@@ -1,1039 +1,1066 @@
 # main.py
 # -*- coding: utf-8 -*-
 """
-농산물 뉴스 브리핑 자동화 (GitHub Actions 운영용)
+Agri News Brief (KST 07:00) -> Kakao "나에게 보내기"
 
-요구사항 반영 사항
-1) 카톡 메시지에서 '브리핑 열기 -> gist' 구조 제거: 브리핑 내용을 카톡 대화창에 직접 발송(여러 메시지로 분할)
-2) 각 기사 요약을 최소 2줄(핵심 요약 + 시사점/체크포인트)로 강화
-3) 저품질/비주류 매체 배제(화이트리스트 우선, 부족하면 블랙리스트 완화)
-4) 기사 있는 섹션을 앞으로 배치, 없는 섹션은 뒤로 배치 + '특이사항 없음' 명확 구분
-5) 주말/공휴일에는 발송하지 않음. 다음 영업일에 직전 영업일~현재까지(휴일 포함) 범위로 확장 스크랩
+이번 버전 반영사항
+1) [SKIP] 주말/공휴일에는 발송하지 않되(영업일만 발송), 다음 영업일에 누락 구간을 자동 포함
+2) 공휴일 판정 오버라이드(특정 날짜를 강제로 영업일/공휴일로)
+3) FORCE_SEND=1 이면 주말/공휴일이라도 강제 발송 (테스트/긴급용)
+4) 카톡 메시지를 "여러 번" 대신 "한 번"으로 줄이기 옵션:
+   - KAKAO_SEND_MODE=multi_text  : (기본) 긴 브리핑을 여러 메시지로 분할 전송
+   - KAKAO_SEND_MODE=single_text : 1개 메시지(핵심 2~3줄 + 상세보기 링크 1개)
+   - KAKAO_SEND_MODE=single_list : 1개 메시지(리스트 템플릿 2~3개 카드 + 헤더 링크)
+5) gist로 넘어가지 않게:
+   - (권장) PUBLISH_MODE=github_pages 로 HTML 뷰어를 repo에 올리고 Pages 링크로 읽기
+   - 카톡엔 BRIEF_VIEW_URL(= Pages URL)을 넣어 1번 클릭으로 보기
 
-필요 Secrets/ENV (GitHub Actions)
+필수 환경변수 (Secrets)
 - OPENAI_API_KEY
-- OPENAI_MODEL (옵션, 기본: gpt-5.2)
-- NAVER_CLIENT_ID
-- NAVER_CLIENT_SECRET
-- KAKAO_REST_API_KEY (client_id)
-- KAKAO_CLIENT_SECRET
-- KAKAO_REFRESH_TOKEN
-- GIST_ID (상태 저장용. 선택이지만 운영 권장)
-- GH_GIST_TOKEN (gist scope 포함 토큰. 선택이지만 운영 권장)
+- KAKAO_REST_API_KEY         (카카오 앱 REST API 키)
+- KAKAO_CLIENT_SECRET        (카카오 앱 Client Secret)
+- KAKAO_REFRESH_TOKEN        (카카오 OAuth refresh_token)
 
-주의/운영 팁
-- 카카오 "기본 템플릿(text)" 본문 200자 제한 때문에, 브리핑은 여러 메시지로 나뉘어 도착합니다.
-- 카카오 메시지 카드(버튼) 클릭 링크는 앱 설정의 "제품 링크"에 등록된 도메인만 허용될 수 있어,
-  본문에는 원문 URL을 그대로 두되, 카드 링크는 안전하게 네이버 뉴스 검색(도메인 1개)로 통일합니다.
+선택 환경변수
+- FORCE_SEND=1                      (테스트용)
+- KAKAO_SEND_MODE=multi_text|single_text|single_list
+- MAX_ARTICLES_PER_SECTION=3
+- PUBLISH_MODE=none|github_pages
+- BRIEF_VIEW_URL=https://...        (single_text/single_list 에서 상세보기 링크로 사용)
+- PAGES_FILE_PATH=docs/brief.html   (repo에 업로드할 파일 경로)
+- PAGES_BRANCH=main                 (업로드 대상 브랜치)
+- STATE_BACKEND=gist|repo
+- (STATE_BACKEND=gist일 때)
+  - GIST_ID
+  - GH_GIST_TOKEN
+- (STATE_BACKEND=repo일 때)
+  - STATE_FILE_PATH=.agri_state.json
+  - (GitHub Actions 기본 제공 GITHUB_TOKEN 사용, workflow permissions: contents: write 필요)
+
+매체 필터
+- 기본: 메이저/공식 위주 "허용 리스트" 기반
+- 필요시 아래 DEFAULT_ALLOWED_PRESS에 추가/삭제
 """
-
-from __future__ import annotations
 
 import os
 import re
 import json
-import time
+import base64
 import html
-import math
-import hashlib
 import logging
-import urllib.parse
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Tuple
 from datetime import datetime, timedelta, date
-from email.utils import parsedate_to_datetime
+from zoneinfo import ZoneInfo
+from typing import Dict, List, Optional, Tuple
+from urllib.parse import quote_plus, urlparse
 
 import requests
 
-try:
-    # Python 3.9+
-    from zoneinfo import ZoneInfo
-except Exception:
-    ZoneInfo = None  # type: ignore
+KST = ZoneInfo("Asia/Seoul")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-# ---------------------------
-# Logging
-# ---------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
-
-# ---------------------------
-# Constants
-# ---------------------------
-KST = ZoneInfo("Asia/Seoul") if ZoneInfo else None
-USER_AGENT = "agri-news-brief/1.0 (+github-actions)"
-
-NAVER_NEWS_API = "https://openapi.naver.com/v1/search/news.json"
-OPENAI_RESPONSES_API = "https://api.openai.com/v1/responses"
-KAKAO_TOKEN_API = "https://kauth.kakao.com/oauth/token"
+# -----------------------------
+# Kakao API endpoints
+# -----------------------------
+KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token"
 KAKAO_MEMO_SEND_API = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
 
-GITHUB_GIST_API = "https://api.github.com/gists"
-
-# 카카오 카드(버튼) 클릭 시 이동 링크: 도메인 1개만 관리하기 위해 네이버 뉴스 검색으로 통일
-KAKAO_CARD_FALLBACK_URL = "https://search.naver.com/search.naver?where=news&query=" + urllib.parse.quote("농산물 수급 가격")
-
-# 카카오 text 본문 제한(문서상 200자)
-KAKAO_TEXT_LIMIT = 200
-# 실제 운영 안전 마진(번호/공백/개행 고려)
-KAKAO_TEXT_SAFE = 190
-
-# OpenAI 비용/속도 균형
-DEFAULT_OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.2")
-OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "low")  # low/medium/high
+# -----------------------------
+# OpenAI API endpoints
+# -----------------------------
+OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.2")  # 사용자가 원한 gpt-5.2 기본
+OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "minimal")  # none/minimal/low/...
 OPENAI_MAX_OUTPUT_TOKENS = int(os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "1200"))
 
-# Naver API 호출 제한 대비
-NAVER_DISPLAY_PER_QUERY = int(os.getenv("NAVER_DISPLAY_PER_QUERY", "50"))  # 1~100
-NAVER_MAX_QUERIES_PER_SECTION = int(os.getenv("NAVER_MAX_QUERIES_PER_SECTION", "8"))
-MAX_FETCH_ARTICLE_BODY = int(os.getenv("MAX_FETCH_ARTICLE_BODY", "18"))  # 본문 크롤 최대 수(속도/리밋 방지)
+# -----------------------------
+# Behavior / Modes
+# -----------------------------
+FORCE_SEND = (os.getenv("FORCE_SEND", "0") == "1")
+KAKAO_SEND_MODE = os.getenv("KAKAO_SEND_MODE", "multi_text")  # multi_text | single_text | single_list
+MAX_ARTICLES_PER_SECTION = int(os.getenv("MAX_ARTICLES_PER_SECTION", "3"))
 
-# 섹션별 최종 선정 기사 수(카톡 메시지 양 조절)
-PICK_PER_SECTION = {
-    "1. 품목 및 수급 동향": int(os.getenv("PICK_ITEMS_SUPPLY", "4")),
-    "2. 주요 이슈 및 정책": int(os.getenv("PICK_ITEMS_POLICY", "3")),
-    "3. 병해충 및 방제": int(os.getenv("PICK_ITEMS_PEST", "2")),
-    "4. 유통 및 현장(APC/수출)": int(os.getenv("PICK_ITEMS_FIELD", "3")),
+PUBLISH_MODE = os.getenv("PUBLISH_MODE", "none")  # none | github_pages
+BRIEF_VIEW_URL = os.getenv("BRIEF_VIEW_URL", "").strip()  # single_* 모드에서 권장
+
+PAGES_FILE_PATH = os.getenv("PAGES_FILE_PATH", "docs/brief.html")
+PAGES_BRANCH = os.getenv("PAGES_BRANCH", "main")
+
+STATE_BACKEND = os.getenv("STATE_BACKEND", "gist")  # gist | repo
+STATE_FILE_PATH = os.getenv("STATE_FILE_PATH", ".agri_state.json")  # repo backend용
+
+# Kakao default 텍스트 템플릿 표시 200자 가이드에 맞춰 안전 마진
+KAKAO_TEXT_SOFT_LIMIT = int(os.getenv("KAKAO_TEXT_SOFT_LIMIT", "180"))
+
+# -----------------------------
+# Naver News search
+# -----------------------------
+NAVER_NEWS_SEARCH_URL = "https://search.naver.com/search.naver?where=news&sm=tab_opt&sort=1&photo=0&field=0&pd=3&ds=&de=&docid=&related=0&mynews=0&office_type=0&office_section_code=0&news_office_checked=&nso=so:dd,p:1d&query="
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
 }
 
-SECTION_ORDER = [
-    "1. 품목 및 수급 동향",
-    "2. 주요 이슈 및 정책",
-    "3. 병해충 및 방제",
-    "4. 유통 및 현장(APC/수출)",
+# -----------------------------
+# Press filtering (tunable)
+# -----------------------------
+DEFAULT_ALLOWED_PRESS = [
+    # 통신/방송
+    "연합뉴스", "뉴시스", "KBS", "MBC", "SBS", "JTBC", "YTN", "연합뉴스TV",
+    # 중앙지
+    "조선일보", "중앙일보", "동아일보", "한겨레", "경향신문", "국민일보", "한국일보",
+    "매일경제", "한국경제", "서울경제", "세계일보",
+    "이데일리", "아시아경제", "헤럴드경제",
+    # 농업/정책/공공
+    "농민신문", "농수축산신문", "한국농어민신문",
+    "정책브리핑", "농림축산식품부", "농식품부", "aT", "한국농수산식품유통공사",
+]
+DEFAULT_BLOCKED_PRESS = [
+    "위키트리", "동행미디어", "시대", "인사이트", "톱스타뉴스"
 ]
 
-# ---------------------------
-# Source quality filtering
-# ---------------------------
-# 1) 우선 허용(화이트리스트). 너무 적으면 완화 모드로 블랙리스트만 적용.
-ALLOWED_DOMAINS = {
-    # 통신/방송/주요 종합지/경제지
-    "yna.co.kr", "newsis.com", "kbs.co.kr", "imnews.imbc.com", "sbs.co.kr", "ytn.co.kr",
-    "joongang.co.kr", "chosun.com", "donga.com", "hani.co.kr", "khan.co.kr",
-    "mk.co.kr", "hankyung.com", "sedaily.com", "fnnews.com", "etnews.com",
+ALLOWED_PRESS = [p.strip() for p in os.getenv("ALLOWED_PRESS", ",".join(DEFAULT_ALLOWED_PRESS)).split(",") if p.strip()]
+BLOCKED_PRESS = [p.strip() for p in os.getenv("BLOCKED_PRESS", ",".join(DEFAULT_BLOCKED_PRESS)).split(",") if p.strip()]
 
-    # 정부/유관
-    "mafra.go.kr", "korea.kr", "policy.go.kr", "at.or.kr", "krei.re.kr", "naqs.go.kr",
-
-    # 주요 지역지(대표급 일부)
-    "ksilbo.co.kr", "busan.com", "kookje.co.kr", "kwnews.co.kr", "gnnews.co.kr",
-    "jbnews.com", "jjan.kr", "idomin.com", "jjilbo.com",
-}
-
-# 제외(블랙리스트) - 사용자 언급 및 흔한 저품질/어그로성
-BLOCKED_DOMAINS = {
-    "wikitree.co.kr",
-    "thetravelnews.co.kr",
-    "donghaengmedia.net",
-    "sidae.com",
-    "topstarnews.net",
-    "insight.co.kr",
-}
-# 제목/요약에 특정 매체명이 박혀오는 경우 보조 차단
-BLOCKED_PATTERNS = [
-    r"위키트리", r"동행미디어", r"\b시대\b", r"인사이트",
+# 도메인 기반(공식/직접 도메인)
+DEFAULT_ALLOWED_DOMAINS = [
+    "yna.co.kr", "news.kbs.co.kr", "imnews.imbc.com", "news.sbs.co.kr",
+    "news.jtbc.co.kr", "www.chosun.com", "www.joongang.co.kr", "www.donga.com",
+    "www.hani.co.kr", "www.khan.co.kr", "www.kmib.co.kr", "www.hankookilbo.com",
+    "www.mk.co.kr", "www.hankyung.com", "www.sedaily.com",
+    "www.edaily.co.kr", "www.asiae.co.kr", "biz.heraldcorp.com",
+    # 정책/공공
+    "www.korea.kr", "www.mafra.go.kr", "www.at.or.kr",
+    # 네이버 호스팅(press 판별이 필요)
+    "n.news.naver.com", "news.naver.com",
 ]
+ALLOWED_DOMAINS = [d.strip() for d in os.getenv("ALLOWED_DOMAINS", ",".join(DEFAULT_ALLOWED_DOMAINS)).split(",") if d.strip()]
 
-# ---------------------------
-# Relevance / Season filtering
-# ---------------------------
-# 너무 "원예수급부 관점"과 거리가 먼(지자체 환급/행사/축제/홍보) 기사 억제
-LOW_RELEVANCE_HINTS = [
-    "온누리상품권", "환급", "축제", "행사", "기부", "나눔", "홍보", "공모전", "체험", "박람회",
-    "맛집", "레시피", "관광", "지역화폐", "상품권",
-]
-# 반대로 수급/정책/시장 관련 핵심 단서 (이게 하나도 없으면 걸러냄)
-HIGH_RELEVANCE_HINTS = [
-    "가격", "시세", "도매", "경락", "물량", "수급", "출하", "저장", "재고", "작황", "생산량",
-    "수입", "할당관세", "검역", "물가", "할인", "도매시장", "가락시장", "공판장",
-    "APC", "선별", "CA저장", "수출", "방제", "병해충", "화상병", "탄저", "동해", "냉해",
-]
 
-# 철 지난(수확기 회고 등) 억제: 최근 기사라도 내용이 “10월 수확기” 중심이면 제외
-OUT_OF_SEASON_HINTS = [
-    "10월", "11월", "추석", "가을 수확", "수확기", "햇과일", "햇사과", "햇배",
-]
-
-# ---------------------------
-# Keyword maps for section routing
-# ---------------------------
-SECTION_KEYWORDS = {
-    "1. 품목 및 수급 동향": [
-        "사과", "배", "단감", "떫은감", "곶감", "둥시",
-        "감귤", "한라봉", "레드향", "천혜향", "만감류",
-        "참다래", "키위", "포도", "샤인머스캣", "복숭아", "자두", "매실", "유자", "밤",
-        "풋고추", "오이", "애호박",
-        "쌀", "절화", "화훼",
-        "저장", "저장량", "재고", "도매가격", "경락가", "시세", "작황", "생산량", "출하",
-        "기후변화", "재배지", "북상", "강원도",
-    ],
-    "2. 주요 이슈 및 정책": [
-        "온라인 도매시장", "도매시장", "허위거래", "이상거래", "전수조사",
-        "할인", "할인지원", "물가", "물가안정", "비축미", "방출", "수입", "할당관세", "검역", "시장개방",
-        "가락시장", "휴무", "경매", "재개",
-        "기후변화", "재배적지", "대체작물", "아열대",
-    ],
-    "3. 병해충 및 방제": [
-        "과수화상병", "화상병", "약제", "신청", "마감", "궤양", "골든타임",
-        "기계유유제", "월동", "해충", "탄저병", "방제", "냉해", "동해",
-    ],
-    "4. 유통 및 현장(APC/수출)": [
-        "농협", "APC", "스마트", "AI 선별", "선별기", "CA저장", "저장시설", "공판장",
-        "도매시장", "가락시장", "유통", "물류",
-        "수출", "수출실적", "농식품", "해외", "검역",
-    ],
-}
-
-# Search queries per section (짧게 여러 번 -> 기사 수 확보)
-SEARCH_QUERIES = {
-    "1. 품목 및 수급 동향": [
-        "사과 저장량 가격", "배 저장량 도매가격", "단감 시세 저장", "곶감 가격 생산량", "떫은감 탄저병 곶감",
-        "감귤 한라봉 레드향 천혜향 시세", "참다래 키위 가격", "샤인머스캣 가격", "풋고추 오이 애호박 가격",
-        "쌀 산지 가격 비축미", "절화 졸업 입학 가격",
+# -----------------------------
+# Sections / Queries
+# -----------------------------
+SECTIONS = [
+    ("품목 및 수급 동향", [
         "기후변화 사과 재배지 북상 강원도",
-    ],
-    "2. 주요 이슈 및 정책": [
-        "농산물 온라인 도매시장 허위거래", "온라인 도매시장 이상거래 전수조사",
-        "농산물 할인지원 연장 3월", "할당관세 수입 과일", "검역 완화 수입 과일",
-        "가락시장 설 휴무 경매 재개",
-        "농산물 물가 안정 대책",
-    ],
-    "3. 병해충 및 방제": [
-        "과수화상병 약제 신청 마감", "과수화상병 궤양 제거 골든타임",
-        "기계유유제 월동 해충 방제", "탄저병 예방 방제", "동해 냉해 대비 과수",
-    ],
-    "4. 유통 및 현장(APC/수출)": [
-        "농협 APC 스마트 선별기", "CA 저장 APC", "공판장 도매시장 동향",
-        "가락시장 휴무 일정 경매 재개", "농식품 수출 실적 1월", "배 수출 딸기 수출 실적",
-    ],
-}
+        "사과 저장량 도매가격",
+        "배 저장량 도매가격",
+        "단감 저장량 시세",
+        "떫은감 탄저병 곶감 생산량 가격 둥시",
+        "감귤 한라봉 레드향 천혜향 가격",
+        "참다래 키위 가격",
+        "샤인머스캣 포도 가격",
+        "매실 개화 전망 냉해",
+        "유자 가격",
+        "밤 가격",
+        "풋고추 오이 애호박 시설채소 가격 일조량 부족",
+        "쌀 산지쌀값 비축미 방출",
+        "절화 졸업 입학 시즌 꽃값",
+    ]),
+    ("주요 이슈 및 정책", [
+        "농산물 온라인 도매시장 허위거래 이상거래 전수조사",
+        "농산물 물가 할인 지원 연장",
+        "할당관세 수입과일 검역 완화",
+        "가락시장 휴무 경매 재개 일정",
+    ]),
+    ("병해충 및 방제", [
+        "과수화상병 약제 신청 마감",
+        "과수화상병 궤양 제거 골든타임",
+        "기계유유제 살포 월동해충 방제",
+        "탄저병 예방",
+        "동해 냉해 대비 과수",
+    ]),
+    ("유통 및 현장(APC/수출)", [
+        "농협 APC 스마트화 AI 선별기 CA 저장",
+        "공판장 도매시장 산지유통 동향",
+        "농식품 수출 실적 배 딸기 라면",
+    ]),
+]
 
 
-# ---------------------------
-# Data structures
-# ---------------------------
-@dataclass
-class Article:
-    uid: str
-    section: str
-    title: str
-    description: str
-    pub_dt_kst: datetime
-    naver_link: str
-    origin_link: str
-    domain: str
-    body_text: str = ""
-
-
-# ---------------------------
-# Utils
-# ---------------------------
-def now_kst() -> datetime:
-    if KST:
-        return datetime.now(tz=KST)
-    # fallback
-    return datetime.now()
-
-def to_kst(dt: datetime) -> datetime:
-    if KST and dt.tzinfo is not None:
-        return dt.astimezone(KST)
-    return dt
-
-def clean_html(s: str) -> str:
-    s = html.unescape(s or "")
-    s = re.sub(r"<[^>]+>", "", s)
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
-def domain_of(url: str) -> str:
-    try:
-        host = urllib.parse.urlparse(url).netloc.lower()
-        if host.startswith("www."):
-            host = host[4:]
-        return host
-    except Exception:
-        return ""
-
-def sha1_short(s: str) -> str:
-    return hashlib.sha1(s.encode("utf-8")).hexdigest()[:12]
-
+# -----------------------------
+# Holiday / Business day logic (with override)
+# -----------------------------
 def is_weekend(d: date) -> bool:
-    return d.weekday() >= 5
+    return d.weekday() >= 5  # 5=Sat, 6=Sun
+
 
 def is_korean_holiday(d: date) -> bool:
     """
-    공휴일 판단: holidays 패키지 사용 가능하면 KR 공휴일 적용, 없으면 주말만.
+    한국 공휴일 판정.
+    - holidays.KR() 사용 (설치/동작 문제시 주말만 스킵하도록 fallback)
+    - 오판정 발생 시 OVERRIDE로 즉시 수정 가능
     """
+    # 강제 오버라이드(필요 시 날짜 문자열 추가)
+    OVERRIDE_FORCE_WORKDAY = {
+        # "2026-02-17",  # 예: 이 날짜를 영업일로 강제
+    }
+    OVERRIDE_FORCE_HOLIDAY = {
+        # "2026-xx-yy",
+    }
+
+    ds = d.isoformat()
+    if ds in OVERRIDE_FORCE_WORKDAY:
+        return False
+    if ds in OVERRIDE_FORCE_HOLIDAY:
+        return True
+
     try:
         import holidays  # type: ignore
         kr = holidays.KR()
         return d in kr
     except Exception:
+        # holidays 라이브러리 없거나 오류 시: 공휴일 아님(주말만 스킵)
         return False
 
+
 def is_business_day(d: date) -> bool:
-    # 주말 + 공휴일 제외
     if is_weekend(d):
         return False
     if is_korean_holiday(d):
         return False
     return True
 
-def clamp_text(s: str, limit: int) -> str:
-    s = (s or "").rstrip()
-    if len(s) <= limit:
-        return s
-    return s[: max(0, limit - 1)] + "…"
 
-def looks_low_relevance(text: str) -> bool:
-    t = text or ""
-    low = any(k in t for k in LOW_RELEVANCE_HINTS)
-    high = any(k in t for k in HIGH_RELEVANCE_HINTS)
-    # low가 강하고 high가 전혀 없으면 제외
-    return low and (not high)
-
-def looks_out_of_season(text: str) -> bool:
-    t = text or ""
-    # "10월/11월/추석/수확기" 중심이면 제외, 단 '저장/전정/설 이후' 등 현재 키워드가 같이 있으면 통과
-    out = any(k in t for k in OUT_OF_SEASON_HINTS)
-    current_ok = any(k in t for k in ["저장", "전정", "설", "저장량", "재고", "현재", "최근"])
-    return out and (not current_ok)
-
-def match_section(title_desc: str) -> Optional[str]:
-    """
-    키워드 기반 섹션 매칭(최다 점수).
-    """
-    text = title_desc
-    scores = {sec: 0 for sec in SECTION_ORDER}
-    for sec in SECTION_ORDER:
-        for kw in SECTION_KEYWORDS.get(sec, []):
-            if kw and kw in text:
-                scores[sec] += 1
-    best = max(scores.items(), key=lambda x: x[1])
-    if best[1] == 0:
-        return None
-    return best[0]
-
-def source_score(domain: str) -> int:
-    """
-    간단 신뢰도 점수(중복 시 선택용)
-    """
-    d = domain
-    if d == "yna.co.kr":
-        return 100
-    if d in {"kbs.co.kr", "imnews.imbc.com", "sbs.co.kr", "ytn.co.kr"}:
-        return 90
-    if d in {"joongang.co.kr", "chosun.com", "donga.com", "hani.co.kr", "khan.co.kr"}:
-        return 85
-    if d in {"mk.co.kr", "hankyung.com", "sedaily.com", "fnnews.com", "etnews.com"}:
-        return 80
-    if d in {"mafra.go.kr", "korea.kr", "policy.go.kr", "at.or.kr", "krei.re.kr", "naqs.go.kr"}:
-        return 95
-    if d in ALLOWED_DOMAINS:
-        return 70
-    return 50
-
-def title_similarity(a: str, b: str) -> float:
-    """
-    아주 단순한 중복 이슈 감지(공백 토큰 자카드).
-    """
-    ta = set(re.findall(r"[0-9가-힣A-Za-z]+", a))
-    tb = set(re.findall(r"[0-9가-힣A-Za-z]+", b))
-    if not ta or not tb:
-        return 0.0
-    return len(ta & tb) / max(1, len(ta | tb))
+# -----------------------------
+# State storage (gist or repo)
+# -----------------------------
+@dataclass
+class State:
+    last_end_kst_iso: str  # ISO datetime with tz
 
 
-# ---------------------------
-# Gist state (optional but recommended)
-# ---------------------------
-def gist_get_state(gist_id: str, token: str) -> Dict:
-    url = f"{GITHUB_GIST_API}/{gist_id}"
-    r = requests.get(url, headers={"Authorization": f"token {token}", "User-Agent": USER_AGENT}, timeout=20)
-    r.raise_for_status()
+def gist_get_file(gist_id: str, token: str, filename: str) -> Optional[str]:
+    url = f"https://api.github.com/gists/{gist_id}"
+    r = requests.get(url, headers={"Authorization": f"token {token}"}, timeout=20)
+    if not r.ok:
+        logging.error("[Gist GET ERROR] %s", r.text)
+        r.raise_for_status()
     data = r.json()
     files = data.get("files", {})
-    if "state.json" in files and files["state.json"].get("content"):
-        try:
-            return json.loads(files["state.json"]["content"])
-        except Exception:
-            return {}
-    return {}
+    if filename in files:
+        return files[filename].get("content")
+    return None
 
-def gist_put_state(gist_id: str, token: str, state: Dict, archive_text: Optional[str] = None) -> None:
-    url = f"{GITHUB_GIST_API}/{gist_id}"
-    files_payload = {
-        "state.json": {"content": json.dumps(state, ensure_ascii=False, indent=2)}
+
+def gist_update_files(gist_id: str, token: str, files_map: Dict[str, str]) -> None:
+    url = f"https://api.github.com/gists/{gist_id}"
+    payload = {"files": {fn: {"content": content} for fn, content in files_map.items()}}
+    r = requests.patch(url, headers={"Authorization": f"token {token}"}, json=payload, timeout=20)
+    if not r.ok:
+        logging.error("[Gist PATCH ERROR] %s", r.text)
+        r.raise_for_status()
+
+
+def github_get_file(repo: str, path: str, token: str, ref: str = "main") -> Tuple[Optional[str], Optional[str]]:
+    """
+    Returns (content_text, sha) or (None, None) if not found.
+    """
+    url = f"https://api.github.com/repos/{repo}/contents/{path}?ref={ref}"
+    r = requests.get(url, headers={"Authorization": f"Bearer {token}"}, timeout=20)
+    if r.status_code == 404:
+        return None, None
+    if not r.ok:
+        logging.error("[GitHub GET ERROR] %s", r.text)
+        r.raise_for_status()
+    j = r.json()
+    sha = j.get("sha")
+    b64 = j.get("content", "")
+    if j.get("encoding") == "base64" and b64:
+        raw = base64.b64decode(b64).decode("utf-8", errors="replace")
+        return raw, sha
+    return None, sha
+
+
+def github_put_file(repo: str, path: str, token: str, content_text: str, branch: str = "main", sha: Optional[str] = None, message: str = "Update file") -> None:
+    url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    b64 = base64.b64encode(content_text.encode("utf-8")).decode("ascii")
+    payload = {
+        "message": message,
+        "content": b64,
+        "branch": branch,
     }
-    # 운영상 디버깅/기록용: 최신 브리핑을 gist에 저장(사용자 클릭용으로 쓰지 않음)
-    if archive_text is not None:
-        files_payload["latest_brief.txt"] = {"content": archive_text}
-    payload = {"files": files_payload}
-    r = requests.patch(
-        url,
-        headers={"Authorization": f"token {token}", "User-Agent": USER_AGENT},
-        json=payload,
-        timeout=20,
-    )
-    r.raise_for_status()
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(url, headers={"Authorization": f"Bearer {token}"}, json=payload, timeout=20)
+    if not r.ok:
+        logging.error("[GitHub PUT ERROR] %s", r.text)
+        r.raise_for_status()
 
 
-# ---------------------------
-# Kakao token + send
-# ---------------------------
-def kakao_refresh_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
+def load_state(now_kst: datetime) -> State:
+    default_last = (now_kst - timedelta(hours=24)).isoformat()
+
+    if STATE_BACKEND == "repo":
+        repo = os.getenv("GITHUB_REPOSITORY", "")
+        token = os.getenv("GITHUB_TOKEN", "")
+        if not repo or not token:
+            logging.warning("[STATE repo] missing GITHUB_REPOSITORY/GITHUB_TOKEN -> fallback to default window")
+            return State(last_end_kst_iso=default_last)
+        raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref=PAGES_BRANCH)
+        if not raw:
+            return State(last_end_kst_iso=default_last)
+        try:
+            j = json.loads(raw)
+            return State(last_end_kst_iso=j.get("last_end_kst_iso", default_last))
+        except Exception:
+            return State(last_end_kst_iso=default_last)
+
+    # gist backend
+    gist_id = os.getenv("GIST_ID", "")
+    token = os.getenv("GH_GIST_TOKEN", "")
+    if not gist_id or not token:
+        logging.warning("[STATE gist] missing GIST_ID/GH_GIST_TOKEN -> fallback to default window")
+        return State(last_end_kst_iso=default_last)
+
+    raw = gist_get_file(gist_id, token, "state.json")
+    if not raw:
+        return State(last_end_kst_iso=default_last)
+    try:
+        j = json.loads(raw)
+        return State(last_end_kst_iso=j.get("last_end_kst_iso", default_last))
+    except Exception:
+        return State(last_end_kst_iso=default_last)
+
+
+def save_state(state: State) -> None:
+    if STATE_BACKEND == "repo":
+        repo = os.getenv("GITHUB_REPOSITORY", "")
+        token = os.getenv("GITHUB_TOKEN", "")
+        if not repo or not token:
+            logging.warning("[STATE repo] missing GITHUB_REPOSITORY/GITHUB_TOKEN -> cannot save")
+            return
+        current, sha = github_get_file(repo, STATE_FILE_PATH, token, ref=PAGES_BRANCH)
+        _ = current  # unused
+        content = json.dumps({"last_end_kst_iso": state.last_end_kst_iso}, ensure_ascii=False, indent=2)
+        github_put_file(repo, STATE_FILE_PATH, token, content, branch=PAGES_BRANCH, sha=sha, message="Update agri-news state")
+        return
+
+    gist_id = os.getenv("GIST_ID", "")
+    token = os.getenv("GH_GIST_TOKEN", "")
+    if not gist_id or not token:
+        logging.warning("[STATE gist] missing GIST_ID/GH_GIST_TOKEN -> cannot save")
+        return
+    content = json.dumps({"last_end_kst_iso": state.last_end_kst_iso}, ensure_ascii=False, indent=2)
+    gist_update_files(gist_id, token, {"state.json": content})
+
+
+# -----------------------------
+# Kakao OAuth / Send
+# -----------------------------
+def kakao_refresh_access_token(refresh_token: str) -> str:
+    rest_api_key = os.getenv("KAKAO_REST_API_KEY", "")
+    client_secret = os.getenv("KAKAO_CLIENT_SECRET", "")
+    if not rest_api_key or not client_secret:
+        raise RuntimeError("Missing KAKAO_REST_API_KEY / KAKAO_CLIENT_SECRET")
+
     data = {
         "grant_type": "refresh_token",
-        "client_id": client_id,
+        "client_id": rest_api_key,
+        "client_secret": client_secret,
         "refresh_token": refresh_token,
     }
-    # client_secret이 설정되어 있다면 포함
-    if client_secret:
-        data["client_secret"] = client_secret
-
-    r = requests.post(
-        KAKAO_TOKEN_API,
-        headers={"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"},
-        data=data,
-        timeout=20,
-    )
-    r.raise_for_status()
+    r = requests.post(KAKAO_TOKEN_URL, data=data, timeout=20)
+    if not r.ok:
+        logging.error("[Kakao token ERROR BODY] %s", r.text)
+        r.raise_for_status()
     j = r.json()
-    access_token = j.get("access_token")
-    if not access_token:
+    access = j.get("access_token")
+    if not access:
         raise RuntimeError(f"Kakao token refresh failed: {j}")
-    return access_token
+    return access
 
-def kakao_send_text(access_token: str, text: str) -> None:
-    """
-    카카오 기본 템플릿(text)로 '나에게 보내기' 발송.
-    text는 최대 200자 제한이 있으므로 호출 전에 분할/절삭 필요.
-    """
-    template_object = {
-        "object_type": "text",
-        "text": text,
-        "link": {
-            "web_url": KAKAO_CARD_FALLBACK_URL,
-            "mobile_web_url": KAKAO_CARD_FALLBACK_URL
-        },
-        "button_title": "뉴스 검색"
-    }
 
+def kakao_send_template(access_token: str, template_object: dict) -> None:
     r = requests.post(
         KAKAO_MEMO_SEND_API,
         headers={"Authorization": f"Bearer {access_token}"},
         data={"template_object": json.dumps(template_object, ensure_ascii=False)},
         timeout=20,
     )
+    if not r.ok:
+        logging.error("[Kakao send ERROR BODY] %s", r.text)
+    else:
+        logging.info("[Kakao send OK] %s", r.text)
     r.raise_for_status()
 
-def split_for_kakao(text: str, safe_limit: int = KAKAO_TEXT_SAFE) -> List[str]:
-    """
-    200자 제한을 넘지 않도록, 줄 단위로 최대한 자연스럽게 분할.
-    """
-    text = (text or "").strip()
-    if len(text) <= safe_limit:
-        return [text]
 
-    lines = text.splitlines()
-    chunks: List[str] = []
-    cur = ""
-    for ln in lines:
-        if not ln:
-            # 빈 줄은 가급적 유지
-            candidate = (cur + "\n").strip("\n") if cur else ""
-            if len(candidate) <= safe_limit:
-                cur = candidate
-            continue
-
-        if not cur:
-            cur = ln
-            continue
-
-        candidate = cur + "\n" + ln
-        if len(candidate) <= safe_limit:
-            cur = candidate
-        else:
-            if cur:
-                chunks.append(cur)
-            # ln 자체가 너무 길면 강제 절삭
-            if len(ln) > safe_limit:
-                chunks.append(clamp_text(ln, safe_limit))
-                cur = ""
-            else:
-                cur = ln
-
-    if cur:
-        chunks.append(cur)
-
-    # 그래도 혹시 넘는 경우 2차 절삭
-    final = [clamp_text(c, safe_limit) for c in chunks if c.strip()]
-    return final
-
-
-# ---------------------------
-# Naver News Search API
-# ---------------------------
-def naver_search_news(client_id: str, client_secret: str, query: str, display: int, start: int = 1) -> List[Dict]:
-    params = {
-        "query": query,
-        "display": display,
-        "start": start,
-        "sort": "date",
+def kakao_send_text(access_token: str, text: str, fallback_url: str) -> None:
+    template_object = {
+        "object_type": "text",
+        "text": text,
+        "link": {
+            "web_url": fallback_url,
+            "mobile_web_url": fallback_url,
+        },
+        "button_title": "바로 확인",
     }
-    headers = {
-        "X-Naver-Client-Id": client_id,
-        "X-Naver-Client-Secret": client_secret,
-        "User-Agent": USER_AGENT,
-    }
-    r = requests.get(NAVER_NEWS_API, headers=headers, params=params, timeout=20)
-    r.raise_for_status()
-    return r.json().get("items", [])
+    kakao_send_template(access_token, template_object)
 
-def parse_pubdate_to_kst(pub_date_str: str) -> Optional[datetime]:
+
+def kakao_send_list(access_token: str, header_title: str, header_url: str, items: List[dict], button_title: str = "상세보기") -> None:
+    """
+    Default template 'list' : contents 2~3개 제한이 있어 top 3만 넣는 용도로 사용 권장.
+    """
+    template_object = {
+        "object_type": "list",
+        "header_title": header_title[:200],
+        "header_link": {"web_url": header_url, "mobile_web_url": header_url},
+        "contents": items[:3],  # 안전
+        "button_title": button_title[:20],
+    }
+    kakao_send_template(access_token, template_object)
+
+
+# -----------------------------
+# Naver parsing helpers
+# -----------------------------
+def normalize_space(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "").strip())
+
+
+def host_of(url: str) -> str:
     try:
-        dt = parsedate_to_datetime(pub_date_str)
-        if dt.tzinfo is None:
-            return None
-        return to_kst(dt)
+        return (urlparse(url).hostname or "").lower()
     except Exception:
+        return ""
+
+
+def is_allowed_article(url: str, press_name: str) -> bool:
+    """
+    도메인 허용 or (네이버 호스팅일 경우 press_name 허용)
+    """
+    h = host_of(url)
+    if any(h == d or h.endswith("." + d) for d in ALLOWED_DOMAINS):
+        # 네이버 호스팅이면 press_name 체크 강화
+        if h.endswith("naver.com"):
+            if press_name and any(p in press_name for p in BLOCKED_PRESS):
+                return False
+            if press_name and any(p in press_name for p in ALLOWED_PRESS):
+                return True
+            # press_name을 못 뽑았으면 보수적으로 제외
+            return False
+        return True
+
+    # 도메인이 허용 리스트 밖이면 press 기반으로 한 번 더 허용
+    if press_name and any(p in press_name for p in BLOCKED_PRESS):
+        return False
+    if press_name and any(p in press_name for p in ALLOWED_PRESS):
+        return True
+    return False
+
+
+def parse_naver_time_str(s: str, now_kst: datetime) -> Optional[datetime]:
+    """
+    Naver 뉴스 결과 시간 문자열 파싱:
+    - '3시간 전', '15분 전'
+    - '2026.02.17.'
+    - '2026.02.17. 09:30'
+    """
+    s = normalize_space(s)
+    if not s:
         return None
 
-def fetch_naver_article_body(naver_link: str, timeout: int = 15) -> str:
+    m = re.search(r"(\d+)\s*분\s*전", s)
+    if m:
+        return now_kst - timedelta(minutes=int(m.group(1)))
+
+    m = re.search(r"(\d+)\s*시간\s*전", s)
+    if m:
+        return now_kst - timedelta(hours=int(m.group(1)))
+
+    m = re.search(r"(\d+)\s*일\s*전", s)
+    if m:
+        return now_kst - timedelta(days=int(m.group(1)))
+
+    # 2026.02.17. 09:30
+    m = re.search(r"(\d{4})\.(\d{2})\.(\d{2})\.\s*(\d{2}):(\d{2})", s)
+    if m:
+        return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4)), int(m.group(5)), tzinfo=KST)
+
+    # 2026.02.17.
+    m = re.search(r"(\d{4})\.(\d{2})\.(\d{2})\.", s)
+    if m:
+        return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), 0, 0, tzinfo=KST)
+
+    return None
+
+
+def fetch_naver_news(query: str, start_kst: datetime, end_kst: datetime, max_items: int = 10) -> List[dict]:
     """
-    Naver 뉴스 링크(news.naver.com)면 비교적 일관된 구조로 본문 추출 가능.
-    다른 링크면 빈 문자열 반환.
+    Naver 뉴스 검색 결과에서 기사 후보를 추출하고, 시간/매체 필터 후 반환.
     """
-    if "news.naver.com" not in (naver_link or ""):
-        return ""
+    now_kst = end_kst
+    url = NAVER_NEWS_SEARCH_URL + quote_plus(query)
+    r = requests.get(url, headers=HEADERS, timeout=20)
+    if not r.ok:
+        logging.warning("[Naver search fail] %s %s", r.status_code, r.text[:200])
+        return []
+
+    html_text = r.text
+
+    # bs4 있으면 정확도 상승
     try:
-        r = requests.get(naver_link, headers={"User-Agent": USER_AGENT}, timeout=timeout)
-        r.raise_for_status()
-        html_text = r.text
+        from bs4 import BeautifulSoup  # type: ignore
+        soup = BeautifulSoup(html_text, "html.parser")
+        items = soup.select("div.news_area")
+        results = []
+        for it in items:
+            a = it.select_one("a.news_tit")
+            if not a:
+                continue
+            link = a.get("href", "").strip()
+            title = normalize_space(a.get("title") or a.get_text(" ", strip=True))
 
-        # BeautifulSoup 있으면 우선 사용
-        try:
-            from bs4 import BeautifulSoup  # type: ignore
-            soup = BeautifulSoup(html_text, "html.parser")
+            # press
+            press = ""
+            press_el = it.select_one("a.info.press") or it.select_one("span.info.press")
+            if press_el:
+                press = normalize_space(press_el.get_text(" ", strip=True))
 
-            # 구형/신형 레이아웃 대응
-            candidates = [
-                soup.select_one("#dic_area"),
-                soup.select_one("#articleBodyContents"),
-                soup.select_one("article#dic_area"),
-            ]
-            for c in candidates:
-                if c and c.get_text(strip=True):
-                    t = c.get_text(" ", strip=True)
-                    t = re.sub(r"\s+", " ", t).strip()
-                    return t
-        except Exception:
-            pass
+            # time
+            time_str = ""
+            info = it.select("span.info")
+            # 보통 span.info 중에 날짜/시간이 섞여 있음
+            for sp in info:
+                t = normalize_space(sp.get_text(" ", strip=True))
+                if "전" in t or re.search(r"\d{4}\.\d{2}\.\d{2}\.", t):
+                    time_str = t
+                    break
+            dt = parse_naver_time_str(time_str, now_kst)
+            if not dt:
+                continue
 
-        # fallback: 정규식(최후)
-        m = re.search(r'id="dic_area".*?>(.*?)</div>', html_text, re.DOTALL)
-        if m:
-            txt = re.sub(r"<[^>]+>", " ", m.group(1))
-            txt = re.sub(r"\s+", " ", txt).strip()
-            return txt
+            if not (start_kst <= dt < end_kst):
+                continue
 
-        return ""
-    except Exception:
-        return ""
+            if not is_allowed_article(link, press):
+                continue
 
-
-# ---------------------------
-# Article collection + filtering
-# ---------------------------
-def collect_articles(start_kst: datetime, end_kst: datetime) -> List[Article]:
-    naver_id = os.getenv("NAVER_CLIENT_ID", "").strip()
-    naver_secret = os.getenv("NAVER_CLIENT_SECRET", "").strip()
-    if not (naver_id and naver_secret):
-        raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 이(가) 필요합니다.")
-
-    raw_items: List[Dict] = []
-    # 섹션별 여러 쿼리 실행
-    for sec in SECTION_ORDER:
-        queries = SEARCH_QUERIES.get(sec, [])[:NAVER_MAX_QUERIES_PER_SECTION]
-        for q in queries:
-            try:
-                items = naver_search_news(
-                    naver_id, naver_secret,
-                    query=q,
-                    display=NAVER_DISPLAY_PER_QUERY,
-                    start=1
-                )
-                raw_items.extend(items)
-                time.sleep(0.15)  # 소폭 rate-limit 완화
-            except Exception as e:
-                logging.warning(f"Naver query failed [{sec}] q='{q}': {e}")
-
-    # 정리/필터링
-    candidates: List[Article] = []
-    for it in raw_items:
-        title = clean_html(it.get("title", ""))
-        desc = clean_html(it.get("description", ""))
-        pub_dt = parse_pubdate_to_kst(it.get("pubDate", ""))
-        if not pub_dt:
-            continue
-        if not (start_kst <= pub_dt < end_kst):
-            continue
-
-        naver_link = it.get("link", "") or ""
-        origin_link = it.get("originallink", "") or naver_link
-        dom = domain_of(origin_link)
-
-        # 매체/패턴 차단
-        if dom in BLOCKED_DOMAINS:
-            continue
-        if any(re.search(p, title) for p in BLOCKED_PATTERNS):
-            continue
-
-        # 시즈널/관련성 필터
-        combined = f"{title} {desc}"
-        if looks_low_relevance(combined):
-            continue
-        if looks_out_of_season(combined):
-            continue
-
-        # 섹션 추정
-        sec = match_section(combined) or "2. 주요 이슈 및 정책"  # 미매칭은 정책/이슈로 우선(너무 품목 편중 방지)
-        uid = sha1_short((origin_link or "") + "|" + title)
-
-        candidates.append(Article(
-            uid=uid,
-            section=sec,
-            title=title,
-            description=desc,
-            pub_dt_kst=pub_dt,
-            naver_link=naver_link,
-            origin_link=origin_link,
-            domain=dom,
-        ))
-
-    # 1차 중복 제거(링크/제목 유사)
-    candidates = dedupe_articles(candidates)
-
-    # 매체 품질 필터(화이트리스트 우선)
-    strict = [a for a in candidates if a.domain in ALLOWED_DOMAINS]
-    # 너무 적으면 완화: 블랙리스트만 유지
-    if len(strict) >= 8:
-        candidates = strict
-        logging.info(f"[FILTER] strict allowlist applied: {len(candidates)} articles")
-    else:
-        logging.info(f"[FILTER] strict allowlist too few ({len(strict)}). fallback to blocklist-only: {len(candidates)} articles")
-
-    # Naver 기사 본문 확보(가능한 것만, 상위 몇 개)
-    candidates = sorted(candidates, key=lambda x: x.pub_dt_kst, reverse=True)
-    for a in candidates[:MAX_FETCH_ARTICLE_BODY]:
-        if a.naver_link and "news.naver.com" in a.naver_link:
-            a.body_text = fetch_naver_article_body(a.naver_link)
-
-    return candidates
-
-def dedupe_articles(arts: List[Article]) -> List[Article]:
-    # 링크 기준 1차
-    by_url: Dict[str, Article] = {}
-    for a in arts:
-        key = (a.origin_link or a.naver_link or "")[:300]
-        if not key:
-            key = a.uid
-        if key in by_url:
-            # 같은 링크면 더 신뢰도 높은 쪽/더 최신을 남김
-            prev = by_url[key]
-            if (source_score(a.domain), a.pub_dt_kst) > (source_score(prev.domain), prev.pub_dt_kst):
-                by_url[key] = a
-        else:
-            by_url[key] = a
-    unique = list(by_url.values())
-
-    # 제목 유사도 기반 2차(같은 이슈 여러 매체)
-    unique_sorted = sorted(unique, key=lambda x: (x.section, x.pub_dt_kst), reverse=True)
-    kept: List[Article] = []
-    for a in unique_sorted:
-        dup = False
-        for b in kept:
-            if a.section == b.section and title_similarity(a.title, b.title) >= 0.75:
-                # 같은 섹션 내 유사 제목 -> 더 신뢰도 높은 것만
-                if source_score(a.domain) > source_score(b.domain):
-                    kept.remove(b)
-                    kept.append(a)
-                dup = True
+            results.append({
+                "query": query,
+                "title": title,
+                "url": link,
+                "press": press,
+                "published_kst": dt.isoformat(),
+            })
+            if len(results) >= max_items:
                 break
-        if not dup:
-            kept.append(a)
-    return kept
+        return results
+    except Exception:
+        # fallback: 매우 단순 추출(정확도 낮음) -> 운영에선 bs4 설치 권장
+        results = []
+        # title+url
+        for m in re.finditer(r'<a[^>]+class="news_tit"[^>]+href="([^"]+)"[^>]*title="([^"]+)"', html_text):
+            link, title = m.group(1), html.unescape(m.group(2))
+            results.append({"query": query, "title": normalize_space(title), "url": link, "press": "", "published_kst": ""})
+            if len(results) >= max_items:
+                break
+        return results
 
 
-# ---------------------------
-# OpenAI summarization
-# ---------------------------
-def openai_summarize(selected: List[Article], start_kst: datetime, end_kst: datetime) -> Dict[str, List[Dict]]:
+# -----------------------------
+# Dedupe / Group
+# -----------------------------
+def dedupe_articles(articles: List[dict]) -> List[dict]:
     """
-    selected 기사들에 대해:
-    - 2줄 요약(line1, line2)
-    - 링크(origin_link)
-    를 생성. 출력은 섹션별 리스트로 반환.
+    - 동일 URL 제거
+    - (제목 유사) 간단 중복 제거
     """
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    seen_url = set()
+    out = []
+    seen_title_key = set()
+    for a in articles:
+        u = a.get("url", "")
+        t = normalize_space(a.get("title", ""))
+        if not u or not t:
+            continue
+        if u in seen_url:
+            continue
+        seen_url.add(u)
+
+        key = re.sub(r"[^0-9a-zA-Z가-힣]+", "", t.lower())[:60]
+        if key in seen_title_key:
+            continue
+        seen_title_key.add(key)
+
+        out.append(a)
+    return out
+
+
+def collect_articles_by_section(start_kst: datetime, end_kst: datetime) -> Dict[str, List[dict]]:
+    by_section: Dict[str, List[dict]] = {sec: [] for sec, _ in SECTIONS}
+
+    for sec, queries in SECTIONS:
+        collected: List[dict] = []
+        for q in queries:
+            items = fetch_naver_news(q, start_kst, end_kst, max_items=8)
+            collected.extend(items)
+        collected = dedupe_articles(collected)
+
+        # 섹션당 상한
+        by_section[sec] = collected[:MAX_ARTICLES_PER_SECTION]
+        logging.info("[Collect] %s: %d", sec, len(by_section[sec]))
+
+    return by_section
+
+
+# -----------------------------
+# OpenAI summarization (robust fallback)
+# -----------------------------
+def openai_summarize(articles_by_section: Dict[str, List[dict]], start_kst: datetime, end_kst: datetime) -> Dict[str, List[dict]]:
+    """
+    각 기사에 대해 2~3문장 요약 + 실무포인트 1줄을 생성.
+    실패 시 press/title 기반 간이 요약으로 fallback.
+    """
+    api_key = os.getenv("OPENAI_API_KEY", "")
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY 이(가) 필요합니다.")
+        logging.warning("[OpenAI] Missing OPENAI_API_KEY -> fallback summaries")
+        return fallback_summaries(articles_by_section)
 
-    # 입력 구성(기사 본문이 있으면 일부 포함)
-    items = []
-    for a in selected:
-        body = (a.body_text or "").strip()
-        if body:
-            body = body[:1200]
-        items.append({
-            "id": a.uid,
-            "section": a.section,
-            "title": a.title,
-            "desc": a.description,
-            "published_kst": a.pub_dt_kst.strftime("%Y-%m-%d %H:%M"),
-            "source_domain": a.domain,
-            "body": body,
-            "url": a.origin_link or a.naver_link,
-        })
+    # 입력 payload 최소화(비용 절감)
+    compact = []
+    for sec, arts in articles_by_section.items():
+        for a in arts:
+            compact.append({
+                "section": sec,
+                "title": a.get("title", ""),
+                "press": a.get("press", ""),
+                "url": a.get("url", ""),
+                "published_kst": a.get("published_kst", ""),
+            })
+
+    prompt = f"""
+너는 농협중앙회 원예수급부 실무자를 위한 '농산물 뉴스 브리핑 편집자'다.
+아래 기사 목록(제목/매체/URL/발행시각)만 보고, 각 기사에 대해:
+- summary: 2~3문장(정책/수급/현장에 직접 연결되게, 군더더기 없이)
+- point: 실무자 관점 한 줄(예: "가격 급등 가능성", "현장 방제 선제 필요", "도매시장 일정 확인 필요")
+를 작성해라.
+
+중요:
+- 추측/과장 금지. 제목으로 판단이 어려우면 '제목상' 표현으로 보수적으로.
+- 동일 이슈 중복 느낌이면 point에서 "중복 이슈" 언급 말고, 그냥 핵심만.
+- 출력은 JSON만.
+
+기간(KST): {start_kst.isoformat()} ~ {end_kst.isoformat()}
+기사 목록 JSON:
+{json.dumps(compact, ensure_ascii=False)}
+"""
 
     schema = {
-        "type": "object",
-        "properties": {
-            "items": {
-                "type": "array",
+        "name": "agri_brief_summaries",
+        "schema": {
+            "type": "object",
+            "properties": {
                 "items": {
-                    "type": "object",
-                    "properties": {
-                        "id": {"type": "string"},
-                        "section": {"type": "string"},
-                        "line1": {"type": "string"},
-                        "line2": {"type": "string"},
-                        "url": {"type": "string"},
-                    },
-                    "required": ["id", "section", "line1", "line2", "url"],
-                    "additionalProperties": False,
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "url": {"type": "string"},
+                            "summary": {"type": "string"},
+                            "point": {"type": "string"}
+                        },
+                        "required": ["url", "summary", "point"],
+                        "additionalProperties": False
+                    }
                 }
-            }
+            },
+            "required": ["items"],
+            "additionalProperties": False
         },
-        "required": ["items"],
-        "additionalProperties": False,
+        "strict": True
     }
 
-    sys = (
-        "당신은 농협중앙회 원예수급부 팀장 결재용 '농산물 뉴스 브리핑' 작성자입니다.\n"
-        "목표: 각 기사마다 카카오톡 메시지 1건(짧게)으로 전달 가능한 2줄 요약을 생성합니다.\n"
-        "규칙:\n"
-        "- line1: 1문장, 핵심 사실/이슈를 압축(너무 포괄 금지)\n"
-        "- line2: 1문장, 원예수급/유통 관점의 시사점 또는 체크포인트(숫자/시장 반응/현장 대응 중심)\n"
-        "- 두 줄 모두 과장 없이 팩트 기반. '추정/가능성'이면 그렇게 명시.\n"
-        "- 각 line은 65자 내외로 최대한 짧게.\n"
-        "- 저품질/홍보성/축제성 내용은 강조하지 말고, 있더라도 요약은 중립적으로.\n"
-        "- 출력은 반드시 JSON.\n"
-    )
-
-    user = (
-        f"기간(KST): {start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}\n"
-        f"아래 기사 목록을 섹션을 유지한 채로 2줄 요약으로 변환하세요.\n\n"
-        f"{json.dumps(items, ensure_ascii=False)}"
-    )
-
     payload = {
-        "model": DEFAULT_OPENAI_MODEL,
+        "model": OPENAI_MODEL,
         "input": [
-            {"role": "system", "content": sys},
-            {"role": "user", "content": user},
+            {"role": "user", "content": prompt}
         ],
+        "reasoning_effort": OPENAI_REASONING_EFFORT,
+        "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
         "text": {
             "format": {
                 "type": "json_schema",
-                "name": "agri_brief_items",
-                "strict": True,
-                "schema": schema,
+                "json_schema": schema
             }
         },
-        "reasoning_effort": OPENAI_REASONING_EFFORT,
-        "verbosity": "low",
-        "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
-        "store": False,
     }
 
-    r = requests.post(
-        OPENAI_RESPONSES_API,
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        json=payload,
-        timeout=60,
-    )
-    if r.status_code >= 400:
-        try:
-            logging.error("[OpenAI ERROR BODY] %s", json.dumps(r.json(), ensure_ascii=False, indent=2))
-        except Exception:
-            logging.error("[OpenAI ERROR TEXT] %s", r.text)
-        r.raise_for_status()
+    try:
+        r = requests.post(
+            OPENAI_RESPONSES_URL,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json=payload,
+            timeout=60,
+        )
+        if not r.ok:
+            logging.error("[OpenAI ERROR BODY] %s", r.text)
+            r.raise_for_status()
 
-    resp = r.json()
-    out_text = extract_responses_output_text(resp)
-    data = json.loads(out_text)
+        data = r.json()
 
-    # 섹션별로 묶기
-    by_sec: Dict[str, List[Dict]] = {s: [] for s in SECTION_ORDER}
-    for it in data.get("items", []):
-        sec = it.get("section") or ""
-        if sec not in by_sec:
-            sec = "2. 주요 이슈 및 정책"
-        by_sec[sec].append(it)
+        # Responses API: output_text는 SDK에서만 편의 제공인 경우가 있어 output에서 파싱
+        out_text = ""
+        if isinstance(data, dict):
+            if "output_text" in data and isinstance(data["output_text"], str):
+                out_text = data["output_text"]
+            else:
+                # output -> message -> output_text
+                for item in data.get("output", []) or []:
+                    if item.get("type") == "message":
+                        for c in item.get("content", []) or []:
+                            if c.get("type") == "output_text":
+                                out_text += c.get("text", "")
 
-    return by_sec
+        out_text = out_text.strip()
+        if not out_text:
+            logging.warning("[OpenAI] empty output -> fallback")
+            return fallback_summaries(articles_by_section)
 
-def extract_responses_output_text(resp_json: Dict) -> str:
+        j = json.loads(out_text)
+        mapping = {it["url"]: {"summary": it["summary"], "point": it["point"]} for it in j.get("items", [])}
+
+        # merge back
+        merged: Dict[str, List[dict]] = {}
+        for sec, arts in articles_by_section.items():
+            merged[sec] = []
+            for a in arts:
+                u = a.get("url", "")
+                extra = mapping.get(u, {})
+                aa = dict(a)
+                aa["summary"] = normalize_space(extra.get("summary", "")) or fallback_one_summary(a)
+                aa["point"] = normalize_space(extra.get("point", "")) or ""
+                merged[sec].append(aa)
+        return merged
+
+    except Exception as e:
+        logging.warning("[OpenAI summarize fail] %s -> fallback", str(e))
+        return fallback_summaries(articles_by_section)
+
+
+def fallback_one_summary(a: dict) -> str:
+    press = a.get("press", "").strip()
+    title = a.get("title", "").strip()
+    if press:
+        return f"{press} 보도: {title}"
+    return title
+
+
+def fallback_summaries(articles_by_section: Dict[str, List[dict]]) -> Dict[str, List[dict]]:
+    merged: Dict[str, List[dict]] = {}
+    for sec, arts in articles_by_section.items():
+        merged[sec] = []
+        for a in arts:
+            aa = dict(a)
+            aa["summary"] = fallback_one_summary(a)
+            aa["point"] = ""
+            merged[sec].append(aa)
+    return merged
+
+
+# -----------------------------
+# Render brief
+# -----------------------------
+def render_full_brief_text(articles_by_section: Dict[str, List[dict]], start_kst: datetime, end_kst: datetime) -> str:
     """
-    Responses API 응답에서 output_text를 합쳐 반환
+    '카톡 복붙용' 전체 브리핑 텍스트(Plain text).
+    - 기사 없는 섹션은 뒤로 밀고, 아예 비표시(요청사항 반영)
     """
-    outs = resp_json.get("output", [])
-    texts = []
-    for item in outs:
-        if item.get("type") == "message":
-            for c in item.get("content", []):
-                if c.get("type") == "output_text":
-                    texts.append(c.get("text", ""))
-    return "".join(texts).strip()
+    # 섹션 정렬: 기사 있는 섹션 먼저
+    nonempty = [(sec, arts) for sec, arts in articles_by_section.items() if arts]
+    empty = [(sec, arts) for sec, arts in articles_by_section.items() if not arts]
+    ordered = nonempty + empty
 
+    lines = []
+    lines.append(f"[농산물 뉴스 Brief] ({start_kst.strftime('%Y-%m-%d %H:%M')}~{end_kst.strftime('%Y-%m-%d %H:%M')} KST)")
+    lines.append("")
 
-# ---------------------------
-# Build briefing & send
-# ---------------------------
-def pick_articles_by_section(arts: List[Article]) -> List[Article]:
-    """
-    섹션별 상위 N개 선정.
-    - 점수: (섹션키워드 매칭 수) + (source_score 가중) + (최근성)
-    """
-    by_sec: Dict[str, List[Article]] = {s: [] for s in SECTION_ORDER}
-    for a in arts:
-        by_sec[a.section].append(a)
-
-    picked: List[Article] = []
-    for sec in SECTION_ORDER:
-        lst = by_sec.get(sec, [])
-        if not lst:
+    for sec, arts in ordered:
+        if not arts:
+            # 요청: 없는 기사는 안 보여줘도 됨 -> 섹션 자체도 생략
             continue
 
-        def score(a: Article) -> float:
-            text = f"{a.title} {a.description}"
-            kw_hits = sum(1 for kw in SECTION_KEYWORDS.get(sec, []) if kw in text)
-            recency = a.pub_dt_kst.timestamp()
-            return kw_hits * 10 + source_score(a.domain) + (recency / 1e10)
+        lines.append(f"■ {sec}")
+        for a in arts:
+            title = normalize_space(a.get("title", ""))
+            press = normalize_space(a.get("press", ""))
+            summary = normalize_space(a.get("summary", ""))
+            point = normalize_space(a.get("point", ""))
 
-        lst_sorted = sorted(lst, key=score, reverse=True)
-        picked.extend(lst_sorted[:PICK_PER_SECTION.get(sec, 2)])
+            # 2~3문장 요약(한 줄로 너무 길어지면 줄바꿈)
+            body = summary
+            if point:
+                body = f"{summary} / 포인트: {point}"
 
-    # 전체 중복 재확인
-    picked = dedupe_articles(picked)
+            # 카톡에서 보기 좋게 2줄 정도로 분리
+            lines.append(f"- {press} | {title}")
+            lines.append(f"  {body}")
+            lines.append(f"  {a.get('url','')}")
+            lines.append("")
+        lines.append("")  # 섹션 구분
 
-    # 너무 품목 편중 완화: 품목이 과도하면 정책/현장 쪽을 추가로 보정
-    # (단, 실제로 기사가 없으면 강제하지 않음)
-    sec_counts = {s: 0 for s in SECTION_ORDER}
-    for a in picked:
-        sec_counts[a.section] += 1
+    return "\n".join(lines).strip() + "\n"
 
-    supply = sec_counts["1. 품목 및 수급 동향"]
-    others = len(picked) - supply
-    if supply >= 6 and others <= 2:
-        # 정책/현장에서 추가로 1~2개 더(있으면)
-        for sec in ["2. 주요 이슈 및 정책", "4. 유통 및 현장(APC/수출)", "3. 병해충 및 방제"]:
-            if sec_counts[sec] >= PICK_PER_SECTION.get(sec, 2):
-                continue
-            pool = [a for a in arts if a.section == sec and a not in picked]
-            pool = sorted(pool, key=lambda x: (source_score(x.domain), x.pub_dt_kst), reverse=True)
-            for a in pool[:2]:
-                picked.append(a)
-                sec_counts[sec] += 1
-            if len(picked) >= 12:
-                break
 
-    return picked
-
-def build_messages(
-    summarized: Dict[str, List[Dict]],
-    articles_index: Dict[str, Article],
-    start_kst: datetime,
-    end_kst: datetime
-) -> List[str]:
+def build_single_highlight_message(articles_by_section: Dict[str, List[dict]], start_kst: datetime, end_kst: datetime, view_url: str) -> str:
     """
-    카카오로 보낼 '짧은 메시지' 리스트 생성.
-    - 섹션 중 기사 있는 섹션을 먼저 배치
-    - 각 기사: 2줄 요약 + 링크(원문)
-    - 섹션 구분/특이사항 없음 표시
+    single_text 모드: 200자 내외로 핵심+링크 1개
     """
-    msgs: List[str] = []
+    # 상위 3개 기사만 뽑아 한 줄 키포인트로
+    tops = []
+    for sec, arts in articles_by_section.items():
+        for a in arts:
+            tops.append((sec, a))
+    tops = tops[:3]
 
-    header = (
-        f"[농산물 뉴스 Brief]\n"
-        f"{start_kst.strftime('%Y-%m-%d %H:%M')}~{end_kst.strftime('%Y-%m-%d %H:%M')} (KST)\n"
-        f"※ 주말/공휴일 미발송 시 기간이 자동 확장됩니다."
-    )
-    msgs.append(header)
+    # 최대한 짧게 구성
+    head = f"[농산물 브리핑] {end_kst.strftime('%m/%d')} 07시"
+    pts = []
+    for sec, a in tops:
+        t = normalize_space(a.get("title", ""))
+        # 너무 길면 자름
+        t = (t[:28] + "…") if len(t) > 29 else t
+        pts.append(f"- {t}")
 
-    # 섹션 순서 재배치: 기사 있는 섹션 -> 없는 섹션
-    non_empty = [s for s in SECTION_ORDER if summarized.get(s)]
-    empty = [s for s in SECTION_ORDER if not summarized.get(s)]
-    ordered_sections = non_empty + empty
+    msg = head
+    if pts:
+        msg += "\n" + "\n".join(pts)
 
-    for sec in ordered_sections:
-        msgs.append(f"== {sec} ==")
+    if view_url:
+        msg += f"\n상세: {view_url}"
 
-        items = summarized.get(sec, [])
-        if not items:
-            # 구분을 위해 빈 줄 한 번
-            msgs.append("특이사항 없음")
+    # 200자 가이드에 맞춰 과하면 절단(링크는 살리기)
+    if len(msg) > 240:  # 줄바꿈/표시차 감안해 넉넉히
+        if view_url:
+            base = head + "\n" + "\n".join(pts[:2])
+            base = (base[:160] + "…") if len(base) > 170 else base
+            msg = base + f"\n상세: {view_url}"
+        else:
+            msg = msg[:220] + "…"
+    return msg
+
+
+def split_text_for_kakao(full_text: str, soft_limit: int = 180) -> List[str]:
+    """
+    multi_text 모드: 텍스트를 여러 메시지로 분할.
+    - 기사 단위 블록을 최대한 유지
+    """
+    blocks = full_text.strip().split("\n\n")
+    chunks = []
+    current = ""
+    for b in blocks:
+        b = b.strip()
+        if not b:
             continue
+        candidate = (current + "\n\n" + b).strip() if current else b
+        if len(candidate) <= soft_limit:
+            current = candidate
+        else:
+            if current:
+                chunks.append(current)
+            # 단일 블록이 너무 길면 하드 컷
+            if len(b) > soft_limit:
+                # 링크가 있는 마지막 줄을 유지하려고 노력
+                lines = b.splitlines()
+                url_line = ""
+                for ln in reversed(lines):
+                    if ln.strip().startswith("http"):
+                        url_line = ln.strip()
+                        break
+                trimmed = b[: max(0, soft_limit - (len(url_line) + 8))].rstrip()
+                if url_line:
+                    trimmed = trimmed + "\n" + url_line
+                chunks.append(trimmed)
+                current = ""
+            else:
+                current = b
+    if current:
+        chunks.append(current)
+    return chunks
 
-        for it in items:
-            uid = it.get("id", "")
-            line1 = clean_html(it.get("line1", ""))
-            line2 = clean_html(it.get("line2", ""))
-            url = (it.get("url") or "").strip()
 
-            # 링크가 너무 길면(드물지만) naver_link로 대체
-            if uid in articles_index:
-                a = articles_index[uid]
-                if not url:
-                    url = (a.origin_link or a.naver_link).strip()
+# -----------------------------
+# Publish viewer (GitHub Pages)
+# -----------------------------
+def linkify(text: str) -> str:
+    def repl(m):
+        u = m.group(1)
+        return f'<a href="{u}" target="_blank" rel="noopener noreferrer">{u}</a>'
+    return re.sub(r"(https?://[^\s<]+)", repl, text)
 
-            block = f"- {line1}\n- {line2}\n{url}".strip()
-            # 카카오 200자 제한 대응: 줄 단위 축약
-            if len(block) > KAKAO_TEXT_SAFE:
-                # 1) line2를 우선 축약
-                line2 = clamp_text(line2, 55)
-                block = f"- {line1}\n- {line2}\n{url}".strip()
-            if len(block) > KAKAO_TEXT_SAFE:
-                # 2) line1 축약
-                line1 = clamp_text(line1, 55)
-                block = f"- {line1}\n- {line2}\n{url}".strip()
-            if len(block) > KAKAO_TEXT_SAFE:
-                # 3) 그래도 길면 line2 제거(최후)
-                block = f"- {line1}\n{url}".strip()
-                block = clamp_text(block, KAKAO_TEXT_SAFE)
 
-            msgs.append(block)
+def make_brief_html(full_text: str, title: str) -> str:
+    escaped = html.escape(full_text)
+    escaped = linkify(escaped).replace("\n", "<br>\n")
+    return f"""<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>{html.escape(title)}</title>
+<style>
+  body{{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; margin: 18px; line-height: 1.45;}}
+  .wrap{{max-width: 860px; margin:0 auto;}}
+  .card{{border:1px solid #e5e7eb; border-radius:12px; padding:16px; background:#fff; box-shadow: 0 2px 10px rgba(0,0,0,.04);}}
+  .meta{{color:#6b7280; font-size:14px; margin-bottom:12px;}}
+  a{{word-break:break-all;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="meta">{html.escape(title)}</div>
+    <div>{escaped}</div>
+  </div>
+</div>
+</body>
+</html>
+"""
 
-    return msgs
 
-def send_brief_to_kakao(msgs: List[str]) -> None:
-    client_id = os.getenv("KAKAO_REST_API_KEY", "").strip()
-    client_secret = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
-    refresh_token = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
-    if not (client_id and refresh_token):
-        raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN 이(가) 필요합니다.")
+def publish_to_github_pages(html_text: str, commit_title: str) -> None:
+    """
+    repo의 PAGES_FILE_PATH 에 HTML을 업로드(또는 갱신).
+    - GitHub Pages는 별도 설정 필요 (repo Settings > Pages)
+    - workflow permissions 에 contents: write 필요
+    """
+    repo = os.getenv("GITHUB_REPOSITORY", "")
+    token = os.getenv("GITHUB_TOKEN", "")
+    if not repo or not token:
+        logging.warning("[Pages publish] missing GITHUB_REPOSITORY/GITHUB_TOKEN -> skip")
+        return
 
-    access_token = kakao_refresh_access_token(client_id, client_secret, refresh_token)
+    raw, sha = github_get_file(repo, PAGES_FILE_PATH, token, ref=PAGES_BRANCH)
+    _ = raw
+    github_put_file(
+        repo=repo,
+        path=PAGES_FILE_PATH,
+        token=token,
+        content_text=html_text,
+        branch=PAGES_BRANCH,
+        sha=sha,
+        message=f"Publish brief viewer: {commit_title}"
+    )
+    logging.info("[Pages publish] updated %s on %s", PAGES_FILE_PATH, PAGES_BRANCH)
 
-    # 각 메시지를 200자 제한에 맞춰 쪼개서 발송
-    sent = 0
-    for m in msgs:
-        parts = split_for_kakao(m, KAKAO_TEXT_SAFE)
-        for p in parts:
-            if not p.strip():
-                continue
-            kakao_send_text(access_token, p)
-            sent += 1
-            time.sleep(0.2)
-    logging.info(f"[KAKAO] sent {sent} message(s)")
 
-# ---------------------------
+# -----------------------------
 # Main
-# ---------------------------
-def compute_window(now: datetime, run_hour_kst: int = 7) -> Tuple[datetime, datetime]:
-    """
-    end_kst: 오늘 run_hour_kst 시각(분/초 0)으로 고정.
-    GitHub Actions가 약간 일찍(06:59) 돌면 전일 07:00을 end로 잡음.
-    """
-    end = now.replace(hour=run_hour_kst, minute=0, second=0, microsecond=0)
-    if now < end:
-        end = end - timedelta(days=1)
-    return (end - timedelta(hours=24), end)
-
+# -----------------------------
 def main():
-    run_hour = int(os.getenv("RUN_HOUR_KST", "7"))
-    now = now_kst()
-    default_start, end_kst = compute_window(now, run_hour_kst=run_hour)
+    now_kst = datetime.now(tz=KST)
 
-    # 영업일이 아니면 발송 생략(상태도 업데이트하지 않음 -> 다음 영업일에 기간 자동 확장)
-    if not is_business_day(end_kst.date()):
-        logging.info(f"[SKIP] Not a business day in KR: {end_kst.date()} (weekend/holiday)")
-        return
+    # end_kst = 현재시각(보통 Actions가 07:00에 실행)
+    end_kst = now_kst
 
-    # 상태 로드(가능하면 gist)
-    gist_id = os.getenv("GIST_ID", "").strip()
-    gist_token = os.getenv("GH_GIST_TOKEN", "").strip()
-    state = {}
-    if gist_id and gist_token:
-        try:
-            state = gist_get_state(gist_id, gist_token)
-        except Exception as e:
-            logging.warning(f"[GIST] read failed, fallback to default window: {e}")
-            state = {}
+    state = load_state(end_kst)
+    try:
+        last_end = datetime.fromisoformat(state.last_end_kst_iso)
+        if last_end.tzinfo is None:
+            last_end = last_end.replace(tzinfo=KST)
+    except Exception:
+        last_end = end_kst - timedelta(hours=24)
 
-    last_end_str = state.get("last_end_kst")
-    if last_end_str:
-        try:
-            start_kst = datetime.fromisoformat(last_end_str)
-            if start_kst.tzinfo is None and KST:
-                start_kst = start_kst.replace(tzinfo=KST)
-        except Exception:
-            start_kst = default_start
-    else:
-        start_kst = default_start
+    start_kst = last_end
 
-    # 안전: start >= end면 종료
+    # window sanity
     if start_kst >= end_kst:
-        logging.info(f"[EXIT] start_kst >= end_kst: {start_kst} >= {end_kst}")
+        start_kst = end_kst - timedelta(hours=24)
+
+    logging.info("[INFO] Window KST: %s ~ %s", start_kst, end_kst)
+
+    # 영업일 스킵 (FORCE_SEND 예외)
+    if FORCE_SEND:
+        logging.info("[FORCE_SEND] enabled: will send even on weekend/holiday")
+
+    if (not FORCE_SEND) and (not is_business_day(end_kst.date())):
+        logging.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date())
+        # 스킵이면 state 저장하지 않음(다음 영업일에 누락구간 포함하기 위함)
         return
 
-    logging.info(f"[INFO] Window KST: {start_kst} ~ {end_kst}")
+    # 1) Collect
+    raw_by_section = collect_articles_by_section(start_kst, end_kst)
 
-    # 기사 수집
-    articles = collect_articles(start_kst, end_kst)
-    if not articles:
-        # 그래도 카톡으로 "기사 없음" 안내는 보냄(운영 확인용)
-        msgs = [
-            f"[농산물 뉴스 Brief]\n{start_kst.strftime('%Y-%m-%d %H:%M')}~{end_kst.strftime('%Y-%m-%d %H:%M')} (KST)",
-            "수집된 기사가 없습니다(필터/키워드/기간을 확인하세요)."
-        ]
-        send_brief_to_kakao(msgs)
-        # 상태 업데이트는 하되(중복 발송 방지), gist 실패해도 크래시 금지
-        state_out = {"last_end_kst": end_kst.isoformat()}
-        if gist_id and gist_token:
-            try:
-                gist_put_state(gist_id, gist_token, state_out, archive_text="\n\n".join(msgs))
-            except Exception as e:
-                logging.warning(f"[GIST] write failed: {e}")
-        return
+    # 2) Summarize
+    enriched_by_section = openai_summarize(raw_by_section, start_kst, end_kst)
 
-    # 섹션별 픽
-    picked = pick_articles_by_section(articles)
+    # 3) Render
+    full_text = render_full_brief_text(enriched_by_section, start_kst, end_kst)
 
-    # OpenAI 요약(2줄)
-    summarized_by_section = openai_summarize(picked, start_kst, end_kst)
+    # 4) Publish viewer (optional)
+    view_url = BRIEF_VIEW_URL
+    if PUBLISH_MODE == "github_pages":
+        title = f"농산물 뉴스 Brief ({start_kst.strftime('%Y-%m-%d %H:%M')}~{end_kst.strftime('%Y-%m-%d %H:%M')} KST)"
+        html_page = make_brief_html(full_text, title)
+        publish_to_github_pages(html_page, commit_title=end_kst.strftime("%Y-%m-%d"))
+        # view_url은 사용자가 환경변수로 넣어줘야 가장 확실 (Pages URL은 계정/설정 따라 다름)
+        if not view_url:
+            logging.warning("[Pages publish] BRIEF_VIEW_URL is empty. Set it to your GitHub Pages URL for single_* mode.")
 
-    # uid -> Article index
-    idx = {a.uid: a for a in picked}
+    # 5) Kakao send
+    refresh_token = os.getenv("KAKAO_REFRESH_TOKEN", "")
+    if not refresh_token:
+        raise RuntimeError("Missing KAKAO_REFRESH_TOKEN")
 
-    # 메시지 구성(기사 있는 섹션 먼저)
-    msgs = build_messages(summarized_by_section, idx, start_kst, end_kst)
+    access = kakao_refresh_access_token(refresh_token)
 
-    # 발송
-    send_brief_to_kakao(msgs)
+    fallback_url = "https://search.naver.com/search.naver?where=news&query=" + quote_plus("농산물 뉴스 브리핑")
 
-    # 상태 저장(다음 실행에서 기간 확장/중복 방지)
-    state_out = {"last_end_kst": end_kst.isoformat()}
-    if gist_id and gist_token:
-        try:
-            gist_put_state(gist_id, gist_token, state_out, archive_text="\n\n".join(msgs))
-        except Exception as e:
-            # gist 실패해도 발송은 성공했을 수 있으니 크래시 금지
-            logging.warning(f"[GIST] write failed (non-fatal): {e}")
+    if KAKAO_SEND_MODE == "single_list":
+        # top 3 카드 + 헤더 링크(view_url 우선)
+        header_url = view_url or fallback_url
+        items = []
+        # 섹션 순서대로 3개만
+        for sec, arts in enriched_by_section.items():
+            for a in arts:
+                title = normalize_space(a.get("title", ""))
+                desc = normalize_space(a.get("summary", ""))[:60]
+                u = a.get("url", "")
+                items.append({
+                    "title": (title[:40] + "…") if len(title) > 41 else title,
+                    "description": (desc[:57] + "…") if len(desc) > 58 else desc,
+                    "link": {"web_url": u, "mobile_web_url": u},
+                })
+                if len(items) >= 3:
+                    break
+            if len(items) >= 3:
+                break
+        # list 템플릿은 contents 최소 2개 필요인 경우가 있어, 부족하면 single_text로 fallback :contentReference[oaicite:2]{index=2}
+        if len(items) >= 2:
+            kakao_send_list(
+                access_token=access,
+                header_title=f"농산물 뉴스 브리핑 {end_kst.strftime('%m/%d')} 07시",
+                header_url=header_url,
+                items=items,
+                button_title="상세보기",
+            )
+        else:
+            msg = build_single_highlight_message(enriched_by_section, start_kst, end_kst, view_url or fallback_url)
+            kakao_send_text(access, msg, view_url or fallback_url)
+
+    elif KAKAO_SEND_MODE == "single_text":
+        msg = build_single_highlight_message(enriched_by_section, start_kst, end_kst, view_url or fallback_url)
+        kakao_send_text(access, msg, view_url or fallback_url)
+
+    else:
+        # multi_text
+        chunks = split_text_for_kakao(full_text, soft_limit=KAKAO_TEXT_SOFT_LIMIT)
+        # 최소 1개는 보내기
+        if not chunks:
+            chunks = [f"[농산물 뉴스 Brief] ({start_kst.strftime('%m/%d %H:%M')}~{end_kst.strftime('%m/%d %H:%M')} KST)\n특이사항 없음\n{fallback_url}"]
+
+        for i, ch in enumerate(chunks, start=1):
+            # 너무 길면 하드 컷
+            txt = ch
+            if len(txt) > 250:
+                txt = txt[:240] + "…"
+            kakao_send_text(access, txt, view_url or fallback_url)
+
+    # 6) Save state (성공적으로 발송한 경우에만 저장)
+    save_state(State(last_end_kst_iso=end_kst.isoformat()))
+    logging.info("[DONE] sent and state updated: %s", end_kst.isoformat())
+
 
 if __name__ == "__main__":
     main()
