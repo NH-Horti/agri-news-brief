@@ -8,6 +8,12 @@ on:
 permissions:
   contents: write
 
+MAX_ARTICLES_PER_SECTION: "7"
+MIN_ARTICLES_PER_SECTION: "4"
+RUN_HOUR_KST: "7"
+PAGES_FILE_PATH: docs/index.html
+BRIEF_VIEW_URL: ${{ vars.BRIEF_VIEW_URL }}
+
 jobs:
   run:
     runs-on: ubuntu-latest
