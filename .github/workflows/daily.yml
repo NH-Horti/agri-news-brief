@@ -28,7 +28,7 @@ jobs:
       - name: Run main
         env:
           # GitHub API 업로드/상태저장에 필요
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
           # OpenAI
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
