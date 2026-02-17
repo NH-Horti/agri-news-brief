@@ -16,17 +16,14 @@ KR_HOLIDAYS = holidays.KR()
 
 ANCHOR_HOUR = 7  # 매일 07:00 KST를 기준으로 윈도우 종료 시각 고정
 MAX_PER_QUERY = 100  # 네이버 뉴스 검색 API display 최대 100
-# "보통" 기준: OpenAI에 넘기는 기사 수를 제한해 입력 토큰을 안정적으로 관리
-MAX_ITEMS_PER_SECTION_FOR_OPENAI = 6
-# "보통" 기준: 출력 토큰 상한(가시 출력+reasoning 포함)
-OPENAI_MAX_OUTPUT_TOKENS = 2000
-# "보통" 기준: reasoning effort (none/low/medium/high/xhigh 중 선택)
-OPENAI_REASONING_EFFORT = "medium"
 
-# 카카오 메시지(짧게)
+# "보통" 기준: OpenAI에 넘기는 기사 수/출력 상한
+MAX_ITEMS_PER_SECTION_FOR_OPENAI = 6
+OPENAI_MAX_OUTPUT_TOKENS = 2000
+OPENAI_REASONING_EFFORT = "medium"  # none/low/medium/high
+
 KAKAO_BUTTON_TITLE = "브리핑 열기"
 
-# 섹션별 키워드(필요시 자유롭게 추가/수정)
 SECTION_QUERIES = {
     "1) 품목 및 수급 동향": [
         "사과 저장량 가격", "배 도매가격", "단감 시세", "곶감 떫은감 탄저병",
@@ -56,7 +53,6 @@ SECTION_QUERIES = {
     ]
 }
 
-# 원예수급부 관점에서 거리가 먼 기사(원하면 수정/추가)
 IRRELEVANT_PATTERNS = [
     r"온누리상품권", r"환급", r"지역축제", r"바자회", r"기부", r"나눔행사",
     r"복지", r"장학금", r"봉사", r"기념식", r"캠페인"
@@ -71,12 +67,10 @@ def kst_now() -> datetime:
 
 
 def anchor_end_time(now: datetime) -> datetime:
-    """오늘 07:00 KST를 '윈도우 종료(end)'로 고정."""
     return datetime.combine(now.date(), time(ANCHOR_HOUR, 0), tzinfo=KST)
 
 
 def is_business_day(d: datetime) -> bool:
-    """월~금 + 공휴일 제외"""
     if d.weekday() >= 5:
         return False
     return d.date() not in KR_HOLIDAYS
@@ -119,6 +113,8 @@ def gh_headers(token: str) -> dict:
 
 def gist_get(gist_id: str, token: str) -> dict:
     r = requests.get(f"https://api.github.com/gists/{gist_id}", headers=gh_headers(token), timeout=30)
+    if not r.ok:
+        print("[Gist GET ERROR BODY]", r.text)
     r.raise_for_status()
     return r.json()
 
@@ -130,6 +126,8 @@ def gist_update_files(gist_id: str, token: str, files_payload: dict) -> dict:
         json={"files": files_payload},
         timeout=30
     )
+    if not r.ok:
+        print("[Gist PATCH ERROR BODY]", r.text)
     r.raise_for_status()
     return r.json()
 
@@ -153,12 +151,7 @@ def naver_news_search(query: str, client_id: str, client_secret: str, display: i
         "X-Naver-Client-Id": client_id,
         "X-Naver-Client-Secret": client_secret,
     }
-    params = {
-        "query": query,
-        "display": min(display, 100),
-        "start": 1,
-        "sort": "date"
-    }
+    params = {"query": query, "display": min(display, 100), "start": 1, "sort": "date"}
     r = requests.get(url, headers=headers, params=params, timeout=30)
     r.raise_for_status()
     return r.json().get("items", [])
@@ -227,7 +220,6 @@ def collect_articles(start_kst: datetime, end_kst: datetime) -> dict[str, list[d
 # OpenAI Responses API 요약 (gpt-5.2, 보통 기준)
 # =========================
 def extract_response_text(data: dict) -> str:
-    # 일부 SDK는 output_text를 편의 제공하지만, API 응답에도 포함될 수 있어 우선 사용
     ot = data.get("output_text")
     if isinstance(ot, str) and ot.strip():
         return ot.strip()
@@ -244,82 +236,6 @@ def extract_response_text(data: dict) -> str:
     return "".join(text_parts).strip()
 
 
-def openai_summarize(articles_by_section: dict[str, list[dict]], start_kst: datetime, end_kst: datetime) -> str:
-    api_key = (os.getenv("OPENAI_API_KEY") or "").strip()
-    if not api_key:
-        return simple_compose_md(articles_by_section, start_kst, end_kst, note="(OPENAI_API_KEY 없음: 제목 기반 나열)")
-
-    # ✅ 빈 문자열 방지: OPENAI_MODEL이 비었으면 자동으로 gpt-5.2 사용
-    model = (os.getenv("OPENAI_MODEL") or "gpt-5.2").strip()
-
-    # 입력 구성(보통 기준: 섹션당 상위 N건만)
-    lines = []
-    lines.append(f"기간(KST): {start_kst:%Y-%m-%d %H:%M} ~ {end_kst:%Y-%m-%d %H:%M}")
-    lines.append("아래는 섹션별 기사 목록(최신순). 중복 이슈는 통합해 요약하되 링크는 남길 것.\n")
-
-    for sec, items in articles_by_section.items():
-        lines.append(f"[{sec}]")
-        if not items:
-            lines.append("- (해당 없음)")
-            lines.append("")
-            continue
-
-        for it in items[:MAX_ITEMS_PER_SECTION_FOR_OPENAI]:
-            # 제목/시간/링크만 제공(토큰 절약)
-            lines.append(f"- {it['pub_kst']} | {it['title']}")
-            lines.append(f"  {it['link']}")
-        lines.append("")
-
-    instructions = (
-        "너는 농협중앙회 원예수급부(과수화훼) 팀장 결재용 '농산물 뉴스 브리핑' 작성자다.\n"
-        "출력 규칙(엄수):\n"
-        "1) 한국어, plain text(볼드/마크다운 강조/이모지 과다 금지).\n"
-        "2) 섹션 순서 유지(1→4).\n"
-        "3) 각 섹션에서 '이슈 단위'로 2~5개 항목만 선정(너무 많지 않게).\n"
-        "4) 각 항목은: 요약 1줄(20~45자 권장) + 다음 줄에 기사 링크(1개 이상).\n"
-        "5) 링크 줄은 URL만 단독으로.\n"
-        "6) 섹션에 기사 없으면: '특이사항 없음' 한 줄.\n"
-        "7) 정책/제도/가격/저장/병해충/유통(APC/가락시장) 관점 우선.\n"
-    )
-
-    payload = {
-        "model": model,
-        "instructions": instructions,
-        "input": "\n".join(lines),
-        "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
-        "truncation": "auto",
-        "reasoning": {"effort": OPENAI_REASONING_EFFORT},
-        "temperature": 0.2
-    }
-
-    try:
-        r = requests.post(
-            "https://api.openai.com/v1/responses",
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=90
-        )
-
-        if not r.ok:
-            # 에러 본문을 로그에 남겨 다음 디버깅 때 바로 원인 파악 가능
-            print("[OpenAI ERROR BODY]", r.text)
-
-        r.raise_for_status()
-        data = r.json()
-
-        # usage 로그(비용/토큰 추적)
-        usage = data.get("usage", {})
-        if usage:
-            print("[OpenAI USAGE]", json.dumps(usage, ensure_ascii=False))
-
-        text = extract_response_text(data)
-        return text if text else simple_compose_md(articles_by_section, start_kst, end_kst, note="(OpenAI 응답 텍스트 없음: 제목 기반 나열)")
-
-    except requests.exceptions.RequestException as e:
-        print("[OpenAI REQUEST FAILED]", str(e))
-        return simple_compose_md(articles_by_section, start_kst, end_kst, note="(OpenAI 실패: 제목 기반 나열)")
-
-
 def simple_compose_md(articles_by_section: dict[str, list[dict]], start_kst: datetime, end_kst: datetime, note: str = "") -> str:
     out = []
     out.append(f"[농산물 뉴스 Brief] {start_kst:%Y-%m-%d %H:%M}~{end_kst:%Y-%m-%d %H:%M} KST {note}".strip())
@@ -334,6 +250,77 @@ def simple_compose_md(articles_by_section: dict[str, list[dict]], start_kst: dat
     return "\n".join(out)
 
 
+def openai_summarize(articles_by_section: dict[str, list[dict]], start_kst: datetime, end_kst: datetime) -> str:
+    api_key = (os.getenv("OPENAI_API_KEY") or "").strip()
+    if not api_key:
+        return simple_compose_md(articles_by_section, start_kst, end_kst, note="(OPENAI_API_KEY 없음: 제목 기반 나열)")
+
+    model = (os.getenv("OPENAI_MODEL") or "gpt-5.2").strip()
+
+    lines = []
+    lines.append(f"기간(KST): {start_kst:%Y-%m-%d %H:%M} ~ {end_kst:%Y-%m-%d %H:%M}")
+    lines.append("아래는 섹션별 기사 목록(최신순). 중복 이슈는 통합해 요약하되 링크는 남길 것.\n")
+
+    for sec, items in articles_by_section.items():
+        lines.append(f"[{sec}]")
+        if not items:
+            lines.append("- (해당 없음)\n")
+            continue
+
+        for it in items[:MAX_ITEMS_PER_SECTION_FOR_OPENAI]:
+            lines.append(f"- {it['pub_kst']} | {it['title']}")
+            lines.append(f"  {it['link']}")
+        lines.append("")
+
+    instructions = (
+        "너는 농협중앙회 원예수급부(과수화훼) 팀장 결재용 '농산물 뉴스 브리핑' 작성자다.\n"
+        "출력 규칙(엄수):\n"
+        "1) 한국어, plain text(볼드/마크다운 강조/이모지 과다 금지).\n"
+        "2) 섹션 순서 유지(1→4).\n"
+        "3) 각 섹션에서 이슈 단위로 2~5개 항목만 선정.\n"
+        "4) 각 항목: 요약 1줄(20~45자) + 다음 줄에 링크(URL만) 1개 이상.\n"
+        "5) 섹션에 기사 없으면: '특이사항 없음' 한 줄.\n"
+        "6) 정책/제도/가격/저장/병해충/유통(APC/가락시장) 관점 우선.\n"
+    )
+
+    payload = {
+        "model": model,
+        "instructions": instructions,
+        "input": "\n".join(lines),
+        "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
+        "truncation": "auto",
+        "reasoning": {"effort": OPENAI_REASONING_EFFORT},
+    }
+
+    # gpt-5.2는 reasoning.effort가 none일 때만 temperature/top_p 등이 지원됨
+    # (effort가 medium/high면 넣으면 400 발생)  ← 지금 이 케이스
+    if OPENAI_REASONING_EFFORT == "none":
+        payload["temperature"] = 0.2
+
+    try:
+        r = requests.post(
+            "https://api.openai.com/v1/responses",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json=payload,
+            timeout=90
+        )
+        if not r.ok:
+            print("[OpenAI ERROR BODY]", r.text)
+        r.raise_for_status()
+        data = r.json()
+
+        usage = data.get("usage", {})
+        if usage:
+            print("[OpenAI USAGE]", json.dumps(usage, ensure_ascii=False))
+
+        text = extract_response_text(data)
+        return text if text else simple_compose_md(articles_by_section, start_kst, end_kst, note="(OpenAI 응답 텍스트 없음: 제목 기반 나열)")
+
+    except requests.exceptions.RequestException as e:
+        print("[OpenAI REQUEST FAILED]", str(e))
+        return simple_compose_md(articles_by_section, start_kst, end_kst, note="(OpenAI 실패: 제목 기반 나열)")
+
+
 # =========================
 # 카카오: refresh_token → access_token 갱신 → 나에게 보내기
 # =========================
@@ -342,11 +329,7 @@ def kakao_refresh_access_token() -> str:
     client_id = os.environ["KAKAO_REST_API_KEY"].strip()
     client_secret = (os.getenv("KAKAO_CLIENT_SECRET") or "").strip()
 
-    data = {
-        "grant_type": "refresh_token",
-        "client_id": client_id,
-        "refresh_token": refresh_token,
-    }
+    data = {"grant_type": "refresh_token", "client_id": client_id, "refresh_token": refresh_token}
     if client_secret:
         data["client_secret"] = client_secret
 
@@ -356,13 +339,11 @@ def kakao_refresh_access_token() -> str:
         data=data,
         timeout=30
     )
-    # 실패 시 본문 출력(디버깅)
     if not r.ok:
         print("[Kakao token ERROR BODY]", r.text)
     r.raise_for_status()
 
-    j = r.json()
-    return j["access_token"]
+    return r.json()["access_token"]
 
 
 def kakao_send_to_me(access_token: str, text: str, link_url: str):
@@ -420,20 +401,12 @@ def main():
     start_kst = last_end_kst
     print(f"[INFO] Window KST: {start_kst} ~ {end_kst}")
 
-    # 1) 기사 수집
     articles_by_section = collect_articles(start_kst, end_kst)
-
-    # 2) 전문 생성(요약)
     brief_text = openai_summarize(articles_by_section, start_kst, end_kst)
 
-    # 3) gist 업데이트(전문 저장)
-    updated = gist_update_files(
-        gist_id, gh_token,
-        {"latest.md": {"content": brief_text}}
-    )
+    updated = gist_update_files(gist_id, gh_token, {"latest.md": {"content": brief_text}})
     gist_url = updated.get("html_url") or gist_json.get("html_url") or f"https://gist.github.com/{gist_id}"
 
-    # 4) 카톡용 짧은 메시지(섹션별 1개씩 하이라이트)
     highlights = []
     for sec, items in articles_by_section.items():
         if items:
@@ -448,16 +421,11 @@ def main():
         "\n(전문은 버튼 클릭)"
     )
 
-    # 5) 카카오 전송
     access_token = kakao_refresh_access_token()
     kakao_send_to_me(access_token, kakao_text, gist_url)
 
-    # 6) 성공 후 state 업데이트(윈도우 전진)
     new_state = {"last_end_kst": end_kst.isoformat()}
-    gist_update_files(
-        gist_id, gh_token,
-        {"state.json": {"content": json.dumps(new_state, ensure_ascii=False)}}
-    )
+    gist_update_files(gist_id, gh_token, {"state.json": {"content": json.dumps(new_state, ensure_ascii=False)}})
 
     print("[OK] Sent to Kakao + Updated gist/state.")
 
