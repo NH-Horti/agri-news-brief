@@ -1,5 +1,7 @@
 name: Agri News Brief (Kakao)
 
+permissions: contents: write
+
 on:
   workflow_dispatch:
     inputs:
