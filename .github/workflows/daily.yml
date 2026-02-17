@@ -41,6 +41,10 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
 
+          # Naver
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+
           # 운영 모드 (핵심)
           KAKAO_SEND_MODE: single_text      # ✅ 카톡 1메시지
           PUBLISH_MODE: github_pages        # ✅ gist 대신 Pages로 보기
