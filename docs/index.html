@@ -3,43 +3,270 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>농산물 뉴스 Brief (2026-02-16 07:00~2026-02-17 07:00 KST)</title>
+<title>농산물 뉴스 브리핑</title>
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;margin:18px;line-height:1.45;background:#f7f7f8;}
-.wrap{max-width:900px;margin:0 auto;}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
-pre{white-space:pre-wrap;word-break:break-word;margin:0;font-size:15px;}
-a{word-break:break-all;}
-.small{color:#6b7280;font-size:13px;margin-bottom:10px;}
+  :root {
+    --bg:#f6f7f9; --card:#fff; --line:#e5e7eb; --text:#111827; --muted:#6b7280;
+  }
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+  .wrap{max-width:900px;margin:0 auto;padding:14px;}
+  .header{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  .h1{font-size:18px;font-weight:800;margin:0 0 6px;}
+  .sub{color:var(--muted);font-size:13px;line-height:1.35;}
+  .chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:12px;color:#111;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;}
+  .section{margin-top:12px;}
+  h2{font-size:16px;margin:14px 2px 10px;}
+  .count{color:var(--muted);font-weight:600;}
+  .empty{color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.03);}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .press{font-weight:800;font-size:13px;}
+  .time{color:var(--muted);font-size:12px;}
+  .title{font-size:15px;font-weight:800;line-height:1.35;margin:4px 0 8px;}
+  .summary{font-size:14px;line-height:1.5;color:#111;margin:0 0 8px;}
+  .point{font-size:13px;line-height:1.4;color:#0f172a;background:#f3f4f6;border-radius:10px;padding:8px 10px;margin:6px 0 10px;}
+  .btn{display:inline-block;text-decoration:none;font-weight:800;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
+  .footer{color:var(--muted);font-size:12px;margin:18px 4px 8px;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="card">
-    <div class="small">농산물 뉴스 Brief (2026-02-16 07:00~2026-02-17 07:00 KST)</div>
-    <pre>[농산물 뉴스 Brief] (2026-02-16 07:00~2026-02-17 07:00 KST)
-
-총 2건 (섹션별: 품목 및 수급 동향 1건, 주요 이슈 및 정책 1건, 병해충 및 방제 0건, 유통 및 현장(APC/수출) 0건)
-
-■ 품목 및 수급 동향
-- 머니투데이 | &quot;농약 때문에 중국산은 좀&quot; 한국산 인기 폭발…몰락한 &#x27;귀족 포도&#x27; 귀환
-  &#x27;몰락한 귀족 과일&#x27;로 불리던 샤인머스캣이 역전을 노린다. 국내에선 가격이 급락하며 위기를 겪었지만 K-푸드 수요가 높은 대만·동남아 시장이 활로로 떠올랐다. 16일 농림축산식품부에 따르면 지난달 포도...
-  <a href="https://www.mt.co.kr/economy/2026/02/16/2026021313585160698" target="_blank" rel="noopener noreferrer">https://www.mt.co.kr/economy/2026/02/16/2026021313585160698</a>
-
-
-■ 주요 이슈 및 정책
-- 정책브리핑 | 모두가 민생회복 체감할 수 있게!
-  공급과 할인 지원에 나선다. 평시 대비 1.5배 수준인 최대 27만 톤의 성수품을 시장에 공급하고 가격 안정과 수급 관리를 위해 범부처 역량을 집중하기로 했다. 농산물의 경우 배추·무·사과·배를 중심으로 정부 보유...
-  <a href="https://www.korea.kr/news/policyNewsView.do?newsId=148959235&amp;call_from=naver_news" target="_blank" rel="noopener noreferrer">https://www.korea.kr/news/policyNewsView.do?newsId=148959235&amp;call_from=naver_news</a>
-
-
-■ 병해충 및 방제
-- 특이사항 없음
-
-■ 유통 및 현장(APC/수출)
-- 특이사항 없음
-</pre>
+  <div class="header">
+    <div class="h1">농산물 뉴스 브리핑</div>
+    <div class="sub">기간: 2026-02-16 07:00 ~ 2026-02-17 07:00 (KST) · 총 28건<br></div>
+    <div class="chips">
+      <div class="chip">품목 및 수급 동향 7건</div><div class="chip">주요 이슈 및 정책 7건</div><div class="chip">병해충 및 방제 7건</div><div class="chip">유통 및 현장(APC/수출) 7건</div>
+    </div>
   </div>
+
+  <div class="section"><h2>품목 및 수급 동향 <span class="count">(7)</span></h2>
+        <div class="card">
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 02:34</span></div>
+          <div class="title">탕후루에 민물고기탕…&#x27;괴식 아침&#x27; 차리는 中 엄마 9억뷰 폭발</div>
+          <div class="summary">14일 홍콩 사우스차이나모닝포스트(SCMP)에 따르면 중국 저장성에서 옷가게를 운영하는 장리핑 씨는 최근... 심지어 콜라와 닭발, 라탸오(매운 양념 간식)와 사과를 넣은 &#x27;중국식 버거&#x27;까지 등장했다. 반전은 아들의...</div>
+          
+          <a class="btn" href="https://www.newsis.com/view/NISX20260216_0003516743" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">연합뉴스TV</span><span class="time">02/16 15:49</span></div>
+          <div class="title">농축수산물 가격 껑충…수입 확대 등 대응 마련</div>
+          <div class="summary">감소하면서 수급 불안이 이어지고 있는 겁니다. 정부는 할당 관세를 통해 수입 물량을 확대하고 있지만... 사과, 딸기와 쌀 가격은 평년보다 높은 수준이고, 환율 영향으로 망고와 오렌지 등 수입 과일 가격도 크게...</div>
+          
+          <a class="btn" href="http://www.yonhapnewstv.co.kr/MYH20260216154813fKZ" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">매일경제</span><span class="time">02/16 14:11</span></div>
+          <div class="title">“아이 밥상이 그게 뭐냐, 계모냐” 욕먹더니…‘9억뷰 스타’ 엄마의 ...</div>
+          <div class="summary">16일 홍콩사우스차이나모닝포스트(SCMP)에 따르면 중국 저장성에서 옷가게를 운영하는 장리핑은 남편, 아들과... 양배추와 사과 조각으로 만든 ‘중국식 버거’나 외계인 모양의 옥수수 찐빵과 같은 독특한 음식 조합도...</div>
+          
+          <a class="btn" href="https://www.mk.co.kr/article/11963977" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">매일신문</span><span class="time">02/16 10:08</span></div>
+          <div class="title">경북농업기술원, 2026년 연구과제 확정… AI·로봇 기반 미래농업 박차</div>
+          <div class="summary">센터는 ▷쪽파 종구 장기저장 기술 개발 ▷포도 고온 피해 저감 기술 ▷비가림 시설 활용 사과 생육 장해 저감 기술 실증 ▷생강청을 활용한 블렌딩 액상차 개발 등이 주요 과제 꼽았다. 조영숙 경상북도농업기술원장은...</div>
+          
+          <a class="btn" href="https://www.imaeil.com/page/view/2026021610073033455" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/16 09:19</span></div>
+          <div class="title">경북농기원 올해 집중할 연구과제, &#x27;AI·융복합·현장실용&#x27;</div>
+          <div class="summary">시·군 농업기술센터 등과의 현장실용 공동연구 과제로는 ▲쪽파 종구 장기저장 기술 개발 ▲포도 고온 피해 저감 기술 개발 ▲비가림 시설 활용 사과생육 장해 저감 기술 실증 ▲생강청을 활용한 블렌딩 액상차 개발 등이...</div>
+          
+          <a class="btn" href="https://www.newsis.com/view/NISX20260216_0003516696" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">뉴스1</span><span class="time">02/16 08:00</span></div>
+          <div class="title">설 선물 &#x27;만감류 3인방&#x27; 차이점은?…식감은 레드향, 향기는 천혜향</div>
+          <div class="summary">설 명절 선물 세트에서 사과나 소고기만큼이나 높은 선호도를 보이는 품목이 감귤·만감류다. 실제... 여기에 한라봉 대비 저장성이 좋아, 수확 시기를 늘리고 출하 시기를 조절하는 데도 유리하다. 탐나는봉은 2022년에...</div>
+          
+          <a class="btn" href="https://www.news1.kr/economy/agri-food/6074515" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">중앙일보</span><span class="time">02/17 06:00</span></div>
+          <div class="title">3살인데 &quot;사과 2분의1 줄게&quot;…딸 MIT 박사로 키운 교수 비법</div>
+          <div class="summary">가격은 구독형 상품 기준 월 10만~35만 원인데, 24~36개월 약정이 있다. 가장 고가의 상품(35만원)을 최장... ☞3세 딸에게 “사과 2분의1 줄게”…MIT 박사로 키운 교수의 양육 [요즘 수학 로드맵②] https://www....</div>
+          
+          <a class="btn" href="https://www.joongang.co.kr/article/25405378" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div><div class="section"><h2>주요 이슈 및 정책 <span class="count">(7)</span></h2>
+        <div class="card">
+          <div class="meta"><span class="press">ktv.go.kr</span><span class="time">02/16 12:00</span></div>
+          <div class="title">이 시각 주요뉴스 (26. 02. 16. 12시)</div>
+          <div class="summary">명절 먹거리 물가 오름세···오늘까지 최대 40% 할인 지원 설 명절 먹거리 물가가 전반적으로 오름세를 보이는 가운데, 정부가 오늘(16일)까지 설 성수품 대상 할인 지원을 실시합니다. 전국 대형, 중소형마트와...</div>
+          
+          <a class="btn" href="https://www.ktv.go.kr/content/view?content_id=748306" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">머니투데이</span><span class="time">02/17 04:30</span></div>
+          <div class="title">&#x27;제주4.3의 아들&#x27; 오영훈 제주지사...&quot;희생자 보상 끝까지 책임진다&quot;</div>
+          <div class="summary">또한 유통의 디지털 전환을 위해 올해 스마트 산지유통센터(APC)를 확충하고 온라인 도매시장 거래를 확대해나갈 것입니다. 아울러 내륙 거점 통합물류센터를 기존 3개 지역에서 충청·강원권까지 확대해 제주 농산물이...</div>
+          
+          <a class="btn" href="https://www.mt.co.kr/society/2026/02/17/2026021420272891650" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">충청투데이</span><span class="time">02/16 10:50</span></div>
+          <div class="title">명절 대목은 옛 말, 전통시장 발길 끊겼다</div>
+          <div class="summary">전통시장과 자영업자의 명절 &#x27;대목&#x27;도 옛 말이 되고 있다.1인 가구 증가, 가치관 변화, 온라인 소비 확산... 정기휴무일이지만 명절 장보기 불편 최소화를 위해 수산동 등 일부 정상영업을 한 노은동 농수산물도매시장도...</div>
+          
+          <a class="btn" href="https://www.cctoday.co.kr/news/articleView.html?idxno=2225783" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">농수축산신문</span><span class="time">02/16 07:00</span></div>
+          <div class="title">온라인도매시장 이상거래 의혹, 일파만파</div>
+          <div class="summary">온라인도매시장도 제도보완을 통해 이상거래를 제어해 신뢰도를 높여 나가야 한다&quot;고 강조했다. 한편 농식품부는 지난 7일 &quot;온라인도매시장 운영의 내실화 필요성이 제기돼 전수조사를 진행하고 전문가와 기업신용평가사...</div>
+          
+          <a class="btn" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314510" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">YTN</span><span class="time">02/16 22:41</span></div>
+          <div class="title">워싱턴의 &#x27;개인 숭배&#x27; 논란...트럼프 &quot;독재자 필요&quot;</div>
+          <div class="summary">의약품 할인 구매 사이트, 전함 현대화 사업에도 &#x27;트럼프&#x27;라는 이름이 붙었습니다. 최근엔 워싱턴 덜레스 국제공항과 뉴욕 펜스테이션 철도역에도 자기 이름을 붙여달라고 요구했습니다. 뉴욕에 연방 자금 지원을 재개하는...</div>
+          
+          <a class="btn" href="https://www.ytn.co.kr/_ln/0104_202602162241048105" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">조선일보</span><span class="time">02/16 18:01</span></div>
+          <div class="title">아침 4시간이 매출을 바꾼다…편의점의 ‘모닝 전쟁’</div>
+          <div class="summary">1500원짜리 즉석 원두커피와 함께 구매하면 1000원을 할인해주는 프로모션도 무기한 진행한다.... 지난해 7월부터는 전국 6개 지역 지원팀에 밀박스 전담 담당자를 배치해 고객 유치와 상담, 주문 관리를 강화했다....</div>
+          
+          <a class="btn" href="https://www.chosun.com/economy/market_trend/2026/02/16/KWSP2WLOVBF4VFYLGTRJU42RRQ/?utm_source=naver&amp;utm_medium=referral&amp;utm_campaign=naver-news" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">YTN</span><span class="time">02/16 17:01</span></div>
+          <div class="title">워싱턴의 &#x27;개인 숭배&#x27; 논란...트럼프 &quot;독재자 필요&quot;</div>
+          <div class="summary">의약품 할인 구매 사이트, 전함 현대화 사업에도 &#x27;트럼프&#x27;라는 이름이 붙었습니다. 최근엔 워싱턴 덜레스 국제공항과 뉴욕 펜스테이션 철도역에도 자기 이름을 붙여달라고 요구했습니다. 뉴욕에 연방 자금 지원을 재개하는...</div>
+          
+          <a class="btn" href="https://www.ytn.co.kr/_ln/0104_202602161701043773" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div><div class="section"><h2>병해충 및 방제 <span class="count">(7)</span></h2>
+        <div class="card">
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/16 13:08</span></div>
+          <div class="title">임실군, &#x27;영농부산물&#x27; 안전처리 지원한다…퇴비로 재활용</div>
+          <div class="summary">과수화상병 우려가 있거나 잔가지 직경이 파쇄 가능 기준(500원 동전 크기)을 초과할 경우 작업이 제한될 수 있다. 이 경우 농업인이 농기계임대사업소에서 잔가지 파쇄기를 무상 임대해 직접 파쇄해야 한다.</div>
+          
+          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514164" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">G1</span><span class="time">02/16 20:22</span></div>
+          <div class="title">강릉방문의 해, 반값투어 출시 승부수</div>
+          <div class="summary">KTX강릉선과 동해선 개통을 기점으로 국내 관광 1번지로 자리매김한 만큼, 더 큰 관광도시로 도약을... 기존 대비 최대 55% 할인된 가격으로 강릉 주요 관광지를 원스톱으로 해결할 수 있도록 개발해 여행 문턱을 낮춘...</div>
+          
+          <a class="btn" href="https://www.g1tv.co.kr/news?mid=1_207_6&amp;newsid=339867" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">세계일보</span><span class="time">02/16 20:04</span></div>
+          <div class="title">설 연휴 교통사고 빈발… ‘폭설’ 동해안 눈길 사고도</div>
+          <div class="summary">특히 강원 동해안과 산지에 눈이 내리면서 눈길 교통사고도 이어졌다. 강원소방본부에 따르면 이날... 보험개발원에 따르면 최근 3년간(2023~2025년) 설 연휴 전날 일평균 교통사고는 1만3233건으로 평시 대비 23.1% 증가한...</div>
+          
+          <a class="btn" href="https://www.segye.com/newsView/20260216505681?OutUrl=naver" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">MBN</span><span class="time">02/16 19:32</span></div>
+          <div class="title">설 연휴에도 철통 경계…동해안 지키는 육군 제23경비여단</div>
+          <div class="summary">바로 동해안 일대 경계를 책임지는 육군 제23경비여단 장병들인데요. 빈틈없는 해안경계작전 현장을 손성민... &quot; 24시간 대비태세 속에서도 잠시 명절 분위기를 내봅니다. 장병들은 휴게공간에서 윷놀이 등 전통놀이를...</div>
+          
+          <a class="btn" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176201" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">뉴스1</span><span class="time">02/16 14:40</span></div>
+          <div class="title">제주도, 외래·돌발 병해충 예찰 강화…약제방제 시험연구도 추진</div>
+          <div class="summary">제주도 세계유산본부는 &#x27;2026년 외래·돌발 병해충 적기 예찰 강화 및 약제방제 시험연구&#x27;를 추진한다고 16일 밝혔다. 기후변화로 인한 신종 외래 병해충 출현과 돌발 산림 병해충 발생 위험이 커지고 있기 때문이다. 본부에...</div>
+          
+          <a class="btn" href="https://www.news1.kr/local/jeju/6074754" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">파이낸셜뉴스</span><span class="time">02/16 12:00</span></div>
+          <div class="title">기후 위기 속 산림 자산 보호 강화… 관광·생활권 녹지 선제 대응</div>
+          <div class="summary">기후변화로 신종 외래 병해충과 돌발 산림병해충 발생 위험이 높아지면서 제주특별자치도 세계유산본부가 ‘2026년 외래·돌발병해충 적기 예찰 강화 및 약제방제 시험연구’를 중점 추진한다. 제주 산림은...</div>
+          
+          <a class="btn" href="http://www.fnnews.com/news/202602161149205826" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">한겨레</span><span class="time">02/16 10:02</span></div>
+          <div class="title">트럼프 “기후변화는 사기극”…농사를 안 지어봐서 하는 소리다</div>
+          <div class="summary">우리 동네는 고추 농사를 많이 짓는데 지난해에는 탄저병이 번져 붉은 고추를 몇 번 따지 못하고 고춧대를 뽑아버린 농가가 많았다. 고추 탄저병은 밭 한쪽에서 발병하면 삽시간에 번지고, 농약을 뿌려도 방제가...</div>
+          
+          <a class="btn" href="https://www.hani.co.kr/arti/society/society_general/1245202.html" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div><div class="section"><h2>유통 및 현장(APC/수출) <span class="count">(7)</span></h2>
+        <div class="card">
+          <div class="meta"><span class="press">한국경제</span><span class="time">02/16 07:01</span></div>
+          <div class="title">신용불량자에서 매출 300억 눈앞…&#x27;인생역전한 비결이요?&#x27;</div>
+          <div class="summary">에너지 저장장치(ESS)와 에너지 플랫폼을 구축해 최적의 충·방전 시간을 정하면 전기 사용을 평소와 같이... 이후 밤에 전기 자격증 공부를 하며 전력 시설물 관리 업체 등에서 근무 경험을 쌓았다. 전기기능장을 따고...</div>
+          
+          <a class="btn" href="https://www.hankyung.com/article/202602016195i" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">농수축산신문</span><span class="time">02/16 07:00</span></div>
+          <div class="title">[기고] 화분매개의 핵심 파트너, 사육자가 &#x27;뒤영벌&#x27; 철저히 관리해야</div>
+          <div class="summary">국내 뒤영벌 시장은 2011년 30억 원에서 2024년 200억 원 규모로 약 6배 이상 성장하며 시설재배 화분 매개 산업을... 동결 저장한 뒤 먹이로 주면 저장진드기 오염을 낮출 수 있다. 설탕물은 밀봉해 냉장 보관하고 제조 후 14일...</div>
+          
+          <a class="btn" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314527" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">서울경제</span><span class="time">02/16 12:01</span></div>
+          <div class="title">상장 첫해 흑자 바이오 속출…‘돈 버는 기업’의 공통점</div>
+          <div class="summary">ADC 개발 과정에서 생성되는 병리 데이터를 AI로 정량 분석해 바이오마커 중심으로 환자를 선별하고 임상 성공 가능성을 높이겠다는 전략이다. 플랫폼이 아닌 개별 후보물질 중심 기술이전 모델을 유지하려면 후속...</div>
+          
+          <a class="btn" href="https://www.sedaily.com/article/20009560?ref=naver" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/16 11:09</span></div>
+          <div class="title">&#x27;사업기획서·콘텐츠제작&#x27; 섬유기업, AI열공…DTC아카데미</div>
+          <div class="summary">이번 교육은 정보 과잉 시대를 맞이한 섬유 기업들이 개별 기업에 최적화된 지원사업을 선별하고 생성형 AI를 활용해 업무 효율을 극대화할 수 있도록 기획됐다. 실제 업무 현장에서 즉시 활용 가능한 플랫폼...</div>
+          
+          <a class="btn" href="https://www.newsis.com/view/NISX20260216_0003516734" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">농수축산신문</span><span class="time">02/16 07:00</span></div>
+          <div class="title">농협 수도권미트센터, 지역별 맞춤 전략으로 역할 확대</div>
+          <div class="summary">김두영 수도권미트센터 센터장은 &quot;라이블리 B2B 매출의 20%, 약 100억 원을 안심브랜드 물량으로 전환함으로써 연간 1억1000만 원의 손익이 개선될 전망&quot;이라며 &quot;안심브랜드 전환으로 축산물공판장의 수익도 발생할 것...</div>
+          
+          <a class="btn" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314585" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">농수축산신문</span><span class="time">02/16 07:00</span></div>
+          <div class="title">농협 한우 &#x27;더한점&#x27; 사업 본격화</div>
+          <div class="summary">더한점은 도축부터 정형·포장까지 전 과정이 축산물공판장 시설에서 원체인으로 생산된다. 상품의 트레이는 좀 더 신선한 한우를 공급하기 위해 여러 번의 테스트를 거쳐 종이로 구성했다. 축산물도매분사는 더한점을...</div>
+          
+          <a class="btn" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314511" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">e-platform.net</span><span class="time">02/17 06:00</span></div>
+          <div class="title">[진단 : 전국 1200곳 구축 LPG배관망, 미신고 굴착 관련 사고 위험 노출...</div>
+          <div class="summary">&#x27;LPG배관망 사업&#x27;은 도시가스 보급에서 소외된 지방 읍면 등에 도시가스 공급 방식과 유사하게 LPG벌크 저장시설과 배관을 설치해 공동 이용 시설을 구축하는 사업이다. 마을단위는 올해로 12년째, 군단위는 10년째...</div>
+          
+          <a class="btn" href="http://www.e-platform.net/news/articleView.html?idxno=100148" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div>
+
+  <div class="footer">* 휴일/주말에는 발송을 스킵하고 state가 갱신되지 않아, 다음 영업일에 자동으로 누적 구간이 확장됩니다(중복 URL은 1회만 반영).</div>
 </div>
 </body>
 </html>
