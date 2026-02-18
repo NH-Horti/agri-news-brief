@@ -44,6 +44,8 @@ jobs:
           # Naver
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NAVER_MAX_WORKERS: "1"
+          NAVER_MIN_INTERVAL_SEC: "0.6"
 
           # 운영 모드 (핵심)
           KAKAO_SEND_MODE: single_text      # ✅ 카톡 1메시지
