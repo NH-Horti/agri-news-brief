@@ -68,6 +68,10 @@ STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
 DOCS_INDEX_PATH = "docs/index.html"
 DOCS_ARCHIVE_DIR = "docs/archive"
+DOCS_SEARCH_INDEX_PATH = "docs/search_index.json"
+MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
+MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
+
 
 DEFAULT_REPO = (os.getenv("GITHUB_REPO") or os.getenv("GITHUB_REPOSITORY") or "").strip()
 GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
@@ -947,6 +951,123 @@ def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
     manifest = _normalize_manifest(manifest)
     github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token,
                     "Update archive manifest", sha=sha, branch="main")
+
+
+
+def load_search_index(repo: str, token: str):
+    raw, sha = github_get_file(repo, DOCS_SEARCH_INDEX_PATH, token, ref="main")
+    if not raw:
+        return {"version": 1, "updated_at": "", "items": []}, sha
+    try:
+        obj = json.loads(raw)
+        if isinstance(obj, list):
+            obj = {"version": 1, "items": obj}
+        if not isinstance(obj, dict):
+            obj = {"version": 1, "items": []}
+        items = obj.get("items", [])
+        if not isinstance(items, list):
+            items = []
+        obj["items"] = items
+        obj.setdefault("version", 1)
+        obj.setdefault("updated_at", "")
+        return obj, sha
+    except Exception:
+        return {"version": 1, "updated_at": "", "items": []}, sha
+
+
+def save_search_index(repo: str, token: str, idx: dict, sha: str):
+    if not isinstance(idx, dict):
+        idx = {"version": 1, "updated_at": "", "items": []}
+    idx["version"] = 1
+    idx["updated_at"] = datetime.now(tz=KST).isoformat()
+    items = idx.get("items", [])
+    if not isinstance(items, list):
+        items = []
+    # cap size
+    if len(items) > MAX_SEARCH_ITEMS:
+        items = items[:MAX_SEARCH_ITEMS]
+        idx["items"] = items
+
+    github_put_file(repo, DOCS_SEARCH_INDEX_PATH, json.dumps(idx, ensure_ascii=False, indent=2), token,
+                    "Update search index", sha=sha, branch="main")
+
+
+def _make_search_items_for_day(report_date: str, by_section: dict, site_path: str) -> list[dict]:
+    items = []
+    for sec in SECTIONS:
+        key = sec["key"]
+        stitle = sec["title"]
+        archive_href = build_site_url(site_path, f"archive/{report_date}.html") + f"#sec-{key}"
+        lst = by_section.get(key, []) or []
+        for i, a in enumerate(lst, start=1):
+            url = (a.get("link") or a.get("url") or "").strip()
+            title = (a.get("title") or "").strip()
+            press = (a.get("press") or a.get("publisher") or "").strip()
+            summary = (a.get("summary") or a.get("desc") or "").strip()
+            score = float(a.get("score") or 0.0)
+            tier = int(press_tier(press, urlparse(url).netloc if url else ""))
+            _id = hashlib.md5(f"{report_date}|{key}|{url}|{title}".encode("utf-8")).hexdigest()[:12]
+            items.append({
+                "id": _id,
+                "date": report_date,
+                "section": key,
+                "section_title": stitle,
+                "rank": i,
+                "title": title,
+                "press": press,
+                "summary": summary[:180],
+                "url": url,
+                "archive": archive_href,
+                "score": score,
+                "press_tier": tier,
+            })
+    return items
+
+
+def update_search_index(existing: dict, report_date: str, by_section: dict, site_path: str) -> dict:
+    if not isinstance(existing, dict):
+        existing = {"version": 1, "updated_at": "", "items": []}
+    items = existing.get("items", [])
+    if not isinstance(items, list):
+        items = []
+
+    # remove existing day entries
+    items = [x for x in items if isinstance(x, dict) and x.get("date") != report_date]
+
+    # add today's
+    items = _make_search_items_for_day(report_date, by_section, site_path) + items
+
+    # keep last MAX_SEARCH_DATES distinct dates
+    def _date_key(d: str):
+        try:
+            return datetime.strptime(d, "%Y-%m-%d").date()
+        except Exception:
+            return date.min
+
+    dates_desc = sorted({x.get("date") for x in items if isinstance(x, dict) and isinstance(x.get("date"), str)}, key=_date_key, reverse=True)
+    keep_dates = set(dates_desc[:MAX_SEARCH_DATES])
+
+    items = [x for x in items if isinstance(x, dict) and x.get("date") in keep_dates]
+
+    # sort: newer date, higher press_tier, higher score
+    def _sort(x):
+        d = x.get("date") or ""
+        try:
+            di = int(d.replace("-", ""))
+        except Exception:
+            di = 0
+        return (di, int(x.get("press_tier") or 0), float(x.get("score") or 0.0), -int(x.get("rank") or 999))
+
+    items.sort(key=_sort, reverse=True)
+
+    # cap items
+    if len(items) > MAX_SEARCH_ITEMS:
+        items = items[:MAX_SEARCH_ITEMS]
+
+    existing["items"] = items
+    return existing
+
+
 
 
 # -----------------------------
@@ -1939,6 +2060,8 @@ def render_index_page(manifest: dict, site_path: str) -> str:
         else '<button class="btn disabled" type="button" data-msg="최신 브리핑이 아직 없습니다.">최신 브리핑 열기</button>'
     )
 
+    search_json_url = build_site_url(site_path, "search_index.json")
+
     return f"""<!doctype html>
 <html lang=\"ko\">
 <head>
@@ -1953,6 +2076,7 @@ def render_index_page(manifest: dict, site_path: str) -> str:
       --line:#e5e7eb;
       --btn:#1d4ed8;
       --btnHover:#1e40af;
+      --chip:#f3f4f6;
     }}
     *{{box-sizing:border-box}}
     body{{margin:0;background:var(--bg);color:var(--text);
@@ -1977,14 +2101,41 @@ def render_index_page(manifest: dict, site_path: str) -> str:
     .dt{{font-size:15px;font-weight:900}}
     .meta{{margin-top:6px;color:var(--muted);font-size:12px}}
     .empty{{color:var(--muted);font-size:13px}}
+
+    /* search */
+    .searchRow{{display:flex;gap:10px;align-items:center}}
+    .searchInput{{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}}
+    .searchInput:focus{{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(59,130,246,.12)}}
+    .searchHint{{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.4}}
+    .searchMeta{{margin-top:10px;color:var(--muted);font-size:12px}}
+    .results{{margin-top:10px;display:flex;flex-direction:column;gap:8px}}
+    .result{{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff}}
+    .rTop{{display:flex;flex-wrap:wrap;gap:6px;align-items:center}}
+    .badge{{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--line);
+            padding:3px 8px;border-radius:999px;font-size:11px;color:#374151}}
+    .rTitle{{margin-top:6px;font-weight:900;font-size:14px;line-height:1.35}}
+    .rLinks{{margin-top:8px;display:flex;gap:10px;font-size:12px}}
+    .rLinks a{{color:var(--btn);text-decoration:none;font-weight:900}}
+    .rLinks a:hover{{text-decoration:underline}}
   </style>
 </head>
 <body>
   <div class=\"wrap\">
     <h1>농산물 뉴스 브리핑</h1>
-    <div class=\"sub\">최신 브리핑과 날짜별 아카이브를 제공합니다.</div>
+    <div class=\"sub\">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드로 기사 검색도 가능합니다)</div>
 
     {latest_btn_html}
+
+    <div class=\"panel\">
+      <div class=\"panelTitle\">키워드 검색</div>
+      <div class=\"searchRow\">
+        <input id=\"q\" class=\"searchInput\" type=\"search\" placeholder=\"키워드로 기사 검색 (예: 사과 가격, 샤인머스캣 수급, 병해충 방제)\" />
+        <button id=\"clearBtn\" class=\"btn\" style=\"margin-top:0;padding:10px 12px;\" type=\"button\">초기화</button>
+      </div>
+      <div class=\"searchHint\">* 제목/요약/언론사/섹션명을 대상으로 검색합니다. (2글자 이상부터 표시)</div>
+      <div id=\"searchMeta\" class=\"searchMeta\"></div>
+      <div id=\"results\" class=\"results\"></div>
+    </div>
 
     <div class=\"panel\">
       <div class=\"panelTitle\">날짜별 아카이브</div>
@@ -1996,10 +2147,142 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 
   <script>
     (function() {{
+      // disabled latest button -> alert
       var b = document.querySelector("button.btn.disabled[data-msg]");
       if (b) {{
         b.addEventListener("click", function() {{
           alert(b.getAttribute("data-msg") || "이동할 페이지가 없습니다.");
+        }});
+      }}
+
+      var input = document.getElementById("q");
+      var clearBtn = document.getElementById("clearBtn");
+      var meta = document.getElementById("searchMeta");
+      var box = document.getElementById("results");
+
+      var DATA = null;
+      var LOADING = false;
+
+      function escHtml(s) {{
+        return (s || "").replace(/[&<>"']/g, function(c) {{
+          return ({{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#39;"}})[c] || c;
+        }});
+      }}
+
+      function norm(s) {{
+        return (s || "").toLowerCase();
+      }}
+
+      function debounce(fn, ms) {{
+        var t = null;
+        return function() {{
+          var args = arguments;
+          clearTimeout(t);
+          t = setTimeout(function() {{ fn.apply(null, args); }}, ms);
+        }}
+      }}
+
+      function showMeta(msg) {{
+        meta.textContent = msg || "";
+      }}
+
+      function renderResults(q) {{
+        q = (q || "").trim();
+        if (!q || q.length < 2) {{
+          box.innerHTML = "";
+          showMeta("");
+          return;
+        }}
+        if (!DATA) {{
+          showMeta(LOADING ? "검색 인덱스를 불러오는 중입니다..." : "검색 인덱스를 불러오지 못했습니다.");
+          return;
+        }}
+
+        var tokens = q.split(/\\s+/).map(function(x){{return norm(x);}}).filter(Boolean);
+        var items = DATA.items || [];
+        var res = [];
+
+        for (var i=0; i<items.length; i++) {{
+          var it = items[i] || {{}};
+          var hay = norm((it.title||"") + " " + (it.summary||"") + " " + (it.press||"") + " " + (it.section_title||"") + " " + (it.date||""));
+          var ok = true;
+          for (var j=0; j<tokens.length; j++) {{
+            if (hay.indexOf(tokens[j]) === -1) {{ ok = false; break; }}
+          }}
+          if (ok) res.push(it);
+          if (res.length >= 80) break; // UI limit
+        }}
+
+        showMeta("검색어 '" + q + "' 결과: " + res.length + "건 (최대 80건 표시)");
+
+        if (res.length === 0) {{
+          box.innerHTML = "<div class='empty'>검색 결과가 없습니다.</div>";
+          return;
+        }}
+
+        var html = "";
+        for (var k=0; k<res.length; k++) {{
+          var r = res[k];
+          var date = escHtml(r.date || "");
+          var sec = escHtml(r.section_title || r.section || "");
+          var press = escHtml(r.press || "");
+          var title = escHtml(r.title || "");
+          var aHref = r.archive || "";
+          var uHref = r.url || "";
+          html += "<div class='result'>"
+               +  "<div class='rTop'>"
+               +    "<span class='badge'>" + date + "</span>"
+               +    "<span class='badge'>" + sec + "</span>"
+               +    (press ? "<span class='badge'>" + press + "</span>" : "")
+               +  "</div>"
+               +  "<div class='rTitle'>" + title + "</div>"
+               +  "<div class='rLinks'>"
+               +    (aHref ? "<a href='" + aHref + "'>브리핑 보기</a>" : "")
+               +    (uHref ? "<a href='" + uHref + "' target='_blank' rel='noopener'>원문 열기</a>" : "")
+               +  "</div>"
+               + "</div>";
+        }}
+        box.innerHTML = html;
+      }}
+
+      async function ensureData() {{
+        if (DATA || LOADING) return;
+        LOADING = true;
+        showMeta("검색 인덱스를 불러오는 중입니다...");
+        try {{
+          // cache bust
+          var url = "{esc(search_json_url)}" + "?t=" + Date.now();
+          var r = await fetch(url, {{cache: "no-store"}});
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          DATA = await r.json();
+          showMeta("검색 준비 완료. 키워드를 입력하세요.");
+        }} catch(e) {{
+          showMeta("검색 인덱스를 불러오지 못했습니다. (잠시 후 새로고침)");
+          DATA = null;
+        }} finally {{
+          LOADING = false;
+        }}
+      }}
+
+      if (input) {{
+        input.addEventListener("focus", function() {{ ensureData(); }});
+        input.addEventListener("input", debounce(function() {{
+          ensureData();
+          renderResults(input.value);
+        }}, 160));
+        input.addEventListener("keydown", function(ev) {{
+          if (ev.key === "Enter") {{
+            ensureData();
+            renderResults(input.value);
+          }}
+        }});
+      }}
+      if (clearBtn) {{
+        clearBtn.addEventListener("click", function() {{
+          if (input) input.value = "";
+          box.innerHTML = "";
+          showMeta("");
+          if (input) input.focus();
         }});
       }}
     }})();
@@ -2007,6 +2290,7 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 </body>
 </html>
 """
+
 
 
 def get_pages_base_url(repo: str) -> str:
@@ -2273,6 +2557,12 @@ def main():
     # index는 404 방지를 위해 "검증된 날짜"만 노출
     index_manifest = {"dates": archive_dates_desc}
     index_html = render_index_page(index_manifest, site_path)
+
+    # update keyword search index (docs/search_index.json)
+    search_idx, ssha = load_search_index(repo, GH_TOKEN)
+    search_idx = update_search_index(search_idx, report_date, by_section, site_path)
+    save_search_index(repo, GH_TOKEN, search_idx, ssha)
+
 
     # write daily
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
