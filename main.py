@@ -121,6 +121,19 @@ OFFTOPIC_HINTS = [
     "여행", "관광", "호텔", "리조트", "레스토랑", "와인", "해변", "휴양",
 ]
 
+# 공통 제외(광고/구인/부동산/도박 등) - text는 lower() 상태
+BAN_KWS = [
+    # 구인/채용
+    "구인", "채용", "모집공고", "아르바이트", "알바", "인턴",
+    # 부동산
+    "부동산", "분양", "오피스텔", "청약", "전세", "월세",
+    # 금융/도박 스팸
+    "대출", "보험", "카지노", "바카라", "토토", "도박",
+    # 기타 스팸성
+    "스팸",
+]
+
+
 GLOBAL_RETAIL_PROTEST_HINTS = [
     "target", "타깃", "walmart", "월마트", "costco", "코스트코",
     "starbucks", "스타벅스", "boycott", "보이콧", "시위", "protest",
@@ -358,6 +371,17 @@ def is_blocked_domain(dom: str) -> bool:
 
 def agri_strength_score(text: str) -> int:
     return count_any(text, AGRI_STRONG_TERMS)
+
+
+def keyword_strength(text: str, section_conf: dict) -> int:
+    """섹션 관련 키워드 강도(정수).
+    - 섹션 must_terms 포함 여부(1차) + 농산물 강키워드(AGRI_STRONG_TERMS) 기반 점수
+    - dist/pest에서 낚시성 기사 제거에 사용
+    """
+    if not section_conf:
+        return agri_strength_score(text)
+    must = [t.lower() for t in section_conf.get("must_terms", [])]
+    return count_any(text, must) + agri_strength_score(text)
 
 def off_topic_penalty(text: str) -> int:
     return count_any(text, OFFTOPIC_HINTS)
@@ -783,9 +807,9 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         return False
 
     # 섹션 must-term 통과 여부
-    if not section_must_terms_ok(text, section_conf):
+    if not section_must_terms_ok(text, section_conf["must_terms"]):
         # policy는 도메인 override가 있음
-        if not policy_domain_override(dom, press):
+        if not policy_domain_override(dom, text):
             return False
 
     # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
