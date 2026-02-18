@@ -838,6 +838,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         cards = []
         for a in lst:
             url = a.originallink or a.link
+            summary_html = "<br>".join(esc(a.summary).splitlines())  # ✅ 백슬래시 없는 방식
             cards.append(
                 f"""
                 <div class="card" style="border-left-color:{color}">
@@ -847,7 +848,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                     <span class="time">{esc(fmt_dt(a.pub_dt_kst))}</span>
                   </div>
                   <div class="ttl">{esc(a.title)}</div>
-                  <div class="sum">{esc(a.summary).replace('\\n','<br>')}</div>
+                  <div class="sum">{summary_html}</div>
                   <div class="lnk"><a href="{esc(url)}" target="_blank" rel="noopener">원문 열기</a></div>
                 </div>
                 """
