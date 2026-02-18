@@ -18,11 +18,12 @@
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
-    .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 80px;}
-    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.92);backdrop-filter:saturate(180%) blur(10px);
+    .wrap{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    /* ✅ 1번: 기간 옆 불필요 문구 삭제(기간만 표시) */
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .navBtn{display:inline-flex;align-items:center;justify-content:center;
@@ -30,36 +31,41 @@
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
     .navBtn:hover{border-color:#cbd5e1}
     .navBtn.disabled{opacity:.45;cursor:not-allowed}
-    /* ✅ 10번: 셀렉트 길이/레이아웃 조정 */
     .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
     select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
             width:140px; max-width:140px;}
     @media (max-width: 520px) {
       select{width:120px; max-width:120px;}
     }
-    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .chip{text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:999px;
+
+    /* ✅ 3번: 상단 섹션 칩을 sticky로 유지 */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .chip{white-space:nowrap;text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
           background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center}
     .chip:hover{border-color:#cbd5e1}
-    .chipTitle{font-weight:600}
+    .chipTitle{font-weight:700}
     .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
-    .sec{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+
+    .sec{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
     .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
-    .secTitle{font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
     .dotColor{width:10px;height:10px;border-radius:999px}
     .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
     .secBody{padding:12px 12px 14px}
     .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
     .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .press{color:#111827;font-weight:700}
+    .press{color:#111827;font-weight:800}
     .dot{opacity:.5}
     .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
-    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:700}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:800}
     .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
     .btnOpen{display:inline-flex;align-items:center;justify-content:center;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
-             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:800}
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
     .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
@@ -70,30 +76,35 @@
     <div class="topin">
       <div>
         <h1>[2026-02-18 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-18 07:00 · 기사 19건 (상한 5개/섹션, 품질 미달은 제외)</div>
+        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-18 07:00 · 기사 18건</div>
       </div>
       <div class="navRow">
         <a class="navBtn" href="../">최신/아카이브</a>
-        <button class="navBtn disabled" disabled>◀ 이전</button>
+        <button class="navBtn disabled" disabled id="btnPrev">◀ 이전</button>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
             <option value="./{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</option>
 <option value="./2026-02-18.html" selected>26-02-18</option>
           </select>
         </div>
-        <a class="navBtn" href="./{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">다음 ▶</a>
+        <button class="navBtn" data-href="./{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html" id="btnNext">다음 ▶</button>
+      </div>
+    </div>
+
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">5</span></a></div>
       </div>
     </div>
   </div>
 
   <div class="wrap">
-    <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">4</span></a></div>
     
             <section id="sec-supply" class="sec">
-              <div class="secHead">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
                 <div class="secTitle">
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
@@ -113,23 +124,23 @@
                     <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260213074600057?input=1195m" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">울산시, 배 농가에 인공수분용 꽃가루·배즙 가공용 수매비 지원</div>
-                  <div class="sum">울산시가 배 농가에 인공수분용 꽃가루 지원과 배즙 가공용 수매비를 지원한다. 울산은 배 629㏊·농가 약 1020가구·연 9500여t 생산 주산지로, 지난해 350t(18억5000만원) 수출했다.</div>
+                  <div class="sum">울산시가 배 농가에 인공수분용 꽃가루와 배즙 가공용 배 수매비를 지원한다. 울산은 배 재배 629ha·연 9500여t 생산 주산지로, 작년 350t(18억5000만원) 수출 실적을 냈다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">아시아경제</span>
+                      <span class="press">한국경제</span>
                       <span class="dot">·</span>
-                      <span class="time">02/16 09:00</span>
+                      <span class="time">02/17 06:01</span>
                       <span class="dot">·</span>
                       <span class="topic">배</span>
                     </div>
-                    <a class="btnOpen" href="https://view.asiae.co.kr/article/2026021317231210628" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.hankyung.com/article/202602168026i" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">“기후위기 파고 넘는다”… 울산시, 배 농가 경쟁력 강화 총력전</div>
-                  <div class="sum">울산시가 기후위기 대응 차원에서 배 농가 경쟁력 강화 대책을 추진한다고 밝혔다. 울산은 배 629㏊·약 1022호·연 9517t 생산 주산지로, 울주 서생·삼남·청량이 주요 산지이며 1999년부터 대미 수출단지다.</div>
+                  <div class="ttl">햅쌀 나오면 잡힌다더니…이젠 &quot;전체 물가보다 덜 올라&quot; 왜? [이광식의 ...</div>
+                  <div class="sum">산지 쌀값은 수확기(10월 초)에도 상승폭이 크지 않았다는 내용이다. 농가 불만이 커지자 정부는 초과 생산량 5만6000t보다 많은 20만t 시장격리를 결정했다.</div>
                 </div>
                 
 
@@ -145,7 +156,7 @@
                     <a class="btnOpen" href="http://www.fnnews.com/news/202602151247596120" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">&quot;내일까지 장 봐야겠네&quot;···뛴 설 물가에 최대 40% 정부 지원</div>
-                  <div class="sum">설 물가 상승 속 정부가 농축산물 할인 지원을 최대 40%까지 제공한다는 내용이다. KAMIS 기준 2월13일 사과(후지 상품) 10개 소매가가 2만8582원으로, 생산량 감소 영향으로 전년·평년보다 3% 이상 높다고 전했다.</div>
+                  <div class="sum">KAMIS 기준 2월13일 사과(후지 상품) 10개 소매가가 2만8582원으로 집계됐다고 전했다. 생산량 감소 영향으로 딸기 등 일부 성수품 가격 부담이 커지자 정부가 최대 40% 지원에 나선다는 내용이다.</div>
                 </div>
                 
 
@@ -161,30 +172,30 @@
                     <a class="btnOpen" href="https://biz.heraldcorp.com/article/10676227" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">생산량이 가른 과일값… 사과 오르고, 배는 내렸다 [푸드360]</div>
-                  <div class="sum">사과는 오르고 배는 내리는 등 과일값이 엇갈린 배경을 생산량 차이로 설명했다. KREI 관측에 따르면 지난해 사과 생산량은 45만t으로 전년 대비 3.0% 감소했고, 재배면적은 2만3246ha로 전년과 비슷했다.</div>
+                  <div class="sum">사과는 생산량 감소로 가격이 오르고, 배는 상대적으로 내리는 등 과일값이 엇갈렸다고 분석했다. KREI에 따르면 지난해 사과 생산량은 45만t으로 전년 대비 3.0% 감소했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">헤럴드경제</span>
+                      <span class="press">농민신문</span>
                       <span class="dot">·</span>
-                      <span class="time">02/15 08:13</span>
+                      <span class="time">02/14 14:02</span>
                       <span class="dot">·</span>
-                      <span class="topic">사과</span>
+                      <span class="topic">쌀</span>
                     </div>
-                    <a class="btnOpen" href="https://biz.heraldcorp.com/article/10677037" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.nongmin.com/article/20260213500386" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">설 앞두고 배 27%↑·한우 12%↑…정부, 최대 40% 할인 지원</div>
-                  <div class="sum">설을 앞두고 배 27%↑, 한우 12%↑ 등 일부 품목 가격 상승이 나타나 정부가 최대 40% 할인 지원에 나섰다고 전했다. 사과·딸기·갈비·삼겹살·계란·고등어는 상승, 배·참조기는 하락했으며 고환율로 수입과일도 비싸졌다고 했다.</div>
+                  <div class="ttl">동서울농협, 설 명절 농축수산물 수급 상황과 식품안전 현장점검</div>
+                  <div class="sum">동서울농협이 설 명절 농축수산물 수급 상황과 식품안전 현장점검을 실시했다. 가격 안정을 위해 산지 직거래 확대·공동구매를 추진하고 ‘황실배’ 등 지역 농산물 홍보에 나선다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-policy" class="sec">
-              <div class="secHead">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
                 <div class="secTitle">
                   <span class="dotColor" style="background:#1d4ed8"></span>
                   주요 이슈 및 정책
@@ -204,7 +215,7 @@
                     <a class="btnOpen" href="https://biz.heraldcorp.com/article/10676362" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">700억 할인도 ‘반짝 효과’…설 물가 잡으려 할인 퍼붓기?</div>
-                  <div class="sum">정부의 700억원 규모 할인지원이 설 물가에 ‘반짝 효과’에 그칠 수 있다는 진단을 다뤘다. 명절 물가 대응이 단기 재정 투입에 치우쳐 근본적인 가격 안정 대책이 필요하다는 보고서 내용을 소개했다.</div>
+                  <div class="sum">설 성수품 수급 동향과 할인지원 사업 현장을 점검하며, 700억원 규모 할인 지원의 효과와 한계를 짚었다. ‘명절 물가 대응이 단기 재정 투입에 치우쳤다’는 보고서를 인용해 근본 대책 필요성을 제기했다.</div>
                 </div>
                 
 
@@ -220,7 +231,7 @@
                     <a class="btnOpen" href="https://view.asiae.co.kr/article/2026021317014972877" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">&quot;설 음식 준비 여기서&quot;…대형마트·전통시장서 최대 50% 할인</div>
-                  <div class="sum">정부가 설 성수품 공급 확대와 함께 농축수산물 할인 지원을 역대 최대 규모로 진행한다고 전했다. 대형마트·전통시장 등에서 최대 50% 할인, 전통시장은 온누리상품권 등 지원을 병행한다는 내용이다.</div>
+                  <div class="sum">정부가 설 성수품 공급을 확대하는 생산자단체와 함께 역대 최대 규모 할인 지원을 추진한다. 농축수산물은 최대 50% 할인, 전통시장은 온누리상품권 등으로 추가 혜택을 제공한다는 내용이다.</div>
                 </div>
                 
 
@@ -236,7 +247,7 @@
                     <a class="btnOpen" href="https://www.korea.kr/news/reporterView.do?newsId=148959464&amp;call_from=naver_news" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">설 성수품의 안정적 공급으로 이번 설도 풍성하게 보낼 수 있어요</div>
-                  <div class="sum">정부가 설 성수품 공급과 할인 지원으로 농축수산물을 최대 50%까지 할인한다고 소개했다. 하나로마트·농협몰·수협 등에서도 제수용품과 선물세트 할인 행사가 진행된다고 전했다.</div>
+                  <div class="sum">정부의 설 성수품 공급 확대와 할인 지원 내용을 소개하며, 농축수산물 최대 50% 할인 정보를 정리했다. 하나로마트·농협몰·수협 등에서도 제수용품·선물세트 할인 판매가 진행된다고 전했다.</div>
                 </div>
                 
 
@@ -252,35 +263,35 @@
                     <a class="btnOpen" href="https://biz.heraldcorp.com/article/10676784" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">“설 음식 겁나서 먹겠나” 명절때 법 위반 2.7배 증가</div>
-                  <div class="sum">최근 5년간 원산지 표시 위반 적발이 1만6072개소였고, 설 특별단속 기간에는 법 위반이 평시보다 크게 늘었다는 분석을 전했다. 명절 전후 단속 강화 필요성을 강조했다.</div>
+                  <div class="sum">최근 5년 원산지 표시 위반 적발 업체가 1만6072개소였다고 밝혔다. 설 명절 특별단속 기간에는 위반 적발이 연간 평균 대비 2.7배 늘었다는 분석을 담았다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#1d4ed8">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">cctimes</span>
+                      <span class="press">ajunews</span>
                       <span class="dot">·</span>
-                      <span class="time">02/17 14:40</span>
+                      <span class="time">02/17 15:00</span>
                       <span class="dot">·</span>
                       <span class="topic">사과</span>
                     </div>
-                    <a class="btnOpen" href="http://www.cctimes.kr/news/articleView.html?idxno=892033" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.ajunews.com/view/20260216234734512" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">서천군, 설 명절 앞두고 물가 안정 캠페인 실시</div>
-                  <div class="sum">서천군이 설 명절을 앞두고 물가 안정 캠페인을 실시했다. 설 기간 ‘물가 안정 특별대책 기간’으로 지정해 사과·배·소고기 등 성수품 20개 품목 가격 동향을 집중 관리하고 표시제·원산지 표시 이행도 점검한다.</div>
+                  <div class="ttl">KREI &quot;설 물가 대책 , 저소득층 지원으로 재구성해야&quot;</div>
+                  <div class="sum">KREI가 설 물가 대책을 보편적 할인 중심에서 저소득층 지원 중심으로 재구성해야 한다고 제안했다. 사과·배 가격 급등이 반복되는 상황에서 현행 할인 확대만으로는 한계가 있다고 지적했다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-dist" class="sec">
-              <div class="secHead">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
                 <div class="secTitle">
                   <span class="dotColor" style="background:#6d28d9"></span>
                   유통 및 현장 (도매시장/APC/수출)
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">3건</div>
               </div>
               <div class="secBody">
                 <div class="card" style="border-left-color:#6d28d9">
@@ -295,85 +306,85 @@
                     <a class="btnOpen" href="https://www.mt.co.kr/society/2026/02/17/2026021420272891650" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">&#x27;제주4.3의 아들&#x27; 오영훈 제주지사...&quot;희생자 보상 끝까지 책임진다&quot;</div>
-                  <div class="sum">오영훈 제주지사가 유통 디지털 전환 계획으로 스마트 산지유통센터(APC) 확충과 온라인 도매시장 거래 확대를 밝혔다. 내륙 거점 통합물류센터를 기존 3개 지역에서 충청·강원권까지 확대하는 구상도 언급됐다.</div>
+                  <div class="sum">오영훈 제주지사가 월동채소 수급을 자율 조절하고 농가별 맞춤형 컨설팅을 제공하겠다고 밝혔다. 스마트 산지유통센터(APC) 확충과 온라인 도매시장 거래 확대 등 유통 디지털 전환 계획도 제시했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#6d28d9">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">농민신문</span>
+                      <span class="press">팜&amp;마켓</span>
                       <span class="dot">·</span>
-                      <span class="time">02/15 12:01</span>
+                      <span class="time">02/13 08:50</span>
                       <span class="dot">·</span>
-                      <span class="topic">사과</span>
+                      <span class="topic">도매시장</span>
                     </div>
-                    <a class="btnOpen" href="https://www.nongmin.com/article/20260213500258" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25649" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">“목표 1만5000상자 돌파”…온라인도매시장 전용 과일 선물세트 ‘완판...</div>
-                  <div class="sum">농협경제지주가 대경사과원예농협 영주 APC와 협업해 온라인도매시장 전용 과일 선물세트 ‘혼합 1·2호’를 출시해 완판됐다고 전했다. 혼합1호는 사과 6개·배 5개(5kg 내외) 구성 등 상품 구성을 소개했다.</div>
+                  <div class="ttl">한국 청과 , 출하비용 보전사업 ‘첫 집행’</div>
+                  <div class="sum">가락시장 한국청과가 출하비용 보전사업을 처음 집행했다고 전했다. 품목별 기준가격(출하비용)보다 경락가가 낮을 경우 차액을 지원하며, 대상은 양파·대파·감자 등 한국청과 출하 물량이다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#6d28d9">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">SBS</span>
+                      <span class="press">미디어제주</span>
                       <span class="dot">·</span>
-                      <span class="time">02/14 20:19</span>
+                      <span class="time">02/13 10:00</span>
                       <span class="dot">·</span>
-                      <span class="topic">정책</span>
+                      <span class="topic">감귤/만감</span>
                     </div>
-                    <a class="btnOpen" href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008444527&amp;plink=ORI&amp;cooper=NAVER" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.mediajeju.com/news/articleView.html?idxno=362911" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">설 연휴 노려 &#x27;기승&#x27;…&quot;장사 안 돼서&quot; 업주들의 실토</div>
-                  <div class="sum">설 연휴를 앞두고 원산지 표시 위반 단속이 강화되는 가운데, 소비자에게 원산지 표시 확인을 당부하는 내용이다. 국립농산물품질관리원이 3주간 특별단속을 실시한다고 전했다.</div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#6d28d9">
-                  <div class="cardTop">
-                    <div class="meta">
-                      <span class="press">webeconomy</span>
-                      <span class="dot">·</span>
-                      <span class="time">02/14 21:06</span>
-                      <span class="dot">·</span>
-                      <span class="topic">정책</span>
-                    </div>
-                    <a class="btnOpen" href="https://www.webeconomy.co.kr/news/articleView.html?idxno=2080071" target="_blank" rel="noopener">원문 열기</a>
-                  </div>
-                  <div class="ttl">부산 금정구, 설 명절 앞두고 전통시장 방문 및 캠페인 실시</div>
-                  <div class="sum">부산 금정구가 설 명절을 앞두고 전통시장 방문 및 캠페인을 실시했다. 1월19일~2월15일 물가대책 상황실을 운영하며 계량기 단속, 성수품 가격·서비스 요금 점검 등을 한다고 밝혔다.</div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#6d28d9">
-                  <div class="cardTop">
-                    <div class="meta">
-                      <span class="press">econonews</span>
-                      <span class="dot">·</span>
-                      <span class="time">02/15 16:22</span>
-                      <span class="dot">·</span>
-                      <span class="topic">포도</span>
-                    </div>
-                    <a class="btnOpen" href="http://www.econonews.co.kr/news/articleView.html?idxno=427783" target="_blank" rel="noopener">원문 열기</a>
-                  </div>
-                  <div class="ttl">농식품부, 검역 협상 중점품목 12개 선정-K-푸드 수출 가속...페루 포도·...</div>
-                  <div class="sum">농식품부가 ‘수출 검역 협상 중점추진품목 선정위원회’를 열고 올해 중점품목 12개를 선정했다고 밝혔다. 농산물 7개(9개국 대상 9건), 축산물 5개(8개국 대상)로 수출 검역 협상을 가속한다는 내용이다.</div>
+                  <div class="ttl">수입 만다린 유입 속 물량 관리 성과…만감류 5031톤 판매</div>
+                  <div class="sum">제주농산물 수급 관리센터가 ‘2025년산 만감류 수급 안정사업’ 결과를 발표하며 5031t 판매 실적을 밝혔다. 수입 만다린 유입 속 출하조절·통합마케팅과 온라인 도매시장 등 다채널 판매를 추진했다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-pest" class="sec">
-              <div class="secHead">
+              <div class="secHead" style="border-left:8px solid #b45309;">
                 <div class="secTitle">
                   <span class="dotColor" style="background:#b45309"></span>
                   병해충 및 방제
                 </div>
-                <div class="secCount">4건</div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
+                <div class="card" style="border-left-color:#b45309">
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">매일경제</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 13:07</span>
+                      <span class="dot">·</span>
+                      <span class="topic">병해충</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.mk.co.kr/article/11962531" target="_blank" rel="noopener">원문 열기</a>
+                  </div>
+                  <div class="ttl">“겨울에만 먹는 딸기? 여름에도 맛있게”…K스마트팜에 ‘원예 강국’...</div>
+                  <div class="sum">딸기 등 시설원예에 야간 무인수확이 가능한 로봇·자동화 기술 도입 사례를 소개했다. 잎·꽃 제거, 병해충 예찰, 수분 기능까지 확대와 자율주행 무인 UV 방제로봇 도입 계획도 담았다.</div>
+                </div>
+                
+
+                <div class="card" style="border-left-color:#b45309">
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">연합뉴스</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/15 07:39</span>
+                      <span class="dot">·</span>
+                      <span class="topic">병해충</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260213117300064?input=1195m" target="_blank" rel="noopener">원문 열기</a>
+                  </div>
+                  <div class="ttl">[전국레이더] &quot;났다 하면 대형&quot;…지자체들 설연휴 산불 예방 총력전</div>
+                  <div class="sum">설 연휴를 앞두고 지자체들이 산불 예방 총력전에 나선다는 전국 단위 동향 기사다. 산불전문예방진화대와 병해충예찰방제단 등을 통합해 ‘산림재난대응단’으로 연중 운영하는 사례를 소개했다.</div>
+                </div>
+                
+
                 <div class="card" style="border-left-color:#b45309">
                   <div class="cardTop">
                     <div class="meta">
@@ -386,7 +397,7 @@
                     <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260212156600053?input=1195m" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">청송에 재해 대응형 하우스 사과 생산 시스템 보급…70억 투입</div>
-                  <div class="sum">경북 청송에 재해 대응형 하우스 사과 생산 시스템을 보급하는 사업에 70억원을 투입한다. 무인방제·환경제어 시스템을 구축하고, 탄저병·저온 피해를 차단하는 하우스 재배에 초밀식 다축 재배를 결합한다고 전했다.</div>
+                  <div class="sum">청송에 재해 대응형 하우스 사과 생산 시스템을 보급하는 사업에 70억원을 투입한다. 무인 방제·환경제어 구축과 하우스 재배+초밀식 다축 재배로 탄저병·저온 피해 대응을 목표로 한다.</div>
                 </div>
                 
 
@@ -402,39 +413,23 @@
                     <a class="btnOpen" href="https://www.hani.co.kr/arti/society/society_general/1245202.html" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">트럼프 “기후변화는 사기극”…농사를 안 지어봐서 하는 소리다</div>
-                  <div class="sum">고추 탄저병의 확산 양상과 방제의 어려움을 사례로 들어 기후변화 논쟁을 다룬 칼럼이다. 탄저병 포자가 토양에 있다가 빗물로 튀어 전염되며, 고온다습·강우 조건에서 피해가 커진다고 설명했다.</div>
+                  <div class="sum">기후변화 부정 발언을 비판하며 농업 현장의 병해 사례로 고추 탄저병 확산과 방제 어려움을 설명했다. 탄저병 포자가 토양에 있다가 빗물 튐으로 전염되고 고온다습·강우 시 확산된다는 점을 전했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#b45309">
                   <div class="cardTop">
                     <div class="meta">
-                      <span class="press">aflnews</span>
+                      <span class="press">sportsseoul</span>
                       <span class="dot">·</span>
-                      <span class="time">02/13 09:42</span>
-                      <span class="dot">·</span>
-                      <span class="topic">사과</span>
-                    </div>
-                    <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314444" target="_blank" rel="noopener">원문 열기</a>
-                  </div>
-                  <div class="ttl">경북도, 미래형 사과 산업 선점...전국 최대 &#x27;재해대응형 하우스재배&#x27; 국...</div>
-                  <div class="sum">경북도가 재해대응형 하우스 사과 재배 모델 확산 등 미래형 사과 산업 선점을 추진한다는 내용이다. 무인방제·환경제어를 갖춘 시설하우스에서 탄저병·저온 피해를 줄이고 초밀식 다축재배로 생산성을 높인다고 전했다.</div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#b45309">
-                  <div class="cardTop">
-                    <div class="meta">
-                      <span class="press">breaknews</span>
-                      <span class="dot">·</span>
-                      <span class="time">02/13 08:20</span>
+                      <span class="time">02/13 14:18</span>
                       <span class="dot">·</span>
                       <span class="topic">고추</span>
                     </div>
-                    <a class="btnOpen" href="http://www.breaknews.com/1185072" target="_blank" rel="noopener">원문 열기</a>
+                    <a class="btnOpen" href="https://www.sportsseoul.com/news/read/1586250" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">부여군 ‘굿뜨래농업방송국’, 실용 영상으로 구독자 1만 명 돌파</div>
-                  <div class="sum">부여군 ‘굿뜨래농업방송국’이 실용 영상 콘텐츠로 구독자 1만명을 돌파했다. 고추 탄저병 방제 롱폼(조회수 19만)과 감나무 굵은가지 전정 숏폼(조회수 43만)이 높은 관심을 받았다고 전했다.</div>
+                  <div class="ttl">장수농업기술센터, ‘올해 농작물 병해충 지원 방제 협의회’ 개최... 농...</div>
+                  <div class="sum">장수농업기술센터가 ‘올해 농작물 병해충 지원 방제 협의회’를 개최했다. 병해충 방제 예산 14억6500만원으로 벼 병해충·과수화상병·돌발병해충 등 1만8250ha 방제비를 편성했다고 밝혔다.</div>
                 </div>
                 </div>
             </section>
@@ -443,12 +438,42 @@
   </div>
 
   <script>
+    async function safeNavigate(url) {
+      if (!url) return;
+      try {
+        // HEAD가 막히는 경우가 있어 GET으로 폴백
+        let res = await fetch(url, { method: "HEAD", cache: "no-store" });
+        if (!res.ok) {
+          res = await fetch(url, { method: "GET", cache: "no-store" });
+        }
+        if (res.ok) {
+          window.location.href = url;
+        } else {
+          alert("해당 날짜 브리핑 페이지가 없습니다.");
+        }
+      } catch (e) {
+        // 네트워크/CORS 등 예외 시에도 에러페이지로 보내지 않음
+        alert("해당 날짜 브리핑 페이지로 이동할 수 없습니다.");
+      }
+    }
+
     (function() {
+      // ✅ 2번: prev/next 버튼 안전 이동
+      for (const id of ["btnPrev", "btnNext"]) {
+        const btn = document.getElementById(id);
+        if (!btn) continue;
+        btn.addEventListener("click", function() {
+          const href = btn.getAttribute("data-href");
+          if (href) safeNavigate(href);
+        });
+      }
+
+      // ✅ 2번: 날짜 선택도 안전 이동
       var sel = document.getElementById("dateSelect");
       if (sel) {
         sel.addEventListener("change", function() {
           var v = sel.value;
-          if (v) window.location.href = v;
+          if (v) safeNavigate(v);
         });
       }
     })();
