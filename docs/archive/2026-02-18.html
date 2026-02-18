@@ -6,476 +6,444 @@
   <title>[2026-02-18 농산물 뉴스 Brief]</title>
   <style>
     :root {
-      --bg:#0b1220; --text:#e5e7eb; --muted:#94a3b8; --line:#1f2937;
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
     }
     *{box-sizing:border-box}
-    body{margin:0;background:radial-gradient(1200px 600px at 20% 10%, #111827, var(--bg)); color:var(--text);
+    body{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
-    .wrap{max-width:1100px;margin:0 auto;padding:22px 16px 80px;}
-    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    h1{margin:0;font-size:20px;letter-spacing:-0.2px}
-    .sub{color:var(--muted);font-size:13px;margin-top:6px}
-    .nav a{color:#cbd5e1;text-decoration:none;font-size:13px;border:1px solid var(--line);padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 80px;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.92);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.disabled{opacity:.45;cursor:not-allowed}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px}
     .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
     .chip{text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:999px;
-          background:rgba(255,255,255,0.02);font-size:13px}
-    .chipN{margin-left:6px;background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:999px;color:var(--text)}
-    .sec{margin-top:18px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02)}
-    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
-    .secTitle{font-size:15px;font-weight:700}
-    .secCount{font-size:13px;color:#e2e8f0;background:rgba(0,0,0,0.25);padding:4px 10px;border-radius:999px}
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center}
+    .chip:hover{border-color:#cbd5e1}
+    .chipTitle{font-weight:600}
+    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+    .sec{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
     .secBody{padding:12px 12px 14px}
-    .card{background:rgba(15,23,42,0.55);border:1px solid var(--line);border-left:4px solid #334155;
-          border-radius:14px;padding:12px;margin:10px 0}
-    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px}
-    .press{color:#e2e8f0}
-    .dot{opacity:.6}
-    .ttl{margin-top:6px;font-size:15px;line-height:1.35}
-    .sum{margin-top:8px;color:#cbd5e1;font-size:13px;line-height:1.55}
-    .lnk{margin-top:10px}
-    .lnk a{display:inline-block;color:#e5e7eb;text-decoration:none;border:1px solid var(--line);
-           padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03)}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:700}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:700}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:36px;padding:0 14px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:700}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
-    .footer{margin-top:22px;color:var(--muted);font-size:12px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
+  <div class="topbar">
+    <div class="topin">
       <div>
         <h1>[2026-02-18 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-18 07:00 · 기사 32건</div>
+        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-18 07:00 · 기사 19건 (섹션당 최대 5개)</div>
       </div>
-      <div class="nav">
-        <a href="https://nh-horti.github.io/agri-news-brief/">최신/아카이브</a>
+      <div class="navRow">
+        <a class="navBtn" href="https://nh-horti.github.io/agri-news-brief/">최신/아카이브</a>
+        <span class="navBtn disabled">◀ 이전</span>
+        <select id="dateSelect" aria-label="날짜 선택">
+          <option value="https://nh-horti.github.io/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</option>
+<option value="https://nh-horti.github.io/agri-news-brief/archive/2026-02-18.html" selected>2026-02-18</option>
+        </select>
+        <a class="navBtn" href="https://nh-horti.github.io/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">다음 ▶</a>
       </div>
     </div>
+  </div>
 
-    <div class="chips"><a class="chip" style="border-color:#0f766e;color:#0f766e" href="#sec-supply">품목 및 수급 동향 <span class="chipN">10</span></a>
-<a class="chip" style="border-color:#1d4ed8;color:#1d4ed8" href="#sec-policy">주요 이슈 및 정책 <span class="chipN">10</span></a>
-<a class="chip" style="border-color:#b45309;color:#b45309" href="#sec-pest">병해충 및 방제 <span class="chipN">6</span></a>
-<a class="chip" style="border-color:#6d28d9;color:#6d28d9" href="#sec-dist">유통 및 현장 (APC/수출) <span class="chipN">6</span></a></div>
-
+  <div class="wrap">
+    <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (APC/수출)</span><span class="chipN">4</span></a></div>
     
             <section id="sec-supply" class="sec">
-              <div class="secHead" style="background:linear-gradient(90deg,#0f766e,#111827);">
-                <div class="secTitle">품목 및 수급 동향</div>
-                <div class="secCount">10건</div>
+              <div class="secHead">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
                 <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">ikpnews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/15 19:44</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">farmnmarket</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 08:50</span>
+                      <span class="dot">·</span>
+                      <span class="topic">기타</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25649" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">불완전한 무관세 만다린 대책, 여전히 불안한 산지</div>
-                  <div class="sum">명절 앞두고 한라봉·천혜향·레드향 등 만감류 가격이 상승세이나 대체로 평년 시세를 밑돈다. 산지에선 무관세 미국산 만다린 수입 영향으로 출하 초기부터 시세가 제대로 형성되지 않았다고 호소한다.</div>
-                  <div class="lnk"><a href="http://www.ikpnews.net/news/articleView.html?idxno=69633" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">한국 청과 , 출하비용 보전사업 ‘첫 집행’</div>
+                  <div class="sum">가락시장 한국청과 출하 농산물에 대해 ‘출하비용 보전사업’을 첫 집행했다. 품목별 기준가격(출하비용)보다 경락가가 낮으면 차액을 지원하는 방식이다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">dealsite</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 07:02</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">mediajeju</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 10:00</span>
+                      <span class="dot">·</span>
+                      <span class="topic">감귤/만감</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.mediajeju.com/news/articleView.html?idxno=362911" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">담합 수사·정부 압박 덕 설 물가부담 완화</div>
-                  <div class="sum">농식품부·해수부가 사과·배·소고기 등 20개 성수품에 정부 지원 할인 등을 추진하며 설 물가 부담 완화를 강조했다. 수입 과일 공급 확대, 정부 비축 수산물 방출 등 공급 측면 대책도 함께 언급됐다.</div>
-                  <div class="lnk"><a href="https://dealsite.co.kr/articles/156952" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">수입 만다린 유입 속 물량 관리 성과…만감류 5031톤 판매</div>
+                  <div class="sum">제주농산물 수급관리센터가 ‘2025년산 만감류 수급 안정사업’ 결과를 발표했다. 출하조절·통합마케팅으로 온라인도매시장·홈쇼핑 등에서 만감류 5031톤을 판매했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">중앙일보</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 06:00</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">jejumaeil</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 16:54</span>
+                      <span class="dot">·</span>
+                      <span class="topic">감귤/만감</span>
+                    </div>
+                    <a class="btnOpen" href="http://www.jejumaeil.net/news/articleView.html?idxno=355450" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">&quot;수입이 쏠쏠 소문 타더니&quot;…잘나가던 이 과일 80% 폭락 그뒤엔</div>
-                  <div class="sum">안동 농수산물도매시장 경락가 기준 샤인머스켓 특등급 2kg 한 박스 가격이 크게 하락했다고 보도했다. 기사에서는 ‘수입이 쏠쏠’하다는 인식 확산 이후 가격이 80% 폭락했다는 점을 배경으로 다뤘다.</div>
-                  <div class="lnk"><a href="https://www.joongang.co.kr/article/25405305" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">제주 농업·골목상권 위기 타파 &#x27;수눌음&#x27; 정신 강조</div>
+                  <div class="sum">제주 농업·골목상권 위기 대응을 위해 구조적 수급안정 시스템과 제주형 농산물 가격안정제 내실화 필요성이 제기됐다. 미국산 만다린 무관세 수입 이후 2월 들어 제주 만감류 가격이 회복세라는 언급이 담겼다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">newdaily</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 15:04</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">webeconomy</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/15 19:54</span>
+                      <span class="dot">·</span>
+                      <span class="topic">기타</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.webeconomy.co.kr/news/articleView.html?idxno=2079305" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">천안 ‘하늘그린 오이 ’ 한파 뚫고 본격 출하… 전국 최대 생산지 위상 ...</div>
-                  <div class="sum">천안 ‘하늘그린 오이’가 본격 출하되며 가락시장 특등급 다다기 오이(100개/박스) 가격이 9.4만~10.6만원 수준으로 제시됐다. 전년 동기 대비 약 7800원 하락했으며, 타 지역 재배면적 증가·일조량 등 생산여건을 원인으로 들었다.</div>
-                  <div class="lnk"><a href="https://cc.newdaily.co.kr/site/data/html/2026/02/13/2026021300263.html" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">안산시, 농수산물 도매시장 서 간부회의 개최… 유통 현장 점검·상인 격...</div>
+                  <div class="sum">안산시가 12일 농수산물도매시장에서 현장 간부회의를 열고 유통 현장을 점검했다. 설 명절을 앞두고 농수산물 수급 및 가격 동향을 살피고 청과·수산동을 순회하며 상인 의견을 청취했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">연합뉴스</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 10:20</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">TJB</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 10:28</span>
+                      <span class="dot">·</span>
+                      <span class="topic">사과</span>
+                    </div>
+                    <a class="btnOpen" href="http://www.tjb.co.kr/sub0301/bodo/view/id/95120" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">천안 &#x27;하늘그린 오이 &#x27; 본격 출하…전국 최대 산지</div>
-                  <div class="sum">천안 ‘하늘그린 오이’ 출하로 가락시장 특등급 다다기 오이(100개) 가격이 9.4만~10.6만원으로, 전년보다 7800원가량 낮다고 전했다. 호남·경북 재배면적 증가와 정식 이후 여건이 가격 형성에 영향을 준 것으로 설명했다.</div>
-                  <div class="lnk"><a href="https://www.yna.co.kr/view/AKR20260213065300063?input=1195m" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">bokuennews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 09:48</span>
-                  </div>
-                  <div class="ttl">농협공판장, 온라인 도매시장 전용상품 출시</div>
-                  <div class="sum">농협공판장이 온라인 도매시장 전용상품을 출시했다. 전용상품은 사과·배 구성 상품 등으로 소개되며, 온라인 도매시장이 산지조직과 소비지를 연결하는 유통경로로 자리매김하고 있다고 전했다.</div>
-                  <div class="lnk"><a href="http://www.bokuennews.com/news/article.html?no=273827" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">thepublic</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 08:10</span>
-                  </div>
-                  <div class="ttl">농협경제지주, 설 앞두고 &#x27;온라인 도매시장 전용상품&#x27; 출시</div>
-                  <div class="sum">농협경제지주가 설을 앞두고 ‘온라인 도매시장 전용상품’을 출시했다고 밝혔다. 온라인 도매시장은 2023년 11월 설립됐으며, 전용상품은 사과·배 구성 상품 등을 포함한다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.thepublic.kr/news/articleView.html?idxno=294323" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">뉴스핌</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 06:00</span>
-                  </div>
-                  <div class="ttl">[AI로 읽는 경제] 명절마다 반복되는 할인 정책…&quot;취약계층·선별지원 전...</div>
-                  <div class="sum">설을 앞두고 정부가 주요 성수품 공급을 평시 대비 1.7배로 확대하고 566억원 규모 할인 지원에 나섰다는 내용이다. 쌀은 수확기 이후 하락했으나 12월 이후 산지 가격이 완만한 상승세로 전환됐다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.newspim.com/news/view/20260213001025" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">aflnews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 16:10</span>
-                  </div>
-                  <div class="ttl">천안시, 전국 최대 &#x27;하늘그린 오이 &#x27; 본격 출하… 672억 규모</div>
-                  <div class="sum">천안시가 ‘하늘그린 오이’ 본격 출하 소식을 전하며 가락시장 특등급 다다기 오이(100개) 가격을 9.4만~10.6만원으로 제시했다. 전년 대비 약 7800원 낮고, 타 지역 재배면적 증가와 기상 여건에 따른 생산량 증가를 배경으로 들었다.</div>
-                  <div class="lnk"><a href="http://www.aflnews.co.kr/news/articleView.html?idxno=314623" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#0f766e">
-                  <div class="meta">
-                    <span class="press">cctimes</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 14:40</span>
-                  </div>
-                  <div class="ttl">서천군, 설 명절 앞두고 물가안정 캠페인 실시</div>
-                  <div class="sum">서천군이 설 명절을 ‘물가안정 특별대책기간’으로 정하고 사과·배·소고기 등 성수품 20개 품목 가격 동향을 집중 관리한다. 가격표시제·원산지 표시 이행 여부 점검도 병행할 계획이라고 밝혔다.</div>
-                  <div class="lnk"><a href="http://www.cctimes.kr/news/articleView.html?idxno=892033" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">노은 도매시장 , 설 앞두고 종합대책 가동..성수품 안정 공급</div>
+                  <div class="sum">대전 노은농수산물도매시장이 설 명절을 앞두고 18일까지 종합상황실을 운영한다. 사과·배 등 성수품 수급관리를 강화하고 수산물은 정기 휴무일에도 정상 운영할 계획이다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-policy" class="sec">
-              <div class="secHead" style="background:linear-gradient(90deg,#1d4ed8,#111827);">
-                <div class="secTitle">주요 이슈 및 정책</div>
-                <div class="secCount">10건</div>
+              <div class="secHead">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  주요 이슈 및 정책
+                </div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
                 <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">뉴스핌</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 06:00</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">뉴스핌</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/16 06:00</span>
+                      <span class="dot">·</span>
+                      <span class="topic">정책</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.newspim.com/news/view/20260213001025" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">[AI로 읽는 경제] 명절마다 반복되는 할인 정책…&quot;취약계층·선별지원 전...</div>
-                  <div class="sum">설을 앞두고 정부가 주요 성수품 공급을 평시 대비 1.7배로 확대하고 566억원 규모 할인 지원에 나섰다는 내용이다. 쌀은 수확기 이후 하락했으나 12월 이후 산지 가격이 완만한 상승세로 전환됐다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.newspim.com/news/view/20260213001025" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="sum">정부가 설 명절을 앞두고 주요 성수품 공급을 평시 대비 1.7배로 확대하고 566억원 규모 할인 지원에 나섰다. 보고서는 명절마다 반복되는 할인정책의 한계와 취약계층·선별지원 필요성을 제기했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">economist</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/15 17:23</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">economist</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/15 17:23</span>
+                      <span class="dot">·</span>
+                      <span class="topic">사과</span>
+                    </div>
+                    <a class="btnOpen" href="https://economist.co.kr/article/view/ecn202602150013" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">“지금 사야 해”…정부, 성수품 최대 40% 할인 지원</div>
-                  <div class="sum">정부가 ‘민생 안정 대책’으로 설 3주 전부터 10대 성수품 공급을 평시 대비 1.7배로 늘리고, 할인 지원을 최대 40%까지 추진한다고 전했다. 사과·배·한우·계란 등이 대상 품목으로 언급됐다.</div>
-                  <div class="lnk"><a href="https://economist.co.kr/article/view/ecn202602150013" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="sum">정부가 ‘민생 안정 대책’으로 설 3주 전부터 10대 성수품 공급을 평시 대비 1.7배로 늘리고 최대 40% 할인 지원을 추진한다. 최근 농축수산물 가격 상승에 대응한 조치라고 전했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">heraldcorp</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 06:00</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">정책브리핑</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 17:49</span>
+                      <span class="dot">·</span>
+                      <span class="topic">쌀</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.korea.kr/news/reporterView.do?newsId=148959464&amp;call_from=naver_news" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">700억 할인도 ‘반짝 효과’…설 물가 잡으려 할인 퍼붓기?</div>
-                  <div class="sum">설 물가 안정을 위해 대규모 할인지원(700억 원 수준)이 투입되지만 효과가 단기에 그친다는 문제의식을 제기했다. ‘물가 안정대책 진단과 과제’ 보고서를 근거로 근본적 가격 안정 대책 필요성을 언급했다.</div>
-                  <div class="lnk"><a href="https://biz.heraldcorp.com/article/10676362" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">설 성수품의 안정적 공급으로 이번 설도 풍성하게 보낼 수 있어요</div>
+                  <div class="sum">정책브리핑이 설 성수품의 안정적 공급·할인지원 내용을 소개했다. 910억원을 투입해 농산물·쌀·축산물 공급물량을 확대하고 수산물 등도 지원하는 계획을 담았다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">dealsite</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 07:02</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">pressian</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 16:25</span>
+                      <span class="dot">·</span>
+                      <span class="topic">기타</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.pressian.com/pages/articles/2026021316224890328" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">담합 수사·정부 압박 덕 설 물가부담 완화</div>
-                  <div class="sum">농식품부·해수부가 사과·배·소고기 등 20개 성수품에 정부 지원 할인 등을 추진하며 설 물가 부담 완화를 강조했다. 수입 과일 공급 확대, 정부 비축 수산물 방출 등 공급 측면 대책도 함께 언급됐다.</div>
-                  <div class="lnk"><a href="https://dealsite.co.kr/articles/156952" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">설 선물·제수용품 원산지 위반 여전…전북농관원, 설 성수품 40곳·16폼...</div>
+                  <div class="sum">전북농관원이 1월 28~2월 13일 설 성수품 원산지 표시 일제단속을 실시해 위반업체 40곳(16품목)을 적발했다. 단속 대상은 제조·가공업체와 통신판매업체 등이다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">뉴시스</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 09:00</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">ikpnews</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/15 19:44</span>
+                      <span class="dot">·</span>
+                      <span class="topic">감/곶감</span>
+                    </div>
+                    <a class="btnOpen" href="http://www.ikpnews.net/news/articleView.html?idxno=69650" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">설 성수품 가격에 소비자 울상…&#x27;장관급 물가관리 TF&#x27; 시험대</div>
-                  <div class="sum">설 성수품 가격 부담 속 ‘장관급 물가관리 TF’가 정책 효과와 부정수급 점검에 나선다는 내용이다. 할당관세·할인지원 등 물가안정 정책의 부정수급 여부를 점검한다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.newsis.com/view/NISX20260212_0003514058" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">cctimes</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 14:40</span>
-                  </div>
-                  <div class="ttl">서천군, 설 명절 앞두고 물가 안정 캠페인 실시</div>
-                  <div class="sum">서천군이 설 명절을 ‘물가안정 특별대책기간’으로 정하고 사과·배·소고기 등 성수품 20개 품목 가격 동향을 집중 관리한다. 가격표시제·원산지 표시 이행 여부 점검도 병행할 계획이라고 밝혔다.</div>
-                  <div class="lnk"><a href="http://www.cctimes.kr/news/articleView.html?idxno=892033" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">ajunews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 15:00</span>
-                  </div>
-                  <div class="ttl">KREI &quot;설 물가 대책 , 저소득층 지원으로 재구성해야&quot;</div>
-                  <div class="sum">KREI가 설 물가대책을 저소득층 중심의 선별 지원으로 재구성할 필요가 있다고 제언했다. 공급 확대·할인 지원 중심 대책의 한계를 지적하며, 사과·배 가격 급등이 반복된다고 언급했다.</div>
-                  <div class="lnk"><a href="https://www.ajunews.com/view/20260216234734512" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">namdonews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 00:02</span>
-                  </div>
-                  <div class="ttl">566억 풀었지만…설 물가 불안 &#x27;현재진행형&#x27;</div>
-                  <div class="sum">정부가 566억원을 투입했지만 설 물가 불안이 이어진다는 문제를 다뤘다. 보고서는 품목별 맞춤 전략, 취약계층 중심 선별 지원, 정밀 수급관리 체계 구축 필요성을 제시했다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.namdonews.com/news/articleView.html?idxno=901525" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">dailian</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/14 09:01</span>
-                  </div>
-                  <div class="ttl">설 농축산물 물가 안정 …과실류는 ‘설 이후 상승’ 구조 고착</div>
-                  <div class="sum">올해 설 농축산물 물가는 전반적으로 안정세이나, 사과·배 등 과실류는 ‘설 이후 가격 상승’ 구조가 고착됐다고 진단했다. 정부 대책은 공급 확대와 할인 지원 중심으로 추진됐다고 정리했다.</div>
-                  <div class="lnk"><a href="https://www.dailian.co.kr/news/view/1610821/?sc=Naver" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#1d4ed8">
-                  <div class="meta">
-                    <span class="press">yonhapnewstv</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 15:49</span>
-                  </div>
-                  <div class="ttl">농축수산물 가격 껑충…수입 확대 등 대응 마련</div>
-                  <div class="sum">농축수산물 가격 오름세가 이어지자 정부가 수입 확대 등 대응책을 마련했다고 전했다. 할당관세와 할인행사 등 물가안정 수단이 함께 언급됐다.</div>
-                  <div class="lnk"><a href="http://www.yonhapnewstv.co.kr/MYH20260216154813fKZ" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">온라인도매시장 성장 실적, 어디까지 진실인가</div>
+                  <div class="sum">농식품부가 정책 지원을 받은 업체를 대상으로 온라인도매시장 거래 실태를 전수조사했다. 총 7698억원 거래 중 4584억원이 허위 또는 이상 거래로 분류됐다고 보도했다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-pest" class="sec">
-              <div class="secHead" style="background:linear-gradient(90deg,#b45309,#111827);">
-                <div class="secTitle">병해충 및 방제</div>
-                <div class="secCount">6건</div>
+              <div class="secHead">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  병해충 및 방제
+                </div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
                 <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">sportsseoul</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 14:18</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">metroseoul</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/14 07:46</span>
+                      <span class="dot">·</span>
+                      <span class="topic">배</span>
+                    </div>
+                    <a class="btnOpen" href="http://www.metroseoul.co.kr/article/20260213500272" target="_blank" rel="noopener">원문 열기</a>
+                  </div>
+                  <div class="ttl">봉화군, 고추 고소득 작목 육성…재배기술 교육 실시</div>
+                  <div class="sum">봉화군이 고추 고소득 작목 육성을 위해 재배기술 교육을 실시한다. 4월까지 병해충·잡초 방제, 생리장해 대응, 수확 후 관리 등 재배 전 과정을 다룬다.</div>
+                </div>
+                
+
+                <div class="card" style="border-left-color:#b45309">
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">스포츠서울</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 14:18</span>
+                      <span class="dot">·</span>
+                      <span class="topic">고추</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.sportsseoul.com/news/read/1586250" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">장수농업기술센터, ‘올해 농작물 병해충 지원 방제 협의회’ 개최... 농...</div>
-                  <div class="sum">장수농업기술센터가 ‘올해 농작물 병해충 지원 방제 협의회’를 열고 방제 계획을 논의했다. 병해충 방제 예산 14억6500만원으로 벼 병해충·과수 화상병·돌발병해충 등 약 1만8250ha 규모 방제비가 편성됐다고 밝혔다.</div>
-                  <div class="lnk"><a href="https://www.sportsseoul.com/news/read/1586250" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="sum">장수농업기술센터가 ‘올해 농작물 병해충 지원 방제 협의회’를 개최했다. 병해충 방제 예산 14억6500만원으로 벼 병해충·과수화상병 등 약 1만8250ha 방제비를 편성하고 약제 적용을 협의했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">aflnews</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 09:42</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">aflnews</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/16 07:00</span>
+                      <span class="dot">·</span>
+                      <span class="topic">정책</span>
+                    </div>
+                    <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314561" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">경북도, 미래형 사과 산업 선점...전국 최대 &#x27;재해대응형 하우스재배&#x27; 국...</div>
-                  <div class="sum">경북도가 미래형 사과 산업 모델로 재해대응형 하우스 재배를 추진하며 에어포그식 무인방제·환경제어 시스템 등을 포함한다고 소개했다. 하우스 재배로 탄저병·저온 피해를 차단하고 초밀식 다축재배로 생산성 제고를 목표로 한다고 전했다.</div>
-                  <div class="lnk"><a href="http://www.aflnews.co.kr/news/articleView.html?idxno=314444" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">농진청, 농약 등록 평가 체계 개선·정책 발전 방향 모색</div>
+                  <div class="sum">농진청이 농약 등록 평가 체계 개선과 정책 발전 방향을 논의했다. 기후변화로 병해충 양상이 바뀌고 드론·스마트방제 등 신기술 확산에 맞춘 제도 개선 필요성이 제기됐다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">연합뉴스</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/14 09:10</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">CHMBC</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/17 21:16</span>
+                      <span class="dot">·</span>
+                      <span class="topic">사과</span>
+                    </div>
+                    <a class="btnOpen" href="https://chmbc.co.kr/article/7L4OvY2eMFNDunxGzQMn" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">청송에 재해 대응형 하우스 사과 생산 시스템 보급…70억 투입</div>
-                  <div class="sum">청송에 재해 대응형 하우스 사과 생산 시스템을 보급하는 사업에 70억원을 투입한다고 전했다. 재해예방 시설, 에어포그식 무인방제, 환경제어 시스템 구축 등을 통해 탄저병·저온 피해를 줄이는 내용이 포함됐다.</div>
-                  <div class="lnk"><a href="https://www.yna.co.kr/view/AKR20260212156600053?input=1195m" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">인제군 &#x27;하늘내린 농업인대학&#x27; 사과 재배 전문인력 육성 운영</div>
+                  <div class="sum">인제군이 ‘하늘내린 농업인대학’에서 사과 재배 전문인력 육성 과정을 운영한다. 농업인 60명을 대상으로 과원 조성부터 병해충 방제, 결실·토양·수형 관리, 정지전정까지 교육한다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">djtimes</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 16:46</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">agrinet</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/13 17:08</span>
+                      <span class="dot">·</span>
+                      <span class="topic">병해충</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=401727" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">당진시농업기술센터, 과수화상병 전염원 예방 예찰 실시</div>
-                  <div class="sum">당진시농업기술센터가 과수화상병 전염원 예방을 위한 예찰을 실시한다고 밝혔다. 농가에 궤양 제거·작업도구 소독·외부 작업자 관리, 의심 증상 발견 시 즉시 신고를 당부했다.</div>
-                  <div class="lnk"><a href="http://www.djtimes.co.kr/news/articleView.html?idxno=110936" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">nongup</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/13 11:52</span>
-                  </div>
-                  <div class="ttl">당진시, 과수화상병 전염원 예방 예찰 실시</div>
-                  <div class="sum">당진시가 과수화상병 전염원 예방 예찰을 실시하고, 농가에 궤양 제거와 작업 도구 소독을 강조했다. 의심 궤양 발견 시 농업기술센터에 즉시 신고해 확산을 막아야 한다고 안내했다.</div>
-                  <div class="lnk"><a href="http://www.nongup.net/news/articleView.html?idxno=32461" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#b45309">
-                  <div class="meta">
-                    <span class="press">newsam</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/15 13:44</span>
-                  </div>
-                  <div class="ttl">따듯한 봄과 함께 찾아오는 불청객 ‘응애’</div>
-                  <div class="sum">봄철 발생하는 ‘응애’(점박이응애 등) 방제 이슈를 다루며 관련 약제를 소개했다. 과수·채소류 등 55개 작물에 사용 가능하다고 설명했다.</div>
-                  <div class="lnk"><a href="https://www.newsam.co.kr/news/article.html?no=42149" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">[주목 이 제품 | 한국아그로바이오텍] &quot; 냉해 ·고온·충·균 걱정 뚝!&quot; 파...</div>
+                  <div class="sum">한국아그로바이오텍 제품을 소개하며 냉해·고온·충·균 피해 대응 효과를 강조한 기사다. 사용자 사례로 과수원에서 냉해와 병충해 감소 및 작황 개선 언급이 포함됐다.</div>
                 </div>
                 </div>
             </section>
             
 
             <section id="sec-dist" class="sec">
-              <div class="secHead" style="background:linear-gradient(90deg,#6d28d9,#111827);">
-                <div class="secTitle">유통 및 현장 (APC/수출)</div>
-                <div class="secCount">6건</div>
+              <div class="secHead">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장 (APC/수출)
+                </div>
+                <div class="secCount">4건</div>
               </div>
               <div class="secBody">
                 <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">천지일보</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/18 01:02</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">뉴시스</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/17 09:00</span>
+                      <span class="dot">·</span>
+                      <span class="topic">정책</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.newsis.com/view/NISX20260212_0003514058" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">설 성수품 원산지 허위표시 7782건… 돼지고기 3700건 최다</div>
-                  <div class="sum">설 성수품 원산지 허위표시가 7782건 적발됐으며, 돼지고기가 3700건으로 최다라고 전했다. 정부는 매년 설을 앞두고 16개 성수품을 집중 단속하고 있다고 덧붙였다.</div>
-                  <div class="lnk"><a href="https://www.newscj.com/news/articleView.html?idxno=3375926" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">설 성수품 가격에 소비자 울상…&#x27;장관급 물가관리 TF&#x27; 시험대</div>
+                  <div class="sum">설 성수품 가격 부담 속 ‘장관급 물가관리 TF’의 점검이 시험대에 올랐다고 전했다. 불공정거래 단속, 할당관세·할인지원 부정수급 점검, 유통구조 점검 등을 추진한다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">kyongbuk</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/15 21:56</span>
-                  </div>
-                  <div class="ttl">[인터뷰] 강매영 영주시 유통지원과장 &quot;유통 혁신, 농가 삶의 안정으로...</div>
-                  <div class="sum">영주시 유통지원과장 인터뷰로, 농협·생산자조직 중심의 출하 체계 전환과 유통 혁신을 강조했다. 산지유통센터(APC)의 저온저장·선별·집하 기능 등 인프라 강화 필요성을 설명했다.</div>
-                  <div class="lnk"><a href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4064662" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">정책브리핑</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 08:58</span>
-                  </div>
-                  <div class="ttl">모두가 민생회복 체감할 수 있게!</div>
-                  <div class="sum">정부가 배추·무·사과·배 중심으로 정부 보유 물량을 평시 대비 최대 4배까지 확대한다고 밝혔다. 제수용·선물용 농수산물은 원산지 표시 위반과 부정유통을 연휴 전후 집중 단속한다는 계획도 포함됐다.</div>
-                  <div class="lnk"><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148959235&amp;call_from=naver_news" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">siminilbo</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/17 00:42</span>
-                  </div>
-                  <div class="ttl">금천구, 설 장바구니 부담 낮춘다... 물가안정 대책 추진</div>
-                  <div class="sum">금천구가 설 물가안정 대책으로 무·배추·사과·배 등 주요 품목 가격을 조사·관리한다고 밝혔다. 전통시장·대형마트의 가격 및 원산지 표시, 부정유통 여부도 점검 대상에 포함됐다.</div>
-                  <div class="lnk"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291371314605" target="_blank" rel="noopener">원문 열기</a></div>
-                </div>
-                
-
-                <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">pointdaily</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/16 05:12</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">pointdaily</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/16 05:12</span>
+                      <span class="dot">·</span>
+                      <span class="topic">배</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.pointdaily.co.kr/news/articleView.html?idxno=293235" target="_blank" rel="noopener">원문 열기</a>
                   </div>
                   <div class="ttl">&quot;설 차례상마저 의심해야 하나&quot; 명절 앞두고 원산지 위반 2.7배 폭증</div>
-                  <div class="sum">설 명절 특별 단속 기간 원산지 위반 적발률이 평시 대비 약 2.7배 높았다는 통계를 제시했다. 최근 5년 평균 적발률은 평시 1.4% 수준, 특별 단속 기간 평균 3.9%로 증가했다고 전했다.</div>
-                  <div class="lnk"><a href="https://www.pointdaily.co.kr/news/articleView.html?idxno=293235" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="sum">설 명절 특별 단속 기간 원산지 위반 적발률이 평시 대비 약 2.7배 높았다는 통계를 제시했다. 최근 5년 평균 적발률은 전체 1.4%인데, 특별단속 평균은 3.9%로 나타났다고 보도했다.</div>
                 </div>
                 
 
                 <div class="card" style="border-left-color:#6d28d9">
-                  <div class="meta">
-                    <span class="press">뉴시스</span>
-                    <span class="dot">·</span>
-                    <span class="time">02/15 14:19</span>
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">tvchosun</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/17 15:04</span>
+                      <span class="dot">·</span>
+                      <span class="topic">정책</span>
+                    </div>
+                    <a class="btnOpen" href="https://news.tvchosun.com/site/data/html_dir/2026/02/17/2026021790087.html" target="_blank" rel="noopener">원문 열기</a>
                   </div>
-                  <div class="ttl">백성현 시장, &quot;논산 딸기 로 세계인의 마음꽃 활짝 피우겠다&quot;</div>
-                  <div class="sum">논산시가 자카르타 ‘논산 농식품 해외박람회’ 현지 간담회에서 딸기 등 전략품목을 확정해 생산을 늘리고 수출을 강화하겠다고 밝혔다. 딸기·배·포도 등이 전략식품 품목으로 언급됐다.</div>
-                  <div class="lnk"><a href="https://www.newsis.com/view/NISX20260215_0003516505" target="_blank" rel="noopener">원문 열기</a></div>
+                  <div class="ttl">&#x27;물가와의 전쟁&#x27;, 경제부총리가 직접 TF 꾸린다는데…</div>
+                  <div class="sum">경제부총리가 TF를 꾸려 ‘물가와의 전쟁’에 나선다는 내용을 다뤘다. 점검은 불공정거래 단속, 정책지원 부정수급 점검, 유통구조 점검의 3개 분야로 진행된다.</div>
+                </div>
+                
+
+                <div class="card" style="border-left-color:#6d28d9">
+                  <div class="cardTop">
+                    <div class="meta">
+                      <span class="press">radiokorea</span>
+                      <span class="dot">·</span>
+                      <span class="time">02/14 01:06</span>
+                      <span class="dot">·</span>
+                      <span class="topic">기타</span>
+                    </div>
+                    <a class="btnOpen" href="https://www.radiokorea.com/news/article.php?uid=490289" target="_blank" rel="noopener">원문 열기</a>
+                  </div>
+                  <div class="ttl">美 전역 Target 매장 앞에서 시위 확산</div>
+                  <div class="sum">미국에서 Target 매장 앞 시위가 확산되고 있다는 해외 소식이다. 시위대는 이민 단속 강화로 매장 직원·배달기사·농산물 공급자 등 이민자 비중이 크다는 점을 주장했다.</div>
                 </div>
                 </div>
             </section>
             
-
-    <div class="footer">
-      * 자동 수집 결과이며, 제목/요약은 원문 기반 정리입니다. (필요 시 원문 확인)
-    </div>
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”를 눌러 원문을 확인하세요.</div>
   </div>
+
+  <script>
+    (function() {
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) window.location.href = v;
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
