@@ -17,10 +17,11 @@ ENV REQUIRED:
 - NAVER_CLIENT_SECRET
 - OPENAI_API_KEY          (optional but recommended for better summaries)
 - OPENAI_MODEL            (default: gpt-5.2)
-- GITHUB_REPO             (e.g., HongTaeHwa/agri-news-brief)
+- GITHUB_REPO             (e.g., HongTaeHwa/agri-news-brief)  [or Actions default GITHUB_REPOSITORY]
 - GH_TOKEN or GITHUB_TOKEN (Actions built-in token OK if permissions: contents: write)
 - KAKAO_REST_API_KEY
 - KAKAO_REFRESH_TOKEN
+
 OPTIONAL:
 - KAKAO_CLIENT_SECRET
 - PAGES_BASE_URL          (override github pages url / custom domain)
@@ -31,6 +32,8 @@ OPTIONAL:
 - EXCLUDE_HOLIDAYS        (comma dates to treat as business day)
 - KAKAO_INCLUDE_LINK_IN_TEXT (true/false, default false)
 - FORCE_REPORT_DATE       (YYYY-MM-DD) for backfill tests
+- FORCE_RUN_ANYDAY        (true/false)  ✅ 테스트용: 휴일/주말 SKIP 무시
+- FORCE_END_NOW           (true/false)  ✅ 테스트용: 종료시각을 '지금'으로(기사량 증가 도움)
 """
 
 import os
@@ -89,6 +92,10 @@ KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
+
+# ✅ TEST OVERRIDES (added)
+FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
+FORCE_END_NOW = os.getenv("FORCE_END_NOW", "false").strip().lower() in ("1", "true", "yes")
 
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
@@ -339,7 +346,7 @@ def is_korean_holiday(d: date) -> bool:
         kr = holidays.KR(years=[d.year], observed=True)
         return d in kr
     except Exception:
-        # Fallback: weekend only (log once)
+        # Fallback: weekend only
         return False
 
 def is_business_day_kr(d: date) -> bool:
@@ -413,7 +420,7 @@ def load_state(repo: str, token: str):
 
 def save_state(repo: str, token: str, last_end: datetime):
     payload = {"last_end_iso": last_end.isoformat()}
-    raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
+    _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     msg = f"Update state {last_end.date().isoformat()}"
     github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token, msg, sha=sha, branch="main")
 
@@ -548,7 +555,6 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
         score += 3.0
 
     # Freshness (within the window, newer gets small boost)
-    # (Not absolute time, but helps ordering)
     age_hours = max(0.0, (datetime.now(tz=KST) - article.pub_dt_kst).total_seconds() / 3600.0)
     score += max(0.0, 24.0 - min(age_hours, 24.0)) * 0.05
 
@@ -1061,6 +1067,10 @@ def compute_end_kst():
         d = datetime.strptime(FORCE_REPORT_DATE, "%Y-%m-%d").date()
         return dt_kst(d, REPORT_HOUR_KST)
 
+    # ✅ TEST: end time = now (added)
+    if FORCE_END_NOW:
+        return now_kst()
+
     n = now_kst()
     candidate = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
     # If running before today's report hour, use yesterday's cutoff
@@ -1098,7 +1108,7 @@ def compute_window(repo: str, token: str, end_kst: datetime):
 # -----------------------------
 def main():
     if not DEFAULT_REPO:
-        raise RuntimeError("GITHUB_REPO is not set (e.g., HongTaeHwa/agri-news-brief)")
+        raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
     if not GH_TOKEN:
         raise RuntimeError("GH_TOKEN or GITHUB_TOKEN is not set")
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
@@ -1110,10 +1120,13 @@ def main():
 
     end_kst = compute_end_kst()
 
-    # Skip if not business day in KR
-    if not is_business_day_kr(end_kst.date()):
+    # ✅ Skip if not business day in KR (unless forced for testing)
+    is_bd = is_business_day_kr(end_kst.date())
+    if (not FORCE_RUN_ANYDAY) and (not is_bd):
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
         return
+    if FORCE_RUN_ANYDAY and (not is_bd):
+        log.info("[FORCE] Non-business day but proceeding for test: %s", end_kst.date().isoformat())
 
     start_kst, end_kst = compute_window(repo, GH_TOKEN, end_kst)
     log.info("[INFO] Window KST: %s ~ %s", start_kst.isoformat(), end_kst.isoformat())
@@ -1145,11 +1158,11 @@ def main():
     # Write to GitHub (docs/)
     # daily
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
-    raw_old, sha_old = github_get_file(repo, daily_path, GH_TOKEN, ref="main")
+    _raw_old, sha_old = github_get_file(repo, daily_path, GH_TOKEN, ref="main")
     github_put_file(repo, daily_path, daily_html, GH_TOKEN, f"Add daily brief {report_date}", sha=sha_old, branch="main")
 
     # index
-    raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
+    _raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
     # archive manifest + state
