@@ -2,38 +2,47 @@
 """
 agri-news-brief main.py (production)
 
-Features:
-- Naver News API search (multi-query per section)
-- Strong relevance filtering to prevent off-topic leakage
-- Business-day window with KR holidays support (+ manual override)
-- OpenAI summaries (batch) -> readable 2~3 lines per article (optional)
-- GitHub Pages output:
-  - docs/index.html (latest + archive list)
-  - docs/archive/YYYY-MM-DD.html (daily snapshot)
-- Kakao "나에게 보내기" one message with "브리핑 열기" button to the daily page
+Fixes included (per latest request):
+1) "브리핑 열기"가 gist.github.com 으로 넘어가는 치명적 문제 방지:
+   - PAGES_BASE_URL이 gist/raw로 잘못 설정되어 있어도 자동 무시하고 GitHub Pages 기본 URL로 복구
+   - 최종 daily_url이 gist/raw면 즉시 중단 (안전장치)
+
+2) 카톡 메시지 포맷을 사용자가 요구한 줄바꿈/띄어쓰기 형태로 "고정" 생성:
+   - 제목, 공백 줄, 기사 집계(총/중앙/지방), 섹션별 2건씩 체크포인트
+   - 섹션 순서: 품목 → 정책 → 유통 → 방제 (고정)
+
+기능:
+- Naver News API 검색(섹션별 멀티 쿼리)
+- 강한 관련도 필터링(연예/여행/주식/무관 기사 차단)
+- 영업일 기준 윈도우(휴일/주말은 다음 영업일에 누적)
+- OpenAI 요약(옵션): 실패/쿼터/키 없음이면 description 기반으로 자동 폴백
+- GitHub Pages 출력:
+  - docs/index.html (최신/아카이브)
+  - docs/archive/YYYY-MM-DD.html (일자별 스냅샷)
+- 카카오 "나에게 보내기" 단일 메시지 + "브리핑 열기" 버튼(해당 날짜 페이지로)
 
 ENV REQUIRED:
 - NAVER_CLIENT_ID
 - NAVER_CLIENT_SECRET
-- GITHUB_REPO             (e.g., HongTaeHwa/agri-news-brief)  [or Actions default GITHUB_REPOSITORY]
+- GITHUB_REPO              (e.g., HongTaeHwa/agri-news-brief)  또는 Actions 기본 GITHUB_REPOSITORY
 - GH_TOKEN or GITHUB_TOKEN (Actions built-in token OK if permissions: contents: write)
 - KAKAO_REST_API_KEY
 - KAKAO_REFRESH_TOKEN
 
 OPTIONAL:
-- OPENAI_API_KEY          (if missing/invalid/quota exceeded -> fallback summaries)
-- OPENAI_MODEL            (default: gpt-5.2)
+- OPENAI_API_KEY           (없거나/실패하면 폴백)
+- OPENAI_MODEL             (default: gpt-5.2)
 - KAKAO_CLIENT_SECRET
-- PAGES_BASE_URL          (override github pages url / custom domain)
-- REPORT_HOUR_KST         (default: 7)
-- MAX_PER_SECTION         (default: 10)
-- MIN_PER_SECTION         (default: 5)
-- EXTRA_HOLIDAYS          (comma dates, e.g., 2026-02-17,2026-02-18)
-- EXCLUDE_HOLIDAYS        (comma dates to treat as business day)
+- PAGES_BASE_URL           (커스텀 도메인/조직 페이지 등)
+- REPORT_HOUR_KST          (default: 7)
+- MAX_PER_SECTION          (default: 10)
+- MIN_PER_SECTION          (default: 5)
+- EXTRA_HOLIDAYS           (comma dates, e.g., 2026-02-17,2026-02-18)
+- EXCLUDE_HOLIDAYS         (comma dates to treat as business day)
 - KAKAO_INCLUDE_LINK_IN_TEXT (true/false, default false)
-- FORCE_REPORT_DATE       (YYYY-MM-DD) for backfill tests
-- FORCE_RUN_ANYDAY        (true/false)  ✅ 테스트용: 휴일/주말 SKIP 무시
-- FORCE_END_NOW           (true/false)  ✅ 테스트용: 종료시각을 '지금'으로(기사량 증가 도움)
+- FORCE_REPORT_DATE        (YYYY-MM-DD) backfill test
+- FORCE_RUN_ANYDAY         (true/false) 휴일/주말에도 강제 실행(테스트용)
+- FORCE_END_NOW            (true/false) end를 "지금"으로(테스트용, 기사량 증가)
 """
 
 import os
@@ -50,17 +59,16 @@ from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 import requests
 
+
 # -----------------------------
 # Logging
 # -----------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("agri-brief")
 
+
 # -----------------------------
-# Config (Easy-to-edit block)
+# Config
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 
@@ -90,15 +98,16 @@ KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
-
-# ✅ TEST OVERRIDES
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
 FORCE_END_NOW = os.getenv("FORCE_END_NOW", "false").strip().lower() in ("1", "true", "yes")
 
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
-# Hard blocks (low-value / lifestyle / spammy aggregators)
+
+# -----------------------------
+# Domain blocks
+# -----------------------------
 BLOCKED_DOMAINS = {
     "wikitree.co.kr",
     "theqoo.net",
@@ -111,6 +120,7 @@ BLOCKED_DOMAINS = {
     "gqkorea.co.kr",
 }
 
+# Strong agriculture context keywords (raise relevance)
 AGRI_STRONG_TERMS = [
     "가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "청과", "산지", "출하", "물량", "반입",
     "산지유통", "APC", "산지유통센터", "선별", "CA저장", "저장고", "저장량",
@@ -118,9 +128,10 @@ AGRI_STRONG_TERMS = [
     "농림축산식품부", "농식품부", "aT", "한국농수산식품유통공사", "농관원", "국립농산물품질관리원",
     "검역", "할당관세", "수입", "수출", "관세", "통관", "원산지", "부정유통", "온라인 도매시장",
     "비축미", "정부", "대책", "지원", "할인지원", "성수품",
-    "병해충", "방제", "약제", "살포", "예찰", "과수화상병", "탄저병", "동해", "냉해", "월동"
+    "병해충", "방제", "약제", "살포", "예찰", "과수화상병", "탄저병", "동해", "냉해", "월동",
 ]
 
+# Very common off-topic hints (penalize)
 OFFTOPIC_HINTS = [
     "배우", "아이돌", "드라마", "영화", "예능", "콘서트", "팬", "유튜브", "뮤직",
     "대통령", "국회", "총선", "검찰", "재판", "탄핵", "정당",
@@ -134,9 +145,13 @@ TRAVEL_MARKET_HINTS = [
 
 KOREA_CONTEXT_HINTS = [
     "국내", "한국", "우리나라", "농협", "지자체", "군", "시", "도", "농가", "산지", "가락시장",
-    "농식품부", "aT", "농관원", "대한민국", "설", "명절"
+    "농식품부", "aT", "농관원", "대한민국", "설", "명절",
 ]
 
+
+# -----------------------------
+# Section configuration (order fixed in rendering; Kakao message order is separately fixed)
+# -----------------------------
 SECTIONS = [
     {
         "key": "supply",
@@ -147,7 +162,7 @@ SECTIONS = [
             "과수 재배면적 변화 사과 배",
             "사과 도매시장 가격 시세",
             "사과 저장량 출하 수급",
-            "배(과일) 도매시장 시세 신고",
+            "배(과일) 도매시장 시세",
             "단감 시세 저장량",
             "떫은감 곶감 탄저병 생산량 가격",
             "둥시 곶감 물량 시세",
@@ -170,9 +185,9 @@ SECTIONS = [
             "농축수산물 할인지원 연장 3월",
             "할당관세 수입 과일 검역 완화",
             "성수품 가격 안정 대책 농축수산물",
-            "대한민국 정책브리핑 농축수산물 할인 지원",
-            "korea.kr 농축수산물 할인 지원",
-            "농식품부 정책 농축수산물 할인 할당관세",
+            "대한민국 정책브리핑 농축수산물",
+            "korea.kr 농축수산물 할인",
+            "농식품부 정책 농축수산물 할당관세",
         ],
         "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "온라인 도매시장", "비축미", "성수품", "수급"],
     },
@@ -191,7 +206,7 @@ SECTIONS = [
     },
     {
         "key": "dist",
-        "title": "유통 및 현장(APC/수출)",
+        "title": "유통 및 현장 (APC/수출)",
         "color": "#6d28d9",
         "queries": [
             "APC 스마트화 AI 선별기 CA저장",
@@ -204,6 +219,7 @@ SECTIONS = [
     },
 ]
 
+
 POLICY_DOMAINS = {
     "korea.kr", "www.korea.kr",
     "mafra.go.kr", "www.mafra.go.kr",
@@ -215,6 +231,7 @@ POLICY_DOMAINS = {
 AGRI_POLICY_KEYWORDS = [
     "농축수산물", "농축산물", "성수품", "할인지원", "할당관세", "검역", "수급", "가격", "과일", "비축미", "원산지"
 ]
+
 
 # -----------------------------
 # Data model
@@ -295,6 +312,7 @@ def has_any(text: str, words) -> bool:
 def count_any(text: str, words) -> int:
     return sum(1 for w in words if w in text)
 
+
 # -----------------------------
 # KR business day / holidays
 # -----------------------------
@@ -326,6 +344,7 @@ def previous_business_day(d: date) -> date:
     while not is_business_day_kr(cur):
         cur -= timedelta(days=1)
     return cur
+
 
 # -----------------------------
 # GitHub Contents API helpers
@@ -369,8 +388,9 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
         r.raise_for_status()
     return r.json()
 
+
 # -----------------------------
-# State / archive manifest
+# State / archive manifest (legacy-safe)
 # -----------------------------
 def load_state(repo: str, token: str):
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
@@ -387,11 +407,11 @@ def load_state(repo: str, token: str):
 def save_state(repo: str, token: str, last_end: datetime):
     payload = {"last_end_iso": last_end.isoformat()}
     _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
-    msg = f"Update state {last_end.date().isoformat()}"
-    github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token, msg, sha=sha, branch="main")
+    github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token,
+                    f"Update state {last_end.date().isoformat()}", sha=sha, branch="main")
 
 def _normalize_manifest(obj):
-    # ✅ supports legacy list format OR new dict format
+    # supports legacy list format OR dict format
     if obj is None:
         return {"dates": []}
     if isinstance(obj, list):
@@ -417,8 +437,9 @@ def load_archive_manifest(repo: str, token: str):
 
 def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
     manifest = _normalize_manifest(manifest)
-    msg = "Update archive manifest"
-    github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token, msg, sha=sha, branch="main")
+    github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token,
+                    "Update archive manifest", sha=sha, branch="main")
+
 
 # -----------------------------
 # Naver News search
@@ -427,16 +448,14 @@ def naver_news_search(query: str, display: int = 30, start: int = 1, sort: str =
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
     url = "https://openapi.naver.com/v1/search/news.json"
-    headers = {
-        "X-Naver-Client-Id": NAVER_CLIENT_ID,
-        "X-Naver-Client-Secret": NAVER_CLIENT_SECRET,
-    }
+    headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
     params = {"query": query, "display": display, "start": start, "sort": sort}
     r = requests.get(url, headers=headers, params=params, timeout=30)
     if not r.ok:
         log.error("[NAVER ERROR] %s", r.text)
         r.raise_for_status()
     return r.json()
+
 
 # -----------------------------
 # Relevance scoring / filtering
@@ -479,6 +498,7 @@ def is_relevant(article: Article, section_conf: dict) -> bool:
 
     text = (article.title + " " + article.description).lower()
 
+    # must_terms gate (policy domains can override)
     if not section_must_terms_ok(text, [t.lower() for t in section_conf["must_terms"]]):
         if not policy_domain_override(dom, text):
             return False
@@ -494,9 +514,11 @@ def is_relevant(article: Article, section_conf: dict) -> bool:
     if offp >= 1 and strength < 3:
         return False
 
+    # disambiguation: "사과" apology
     if re.search(r"(공개\s*)?사과(했다|해야|하라|문|요구|요청|발표)", article.title) and strength < 4:
         return False
 
+    # disambiguation: "배" ship
     if re.search(r"(선박|해군|항만|조선|함정|승선|항해)", text) and strength < 4:
         return False
 
@@ -527,12 +549,14 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
 
     return score
 
+
 # -----------------------------
-# Collect articles for a window
+# Collect articles
 # -----------------------------
 def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime):
-    items = []
+    items: list[Article] = []
     seen_keys = set()
+
     display = 40
 
     for q in section_conf["queries"]:
@@ -562,6 +586,11 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
                     "www.hani.co.kr": "한겨레", "hani.co.kr": "한겨레",
                     "www.khan.co.kr": "경향신문", "khan.co.kr": "경향신문",
                     "www.sedaily.com": "서울경제", "sedaily.com": "서울경제",
+                    "www.hankyung.com": "한국경제", "hankyung.com": "한국경제",
+                    "www.asiae.co.kr": "아시아경제", "asiae.co.kr": "아시아경제",
+                    "www.mt.co.kr": "머니투데이", "mt.co.kr": "머니투데이",
+                    "www.edaily.co.kr": "이데일리", "edaily.co.kr": "이데일리",
+                    "www.heraldcorp.com": "헤럴드경제", "heraldcorp.com": "헤럴드경제",
                     "www.newsis.com": "뉴시스", "newsis.com": "뉴시스",
                     "www.news1.kr": "뉴스1", "news1.kr": "뉴스1",
                     "www.fnnews.com": "파이낸셜뉴스", "fnnews.com": "파이낸셜뉴스",
@@ -592,6 +621,7 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
                 art.score = compute_rank_score(art, section_conf)
                 seen_keys.add(norm_key)
                 items.append(art)
+
         except Exception as e:
             log.warning("[WARN] query failed: %s (%s)", q, e)
 
@@ -599,10 +629,11 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
     return items[:MAX_PER_SECTION]
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
-    by_section = {}
+    by_section: dict[str, list[Article]] = {}
     for sec in SECTIONS:
         by_section[sec["key"]] = collect_articles_for_section(sec, start_kst, end_kst)
 
+    # light broad fill if too few
     for sec in SECTIONS:
         key = sec["key"]
         if len(by_section[key]) >= MIN_PER_SECTION:
@@ -619,8 +650,8 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 
         tmp = dict(sec)
         tmp["queries"] = broad_queries
-        extra = collect_articles_for_section(tmp, start_kst, end_kst)
 
+        extra = collect_articles_for_section(tmp, start_kst, end_kst)
         merged = {a.norm_key: a for a in by_section[key]}
         for a in extra:
             merged.setdefault(a.norm_key, a)
@@ -631,8 +662,9 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 
     return by_section
 
+
 # -----------------------------
-# OpenAI summaries (batch)
+# OpenAI summaries (batch) - optional
 # -----------------------------
 def openai_extract_text(resp_json: dict) -> str:
     try:
@@ -657,7 +689,7 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             "id": a.norm_key,
             "press": a.press,
             "title": a.title[:180],
-            "desc": a.description[:240],
+            "desc": a.description[:260],
             "section": a.section,
             "url": a.originallink or a.link,
         })
@@ -666,8 +698,7 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
         "너는 농협 경제지주 원예수급부(과수화훼) 실무자를 위한 '농산물 뉴스 요약가'다.\n"
         "- 절대 상상/추정으로 사실을 만들지 마라.\n"
         "- 각 기사 요약은 '업무적으로 쓸모 있는 팩트' 위주로 2~3문장(줄바꿈 포함 가능), 120~220자 내.\n"
-        "- 가격/수급/정책/방제/유통 포인트를 한 번에 파악되게 써라.\n"
-        "- 연예/정치(사과=apology) 등 비농업이면 '제외(무관)'이라고 써라.\n"
+        "- 가격/수급/정책/방제/유통 포인트를 빠르게 파악되게 써라.\n"
         "출력 형식(반드시): 각 줄에 'id\\t요약' 형태로만 출력."
     )
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
@@ -688,14 +719,14 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             timeout=60,
         )
         if not r.ok:
-            # ✅ quota/429 등은 "요약만 포기"하고 계속 진행
+            # quota/429/invalid 등: 요약만 포기하고 폴백
             try:
                 body = r.json()
             except Exception:
                 body = {"raw": r.text}
-            code = (body.get("error") or {}).get("code")
             msg = (body.get("error") or {}).get("message") or r.text
-            log.warning("[OpenAI] summarize skipped (%s): %s", code or r.status_code, msg)
+            code = (body.get("error") or {}).get("code") or str(r.status_code)
+            log.warning("[OpenAI] summarize skipped (%s): %s", code, msg)
             return {}
 
         text = openai_extract_text(r.json()).strip()
@@ -709,12 +740,13 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             if k:
                 out[k] = v
         return out
+
     except Exception as e:
-        log.warning("[OpenAI] summarize failed, fallback to description: %s", e)
+        log.warning("[OpenAI] summarize failed, fallback: %s", e)
         return {}
 
 def fill_summaries(by_section: dict):
-    all_articles = []
+    all_articles: list[Article] = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
 
@@ -724,11 +756,10 @@ def fill_summaries(by_section: dict):
         s = mapping.get(a.norm_key, "").strip()
         if not s:
             s = a.description.strip() or a.title.strip()
-        if "제외(무관)" in s:
-            s = a.description.strip() or a.title.strip()
         a.summary = s
 
     return by_section
+
 
 # -----------------------------
 # Rendering (HTML)
@@ -738,12 +769,6 @@ def esc(s: str) -> str:
 
 def fmt_dt(dt_: datetime) -> str:
     return dt_.strftime("%m/%d %H:%M")
-
-def section_conf(key: str) -> dict:
-    for s in SECTIONS:
-        if s["key"] == key:
-            return s
-    return None
 
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict, base_url: str) -> str:
     chips = []
@@ -785,6 +810,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 </div>
                 """
             )
+
         cards_html = '<div class="empty">특이사항 없음</div>' if not cards else "\n".join(cards)
 
         sections_html.append(
@@ -867,7 +893,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     {sections_html}
 
     <div class="footer">
-      * 자동 수집 결과이며, 제목/요약은 원문을 기반으로 정리됩니다. (필요 시 원문 확인)
+      * 자동 수집 결과이며, 제목/요약은 원문 기반 정리입니다. (필요 시 원문 확인)
     </div>
   </div>
 </body>
@@ -923,6 +949,142 @@ def render_index_page(manifest: dict, base_url: str) -> str:
 </html>
 """
 
+
+# -----------------------------
+# Pages URL (anti-gist safeguard)
+# -----------------------------
+def get_pages_base_url(repo: str) -> str:
+    """
+    - If PAGES_BASE_URL is set and valid: use it
+    - If it's mistakenly set to gist/raw or invalid: ignore and fallback to default GitHub Pages URL
+    """
+    owner, name = repo.split("/", 1)
+    default_url = f"https://{owner.lower()}.github.io/{name}".rstrip("/")
+
+    env_url = os.getenv("PAGES_BASE_URL", "").strip().rstrip("/")
+    if not env_url:
+        return default_url
+
+    bad = ("gist.github.com", "raw.githubusercontent.com")
+    if any(b in env_url for b in bad):
+        log.warning("[WARN] PAGES_BASE_URL points to gist/raw. Ignoring and using default: %s", default_url)
+        return default_url
+
+    if not env_url.startswith("http://") and not env_url.startswith("https://"):
+        log.warning("[WARN] PAGES_BASE_URL is invalid (no http/https). Ignoring and using default: %s", default_url)
+        return default_url
+
+    return env_url
+
+
+# -----------------------------
+# Press tier (central/local) + Kakao message builder
+# -----------------------------
+CENTRAL_PRESS_NAMES = {
+    "연합뉴스", "매일경제", "중앙일보", "조선일보", "동아일보", "한겨레", "경향신문",
+    "서울경제", "한국경제", "아시아경제", "머니투데이", "헤럴드경제", "이데일리",
+    "뉴시스", "뉴스1", "파이낸셜뉴스", "정책브리핑",
+    "SBS", "KBS", "MBC", "YTN", "JTBC",
+}
+
+LOCAL_PRESS_HINTS = (
+    "강원", "경기", "인천", "대전", "충청", "충북", "충남", "전북", "전남",
+    "광주", "대구", "경북", "부산", "울산", "경남", "제주", "세종",
+)
+
+def press_tier(press: str, domain: str) -> str:
+    """
+    Returns 'central' or 'local'
+    - unknown defaults to central (so 중앙+지방 합이 총 기사수와 일치하도록 보장)
+    """
+    p = (press or "").strip()
+    d = (domain or "").lower()
+
+    if p in CENTRAL_PRESS_NAMES:
+        return "central"
+
+    if d.endswith("korea.kr") or d == "korea.kr" or "mafra.go.kr" in d or "at.or.kr" in d:
+        return "central"
+
+    if any(h in p for h in LOCAL_PRESS_HINTS) and any(x in p for x in ("일보", "신문", "방송", "뉴스")):
+        return "local"
+
+    return "central"
+
+
+# 카톡 메시지 섹션 순서(요청 고정)
+KAKAO_MESSAGE_SECTION_ORDER = ["supply", "policy", "dist", "pest"]
+
+def _get_section_conf(key: str):
+    for s in SECTIONS:
+        if s["key"] == key:
+            return s
+    return None
+
+def build_kakao_message(report_date: str, by_section: dict) -> str:
+    """
+    Generates Kakao text with exact spacing/line breaks requested by user.
+    """
+    total = 0
+    per = {}
+    central = 0
+    local = 0
+
+    for sec in SECTIONS:
+        key = sec["key"]
+        lst = by_section.get(key, [])
+        per[key] = len(lst)
+        total += len(lst)
+        for a in lst:
+            t = press_tier(a.press, a.domain)
+            if t == "local":
+                local += 1
+            else:
+                central += 1
+
+    # --- EXACT FORMAT START ---
+    lines = []
+    lines.append(f"[{report_date} 농산물 뉴스 Brief]")
+    lines.append("")
+    lines.append("")
+    lines.append(f"기사 : 총 {total}건 (중앙 {central}건, 지방 {local}건)")
+    lines.append("")
+    lines.append(f"- 품목 {per.get('supply',0)} · 정책 {per.get('policy',0)} · 방제 {per.get('pest',0)} · 유통 {per.get('dist',0)}")
+    lines.append("")
+    lines.append("")
+    lines.append("오늘의 체크포인트")
+    lines.append("")
+    lines.append("")
+
+    section_num = 0
+    for key in KAKAO_MESSAGE_SECTION_ORDER:
+        conf = _get_section_conf(key)
+        if not conf:
+            continue
+        section_num += 1
+
+        lines.append(f"{section_num}) {conf['title']}")
+        lines.append("")
+        lines.append("")
+
+        items = by_section.get(key, [])[:2]
+        if not items:
+            lines.append("   - (기사 없음)")
+            lines.append("")
+            lines.append("")
+            continue
+
+        for a in items:
+            lines.append(f"   - ({a.press}) {a.title}")
+            lines.append("")
+            lines.append("")
+
+    lines.append("👉 '브리핑 열기'에서 섹션별 기사를 확인하세요.")
+    # --- EXACT FORMAT END ---
+
+    return "\n".join(lines)
+
+
 # -----------------------------
 # Kakao API
 # -----------------------------
@@ -948,6 +1110,11 @@ def kakao_refresh_access_token() -> str:
 
 def kakao_send_to_me(text: str, web_url: str):
     access_token = kakao_refresh_access_token()
+
+    # Safety: never allow gist/raw
+    if "gist.github.com" in web_url or "raw.githubusercontent.com" in web_url:
+        raise RuntimeError(f"[FATAL] Kakao web_url points to gist/raw: {web_url}")
+
     url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
     headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -964,14 +1131,6 @@ def kakao_send_to_me(text: str, web_url: str):
         r.raise_for_status()
     return r.json()
 
-def pick_kakao_highlights(by_section: dict, k: int = 3):
-    picks = []
-    for sec in SECTIONS:
-        lst = by_section.get(sec["key"], [])
-        if lst:
-            picks.append(lst[0])
-    picks.sort(key=lambda a: a.score, reverse=True)
-    return picks[:k]
 
 # -----------------------------
 # Window calculation
@@ -981,7 +1140,6 @@ def compute_end_kst():
         d = datetime.strptime(FORCE_REPORT_DATE, "%Y-%m-%d").date()
         return dt_kst(d, REPORT_HOUR_KST)
 
-    # ✅ TEST: end time = now
     if FORCE_END_NOW:
         return now_kst()
 
@@ -1013,6 +1171,7 @@ def compute_window(repo: str, token: str, end_kst: datetime):
 
     return start, end_kst
 
+
 # -----------------------------
 # Main
 # -----------------------------
@@ -1029,7 +1188,7 @@ def main():
     repo = DEFAULT_REPO
     end_kst = compute_end_kst()
 
-    # ✅ Skip if not business day (unless forced)
+    # Skip if not business day (unless forced)
     is_bd = is_business_day_kr(end_kst.date())
     if (not FORCE_RUN_ANYDAY) and (not is_bd):
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
@@ -1042,71 +1201,52 @@ def main():
 
     report_date = end_kst.date().isoformat()
 
-    base_url = os.getenv("PAGES_BASE_URL", "").strip()
-    if not base_url:
-        owner, name = repo.split("/", 1)
-        base_url = f"https://{owner.lower()}.github.io/{name}"
+    base_url = get_pages_base_url(repo)
     base_url = base_url.rstrip("/")
-
     daily_url = f"{base_url}/archive/{report_date}.html"
 
+    # Safety: never allow gist/raw
+    if "gist.github.com" in daily_url or "raw.githubusercontent.com" in daily_url:
+        raise RuntimeError(f"[FATAL] daily_url is wrong (gist/raw): {daily_url}")
+
+    # Collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
     by_section = fill_summaries(by_section)
 
+    # Render pages
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, base_url)
 
     manifest, msha = load_archive_manifest(repo, GH_TOKEN)
     manifest = _normalize_manifest(manifest)
-
     dates = set(manifest.get("dates", []))
     dates.add(report_date)
     manifest["dates"] = sorted(list(dates))
 
     index_html = render_index_page(manifest, base_url)
 
+    # Write daily page
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
     _raw_old, sha_old = github_get_file(repo, daily_path, GH_TOKEN, ref="main")
     github_put_file(repo, daily_path, daily_html, GH_TOKEN, f"Add daily brief {report_date}", sha=sha_old, branch="main")
 
+    # Write index
     _raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
+    # Save manifest/state
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
     save_state(repo, GH_TOKEN, end_kst)
 
-    c_map = {}
-    total = 0
-    for sec in SECTIONS:
-        n = len(by_section.get(sec["key"], []))
-        total += n
-        c_map[sec["key"]] = n
+    # Kakao message (exact format)
+    kakao_text = build_kakao_message(report_date, by_section)
 
-    line_counts = f"- 기사(총 {total}건) : 품목 {c_map.get('supply',0)} · 정책 {c_map.get('policy',0)} · 방제 {c_map.get('pest',0)} · 유통 {c_map.get('dist',0)}"
-
-    highlights = pick_kakao_highlights(by_section, k=3)
-    hl_lines = []
-    for i, a in enumerate(highlights, 1):
-        sec_title = section_conf(a.section)["title"]
-        one = a.summary.splitlines()[0].strip() if a.summary else a.title
-        if len(one) > 70:
-            one = one[:70].rstrip() + "…"
-        hl_lines.append(f"{i}) ({sec_title}) {a.press} | {a.title}")
-        hl_lines.append(f"   - {one}")
-
-    title = f"[{report_date} 농산물 뉴스 Brief]"
-    body = [title, "", line_counts, ""]
-    if hl_lines:
-        body.append("오늘의 체크포인트")
-        body.extend(hl_lines)
-        body.append("")
-    body.append("👉 '브리핑 열기'에서 섹션별 요약/원문을 확인하세요.")
-
+    # Optional: include URL in text (default false)
     if KAKAO_INCLUDE_LINK_IN_TEXT:
-        body.append(daily_url)
+        kakao_text = kakao_text + "\n\n" + daily_url
 
-    kakao_text = "\n".join(body)
     kakao_send_to_me(kakao_text, daily_url)
     log.info("[OK] Kakao message sent. URL=%s", daily_url)
+
 
 if __name__ == "__main__":
     main()
