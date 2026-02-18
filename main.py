@@ -62,7 +62,7 @@ SESSION = requests.Session()
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
-MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
+MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
 
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
@@ -416,6 +416,60 @@ def korea_context_score(text: str) -> int:
 def global_retail_protest_penalty(text: str) -> int:
     return count_any(text.lower(), GLOBAL_RETAIL_PROTEST_HINTS)
 
+# -----------------------------
+# Section signal weights (원예수급 핵심성 가중치)
+# - '키워드 강도'를 단순 카운트가 아니라 가중치 합으로 반영
+# -----------------------------
+def weighted_hits(text: str, weight_map: dict[str, float]) -> float:
+    return sum(w for k, w in weight_map.items() if k in text)
+
+_NUMERIC_HINT_RE = re.compile(r"\d")
+_UNIT_HINT_RE = re.compile(r"(kg|톤|t\b|%|억원|만원|원|달러)")
+
+SUPPLY_WEIGHT_MAP = {
+    # 수급/가격 핵심
+    '수급': 4.0, '가격': 4.0, '시세': 3.5, '경락가': 3.5, '도매가격': 3.0, '소매가격': 3.0,
+    # 생산/출하/재고
+    '작황': 3.0, '생산': 2.5, '생산량': 3.0, '출하': 3.0, '물량': 2.5, '반입': 2.0,
+    '재고': 3.0, '저장': 2.5, 'ca저장': 2.5,
+    # 변동성/리스크
+    '급등': 2.5, '폭등': 2.5, '급락': 2.0, '하락': 1.5, '대란': 2.0, '비상': 2.0,
+    '전망': 1.2, '동향': 1.0, '평년': 1.0, '전년': 1.0, '대비': 0.8,
+}
+
+DIST_WEIGHT_MAP = {
+    '가락시장': 3.5, '도매시장': 3.0, '공판장': 2.8, '경락': 2.8, '경매': 2.5, '청과': 1.5,
+    '반입': 2.2, '중도매인': 2.0, '시장도매인': 2.0, '물류': 2.0, '유통센터': 1.5,
+    'apc': 2.0, '선별': 1.8, '저온': 1.2, '저장': 1.2, '원산지': 2.0, '부정유통': 2.0,
+}
+
+POLICY_WEIGHT_MAP = {
+    '대책': 3.0, '지원': 2.8, '할인지원': 3.0, '할당관세': 3.0, '검역': 2.5, '단속': 2.3,
+    '고시': 2.0, '개정': 2.0, '발표': 1.8, '추진': 1.8, '확대': 1.3, '연장': 1.3,
+    '예산': 1.8, '브리핑': 2.0, '보도자료': 1.8,
+}
+
+PEST_WEIGHT_MAP = {
+    '병해충': 3.5, '방제': 3.0, '예찰': 2.5, '농약': 2.3, '살포': 2.0,
+    '과수화상병': 4.0, '탄저병': 3.0, '역병': 2.8, '노균병': 2.8, '흰가루병': 2.8,
+    '진딧물': 2.5, '응애': 2.3, '노린재': 2.3, '총채벌레': 2.3,
+    '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
+}
+
+SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출하','재고','저장','물량')
+DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지')
+POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료')
+PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
+
+def title_signal_bonus(title: str) -> float:
+    t = (title or '').lower()
+    bonus = 0.0
+    if _NUMERIC_HINT_RE.search(t):
+        bonus += 0.8
+    if _UNIT_HINT_RE.search(t):
+        bonus += 0.8
+    return bonus
+
 
 # -----------------------------
 # Dedupe index
@@ -616,6 +670,95 @@ def press_priority(press: str, domain: str) -> int:
         return 1
 
     return 1
+
+# -----------------------------
+# Press tier/weight (정밀 가중치)
+# - press_priority는 정렬용(3/2/1)로 유지하되, 스코어에는 더 세밀한 press_weight를 반영
+# -----------------------------
+# 최상위: 공식 정책/기관 (농식품부, 정책브리핑, aT, 농관원, KREI 등)
+OFFICIAL_HOSTS = {
+    'korea.kr', 'mafra.go.kr', 'at.or.kr', 'naqs.go.kr', 'krei.re.kr',
+    # 참고용(정책/통계):
+    'kostat.go.kr', 'customs.go.kr', 'moef.go.kr', 'kma.go.kr',
+}
+
+# 최상위 언론(중앙지/일간지/경제지/통신) + 방송 + 농민신문
+MAJOR_PRESS = {
+    '연합뉴스', '뉴스1', '뉴시스',
+    '중앙일보', '동아일보', '조선일보', '한겨레', '경향신문', '국민일보', '서울신문',
+    '매일경제', '머니투데이', '서울경제', '한국경제', '파이낸셜뉴스', '이데일리', '아시아경제', '헤럴드경제',
+    'KBS', 'MBC', 'SBS', 'YTN', 'JTBC', 'MBN',
+    # 종편/보도채널 (필요시 매핑 확대)
+    'TV조선', '채널A', '연합뉴스TV', 'OBS',
+    '농민신문',
+}
+
+# 중간: 농업 전문지/지방/중소/연구·지자체
+MID_PRESS_HINTS = (
+    '농업', '팜', '축산', '유통', '식품', '경남', '전북', '전남', '충북', '충남', '강원', '제주',
+)
+
+LOW_QUALITY_PRESS = {
+    # 지나치게 가십/클릭 유도 성향이 강한 경우(필요 시 추가)
+    # '포인트데일리',
+}
+
+def press_tier(press: str, domain: str) -> int:
+    """
+    4: 공식 정책/기관(농식품부, 정책브리핑 등)
+    3: 중앙지/일간지/경제지/통신 + 방송 + 농민신문
+    2: 중소/지방/전문지/지자체·연구기관
+    1: 그 외(인터넷/UGC/기타)
+    """
+    p = (press or '').strip()
+    d = normalize_host(domain or '')
+    d = (d or '').lower()
+
+    # UGC/커뮤니티/블로그는 최하
+    if any(h in d for h in _UGC_HOST_HINTS):
+        return 1
+
+    # 공식(정책/기관) 우선
+    if d in OFFICIAL_HOSTS or any(d.endswith('.' + h) for h in OFFICIAL_HOSTS):
+        return 4
+    if p in ('농식품부', '정책브리핑', 'aT', '농관원', 'KREI'):
+        return 4
+
+    # 주요 언론
+    if p in MAJOR_PRESS:
+        return 3
+
+    # 지자체/연구기관(.go.kr/.re.kr) 및 중간 티어 힌트
+    if d.endswith('.go.kr') or d.endswith('.re.kr') or d in ALLOWED_GO_KR:
+        return 2
+    if p in MID_TIER_PRESS:
+        return 2
+    if p and (re.search(r'(일보|신문)$', p) or ('방송' in p and p not in MAJOR_PRESS)):
+        return 2
+    if any(h in p for h in MID_PRESS_HINTS):
+        return 2
+
+    return 1
+
+def press_weight(press: str, domain: str) -> float:
+    """스코어 가중치(정밀)."""
+    t = press_tier(press, domain)
+    # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
+    w = {4: 12.5, 3: 9.5, 2: 4.0, 1: 0.0}.get(t, 0.0)
+    p = (press or '').strip()
+    d = (domain or '').lower()
+    # 통신/공식은 기사 생산량이 많아도 핵심성 높음: 약간 추가
+    if p == '연합뉴스':
+        w += 0.8
+    if d in ('korea.kr', 'mafra.go.kr'):
+        w += 1.0
+    if p in LOW_QUALITY_PRESS:
+        w -= 2.0
+    # UGC 계열은 감점
+    if any(h in d for h in _UGC_HOST_HINTS):
+        w -= 3.0
+    return w
+
 def _sort_key_major_first(a: Article):
     return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
 
@@ -908,6 +1051,8 @@ PEST_OFFTOPIC_TERMS = [
     "코로나", "독감", "감염병", "방역", "방역당국", "모기", "진드기", "말라리아", "뎅기",
     # 생활 해충/건물 해충
     "바퀴", "흰개미", "개미",
+    "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
+    "학교", "어린이집", "환자", "감염",
 ]
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷)."""
@@ -941,17 +1086,27 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
             return False
 
     # 병해충/방제 섹션 정교화: 농업 맥락 없는 "방역/생활해충" 오탐을 강하게 제거
+    # 병해충/방제 섹션 정교화: 농업 맥락 없는 "방역/생활해충" 오탐을 강하게 제거
     if section_conf["key"] == "pest":
         # (A) 농업 맥락 단어가 최소 1개는 있어야 함
-        if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
+        agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
+        if agri_ctx_hits < 1:
             return False
-        # (B) 병해충/방제 핵심 단어(또는 냉해/동해 등 과수 피해) 중 하나는 있어야 함
-        strict_hit = has_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        weather_hit = has_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
-        if not strict_hit and not weather_hit:
+        # (B) 병해충/방제 핵심 단어(또는 냉해/동해 등 과수 피해) 히트 수
+        strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
+        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        # 최소 2개 신호(병해충/방제 조합 또는 기상피해 조합) 필요
+        if (strict_hits + weather_hits) < 2:
             return False
-        # (C) 사람/도시 방역성 기사 차단(단, 농작물 맥락이 강하면 일부 허용)
-        if has_any(text, [t.lower() for t in PEST_OFFTOPIC_TERMS]) and count_any(text, [t.lower() for t in ["농작물","과수","과원","재배","농가"]]) == 0:
+        # (C) 사람/도시 방역성 기사 차단: 오탐 키워드가 있으면 더 강한 조건을 요구
+        off_hits = count_any(text, [t.lower() for t in PEST_OFFTOPIC_TERMS])
+        if off_hits:
+            # 도시/보건 방역성 단어가 섞인 경우: 농업 맥락이 더 강하고(strict>=2)일 때만 허용
+            if agri_ctx_hits < 2 or strict_hits < 2:
+                return False
+        # (D) 제목에 핵심 단어가 전혀 없으면(본문만 살짝 언급) 품질이 낮을 수 있어 감점/컷 보조
+        title_hits = count_any((title or "").lower(), [t.lower() for t in PEST_TITLE_CORE_TERMS])
+        if title_hits == 0 and strict_hits < 3:
             return False
 
     # 섹션별 키워드 강도(낚시성/약한 기사 컷)
@@ -968,29 +1123,51 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
 
 def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
     text = (title + " " + desc).lower()
+    title_l = (title or "").lower()
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
     offp = off_topic_penalty(text)
     retail_pen = global_retail_protest_penalty(text)
 
     score = 0.0
-    score += strength * 2.2
-    score += korea * 0.9
-    score -= offp * 2.8
+    # 1) 기본 농업/원예 수급 신호
+    score += strength * 2.0
+    score += korea * 0.7
+    score -= offp * 3.0
     score -= retail_pen * 2.0
 
-    pr = press_priority(press, dom)
-    if pr == 3:
-        score += 10.0
-    elif pr == 2:
-        score += 4.5
+    # 2) 섹션별 핵심 신호 가중치(원예수급 정밀화)
+    skey = section_conf["key"]
+    if skey == "supply":
+        score += weighted_hits(text, SUPPLY_WEIGHT_MAP) * 0.9
+        # 제목에 '수급/가격/작황' 같은 핵심어가 직접 있으면 더 강하게
+        score += count_any(title_l, [t for t in SUPPLY_TITLE_CORE_TERMS]) * 1.1
+        score += title_signal_bonus(title)
+    elif skey == "dist":
+        score += weighted_hits(text, DIST_WEIGHT_MAP) * 0.95
+        score += count_any(title_l, [t for t in DIST_TITLE_CORE_TERMS]) * 1.0
+        score += title_signal_bonus(title) * 0.6
+    elif skey == "policy":
+        score += weighted_hits(text, POLICY_WEIGHT_MAP) * 0.95
+        score += count_any(title_l, [t for t in POLICY_TITLE_CORE_TERMS]) * 1.0
+        # 공식 소스 보너스(정책브리핑/농식품부 등)
+        if normalize_host(dom) in ("korea.kr", "mafra.go.kr") or (press or "") in ("정책브리핑", "농식품부"):
+            score += 4.0
+    elif skey == "pest":
+        score += weighted_hits(text, PEST_WEIGHT_MAP) * 0.95
+        score += count_any(title_l, [t for t in PEST_TITLE_CORE_TERMS]) * 1.1
+        score += title_signal_bonus(title) * 0.5
 
-    # 정책 섹션: 지방 단신 감점
-    if section_conf["key"] == "policy" and _LOCAL_GEO_PATTERN.search(title) and pr < 2:
+    # 3) 언론/출처 가중치(가장 중요한 축)
+    score += press_weight(press, dom)
+
+    # 정책 섹션: 지방 단신 감점(주요 매체면 완화)
+    pr = press_priority(press, dom)
+    if skey == "policy" and _LOCAL_GEO_PATTERN.search(title) and pr < 2:
         score -= 5.0
 
     # ✅ (6) 유통(dist): '현장/유통'과 무관한 인물·역사·문화성 기사(예: 제주 4.3 등) 상단 배치 방지
-    if section_conf["key"] == "dist":
+    if skey == "dist":
         dist_strong_terms = [
             "가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "반입", "반출",
             "중도매인", "시장도매인", "유통센터", "물류", "창고",
@@ -1007,7 +1184,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         strong_hits = sum(1 for t in dist_strong_terms if t in text)
         noise_hits = sum(1 for t in dist_noise_terms if t in text)
 
-        # 핵심 유통 인프라/현장 단어가 없으면 상단 노출을 억제
         if strong_hits >= 2:
             score += 2.5
         elif strong_hits == 1:
@@ -1015,25 +1191,24 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         else:
             score -= 2.5
 
-        # 문화/역사성 단어가 섞이고(노이즈), 유통 핵심 단어가 없으면 추가 감점
         if noise_hits and strong_hits == 0:
             score -= 6.0 + (noise_hits * 1.5)
 
-    # 최신성(24시간 내 가산)
+    # 4) 최신성(24시간 내 가산) - 너무 과도하지 않게
     age_hours = max(0.0, (datetime.now(tz=KST) - pub_dt_kst).total_seconds() / 3600.0)
-    score += max(0.0, 24.0 - min(age_hours, 24.0)) * 0.06
+    score += max(0.0, 24.0 - min(age_hours, 24.0)) * 0.05
 
-    # 섹션 must-term이 제목에 직접 들어가면 약간 가산
+    # 5) 섹션 must-term이 제목에 직접 들어가면 약간 가산
     for t in section_conf["must_terms"]:
-        if t.lower() in title.lower():
-            score += 0.7
+        if t.lower() in title_l:
+            score += 0.8
 
-    # 정책 섹션: 농식품부/정책브리핑 가산
-    if section_conf["key"] == "policy":
-        if "농식품부" in title or dom == "mafra.go.kr":
-            score += 3.0
-        if "정책브리핑" in title or dom == "korea.kr":
-            score += 1.5
+    # 6) 정책 섹션: 농식품부/정책브리핑 가산(중복 방지 위해 약하게)
+    if skey == "policy":
+        if "농식품부" in title or normalize_host(dom) == "mafra.go.kr":
+            score += 1.8
+        if "정책브리핑" in title or normalize_host(dom) == "korea.kr":
+            score += 1.0
 
     return score
 
@@ -1058,7 +1233,7 @@ def _dynamic_threshold(candidates: list[Article], section_key: str) -> float:
     if not candidates:
         return 10**9
     best = max(a.score for a in candidates)
-    return max(BASE_MIN_SCORE.get(section_key, 6.5), best - 8.0)
+    return max(BASE_MIN_SCORE.get(section_key, 6.5), best - 12.0)
 
 
 
