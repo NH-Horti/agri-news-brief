@@ -1,133 +1,35 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>농산물 뉴스 브리핑</title>
-<style>
-  :root {
-    --bg:#f6f7f9; --card:#fff; --line:#e5e7eb; --text:#111827; --muted:#6b7280;
-    --bar:#111827;
-  }
-  html{scroll-behavior:smooth;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  .wrap{max-width:980px;margin:0 auto;padding:14px;}
-  .header{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
-  .toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-  .h1{font-size:18px;font-weight:900;margin:0 0 6px;}
-  .sub{color:var(--muted);font-size:13px;line-height:1.35;}
-  .linkrow a{font-size:12px;color:#111;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 10px;display:inline-block;background:#fff;}
-  .chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{font-size:12px;color:#111;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:800;}
-  .chip:active{transform:scale(.99);}
-  .section{margin-top:14px;border-top:3px solid var(--bar);padding-top:10px;}
-  .secbar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(0,0,0,.03);}
-  h2{font-size:16px;margin:0;display:flex;justify-content:space-between;align-items:center;}
-  .count{color:var(--muted);font-weight:700;}
-  .empty{color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:10px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.03);}
-  .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-  .press{font-weight:900;font-size:13px;}
-  .time{color:var(--muted);font-size:12px;}
-  .title{font-size:15px;font-weight:900;line-height:1.35;margin:4px 0 8px;}
-  .summary{font-size:14px;line-height:1.55;color:#111;margin:0 0 8px;}
-  .point{font-size:13px;line-height:1.45;color:#0f172a;background:#f3f4f6;border-radius:10px;padding:8px 10px;margin:6px 0 10px;}
-  .btn{display:inline-block;text-decoration:none;font-weight:900;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
-  .footer{color:var(--muted);font-size:12px;margin:18px 4px 8px;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>농산물 뉴스 브리핑</title>
+  <style>
+    body{margin:0;background:#0b1220;color:#e5e7eb;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+    h1{margin:0;font-size:22px}
+    .sub{color:#94a3b8;margin-top:8px;font-size:13px}
+    .btn{display:inline-block;margin-top:14px;text-decoration:none;color:#e5e7eb;border:1px solid #1f2937;
+         padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.03)}
+    .panel{margin-top:18px;border:1px solid #1f2937;border-radius:16px;background:rgba(255,255,255,0.02);padding:14px}
+    ul{margin:10px 0 0 18px}
+    a{color:#cbd5e1}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <div class="toprow">
-      <div>
-        <div class="h1">농산물 뉴스 브리핑</div>
-        <div class="sub">기간: 2026-02-17 07:00 ~ 2026-02-18 07:00 (KST) · 총 9건<br></div>
-      </div>
-      <div class="linkrow">
-        <a href="https://hongtaehwa.github.io/agri-news-brief/archive/">아카이브 목록</a>
-      </div>
-    </div>
-    <div class="chips">
-      <a class="chip" href="#sec-supply">품목 및 수급 동향 7건</a><a class="chip" href="#sec-policy">주요 이슈 및 정책 0건</a><a class="chip" href="#sec-pest">병해충 및 방제 1건</a><a class="chip" href="#sec-dist">유통 및 현장(APC/수출) 1건</a>
+  <div class="wrap">
+    <h1>농산물 뉴스 브리핑</h1>
+    <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다.</div>
+
+    <a class="btn" href="https://nh-horti.github.io/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">최신 브리핑 열기</a>
+
+    <div class="panel">
+      <div style="font-weight:700;margin-bottom:6px;">날짜별 아카이브</div>
+      <ul>
+        <li><a href="https://nh-horti.github.io/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</a></li>
+<li><a href="https://nh-horti.github.io/agri-news-brief/archive/2026-02-18.html">2026-02-18</a></li>
+      </ul>
     </div>
   </div>
-
-  <div class="section" id="sec-supply"><div class="secbar"><h2>품목 및 수급 동향 <span class="count">(7)</span></h2></div>
-        <div class="card">
-          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 17:01</span></div>
-          <div class="title">“더운 베트남서 딸기 생산?”…농업판 뒤집은 ‘AI 농부’ 정체</div>
-          <div class="summary">고품질 딸기를 생산해낸다. 박 대표는 “베트남 중산층은 소득 수준이 높아지며 고품질 먹거리를 찾지만 현지 공급망은 이를 따라가지 못하는 ‘수급 불균형’ 상태”라며 “수입산에 의존하던 프리미엄 농산물을...</div>
-          
-          <a class="btn" href="https://www.mk.co.kr/article/11962429" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 09:00</span></div>
-          <div class="title">설 성수품 가격에 소비자 울상…&#x27;장관급 물가관리 TF&#x27; 시험대</div>
-          <div class="summary">한국농수산식품유통공사(aT) 농산물유통정보(KAMIS)에 따르면 지난 13일 기준 사과(후지·상급) 10개 가격은... 점검은 ▲불공정거래 ▲정책지원 부정수급 ▲유통구조 등 3개 분야로 추진된다. 공정위 부위원장이 주도하는...</div>
-          
-          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514058" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 07:08</span></div>
-          <div class="title">어떤 기업 눈길 끄나…농우바이오·팜한농 대기업 ‘열일’ [스페셜리포...</div>
-          <div class="summary">첫 출하 이후 단기간에 이룬 쾌거라 평가받는다. 현재 주력 제품 ‘홍희’와 ‘골드베리’는 미국·중동 등지에서 호평받으며 연간 20만달러 로열티를 거둔다. 딸기 단일 품목으로는 업계 최고 수준이다. 헤테로는...</div>
-          
-          <a class="btn" href="https://www.mk.co.kr/article/11962443" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 07:07</span></div>
-          <div class="title">농업의 반도체 ‘K종자 산업’을 아십니까 [스페셜리포트]</div>
-          <div class="summary">한국 딸기 전 세계 수출 규모는 6753만달러(약 971억원)를 기록했다. 5년 전보다 47%나 급증해 한국 농산물... 종자는 농산물 수확량, 맛, 병해충 저항성 등 핵심 품질을 결정한다. 기후 위기와 국제 분쟁으로 식량 수급...</div>
-          
-          <a class="btn" href="https://www.mk.co.kr/article/11962441" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">newscj.com</span><span class="time">02/18 01:02</span></div>
-          <div class="title">설 성수품 원산지 허위표시 7782건… 돼지고기 3700건 최다</div>
-          <div class="summary">높은 사과 배 소고기 돼지고기 등 16개 품목의 원산지 부정 유통 적발 건수는 7782건으로 집계됐다.... 온라인 구매 시에는 상품 정보와 판매자 정보를 점검하고 시세보다 지나치게 낮은 가격은 한 번 더 살펴볼 필요가...</div>
-          
-          <a class="btn" href="https://www.newscj.com/news/articleView.html?idxno=3375926" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">news.tvchosun.com</span><span class="time">02/17 15:04</span></div>
-          <div class="title">&#x27;물가와의 전쟁&#x27;, 경제부총리가 직접 TF 꾸린다는데…</div>
-          <div class="summary">한국농수산식품유통공사(aT) 농산물유통정보(KAMIS)에 따르면 같은 날 기준 사과(후지·상급) 10개 가격은... 점검 분야는 ▲불공정거래 ▲정책지원 부정수급 ▲유통구조 등 세 갈래다. 공정위 부위원장이 주도하는...</div>
-          
-          <a class="btn" href="https://news.tvchosun.com/site/data/html_dir/2026/02/17/2026021790087.html" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">allurekorea.com</span><span class="time">02/17 08:02</span></div>
-          <div class="title">프랑스의 햄튼으로 불리는 ‘캅 페레’ 여기 어때?</div>
-          <div class="summary">직접 양식한 굴을 제공하며, 굴 6개를 9파운드도 안 되는 가격에 맛볼 수 있고, 로제와인 한 잔 역시 약... 캅 페레 시장(Cap Ferret Market) 레주 캅 페레(Lege-Cap-Ferret)의 전통시장에서는 신선한 현지 농산물을 판매한다. 약...</div>
-          
-          <a class="btn" href="https://www.allurekorea.com/2026/02/17/%ed%94%84%eb%9e%91%ec%8a%a4%ec%9d%98-%ed%96%84%ed%8a%bc%ec%9c%bc%eb%a1%9c-%eb%b6%88%eb%a6%ac%eb%8a%94-%ec%ba%85-%ed%8e%98%eb%a0%88-%ec%97%ac%ea%b8%b0-%ec%96%b4%eb%95%8c/?utm_source=naver&amp;utm_medium=partnership" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div><div class="section" id="sec-policy"><div class="secbar"><h2>주요 이슈 및 정책 <span class="count">(0)</span></h2></div><div class="empty">특이사항 없음</div></div><div class="section" id="sec-pest"><div class="secbar"><h2>병해충 및 방제 <span class="count">(1)</span></h2></div>
-        <div class="card">
-          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 11:32</span></div>
-          <div class="title">정읍, 사과·배 등 4종 농작물재해보험 90% 지원</div>
-          <div class="summary">전북 정읍시는 사과, 배, 단감, 떫은감 등 과수 4종 재배농가를 대상으로 3월6일까지 ‘2026년 농작물재해보험’ 가입 신청을 접수한다고 17일 밝혔다. 농작물재해보험은 태풍, 홍수, 가뭄 등 자연재해와 병해충 등으로...</div>
-          
-          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514184" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div><div class="section" id="sec-dist"><div class="secbar"><h2>유통 및 현장(APC/수출) <span class="count">(1)</span></h2></div>
-        <div class="card">
-          <div class="meta"><span class="press">MBN</span><span class="time">02/17 19:46</span></div>
-          <div class="title">진격의 K-포도…딸기 제치고 &#x27;수출 과일 1위&#x27;</div>
-          <div class="summary">지난해엔 포도가 딸기를 제치고 수출 과일 1위 자리를 꿰찼습니다. 수확 철이 아닌데도 포도 수출 주문이... 새 수출액이 4배나 늘었습니다. ▶ 인터뷰 : 강효주 / 농림축산식품부 농식품수출진흥과장 - &quot;2년 전부터 저희가...</div>
-          
-          <a class="btn" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176292" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div>
-
-  <div class="footer">* 휴일/주말에는 발송을 스킵하고 state가 갱신되지 않아, 다음 영업일에 누적 구간이 자동 확장됩니다(중복 URL은 1회만 반영).</div>
-</div>
 </body>
 </html>
