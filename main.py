@@ -41,6 +41,9 @@ from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+import random
+import threading
 
 
 # -----------------------------
@@ -58,8 +61,8 @@ SESSION = requests.Session()
 # Config
 # -----------------------------
 KST = timezone(timedelta(hours=9))
-REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", "7"))
-MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", "5"))  # 표시 상한(핵심2 + 추가기사)
+REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
+MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
@@ -71,6 +74,27 @@ GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
 
 NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID", "").strip()
 NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET", "").strip()
+
+# -----------------------------
+# Naver rate limit / retry
+# -----------------------------
+NAVER_MIN_INTERVAL_SEC = float(os.getenv("NAVER_MIN_INTERVAL_SEC", "0.35"))  # 최소 호출 간격(초)
+NAVER_MAX_RETRIES = int(os.getenv("NAVER_MAX_RETRIES", "6"))
+NAVER_BACKOFF_MAX_SEC = float(os.getenv("NAVER_BACKOFF_MAX_SEC", "20"))
+NAVER_MAX_WORKERS = int(os.getenv("NAVER_MAX_WORKERS", "2"))  # 동시 요청 수(속도제한 회피용)
+
+_NAVER_LOCK = threading.Lock()
+_NAVER_LAST_CALL = 0.0
+
+def _naver_throttle():
+    """전역 최소 간격을 보장(멀티스레드 안전)."""
+    global _NAVER_LAST_CALL
+    with _NAVER_LOCK:
+        now = time.monotonic()
+        wait = NAVER_MIN_INTERVAL_SEC - (now - _NAVER_LAST_CALL)
+        if wait > 0:
+            time.sleep(wait)
+        _NAVER_LAST_CALL = time.monotonic()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.2").strip()
@@ -761,16 +785,68 @@ def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
 # Naver News search
 # -----------------------------
 def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str = "date"):
+    """Naver News 검색 (429 속도제한 대응: throttle + retry + backoff).
+    - 429/에러코드 012는 일정 시간 대기 후 재시도
+    - 계속 실패하면 빈 결과(items=[])로 반환해 전체 파이프라인이 죽지 않게 함
+    """
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
     params = {"query": query, "display": display, "start": start, "sort": sort}
-    r = SESSION.get(url, headers=headers, params=params, timeout=25)
-    if not r.ok:
-        log.error("[NAVER ERROR] %s", r.text)
-        r.raise_for_status()
-    return r.json()
+
+    last_err = None
+    for attempt in range(max(1, NAVER_MAX_RETRIES)):
+        try:
+            _naver_throttle()
+            r = SESSION.get(url, headers=headers, params=params, timeout=25)
+
+            # JSON 파싱 시도 (에러 본문에 errorCode가 오는 경우 대응)
+            data = None
+            try:
+                data = r.json()
+            except Exception:
+                data = None
+
+            # 속도 제한(429) 또는 Naver 에러코드 012
+            is_rate = (r.status_code == 429) or (isinstance(data, dict) and str(data.get("errorCode", "")) == "012")
+
+            if r.ok and not is_rate:
+                return data if isinstance(data, dict) else {"items": []}
+
+            if is_rate:
+                # Retry-After 헤더가 있으면 우선 사용
+                ra = 0.0
+                try:
+                    ra = float(r.headers.get("Retry-After", "0") or 0)
+                except Exception:
+                    ra = 0.0
+                backoff = ra if ra > 0 else min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+                msg = None
+                if isinstance(data, dict):
+                    msg = data.get("errorMessage") or data.get("message")
+                log.warning("[NAVER] rate-limited (attempt %d/%d). sleep %.1fs. %s", attempt+1, NAVER_MAX_RETRIES, backoff, (msg or ""))
+                time.sleep(backoff)
+                continue
+
+            # 그 외 오류는 즉시 raise (호출부에서 처리)
+            if not r.ok:
+                log.error("[NAVER ERROR] %s", r.text)
+                r.raise_for_status()
+
+            # r.ok인데도 error 구조가 이상한 경우
+            return {"items": []}
+
+        except Exception as e:
+            last_err = e
+            # 네트워크/일시오류는 backoff 후 재시도
+            backoff = min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[NAVER] transient error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, NAVER_MAX_RETRIES, e, backoff)
+            time.sleep(backoff)
+
+    # 모두 실패: 빈 결과로 반환 (파이프라인 유지)
+    log.error("[NAVER] giving up after retries: query=%s (last=%s)", query, last_err)
+    return {"items": []}
 
 
 # -----------------------------
@@ -902,6 +978,23 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     return score
 
+
+# -----------------------------
+# Selection thresholds (섹션별 최소 점수)
+# - 동적 threshold(best-8)와 함께 사용
+# - 값이 높을수록 '정말 핵심'만 남김
+# -----------------------------
+BASE_MIN_SCORE = {
+    # 품목/수급
+    "supply": 7.0,
+    # 정책/제도(공식기관 우선)
+    "policy": 7.0,
+    # 유통/현장(시장·유통 인프라 중심)
+    "dist": 7.0,
+    # 병해충/방제(지방 이슈가 많아 상대적으로 완화)
+    "pest": 6.0,
+}
+
 def _dynamic_threshold(candidates: list[Article], section_key: str) -> float:
     if not candidates:
         return 10**9
@@ -1014,7 +1107,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     def fetch(q: str):
         return q, naver_news_search(q, display=50, start=1, sort="date")
 
-    max_workers = min(6, max(1, len(queries)))
+    max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
     futures = []
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         for q in queries:
