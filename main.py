@@ -18,6 +18,15 @@ agri-news-brief main.py (production)
 
 3) ( ) 안에는 링크가 아닌 '매체명'이 들어가도록 press 추출/표시 강화
 
+4) 카카오 web_url 안전장치(또 5번째 방지):
+   - web_url 비어있음/상대경로/비-http(s)면 즉시 중단
+   - host가 gist.github.com이면 즉시 중단
+   - 발송 직전 web_url을 반드시 로그로 남김
+
+5) 카톡 메시지의 (CO) 문제(언론사명 추출 버그) 수정:
+   - host 전체 매핑 우선 + .co.kr 등 2단계 TLD 처리 + 약어 치환(mk/mt 등)
+   - news.mk.co.kr 같은 서브도메인에서도 (CO) 대신 매체명이 나오도록 개선
+
 기능:
 - Naver News API 검색(섹션별 멀티 쿼리)
 - 강한 관련도 필터링(연예/여행/주식/무관 기사 차단)
@@ -66,6 +75,9 @@ from email.utils import parsedate_to_datetime
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 import requests
+
+# Reuse HTTP connections (faster)
+SESSION = requests.Session()
 
 
 # -----------------------------
@@ -288,8 +300,10 @@ def clean_text(s: str) -> str:
     return s
 
 def domain_of(url: str) -> str:
+    """Return hostname (no port), lowercased."""
     try:
-        return (urlparse(url).netloc or "").lower()
+        u = urlparse(url)
+        return (u.hostname or "").lower()
     except Exception:
         return ""
 
@@ -324,18 +338,32 @@ def count_any(text: str, words) -> int:
 
 def simplify_domain_for_press(dom: str) -> str:
     """
-    도메인밖에 모르는 경우라도 (www 제거, 너무 지저분하지 않게) 표시용 press를 만든다.
-    예: www.mbn.co.kr -> mbn
-    예: news.mt.co.kr -> mt
+    도메인 기반 fallback press 표시(버그 수정: mk.co.kr/mt.co.kr 등에서 (CO) 방지)
+    예: www.mbn.co.kr -> MBN
+    예: news.mt.co.kr -> MT -> (약어 매핑이 있으면 '머니투데이'로 치환)
     """
-    d = (dom or "").lower()
+    d = (dom or "").lower().strip()
     if not d:
-        return "알수없음"
-    d = d.replace("www.", "")
+        return "미상"
+
+    # prefix normalize
+    for pfx in ("www.", "m.", "mobile."):
+        if d.startswith(pfx):
+            d = d[len(pfx):]
+
     parts = d.split(".")
-    if len(parts) >= 2:
-        return parts[-2].upper() if len(parts[-2]) <= 5 else parts[-2]
-    return d
+    brand = d
+
+    # 2단계 TLD 처리 (co.kr 등)
+    if len(parts) >= 3 and parts[-1] == "kr" and parts[-2] in ("co", "or", "go", "ac", "re", "ne", "pe"):
+        brand = parts[-3]
+    elif len(parts) >= 2:
+        brand = parts[-2]
+
+    # 너무 긴 경우는 그대로, 짧으면 대문자
+    if len(brand) <= 5:
+        return brand.upper()
+    return brand
 
 
 # -----------------------------
@@ -383,7 +411,7 @@ def github_api_headers(token: str):
 
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
-    r = requests.get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
+    r = SESSION.get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
     if r.status_code == 404:
         return None, None
     if not r.ok:
@@ -404,7 +432,7 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
     }
     if sha:
         payload["sha"] = sha
-    r = requests.put(url, headers=github_api_headers(token), json=payload, timeout=30)
+    r = SESSION.put(url, headers=github_api_headers(token), json=payload, timeout=30)
     if not r.ok:
         log.error("[GitHub PUT ERROR] %s", r.text)
         r.raise_for_status()
@@ -468,7 +496,7 @@ def naver_news_search(query: str, display: int = 30, start: int = 1, sort: str =
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
     params = {"query": query, "display": display, "start": start, "sort": sort}
-    r = requests.get(url, headers=headers, params=params, timeout=30)
+    r = SESSION.get(url, headers=headers, params=params, timeout=30)
     if not r.ok:
         log.error("[NAVER ERROR] %s", r.text)
         r.raise_for_status()
@@ -568,48 +596,100 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
 
 
 # -----------------------------
-# Press mapping
+# Press mapping  (fix: (CO) 언론사명 버그)
 # -----------------------------
-PRESS_MAP = {
-    # national
-    "www.yna.co.kr": "연합뉴스", "yna.co.kr": "연합뉴스",
-    "www.mk.co.kr": "매일경제", "mk.co.kr": "매일경제",
-    "www.joongang.co.kr": "중앙일보", "joongang.co.kr": "중앙일보",
-    "www.chosun.com": "조선일보", "chosun.com": "조선일보",
-    "www.donga.com": "동아일보", "donga.com": "동아일보",
-    "www.hani.co.kr": "한겨레", "hani.co.kr": "한겨레",
-    "www.khan.co.kr": "경향신문", "khan.co.kr": "경향신문",
-    "www.sedaily.com": "서울경제", "sedaily.com": "서울경제",
-    "www.hankyung.com": "한국경제", "hankyung.com": "한국경제",
-    "www.asiae.co.kr": "아시아경제", "asiae.co.kr": "아시아경제",
-    "www.mt.co.kr": "머니투데이", "mt.co.kr": "머니투데이",
-    "www.edaily.co.kr": "이데일리", "edaily.co.kr": "이데일리",
-    "www.heraldcorp.com": "헤럴드경제", "heraldcorp.com": "헤럴드경제",
-    "www.fnnews.com": "파이낸셜뉴스", "fnnews.com": "파이낸셜뉴스",
-    "www.newsis.com": "뉴시스", "newsis.com": "뉴시스",
-    "www.news1.kr": "뉴스1", "news1.kr": "뉴스1",
+def normalize_host(host: str) -> str:
+    h = (host or "").lower().strip()
+    for pfx in ("www.", "m.", "mobile."):
+        if h.startswith(pfx):
+            h = h[len(pfx):]
+    return h
 
-    # broadcast / mid-tier
-    "www.mbn.co.kr": "MBN", "mbn.co.kr": "MBN",
-    "news.sbs.co.kr": "SBS", "www.sbs.co.kr": "SBS", "sbs.co.kr": "SBS",
-    "news.kbs.co.kr": "KBS", "www.kbs.co.kr": "KBS", "kbs.co.kr": "KBS",
-    "imnews.imbc.com": "MBC", "www.imbc.com": "MBC", "imbc.com": "MBC",
-    "www.ytn.co.kr": "YTN", "ytn.co.kr": "YTN",
-    "news.jtbc.co.kr": "JTBC", "jtbc.co.kr": "JTBC", "www.jtbc.co.kr": "JTBC",
+# 1) host 전체 기반 우선 매핑 (가장 정확)
+PRESS_HOST_MAP = {
+    # user-provided core map
+    "yna.co.kr": "연합뉴스",
+    "mk.co.kr": "매일경제",
+    "mt.co.kr": "머니투데이",
+    "fnnews.com": "파이낸셜뉴스",
+    "sedaily.com": "서울경제",
+    "hankyung.com": "한국경제",
+    "joongang.co.kr": "중앙일보",
+    "chosun.com": "조선일보",
+    "donga.com": "동아일보",
+    "hani.co.kr": "한겨레",
+    "khan.co.kr": "경향신문",
+    "kmib.co.kr": "국민일보",
+    "mbn.co.kr": "MBN",
+    "ytn.co.kr": "YTN",
+    "jtbc.co.kr": "JTBC",
+    "news1.kr": "뉴스1",
+    "newsis.com": "뉴시스",
+    "newspim.com": "뉴스핌",
+    "newscj.com": "천지일보",
+    "korea.kr": "정책브리핑",
+    "mafra.go.kr": "농식품부",
+    "at.or.kr": "aT",
+    "naqs.go.kr": "농관원",
+    "krei.re.kr": "KREI",
 
-    # policy
-    "www.korea.kr": "정책브리핑", "korea.kr": "정책브리핑",
-    "www.mafra.go.kr": "농식품부", "mafra.go.kr": "농식품부",
-    "www.at.or.kr": "aT", "at.or.kr": "aT",
-    "www.naqs.go.kr": "농관원", "naqs.go.kr": "농관원",
+    # expanded coverage (existing code)
+    "asiae.co.kr": "아시아경제",
+    "edaily.co.kr": "이데일리",
+    "heraldcorp.com": "헤럴드경제",
+    "imbc.com": "MBC",
+    "imnews.imbc.com": "MBC",
+    "kbs.co.kr": "KBS",
+    "news.kbs.co.kr": "KBS",
+    "sbs.co.kr": "SBS",
+    "news.sbs.co.kr": "SBS",
+    "news.jtbc.co.kr": "JTBC",
 }
 
-CENTRAL_PRESS_NAMES = {
+# 2) 2단계 TLD에서 brand 약어 치환 (mk/mt 등)
+ABBR_MAP = {
+    "mk": "매일경제",
+    "mt": "머니투데이",
+    "kbs": "KBS",
+    "mbc": "MBC",
+    "sbs": "SBS",
+    "ytn": "YTN",
+    "jtbc": "JTBC",
+    "mbn": "MBN",
+}
+
+def press_name_from_url(url: str) -> str:
+    host = normalize_host(domain_of(url))
+    if not host:
+        return "미상"
+
+    # 1) 직접 매핑
+    if host in PRESS_HOST_MAP:
+        return PRESS_HOST_MAP[host]
+
+    # 2) 2단계 TLD 처리 (co.kr 등)
+    parts = host.split(".")
+    if len(parts) >= 3 and parts[-1] == "kr" and parts[-2] in ("co", "or", "go", "ac", "re", "ne", "pe"):
+        brand = parts[-3]
+    elif len(parts) >= 2:
+        brand = parts[-2]
+    else:
+        brand = host
+
+    # 3) 약어 치환
+    if brand in ABBR_MAP:
+        return ABBR_MAP[brand]
+
+    # 4) 최후 fallback: 브랜드(짧으면 대문자)
+    return brand.upper() if len(brand) <= 5 else brand
+
+CENTRAL_PRESS_NAMES = set(PRESS_HOST_MAP.values()) | {
+    # 정책기관/중앙 분류 보강
     "연합뉴스", "매일경제", "중앙일보", "조선일보", "동아일보", "한겨레", "경향신문",
     "서울경제", "한국경제", "아시아경제", "머니투데이", "헤럴드경제", "이데일리",
-    "뉴시스", "뉴스1", "파이낸셜뉴스",
+    "뉴시스", "뉴스1", "파이낸셜뉴스", "뉴스핌",
     "SBS", "KBS", "MBC", "YTN", "JTBC", "MBN",
-    "정책브리핑", "농식품부", "aT", "농관원",
+    "정책브리핑", "농식품부", "aT", "농관원", "KREI",
 }
 
 def press_tier(press: str, domain: str) -> str:
@@ -652,9 +732,7 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
                 if is_blocked_domain(dom):
                     continue
 
-                press = PRESS_MAP.get(dom)
-                if not press:
-                    press = simplify_domain_for_press(dom)
+                press = press_name_from_url(origin or link)
 
                 norm_key = make_norm_key(origin, link, title)
                 if norm_key in seen_keys:
@@ -768,7 +846,7 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
     }
 
     try:
-        r = requests.post(
+        r = SESSION.post(
             "https://api.openai.com/v1/responses",
             headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
             json=payload,
@@ -1048,6 +1126,31 @@ def ensure_not_gist(url: str, label: str):
 
 
 # -----------------------------
+# Kakao web_url safety (anti "gist jump" - hard block)
+# -----------------------------
+def ensure_absolute_http_url(u: str) -> str:
+    u = (u or "").strip()
+    if not u:
+        raise RuntimeError("Kakao web_url is empty (PAGES_BASE_URL or computed URL failed).")
+    p = urlparse(u)
+    if p.scheme not in ("http", "https") or not p.netloc:
+        raise RuntimeError(f"Kakao web_url must be absolute http(s) URL. Got: {u}")
+    host = (p.hostname or "").lower()
+    if host == "gist.github.com":
+        raise RuntimeError(
+            f"Kakao web_url is pointing to gist. Fix PAGES_BASE_URL / Kakao domain settings. Got: {u}"
+        )
+    return u
+
+def log_kakao_link(url: str):
+    try:
+        p = urlparse(url)
+        print(f"[KAKAO LINK] {url}  (host={p.netloc})")
+    except Exception:
+        print(f"[KAKAO LINK] {url}")
+
+
+# -----------------------------
 # Kakao message builder (compact, press in parentheses)
 # -----------------------------
 # 카톡 메시지 섹션 순서(요청 고정): 품목 → 정책 → 유통 → 방제
@@ -1140,7 +1243,7 @@ def kakao_refresh_access_token() -> str:
     if KAKAO_CLIENT_SECRET:
         data["client_secret"] = KAKAO_CLIENT_SECRET
 
-    r = requests.post(url, data=data, timeout=30)
+    r = SESSION.post(url, data=data, timeout=30)
     if not r.ok:
         log.error("[KAKAO TOKEN ERROR] %s", r.text)
         r.raise_for_status()
@@ -1148,10 +1251,12 @@ def kakao_refresh_access_token() -> str:
     return j["access_token"]
 
 def kakao_send_to_me(text: str, web_url: str):
-    access_token = kakao_refresh_access_token()
-
-    # ✅ 코드상 web_url은 gist가 될 수 없게 한다(치명 사고 방지)
+    # ✅ 발송 직전 web_url 검증/로깅(버튼이 gist로 튀는 상황을 코드 레벨에서 차단)
+    web_url = ensure_absolute_http_url(web_url)
+    log_kakao_link(web_url)
     ensure_not_gist(web_url, "Kakao web_url")
+
+    access_token = kakao_refresh_access_token()
 
     url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -1165,7 +1270,7 @@ def kakao_send_to_me(text: str, web_url: str):
         "button_title": "브리핑 열기",
     }
 
-    r = requests.post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
+    r = SESSION.post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
     if not r.ok:
         log.error("[KAKAO SEND ERROR] %s", r.text)
         r.raise_for_status()
@@ -1296,6 +1401,9 @@ def main():
         if not parsed.scheme.startswith("http") or not parsed.netloc:
             raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
 
+    # ✅ '브리핑 열기' 링크가 gist로 튀는 상황 차단(또 5번째 방지)
+    daily_url = ensure_absolute_http_url(daily_url)
+    log_kakao_link(daily_url)
     kakao_send_to_me(kakao_text, daily_url)
     log.info("[OK] Kakao message sent. URL=%s", daily_url)
 
