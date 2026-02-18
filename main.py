@@ -460,6 +460,92 @@ PEST_WEIGHT_MAP = {
     '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
 }
 
+
+# -----------------------------
+# NH (농협) relevance boost (농협 경제지주/임직원 대상 최적화)
+# - '농협'은 범위가 넓어 무조건 가산하면 행사/금융 오탐이 늘 수 있으므로
+#   (1) 강신호(경제지주/하나로마트/농협몰 등)는 크게 가산
+#   (2) 약신호(농협 단독)는 수급/유통/정책 핵심 단어와 동시 등장할 때만 소폭 가산
+# -----------------------------
+NH_STRONG_TERMS = [
+    "농협경제지주", "경제지주", "농협유통", "하나로마트", "농협몰",
+    "농협공판장", "농협 공판장", "조합공판장",
+]
+# '농수산물 온라인도매시장'은 주체가 다양하므로, 농협 단서와 함께 나오면 강하게 가산
+NH_STRONG_COOCUR_TERMS = ["온라인도매시장", "농수산물 온라인도매시장", "온라인 도매시장"]
+
+NH_WEAK_TERMS = ["농협", "nh", "농협중앙회", "지역농협", "원예농협"]
+
+# 농협 키워드가 있어도 실무와 무관한 경우(금융/행사/동정 등)는 가산 금지(또는 간접 감점)
+NH_OFFTOPIC_TERMS = [
+    "농협은행", "nh농협은행", "nh투자증권", "농협카드", "nh카드",
+    "금융", "대출", "적금", "예금", "펀드", "보험", "주가",
+    "봉사", "기부", "후원", "시상", "축제", "행사", "동정", "간담회", "협의회", "세미나",
+]
+
+NH_COOCUR_SUPPLY = ["가격", "수급", "작황", "출하", "물량", "반입", "경락", "경락가", "도매", "재고", "저장"]
+NH_COOCUR_DIST   = ["도매시장", "가락시장", "공판장", "경매", "경락", "반입", "물류", "유통센터", "온라인도매시장"]
+NH_COOCUR_POLICY = ["대책", "지원", "할인", "비축", "물가", "성수품", "관세", "수입", "검역", "통관", "단속", "브리핑"]
+
+def nh_boost(text: str, section_key: str) -> float:
+    t = (text or "").lower()
+    if any(k.lower() in t for k in NH_OFFTOPIC_TERMS):
+        return 0.0
+
+    strong = any(k.lower() in t for k in NH_STRONG_TERMS)
+    weak = any(k.lower() in t for k in NH_WEAK_TERMS)
+
+    # 강신호: 경제지주/하나로마트/농협몰/공판장 등
+    if strong:
+        return 4.0 if section_key in ("dist", "policy", "supply") else 2.5
+
+    # 온라인도매시장은 농협 단서와 동반될 때만 강하게
+    if any(k.lower() in t for k in NH_STRONG_COOCUR_TERMS) and weak:
+        return 3.2 if section_key in ("dist", "policy") else 2.0
+
+    # 약신호: '농협'만 있을 경우 -> 섹션 핵심 단어와 함께일 때만 소폭 가산
+    if weak:
+        co = NH_COOCUR_SUPPLY if section_key == "supply" else NH_COOCUR_DIST if section_key == "dist" else NH_COOCUR_POLICY
+        if sum(1 for k in co if k in t) >= 1:
+            return 1.6
+
+    return 0.0
+
+
+# -----------------------------
+# De-prioritize meeting/visit/PR-heavy articles (품질 보정)
+# - '방문/협의회/간담회/업무협약'류는 실무 의사결정 신호(가격/수급/물량/대책)가 약한 경우가 많음
+# -----------------------------
+EVENTY_TERMS = ["방문", "시찰", "간담회", "협의회", "세미나", "토론회", "업무협약", "협약", "mou", "설명회", "발대식", "기념식", "캠페인"]
+TECH_TREND_TERMS = ["스마트팜", "ai", "로봇", "자율", "연중생산", "수직농장", "빅데이터", "디지털", "혁신"]
+
+def eventy_penalty(text: str, title: str, section_key: str) -> float:
+    t = (text or "").lower()
+    ttl = (title or "").lower()
+    hits = count_any(t, [k.lower() for k in EVENTY_TERMS])
+    tech = count_any(t, [k.lower() for k in TECH_TREND_TERMS])
+
+    if hits == 0 and tech == 0:
+        return 0.0
+
+    # 실무 신호가 충분하면 패널티 최소화
+    strong_signal = 0
+    if section_key == "supply":
+        strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_SUPPLY]) + count_any(ttl, [k.lower() for k in SUPPLY_TITLE_CORE_TERMS])
+    elif section_key == "dist":
+        strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_DIST]) + count_any(ttl, [k.lower() for k in DIST_TITLE_CORE_TERMS])
+    elif section_key == "policy":
+        strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_POLICY]) + count_any(ttl, [k.lower() for k in POLICY_TITLE_CORE_TERMS])
+    else:
+        strong_signal = count_any(t, [k.lower() for k in PEST_TITLE_CORE_TERMS])
+
+    if strong_signal >= 2:
+        return 0.0
+    if strong_signal == 1:
+        return 1.2
+    # 시찰/협의회/방문/기술트렌드만 있는 경우는 더 크게 감점
+    return 2.8 + 0.6 * max(0, hits - 1) + 0.4 * tech
+
 SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출하','재고','저장','물량')
 DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지')
 POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료')
@@ -1299,6 +1385,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 3) 언론/출처 가중치(가장 중요한 축)
     score += press_weight(press, dom)
+    score += nh_boost(text, skey)
+    score -= eventy_penalty(text, title, skey)
 
     # 정책 섹션: 지방 단신 감점(주요 매체면 완화)
     pr = press_priority(press, dom)
