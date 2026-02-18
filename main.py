@@ -993,20 +993,39 @@ def save_search_index(repo: str, token: str, idx: dict, sha: str):
 
 
 def _make_search_items_for_day(report_date: str, by_section: dict, site_path: str) -> list[dict]:
-    items = []
+    """Build search-index items for a single report day.
+
+    `by_section` normally contains lists of Article objects (our internal dataclass),
+    but some legacy paths may pass dict-like items. Support both.
+    NOTE: Keep output schema stable for index.html JS (press_tier, summary truncation, etc.).
+    """
+    def _get(a, key, default=""):
+        if isinstance(a, dict):
+            return a.get(key, default)
+        return getattr(a, key, default)
+
+    items: list[dict] = []
     for sec in SECTIONS:
         key = sec["key"]
         stitle = sec["title"]
         archive_href = build_site_url(site_path, f"archive/{report_date}.html") + f"#sec-{key}"
         lst = by_section.get(key, []) or []
         for i, a in enumerate(lst, start=1):
-            url = (a.get("link") or a.get("url") or "").strip()
-            title = (a.get("title") or "").strip()
-            press = (a.get("press") or a.get("publisher") or "").strip()
-            summary = (a.get("summary") or a.get("desc") or "").strip()
-            score = float(a.get("score") or 0.0)
-            tier = int(press_tier(press, urlparse(url).netloc if url else ""))
+            url = (_get(a, "link") or _get(a, "url") or _get(a, "originallink") or "").strip()
+            title = (_get(a, "title") or "").strip()
+            press = (_get(a, "press") or _get(a, "publisher") or _get(a, "company") or "").strip()
+            summary = (_get(a, "summary") or _get(a, "desc") or _get(a, "description") or "").strip()
+
+            score_raw = _get(a, "score", 0.0)
+            try:
+                score = float(score_raw or 0.0)
+            except Exception:
+                score = 0.0
+
+            dom = urlparse(url).netloc if url else ""
+            tier = int(press_tier(press, dom))
             _id = hashlib.md5(f"{report_date}|{key}|{url}|{title}".encode("utf-8")).hexdigest()[:12]
+
             items.append({
                 "id": _id,
                 "date": report_date,
@@ -1022,7 +1041,6 @@ def _make_search_items_for_day(report_date: str, by_section: dict, site_path: st
                 "press_tier": tier,
             })
     return items
-
 
 def update_search_index(existing: dict, report_date: str, by_section: dict, site_path: str) -> dict:
     if not isinstance(existing, dict):
