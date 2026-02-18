@@ -6,7 +6,7 @@ Features:
 - Naver News API search (multi-query per section)
 - Strong relevance filtering to prevent off-topic leakage
 - Business-day window with KR holidays support (+ manual override)
-- OpenAI summaries (batch) -> readable 2~3 lines per article
+- OpenAI summaries (batch) -> readable 2~3 lines per article (optional)
 - GitHub Pages output:
   - docs/index.html (latest + archive list)
   - docs/archive/YYYY-MM-DD.html (daily snapshot)
@@ -15,14 +15,14 @@ Features:
 ENV REQUIRED:
 - NAVER_CLIENT_ID
 - NAVER_CLIENT_SECRET
-- OPENAI_API_KEY          (optional but recommended for better summaries)
-- OPENAI_MODEL            (default: gpt-5.2)
 - GITHUB_REPO             (e.g., HongTaeHwa/agri-news-brief)  [or Actions default GITHUB_REPOSITORY]
 - GH_TOKEN or GITHUB_TOKEN (Actions built-in token OK if permissions: contents: write)
 - KAKAO_REST_API_KEY
 - KAKAO_REFRESH_TOKEN
 
 OPTIONAL:
+- OPENAI_API_KEY          (if missing/invalid/quota exceeded -> fallback summaries)
+- OPENAI_MODEL            (default: gpt-5.2)
 - KAKAO_CLIENT_SECRET
 - PAGES_BASE_URL          (override github pages url / custom domain)
 - REPORT_HOUR_KST         (default: 7)
@@ -41,10 +41,9 @@ import re
 import json
 import base64
 import html
-import time
 import logging
 import hashlib
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
@@ -75,7 +74,6 @@ ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
 DOCS_INDEX_PATH = "docs/index.html"
 DOCS_ARCHIVE_DIR = "docs/archive"
 
-# If you use custom domain, set PAGES_BASE_URL like https://agri-brief.yourdomain.com
 DEFAULT_REPO = (os.getenv("GITHUB_REPO") or os.getenv("GITHUB_REPOSITORY") or "").strip()
 GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
 
@@ -93,7 +91,7 @@ KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").st
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 
-# ✅ TEST OVERRIDES (added)
+# ✅ TEST OVERRIDES
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
 FORCE_END_NOW = os.getenv("FORCE_END_NOW", "false").strip().lower() in ("1", "true", "yes")
 
@@ -101,86 +99,66 @@ EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split("
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
 # Hard blocks (low-value / lifestyle / spammy aggregators)
-# Add more here if needed.
 BLOCKED_DOMAINS = {
     "wikitree.co.kr",
     "theqoo.net",
     "instiz.net",
     "namu.wiki",
-    "allurekorea.com",   # user reported false positive
+    "allurekorea.com",
     "vogue.co.kr",
     "marieclairekorea.com",
     "cosmopolitan.co.kr",
     "gqkorea.co.kr",
 }
 
-# Strong agriculture context keywords (raise relevance)
 AGRI_STRONG_TERMS = [
-    # markets / distribution
     "가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "청과", "산지", "출하", "물량", "반입",
     "산지유통", "APC", "산지유통센터", "선별", "CA저장", "저장고", "저장량",
-    # price/supply
     "시세", "도매가격", "소매가격", "가격", "수급", "수급동향", "작황", "생산량", "재배", "수확", "면적",
-    # policy / institutions
     "농림축산식품부", "농식품부", "aT", "한국농수산식품유통공사", "농관원", "국립농산물품질관리원",
     "검역", "할당관세", "수입", "수출", "관세", "통관", "원산지", "부정유통", "온라인 도매시장",
     "비축미", "정부", "대책", "지원", "할인지원", "성수품",
-    # pests
     "병해충", "방제", "약제", "살포", "예찰", "과수화상병", "탄저병", "동해", "냉해", "월동"
 ]
 
-# Very common off-topic hints (penalize)
 OFFTOPIC_HINTS = [
-    # entertainment / celebrity
     "배우", "아이돌", "드라마", "영화", "예능", "콘서트", "팬", "유튜브", "뮤직",
-    # politics / courts (often unrelated)
     "대통령", "국회", "총선", "검찰", "재판", "탄핵", "정당",
-    # finance / stocks
     "코스피", "코스닥", "주가", "급등", "급락", "비트코인", "환율",
-    # travel/lifestyle
     "여행", "관광", "호텔", "리조트", "레스토랑", "와인", "해변", "휴양", "파운드", "달러", "유로",
 ]
 
-# Extra “travel-market” words that triggered false positives (like Allure)
 TRAVEL_MARKET_HINTS = [
     "현지", "전통시장", "노점", "파운드", "로제", "타파스", "리비에라", "프랑스", "두바이",
 ]
 
-# Korea-context hints (helps separate domestic agri from foreign travel markets)
 KOREA_CONTEXT_HINTS = [
     "국내", "한국", "우리나라", "농협", "지자체", "군", "시", "도", "농가", "산지", "가락시장",
     "농식품부", "aT", "농관원", "대한민국", "설", "명절"
 ]
 
-# Section configuration (order fixed as user requested)
 SECTIONS = [
     {
         "key": "supply",
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
-            # 구조/기후/재배지 이동
             "기후변화 사과 재배지 북상 강원도",
             "과수 재배면적 변화 사과 배",
-            # 주요 과수: 사과/배 (ambiguous words handled by filter)
             "사과 도매시장 가격 시세",
             "사과 저장량 출하 수급",
             "배(과일) 도매시장 시세 신고",
-            # 감/곶감
             "단감 시세 저장량",
             "떫은감 곶감 탄저병 생산량 가격",
             "둥시 곶감 물량 시세",
-            # 만감류/제주
             "감귤 한라봉 레드향 천혜향 시세",
             "제주 만감류 출하 가격",
             "참다래 키위 시세",
-            # 기타
             "샤인머스캣 포도 시세 출하",
             "절화 졸업 입학 시즌 가격",
             "풋고추 오이 시설채소 가격 일조량",
             "쌀 산지 가격 비축미 방출",
         ],
-        # supply requires at least 1 supply-specific signal
         "must_terms": ["가격", "시세", "수급", "출하", "도매", "경락", "저장량", "작황", "생산량", "재배", "수확", "면적", "물량"],
     },
     {
@@ -192,7 +170,6 @@ SECTIONS = [
             "농축수산물 할인지원 연장 3월",
             "할당관세 수입 과일 검역 완화",
             "성수품 가격 안정 대책 농축수산물",
-            # policy briefing / government channels (to reduce false negatives)
             "대한민국 정책브리핑 농축수산물 할인 지원",
             "korea.kr 농축수산물 할인 지원",
             "농식품부 정책 농축수산물 할인 할당관세",
@@ -227,24 +204,17 @@ SECTIONS = [
     },
 ]
 
-# policy/institution domains: allow slightly looser “work signals” if agri policy keywords exist
 POLICY_DOMAINS = {
-    "korea.kr",
-    "www.korea.kr",
-    "mafra.go.kr",
-    "www.mafra.go.kr",
-    "at.or.kr",
-    "www.at.or.kr",
-    "naqs.go.kr",
-    "www.naqs.go.kr",
-    "krei.re.kr",
-    "www.krei.re.kr",
+    "korea.kr", "www.korea.kr",
+    "mafra.go.kr", "www.mafra.go.kr",
+    "at.or.kr", "www.at.or.kr",
+    "naqs.go.kr", "www.naqs.go.kr",
+    "krei.re.kr", "www.krei.re.kr",
 }
 
 AGRI_POLICY_KEYWORDS = [
     "농축수산물", "농축산물", "성수품", "할인지원", "할당관세", "검역", "수급", "가격", "과일", "비축미", "원산지"
 ]
-
 
 # -----------------------------
 # Data model
@@ -274,7 +244,6 @@ def dt_kst(d: date, hour: int) -> datetime:
     return datetime(d.year, d.month, d.day, hour, 0, 0, tzinfo=KST)
 
 def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
-    # Naver returns RFC822-like date (e.g., "Mon, 17 Feb 2026 10:34:00 +0900")
     try:
         dt = parsedate_to_datetime(pubdate_str)
         if dt.tzinfo is None:
@@ -309,7 +278,7 @@ def strip_tracking_params(url: str) -> str:
 
 def norm_title_key(title: str) -> str:
     t = title.lower()
-    t = re.sub(r"\[[^\]]+\]", " ", t)  # remove [..]
+    t = re.sub(r"\[[^\]]+\]", " ", t)
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:80]
 
@@ -326,7 +295,6 @@ def has_any(text: str, words) -> bool:
 def count_any(text: str, words) -> int:
     return sum(1 for w in words if w in text)
 
-
 # -----------------------------
 # KR business day / holidays
 # -----------------------------
@@ -339,14 +307,11 @@ def is_korean_holiday(d: date) -> bool:
         return False
     if s in EXTRA_HOLIDAYS:
         return True
-
-    # Use python-holidays if available
     try:
         import holidays  # type: ignore
         kr = holidays.KR(years=[d.year], observed=True)
         return d in kr
     except Exception:
-        # Fallback: weekend only
         return False
 
 def is_business_day_kr(d: date) -> bool:
@@ -361,7 +326,6 @@ def previous_business_day(d: date) -> date:
     while not is_business_day_kr(cur):
         cur -= timedelta(days=1)
     return cur
-
 
 # -----------------------------
 # GitHub Contents API helpers
@@ -405,7 +369,6 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
         r.raise_for_status()
     return r.json()
 
-
 # -----------------------------
 # State / archive manifest
 # -----------------------------
@@ -414,7 +377,10 @@ def load_state(repo: str, token: str):
     if not raw:
         return {"last_end_iso": None}
     try:
-        return json.loads(raw)
+        obj = json.loads(raw)
+        if isinstance(obj, dict):
+            return obj
+        return {"last_end_iso": None}
     except Exception:
         return {"last_end_iso": None}
 
@@ -424,19 +390,35 @@ def save_state(repo: str, token: str, last_end: datetime):
     msg = f"Update state {last_end.date().isoformat()}"
     github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token, msg, sha=sha, branch="main")
 
+def _normalize_manifest(obj):
+    # ✅ supports legacy list format OR new dict format
+    if obj is None:
+        return {"dates": []}
+    if isinstance(obj, list):
+        return {"dates": [str(x) for x in obj if str(x).strip()]}
+    if isinstance(obj, dict):
+        dates = obj.get("dates", [])
+        if isinstance(dates, list):
+            return {"dates": [str(x) for x in dates if str(x).strip()]}
+        if isinstance(dates, str) and dates.strip():
+            return {"dates": [dates.strip()]}
+        return {"dates": []}
+    return {"dates": []}
+
 def load_archive_manifest(repo: str, token: str):
     raw, sha = github_get_file(repo, ARCHIVE_MANIFEST_PATH, token, ref="main")
     if not raw:
         return {"dates": []}, sha
     try:
-        return json.loads(raw), sha
+        obj = json.loads(raw)
+        return _normalize_manifest(obj), sha
     except Exception:
         return {"dates": []}, sha
 
 def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
+    manifest = _normalize_manifest(manifest)
     msg = "Update archive manifest"
     github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token, msg, sha=sha, branch="main")
-
 
 # -----------------------------
 # Naver News search
@@ -444,24 +426,17 @@ def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
 def naver_news_search(query: str, display: int = 30, start: int = 1, sort: str = "date"):
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
-
     url = "https://openapi.naver.com/v1/search/news.json"
     headers = {
         "X-Naver-Client-Id": NAVER_CLIENT_ID,
         "X-Naver-Client-Secret": NAVER_CLIENT_SECRET,
     }
-    params = {
-        "query": query,
-        "display": display,
-        "start": start,
-        "sort": sort,
-    }
+    params = {"query": query, "display": display, "start": start, "sort": sort}
     r = requests.get(url, headers=headers, params=params, timeout=30)
     if not r.ok:
         log.error("[NAVER ERROR] %s", r.text)
         r.raise_for_status()
     return r.json()
-
 
 # -----------------------------
 # Relevance scoring / filtering
@@ -472,7 +447,6 @@ def is_blocked_domain(dom: str) -> bool:
     dom = dom.lower()
     if dom in BLOCKED_DOMAINS:
         return True
-    # also block subdomains of blocked domains
     for b in BLOCKED_DOMAINS:
         if dom.endswith("." + b):
             return True
@@ -491,11 +465,9 @@ def korea_context_score(text: str) -> int:
     return count_any(text, KOREA_CONTEXT_HINTS)
 
 def section_must_terms_ok(text: str, must_terms) -> bool:
-    # must include at least one term from section's must_terms
     return has_any(text, must_terms)
 
 def policy_domain_override(dom: str, text: str) -> bool:
-    # if it's an official policy domain and has agri-policy keywords -> accept (avoid false negatives)
     if dom in POLICY_DOMAINS:
         return has_any(text, AGRI_POLICY_KEYWORDS)
     return False
@@ -507,31 +479,24 @@ def is_relevant(article: Article, section_conf: dict) -> bool:
 
     text = (article.title + " " + article.description).lower()
 
-    # Section must_terms
     if not section_must_terms_ok(text, [t.lower() for t in section_conf["must_terms"]]):
-        # Allow override for policy domains
         if not policy_domain_override(dom, text):
             return False
 
-    # Core agriculture strength
     strength = agri_strength_score(text)
     offp = off_topic_penalty(text)
     trav = travel_penalty(text)
     korea = korea_context_score(text)
 
-    # If it smells like travel/lifestyle market content, require explicit Korea context or strong agri strength
     if trav >= 1 and korea == 0 and strength < 3:
         return False
 
-    # If off-topic hints exist, require stronger agri evidence
     if offp >= 1 and strength < 3:
         return False
 
-    # Special disambiguation: "사과" apology pattern
     if re.search(r"(공개\s*)?사과(했다|해야|하라|문|요구|요청|발표)", article.title) and strength < 4:
         return False
 
-    # Special disambiguation: "배" (ship) patterns
     if re.search(r"(선박|해군|항만|조선|함정|승선|항해)", text) and strength < 4:
         return False
 
@@ -550,21 +515,17 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
     score -= offp * 2.5
     score -= trav * 2.0
 
-    # Prefer official policy sources a bit
     if article.domain in POLICY_DOMAINS:
         score += 3.0
 
-    # Freshness (within the window, newer gets small boost)
     age_hours = max(0.0, (datetime.now(tz=KST) - article.pub_dt_kst).total_seconds() / 3600.0)
     score += max(0.0, 24.0 - min(age_hours, 24.0)) * 0.05
 
-    # If title contains key must terms, boost
     for t in section_conf["must_terms"]:
         if t.lower() in article.title.lower():
             score += 0.6
 
     return score
-
 
 # -----------------------------
 # Collect articles for a window
@@ -572,8 +533,6 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
 def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime):
     items = []
     seen_keys = set()
-
-    # pull more per query to avoid “too few articles”
     display = 40
 
     for q in section_conf["queries"]:
@@ -594,32 +553,19 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
                     continue
 
                 press = dom
-                # simple domain->press mapping (extend as you want)
                 PRESS_MAP = {
-                    "www.yna.co.kr": "연합뉴스",
-                    "yna.co.kr": "연합뉴스",
-                    "www.mk.co.kr": "매일경제",
-                    "mk.co.kr": "매일경제",
-                    "www.joongang.co.kr": "중앙일보",
-                    "joongang.co.kr": "중앙일보",
-                    "www.chosun.com": "조선일보",
-                    "chosun.com": "조선일보",
-                    "www.donga.com": "동아일보",
-                    "donga.com": "동아일보",
-                    "www.hani.co.kr": "한겨레",
-                    "hani.co.kr": "한겨레",
-                    "www.khan.co.kr": "경향신문",
-                    "khan.co.kr": "경향신문",
-                    "www.sedaily.com": "서울경제",
-                    "sedaily.com": "서울경제",
-                    "www.newsis.com": "뉴시스",
-                    "newsis.com": "뉴시스",
-                    "www.news1.kr": "뉴스1",
-                    "news1.kr": "뉴스1",
-                    "www.fnnews.com": "파이낸셜뉴스",
-                    "fnnews.com": "파이낸셜뉴스",
-                    "www.korea.kr": "정책브리핑",
-                    "korea.kr": "정책브리핑",
+                    "www.yna.co.kr": "연합뉴스", "yna.co.kr": "연합뉴스",
+                    "www.mk.co.kr": "매일경제", "mk.co.kr": "매일경제",
+                    "www.joongang.co.kr": "중앙일보", "joongang.co.kr": "중앙일보",
+                    "www.chosun.com": "조선일보", "chosun.com": "조선일보",
+                    "www.donga.com": "동아일보", "donga.com": "동아일보",
+                    "www.hani.co.kr": "한겨레", "hani.co.kr": "한겨레",
+                    "www.khan.co.kr": "경향신문", "khan.co.kr": "경향신문",
+                    "www.sedaily.com": "서울경제", "sedaily.com": "서울경제",
+                    "www.newsis.com": "뉴시스", "newsis.com": "뉴시스",
+                    "www.news1.kr": "뉴스1", "news1.kr": "뉴스1",
+                    "www.fnnews.com": "파이낸셜뉴스", "fnnews.com": "파이낸셜뉴스",
+                    "www.korea.kr": "정책브리핑", "korea.kr": "정책브리핑",
                 }
                 if dom in PRESS_MAP:
                     press = PRESS_MAP[dom]
@@ -649,40 +595,32 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
         except Exception as e:
             log.warning("[WARN] query failed: %s (%s)", q, e)
 
-    # Sort by score desc then pubdate desc
     items.sort(key=lambda a: (a.score, a.pub_dt_kst), reverse=True)
-
-    # Cap
     return items[:MAX_PER_SECTION]
-
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     by_section = {}
     for sec in SECTIONS:
-        lst = collect_articles_for_section(sec, start_kst, end_kst)
-        by_section[sec["key"]] = lst
+        by_section[sec["key"]] = collect_articles_for_section(sec, start_kst, end_kst)
 
-    # If any section has too few, do a light “broad fill” but still filtered by relevance
     for sec in SECTIONS:
         key = sec["key"]
         if len(by_section[key]) >= MIN_PER_SECTION:
             continue
 
-        broad_queries = []
         if key == "supply":
             broad_queries = ["농산물 가격", "과일 도매시장 시세", "청과 경락가", "산지 출하 물량"]
         elif key == "policy":
             broad_queries = ["농축수산물 할인 지원", "할당관세 과일", "농산물 물가 대책"]
         elif key == "pest":
             broad_queries = ["과수 병해충 방제 약제", "과수화상병 방제", "월동 해충 방제"]
-        elif key == "dist":
+        else:
             broad_queries = ["APC 선별 저장", "농식품 수출 실적", "가락시장 경매 일정"]
 
-        # temporarily append and fetch extra
         tmp = dict(sec)
         tmp["queries"] = broad_queries
-
         extra = collect_articles_for_section(tmp, start_kst, end_kst)
+
         merged = {a.norm_key: a for a in by_section[key]}
         for a in extra:
             merged.setdefault(a.norm_key, a)
@@ -693,36 +631,26 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 
     return by_section
 
-
 # -----------------------------
 # OpenAI summaries (batch)
 # -----------------------------
 def openai_extract_text(resp_json: dict) -> str:
-    # Robust extraction for Responses API
     try:
         out = resp_json.get("output", [])
         if not out:
             return ""
-        # find first text chunk
         for block in out:
             for c in block.get("content", []):
-                if c.get("type") == "output_text" and "text" in c:
+                if c.get("type") in ("output_text", "text") and "text" in c:
                     return c["text"]
-                if c.get("type") == "text" and "text" in c:
-                    return c["text"]
-        # fallback
-        return json.dumps(resp_json, ensure_ascii=False)
+        return ""
     except Exception:
         return ""
 
 def openai_summarize_batch(articles: list[Article]) -> dict:
-    """
-    Returns dict: norm_key -> summary text (2~3 lines).
-    """
     if not OPENAI_API_KEY or not articles:
         return {}
 
-    # Keep input compact
     rows = []
     for a in articles:
         rows.append({
@@ -739,10 +667,9 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
         "- 절대 상상/추정으로 사실을 만들지 마라.\n"
         "- 각 기사 요약은 '업무적으로 쓸모 있는 팩트' 위주로 2~3문장(줄바꿈 포함 가능), 120~220자 내.\n"
         "- 가격/수급/정책/방제/유통 포인트를 한 번에 파악되게 써라.\n"
-        "- 연예/정치(사과=apology) 등 비농업이면 요약하지 말고 빈칸으로 두지 말고 '제외(무관)'라고 써라.\n"
+        "- 연예/정치(사과=apology) 등 비농업이면 '제외(무관)'이라고 써라.\n"
         "출력 형식(반드시): 각 줄에 'id\\t요약' 형태로만 출력."
     )
-
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
 
     payload = {
@@ -761,8 +688,15 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             timeout=60,
         )
         if not r.ok:
-            log.error("[OpenAI ERROR BODY] %s", r.text)
-            r.raise_for_status()
+            # ✅ quota/429 등은 "요약만 포기"하고 계속 진행
+            try:
+                body = r.json()
+            except Exception:
+                body = {"raw": r.text}
+            code = (body.get("error") or {}).get("code")
+            msg = (body.get("error") or {}).get("message") or r.text
+            log.warning("[OpenAI] summarize skipped (%s): %s", code or r.status_code, msg)
+            return {}
 
         text = openai_extract_text(r.json()).strip()
         out = {}
@@ -772,17 +706,14 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             k, v = line.split("\t", 1)
             k = k.strip()
             v = v.strip()
-            if not k:
-                continue
-            out[k] = v
+            if k:
+                out[k] = v
         return out
     except Exception as e:
-        log.warning("[OpenAI] summarize failed: %s", e)
+        log.warning("[OpenAI] summarize failed, fallback to description: %s", e)
         return {}
 
-
 def fill_summaries(by_section: dict):
-    # Batch all for one call (cheaper, consistent)
     all_articles = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
@@ -792,15 +723,12 @@ def fill_summaries(by_section: dict):
     for a in all_articles:
         s = mapping.get(a.norm_key, "").strip()
         if not s:
-            # fallback to description snippet
             s = a.description.strip() or a.title.strip()
-        # If model says excluded, keep fallback desc (we already filtered hard, but just in case)
         if "제외(무관)" in s:
             s = a.description.strip() or a.title.strip()
         a.summary = s
 
     return by_section
-
 
 # -----------------------------
 # Rendering (HTML)
@@ -818,7 +746,6 @@ def section_conf(key: str) -> dict:
     return None
 
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict, base_url: str) -> str:
-    # summary chips
     chips = []
     total = 0
     for sec in SECTIONS:
@@ -834,7 +761,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
 
-    # sections
     sections_html = []
     for sec in SECTIONS:
         key = sec["key"]
@@ -844,7 +770,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         cards = []
         for a in lst:
             url = a.originallink or a.link
-            summary_html = "<br>".join(esc(a.summary).splitlines())  # ✅ 백슬래시 없는 방식
+            summary_html = "<br>".join(esc(a.summary).splitlines())
             cards.append(
                 f"""
                 <div class="card" style="border-left-color:{color}">
@@ -859,10 +785,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 </div>
                 """
             )
-        if not cards:
-            cards_html = '<div class="empty">특이사항 없음</div>'
-        else:
-            cards_html = "\n".join(cards)
+        cards_html = '<div class="empty">특이사항 없음</div>' if not cards else "\n".join(cards)
 
         sections_html.append(
             f"""
@@ -882,9 +805,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     title = f"[{report_date} 농산물 뉴스 Brief]"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
-
-    # Simple archive nav
     index_url = f"{base_url}/"
+
     return f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -893,8 +815,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <title>{esc(title)}</title>
   <style>
     :root {{
-      --bg:#0b1220; --panel:#0f172a; --card:#0b1220;
-      --text:#e5e7eb; --muted:#94a3b8; --line:#1f2937;
+      --bg:#0b1220; --text:#e5e7eb; --muted:#94a3b8; --line:#1f2937;
     }}
     *{{box-sizing:border-box}}
     body{{margin:0;background:radial-gradient(1200px 600px at 20% 10%, #111827, var(--bg)); color:var(--text);
@@ -953,10 +874,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 </html>
 """
 
-
 def render_index_page(manifest: dict, base_url: str) -> str:
-    dates = manifest.get("dates", [])
-    dates = sorted(dates, reverse=True)
+    manifest = _normalize_manifest(manifest)
+    dates = sorted(manifest.get("dates", []), reverse=True)
     latest = dates[0] if dates else None
 
     items_html = []
@@ -1003,7 +923,6 @@ def render_index_page(manifest: dict, base_url: str) -> str:
 </html>
 """
 
-
 # -----------------------------
 # Kakao API
 # -----------------------------
@@ -1029,11 +948,9 @@ def kakao_refresh_access_token() -> str:
 
 def kakao_send_to_me(text: str, web_url: str):
     access_token = kakao_refresh_access_token()
-
     url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    # Kakao default template
     template = {
         "object_type": "text",
         "text": text,
@@ -1048,16 +965,13 @@ def kakao_send_to_me(text: str, web_url: str):
     return r.json()
 
 def pick_kakao_highlights(by_section: dict, k: int = 3):
-    # pick best one per section first, then top-k overall
     picks = []
     for sec in SECTIONS:
         lst = by_section.get(sec["key"], [])
         if lst:
             picks.append(lst[0])
-    # sort by score desc
     picks.sort(key=lambda a: a.score, reverse=True)
     return picks[:k]
-
 
 # -----------------------------
 # Window calculation
@@ -1067,13 +981,12 @@ def compute_end_kst():
         d = datetime.strptime(FORCE_REPORT_DATE, "%Y-%m-%d").date()
         return dt_kst(d, REPORT_HOUR_KST)
 
-    # ✅ TEST: end time = now (added)
+    # ✅ TEST: end time = now
     if FORCE_END_NOW:
         return now_kst()
 
     n = now_kst()
     candidate = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
-    # If running before today's report hour, use yesterday's cutoff
     if n < candidate:
         candidate -= timedelta(days=1)
     return candidate
@@ -1091,17 +1004,14 @@ def compute_window(repo: str, token: str, end_kst: datetime):
             st = datetime.fromisoformat(last_end_iso)
             if st.tzinfo is None:
                 st = st.replace(tzinfo=KST)
-            # choose earlier to avoid missing (also fixes “holiday mis-detected and state moved forward”)
             start = min(st.astimezone(KST), prev_cutoff)
         except Exception:
             start = prev_cutoff
 
-    # safety
     if start >= end_kst:
         start = end_kst - timedelta(hours=24)
 
     return start, end_kst
-
 
 # -----------------------------
 # Main
@@ -1117,10 +1027,9 @@ def main():
         raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN is not set")
 
     repo = DEFAULT_REPO
-
     end_kst = compute_end_kst()
 
-    # ✅ Skip if not business day in KR (unless forced for testing)
+    # ✅ Skip if not business day (unless forced)
     is_bd = is_business_day_kr(end_kst.date())
     if (not FORCE_RUN_ANYDAY) and (not is_bd):
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
@@ -1133,7 +1042,6 @@ def main():
 
     report_date = end_kst.date().isoformat()
 
-    # PAGES_BASE_URL
     base_url = os.getenv("PAGES_BASE_URL", "").strip()
     if not base_url:
         owner, name = repo.split("/", 1)
@@ -1142,50 +1050,44 @@ def main():
 
     daily_url = f"{base_url}/archive/{report_date}.html"
 
-    # Collect
     by_section = collect_all_sections(start_kst, end_kst)
     by_section = fill_summaries(by_section)
 
-    # Render daily page + index
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, base_url)
+
     manifest, msha = load_archive_manifest(repo, GH_TOKEN)
+    manifest = _normalize_manifest(manifest)
+
     dates = set(manifest.get("dates", []))
     dates.add(report_date)
     manifest["dates"] = sorted(list(dates))
 
     index_html = render_index_page(manifest, base_url)
 
-    # Write to GitHub (docs/)
-    # daily
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
     _raw_old, sha_old = github_get_file(repo, daily_path, GH_TOKEN, ref="main")
     github_put_file(repo, daily_path, daily_html, GH_TOKEN, f"Add daily brief {report_date}", sha=sha_old, branch="main")
 
-    # index
     _raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
-    # archive manifest + state
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
     save_state(repo, GH_TOKEN, end_kst)
 
-    # Compose Kakao message
-    counts = []
+    c_map = {}
     total = 0
     for sec in SECTIONS:
         n = len(by_section.get(sec["key"], []))
         total += n
-        counts.append((sec["key"], n))
+        c_map[sec["key"]] = n
 
-    # supply, policy, pest, dist order fixed
-    c_map = {k: n for k, n in counts}
     line_counts = f"- 기사(총 {total}건) : 품목 {c_map.get('supply',0)} · 정책 {c_map.get('policy',0)} · 방제 {c_map.get('pest',0)} · 유통 {c_map.get('dist',0)}"
 
     highlights = pick_kakao_highlights(by_section, k=3)
     hl_lines = []
     for i, a in enumerate(highlights, 1):
         sec_title = section_conf(a.section)["title"]
-        one = a.summary.splitlines()[0].strip()
+        one = a.summary.splitlines()[0].strip() if a.summary else a.title
         if len(one) > 70:
             one = one[:70].rstrip() + "…"
         hl_lines.append(f"{i}) ({sec_title}) {a.press} | {a.title}")
@@ -1203,10 +1105,8 @@ def main():
         body.append(daily_url)
 
     kakao_text = "\n".join(body)
-
     kakao_send_to_me(kakao_text, daily_url)
     log.info("[OK] Kakao message sent. URL=%s", daily_url)
-
 
 if __name__ == "__main__":
     main()
