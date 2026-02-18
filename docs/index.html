@@ -20,8 +20,9 @@
     h1{margin:0;font-size:22px;letter-spacing:-0.2px}
     .sub{color:var(--muted);margin-top:8px;font-size:13px;line-height:1.5}
     .btn{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;text-decoration:none;color:#fff;
-         border:1px solid var(--btn);padding:10px 14px;border-radius:12px;background:var(--btn);font-weight:900}
+         border:1px solid var(--btn);padding:10px 14px;border-radius:12px;background:var(--btn);font-weight:900; cursor:pointer}
     .btn:hover{background:var(--btnHover);border-color:var(--btnHover)}
+    .btn.disabled{opacity:.5; cursor:pointer}
 
     .panel{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}
     .panelTitle{font-weight:900;margin-bottom:10px}
@@ -42,25 +43,30 @@
     <h1>농산물 뉴스 브리핑</h1>
     <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다.</div>
 
-    <a class="btn" href="/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">최신 브리핑 열기</a>
+    <a class="btn" href="/agri-news-brief/archive/2026-02-18.html">최신 브리핑 열기</a>
 
     <div class="panel">
       <div class="panelTitle">날짜별 아카이브</div>
       <div class="grid">
         
-          <a class="card" href="/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">
-            <div class="dt">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</div>
-            <div class="meta">요일</div>
-          </a>
-        
-
           <a class="card" href="/agri-news-brief/archive/2026-02-18.html">
-            <div class="dt">2026-02-18</div>
-            <div class="meta">수요일</div>
+            <div class="dt">2026년 2월 18일</div>
+            <div class="meta">2026-02-18 · 수요일</div>
           </a>
         
       </div>
     </div>
   </div>
+
+  <script>
+    (function() {
+      var b = document.querySelector("button.btn.disabled[data-msg]");
+      if (b) {
+        b.addEventListener("click", function() {
+          alert(b.getAttribute("data-msg") || "이동할 페이지가 없습니다.");
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
