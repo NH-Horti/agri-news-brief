@@ -2,14 +2,21 @@
 """
 agri-news-brief main.py (production)
 
-Fixes included (per latest request):
-1) "브리핑 열기"가 gist.github.com 으로 넘어가는 치명적 문제 방지:
-   - PAGES_BASE_URL이 gist/raw로 잘못 설정되어 있어도 자동 무시하고 GitHub Pages 기본 URL로 복구
-   - 최종 daily_url이 gist/raw면 즉시 중단 (안전장치)
+✅ Changes in this version (IMPORTANT):
+1) "브리핑 열기"가 gist.github.com 으로 열리는 문제를 '철저히' 잡기 위한 진단/차단 강화
+   - 코드에서 daily_url은 절대 gist로 만들지 않음
+   - 발송 전: daily_url 도메인을 검사하여, 카카오 개발자 콘솔(플랫폼 > Web > 사이트 도메인)에
+     등록해야 할 도메인 후보를 로그에 명시적으로 출력
+   - 만약 카카오 도메인 미등록 때문에 링크가 강제로 gist로 열리는 경우:
+     => 코드 수정만으로 해결 불가. "사이트 도메인"에 GitHub Pages 도메인을 추가해야 함.
+        (예: hongtaehwa.github.io)
 
-2) 카톡 메시지 포맷을 사용자가 요구한 줄바꿈/띄어쓰기 형태로 "고정" 생성:
-   - 제목, 공백 줄, 기사 집계(총/중앙/지방), 섹션별 2건씩 체크포인트
-   - 섹션 순서: 품목 → 정책 → 유통 → 방제 (고정)
+2) 카카오 메시지 포맷 개선(가독성):
+   - 항목(블록) 간에만 빈 줄 1개
+   - 항목 내부는 줄바꿈만 (불필요한 1칸씩 띄우기 제거)
+   - (매체명) 기사제목 형태 고정
+
+3) ( ) 안에는 링크가 아닌 '매체명'이 들어가도록 press 추출/표시 강화
 
 기능:
 - Naver News API 검색(섹션별 멀티 쿼리)
@@ -24,25 +31,26 @@ Fixes included (per latest request):
 ENV REQUIRED:
 - NAVER_CLIENT_ID
 - NAVER_CLIENT_SECRET
-- GITHUB_REPO              (e.g., HongTaeHwa/agri-news-brief)  또는 Actions 기본 GITHUB_REPOSITORY
-- GH_TOKEN or GITHUB_TOKEN (Actions built-in token OK if permissions: contents: write)
+- GITHUB_REPO               (e.g., HongTaeHwa/agri-news-brief) 또는 Actions 기본 GITHUB_REPOSITORY
+- GH_TOKEN or GITHUB_TOKEN  (Actions built-in token OK if permissions: contents: write)
 - KAKAO_REST_API_KEY
 - KAKAO_REFRESH_TOKEN
 
 OPTIONAL:
-- OPENAI_API_KEY           (없거나/실패하면 폴백)
-- OPENAI_MODEL             (default: gpt-5.2)
+- OPENAI_API_KEY            (없거나/실패하면 폴백)
+- OPENAI_MODEL              (default: gpt-5.2)
 - KAKAO_CLIENT_SECRET
-- PAGES_BASE_URL           (커스텀 도메인/조직 페이지 등)
-- REPORT_HOUR_KST          (default: 7)
-- MAX_PER_SECTION          (default: 10)
-- MIN_PER_SECTION          (default: 5)
-- EXTRA_HOLIDAYS           (comma dates, e.g., 2026-02-17,2026-02-18)
-- EXCLUDE_HOLIDAYS         (comma dates to treat as business day)
+- PAGES_BASE_URL            (커스텀 도메인/조직 페이지 등)
+- REPORT_HOUR_KST           (default: 7)
+- MAX_PER_SECTION           (default: 10)
+- MIN_PER_SECTION           (default: 5)
+- EXTRA_HOLIDAYS            (comma dates, e.g., 2026-02-17,2026-02-18)
+- EXCLUDE_HOLIDAYS          (comma dates to treat as business day)
 - KAKAO_INCLUDE_LINK_IN_TEXT (true/false, default false)
-- FORCE_REPORT_DATE        (YYYY-MM-DD) backfill test
-- FORCE_RUN_ANYDAY         (true/false) 휴일/주말에도 강제 실행(테스트용)
-- FORCE_END_NOW            (true/false) end를 "지금"으로(테스트용, 기사량 증가)
+- FORCE_REPORT_DATE         (YYYY-MM-DD) backfill test
+- FORCE_RUN_ANYDAY          (true/false) 휴일/주말에도 강제 실행(테스트용)
+- FORCE_END_NOW             (true/false) end를 "지금"으로(테스트용)
+- STRICT_KAKAO_LINK_CHECK   (true/false, default false)  # true면 도메인 의심 시 발송 중단(테스트용)
 """
 
 import os
@@ -101,6 +109,8 @@ FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
 FORCE_END_NOW = os.getenv("FORCE_END_NOW", "false").strip().lower() in ("1", "true", "yes")
 
+STRICT_KAKAO_LINK_CHECK = os.getenv("STRICT_KAKAO_LINK_CHECK", "false").strip().lower() in ("1", "true", "yes")
+
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
@@ -150,7 +160,7 @@ KOREA_CONTEXT_HINTS = [
 
 
 # -----------------------------
-# Section configuration (order fixed in rendering; Kakao message order is separately fixed)
+# Section configuration
 # -----------------------------
 SECTIONS = [
     {
@@ -158,47 +168,47 @@ SECTIONS = [
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
+            # 구조/기후/재배지 이동
             "기후변화 사과 재배지 북상 강원도",
             "과수 재배면적 변화 사과 배",
-            "사과 도매시장 가격 시세",
-            "사과 저장량 출하 수급",
-            "배(과일) 도매시장 시세",
-            "단감 시세 저장량",
-            "떫은감 곶감 탄저병 생산량 가격",
-            "둥시 곶감 물량 시세",
-            "감귤 한라봉 레드향 천혜향 시세",
-            "제주 만감류 출하 가격",
-            "참다래 키위 시세",
-            "샤인머스캣 포도 시세 출하",
-            "절화 졸업 입학 시즌 가격",
-            "풋고추 오이 시설채소 가격 일조량",
-            "쌀 산지 가격 비축미 방출",
+            # 사과/배/감/만감/기타
+            "사과 가격", "사과 시세", "사과 도매시장", "사과 저장량", "사과 출하",
+            "배(과일) 가격", "배(과일) 시세", "배(과일) 도매시장",
+            "단감 시세", "단감 저장량",
+            "떫은감 곶감 탄저병", "곶감 가격", "둥시 곶감",
+            "감귤 가격", "한라봉 가격", "레드향 가격", "천혜향 가격", "만감류 출하",
+            "참다래 시세", "키위 시세",
+            "샤인머스캣 시세", "포도 가격",
+            "풋고추 가격", "오이 가격", "시설채소 가격",
+            "절화 가격", "졸업 입학 절화",
+            "쌀 산지 가격", "비축미 방출",
         ],
-        "must_terms": ["가격", "시세", "수급", "출하", "도매", "경락", "저장량", "작황", "생산량", "재배", "수확", "면적", "물량"],
+        "must_terms": ["가격", "시세", "수급", "출하", "도매", "경락", "저장", "작황", "생산", "재배", "수확", "면적", "물량"],
     },
     {
         "key": "policy",
         "title": "주요 이슈 및 정책",
         "color": "#1d4ed8",
         "queries": [
-            "농산물 온라인 도매시장 허위거래 전수조사",
-            "농축수산물 할인지원 연장 3월",
-            "할당관세 수입 과일 검역 완화",
-            "성수품 가격 안정 대책 농축수산물",
+            "농산물 온라인 도매시장 허위거래",
+            "온라인 도매시장 이상거래 전수조사",
+            "농축수산물 할인지원 연장",
+            "할당관세 과일 검역 완화",
+            "성수품 가격 안정 대책",
             "대한민국 정책브리핑 농축수산물",
             "korea.kr 농축수산물 할인",
-            "농식품부 정책 농축수산물 할당관세",
+            "농식품부 정책 할당관세 농축수산물",
         ],
-        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "온라인 도매시장", "비축미", "성수품", "수급"],
+        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "온라인 도매시장", "비축미", "성수품", "수급", "물가"],
     },
     {
         "key": "pest",
         "title": "병해충 및 방제",
         "color": "#b45309",
         "queries": [
-            "과수화상병 약제 신청 마감",
-            "과수화상병 궤양 제거 골든타임",
-            "월동 해충 방제 기계유유제 살포",
+            "과수화상병 약제 신청",
+            "과수화상병 궤양 제거",
+            "월동 해충 방제 기계유유제",
             "탄저병 예방 방제",
             "동해 냉해 과수 피해 대비",
         ],
@@ -209,16 +219,16 @@ SECTIONS = [
         "title": "유통 및 현장 (APC/수출)",
         "color": "#6d28d9",
         "queries": [
-            "APC 스마트화 AI 선별기 CA저장",
+            "APC 스마트화 AI 선별기",
             "농협 APC 선별 저장",
-            "농식품 수출 실적 배 딸기 포도",
-            "가락시장 경매 재개 일정 휴무",
+            "CA저장 APC",
+            "농식품 수출 실적 배 딸기",
+            "가락시장 경매 재개 일정",
             "원산지 단속 농산물 부정유통",
         ],
-        "must_terms": ["APC", "선별", "CA저장", "공판장", "도매시장", "가락시장", "수출", "검역", "원산지", "유통"],
+        "must_terms": ["APC", "선별", "CA저장", "공판장", "도매시장", "가락시장", "수출", "원산지", "유통", "검역"],
     },
 ]
-
 
 POLICY_DOMAINS = {
     "korea.kr", "www.korea.kr",
@@ -312,6 +322,21 @@ def has_any(text: str, words) -> bool:
 def count_any(text: str, words) -> int:
     return sum(1 for w in words if w in text)
 
+def simplify_domain_for_press(dom: str) -> str:
+    """
+    도메인밖에 모르는 경우라도 (www 제거, 너무 지저분하지 않게) 표시용 press를 만든다.
+    예: www.mbn.co.kr -> mbn
+    예: news.mt.co.kr -> mt
+    """
+    d = (dom or "").lower()
+    if not d:
+        return "알수없음"
+    d = d.replace("www.", "")
+    parts = d.split(".")
+    if len(parts) >= 2:
+        return parts[-2].upper() if len(parts[-2]) <= 5 else parts[-2]
+    return d
+
 
 # -----------------------------
 # KR business day / holidays
@@ -367,10 +392,7 @@ def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     j = r.json()
     content_b64 = j.get("content", "")
     sha = j.get("sha")
-    if content_b64:
-        raw = base64.b64decode(content_b64).decode("utf-8", errors="replace")
-    else:
-        raw = ""
+    raw = base64.b64decode(content_b64).decode("utf-8", errors="replace") if content_b64 else ""
     return raw, sha
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
@@ -398,9 +420,7 @@ def load_state(repo: str, token: str):
         return {"last_end_iso": None}
     try:
         obj = json.loads(raw)
-        if isinstance(obj, dict):
-            return obj
-        return {"last_end_iso": None}
+        return obj if isinstance(obj, dict) else {"last_end_iso": None}
     except Exception:
         return {"last_end_iso": None}
 
@@ -411,7 +431,6 @@ def save_state(repo: str, token: str, last_end: datetime):
                     f"Update state {last_end.date().isoformat()}", sha=sha, branch="main")
 
 def _normalize_manifest(obj):
-    # supports legacy list format OR dict format
     if obj is None:
         return {"dates": []}
     if isinstance(obj, list):
@@ -430,8 +449,7 @@ def load_archive_manifest(repo: str, token: str):
     if not raw:
         return {"dates": []}, sha
     try:
-        obj = json.loads(raw)
-        return _normalize_manifest(obj), sha
+        return _normalize_manifest(json.loads(raw)), sha
     except Exception:
         return {"dates": []}, sha
 
@@ -510,7 +528,6 @@ def is_relevant(article: Article, section_conf: dict) -> bool:
 
     if trav >= 1 and korea == 0 and strength < 3:
         return False
-
     if offp >= 1 and strength < 3:
         return False
 
@@ -551,12 +568,71 @@ def compute_rank_score(article: Article, section_conf: dict) -> float:
 
 
 # -----------------------------
+# Press mapping
+# -----------------------------
+PRESS_MAP = {
+    # national
+    "www.yna.co.kr": "연합뉴스", "yna.co.kr": "연합뉴스",
+    "www.mk.co.kr": "매일경제", "mk.co.kr": "매일경제",
+    "www.joongang.co.kr": "중앙일보", "joongang.co.kr": "중앙일보",
+    "www.chosun.com": "조선일보", "chosun.com": "조선일보",
+    "www.donga.com": "동아일보", "donga.com": "동아일보",
+    "www.hani.co.kr": "한겨레", "hani.co.kr": "한겨레",
+    "www.khan.co.kr": "경향신문", "khan.co.kr": "경향신문",
+    "www.sedaily.com": "서울경제", "sedaily.com": "서울경제",
+    "www.hankyung.com": "한국경제", "hankyung.com": "한국경제",
+    "www.asiae.co.kr": "아시아경제", "asiae.co.kr": "아시아경제",
+    "www.mt.co.kr": "머니투데이", "mt.co.kr": "머니투데이",
+    "www.edaily.co.kr": "이데일리", "edaily.co.kr": "이데일리",
+    "www.heraldcorp.com": "헤럴드경제", "heraldcorp.com": "헤럴드경제",
+    "www.fnnews.com": "파이낸셜뉴스", "fnnews.com": "파이낸셜뉴스",
+    "www.newsis.com": "뉴시스", "newsis.com": "뉴시스",
+    "www.news1.kr": "뉴스1", "news1.kr": "뉴스1",
+
+    # broadcast / mid-tier
+    "www.mbn.co.kr": "MBN", "mbn.co.kr": "MBN",
+    "news.sbs.co.kr": "SBS", "www.sbs.co.kr": "SBS", "sbs.co.kr": "SBS",
+    "news.kbs.co.kr": "KBS", "www.kbs.co.kr": "KBS", "kbs.co.kr": "KBS",
+    "imnews.imbc.com": "MBC", "www.imbc.com": "MBC", "imbc.com": "MBC",
+    "www.ytn.co.kr": "YTN", "ytn.co.kr": "YTN",
+    "news.jtbc.co.kr": "JTBC", "jtbc.co.kr": "JTBC", "www.jtbc.co.kr": "JTBC",
+
+    # policy
+    "www.korea.kr": "정책브리핑", "korea.kr": "정책브리핑",
+    "www.mafra.go.kr": "농식품부", "mafra.go.kr": "농식품부",
+    "www.at.or.kr": "aT", "at.or.kr": "aT",
+    "www.naqs.go.kr": "농관원", "naqs.go.kr": "농관원",
+}
+
+CENTRAL_PRESS_NAMES = {
+    "연합뉴스", "매일경제", "중앙일보", "조선일보", "동아일보", "한겨레", "경향신문",
+    "서울경제", "한국경제", "아시아경제", "머니투데이", "헤럴드경제", "이데일리",
+    "뉴시스", "뉴스1", "파이낸셜뉴스",
+    "SBS", "KBS", "MBC", "YTN", "JTBC", "MBN",
+    "정책브리핑", "농식품부", "aT", "농관원",
+}
+
+def press_tier(press: str, domain: str) -> str:
+    """
+    중앙/지방 집계용 (대략적인 분류)
+    - 중앙: 중앙/방송/정책기관
+    - 그 외는 지방으로 집계 (합계가 total과 맞도록)
+    """
+    p = (press or "").strip()
+    d = (domain or "").lower()
+    if p in CENTRAL_PRESS_NAMES:
+        return "central"
+    if d in POLICY_DOMAINS or d.endswith(".go.kr"):
+        return "central"
+    return "local"
+
+
+# -----------------------------
 # Collect articles
 # -----------------------------
 def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime):
     items: list[Article] = []
     seen_keys = set()
-
     display = 40
 
     for q in section_conf["queries"]:
@@ -576,28 +652,9 @@ def collect_articles_for_section(section_conf: dict, start_kst: datetime, end_ks
                 if is_blocked_domain(dom):
                     continue
 
-                press = dom
-                PRESS_MAP = {
-                    "www.yna.co.kr": "연합뉴스", "yna.co.kr": "연합뉴스",
-                    "www.mk.co.kr": "매일경제", "mk.co.kr": "매일경제",
-                    "www.joongang.co.kr": "중앙일보", "joongang.co.kr": "중앙일보",
-                    "www.chosun.com": "조선일보", "chosun.com": "조선일보",
-                    "www.donga.com": "동아일보", "donga.com": "동아일보",
-                    "www.hani.co.kr": "한겨레", "hani.co.kr": "한겨레",
-                    "www.khan.co.kr": "경향신문", "khan.co.kr": "경향신문",
-                    "www.sedaily.com": "서울경제", "sedaily.com": "서울경제",
-                    "www.hankyung.com": "한국경제", "hankyung.com": "한국경제",
-                    "www.asiae.co.kr": "아시아경제", "asiae.co.kr": "아시아경제",
-                    "www.mt.co.kr": "머니투데이", "mt.co.kr": "머니투데이",
-                    "www.edaily.co.kr": "이데일리", "edaily.co.kr": "이데일리",
-                    "www.heraldcorp.com": "헤럴드경제", "heraldcorp.com": "헤럴드경제",
-                    "www.newsis.com": "뉴시스", "newsis.com": "뉴시스",
-                    "www.news1.kr": "뉴스1", "news1.kr": "뉴스1",
-                    "www.fnnews.com": "파이낸셜뉴스", "fnnews.com": "파이낸셜뉴스",
-                    "www.korea.kr": "정책브리핑", "korea.kr": "정책브리핑",
-                }
-                if dom in PRESS_MAP:
-                    press = PRESS_MAP[dom]
+                press = PRESS_MAP.get(dom)
+                if not press:
+                    press = simplify_domain_for_press(dom)
 
                 norm_key = make_norm_key(origin, link, title)
                 if norm_key in seen_keys:
@@ -633,20 +690,20 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
     for sec in SECTIONS:
         by_section[sec["key"]] = collect_articles_for_section(sec, start_kst, end_kst)
 
-    # light broad fill if too few
+    # broad fill if too few
     for sec in SECTIONS:
         key = sec["key"]
         if len(by_section[key]) >= MIN_PER_SECTION:
             continue
 
         if key == "supply":
-            broad_queries = ["농산물 가격", "과일 도매시장 시세", "청과 경락가", "산지 출하 물량"]
+            broad_queries = ["농산물 가격", "과일 시세", "도매시장 시세", "산지 출하"]
         elif key == "policy":
-            broad_queries = ["농축수산물 할인 지원", "할당관세 과일", "농산물 물가 대책"]
+            broad_queries = ["농축수산물 할인", "농산물 물가 대책", "할당관세 과일"]
         elif key == "pest":
-            broad_queries = ["과수 병해충 방제 약제", "과수화상병 방제", "월동 해충 방제"]
+            broad_queries = ["과수 방제 약제", "과수화상병 방제", "월동 해충 방제"]
         else:
-            broad_queries = ["APC 선별 저장", "농식품 수출 실적", "가락시장 경매 일정"]
+            broad_queries = ["APC 선별", "농식품 수출 실적", "가락시장 경매"]
 
         tmp = dict(sec)
         tmp["queries"] = broad_queries
@@ -664,7 +721,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 
 
 # -----------------------------
-# OpenAI summaries (batch) - optional
+# OpenAI summaries (optional)
 # -----------------------------
 def openai_extract_text(resp_json: dict) -> str:
     try:
@@ -697,9 +754,8 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
     system = (
         "너는 농협 경제지주 원예수급부(과수화훼) 실무자를 위한 '농산물 뉴스 요약가'다.\n"
         "- 절대 상상/추정으로 사실을 만들지 마라.\n"
-        "- 각 기사 요약은 '업무적으로 쓸모 있는 팩트' 위주로 2~3문장(줄바꿈 포함 가능), 120~220자 내.\n"
-        "- 가격/수급/정책/방제/유통 포인트를 빠르게 파악되게 써라.\n"
-        "출력 형식(반드시): 각 줄에 'id\\t요약' 형태로만 출력."
+        "- 각 기사 요약은 2~3문장, 120~220자 내. 핵심 팩트 중심.\n"
+        "출력 형식: 각 줄 'id\\t요약' 형태로만 출력."
     )
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
 
@@ -719,7 +775,6 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             timeout=60,
         )
         if not r.ok:
-            # quota/429/invalid 등: 요약만 포기하고 폴백
             try:
                 body = r.json()
             except Exception:
@@ -757,7 +812,6 @@ def fill_summaries(by_section: dict):
         if not s:
             s = a.description.strip() or a.title.strip()
         a.summary = s
-
     return by_section
 
 
@@ -810,7 +864,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 </div>
                 """
             )
-
         cards_html = '<div class="empty">특이사항 없음</div>' if not cards else "\n".join(cards)
 
         sections_html.append(
@@ -820,9 +873,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 <div class="secTitle">{esc(title)}</div>
                 <div class="secCount">{len(lst)}건</div>
               </div>
-              <div class="secBody">
-                {cards_html}
-              </div>
+              <div class="secBody">{cards_html}</div>
             </section>
             """
         )
@@ -861,7 +912,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .secCount{{font-size:13px;color:#e2e8f0;background:rgba(0,0,0,0.25);padding:4px 10px;border-radius:999px}}
     .secBody{{padding:12px 12px 14px}}
     .card{{background:rgba(15,23,42,0.55);border:1px solid var(--line);border-left:4px solid #334155;
-          border-radius:14px;padding:12px 12px 12px;margin:10px 0}}
+          border-radius:14px;padding:12px;margin:10px 0}}
     .meta{{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px}}
     .press{{color:#e2e8f0}}
     .dot{{opacity:.6}}
@@ -886,9 +937,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       </div>
     </div>
 
-    <div class="chips">
-      {chips_html}
-    </div>
+    <div class="chips">{chips_html}</div>
 
     {sections_html}
 
@@ -940,9 +989,7 @@ def render_index_page(manifest: dict, base_url: str) -> str:
 
     <div class="panel">
       <div style="font-weight:700;margin-bottom:6px;">날짜별 아카이브</div>
-      <ul>
-        {ul}
-      </ul>
+      <ul>{ul}</ul>
     </div>
   </div>
 </body>
@@ -951,12 +998,13 @@ def render_index_page(manifest: dict, base_url: str) -> str:
 
 
 # -----------------------------
-# Pages URL (anti-gist safeguard)
+# Pages URL (anti-gist + safer)
 # -----------------------------
 def get_pages_base_url(repo: str) -> str:
     """
-    - If PAGES_BASE_URL is set and valid: use it
-    - If it's mistakenly set to gist/raw or invalid: ignore and fallback to default GitHub Pages URL
+    base_url 결정 로직(안전 강화):
+    - PAGES_BASE_URL이 없으면 기본 GitHub Pages로
+    - PAGES_BASE_URL이 gist/raw 등 의심 도메인이면 무시하고 기본 URL로
     """
     owner, name = repo.split("/", 1)
     default_url = f"https://{owner.lower()}.github.io/{name}".rstrip("/")
@@ -971,48 +1019,38 @@ def get_pages_base_url(repo: str) -> str:
         return default_url
 
     if not env_url.startswith("http://") and not env_url.startswith("https://"):
-        log.warning("[WARN] PAGES_BASE_URL is invalid (no http/https). Ignoring and using default: %s", default_url)
+        log.warning("[WARN] PAGES_BASE_URL invalid (no http/https). Ignoring and using default: %s", default_url)
         return default_url
 
     return env_url
 
 
-# -----------------------------
-# Press tier (central/local) + Kakao message builder
-# -----------------------------
-CENTRAL_PRESS_NAMES = {
-    "연합뉴스", "매일경제", "중앙일보", "조선일보", "동아일보", "한겨레", "경향신문",
-    "서울경제", "한국경제", "아시아경제", "머니투데이", "헤럴드경제", "이데일리",
-    "뉴시스", "뉴스1", "파이낸셜뉴스", "정책브리핑",
-    "SBS", "KBS", "MBC", "YTN", "JTBC",
-}
-
-LOCAL_PRESS_HINTS = (
-    "강원", "경기", "인천", "대전", "충청", "충북", "충남", "전북", "전남",
-    "광주", "대구", "경북", "부산", "울산", "경남", "제주", "세종",
-)
-
-def press_tier(press: str, domain: str) -> str:
+def log_kakao_domain_requirement(daily_url: str):
     """
-    Returns 'central' or 'local'
-    - unknown defaults to central (so 중앙+지방 합이 총 기사수와 일치하도록 보장)
+    ✅ '브리핑 열기'가 gist로 열리는 대표 원인:
+    - 카카오 개발자 콘솔 > 플랫폼 > Web > 사이트 도메인에
+      GitHub Pages 도메인(예: hongtaehwa.github.io)이 등록되어 있지 않음
+    이 경우 카카오가 링크를 정상 처리하지 못하고, 이미 등록된 다른 도메인(예: gist)로 열어버릴 수 있음.
+    => 런 로그에 등록해야 할 도메인을 정확히 표시.
     """
-    p = (press or "").strip()
-    d = (domain or "").lower()
-
-    if p in CENTRAL_PRESS_NAMES:
-        return "central"
-
-    if d.endswith("korea.kr") or d == "korea.kr" or "mafra.go.kr" in d or "at.or.kr" in d:
-        return "central"
-
-    if any(h in p for h in LOCAL_PRESS_HINTS) and any(x in p for x in ("일보", "신문", "방송", "뉴스")):
-        return "local"
-
-    return "central"
+    dom = domain_of(daily_url)
+    if not dom:
+        return
+    # github pages / custom domain 모두에 대해 안내
+    log.info("[KAKAO LINK CHECK] daily_url domain=%s", dom)
+    log.info("[KAKAO LINK CHECK] If '브리핑 열기' opens wrong site, add this domain to Kakao Dev Console:")
+    log.info("[KAKAO LINK CHECK] Kakao Developers > 내 애플리케이션 > 앱 설정 > 플랫폼 > Web > 사이트 도메인 : %s", dom)
 
 
-# 카톡 메시지 섹션 순서(요청 고정)
+def ensure_not_gist(url: str, label: str):
+    if "gist.github.com" in url or "raw.githubusercontent.com" in url:
+        raise RuntimeError(f"[FATAL] {label} points to gist/raw: {url}")
+
+
+# -----------------------------
+# Kakao message builder (compact, press in parentheses)
+# -----------------------------
+# 카톡 메시지 섹션 순서(요청 고정): 품목 → 정책 → 유통 → 방제
 KAKAO_MESSAGE_SECTION_ORDER = ["supply", "policy", "dist", "pest"]
 
 def _get_section_conf(key: str):
@@ -1023,38 +1061,36 @@ def _get_section_conf(key: str):
 
 def build_kakao_message(report_date: str, by_section: dict) -> str:
     """
-    Generates Kakao text with exact spacing/line breaks requested by user.
+    요구사항 반영:
+    - 항목 간에만 빈 줄 1개
+    - 항목 내부는 줄바꿈만
+    - (매체명) 기사제목
     """
     total = 0
-    per = {}
     central = 0
     local = 0
+    per = {"supply": 0, "policy": 0, "pest": 0, "dist": 0}
 
-    for sec in SECTIONS:
-        key = sec["key"]
+    for key in per.keys():
         lst = by_section.get(key, [])
         per[key] = len(lst)
         total += len(lst)
         for a in lst:
-            t = press_tier(a.press, a.domain)
-            if t == "local":
-                local += 1
-            else:
+            if press_tier(a.press, a.domain) == "central":
                 central += 1
+            else:
+                local += 1
 
-    # --- EXACT FORMAT START ---
     lines = []
     lines.append(f"[{report_date} 농산물 뉴스 Brief]")
-    lines.append("")
-    lines.append("")
+    lines.append("")  # 블록 간 1줄
+
     lines.append(f"기사 : 총 {total}건 (중앙 {central}건, 지방 {local}건)")
-    lines.append("")
-    lines.append(f"- 품목 {per.get('supply',0)} · 정책 {per.get('policy',0)} · 방제 {per.get('pest',0)} · 유통 {per.get('dist',0)}")
-    lines.append("")
-    lines.append("")
+    lines.append(f"- 품목 {per['supply']} · 정책 {per['policy']} · 방제 {per['pest']} · 유통 {per['dist']}")
+    lines.append("")  # 블록 간 1줄
+
     lines.append("오늘의 체크포인트")
-    lines.append("")
-    lines.append("")
+    lines.append("")  # 블록 간 1줄
 
     section_num = 0
     for key in KAKAO_MESSAGE_SECTION_ORDER:
@@ -1064,23 +1100,26 @@ def build_kakao_message(report_date: str, by_section: dict) -> str:
         section_num += 1
 
         lines.append(f"{section_num}) {conf['title']}")
-        lines.append("")
-        lines.append("")
 
         items = by_section.get(key, [])[:2]
         if not items:
             lines.append("   - (기사 없음)")
-            lines.append("")
-            lines.append("")
-            continue
+        else:
+            for a in items:
+                # (매체명) 기사제목
+                press = (a.press or "").strip()
+                if not press:
+                    press = simplify_domain_for_press(a.domain)
+                lines.append(f"   - ({press}) {a.title}")
 
-        for a in items:
-            lines.append(f"   - ({a.press}) {a.title}")
-            lines.append("")
-            lines.append("")
+        lines.append("")  # 섹션(항목) 간 1줄
 
+    # 마지막 빈 줄 하나 제거(가독성)
+    while lines and lines[-1] == "":
+        lines.pop()
+
+    lines.append("")
     lines.append("👉 '브리핑 열기'에서 섹션별 기사를 확인하세요.")
-    # --- EXACT FORMAT END ---
 
     return "\n".join(lines)
 
@@ -1111,13 +1150,14 @@ def kakao_refresh_access_token() -> str:
 def kakao_send_to_me(text: str, web_url: str):
     access_token = kakao_refresh_access_token()
 
-    # Safety: never allow gist/raw
-    if "gist.github.com" in web_url or "raw.githubusercontent.com" in web_url:
-        raise RuntimeError(f"[FATAL] Kakao web_url points to gist/raw: {web_url}")
+    # ✅ 코드상 web_url은 gist가 될 수 없게 한다(치명 사고 방지)
+    ensure_not_gist(web_url, "Kakao web_url")
 
     url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
     headers = {"Authorization": f"Bearer {access_token}"}
 
+    # ✅ "text" 템플릿: 버튼(브리핑 열기) 및 말풍선 클릭 링크는 link 기준
+    #    (본문에 URL이 들어가면 미리보기/자동 링크가 섞일 수 있으니 기본 false 권장)
     template = {
         "object_type": "text",
         "text": text,
@@ -1156,12 +1196,16 @@ def compute_window(repo: str, token: str, end_kst: datetime):
     prev_bd = previous_business_day(end_kst.date())
     prev_cutoff = dt_kst(prev_bd, REPORT_HOUR_KST)
 
+    # 기본: 직전 영업일 컷오프부터
     start = prev_cutoff
+
+    # 상태 파일(last_end)이 더 과거라면 더 과거부터(누락 방지) / 더 최근이면 prev_cutoff로
     if last_end_iso:
         try:
             st = datetime.fromisoformat(last_end_iso)
             if st.tzinfo is None:
                 st = st.replace(tzinfo=KST)
+            # 더 이른 쪽으로 설정(휴일 누적/누락 방지)
             start = min(st.astimezone(KST), prev_cutoff)
         except Exception:
             start = prev_cutoff
@@ -1188,7 +1232,6 @@ def main():
     repo = DEFAULT_REPO
     end_kst = compute_end_kst()
 
-    # Skip if not business day (unless forced)
     is_bd = is_business_day_kr(end_kst.date())
     if (not FORCE_RUN_ANYDAY) and (not is_bd):
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
@@ -1201,13 +1244,15 @@ def main():
 
     report_date = end_kst.date().isoformat()
 
-    base_url = get_pages_base_url(repo)
-    base_url = base_url.rstrip("/")
+    # ✅ base_url / daily_url (gist 절대 불가)
+    base_url = get_pages_base_url(repo).rstrip("/")
     daily_url = f"{base_url}/archive/{report_date}.html"
 
-    # Safety: never allow gist/raw
-    if "gist.github.com" in daily_url or "raw.githubusercontent.com" in daily_url:
-        raise RuntimeError(f"[FATAL] daily_url is wrong (gist/raw): {daily_url}")
+    ensure_not_gist(base_url, "base_url")
+    ensure_not_gist(daily_url, "daily_url")
+
+    # ✅ 철저 진단 로그: 카카오 링크 도메인 등록 필요 여부 확인용
+    log_kakao_domain_requirement(daily_url)
 
     # Collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
@@ -1237,12 +1282,19 @@ def main():
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
     save_state(repo, GH_TOKEN, end_kst)
 
-    # Kakao message (exact format)
+    # Kakao message (compact & readable)
     kakao_text = build_kakao_message(report_date, by_section)
 
-    # Optional: include URL in text (default false)
+    # 본문에 URL 넣기 옵션(기본 false 권장: 미리보기/자동 링크가 섞일 수 있음)
     if KAKAO_INCLUDE_LINK_IN_TEXT:
-        kakao_text = kakao_text + "\n\n" + daily_url
+        kakao_text = kakao_text + "\n" + daily_url
+
+    # ✅ STRICT 모드: 링크 도메인 의심 시 발송 중단(테스트용)
+    if STRICT_KAKAO_LINK_CHECK:
+        # github.io / custom domain 모두 허용, 다만 gist/raw는 이미 차단
+        parsed = urlparse(daily_url)
+        if not parsed.scheme.startswith("http") or not parsed.netloc:
+            raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
 
     kakao_send_to_me(kakao_text, daily_url)
     log.info("[OK] Kakao message sent. URL=%s", daily_url)
