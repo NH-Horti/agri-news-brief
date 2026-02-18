@@ -558,39 +558,64 @@ def press_name_from_url(url: str) -> str:
 # Press priority (중요도)
 # -----------------------------
 MAFRA_HOSTS = {"mafra.go.kr"}
+POLICY_TOP_HOSTS = {"korea.kr", "mafra.go.kr", "at.or.kr", "naqs.go.kr", "krei.re.kr"}
 
-MAJOR_PRESS_SET = {
-    "연합뉴스", "중앙일보", "동아일보", "조선일보", "한겨레", "경향신문", "국민일보", "서울신문",
+# (4) 중요도 우선순위:
+#   3: 중앙지/일간지/경제지 + 농민신문 + 방송사 + 농식품부·정책브리핑(최상)
+#   2: 중소매체/지방언론/전문지/지자체·연구기관(중간)
+#   1: 그 외(인터넷/기타)
+TOP_TIER_PRESS = {
+    "연합뉴스",
+    "중앙일보", "동아일보", "조선일보", "한겨레", "경향신문", "국민일보", "서울신문",
     "매일경제", "머니투데이", "서울경제", "한국경제", "파이낸셜뉴스", "이데일리", "아시아경제", "헤럴드경제",
     "KBS", "MBC", "SBS", "YTN", "JTBC", "MBN",
     "농민신문",
-    "정책브리핑", "농식품부", "aT", "농관원", "KREI",
+    "정책브리핑", "농식품부",
+    # 기관/공공(농업 관련)
+    "aT", "농관원", "KREI",
+}
+
+MID_TIER_PRESS = {
+    # 농업·유통 전문/중소 매체(필요시 추가 가능)
     "팜&마켓",
     "아주경제",
-    "스포츠서울",  # (단, 점수에서 2등급으로 보지 않을 수 있으나 표기 한글화는 필수)
+    # 스포츠서울은 한글 표기만 유지(중요도는 낮게)
 }
+
+_UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
 
 def press_priority(press: str, domain: str) -> int:
     """
-    3: 농식품부(최우선)
-    2: 중앙/방송/농민신문/정책기관/핵심전문지
-    1: 기타
+    3: 중앙지/일간지/경제지 + 농민신문 + 방송사 + 농식품부·정책브리핑(최상)
+    2: 중소매체/지방언론/전문지/지자체·연구기관(중간)
+    1: 그 외(인터넷/기타)
     """
     p = (press or "").strip()
     d = (domain or "").lower()
 
+    # 최상: 농식품부/정책브리핑 및 주요 농업기관
     if d in MAFRA_HOSTS or d.endswith(".mafra.go.kr") or p == "농식품부":
         return 3
-    if p in MAJOR_PRESS_SET:
-        # 스포츠/기타는 '중요도 2'로 보기 애매하면 여기서 조정 가능
-        # 현재는 2로 포함(필요시 제외 가능)
-        return 2
-    if d in POLICY_DOMAINS or d.endswith(".re.kr"):
-        return 2
-    if d in ALLOWED_GO_KR:
-        return 2
-    return 1
+    if d == "korea.kr" or p == "정책브리핑":
+        return 3
+    if d in POLICY_TOP_HOSTS or any(d.endswith("." + h) for h in POLICY_TOP_HOSTS):
+        return 3
+    if p in TOP_TIER_PRESS:
+        return 3
 
+    # 중간: 농업전문/중소/지방/연구·지자체
+    if p in MID_TIER_PRESS:
+        return 2
+    if d.endswith(".go.kr") or d.endswith(".re.kr") or d in ALLOWED_GO_KR:
+        return 2
+    if p and (re.search(r"(일보|신문)$", p) or ("방송" in p and p not in TOP_TIER_PRESS)):
+        return 2
+
+    # UGC/커뮤니티성
+    if any(h in d for h in _UGC_HOST_HINTS):
+        return 1
+
+    return 1
 def _sort_key_major_first(a: Article):
     return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
 
@@ -863,6 +888,27 @@ def policy_domain_override(dom: str, text: str) -> bool:
 _LOCAL_GEO_PATTERN = re.compile(r"[가-힣]{2,6}(군|시|구|도)\b")
 
 
+
+# --- pest(병해충/방제) 정교화: 농업 맥락 없는 "방역/생활해충" 오탐 감소 ---
+PEST_STRICT_TERMS = [
+    # 병해
+    "과수화상병", "탄저병", "역병", "잿빛곰팡이", "흰가루병", "노균병", "세균", "바이러스", "병반",
+    # 해충
+    "해충", "진딧물", "응애", "노린재", "나방", "총채벌레", "선충", "깍지벌레",
+    # 방제/예찰/약제
+    "병해충", "방제", "예찰", "방제약", "약제", "농약", "살포", "살충", "살균", "훈증",
+]
+PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해"]
+PEST_AGRI_CONTEXT_TERMS = [
+    "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
+    "사과", "배", "감귤", "포도", "딸기", "복숭아", "감자", "고추", "오이", "양파", "마늘", "벼", "쌀",
+]
+PEST_OFFTOPIC_TERMS = [
+    # 사람/도시 방역성 기사(농업과 무관한 경우 차단)
+    "코로나", "독감", "감염병", "방역", "방역당국", "모기", "진드기", "말라리아", "뎅기",
+    # 생활 해충/건물 해충
+    "바퀴", "흰개미", "개미",
+]
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷)."""
     text = (title + " " + desc).lower()
@@ -894,8 +940,21 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         if (not is_major) and _LOCAL_GEO_PATTERN.search(title):
             return False
 
-    # 방제 섹션은 키워드가 약하면 제외(너무 넓게 잡히는 이슈 방지)
-    # (pest는 지방 이슈가 많지만, 최소 강도는 유지)
+    # 병해충/방제 섹션 정교화: 농업 맥락 없는 "방역/생활해충" 오탐을 강하게 제거
+    if section_conf["key"] == "pest":
+        # (A) 농업 맥락 단어가 최소 1개는 있어야 함
+        if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
+            return False
+        # (B) 병해충/방제 핵심 단어(또는 냉해/동해 등 과수 피해) 중 하나는 있어야 함
+        strict_hit = has_any(text, [t.lower() for t in PEST_STRICT_TERMS])
+        weather_hit = has_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        if not strict_hit and not weather_hit:
+            return False
+        # (C) 사람/도시 방역성 기사 차단(단, 농작물 맥락이 강하면 일부 허용)
+        if has_any(text, [t.lower() for t in PEST_OFFTOPIC_TERMS]) and count_any(text, [t.lower() for t in ["농작물","과수","과원","재배","농가"]]) == 0:
+            return False
+
+    # 섹션별 키워드 강도(낚시성/약한 기사 컷)
     strength = keyword_strength(text, section_conf)
     if section_conf["key"] == "pest" and strength < 3:
         return False
@@ -986,9 +1045,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 # -----------------------------
 BASE_MIN_SCORE = {
     # 품목/수급
-    "supply": 7.0,
+        "supply": 7.5,
     # 정책/제도(공식기관 우선)
-    "policy": 7.0,
+        "policy": 7.5,
     # 유통/현장(시장·유통 인프라 중심)
     "dist": 7.0,
     # 병해충/방제(지방 이슈가 많아 상대적으로 완화)
@@ -1002,6 +1061,66 @@ def _dynamic_threshold(candidates: list[Article], section_key: str) -> float:
     return max(BASE_MIN_SCORE.get(section_key, 6.5), best - 8.0)
 
 
+
+# -----------------------------
+# Headline(core2) gate: "섹션 타이틀" 급 기사만 코어로 올리기
+# -----------------------------
+_HEADLINE_STOPWORDS = [
+    "칼럼", "기고", "사설", "인터뷰", "포토", "사진", "영상", "만평", "연재",
+    "기획", "탐방", "인물", "추모", "기념", "축제", "전시", "공연", "문학", "소설", "시",
+]
+
+def _token_set(s: str) -> set[str]:
+    s = (s or "").lower()
+    toks = re.findall(r"[0-9a-z가-힣]{2,}", s)
+    return {t for t in toks if t not in ("기사", "뉴스", "농산물", "농업", "정부", "지자체")}
+
+def _jaccard(a: set[str], b: set[str]) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    union = len(a | b)
+    return inter / union if union else 0.0
+
+def _is_policy_official(a: "Article") -> bool:
+    dom = normalize_host(a.domain)
+    p = (a.press or "").strip()
+    return (dom in ("mafra.go.kr", "korea.kr") or p in ("농식품부", "정책브리핑"))
+
+def _headline_gate(a: "Article", section_key: str) -> bool:
+    """코어(핵심2)로 올릴 자격이 있는지(섹션별)."""
+    title = (a.title or "").lower()
+    text = (a.title + " " + a.description).lower()
+
+    # 공통: 칼럼/기고/인물/행사성은 코어에서 제외
+    if has_any(title, [w.lower() for w in _HEADLINE_STOPWORDS]):
+        return False
+
+    if section_key == "supply":
+        core_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "물량", "재고", "저장"]
+        crop_terms = ["사과", "배", "감귤", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣", "오이", "고추", "쌀", "비축미"]
+        return has_any(text, core_terms) and has_any(text, crop_terms)
+
+    if section_key == "policy":
+        if _is_policy_official(a):
+            return True
+        action_terms = ["대책", "지원", "할인", "할당관세", "검역", "고시", "개정", "발표", "추진", "확대", "연장", "단속", "브리핑", "보도자료", "예산"]
+        ctx_terms = ["농산물", "농업", "농식품", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "수출", "검역"]
+        return has_any(text, action_terms) and has_any(text, ctx_terms)
+
+    if section_key == "dist":
+        dist_terms = ["가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "반입", "중도매인", "시장도매인", "apc", "선별", "ca저장", "물류", "수출", "검역", "통관", "원산지"]
+        return count_any(text, dist_terms) >= 2
+
+    if section_key == "pest":
+        # 농업 맥락 + 병해충/방제(또는 냉해/동해 피해) 가시적이어야 코어
+        if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
+            return False
+        strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
+        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
+
+    return True
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선정.
     ✅ (1) 카톡/브리핑 상단 '핵심 2'는 "진짜 상위 2"가 되도록(다양성 캡에 의해 밀려나지 않게) 고정.
@@ -1014,10 +1133,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # --- 핵심 2: 상위 중요도 2개를 우선 확보(너무 저품질은 컷) ---
     CORE_MIN_SCORE = {
-        "supply": 7.0,
-        "policy": 7.0,
-        "dist": 7.5,
-        "pest": 6.5,
+        "supply": 7.5,
+        "policy": 7.5,
+        "dist": 8.0,
+        "pest": 6.8,
     }
     core_min = CORE_MIN_SCORE.get(section_key, 6.5)
 
@@ -1036,34 +1155,67 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         used_keys.add(k)
         return True
 
-    # policy는 정부 공식 1~2개를 선호(있으면 코어로 고정)
+
+    def _too_similar(a1: Article, a2: Article) -> bool:
+        return _jaccard(_token_set(a1.title), _token_set(a2.title)) >= 0.72
+
+    # ✅ (5) 코어(핵심 2)는 "정말 핵심"만: 섹션별 게이트(_headline_gate) 통과 우선
     if section_key == "policy":
-        for a in candidates_sorted:
-            dom = normalize_host(a.domain)
-            if dom == "mafra.go.kr" or (a.press or "").strip() == "농식품부":
-                try_add_core(a)
-                break
+        # (최우선) 농식품부/정책브리핑 등 공식 소스
         for a in candidates_sorted:
             if len(core2) >= 2:
                 break
-            dom = normalize_host(a.domain)
-            if dom == "korea.kr" or (a.press or "").strip() == "정책브리핑":
-                try_add_core(a)
-                break
-
-    # 점수 기준 이상인 상위 기사로 코어 채우기
-    for a in candidates_sorted:
-        if len(core2) >= 2:
-            break
-        if a.score >= core_min:
+            if a.score < core_min:
+                continue
+            if not _is_policy_official(a):
+                continue
+            if not _headline_gate(a, section_key):
+                continue
+            if core2 and _too_similar(core2[0], a):
+                continue
             try_add_core(a)
 
-    # 그래도 부족하면 상위에서 채움(최소 1~2개는 확보)
+        # (차순) 정책 액션/제도성(대책/지원/할당관세 등) 기사
+        for a in candidates_sorted:
+            if len(core2) >= 2:
+                break
+            if a.score < core_min:
+                continue
+            if not _headline_gate(a, section_key):
+                continue
+            if core2 and _too_similar(core2[0], a):
+                continue
+            try_add_core(a)
+
+    else:
+        for a in candidates_sorted:
+            if len(core2) >= 2:
+                break
+            if a.score < core_min:
+                continue
+            if not _headline_gate(a, section_key):
+                continue
+            if core2 and _too_similar(core2[0], a):
+                continue
+            try_add_core(a)
+
+    # 게이트 통과가 부족하면, 최소 점수(core_min) 이상 상위 기사로 보완(코어 2 확보)
     for a in candidates_sorted:
         if len(core2) >= 2:
             break
+        if a.score < core_min:
+            continue
+        if core2 and _too_similar(core2[0], a):
+            continue
         try_add_core(a)
 
+    # 그래도 부족하면 최상위에서 채움(단, 유사 제목은 회피)
+    for a in candidates_sorted:
+        if len(core2) >= 2:
+            break
+        if core2 and _too_similar(core2[0], a):
+            continue
+        try_add_core(a)
     # --- 나머지: 동적 임계치로 너무 약한 기사 컷 + topic 다양성 약하게 반영 ---
     thr = _dynamic_threshold(candidates_sorted, section_key)
     pool = [a for a in candidates_sorted if a.score >= thr]
@@ -1768,8 +1920,6 @@ def build_kakao_message(report_date: str, by_section: dict) -> str:
     lines.append(f"기사 : 총 {total}건 (주요매체 {major_cnt}건, 기타 {other_cnt}건)")
     lines.append(f"- 품목 {per['supply']} · 정책 {per['policy']} · 유통 {per['dist']} · 방제 {per['pest']}")
     lines.append("")
-    lines.append("오늘의 체크포인트 (섹션별 핵심 2)")
-    lines.append("")
 
     section_num = 0
     for key in KAKAO_MESSAGE_SECTION_ORDER:
@@ -1792,7 +1942,7 @@ def build_kakao_message(report_date: str, by_section: dict) -> str:
         lines.pop()
 
     lines.append("")
-    lines.append("👉 '브리핑 열기'에서 섹션별 핵심 2를 바로 확인하세요.")
+    lines.append("👉 브리핑 열기에서 오늘의 뉴스를 확인하세요.")
     return "\n".join(lines)
 
 
