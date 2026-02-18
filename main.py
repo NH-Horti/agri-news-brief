@@ -73,7 +73,7 @@ DOCS_INDEX_PATH = "docs/index.html"
 DOCS_ARCHIVE_DIR = "docs/archive"
 
 # If you use custom domain, set PAGES_BASE_URL like https://agri-brief.yourdomain.com
-DEFAULT_REPO = os.getenv("GITHUB_REPO", "").strip()
+DEFAULT_REPO = (os.getenv("GITHUB_REPO") or os.getenv("GITHUB_REPOSITORY") or "").strip()
 GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
 
 NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID", "").strip()
