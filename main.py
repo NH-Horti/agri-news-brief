@@ -2,59 +2,47 @@
 """
 agri-news-brief main.py (production)
 
-✅ 이번 수정 반영(요청 1~7)
-1) 매체명 영문 표기 개선:
-   - host "정확 일치" + "suffix(끝부분) 일치" 매핑 추가(서브도메인 대응)
-   - 스포츠/중견/지방지 도메인 매핑 확장 + 약어 치환 강화
-   - 그래도 미상일 때는 brand를 한글로 못 바꾸면 영문/약어 최소화(대문자 약어/도메인 브랜드)
+✅ 이번 수정 반영 (요청 1~10)
 
-2) 브리핑 페이지 흰 배경(화이트 테마) + 레이아웃 재정비:
-   - 배경 흰색 / 카드형 / 글자 대비 강화 / 상단 네비(이전/다음/드롭다운 날짜 이동)
+1) 일부 매체 영문 표기 개선
+   - PRESS_HOST_MAP 확장: 팜&마켓(farmnmarket.com), 미디어제주(mediajeju.com),
+     포인트데일리(pointdaily.co.kr), 메트로신문(metroseoul.co.kr) 등 추가
+   - host exact + suffix 매칭, 2단계 TLD(co.kr 등) 브랜드 추출 개선 유지
 
-3) 중복 기사 방지 강화(ex. 동일 기사 반복):
-   - canonical URL(https 강제, www/m/mobile 제거, tracking 제거) 기반 dedupe
-   - (press + 정규화 제목) 기반 2차 dedupe(서로 다른 URL이지만 사실상 동일 기사 반복 방지)
-   - 섹션/전체 공통 dedupe 인덱스 적용
+2) 카톡 메시지에 중앙지 우선
+   - 기사 점수에 “매체 우선순위(중앙/주요방송/농민신문/정책기관)” 가중치 강화
+   - 카톡용 TOP2는 섹션 리스트에서 다시 “중앙/주요매체 우선 정렬” 후 선택
 
-4) 기사 수 축소 + “놓치면 안될 기사”가 들어오는 구조:
-   - 한 섹션 MAX 5개(기본값)로 축소
-   - 후보군은 넉넉히 수집 후(병렬) 점수화 + 핵심 보장(정책기관/가락/수급 등) + 품목 다양성(같은 품목 도배 방지)
-   - 카톡은 섹션당 2개지만, 선정된 TOP 5 안에서 다시 “진짜 핵심”이 위로 오도록 점수/보장/다양성 적용
+3) 브리핑 페이지 ‘다음’이 없는 경우 클릭해도 에러페이지 안 뜨게
+   - next/prev가 없으면 <button disabled> 로 렌더링(링크 자체를 없앰)
+   - select 이동도 항상 존재하는 날짜만 생성
 
-5) “원문 열기” 버튼 눈에 띄게:
-   - 카드 우측에 큰 버튼(hover/색상) + 모바일에서도 잘 누르게
+4) 도매시장 이슈는 유통으로, 품목/수급은 품목 중심으로
+   - supply 섹션에서 ‘가락시장/도매시장/경락/경매/반입’ 키워드가 나오면 제외(유통으로만)
+   - dist 섹션에 도매시장/가락시장 관련 쿼리/필수키워드 집중 배치
 
-6) 농식품부/정책브리핑(정책기관 출처)은 “2번 주요 이슈 및 정책”으로만 들어오게:
-   - 정책기관 도메인(마프라/정책브리핑/aT/농관원/KREI 등)은 policy 섹션 외에는 원천 차단(다른 섹션에서 발견돼도 skip)
-   - policy 섹션 쿼리에 “농식품부 정책브리핑/정책브리핑 농축수산물/보도자료” 보강
+5) ‘주요 이슈 및 정책’에서 농식품부(마프라) 기사가 항상 1번
+   - policy 섹션 선택 로직: mafra.go.kr 최우선 고정(있으면 무조건 1번)
 
-7) 브리핑 페이지에서 이전 날짜로 즉시 이동:
-   - 상단에 [이전] [다음] [드롭다운 날짜 선택] 제공
-   - 최신/아카이브 링크 유지
+6) 섹션당 기사수는 꼭 5개가 아님
+   - 최대(MAX_PER_SECTION)까지지만, 품질 기준 미달이면 과감히 제외
+   - 정말 관련 없으면 “해당사항 없음” 표시
 
-+ 기존 반영 유지:
-- Kakao web_url 안전장치(빈값/상대경로/비 http(s)/gist 차단) + 로그
-- (CO) 언론사명 버그 수정(2단계 TLD 처리 등)
+7) 최신/아카이브 페이지 에러 개선
+   - HTML 내부 링크를 base_url 절대경로가 아닌 “상대경로”로 변경(환경/도메인 설정과 무관하게 동작)
+     · index: ./archive/YYYY-MM-DD.html
+     · daily: ../ (index로), ./YYYY-MM-DD.html(같은 archive 내부 이동)
 
-ENV REQUIRED:
-- NAVER_CLIENT_ID
-- NAVER_CLIENT_SECRET
-- GITHUB_REPO               (e.g., HongTaeHwa/agri-news-brief) 또는 Actions 기본 GITHUB_REPOSITORY
-- GH_TOKEN or GITHUB_TOKEN  (Actions token OK if permissions: contents: write)
-- KAKAO_REST_API_KEY
-- KAKAO_REFRESH_TOKEN
+8) ‘미 전역 Target 매장 시위’ 같은 비관련 뉴스 유입 차단
+   - 글로벌 리테일/소매 시위/보이콧류 키워드 + 농업 강도 낮으면 강제 제외
+   - dist 섹션의 필수키워드에서 너무 일반적인 “유통” 제거(오탐 감소)
 
-OPTIONAL:
-- OPENAI_API_KEY            (없거나/실패하면 description 기반 폴백)
-- OPENAI_MODEL              (default: gpt-5.2)
-- KAKAO_CLIENT_SECRET
-- PAGES_BASE_URL
-- REPORT_HOUR_KST           (default: 7)
-- MAX_PER_SECTION           (default: 5)
-- MIN_PER_SECTION           (default: 3)
-- EXTRA_HOLIDAYS / EXCLUDE_HOLIDAYS
-- KAKAO_INCLUDE_LINK_IN_TEXT (true/false)
-- FORCE_REPORT_DATE, FORCE_RUN_ANYDAY, FORCE_END_NOW, STRICT_KAKAO_LINK_CHECK
+9) 중앙지/농민신문/MBC 등 주요 매체 우선 기준 철저
+   - MAJOR_PRESS_SET 확장(농민신문 포함)
+   - 점수/정렬/카톡선정 모두 동일 기준 적용
+
+10) 날짜 셀렉 길이(레이아웃) 조정
+   - 옵션 표시는 YY-MM-DD로 축약, select 폭 제한 + 줄바꿈/정렬 개선
 """
 
 import os
@@ -93,9 +81,8 @@ KST = timezone(timedelta(hours=9))
 
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", "7"))
 
-# ✅ 기사량 축소 기본값
+# 최대치(상한)만 5 정도로 두되, 실제는 품질에 따라 더 적을 수 있음
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", "5"))
-MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", "3"))
 
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
@@ -142,7 +129,7 @@ BLOCKED_DOMAINS = {
     "gqkorea.co.kr",
 }
 
-# Strong agriculture context keywords
+# 농업 맥락 강한 키워드
 AGRI_STRONG_TERMS = [
     "가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "청과", "산지", "출하", "물량", "반입",
     "산지유통", "APC", "산지유통센터", "선별", "CA저장", "저장고", "저장량",
@@ -153,31 +140,39 @@ AGRI_STRONG_TERMS = [
     "병해충", "방제", "약제", "살포", "예찰", "과수화상병", "탄저병", "동해", "냉해", "월동",
 ]
 
-# Common off-topic hints (penalize)
+# 오프토픽(감점)
 OFFTOPIC_HINTS = [
     "배우", "아이돌", "드라마", "영화", "예능", "콘서트", "팬", "뮤직",
-    "대통령", "국회", "총선", "검찰", "재판", "탄핵", "정당",
+    "국회", "총선", "검찰", "재판", "탄핵", "정당",
     "코스피", "코스닥", "주가", "급등", "급락", "비트코인", "환율",
     "여행", "관광", "호텔", "리조트", "레스토랑", "와인", "해변", "휴양",
 ]
 
-TRAVEL_MARKET_HINTS = ["현지", "전통시장", "노점", "파운드", "달러", "유로", "로제", "타파스"]
+# ✅ 8번: 글로벌 리테일 시위/보이콧류 차단(농업 강도 낮으면 제외)
+GLOBAL_RETAIL_PROTEST_HINTS = [
+    "target", "타깃", "walmart", "월마트", "costco", "코스트코",
+    "starbucks", "스타벅스", "boycott", "보이콧", "시위", "protest",
+    "매장", "retail", "소매", "전역",
+]
 
 KOREA_CONTEXT_HINTS = [
     "국내", "한국", "우리나라", "농협", "지자체", "군", "시", "도", "농가", "산지", "가락시장",
     "농식품부", "aT", "농관원", "대한민국", "설", "명절",
 ]
 
+# ✅ 4번: supply에서 제외할 도매시장/유통 키워드(유통 섹션으로만)
+WHOLESALE_MARKET_TERMS = ["가락시장", "도매시장", "공판장", "경락", "경매", "반입", "중도매"]
+
 
 # -----------------------------
-# Policy domains (✅ 6번: 정책기관은 policy 섹션으로만)
+# Policy domains (정책기관은 policy 섹션으로만)
 # -----------------------------
 POLICY_DOMAINS = {
-    "korea.kr", "www.korea.kr",
-    "mafra.go.kr", "www.mafra.go.kr",
-    "at.or.kr", "www.at.or.kr",
-    "naqs.go.kr", "www.naqs.go.kr",
-    "krei.re.kr", "www.krei.re.kr",
+    "korea.kr",
+    "mafra.go.kr",
+    "at.or.kr",
+    "naqs.go.kr",
+    "krei.re.kr",
 }
 
 AGRI_POLICY_KEYWORDS = [
@@ -187,7 +182,7 @@ AGRI_POLICY_KEYWORDS = [
 
 
 # -----------------------------
-# Sections
+# Sections (4번 반영: supply 품목 중심 / dist 도매시장 중심)
 # -----------------------------
 SECTIONS = [
     {
@@ -195,28 +190,42 @@ SECTIONS = [
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
-            "농산물 수급 동향", "도매시장 수급", "가락시장 청과 경락",
-            "사과 도매가격", "사과 저장량", "사과 출하",
-            "배(과일) 도매가격", "배(과일) 출하",
-            "감귤 도매가격", "만감류 출하",
-            "샤인머스캣 시세", "포도 도매가격",
-            "오이 도매가격", "풋고추 도매가격",
-            "쌀 산지 가격", "비축미 가격",
+            # ✅ 품목 중심(도매시장/가락시장 쿼리 제거)
+            "사과 작황", "사과 생산량", "사과 저장", "사과 수급", "사과 가격",
+            "배 작황", "배 생산량", "배 저장", "배 수급", "배 가격",
+            "감귤 작황", "감귤 수급", "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하",
+            "샤인머스캣 작황", "샤인머스캣 수급", "포도 작황", "포도 수급",
+            "오이 작황", "오이 수급", "풋고추 작황", "풋고추 수급",
+            "쌀 산지 가격", "비축미 동향",
         ],
-        "must_terms": ["가격", "시세", "수급", "출하", "도매", "경락", "저장", "작황", "생산", "재배", "수확", "면적"],
+        # ✅ 품목/생산/작황/저장 중심
+        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세"],
     },
     {
         "key": "policy",
         "title": "주요 이슈 및 정책",
         "color": "#1d4ed8",
         "queries": [
-            # ✅ 정책 브리핑 보강(6번)
-            "농식품부 정책브리핑", "정책브리핑 농축수산물", "농식품부 보도자료 농산물",
-            "농산물 온라인 도매시장 이상거래", "온라인 도매시장 전수조사",
-            "농축수산물 할인지원 연장", "성수품 가격 안정 대책",
-            "할당관세 과일 검역", "원산지 단속 농산물",
+            "농식품부 정책브리핑", "농식품부 보도자료 농산물", "정책브리핑 농축수산물",
+            "농축수산물 할인지원", "성수품 가격 안정 대책", "할당관세 과일 검역",
+            "원산지 단속 농산물", "온라인 도매시장 농식품부",
         ],
-        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "온라인 도매시장", "비축미", "성수품", "수급", "물가", "보도자료", "브리핑"],
+        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장", "원산지"],
+    },
+    {
+        "key": "dist",
+        "title": "유통 및 현장 (도매시장/APC/수출)",
+        "color": "#6d28d9",
+        "queries": [
+            # ✅ 도매시장/가락시장 이슈를 여기로 집중
+            "가락시장 청과 경락", "도매시장 경락가", "도매시장 반입량", "도매시장 수급",
+            "공판장 경매", "경락가 상승", "경락가 하락",
+            "APC 선별", "CA저장 APC", "산지유통센터 APC",
+            "농산물 수출 실적", "과일 수출 실적", "검역 수출 농산물",
+            "부정유통 단속 농산물", "원산지 표시 단속",
+        ],
+        # ✅ 너무 일반적인 '유통' 제거 (8번 오탐 감소)
+        "must_terms": ["가락시장", "도매시장", "공판장", "경락", "경매", "반입", "APC", "선별", "CA저장", "수출", "검역", "원산지", "부정유통"],
     },
     {
         "key": "pest",
@@ -228,22 +237,11 @@ SECTIONS = [
         ],
         "must_terms": ["방제", "병해충", "약제", "살포", "예찰", "과수화상병", "탄저병", "냉해", "동해", "월동"],
     },
-    {
-        "key": "dist",
-        "title": "유통 및 현장 (APC/수출)",
-        "color": "#6d28d9",
-        "queries": [
-            "APC 선별 저장", "CA저장 APC", "산지유통센터 APC",
-            "농식품 수출 실적 과일", "농산물 수출 실적",
-            "가락시장 경매", "부정유통 단속 농산물",
-        ],
-        "must_terms": ["APC", "선별", "CA저장", "공판장", "도매시장", "가락시장", "수출", "원산지", "유통", "검역"],
-    },
 ]
 
 
 # -----------------------------
-# Topic diversity (✅ 4번: 같은 품목 도배 방지)
+# Topic diversity (품목 도배 방지)
 # -----------------------------
 COMMODITY_TOPICS = [
     ("사과", ["사과"]),
@@ -254,8 +252,9 @@ COMMODITY_TOPICS = [
     ("오이", ["오이"]),
     ("고추", ["고추", "풋고추", "청양"]),
     ("쌀", ["쌀", "비축미"]),
-    ("수출", ["수출"]),
-    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "검역"]),
+    ("도매시장", ["가락시장", "도매시장", "공판장", "경락", "경매", "반입"]),
+    ("수출", ["수출", "검역", "통관"]),
+    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "원산지"]),
     ("병해충", ["병해충", "방제", "약제", "예찰", "과수화상병", "탄저병", "냉해", "동해"]),
 ]
 
@@ -325,12 +324,6 @@ def strip_tracking_params(url: str) -> str:
         return url
 
 def canonicalize_url(url: str) -> str:
-    """
-    ✅ 중복 방지 핵심:
-    - https 강제
-    - host에서 www./m./mobile. 제거
-    - tracking 제거
-    """
     url = strip_tracking_params(url or "").strip()
     if not url:
         return ""
@@ -343,8 +336,7 @@ def canonicalize_url(url: str) -> str:
         scheme = "https" if u.scheme in ("http", "https") else "https"
         netloc = host
         path = u.path or "/"
-        # fragment 제거(기사 중복에 영향)
-        frag = ""
+        frag = ""  # fragment 제거
         return urlunparse((scheme, netloc, path, "", u.query or "", frag))
     except Exception:
         return url
@@ -352,7 +344,7 @@ def canonicalize_url(url: str) -> str:
 def norm_title_key(title: str) -> str:
     t = (title or "").lower()
     t = re.sub(r"\[[^\]]+\]", " ", t)
-    t = re.sub(r"\([^)]*\)", " ", t)  # 제목 내 괄호(부제) 중복 유발 완화
+    t = re.sub(r"\([^)]*\)", " ", t)
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
@@ -365,10 +357,6 @@ def extract_topic(title: str, desc: str) -> str:
     return "기타"
 
 def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
-    """
-    1) canonical URL이 있으면 URL hash로(가장 정확)
-    2) 없으면 press+title_key로
-    """
     if canon_url:
         h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
         return f"url:{h}"
@@ -399,34 +387,30 @@ def agri_strength_score(text: str) -> int:
 def off_topic_penalty(text: str) -> int:
     return count_any(text, OFFTOPIC_HINTS)
 
-def travel_penalty(text: str) -> int:
-    return count_any(text, TRAVEL_MARKET_HINTS)
-
 def korea_context_score(text: str) -> int:
     return count_any(text, KOREA_CONTEXT_HINTS)
 
+def global_retail_protest_penalty(text: str) -> int:
+    t = text.lower()
+    return count_any(t, GLOBAL_RETAIL_PROTEST_HINTS)
+
 
 # -----------------------------
-# Dedupe index (✅ 3번)
+# Dedupe index
 # -----------------------------
 class DedupeIndex:
     def __init__(self):
-        self.seen_norm = set()          # norm_key
-        self.seen_canon = set()         # canonical_url hash
-        self.seen_press_title = set()   # press|title_key
+        self.seen_norm = set()
+        self.seen_canon = set()
+        self.seen_press_title = set()
 
     def add_and_check(self, canon_url: str, press: str, title_key: str, norm_key: str) -> bool:
-        """
-        return True if NEW (allowed), False if DUP
-        """
         if norm_key in self.seen_norm:
             return False
-
         if canon_url:
             h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
             if h in self.seen_canon:
                 return False
-
         pt = f"{(press or '').strip()}|{title_key}"
         if pt in self.seen_press_title:
             return False
@@ -439,7 +423,7 @@ class DedupeIndex:
 
 
 # -----------------------------
-# Press mapping (✅ 1번 강화 + (CO) 해결 유지)
+# Press mapping (1번 강화)
 # -----------------------------
 def normalize_host(host: str) -> str:
     h = (host or "").lower().strip()
@@ -448,9 +432,8 @@ def normalize_host(host: str) -> str:
             h = h[len(pfx):]
     return h
 
-# ✅ 정확/끝부분 매핑(서브도메인 대응)
 PRESS_HOST_MAP = {
-    # 중앙/방송/통신
+    # 중앙/경제/통신
     "yna.co.kr": "연합뉴스",
     "mk.co.kr": "매일경제",
     "mt.co.kr": "머니투데이",
@@ -463,6 +446,7 @@ PRESS_HOST_MAP = {
     "hani.co.kr": "한겨레",
     "khan.co.kr": "경향신문",
     "kmib.co.kr": "국민일보",
+    "seoul.co.kr": "서울신문",
     "news1.kr": "뉴스1",
     "newsis.com": "뉴시스",
     "newspim.com": "뉴스핌",
@@ -478,7 +462,11 @@ PRESS_HOST_MAP = {
     "jtbc.co.kr": "JTBC",
     "mbn.co.kr": "MBN",
 
-    # ✅ 스포츠/중견(영문 → 한글)
+    # ✅ 농업/전문지(우선순위 높게)
+    "nongmin.com": "농민신문",
+    "farmnmarket.com": "팜&마켓",
+
+    # ✅ 스포츠/중견
     "sportsseoul.com": "스포츠서울",
     "sportschosun.com": "스포츠조선",
     "osen.co.kr": "오센",
@@ -489,28 +477,17 @@ PRESS_HOST_MAP = {
     "spotvnews.co.kr": "SPOTVNEWS",
     "xportsnews.com": "엑스포츠뉴스",
 
-    # ✅ 정책기관/연구기관
+    # ✅ 요청 매체(영문→한글)
+    "mediajeju.com": "미디어제주",
+    "pointdaily.co.kr": "포인트데일리",
+    "metroseoul.co.kr": "메트로신문",
+
+    # 정책기관/연구기관
     "korea.kr": "정책브리핑",
     "mafra.go.kr": "농식품부",
     "at.or.kr": "aT",
     "naqs.go.kr": "농관원",
     "krei.re.kr": "KREI",
-
-    # ✅ 지방지/중견(대표 일부)
-    "kwnews.co.kr": "강원일보",
-    "kado.net": "강원도민일보",
-    "ggilbo.com": "금강일보",
-    "ksilbo.co.kr": "경상일보",
-    "yeongnam.com": "영남일보",
-    "imaeil.com": "매일신문",
-    "idaegu.co.kr": "대구일보",
-    "ihalla.com": "한라일보",
-    "jejusori.net": "제주소리",
-    "jjan.kr": "전북일보",
-    "jnilbo.com": "전남일보",
-    "busan.com": "부산일보",
-    "kookje.co.kr": "국제신문",
-    "seoul.co.kr": "서울신문",
 }
 
 ABBR_MAP = {
@@ -530,16 +507,16 @@ def press_name_from_url(url: str) -> str:
     if not host:
         return "미상"
 
-    # 1) exact match
+    # 1) exact
     if host in PRESS_HOST_MAP:
         return PRESS_HOST_MAP[host]
 
-    # 2) suffix match (subdomain 대응)
+    # 2) suffix match
     for k, v in PRESS_HOST_MAP.items():
         if host.endswith("." + k):
             return v
 
-    # 3) 2단계 TLD 처리 (co.kr 등)
+    # 3) 2단계 TLD 처리(co.kr 등)
     parts = host.split(".")
     if len(parts) >= 3 and parts[-1] == "kr" and parts[-2] in ("co", "or", "go", "ac", "re", "ne", "pe"):
         brand = parts[-3]
@@ -552,26 +529,41 @@ def press_name_from_url(url: str) -> str:
     if brand in ABBR_MAP:
         return ABBR_MAP[brand]
 
-    # 5) 최후 fallback: brand (짧으면 대문자, 길면 그대로)
+    # 5) fallback
     return brand.upper() if len(brand) <= 6 else brand
 
 
-CENTRAL_PRESS_NAMES = set(PRESS_HOST_MAP.values()) | {
-    "연합뉴스", "매일경제", "중앙일보", "조선일보", "동아일보", "한겨레", "경향신문",
-    "서울경제", "한국경제", "아시아경제", "머니투데이", "헤럴드경제", "이데일리",
-    "뉴시스", "뉴스1", "파이낸셜뉴스", "뉴스핌",
-    "SBS", "KBS", "MBC", "YTN", "JTBC", "MBN",
+# -----------------------------
+# Press priority (2,9번 핵심)
+# -----------------------------
+MAFRA_HOSTS = {"mafra.go.kr"}
+POLICY_HOSTS = set(POLICY_DOMAINS)
+
+MAJOR_PRESS_SET = {
+    "연합뉴스", "중앙일보", "동아일보", "조선일보", "한겨레", "경향신문", "국민일보", "서울신문",
+    "매일경제", "머니투데이", "서울경제", "한국경제", "파이낸셜뉴스", "이데일리", "아시아경제", "헤럴드경제",
+    "KBS", "MBC", "SBS", "YTN", "JTBC", "MBN",
+    "농민신문",
     "정책브리핑", "농식품부", "aT", "농관원", "KREI",
+    "팜&마켓",
 }
 
-def press_tier(press: str, domain: str) -> str:
+def press_priority(press: str, domain: str) -> int:
+    """
+    3: 농식품부(최우선)
+    2: 주요 중앙지/방송/농민신문/정책기관/전문 핵심
+    1: 기타(지방지/인터넷)
+    """
     p = (press or "").strip()
     d = (domain or "").lower()
-    if p in CENTRAL_PRESS_NAMES:
-        return "central"
-    if d in POLICY_DOMAINS or d.endswith(".go.kr"):
-        return "central"
-    return "local"
+
+    if d in MAFRA_HOSTS or d.endswith(".mafra.go.kr") or p == "농식품부":
+        return 3
+    if p in MAJOR_PRESS_SET:
+        return 2
+    if d in POLICY_HOSTS or d.endswith(".go.kr") or d.endswith(".re.kr"):
+        return 2
+    return 1
 
 
 # -----------------------------
@@ -648,7 +640,7 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
 
 
 # -----------------------------
-# State / archive manifest (legacy-safe)
+# State / archive manifest
 # -----------------------------
 def load_state(repo: str, token: str):
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
@@ -718,7 +710,7 @@ def section_must_terms_ok(text: str, must_terms) -> bool:
     return has_any(text, must_terms)
 
 def policy_domain_override(dom: str, text: str) -> bool:
-    if dom in POLICY_DOMAINS or dom.endswith(".go.kr") or dom.endswith(".re.kr"):
+    if dom in POLICY_DOMAINS or dom.endswith(".go.kr"):
         return has_any(text, [k.lower() for k in AGRI_POLICY_KEYWORDS])
     return False
 
@@ -728,8 +720,19 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict) -> bool:
 
     text = (title + " " + desc).lower()
 
-    # ✅ 6번: 정책기관 도메인은 policy 섹션 외에서는 제외
+    # 정책기관 도메인은 policy 섹션 외에서는 제외
     if (dom in POLICY_DOMAINS or dom.endswith(".go.kr") or dom.endswith(".re.kr")) and section_conf["key"] != "policy":
+        return False
+
+    # ✅ 4번: supply는 도매시장/가락시장 이슈 제외(유통으로만)
+    if section_conf["key"] == "supply":
+        if has_any(text, [w.lower() for w in WHOLESALE_MARKET_TERMS]):
+            return False
+
+    # ✅ 8번: 글로벌 리테일 시위/보이콧 오탐 제거(농업 강도 낮으면 컷)
+    strength = agri_strength_score(text)
+    retail_pen = global_retail_protest_penalty(text)
+    if retail_pen >= 2 and strength < 4:
         return False
 
     # must_terms gate (policy domains can override)
@@ -737,42 +740,52 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict) -> bool:
         if not policy_domain_override(dom, text):
             return False
 
-    strength = agri_strength_score(text)
     offp = off_topic_penalty(text)
-    trav = travel_penalty(text)
     korea = korea_context_score(text)
 
-    if trav >= 1 and korea == 0 and strength < 3:
-        return False
-    if offp >= 1 and strength < 3:
-        return False
-
-    # disambiguation: "사과" apology
-    if re.search(r"(공개\s*)?사과(했다|해야|하라|문|요구|요청|발표)", title) and strength < 4:
+    # 오프토픽인데 농업 강도 낮으면 제외
+    if offp >= 1 and strength < 4:
         return False
 
-    # disambiguation: "배" ship
-    if re.search(r"(선박|해군|항만|조선|함정|승선|항해)", text) and strength < 4:
+    # “사과(사과문)” 오탐 방지
+    if re.search(r"(공개\s*)?사과(했다|해야|하라|문|요구|요청|발표)", title) and strength < 5:
+        return False
+
+    # “배(선박)” 오탐 방지
+    if re.search(r"(선박|해군|항만|조선|함정|승선|항해)", text) and strength < 5:
+        return False
+
+    # dist 섹션은 “유통 일반” 오탐을 막기 위해 농업 강도 최소치 요구
+    if section_conf["key"] == "dist" and strength < 4:
+        return False
+
+    # supply 섹션도 최소 농업 강도 요구(품목 중심)
+    if section_conf["key"] == "supply" and strength < 3:
         return False
 
     return True
 
-def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict) -> float:
+def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
     text = (title + " " + desc).lower()
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
     offp = off_topic_penalty(text)
-    trav = travel_penalty(text)
+    retail_pen = global_retail_protest_penalty(text)
 
     score = 0.0
     score += strength * 2.2
     score += korea * 0.9
-    score -= offp * 2.6
-    score -= trav * 2.2
+    score -= offp * 2.8
+    score -= retail_pen * 2.0
 
-    # ✅ 정책기관은 놓치면 안됨(4번)
-    if dom in POLICY_DOMAINS or dom.endswith(".go.kr") or dom.endswith(".re.kr"):
-        score += 5.0
+    # ✅ 2,9번: 매체 우선순위 강하게 반영
+    pr = press_priority(press, dom)
+    if pr == 3:
+        score += 10.0  # 농식품부 최우선
+    elif pr == 2:
+        score += 4.5   # 중앙지/방송/농민신문/정책기관
+    else:
+        score += 0.0
 
     # 최신 가산
     age_hours = max(0.0, (datetime.now(tz=KST) - pub_dt_kst).total_seconds() / 3600.0)
@@ -783,78 +796,114 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if t.lower() in title.lower():
             score += 0.7
 
-    # 가락시장/경락 등 핵심 키워드 가산(수급 핵심)
-    if section_conf["key"] == "supply" and ("가락시장" in title or "경락" in title or "도매시장" in title):
-        score += 1.5
+    # policy 섹션에서 농식품부/정책브리핑 가산
+    if section_conf["key"] == "policy":
+        if "농식품부" in title or "정책브리핑" in title or dom in ("mafra.go.kr", "korea.kr"):
+            score += 2.0
 
     return score
 
 
 # -----------------------------
-# Selection (✅ 4번 핵심 보장 + 다양성)
+# Selection (5,6,9번 반영)
 # -----------------------------
+BASE_MIN_SCORE = {
+    "supply": 7.0,
+    "policy": 6.5,
+    "dist": 7.0,
+    "pest": 6.0,
+}
+
+def _dynamic_threshold(candidates: list[Article], section_key: str) -> float:
+    if not candidates:
+        return 10**9
+    best = max(a.score for a in candidates)
+    # best 대비 너무 멀리 떨어진 기사들은 버림 + 섹션별 바닥 기준
+    return max(BASE_MIN_SCORE.get(section_key, 6.5), best - 8.0)
+
+def _sort_key_major_first(a: Article):
+    # 중앙/주요매체 우선 -> 점수 -> 최신
+    return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
+
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     if not candidates:
         return []
 
-    candidates.sort(key=lambda a: (a.score, a.pub_dt_kst), reverse=True)
+    # 우선순위 정렬
+    candidates = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
+    # ✅ 6번: 품질 기준 미달은 과감히 제거
+    thr = _dynamic_threshold(candidates, section_key)
+    filtered = [a for a in candidates if a.score >= thr]
+
+    # policy는 “농식품부 1번”을 최우선 보장 (5번)
     selected: list[Article] = []
-    used_topic = {}
-    used_press = {}
 
-    def pick_best(pred):
-        for a in candidates:
+    def add_one(pred):
+        for a in filtered:
             if a in selected:
                 continue
             if pred(a):
                 selected.append(a)
-                used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
-                used_press[a.press] = used_press.get(a.press, 0) + 1
                 return True
         return False
 
-    # 1) “놓치면 안됨” 보장 슬롯(섹션별)
     if section_key == "policy":
-        pick_best(lambda a: (a.domain in POLICY_DOMAINS) or a.domain.endswith(".go.kr") or a.domain.endswith(".re.kr"))
-    if section_key == "supply":
-        pick_best(lambda a: ("가락시장" in a.title) or ("도매시장" in a.title) or ("경락" in a.title))
-    if section_key == "pest":
-        pick_best(lambda a: ("과수화상병" in a.title) or ("탄저병" in a.title) or ("냉해" in a.title) or ("동해" in a.title))
-    if section_key == "dist":
-        pick_best(lambda a: ("APC" in a.title) or ("수출" in a.title) or ("원산지" in a.title))
+        # 1) mafra.go.kr 최우선(있으면 무조건 1번)
+        if not add_one(lambda a: normalize_host(a.domain) == "mafra.go.kr" or a.press == "농식품부"):
+            # 2) 다음은 정책브리핑
+            add_one(lambda a: normalize_host(a.domain) == "korea.kr" or a.press == "정책브리핑")
 
-    # 2) 다양성 우선(같은 품목/주제 도배 방지) - 1차 cap=1
-    def fill_with_topic_cap(cap: int):
-        nonlocal selected
-        for a in candidates:
+    # 다양성(같은 토픽 도배 완화)
+    used_topic = {}
+    def can_take(a: Article, cap: int) -> bool:
+        return used_topic.get(a.topic, 0) < cap
+
+    # 먼저 cap=1로 채우기
+    for a in filtered:
+        if len(selected) >= max_n:
+            break
+        if a in selected:
+            continue
+        if not can_take(a, 1):
+            continue
+        selected.append(a)
+        used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
+
+    # 부족하면 cap=2로 완화
+    if len(selected) < max_n:
+        for a in filtered:
             if len(selected) >= max_n:
                 break
             if a in selected:
                 continue
-            if used_topic.get(a.topic, 0) >= cap:
+            if not can_take(a, 2):
                 continue
             selected.append(a)
             used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
-            used_press[a.press] = used_press.get(a.press, 0) + 1
 
-    fill_with_topic_cap(cap=1)
-
-    # 3) 부족하면 cap=2로 완화
+    # 그래도 부족하면 그냥 점수순으로
     if len(selected) < max_n:
-        fill_with_topic_cap(cap=2)
-
-    # 4) 그래도 부족하면 그냥 점수순 채우기
-    if len(selected) < max_n:
-        for a in candidates:
+        for a in filtered:
             if len(selected) >= max_n:
                 break
             if a in selected:
                 continue
             selected.append(a)
 
-    selected.sort(key=lambda a: (a.score, a.pub_dt_kst), reverse=True)
-    return selected[:max_n]
+    selected = sorted(selected, key=_sort_key_major_first, reverse=True)[:max_n]
+
+    # ✅ 5번: policy는 “농식품부 1번” 고정
+    if section_key == "policy":
+        mafra = None
+        for a in selected:
+            if normalize_host(a.domain) == "mafra.go.kr" or a.press == "농식품부":
+                mafra = a
+                break
+        if mafra:
+            selected = [mafra] + [x for x in selected if x is not mafra]
+
+    return selected
 
 
 # -----------------------------
@@ -867,7 +916,6 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     def fetch(q: str):
         return q, naver_news_search(q, display=50, start=1, sort="date")
 
-    # ✅ 속도 개선: 병렬(너무 과하지 않게)
     max_workers = min(6, max(1, len(queries)))
     futures = []
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
@@ -876,7 +924,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
         for fut in as_completed(futures):
             try:
-                q, data = fut.result()
+                _q, data = fut.result()
             except Exception as e:
                 log.warning("[WARN] query failed: %s", e)
                 continue
@@ -921,46 +969,22 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     canon_url=canon,
                     topic=topic,
                 )
-                art.score = compute_rank_score(title, desc, dom, pub, section_conf)
+                art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
                 items.append(art)
 
-    items.sort(key=lambda a: (a.score, a.pub_dt_kst), reverse=True)
+    items.sort(key=_sort_key_major_first, reverse=True)
     return items
-
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     dedupe = DedupeIndex()
     raw_by_section: dict[str, list[Article]] = {}
 
-    # ✅ policy 먼저 수집(정책기관 기사 우선권)
+    # policy 먼저 수집
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
     for sec in ordered:
         raw_by_section[sec["key"]] = collect_candidates_for_section(sec, start_kst, end_kst, dedupe)
 
-    # “너무 적으면” broad fill (섹션별 2~3개 더)
-    for sec in SECTIONS:
-        key = sec["key"]
-        if len(raw_by_section.get(key, [])) >= MIN_PER_SECTION:
-            continue
-
-        if key == "supply":
-            broad = ["농산물 가격", "도매시장 시세", "가락시장 경락가"]
-        elif key == "policy":
-            broad = ["농식품부 보도자료", "정책브리핑 농축수산물", "농축수산물 할인지원"]
-        elif key == "pest":
-            broad = ["과수 방제 약제", "병해충 방제", "냉해 피해 과수"]
-        else:
-            broad = ["APC 선별", "농산물 수출 실적", "원산지 단속 농산물"]
-
-        tmp = dict(sec)
-        tmp["queries"] = broad
-        extra = collect_candidates_for_section(tmp, start_kst, end_kst, dedupe)
-
-        merged = raw_by_section.get(key, []) + extra
-        merged.sort(key=lambda a: (a.score, a.pub_dt_kst), reverse=True)
-        raw_by_section[key] = merged
-
-    # ✅ 최종 선정: 섹션당 MAX 5개(핵심 보장 + 다양성)
+    # ✅ “억지로 채우지 않음” (6번)
     final_by_section: dict[str, list[Article]] = {}
     for sec in SECTIONS:
         key = sec["key"]
@@ -1066,7 +1090,8 @@ def fill_summaries(by_section: dict):
 
 
 # -----------------------------
-# Rendering (HTML)  ✅ 2,5,7번
+# Rendering (HTML)  ✅ 3,7,10번 핵심
+# - 내부 링크는 상대경로로만 구성 (base_url 영향 제거)
 # -----------------------------
 def esc(s: str) -> str:
     return html.escape(s or "")
@@ -1074,15 +1099,15 @@ def esc(s: str) -> str:
 def fmt_dt(dt_: datetime) -> str:
     return dt_.strftime("%m/%d %H:%M")
 
+def short_date_label(iso_date: str) -> str:
+    # ✅ 10번: 날짜 셀렉 표시 길이 축소 (YY-MM-DD)
+    return iso_date[2:] if len(iso_date) == 10 else iso_date
+
 def compute_prev_next_dates(archive_dates_desc: list[str], current_date: str):
-    """
-    archive_dates_desc: 내림차순(최신->과거)
-    """
-    prev_date = None  # 과거(이전 날짜)
-    next_date = None  # 미래(다음 날짜, 더 최신)
+    prev_date = None  # 더 과거
+    next_date = None  # 더 최신
     if current_date in archive_dates_desc:
         idx = archive_dates_desc.index(current_date)
-        # 내림차순이므로 idx+1이 더 과거(이전), idx-1이 더 최신(다음)
         if idx + 1 < len(archive_dates_desc):
             prev_date = archive_dates_desc[idx + 1]
         if idx - 1 >= 0:
@@ -1090,7 +1115,7 @@ def compute_prev_next_dates(archive_dates_desc: list[str], current_date: str):
     return prev_date, next_date
 
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict,
-                      base_url: str, archive_dates_desc: list[str]) -> str:
+                      archive_dates_desc: list[str]) -> str:
     chips = []
     total = 0
     for sec in SECTIONS:
@@ -1099,15 +1124,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         chips.append((sec["key"], sec["title"], n, sec["color"]))
 
     prev_date, next_date = compute_prev_next_dates(archive_dates_desc, report_date)
-    prev_url = f"{base_url}/archive/{prev_date}.html" if prev_date else ""
-    next_url = f"{base_url}/archive/{next_date}.html" if next_date else ""
+
+    # ✅ 3번: next/prev 없으면 disabled button(링크 없음)
+    # archive 폴더 내 이동은 같은 폴더이므로 ./YYYY-MM-DD.html
+    prev_href = f"./{prev_date}.html" if prev_date else None
+    next_href = f"./{next_date}.html" if next_date else None
 
     # dropdown (최근 60개만)
     options = []
     for d in archive_dates_desc[:60]:
         sel = " selected" if d == report_date else ""
-        options.append(f'<option value="{esc(base_url)}/archive/{esc(d)}.html"{sel}>{esc(d)}</option>')
-    options_html = "\n".join(options) if options else f'<option value="{esc(base_url)}/archive/{esc(report_date)}.html" selected>{esc(report_date)}</option>'
+        options.append(f'<option value="./{esc(d)}.html"{sel}>{esc(short_date_label(d))}</option>')
+    options_html = "\n".join(options) if options else f'<option value="./{esc(report_date)}.html" selected>{esc(short_date_label(report_date))}</option>'
 
     def chip_html(k, title, n, color):
         return (
@@ -1123,12 +1151,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         title = sec["title"]
         color = sec["color"]
         lst = by_section.get(key, [])
+
         cards = []
         for a in lst:
             url = a.originallink or a.link
             summary_html = "<br>".join(esc(a.summary).splitlines())
-
-            # ✅ 5번: 원문 버튼 더 크게/눈에 띄게
             cards.append(
                 f"""
                 <div class="card" style="border-left-color:{color}">
@@ -1148,7 +1175,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 """
             )
 
-        cards_html = '<div class="empty">특이사항 없음</div>' if not cards else "\n".join(cards)
+        cards_html = '<div class="empty">해당사항 없음</div>' if not cards else "\n".join(cards)
 
         sections_html.append(
             f"""
@@ -1169,10 +1196,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     title = f"[{report_date} 농산물 뉴스 Brief]"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
-    index_url = f"{base_url}/"
 
-    prev_btn = f'<a class="navBtn" href="{esc(prev_url)}">◀ 이전</a>' if prev_url else '<span class="navBtn disabled">◀ 이전</span>'
-    next_btn = f'<a class="navBtn" href="{esc(next_url)}">다음 ▶</a>' if next_url else '<span class="navBtn disabled">다음 ▶</span>'
+    def nav_btn(href: str | None, label: str):
+        if href:
+            return f'<a class="navBtn" href="{esc(href)}">{esc(label)}</a>'
+        return f'<button class="navBtn disabled" disabled>{esc(label)}</button>'
+
+    # ✅ 7번: index로 가는 링크도 상대경로(archive에서 상위로)
+    index_href = "../"
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -1203,10 +1234,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap}}
     .navBtn{{display:inline-flex;align-items:center;justify-content:center;
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
-            background:#fff;color:#111827;text-decoration:none;font-size:13px}}
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
     .navBtn:hover{{border-color:#cbd5e1}}
     .navBtn.disabled{{opacity:.45;cursor:not-allowed}}
-    select{{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px}}
+    /* ✅ 10번: 셀렉트 길이/레이아웃 조정 */
+    .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
+    select{{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:140px; max-width:140px;}}
+    @media (max-width: 520px) {{
+      select{{width:120px; max-width:120px;}}
+    }}
     .chips{{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}}
     .chip{{text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:999px;
           background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center}}
@@ -1228,8 +1265,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .ttl{{margin-top:8px;font-size:15px;line-height:1.35;font-weight:700}}
     .sum{{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}}
     .btnOpen{{display:inline-flex;align-items:center;justify-content:center;
-             height:36px;padding:0 14px;border-radius:12px;border:1px solid var(--btn);
-             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:700}}
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:800}}
     .btnOpen:hover{{background:var(--btnHover);border-color:var(--btnHover)}}
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
     .footer{{margin-top:18px;color:var(--muted);font-size:12px}}
@@ -1240,15 +1277,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     <div class="topin">
       <div>
         <h1>{esc(title)}</h1>
-        <div class="sub">기간: {esc(period)} · 기사 {total}건 (섹션당 최대 {MAX_PER_SECTION}개)</div>
+        <div class="sub">기간: {esc(period)} · 기사 {total}건 (상한 {MAX_PER_SECTION}개/섹션, 품질 미달은 제외)</div>
       </div>
       <div class="navRow">
-        <a class="navBtn" href="{esc(index_url)}">최신/아카이브</a>
-        {prev_btn}
-        <select id="dateSelect" aria-label="날짜 선택">
-          {options_html}
-        </select>
-        {next_btn}
+        <a class="navBtn" href="{esc(index_href)}">최신/아카이브</a>
+        {nav_btn(prev_href, "◀ 이전")}
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            {options_html}
+          </select>
+        </div>
+        {nav_btn(next_href, "다음 ▶")}
       </div>
     </div>
   </div>
@@ -1256,7 +1295,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <div class="wrap">
     <div class="chips">{chips_html}</div>
     {sections_html}
-    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”를 눌러 원문을 확인하세요.</div>
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
   </div>
 
   <script>
@@ -1274,18 +1313,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 </html>
 """
 
-def render_index_page(manifest: dict, base_url: str) -> str:
+def render_index_page(manifest: dict) -> str:
     manifest = _normalize_manifest(manifest)
     dates = sorted(manifest.get("dates", []), reverse=True)
     latest = dates[0] if dates else None
 
     items_html = []
     for d in dates[:60]:
-        url = f"{base_url}/archive/{d}.html"
-        items_html.append(f'<li><a href="{esc(url)}">{esc(d)}</a></li>')
+        url = f'./archive/{esc(d)}.html'
+        items_html.append(f'<li><a href="{url}">{esc(d)}</a></li>')
     ul = "\n".join(items_html) if items_html else "<li>아카이브가 아직 없습니다.</li>"
 
-    latest_link = f"{base_url}/archive/{latest}.html" if latest else base_url
+    latest_link = f'./archive/{esc(latest)}.html' if latest else "./archive/"
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -1299,7 +1338,7 @@ def render_index_page(manifest: dict, base_url: str) -> str:
     h1{{margin:0;font-size:22px}}
     .sub{{color:#6b7280;margin-top:8px;font-size:13px}}
     .btn{{display:inline-block;margin-top:14px;text-decoration:none;color:#fff;border:1px solid #1d4ed8;
-         padding:10px 14px;border-radius:12px;background:#1d4ed8;font-weight:800}}
+         padding:10px 14px;border-radius:12px;background:#1d4ed8;font-weight:900}}
     .btn:hover{{background:#1e40af;border-color:#1e40af}}
     .panel{{margin-top:18px;border:1px solid #e5e7eb;border-radius:16px;background:#fff;padding:14px}}
     ul{{margin:10px 0 0 18px}}
@@ -1311,7 +1350,7 @@ def render_index_page(manifest: dict, base_url: str) -> str:
     <h1>농산물 뉴스 브리핑</h1>
     <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다.</div>
 
-    <a class="btn" href="{esc(latest_link)}">최신 브리핑 열기</a>
+    <a class="btn" href="{latest_link}">최신 브리핑 열기</a>
 
     <div class="panel">
       <div style="font-weight:900;margin-bottom:6px;">날짜별 아카이브</div>
@@ -1324,7 +1363,7 @@ def render_index_page(manifest: dict, base_url: str) -> str:
 
 
 # -----------------------------
-# Pages URL (anti-gist)
+# Pages URL (anti-gist) - Kakao용 절대 URL 생성만 사용
 # -----------------------------
 def get_pages_base_url(repo: str) -> str:
     owner, name = repo.split("/", 1)
@@ -1382,7 +1421,7 @@ def log_kakao_link(url: str):
 
 
 # -----------------------------
-# Kakao message builder (핵심 2개)
+# Kakao message builder (2,9번 반영: 중앙/주요매체 우선)
 # -----------------------------
 KAKAO_MESSAGE_SECTION_ORDER = ["supply", "policy", "dist", "pest"]
 
@@ -1392,10 +1431,16 @@ def _get_section_conf(key: str):
             return s
     return None
 
+def _kakao_pick_top2(lst: list[Article]) -> list[Article]:
+    # 중앙/주요매체 우선 정렬 후 2개
+    if not lst:
+        return []
+    return sorted(lst, key=_sort_key_major_first, reverse=True)[:2]
+
 def build_kakao_message(report_date: str, by_section: dict) -> str:
     total = 0
-    central = 0
-    local = 0
+    major_cnt = 0
+    other_cnt = 0
     per = {"supply": 0, "policy": 0, "pest": 0, "dist": 0}
 
     for key in per.keys():
@@ -1403,16 +1448,16 @@ def build_kakao_message(report_date: str, by_section: dict) -> str:
         per[key] = len(lst)
         total += len(lst)
         for a in lst:
-            if press_tier(a.press, a.domain) == "central":
-                central += 1
+            if press_priority(a.press, a.domain) >= 2:
+                major_cnt += 1
             else:
-                local += 1
+                other_cnt += 1
 
     lines = []
     lines.append(f"[{report_date} 농산물 뉴스 Brief]")
     lines.append("")
-    lines.append(f"기사 : 총 {total}건 (중앙 {central}건, 지방 {local}건)")
-    lines.append(f"- 품목 {per['supply']} · 정책 {per['policy']} · 방제 {per['pest']} · 유통 {per['dist']}")
+    lines.append(f"기사 : 총 {total}건 (주요매체 {major_cnt}건, 기타 {other_cnt}건)")
+    lines.append(f"- 품목 {per['supply']} · 정책 {per['policy']} · 유통 {per['dist']} · 방제 {per['pest']}")
     lines.append("")
     lines.append("오늘의 체크포인트")
     lines.append("")
@@ -1426,10 +1471,9 @@ def build_kakao_message(report_date: str, by_section: dict) -> str:
 
         lines.append(f"{section_num}) {conf['title']}")
 
-        # ✅ 섹션당 2개지만, 이미 TOP5가 “핵심 보장 + 다양성”으로 구성됨
-        items = by_section.get(key, [])[:2]
+        items = _kakao_pick_top2(by_section.get(key, []))
         if not items:
-            lines.append("   - (기사 없음)")
+            lines.append("   - (해당사항 없음)")
         else:
             for a in items:
                 press = (a.press or "").strip() or "미상"
@@ -1559,6 +1603,7 @@ def main():
 
     report_date = end_kst.date().isoformat()
 
+    # Kakao는 절대 URL이 필요하므로 base_url 유지
     base_url = get_pages_base_url(repo).rstrip("/")
     daily_url = f"{base_url}/archive/{report_date}.html"
 
@@ -1566,23 +1611,21 @@ def main():
     ensure_not_gist(daily_url, "daily_url")
     log_kakao_domain_requirement(daily_url)
 
-    # ✅ 아카이브 목록 먼저 로드(7번: 일자 이동 네비 필요)
+    # 아카이브 목록 로드
     manifest, msha = load_archive_manifest(repo, GH_TOKEN)
     manifest = _normalize_manifest(manifest)
     dates_set = set(manifest.get("dates", []))
     dates_set.add(report_date)
-    manifest["dates"] = sorted(list(dates_set))  # 저장은 오름차순(파일 크기/관리 쉬움)
+    manifest["dates"] = sorted(list(dates_set))  # 저장은 오름차순
+    archive_dates_desc = sorted(manifest["dates"], reverse=True)  # 화면용은 내림차순
 
-    # 화면용은 내림차순
-    archive_dates_desc = sorted(manifest["dates"], reverse=True)
-
-    # Collect + summarize (✅ 섹션당 최대 5 + 중복 방지 + 핵심 보장)
+    # Collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
     by_section = fill_summaries(by_section)
 
-    # Render pages (✅ 흰 배경 + 원문 버튼 + 이전/다음/드롭다운)
-    daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, base_url, archive_dates_desc)
-    index_html = render_index_page(manifest, base_url)
+    # Render pages (상대경로 기반)
+    daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc)
+    index_html = render_index_page(manifest)
 
     # Write daily page
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
@@ -1607,7 +1650,7 @@ def main():
         if not parsed.scheme.startswith("http") or not parsed.netloc:
             raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
 
-    # ✅ anti-gist hard block
+    # anti-gist hard block
     daily_url = ensure_absolute_http_url(daily_url)
     log_kakao_link(daily_url)
     kakao_send_to_me(kakao_text, daily_url)
