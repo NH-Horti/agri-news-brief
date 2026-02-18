@@ -7,266 +7,127 @@
 <style>
   :root {
     --bg:#f6f7f9; --card:#fff; --line:#e5e7eb; --text:#111827; --muted:#6b7280;
+    --bar:#111827;
   }
+  html{scroll-behavior:smooth;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  .wrap{max-width:900px;margin:0 auto;padding:14px;}
+  .wrap{max-width:980px;margin:0 auto;padding:14px;}
   .header{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
-  .h1{font-size:18px;font-weight:800;margin:0 0 6px;}
+  .toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .h1{font-size:18px;font-weight:900;margin:0 0 6px;}
   .sub{color:var(--muted);font-size:13px;line-height:1.35;}
+  .linkrow a{font-size:12px;color:#111;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 10px;display:inline-block;background:#fff;}
   .chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{font-size:12px;color:#111;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;}
-  .section{margin-top:12px;}
-  h2{font-size:16px;margin:14px 2px 10px;}
-  .count{color:var(--muted);font-weight:600;}
-  .empty{color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px;}
+  .chip{font-size:12px;color:#111;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:800;}
+  .chip:active{transform:scale(.99);}
+  .section{margin-top:14px;border-top:3px solid var(--bar);padding-top:10px;}
+  .secbar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(0,0,0,.03);}
+  h2{font-size:16px;margin:0;display:flex;justify-content:space-between;align-items:center;}
+  .count{color:var(--muted);font-weight:700;}
+  .empty{color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:10px;}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.03);}
   .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-  .press{font-weight:800;font-size:13px;}
+  .press{font-weight:900;font-size:13px;}
   .time{color:var(--muted);font-size:12px;}
-  .title{font-size:15px;font-weight:800;line-height:1.35;margin:4px 0 8px;}
-  .summary{font-size:14px;line-height:1.5;color:#111;margin:0 0 8px;}
-  .point{font-size:13px;line-height:1.4;color:#0f172a;background:#f3f4f6;border-radius:10px;padding:8px 10px;margin:6px 0 10px;}
-  .btn{display:inline-block;text-decoration:none;font-weight:800;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
+  .title{font-size:15px;font-weight:900;line-height:1.35;margin:4px 0 8px;}
+  .summary{font-size:14px;line-height:1.55;color:#111;margin:0 0 8px;}
+  .point{font-size:13px;line-height:1.45;color:#0f172a;background:#f3f4f6;border-radius:10px;padding:8px 10px;margin:6px 0 10px;}
+  .btn{display:inline-block;text-decoration:none;font-weight:900;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
   .footer{color:var(--muted);font-size:12px;margin:18px 4px 8px;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="header">
-    <div class="h1">농산물 뉴스 브리핑</div>
-    <div class="sub">기간: 2026-02-17 07:00 ~ 2026-02-18 07:00 (KST) · 총 28건<br></div>
+    <div class="toprow">
+      <div>
+        <div class="h1">농산물 뉴스 브리핑</div>
+        <div class="sub">기간: 2026-02-17 07:00 ~ 2026-02-18 07:00 (KST) · 총 9건<br></div>
+      </div>
+      <div class="linkrow">
+        <a href="https://hongtaehwa.github.io/agri-news-brief/archive/">아카이브 목록</a>
+      </div>
+    </div>
     <div class="chips">
-      <div class="chip">품목 및 수급 동향 7건</div><div class="chip">주요 이슈 및 정책 7건</div><div class="chip">병해충 및 방제 7건</div><div class="chip">유통 및 현장(APC/수출) 7건</div>
+      <a class="chip" href="#sec-supply">품목 및 수급 동향 7건</a><a class="chip" href="#sec-policy">주요 이슈 및 정책 0건</a><a class="chip" href="#sec-pest">병해충 및 방제 1건</a><a class="chip" href="#sec-dist">유통 및 현장(APC/수출) 1건</a>
     </div>
   </div>
 
-  <div class="section"><h2>품목 및 수급 동향 <span class="count">(7)</span></h2>
-        <div class="card">
-          <div class="meta"><span class="press">국민일보</span><span class="time">02/17 17:51</span></div>
-          <div class="title">박지훈 “배우로서 최고의 순간”…인생작 된 ‘왕과 사는 남자’</div>
-          <div class="summary">“내 마음속에 저장.” 아이돌 그룹 워너원의 ‘비주얼 센터’로서 필살의 애교를 날리던 모습이 흐릿해질... 그걸 표현하기 위해서 두 달 반 동안 사과 한 쪽만 먹으면서 버텼습니다. 입술도 목소리도 버석하게 말라...</div>
-          
-          <a class="btn" href="https://www.kmib.co.kr/article/view.asp?arcid=0029407386&amp;code=61181511&amp;cp=nv" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">중앙일보</span><span class="time">02/17 15:47</span></div>
-          <div class="title">[Biz-inside,China] 하이테크 비중 70% 돌파…中 저장성, &#x27;제조 대성&#x27; 넘어...</div>
-          <div class="summary">저장(浙江)성이 혁신을 모토로 &#x27;제조 대성(省)&#x27;에서 &#x27;과학기술 강성&#x27;으로 도약하고 있다. 전체 사회... 이는 모두 저장성이 지난해 거둔 과학기술 혁신 성과다. &#x27;14차 5개년(2021∼2025년) 계획&#x27; 이래로 저장성의 지역 혁신...</div>
-          
-          <a class="btn" href="https://www.joongang.co.kr/article/25405417" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">경향신문</span><span class="time">02/17 09:34</span></div>
-          <div class="title">15년째, 몰래 두고 간 과일이 1279상자···이번 명절에도 찾아온 광주...</div>
-          <div class="summary">2014년 1월과 9월 사과 50상자가 도착했다. 이듬해에도 설과 추석에 배와 사과 50상자를 각각 기부했다.... 기부된 과일 등은 매년 명절 하남동 관내 기초생활수급자와 차상위계층 가정 등 어려운 이웃들에게 전달되고...</div>
-          
-          <a class="btn" href="https://www.khan.co.kr/article/202602170934001" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">서울경제</span><span class="time">02/17 09:01</span></div>
-          <div class="title">하루종일 바닥 기는 설 연휴 전력수요…명절마다 골머리</div>
-          <div class="summary">마지막으로 낮에 물을 저장해둔 양수발전소가 다시 하부댐으로 물을 쏟아내며 2.17GW의 전력을 생산했다. 이처럼 하루 종일 발전원을 다양하게 조합해 저조한 전력 수요에 대응하는 일은 연휴나 명절, 봄·가을철마다...</div>
-          
-          <a class="btn" href="https://www.sedaily.com/article/20009637?ref=naver" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">YTN</span><span class="time">02/17 22:43</span></div>
-          <div class="title">이 대통령, 설 명절 인사...여야, 민심잡기 분주</div>
-          <div class="summary">때는 시세 차익이 50억에 가까울 수 있다는 이야기가 있으니까 그런 것을 솔선수범하는 모습을 보이면 부동산... 윤 전 대통령 1심 선고 이틀 앞두고 국민의힘에서 윤 전 대통령의 사과를 요구하는 목소리가 나왔는데요....</div>
-          
-          <a class="btn" href="https://www.ytn.co.kr/_ln/0101_202602172243161634" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">한겨레</span><span class="time">02/17 14:02</span></div>
-          <div class="title">힙한 아이템이 진정성을 만날 때, 두바이 쫀득 쿠키</div>
-          <div class="summary">“두쫀쿠 가격이 합리적인 게 맞냐” “디저트 먹자고 그 정도 시간을 쏟는 건 현명하지 못하다” 모든... 많은 댓글은 그의 진솔한 사과가 가슴을 울렸다고 했다. 순순히 잘못을 인정하는 부모의 모습을 보며, 사람들은...</div>
-          
-          <a class="btn" href="https://www.hani.co.kr/arti/culture/travel/1245273.html" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">JIBS</span><span class="time">02/17 12:17</span></div>
-          <div class="title">“비싸도 믿고 샀는데”… 설 밥상 뒤흔든 ‘원산지 둔갑’, 5년 7,700건</div>
-          <div class="summary">사과(후지·상급) 10개 가격은 약 2만 8,000원 수준으로 전년 대비 상승했고, 배 역시 3만 원 중반대를 형성하며 명절 수요가 가격을 밀어 올리는 흐름입니다. 가격이 오를수록 ‘국산’ 표기는 곧 가격 정당성을 설명하는...</div>
-          
-          <a class="btn" href="https://www.jibs.co.kr/news/articles/articlesDetail/57914?feed=na" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div><div class="section"><h2>주요 이슈 및 정책 <span class="count">(7)</span></h2>
-        <div class="card">
-          <div class="meta"><span class="press">세계일보</span><span class="time">02/18 05:12</span></div>
-          <div class="title">식비 새는 집 vs 아끼는 집, 냉동 보관에서 갈린다 [FOOD+]</div>
-          <div class="summary">대파·고기·과일 가격 부담…냉동 보관만 잘 해도 버리는 양↓ 최근 기온 변동과 이상기후 영향으로 농산물... 농축산물과 가공식품 등 먹거리 물가가 높은 가격 상승률을 보였는데, 수입 소고기 상승 폭은 1월 기준으로...</div>
-          
-          <a class="btn" href="https://www.segye.com/newsView/20260205508322?OutUrl=naver" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">YTN</span><span class="time">02/18 02:00</span></div>
-          <div class="title">내년부터 영화관 구독권 시행?...프랑스 사례 보니</div>
-          <div class="summary">청년 할인이나 동반 관람 할인을 받는 등 다양한 구독 모델이 운영 중입니다. [장샤를 / 출시 직후부터... 또 프랑스처럼 티켓 매출 일부가 다시 극장 시설 개선에 쓰이도록 적립식 지원 제도를 병행해야 한다는 의견도...</div>
-          
-          <a class="btn" href="https://www.ytn.co.kr/_ln/0106_202602180200298182" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">MBN</span><span class="time">02/17 19:46</span></div>
-          <div class="title">진격의 K-포도…딸기 제치고 &#x27;수출 과일 1위&#x27;</div>
-          <div class="summary">K-농산물의 위상을 빛낸 과일을 꼽으라면 그동안은 딸기였는데요. 지난해엔 포도가 딸기를 제치고 수출 과일... ▶ 인터뷰 : 강효주 / 농림축산식품부 농식품수출진흥과장 - &quot;2년 전부터 저희가 농가의 생산 단계부터 잔류...</div>
-          
-          <a class="btn" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176292" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">연합뉴스TV</span><span class="time">02/17 15:47</span></div>
-          <div class="title">[뉴스초점] 코스피 연초 30% 급등…설 이후 집값 향방은?</div>
-          <div class="summary">범정부 물가대응을 위해 &#x27;민생물가 특별관리 관계장관 TF&#x27;도 구성됐는데, 단기간 내 체감물가 안정으로 이어질지 관심입니다? 농산물과 축산물 등 성수품 가격이 단순히 명절 대목의 문제가 아니라는 지적이...</div>
-          
-          <a class="btn" href="http://www.yonhapnewstv.co.kr/MYH20260217154607zVp" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">머니투데이</span><span class="time">02/17 14:00</span></div>
-          <div class="title">설 연휴, 전기차 견적 좀 볼까?… 연 2%대 금리로 신차 마련하기</div>
-          <div class="summary">올해 전기차를 구매하면 기본 보조금과 전환 지원금, 지자체 보조금까지 더해 중·대형 전기 승용차 기준으로 최대 700만~900만원의 할인을 받을 수 있다. 차종을 골랐다면 다음은 금융이다. 여신금융협회에 따르면...</div>
-          
-          <a class="btn" href="https://www.mt.co.kr/finance/2026/02/17/2026021215522116608" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">뉴스1</span><span class="time">02/17 11:00</span></div>
-          <div class="title">사과 63%·딸기 103%↑…6년 새 2배 뛴 설 차례상, 누적 인상에 &#x27;허덕&#x27;</div>
-          <div class="summary">정부는 올해 상반기 민생품목 가격 동향을 집중 점검하고, 할인지원과 비축물량 방출 등 대책의 이행 실태를 점검할 계획이다. 또한 할당관세 악용과 담합 등 불공정거래 행위에 대해서도 엄정 대응하겠다는...</div>
-          
-          <a class="btn" href="https://www.news1.kr/economy/trend/6073910" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">한겨레</span><span class="time">02/17 10:02</span></div>
-          <div class="title">겨울에 농막에서 뭐해? “천연 농약 만들어요”</div>
-          <div class="summary">땅에서 나는 수입이 전부인 농민에게 병충해 없이 작물을 키우는 것은 생계가 달린 문제였다. 살충제... 상추·오이에도 부담 없이 ‘팍팍’ 이렇게 만든 친환경 농약과 비료를 이듬해 봄 부터 작물과 과일 나무에...</div>
-          
-          <a class="btn" href="https://www.hani.co.kr/arti/society/society_general/1245260.html" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div><div class="section"><h2>병해충 및 방제 <span class="count">(7)</span></h2>
-        <div class="card">
-          <div class="meta"><span class="press">YTN</span><span class="time">02/18 02:13</span></div>
-          <div class="title">[날씨] 연휴 막바지 맑고 쾌청...산간 강풍·해상 풍랑 주의</div>
-          <div class="summary">특히 산간 곳곳에는 10cm 안팎의 눈이 쌓여 있어 빙판길 사고에도 대비해야 합니다. 눈이 내리면서... [윤영승 / 기상청 예보관 : 18일에는 중국 중부 지방에 위치한 고기압과 동해 북부 해상 북동쪽의 저기압 사이에 기압...</div>
-          
-          <a class="btn" href="https://www.ytn.co.kr/_ln/0108_202602180213544717" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">연합뉴스TV</span><span class="time">02/17 19:31</span></div>
-          <div class="title">[날씨] 설날 하늘 쾌청, 공기 깨끗…곳곳 큰 일교차</div>
-          <div class="summary">큰 기온 변화에 대비한 옷차림 챙기셔야겠습니다. 내일도 날은 대체로 맑겠습니다. 울릉도와 독도는... 내일 동해안과 동쪽 산지, 제주로 강한 바람이 불겠습니다. 영남으로는 대기가 건조해지고 있어 불조심...</div>
-          
-          <a class="btn" href="http://www.yonhapnewstv.co.kr/MYH20260217193035eMn" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">YTN</span><span class="time">02/17 16:54</span></div>
-          <div class="title">[날씨] 연휴 막바지 맑고 쾌청...산간 강풍·해상 풍랑 주의</div>
-          <div class="summary">특히 산간 곳곳에는 10cm 안팎의 눈이 쌓여 있어 빙판길 사고에도 대비해야 합니다. 눈이 내리면서... [윤영승 / 기상청 예보관 : 18일에는 중국 중부 지방에 위치한 고기압과 동해 북부 해상 북동쪽의 저기압 사이에 기압...</div>
-          
-          <a class="btn" href="https://www.ytn.co.kr/_ln/0108_202602171654433256" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">연합뉴스TV</span><span class="time">02/17 16:49</span></div>
-          <div class="title">[날씨] 설날 맑고 한낮 포근…내륙 큰 일교차</div>
-          <div class="summary">큰 기온 변화에 대비한 옷차림 하셔야겠습니다. 내일 새벽부터 아침 사이 중부 내륙과 호남 내륙에는 안개... 내일 오후 동해안에는 높은 너울성 파도가 치겠습니다. 바다의 물결은 동해상에서 최고 3.5m로 높게 일겠습니다....</div>
-          
-          <a class="btn" href="http://www.yonhapnewstv.co.kr/MYH20260217164818IKq" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 11:32</span></div>
-          <div class="title">정읍, 사과·배 등 4종 농작물재해보험 90% 지원</div>
-          <div class="summary">농작물재해보험은 태풍, 홍수, 가뭄 등 자연재해와 병해충 등으로 발생한 농작물 피해를 보상해 농업인의 소득과 경영 안정을 도모하는 정책 보험이다. 특히 과수 농가의 경우 한번의 재해로도 연간 수확량이 급감할 수...</div>
-          
-          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514184" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 07:08</span></div>
-          <div class="title">어떤 기업 눈길 끄나…농우바이오·팜한농 대기업 ‘열일’ [스페셜리포...</div>
-          <div class="summary">(CMV), 탄저병, 칼라병, 역병 등 다양한 병해에 복합적인 저항성을 지녔다. 초세가 강하고 열과(갈라짐)·칼슘... 농사를 망치는 주범인 칼라병(토마토반점위조바이러스)과 탄저병을 동시에 막아내는 ‘복합 내병성’...</div>
-          
-          <a class="btn" href="https://www.mk.co.kr/article/11962443" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">koreatimes.com</span><span class="time">02/18 02:28</span></div>
-          <div class="title">한국 방문시 육류 반입하단 ‘낭패’</div>
-          <div class="summary">식물 검역 품목도 엄격해 ▲망고·라임·오렌지·파파야·사과 등 과일류 ▲감자·고구마·마 등 생과채류 ▲사과나무, 배나무, 포도나무 등 과수의 묘목, 접수, 삽수 등 ▲흙이 붙은 식물이나 살아있는 병해충·잡초 종자...</div>
-          
-          <a class="btn" href="http://www.koreatimes.com/article/1601553" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        </div><div class="section"><h2>유통 및 현장(APC/수출) <span class="count">(7)</span></h2>
-        <div class="card">
-          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 17:47</span></div>
-          <div class="title">기후변화가 만든 새 풍경 …&#x27;오징어 도시&#x27;가 &#x27;정어리 도시&#x27; 됐다</div>
-          <div class="summary">&quot; 새벽 공기가 아직 채 가시지 않은 이달 초, 일본 홋카이도 하코다테시 수산물도매시장. 경매장 한복판에서... 가와무라 대표는 &quot;지속가능한 어업을 위해서는 어종 변화에 맞춰 유통과 가공 방식도 달라져야 한다&quot;며...</div>
-          
-          <a class="btn" href="https://www.mk.co.kr/article/11964275" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">뉴시스</span><span class="time">02/18 06:00</span></div>
-          <div class="title">&quot;물 들어올 때 노 젓자&quot;…K-푸드 인기에 해외로 눈돌린다[우울한 식품업...</div>
-          <div class="summary">이 가운데 농식품 수출은 2015년 이후 10년 연속 증가세를 이어가다 처음으로 100억 달러를 넘어섰다. 단일 품목으로는 라면이 전년 대비 21.9% 늘어 처음으로 15억 달러를 넘어섰다. 글로벌 수요 증가에 생산을 확대하고...</div>
-          
-          <a class="btn" href="https://www.newsis.com/view/NISX20260213_0003515753" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">노컷뉴스</span><span class="time">02/18 05:02</span></div>
-          <div class="title">검색 판 흔드는 AI…포털은 AI처럼, AI는 포털처럼</div>
-          <div class="summary">퍼플렉시티는 AI 브라우저 &#x27;코멧&#x27;을 출시해 AI가 선별·요약한 뉴스를 전면에 배치하는 등 포털과 유사한 사용자 환경을 구현했다. 국내 포털도 대응에 속도를 내고 있다. 네이버는 검색 상단에 &#x27;AI 브리핑&#x27;을 도입해...</div>
-          
-          <a class="btn" href="https://www.nocutnews.co.kr/news/6472278?utm_source=naver&amp;utm_medium=article&amp;utm_campaign=20260218050103" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
-        <div class="card">
-          <div class="meta"><span class="press">머니투데이</span><span class="time">02/18 05:00</span></div>
-          <div class="title">이런 것도 맞춘다고?…배터리부터 날씨까지 &#x27;예측의 벽&#x27; 넘은 AI</div>
-          <div class="summary">충·방전 데이터에서 추출한 수십 개 패턴 중 연결 방식의 영향을 받지 않으면서 수명 예측에 민감한 핵심 지표 5가지를 스스로 선별하는 것도 특징이다. 연구팀 실험 결과, 단일 셀 데이터로 학습한 AI가 여러 셀이 병렬...</div>
-          
-          <a class="btn" href="https://www.mt.co.kr/future/2026/02/18/2026021203524057035" target="_blank" rel="noopener noreferrer">원문 열기</a>
-        </div>
-        
+  <div class="section" id="sec-supply"><div class="secbar"><h2>품목 및 수급 동향 <span class="count">(7)</span></h2></div>
         <div class="card">
           <div class="meta"><span class="press">매일경제</span><span class="time">02/17 17:01</span></div>
           <div class="title">“더운 베트남서 딸기 생산?”…농업판 뒤집은 ‘AI 농부’ 정체</div>
-          <div class="summary">프리미엄 농산물을 현지에서 직접 생산해 신선도와 가격 경쟁력을 모두 잡겠다는 수요가 폭발한다”고... 이어 “어밸브는 단순한 설비 수출이 아니라 AI 기반 재배 운영 표준을 현지에 정착시키고 있다는 점에서...</div>
+          <div class="summary">고품질 딸기를 생산해낸다. 박 대표는 “베트남 중산층은 소득 수준이 높아지며 고품질 먹거리를 찾지만 현지 공급망은 이를 따라가지 못하는 ‘수급 불균형’ 상태”라며 “수입산에 의존하던 프리미엄 농산물을...</div>
           
           <a class="btn" href="https://www.mk.co.kr/article/11962429" target="_blank" rel="noopener noreferrer">원문 열기</a>
         </div>
         
         <div class="card">
-          <div class="meta"><span class="press">세계일보</span><span class="time">02/17 15:14</span></div>
-          <div class="title">산지 쌀값 23만원 넘는데…농업단체 “가격 정상화다” 주장</div>
-          <div class="summary">국가데이터처에 따르면 이달 5일 기준 산지 쌀값(80kg)은 23만232원으로 집계됐다. 지난달 25일(22만9328원)보다 0.4% 오른 수준이다. 또 한국농수산식품유통공사(aT)에 따르면 지난 13일 기준 쌀 소비자 가격은 20kg당...</div>
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 09:00</span></div>
+          <div class="title">설 성수품 가격에 소비자 울상…&#x27;장관급 물가관리 TF&#x27; 시험대</div>
+          <div class="summary">한국농수산식품유통공사(aT) 농산물유통정보(KAMIS)에 따르면 지난 13일 기준 사과(후지·상급) 10개 가격은... 점검은 ▲불공정거래 ▲정책지원 부정수급 ▲유통구조 등 3개 분야로 추진된다. 공정위 부위원장이 주도하는...</div>
           
-          <a class="btn" href="https://www.segye.com/newsView/20260217504489?OutUrl=naver" target="_blank" rel="noopener noreferrer">원문 열기</a>
+          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514058" target="_blank" rel="noopener noreferrer">원문 열기</a>
         </div>
         
         <div class="card">
-          <div class="meta"><span class="press">경향신문</span><span class="time">02/17 15:04</span></div>
-          <div class="title">국제형사재판소, AI 기술 도입 한창···‘미 빅테크 의존’ 문제를 어...</div>
-          <div class="summary">AI가 선별한 증거의 법적 능력과 미국 빅테크에 AI 기술을 의존해야 하는 구조적 문제는 해결해야 할 과제다. ICC 검찰국 ‘57테라바이트’ 증거 플랫폼으로 수집 AI 도입에 가장 적극적인 곳은 검찰국(Office of the...</div>
+          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 07:08</span></div>
+          <div class="title">어떤 기업 눈길 끄나…농우바이오·팜한농 대기업 ‘열일’ [스페셜리포...</div>
+          <div class="summary">첫 출하 이후 단기간에 이룬 쾌거라 평가받는다. 현재 주력 제품 ‘홍희’와 ‘골드베리’는 미국·중동 등지에서 호평받으며 연간 20만달러 로열티를 거둔다. 딸기 단일 품목으로는 업계 최고 수준이다. 헤테로는...</div>
           
-          <a class="btn" href="https://www.khan.co.kr/article/202602171504001" target="_blank" rel="noopener noreferrer">원문 열기</a>
+          <a class="btn" href="https://www.mk.co.kr/article/11962443" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">매일경제</span><span class="time">02/17 07:07</span></div>
+          <div class="title">농업의 반도체 ‘K종자 산업’을 아십니까 [스페셜리포트]</div>
+          <div class="summary">한국 딸기 전 세계 수출 규모는 6753만달러(약 971억원)를 기록했다. 5년 전보다 47%나 급증해 한국 농산물... 종자는 농산물 수확량, 맛, 병해충 저항성 등 핵심 품질을 결정한다. 기후 위기와 국제 분쟁으로 식량 수급...</div>
+          
+          <a class="btn" href="https://www.mk.co.kr/article/11962441" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">newscj.com</span><span class="time">02/18 01:02</span></div>
+          <div class="title">설 성수품 원산지 허위표시 7782건… 돼지고기 3700건 최다</div>
+          <div class="summary">높은 사과 배 소고기 돼지고기 등 16개 품목의 원산지 부정 유통 적발 건수는 7782건으로 집계됐다.... 온라인 구매 시에는 상품 정보와 판매자 정보를 점검하고 시세보다 지나치게 낮은 가격은 한 번 더 살펴볼 필요가...</div>
+          
+          <a class="btn" href="https://www.newscj.com/news/articleView.html?idxno=3375926" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">news.tvchosun.com</span><span class="time">02/17 15:04</span></div>
+          <div class="title">&#x27;물가와의 전쟁&#x27;, 경제부총리가 직접 TF 꾸린다는데…</div>
+          <div class="summary">한국농수산식품유통공사(aT) 농산물유통정보(KAMIS)에 따르면 같은 날 기준 사과(후지·상급) 10개 가격은... 점검 분야는 ▲불공정거래 ▲정책지원 부정수급 ▲유통구조 등 세 갈래다. 공정위 부위원장이 주도하는...</div>
+          
+          <a class="btn" href="https://news.tvchosun.com/site/data/html_dir/2026/02/17/2026021790087.html" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        
+        <div class="card">
+          <div class="meta"><span class="press">allurekorea.com</span><span class="time">02/17 08:02</span></div>
+          <div class="title">프랑스의 햄튼으로 불리는 ‘캅 페레’ 여기 어때?</div>
+          <div class="summary">직접 양식한 굴을 제공하며, 굴 6개를 9파운드도 안 되는 가격에 맛볼 수 있고, 로제와인 한 잔 역시 약... 캅 페레 시장(Cap Ferret Market) 레주 캅 페레(Lege-Cap-Ferret)의 전통시장에서는 신선한 현지 농산물을 판매한다. 약...</div>
+          
+          <a class="btn" href="https://www.allurekorea.com/2026/02/17/%ed%94%84%eb%9e%91%ec%8a%a4%ec%9d%98-%ed%96%84%ed%8a%bc%ec%9c%bc%eb%a1%9c-%eb%b6%88%eb%a6%ac%eb%8a%94-%ec%ba%85-%ed%8e%98%eb%a0%88-%ec%97%ac%ea%b8%b0-%ec%96%b4%eb%95%8c/?utm_source=naver&amp;utm_medium=partnership" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div><div class="section" id="sec-policy"><div class="secbar"><h2>주요 이슈 및 정책 <span class="count">(0)</span></h2></div><div class="empty">특이사항 없음</div></div><div class="section" id="sec-pest"><div class="secbar"><h2>병해충 및 방제 <span class="count">(1)</span></h2></div>
+        <div class="card">
+          <div class="meta"><span class="press">뉴시스</span><span class="time">02/17 11:32</span></div>
+          <div class="title">정읍, 사과·배 등 4종 농작물재해보험 90% 지원</div>
+          <div class="summary">전북 정읍시는 사과, 배, 단감, 떫은감 등 과수 4종 재배농가를 대상으로 3월6일까지 ‘2026년 농작물재해보험’ 가입 신청을 접수한다고 17일 밝혔다. 농작물재해보험은 태풍, 홍수, 가뭄 등 자연재해와 병해충 등으로...</div>
+          
+          <a class="btn" href="https://www.newsis.com/view/NISX20260212_0003514184" target="_blank" rel="noopener noreferrer">원문 열기</a>
+        </div>
+        </div><div class="section" id="sec-dist"><div class="secbar"><h2>유통 및 현장(APC/수출) <span class="count">(1)</span></h2></div>
+        <div class="card">
+          <div class="meta"><span class="press">MBN</span><span class="time">02/17 19:46</span></div>
+          <div class="title">진격의 K-포도…딸기 제치고 &#x27;수출 과일 1위&#x27;</div>
+          <div class="summary">지난해엔 포도가 딸기를 제치고 수출 과일 1위 자리를 꿰찼습니다. 수확 철이 아닌데도 포도 수출 주문이... 새 수출액이 4배나 늘었습니다. ▶ 인터뷰 : 강효주 / 농림축산식품부 농식품수출진흥과장 - &quot;2년 전부터 저희가...</div>
+          
+          <a class="btn" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176292" target="_blank" rel="noopener noreferrer">원문 열기</a>
         </div>
         </div>
 
-  <div class="footer">* 휴일/주말에는 발송을 스킵하고 state가 갱신되지 않아, 다음 영업일에 자동으로 누적 구간이 확장됩니다(중복 URL은 1회만 반영).</div>
+  <div class="footer">* 휴일/주말에는 발송을 스킵하고 state가 갱신되지 않아, 다음 영업일에 누적 구간이 자동 확장됩니다(중복 URL은 1회만 반영).</div>
 </div>
 </body>
 </html>
