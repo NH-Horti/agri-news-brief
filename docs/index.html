@@ -5,16 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>농산물 뉴스 브리핑</title>
   <style>
-    body{margin:0;background:#ffffff;color:#111827;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
-    .wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
-    h1{margin:0;font-size:22px}
-    .sub{color:#6b7280;margin-top:8px;font-size:13px}
-    .btn{display:inline-block;margin-top:14px;text-decoration:none;color:#fff;border:1px solid #1d4ed8;
-         padding:10px 14px;border-radius:12px;background:#1d4ed8;font-weight:900}
-    .btn:hover{background:#1e40af;border-color:#1e40af}
-    .panel{margin-top:18px;border:1px solid #e5e7eb;border-radius:16px;background:#fff;padding:14px}
-    ul{margin:10px 0 0 18px}
-    a{color:#1d4ed8}
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:980px;margin:0 auto;padding:26px 16px 70px}
+    h1{margin:0;font-size:22px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);margin-top:8px;font-size:13px;line-height:1.5}
+    .btn{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;text-decoration:none;color:#fff;
+         border:1px solid var(--btn);padding:10px 14px;border-radius:12px;background:var(--btn);font-weight:900}
+    .btn:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .panel{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}
+    .panelTitle{font-weight:900;margin-bottom:10px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    @media (max-width: 820px) { .grid{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width: 520px) { .grid{grid-template-columns:1fr;} }
+
+    .card{display:block;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:12px;
+          background:#ffffff;color:var(--text)}
+    .card:hover{border-color:#cbd5e1}
+    .dt{font-size:15px;font-weight:900}
+    .meta{margin-top:6px;color:var(--muted);font-size:12px}
+    .empty{color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
@@ -22,12 +42,24 @@
     <h1>농산물 뉴스 브리핑</h1>
     <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다.</div>
 
-    <a class="btn" href="./archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">최신 브리핑 열기</a>
+    <a class="btn" href="/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">최신 브리핑 열기</a>
 
     <div class="panel">
-      <div style="font-weight:900;margin-bottom:6px;">날짜별 아카이브</div>
-      <ul><li><a href="./archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</a></li>
-<li><a href="./archive/2026-02-18.html">2026-02-18</a></li></ul>
+      <div class="panelTitle">날짜별 아카이브</div>
+      <div class="grid">
+        
+          <a class="card" href="/agri-news-brief/archive/{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}.html">
+            <div class="dt">{&#x27;date&#x27;: &#x27;2026-02-18&#x27;, &#x27;start&#x27;: &#x27;02/17 07:00&#x27;, &#x27;end&#x27;: &#x27;02/18 07:00&#x27;, &#x27;total&#x27;: 9}</div>
+            <div class="meta">요일</div>
+          </a>
+        
+
+          <a class="card" href="/agri-news-brief/archive/2026-02-18.html">
+            <div class="dt">2026-02-18</div>
+            <div class="meta">수요일</div>
+          </a>
+        
+      </div>
     </div>
   </div>
 </body>
