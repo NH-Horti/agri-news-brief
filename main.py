@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v19-refine-scoring-remove-feedback-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v20-hotfix-businessday-20260219")
 
 # -----------------------------
 # -----------------------------
@@ -130,6 +130,39 @@ STRICT_KAKAO_LINK_CHECK = os.getenv("STRICT_KAKAO_LINK_CHECK", "false").strip().
 
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
+
+# -----------------------------
+# Business day / holidays
+# -----------------------------
+def is_weekend(d: date) -> bool:
+    return d.weekday() >= 5
+
+def is_korean_holiday(d: date) -> bool:
+    s = d.isoformat()
+    if s in EXCLUDE_HOLIDAYS:
+        return False
+    if s in EXTRA_HOLIDAYS:
+        return True
+    try:
+        import holidays  # type: ignore
+        kr = holidays.KR(years=[d.year], observed=True)
+        return d in kr
+    except Exception:
+        return False
+
+def is_business_day_kr(d: date) -> bool:
+    if is_weekend(d):
+        return False
+    if is_korean_holiday(d):
+        return False
+    return True
+
+def previous_business_day(d: date) -> date:
+    cur = d - timedelta(days=1)
+    while not is_business_day_kr(cur):
+        cur -= timedelta(days=1)
+    return cur
+
 
 
 # -----------------------------
