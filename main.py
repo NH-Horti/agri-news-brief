@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v23-hotfix-agri-strength-score-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v24-hotfix-press-weight-domain-20260219")
 
 # -----------------------------
 # -----------------------------
@@ -929,7 +929,7 @@ def press_tier(press: str, domain: str) -> int:
 
     return 1
 
-def press_weight(press: str, domain: str) -> float:
+def press_weight(press: str, domain: str = "") -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
@@ -1524,7 +1524,7 @@ def _compute_rank_score_article(a: Article, section_key: str) -> float:
     # 기본: 강한 농업/원예 신호 + 정책/유통/병해충 신호 + 언론사
     base_strength = agri_strength_score(text, key)
     score = base_strength
-    score += press_weight(press)
+    score += press_weight(press, dom)
     score += nh_boost(text, key)
     score -= low_quality_domain_penalty(dom)
     score -= off_topic_penalty(text)
