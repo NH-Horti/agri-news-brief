@@ -76,14 +76,27 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v24-hotfix-press-weight-domain-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v16-all-upgrades-20260219")
 
 # -----------------------------
+# Feedback learning & extra sources (고도화)
 # -----------------------------
-# Extra RSS sources (optional)
-# -----------------------------
+DOCS_FEEDBACK_PATH = "docs/feedback.json"
+
+# GitHub repo slug (owner/repo). In Actions, GITHUB_REPOSITORY is set automatically.
+REPO_SLUG = os.getenv("REPO_SLUG", os.getenv("GITHUB_REPOSITORY", "")).strip()
+
+# Feedback settings
+FEEDBACK_ENABLE = os.getenv("FEEDBACK_ENABLE", "false").strip().lower() in ("1", "true", "yes")
+FEEDBACK_LABEL = os.getenv("FEEDBACK_LABEL", "feedback").strip()
+FEEDBACK_CLOSE_ISSUES = os.getenv("FEEDBACK_CLOSE_ISSUES", "true").strip().lower() in ("1", "true", "yes")
+FEEDBACK_SINCE_DAYS = int(os.getenv("FEEDBACK_SINCE_DAYS", "120") or "120")
+
+# Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
 WHITELIST_RSS_URLS = [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]
 
+# Runtime-loaded feedback model (updated in main()).
+FEEDBACK_MODEL = None  # type: ignore
 
 
 
@@ -131,39 +144,6 @@ STRICT_KAKAO_LINK_CHECK = os.getenv("STRICT_KAKAO_LINK_CHECK", "false").strip().
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
-# -----------------------------
-# Business day / holidays
-# -----------------------------
-def is_weekend(d: date) -> bool:
-    return d.weekday() >= 5
-
-def is_korean_holiday(d: date) -> bool:
-    s = d.isoformat()
-    if s in EXCLUDE_HOLIDAYS:
-        return False
-    if s in EXTRA_HOLIDAYS:
-        return True
-    try:
-        import holidays  # type: ignore
-        kr = holidays.KR(years=[d.year], observed=True)
-        return d in kr
-    except Exception:
-        return False
-
-def is_business_day_kr(d: date) -> bool:
-    if is_weekend(d):
-        return False
-    if is_korean_holiday(d):
-        return False
-    return True
-
-def previous_business_day(d: date) -> date:
-    cur = d - timedelta(days=1)
-    while not is_business_day_kr(cur):
-        cur -= timedelta(days=1)
-    return cur
-
-
 
 # -----------------------------
 # Domain blocks / terms
@@ -196,17 +176,6 @@ OFFTOPIC_HINTS = [
     "코스피", "코스닥", "주가", "급등", "급락", "비트코인", "환율",
     "여행", "관광", "호텔", "리조트", "레스토랑", "와인", "해변", "휴양",
 ]
-
-# 코어(섹션별 핵심 2) 선정에서 제외할 헤드라인 유형(칼럼/기고/인물/행사/홍보 등)
-# - 전체 기사 리스트(Top5)에는 포함될 수 있으나, '핵심2'에는 올리지 않기 위함
-_HEADLINE_STOPWORDS = [
-    "칼럼", "기고", "오피니언", "사설", "논설", "데스크", "기획", "기자수첩",
-    "인물", "동정", "축제", "행사", "개막", "전시", "공연", "페스티벌",
-    "봉사", "기부", "후원", "시상", "캠페인", "공모",
-    "간담회", "협의회", "설명회", "세미나", "포럼", "워크숍", "교육", "연수",
-    "업무협약", "mou", "협약", "발대식", "출범", "개소식", "준공식",
-]
-
 
 # 공통 제외(광고/구인/부동산/도박 등) - text는 lower() 상태
 BAN_KWS = [
@@ -518,43 +487,6 @@ PEST_WEIGHT_MAP = {
     '진딧물': 2.5, '응애': 2.3, '노린재': 2.3, '총채벌레': 2.3,
     '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
 }
-# -----------------------------
-# Section-aware agriculture strength score (v23)
-# - Backward compatible: agri_strength_score(text) works.
-# - New: agri_strength_score(text, section_key) uses section weight maps.
-#   (Fixes TypeError when called with 2 args and improves scoring precision.)
-# -----------------------------
-def agri_strength_score(text: str, section_key: str | None = None) -> float:
-    t = (text or "").lower()
-
-    # Base agriculture anchors (broad)
-    base = float(count_any(t, [w.lower() for w in AGRI_STRONG_TERMS]))
-
-    # Section-weighted signals
-    wm: dict[str, float] | None = None
-    if section_key == "supply":
-        wm = SUPPLY_WEIGHT_MAP
-    elif section_key == "dist":
-        wm = DIST_WEIGHT_MAP
-    elif section_key == "policy":
-        wm = POLICY_WEIGHT_MAP
-    elif section_key == "pest":
-        wm = PEST_WEIGHT_MAP
-
-    if wm is not None:
-        sig = float(weighted_hits(t, wm))
-        # Scale down to keep the overall rank score range stable (~0-15)
-        score = 0.55 * sig + 0.65 * base
-    else:
-        score = base
-
-    # Numeric / unit hints often indicate practical signal (prices/volumes/budgets)
-    if _NUMERIC_HINT_RE.search(t):
-        score += 0.5
-    if _UNIT_HINT_RE.search(t):
-        score += 0.5
-
-    return score
 
 
 # -----------------------------
@@ -929,7 +861,7 @@ def press_tier(press: str, domain: str) -> int:
 
     return 1
 
-def press_weight(press: str, domain: str = "") -> float:
+def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
@@ -968,58 +900,190 @@ def low_quality_domain_penalty(domain: str) -> float:
 
 _LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
 
-def local_coop_penalty(text: str, section_key: str) -> float:
-    """지역 단위 '○○농협' 기사 중 이벤트/동정성 기사를 과도하게 올리지 않기 위한 패널티.
-    - 단, APC/산지유통/도매시장/품목 수급/가격/경락 등 '원예수급 핵심 맥락'이 있으면 패널티를 해제.
+def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> float:
+    """지역 단위 농협(지점/조합) 동정성 기사 감점.
+    - 농민신문은 '지역농협 소식'이 많아 원예수급 핵심에서 밀려야 하는 경우가 있어 보정.
+    - 단, 경제지주/공판장/하나로마트/온라인도매시장 등 '실무 신호'가 있으면 감점하지 않는다.
     """
-    if not _LOCAL_COOP_RX.search(text):
+    t = (text or "").lower()
+    # 실무 신호가 있으면 감점하지 않음
+    if any(k.lower() in t for k in NH_STRONG_TERMS) or any(k.lower() in t for k in NH_STRONG_COOCUR_TERMS):
+        return 0.0
+    if any(k in t for k in ("공판장", "가락시장", "도매시장", "경락", "경락가", "반입", "출하", "수급", "가격")):
         return 0.0
 
-    # 예외(높은 가치): APC/산지유통/시장/품목수급/가격/경락/인터뷰(품목)
-    apc_terms = [
-        "apc", "산지유통센터", "산지유통", "선별", "ca저장", "저장고", "저장량",
-        "공판장", "도매시장", "가락시장", "경락", "경락가", "경매", "반입", "출하",
-        "수급", "시세", "가격", "도매가격", "소매가격",
-        "품목", "사과", "배", "감귤", "만감", "포도", "딸기", "복숭아", "단감", "키위",
-        "오이", "고추", "양파", "마늘", "감자",
-    ]
-    if has_any(text, apc_terms):
-        # '행사/봉사/기부' 같은 이벤트성이어도 위 맥락이 있으면 제외하지 않음(다만 점수는 낮게 시작)
-        if not has_any(text, ["기부", "봉사", "후원", "행사", "축제", "캠페인", "시상", "발대식", "기념식"]):
-            return 0.0
-        # 이벤트성 + 핵심 맥락: 약한 패널티만 적용
-        return 1.5
+    if not _LOCAL_COOP_RX.search(t):
+        return 0.0
 
-    # 이벤트/동정/홍보성 키워드
-    event_terms = [
-        "기부", "봉사", "후원", "행사", "축제", "개막", "캠페인", "시상", "발대식", "기념식",
-        "방문", "격려", "수상", "전달", "기탁", "나눔", "사랑의", "무료", "할인행사",
-        "홍보", "출시", "오픈", "개점", "기념", "협약", "mou",
-    ]
-    is_eventy = has_any(text, event_terms)
+    # '○○농협' + 행사/동정/기부성 기사 패널티
+    if any(w in t for w in ("기부", "후원", "봉사", "행사", "축제", "시상", "간담회", "협의회", "설명회", "업무협약", "mou")):
+        return 4.2 if section_key in ("supply", "dist", "policy") else 2.8
 
-    # 섹션별 패널티 강도(정책/품목 수급에선 더 강하게)
-    if section_key in ("supply", "policy"):
-        return 6.0 if is_eventy else 4.5
-    if section_key == "dist":
-        return 4.5 if is_eventy else 3.5
-    # pest는 농협 기사 자체가 많지 않으므로 약하게
-    return 3.0 if is_eventy else 2.0
+    # 단순 지역 소식은 소폭 감점
+    return 2.0 if section_key in ("supply", "dist", "policy") else 1.2
+
+
+# -----------------------------
+# Feedback model (GitHub issues -> feedback.json) + runtime scoring boost
+# -----------------------------
 def _now_iso() -> str:
     return datetime.now(timezone(timedelta(hours=9))).isoformat()
 
-# (feedback buttons removed)
+def load_feedback_local(path: str) -> dict:
+    try:
+        p = Path(path)
+        if p.exists():
+            return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {"press": {}, "domain": {}, "token": {}, "stats": {"up": 0, "down": 0}, "updated_at": None}
 
-def github_api_headers(token: str | None) -> dict:
-    """Headers for GitHub REST API calls."""
-    h = {
+def save_feedback_local(path: str, data: dict):
+    try:
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+def github_list_feedback_issues(repo: str, token: str, label: str, since_iso: str | None = None, per_page: int = 100) -> list[dict]:
+    """List open issues labeled feedback."""
+    url = f"https://api.github.com/repos/{repo}/issues"
+    params = {"state": "open", "labels": label, "per_page": per_page, "page": 1, "sort": "updated", "direction": "desc"}
+    if since_iso:
+        params["since"] = since_iso
+    out: list[dict] = []
+    for _ in range(5):
+        r = SESSION.get(url, headers=github_api_headers(token), params=params, timeout=30)
+        if not r.ok:
+            break
+        items = r.json()
+        if not items:
+            break
+        out.extend(items)
+        if len(items) < per_page:
+            break
+        params["page"] = int(params.get("page", 1)) + 1
+    return out
+
+def github_close_issue(repo: str, token: str, issue_number: int):
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
+    SESSION.patch(url, headers=github_api_headers(token), json={"state": "closed"}, timeout=30)
+
+def _parse_feedback_issue_body(body: str) -> dict | None:
+    """Parse body created by our feedback links."""
+    if not body:
+        return None
+    data: dict[str, str] = {}
+    for line in body.splitlines():
+        line = line.strip()
+        if ":" not in line:
+            continue
+        k, v = line.split(":", 1)
+        k = k.strip().lower()
+        v = v.strip()
+        if k in ("vote", "url", "section", "press", "domain", "title", "date"):
+            data[k] = v
+    if "vote" not in data or "url" not in data:
+        return None
+    vote = data["vote"].lower()
+    if vote not in ("up", "down"):
+        return None
+    return data
+
+def _extract_tokens_for_feedback(title: str, desc: str) -> list[str]:
+    # 매우 단순 토큰: 한글/영문/숫자 2자 이상
+    txt = f"{title} {desc}".lower()
+    toks = re.findall(r"[0-9a-z가-힣]{2,}", txt)
+    stop = set(["기사","뉴스","농산물","농업","정부","지자체","오늘","관련","단독"])
+    out = []
+    for t in toks:
+        if t in stop:
+            continue
+        if len(out) >= 12:
+            break
+        out.append(t)
+    return out
+
+def _clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, x))
+
+def _bump(m: dict, k: str, delta: float, lo=-3.0, hi=3.0):
+    if not k:
+        return
+    m[k] = float(m.get(k, 0.0)) + float(delta)
+    m[k] = _clamp(float(m[k]), lo, hi)
+
+def update_feedback_model(model: dict, vote: str, press: str, domain: str, title: str, desc: str):
+    delta = 1.0 if vote == "up" else -1.0
+    # press: 업/다운 반영 (과도한 편향 방지 위해 step 작게)
+    _bump(model["press"], press, 0.25 * delta)
+    # domain: 품질이 낮다고 판단되는 도메인은 더 큰 감점
+    _bump(model["domain"], normalize_host(domain), (0.35 if delta > 0 else 0.60) * delta)
+    # tokens: 약하게
+    for t in _extract_tokens_for_feedback(title, desc):
+        _bump(model["token"], t, 0.05 * delta)
+    model["stats"]["up" if delta > 0 else "down"] = int(model["stats"].get("up" if delta > 0 else "down", 0)) + 1
+    model["updated_at"] = _now_iso()
+
+def feedback_bonus_for_article(model: dict, press: str, domain: str, title: str, desc: str) -> float:
+    if not model:
+        return 0.0
+    b = 0.0
+    b += float(model.get("press", {}).get(press, 0.0))
+    b += float(model.get("domain", {}).get(normalize_host(domain), 0.0))
+    # token bonus: 상위 몇 개만
+    toks = _extract_tokens_for_feedback(title, desc)[:8]
+    for t in toks:
+        b += float(model.get("token", {}).get(t, 0.0))
+    return b
+
+def _sort_key_major_first(a: Article):
+    return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
+
+
+# -----------------------------
+# Business day / holidays
+# -----------------------------
+def is_weekend(d: date) -> bool:
+    return d.weekday() >= 5
+
+def is_korean_holiday(d: date) -> bool:
+    s = d.isoformat()
+    if s in EXCLUDE_HOLIDAYS:
+        return False
+    if s in EXTRA_HOLIDAYS:
+        return True
+    try:
+        import holidays  # type: ignore
+        kr = holidays.KR(years=[d.year], observed=True)
+        return d in kr
+    except Exception:
+        return False
+
+def is_business_day_kr(d: date) -> bool:
+    if is_weekend(d):
+        return False
+    if is_korean_holiday(d):
+        return False
+    return True
+
+def previous_business_day(d: date) -> date:
+    cur = d - timedelta(days=1)
+    while not is_business_day_kr(cur):
+        cur -= timedelta(days=1)
+    return cur
+
+
+# -----------------------------
+# GitHub Contents API helpers
+# -----------------------------
+def github_api_headers(token: str):
+    return {
+        "Authorization": f"token {token}",
         "Accept": "application/vnd.github+json",
-        "User-Agent": "agri-news-brief",
-        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "agri-news-brief-bot",
     }
-    if token:
-        h["Authorization"] = f"Bearer {token}"
-    return h
 
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
@@ -1416,203 +1480,183 @@ PEST_OFFTOPIC_TERMS = [
     "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
     "학교", "어린이집", "환자", "감염",
 ]
-# --- 섹션별 맥락 보강 ---
-SUPPLY_HORTI_CONTEXT_TERMS = [
-    "원예", "과수", "과일", "채소", "청과", "산지",
-    "사과", "배", "감귤", "만감", "한라봉", "천혜향", "레드향",
-    "포도", "샤인머스캣", "딸기", "복숭아", "단감", "곶감", "키위", "참다래",
-    "오이", "고추", "풋고추", "토마토", "파프리카", "상추", "양파", "마늘", "감자",
-]
-POLICY_AGRI_CONTEXT_TERMS = [
-    "농산물", "농축산물", "농축수산물", "농식품", "농업", "농가", "원예", "과수", "채소", "과일",
-    "청과", "도매시장", "공판장", "가락시장", "온라인 도매시장",
-    "농림축산식품부", "농식품부", "aT", "농관원", "검역", "원산지", "부정유통",
-] + [k.lower() for k in AGRI_POLICY_KEYWORDS]
-
-PEST_ORCHARD_PRIORITY_TERMS = ["과수화상병", "탄저병", "세균", "살균", "살충", "약제", "예찰", "월동", "냉해", "동해"]
-
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
-    """섹션별 1차 필터(관련도/노이즈 컷).
-    - '품목/수급'은 가격/수급 키워드만으로는 오탐이 많으므로 **원예 맥락(과일/채소/청과/원예/과수/산지/품목명)**을 추가로 요구
-    - '정책'은 경제/금융/부동산 기사 유입을 막기 위해 **농업/농산물 맥락**을 요구(단, 정책 브리핑/공식 사이트는 예외)
-    - '병해충/방제'는 **생활방역/감염병** 기사 차단 + **벼(양곡) 방제**는 원예 맥락이 없으면 제외
-    """
-    title = title or ""
-    desc = desc or ""
-    dom = normalize_host(dom or "")
-    key = section_conf.get("key", "")
+    """섹션별 1차 필터(관련도/노이즈 컷)."""
+    text = (title + " " + desc).lower()
+    dom = (dom or "").lower().strip()
 
-    text = f"{title} {desc}".lower()
-
-    # 공통 제외 키워드
+    # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
         return False
 
-    # 공통 제외 도메인
-    if is_blocked_domain(dom):
+    # 정책 섹션만 정책기관/공공 도메인 허용(단, 방제(pest)는 지방 이슈가 많아 예외 허용)
+    # ✅ (5) pest 섹션은 지자체/연구기관(.go.kr/.re.kr) 기사도 허용
+    if (
+        dom in POLICY_DOMAINS
+        or dom in ALLOWED_GO_KR
+        or dom.endswith(".re.kr")
+        or dom.endswith(".go.kr")
+    ) and section_conf["key"] not in ("policy", "pest"):
         return False
 
-    # must_terms(섹션 핵심 신호) 체크
-    must_terms = [t.lower() for t in (section_conf.get("must_terms") or [])]
-    if must_terms and not has_any(text, must_terms):
-        return False
+    # 섹션 must-term 통과 여부
+    if not section_must_terms_ok(text, section_conf["must_terms"]):
+        # policy는 도메인 override가 있음
+        if not policy_domain_override(dom, text):
+            return False
 
-    strength = keyword_strength(text, section_conf)
 
-    # --- 섹션별 추가 맥락 ---
+    key = section_conf["key"]
+
+    # 공급(supply): '원예/농산물 맥락'이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
     if key == "supply":
-        # 원예 맥락이 없으면 가격/수급 기사 오탐이 많음(예: 산업/금융 기사)
-        if not has_any(text, [t.lower() for t in SUPPLY_HORTI_CONTEXT_TERMS]):
-            return False
-        # supply는 조금 더 빡세게
-        if strength < 4:
-            return False
-
-    elif key == "policy":
-        # 공식 정책/기관 도메인은 AGRI_POLICY_KEYWORDS가 있으면 허용
-        if policy_domain_override(dom, text):
-            return True
-        # 일반 언론은 농업/농산물 맥락이 명확해야 함
-        if not has_any(text, [t.lower() for t in POLICY_AGRI_CONTEXT_TERMS]):
-            return False
-        if strength < 3:
+        supply_ctx_terms = [
+            "농산물", "농업", "원예", "과수", "화훼", "시설", "청과",
+            "산지", "산지유통", "도매시장", "가락시장", "공판장", "경락", "경락가",
+            "사과", "배", "감귤", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣", "오이", "고추",
+            "수출", "검역", "apc", "산지유통센터",
+        ]
+        if count_any(text, [t.lower() for t in supply_ctx_terms]) < 1:
             return False
 
-    elif key == "dist":
-        # dist는 현장 기사 다양성이 크므로 기준 완화(너무 줄어드는 문제 방지)
-        if strength < 3:
+    # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
+    if key == "policy":
+        policy_agri_ctx = [
+            "농식품", "농업", "농산물", "원예", "과수", "청과", "도매시장", "온라인 도매시장",
+            "검역", "원산지", "수입", "수출", "관세", "할당관세", "할인지원", "성수품", "가격 안정",
+            "농협", "aT", "농촌진흥청", "국립농산물품질관리원", "식약처",
+        ]
+        if not policy_domain_override(dom, text):
+            if count_any(text, [t.lower() for t in policy_agri_ctx]) < 1:
+                return False
+        policy_off = ["금리", "주택", "부동산", "코스피", "코스닥", "주식", "채권", "가상자산", "원화", "환율", "반도체", "배터리"]
+        if any(w in text for w in policy_off):
+            if count_any(text, [t.lower() for t in ("농식품", "농산물", "농업", "원예", "과수", "청과", "도매시장")]) < 2:
+                return False
+
+        # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
+        is_major = press_priority(press, dom) >= 2
+        if (not is_major) and _LOCAL_GEO_PATTERN.search(title):
             return False
 
-    elif key == "pest":
-        # 생활방역/감염병 기사 차단
-        if any(k in text for k in [w.lower() for w in PEST_OFFTOPIC_TERMS]):
+    # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
+    if key == "pest":
+        agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
+        if agri_ctx_hits < 1:
             return False
 
-        # 벼(양곡) 방제는 원예 맥락이 없으면 제외
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
-        if rice_hits >= 2 and horti_hits == 0:
+        if rice_hits >= 1 and horti_hits == 0:
             return False
 
-        # pest는 병해충/방제 맥락이 최소 1개는 있어야 함
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        orchard_hits = count_any(text, [t.lower() for t in PEST_ORCHARD_PRIORITY_TERMS])
-        if strict_hits == 0 and orchard_hits == 0:
+        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        if (strict_hits + weather_hits) < 2:
             return False
 
-        if strength < 3:
-            return False
+        off_hits = count_any(text, [t.lower() for t in PEST_OFFTOPIC_TERMS])
+        if off_hits:
+            if agri_ctx_hits < 2 or strict_hits < 2:
+                return False
 
-    else:
-        if strength < 3:
+        title_hits = count_any((title or "").lower(), [t.lower() for t in PEST_TITLE_CORE_TERMS])
+        if title_hits == 0 and strict_hits < 3:
             return False
+    # 섹션별 키워드 강도(낚시성/약한 기사 컷)
+    strength = keyword_strength(text, section_conf)
+    if section_conf["key"] == "pest" and strength < 3:
+        return False
+
+    # 유통 섹션은 MUST/강도 기준을 좀 더 엄격하게 (낚시성/인물기사 방지)
+    if section_conf["key"] == "dist" and strength < 3:
+        return False
 
     return True
-def _compute_rank_score_article(a: Article, section_key: str) -> float:
-    """기사 중요도 스코어(섹션별로 가중치 다르게).
-    핵심 원칙:
-      - 언론사 중요도(중앙지/방송/농민신문/정책브리핑 등) 반영
-      - 섹션별 핵심 키워드(수급/가격/유통/병해충/정책) 반영
-      - 이벤트/동정성 기사(특히 지역농협 단발성 행사) 감점
-      - 저품질 도메인 감점 + 중복 기사 감점은 별도 루틴에서 처리
-    """
-    key = section_key
-    text = f"{a.title} {a.description}".lower()
-    dom = normalize_host(a.domain)
-    press = (a.press or "").strip()
 
-    # 기본: 강한 농업/원예 신호 + 정책/유통/병해충 신호 + 언론사
-    base_strength = agri_strength_score(text, key)
-    score = base_strength
+
+def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
+    """중요도 스코어.
+    목표:
+    - 원예수급(과수/화훼/시설채소) 실무에 직접 영향을 주는 의사결정 신호(가격/물량/대책/검역/방제)를 최우선
+    - 언론매체 가중치: 공식(정책/기관) > 중앙·일간·경제·방송·농민신문 > 중소/지방 > 인터넷
+    - 농협(경제지주/공판장/하나로/온라인도매) 관련성 반영
+    - 지방 방제/협의회/행사성 기사 상단 배치 억제 + 중복 이슈 억제
+    - (옵션) feedback.json 기반으로 사용자/조직의 선호를 학습하여 미세 조정
+    """
+    text = (title + " " + desc).lower()
+    title_l = (title or "").lower()
+    strength = agri_strength_score(text)
+    korea = korea_context_score(text)
+    offp = off_topic_penalty(text)
+
+    # 기본: 강신호(원예수급/유통/정책/방제) 기반
+    score = 0.0
+    score += 0.55 * strength
+    score += 0.25 * korea
+    score -= 0.70 * offp
+
+    # 섹션별 키워드 가중치
+    key = section_conf["key"]
+    if key == "supply":
+        score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+    elif key == "dist":
+        score += weighted_hits(text, DIST_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+    elif key == "policy":
+        score += weighted_hits(text, POLICY_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
+        # 공식 정책 소스 추가 가점
+        if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
+            score += 3.0
+    elif key == "pest":
+        score += weighted_hits(text, PEST_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
+
+        # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
+        if "과수화상병" in text:
+            score += 6.0
+        if "탄저병" in text:
+            score += 3.0
+        if any(w in text for w in ("냉해", "동해", "저온피해", "서리")):
+            score += 2.4
+
+        # 양곡(벼) 방제는 제외: 남아있더라도 강하게 감점
+        rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
+        horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
+        if rice_hits >= 1 and horti_hits == 0:
+            score -= 7.0
+
+    # 언론/기관 가중치
     score += press_weight(press, dom)
-    score += nh_boost(text, key)
+
+    # 도메인 품질 패널티
     score -= low_quality_domain_penalty(dom)
-    score -= off_topic_penalty(text)
 
-    # 섹션별 세부 가감
-    score -= eventy_penalty(text, a.title, key)
-    score -= local_coop_penalty(text, key)
+    # 농협(경제지주/공판장 등) 관련성 가점
+    score += nh_boost(text, key)
 
-    # pest(과수화훼팀 관점): 과수화상병/탄저병 등 과수 병해 우대
-    if key == "pest":
-        if has_any(text, [t.lower() for t in PEST_ORCHARD_PRIORITY_TERMS]):
-            # 중앙지/방송/농민신문/정책브리핑이면 더 우대
-            pr = press_priority(press)
-            score += 2.0 if pr >= 2 else 1.0
-            # 특정 지역매체라도 실무 유용성이 높으면 소폭 우대
-            if dom in {"inews365.com", "www.inews365.com"}:
-                score += 0.8
+    # 행사/동정성 패널티(실무 신호 약하면 감점)
+    score -= eventy_penalty(text, title, key)
 
-    # policy(정책): 공식 사이트/정책브리핑은 우대
-    if key == "policy" and policy_domain_override(dom, text):
-        score += 2.5
+    # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
+    score -= local_coop_penalty(text, press, dom, key)
 
-    # dist(유통/현장): 도매시장/공판장/가락시장 맥락이 강하면 우대
-    if key == "dist" and has_any(text, ["가락시장", "도매시장", "공판장", "온라인 도매시장", "반입", "경락"]):
-        score += 1.0
+    # 최신성: 48시간 내 기사 보정(너무 과도하지 않게)
+    try:
+        now_kst = datetime.now(timezone(timedelta(hours=9)))
+        age_h = (now_kst - pub_dt_kst).total_seconds() / 3600.0
+        if age_h <= 8:
+            score += 0.8
+        elif age_h <= 24:
+            score += 0.4
+        elif age_h <= 48:
+            score += 0.2
+    except Exception:
+        pass
 
-    # time decay (최근 기사 우대)
-    if a.published_at_kst:
-        # 0~48시간: +1.5, 3~7일: 0, 그 이상: -1.0
-        hours = (datetime.now(KST) - a.published_at_kst).total_seconds() / 3600.0
-        if hours <= 48:
-            score += 1.5
-        elif hours <= 168:
-            score += 0.0
-        else:
-            score -= 1.0
-
-    return round(score, 2)
-
-def compute_rank_score(*args, **kwargs) -> float:
-    """Backward-compatible wrapper for rank scoring.
-
-    Supports two call styles:
-      1) compute_rank_score(article, section_key)
-      2) compute_rank_score(title, desc, dom, pub_dt_kst, section_conf, press)
-         (legacy call sites)
-
-    This prevents runtime crashes when internal refactors change the signature.
-    """
-    # Style 1: (Article, section_key)
-    if len(args) >= 1 and isinstance(args[0], Article):
-        a = args[0]
-        section_key = args[1] if len(args) >= 2 else getattr(a, "section", "")
-        return _compute_rank_score_article(a, section_key)
-
-    # Style 2: (title, desc, dom, pub_dt_kst, section_conf, press)
-    if len(args) >= 6:
-        title, desc, dom, pub, section_conf, press = args[:6]
-        skey = ""
-        if isinstance(section_conf, dict):
-            skey = section_conf.get("key", "") or section_conf.get("section", "")
-        else:
-            skey = str(section_conf or "")
-
-        title = title or ""
-        desc = desc or ""
-        dom = (dom or "").lower()
-        pub_dt = pub if isinstance(pub, datetime) else datetime.min.replace(tzinfo=KST)
-
-        a = Article(
-            section=skey,
-            title=title,
-            description=desc,
-            link="",
-            originallink="",
-            pub_dt_kst=pub_dt,
-            domain=dom,
-            press=press or "",
-            norm_key="",
-            title_key=norm_title_key(title),
-            canon_url="",
-            topic=extract_topic(title, desc),
-            score=0.0,
-            summary="",
-        )
-        return _compute_rank_score_article(a, skey)
-
-    raise TypeError("compute_rank_score() expects (Article, section_key) or (title, desc, dom, pub_dt_kst, section_conf, press)")
+    return round(score, 3)
 def _token_set(s: str) -> set[str]:
     s = (s or "").lower()
     toks = re.findall(r"[0-9a-z가-힣]{2,}", s)
@@ -1637,123 +1681,80 @@ def _region_set(s: str) -> set[str]:
     s = (s or "")
     return {m.group(0) for m in _REGION_RX.finditer(s)}
 
-def _pest_region_key(a: "Article") -> str:
-    """병해충/방제 기사에서 지역 1건 제한을 위한 region key.
-    - 제목에 지역이 없고 요약(desc)에만 있는 경우가 많아 title+desc를 함께 본다.
-    - '장수군', '장수 농업기술센터' 등 다양한 표기를 최대한 동일하게 묶는다.
+def _pest_region_key(title: str) -> str:
+    """pest 섹션 중복 억제를 위한 대표 지역 키.
+    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
+    - 없으면 첫 지역 토큰(도 등) 사용
     """
+    t = title or ""
+    ms = list(_REGION_RX.finditer(t))
+    if not ms:
+        # 군/시/구가 명시되지 않지만 "장수 농업기술센터"처럼 자주 등장하는 패턴 보완
+        m2 = _BARE_REGION_RX.search(t)
+        if m2:
+            return m2.group(1)
+        return ""
+    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
+    for m in ms:
+        r = m.group(0)
+        if r.endswith(("군", "시", "구")):
+            return r
+    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
+    return ms[0].group(0)
+
+def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
+    """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
+    - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
+    """
+    ta = _token_set(a.title)
+    tb = _token_set(b.title)
+    jac = _jaccard(ta, tb)
+
+
+    # 문자열 유사도(표기 차이/특수문자 차이 보완)
+    sa = re.sub(r"\s+", "", (a.title_key or a.title or "")).lower()
+    sb = re.sub(r"\s+", "", (b.title_key or b.title or "")).lower()
     try:
-        text = f"{a.title or ''} {a.description or ''}".strip()
+        if sa and sb and difflib.SequenceMatcher(None, sa, sb).ratio() >= 0.88:
+            return True
     except Exception:
-        text = str(a)
+        pass
 
-    # 1) 군/시/구/도 형태(장수군/제주시/충남 등)
-    m = REGION_RX.search(text)
-    if m:
-        return m.group(1)
-
-    # 2) '장수 농업기술센터' 같은 케이스(군/시 생략)
-    m2 = _BARE_REGION_RX.search(text)
-    if m2:
-        return f"{m2.group(1)}군"  # 장수 -> 장수군 으로 정규화
-
-    # 3) '전북 장수' 같은 케이스: 앞 단어가 도/광역, 뒤가 지자체명
-    m3 = re.search(r"[가-힣]{2,6}(도|특별시|광역시)\s*([가-힣]{2,6})\s*(군|시|구)?", text)
-    if m3:
-        base = m3.group(2)
-        suf = m3.group(3) or "군"
-        return f"{base}{suf}"
-
-    return ""
-
-def _pest_issue_signature(a: "Article") -> tuple[str, str, str]:
-    """pest 섹션 중복 제거용 시그니처.
-    region_key + disease_key + action_key 로 구성한다.
-    """
-    text = f"{a.title or ''} {a.description or ''}".lower()
-    region = _pest_region_key(a) or ""
-
-    disease_map = [
-        ("과수화상병", "FIREBLIGHT"),
-        ("탄저병", "ANTHRAC"),
-        ("냉해", "COLD"),
-        ("동해", "COLD"),
-        ("월동", "WINTER"),
-        ("병해충", "PEST"),
-        ("예찰", "SCOUT"),
-        ("방제", "CTRL"),
-    ]
-    disease_key = "ETC"
-    for kw, code in disease_map:
-        if kw in text:
-            disease_key = code
-            break
-
-    action_map = [
-        ("공동방제", "JOINT"),
-        ("방제", "CTRL"),
-        ("예찰", "SCOUT"),
-        ("약제", "CHEM"),
-        ("살포", "SPRAY"),
-        ("지원", "SUPPORT"),
-        ("단속", "ENFORCE"),
-    ]
-    action_key = "GEN"
-    for kw, code in action_map:
-        if kw in text:
-            action_key = code
-            break
-
-    return (region, disease_key, action_key)
-def _near_duplicate_title(a: Article, b: Article, section_key: str) -> bool:
-    # When in doubt, be more aggressive for low-quality / syndication-heavy domains.
-    ta = (a.title or "").strip()
-    tb = (b.title or "").strip()
-    if not ta or not tb:
-        return False
-
-    na = normalize_title_key(ta)
-    nb = normalize_title_key(tb)
-    if na and nb and na == nb:
+    # 강한 중복(거의 동일)
+    if jac >= 0.72:
         return True
 
-    toks_a = set(tokenize_for_sim(ta))
-    toks_b = set(tokenize_for_sim(tb))
-    if not toks_a or not toks_b:
-        return False
+    ra = _region_set((a.title or "") + " " + (a.description or ""))
+    rb = _region_set((b.title or "") + " " + (b.description or ""))
+    same_region = bool(ra & rb)
 
-    inter = len(toks_a & toks_b)
-    union = len(toks_a | toks_b)
-    jac = inter / union if union else 0.0
-    ratio = difflib.SequenceMatcher(None, ta, tb).ratio()
-
-    # region-awareness (특히 pest 섹션에서 중요)
-    same_region = False
     if section_key == "pest":
-        ra = _region_set(f"{ta} {(a.description or '')}")
-        rb = _region_set(f"{tb} {(b.description or '')}")
-        same_region = bool(ra & rb) if (ra and rb) else False
-
-    low_a = normalize_host(a.domain) in LOW_QUALITY_DOMAINS
-    low_b = normalize_host(b.domain) in LOW_QUALITY_DOMAINS
-    lowish = low_a or low_b
-
-    # 기본 기준
-    if same_region and jac >= 0.55:
-        return True
-    if ratio >= 0.88:
-        return True
-
-    # 저품질/전재 도메인은 더 공격적으로 중복 판단
-    if lowish:
-        if same_region and jac >= 0.45:
+        common_core = len((ta & tb) & _PEST_CORE_TOKENS)
+        # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
+        if same_region and common_core >= 2 and jac >= 0.45:
             return True
-        if ratio >= 0.84:
+        # '방제/예찰/약제' + 같은 지역이면 더 관대하게 중복 판단
+        if same_region and common_core >= 1 and jac >= 0.52:
             return True
-        if jac >= 0.50:
+
+    if section_key == "supply":
+        common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
+        common_cmd = len((ta & tb) & _SUPPLY_COMMODITY_TOKENS)
+        if common_cmd >= 1 and common_core >= 2 and jac >= 0.50:
+            return True
+
+    if section_key == "dist":
+        common_core = len((ta & tb) & _DIST_CORE_TOKENS)
+        if (same_region or common_core >= 2) and jac >= 0.50:
+            return True
+
+    if section_key == "policy":
+        common_core = len((ta & tb) & _POLICY_CORE_TOKENS)
+        if common_core >= 2 and jac >= 0.55:
             return True
 
     return False
+
 def _jaccard(a: set[str], b: set[str]) -> float:
     if not a or not b:
         return 0.0
@@ -1765,6 +1766,18 @@ def _is_policy_official(a: "Article") -> bool:
     dom = normalize_host(a.domain)
     p = (a.press or "").strip()
     return (dom in ("mafra.go.kr", "korea.kr") or p in ("농식품부", "정책브리핑"))
+
+# -----------------------------
+# Headline gate constants
+# -----------------------------
+# 코어(핵심 2)로 올리기엔 부적절한 헤드라인 패턴(칼럼/기고/행사/인물/홍보성)
+_HEADLINE_STOPWORDS = [
+    "칼럼", "기고", "사설", "오피니언", "독자기고", "기자수첩",
+    "인터뷰", "대담", "신간", "책", "추천", "여행", "맛집",
+    "포토", "화보", "영상", "스케치", "행사", "축제", "기념", "시상",
+    "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou",
+    "인물", "동정", "취임", "인사", "부고", "결혼", "개업",
+]
 
 def _headline_gate(a: "Article", section_key: str) -> bool:
     """코어(핵심2)로 올릴 자격이 있는지(섹션별)."""
@@ -1800,33 +1813,26 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
 
     return True
-
 # -----------------------------
-# Dynamic threshold for section selection
-# - Rest articles (beyond core2) should not be too weak.
-# - Use a base minimum per section and a relative cutoff from the best score.
+# Selection threshold
 # -----------------------------
-BASE_MIN_SCORE: dict[str, float] = {
-    "supply": 6.8,
-    "policy": 6.8,
-    "dist": 6.5,
-    "pest": 6.2,
+# 섹션별 최소 스코어 기준선(너무 약한 기사는 후보 풀에서 제외)
+BASE_MIN_SCORE = {
+    "supply": 6.5,
+    "policy": 6.5,
+    "dist": 6.3,
+    "pest": 6.0,
 }
 
 def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> float:
+    """상위 기사 분포에 맞춰 동적으로 임계치를 잡아 '약한 기사'를 컷한다.
+    - 최상위(best)에서 일정 마진을 빼고, 섹션별 최소선(BASE_MIN_SCORE)보다 낮아지지 않게.
+    """
     if not candidates_sorted:
-        return BASE_MIN_SCORE.get(section_key, 6.5)
-    try:
-        best = max(float(a.score or 0.0) for a in candidates_sorted)
-    except Exception:
-        best = float(candidates_sorted[0].score or 0.0)
-    base = BASE_MIN_SCORE.get(section_key, 6.5)
-    # Pest tends to have fewer high-score candidates; be slightly more permissive.
-    delta = 7.0 if section_key == "pest" else 8.0
-    thr = max(base, best - delta)
-    # Prevent overly aggressive cutoff when best itself is modest.
-    return min(thr, best)
-
+        return BASE_MIN_SCORE.get(section_key, 6.0)
+    best = float(getattr(candidates_sorted[0], "score", 0.0) or 0.0)
+    margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
+    return max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선정.
@@ -1854,7 +1860,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return a.norm_key or a.canon_url or a.link or a.title_key
 
     def rkey(a: Article) -> str:
-        return _pest_region_key(a) if section_key == "pest" else ""
+        return _pest_region_key((a.title or "") + " " + (a.description or "")) if section_key == "pest" else ""
 
     def can_take_region(a: Article, enforce: bool = True) -> bool:
         if section_key != "pest" or not enforce:
@@ -1993,21 +1999,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 최종 방어: 유사 제목/같은 지역(pest) 중복 제거
     final: list[Article] = []
     used_rk: dict[str, int] = {}
-    used_sig: set[tuple[str, str, str]] = set()
     for a in selected:
         if any(_near_duplicate_title(a, b, section_key) for b in final):
             continue
         if section_key == "pest":
-            rk = _pest_region_key(a)
-            sig = _pest_issue_signature(a)
-            if any(sig):
-                if sig in used_sig:
-                    continue
-                used_sig.add(sig)
+            rk = _pest_region_key(a.title)
             if rk:
                 if used_rk.get(rk, 0) >= 1:
                     continue
                 used_rk[rk] = used_rk.get(rk, 0) + 1
+        final.append(a)
 
     final = sorted(final, key=_sort_key_major_first, reverse=True)
     return final[:max_n]
@@ -2191,7 +2192,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                     nh = nh_boost((a.title + " " + a.description).lower(), key)
                 except Exception:
                     nh = 0.0
-                rk = _pest_region_key(a) if key == "pest" else ""
+                rk = _pest_region_key(a.title) if key == "pest" else ""
                 log.info("  [DEBUG] %.2f pr=%s tier=%d region=%s nh=%.1f title=%s",
                          a.score, press_priority(a.press, a.domain), press_tier(a.press, a.domain),
                          rk, nh, a.title[:120])
@@ -2391,6 +2392,33 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
         line = ""
     return (line, tags)
 
+def feedback_issue_url(repo_slug: str, vote: str, report_date: str, section_key: str, section_title: str, a: Article) -> str:
+    """GitHub issue prefill 링크(정적 페이지에서도 동작)."""
+    if not repo_slug:
+        return ""
+    url = (a.originallink or a.link or "").strip()
+    dom = normalize_host(a.domain or domain_of(url) or "")
+    press = (a.press or "").strip()
+    title = (a.title or "").strip()
+    issue_title = f"[feedback][{vote.upper()}] {report_date} {section_title} | {press} | {title[:60]}"
+    body = "\n".join([
+        f"vote: {vote}",
+        f"date: {report_date}",
+        f"section: {section_key}",
+        f"press: {press}",
+        f"domain: {dom}",
+        f"url: {url}",
+        f"title: {title}",
+        "",
+        "comment: ",
+    ])
+    q = {
+        "labels": FEEDBACK_LABEL,
+        "title": issue_title,
+        "body": body,
+    }
+    return "https://github.com/" + repo_slug + "/issues/new?" + urlencode(q)
+
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict,
                       archive_dates_desc: list[str], site_path: str) -> str:
     # 상단 칩 카운트 + 섹션별 중요도 정렬
@@ -2447,29 +2475,49 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         insight_line, insight_tags = make_section_insight(key, lst)
 
         def render_card(a: Article, is_core: bool):
-            url = a.url
-            press = a.press
-            title = html_escape(a.title)
-            dt = a.published_at_kst.strftime("%m/%d %H:%M") if a.published_at_kst else ""
-            badge = '<span class="core">핵심</span>' if is_core else ""
-            score = f"{a.score:.1f}"
-            tag = f'<span class="score">S:{score}</span>'
-
-            desc = html_escape((a.description or "").strip())
-            if len(desc) > 160:
-                desc = desc[:160] + "…"
-
-            return f'''
-            <div class="card">
-              <div class="meta">
-                <span class="press">{press}</span>
-                <span class="dt">{dt}</span>
-                {tag}{badge}
+            url = a.originallink or a.link
+            summary_html = "<br>".join(esc(a.summary).splitlines())
+            core_badge = '<span class="badgeCore">핵심</span>' if is_core else ""
+            # (feedback buttons removed)
+            feedback_html = ""
+            return f"""
+            <div class=\"card\" style=\"border-left-color:{color}\">
+              <div class=\"cardTop\">
+                <div class=\"meta\">
+                  {core_badge}
+                  <span class=\"press\">{esc(a.press)}</span>
+                  <span class=\"dot\">·</span>
+                  <span class=\"time\">{esc(fmt_dt(a.pub_dt_kst))}</span>
+                  <span class=\"dot\">·</span>
+                  <span class=\"topic\">{esc(a.topic)}</span>
+                </div>
+                <a class=\"btnOpen\" href=\"{esc(url)}\" target=\"_blank\" rel=\"noopener\">원문 열기</a>
               </div>
-              <a class="title" href="{url}" target="_blank" rel="noopener">{title}</a>
-              <div class="desc">{desc}</div>
+              <div class=\"ttl\">{esc(a.title)}</div>
+              <div class=\"sum\">{summary_html}</div>
             </div>
-            '''
+            """
+
+        if not lst:
+            body_html = '<div class="empty">해당사항 없음</div>'
+        else:
+            body_html = "\n".join([render_card(a, i < 2) for i, a in enumerate(lst)])
+
+        sections_html.append(
+            f"""
+            <section id=\"sec-{key}\" class=\"sec\">
+              <div class=\"secHead\" style=\"border-left:8px solid {color};\">
+                <div class=\"secTitle\">
+                  <span class=\"dotColor\" style=\"background:{color}\"></span>
+                  {esc(title)}
+                </div>
+                <div class=\"secCount\">{len(lst)}건</div>
+              </div>
+              <div class=\"secBody\">{body_html}</div>
+            </section>
+            """
+        )
+
     sections_html = "\n".join(sections_html)
 
     page_title = f"[{report_date} 농산물 뉴스 Brief]"
@@ -3569,7 +3617,6 @@ def main():
 
     # write index
     _raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
-    
 
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
