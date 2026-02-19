@@ -32,6 +32,7 @@ import re
 import json
 import base64
 import html
+import difflib
 import logging
 import hashlib
 from dataclasses import dataclass
@@ -75,7 +76,28 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v15-scoring-dedupe-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v16-all-upgrades-20260219")
+
+# -----------------------------
+# Feedback learning & extra sources (고도화)
+# -----------------------------
+DOCS_FEEDBACK_PATH = "docs/feedback.json"
+
+# GitHub repo slug (owner/repo). In Actions, GITHUB_REPOSITORY is set automatically.
+REPO_SLUG = os.getenv("REPO_SLUG", os.getenv("GITHUB_REPOSITORY", "")).strip()
+
+# Feedback settings
+FEEDBACK_ENABLE = os.getenv("FEEDBACK_ENABLE", "true").strip().lower() in ("1", "true", "yes")
+FEEDBACK_LABEL = os.getenv("FEEDBACK_LABEL", "feedback").strip()
+FEEDBACK_CLOSE_ISSUES = os.getenv("FEEDBACK_CLOSE_ISSUES", "true").strip().lower() in ("1", "true", "yes")
+FEEDBACK_SINCE_DAYS = int(os.getenv("FEEDBACK_SINCE_DAYS", "120") or "120")
+
+# Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
+WHITELIST_RSS_URLS = [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]
+
+# Runtime-loaded feedback model (updated in main()).
+FEEDBACK_MODEL = None  # type: ignore
+
 
 
 
@@ -466,43 +488,6 @@ PEST_WEIGHT_MAP = {
     '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
 }
 
-# -----------------------------
-# Pest section focus tuning (원예수급/과수화훼팀 관점)
-# - 벼(양곡) 중심 방제/협의회성 기사는 필요도가 낮아 제외/감점
-# - 과수화상병/탄저병 등 과수 핵심 병해는 강하게 가산
-# -----------------------------
-PEST_HORTI_TERMS = [
-    # 과수/만감류/포도
-    "사과", "배", "감귤", "만감", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣",
-    "복숭아", "자두", "감", "단감", "곶감",
-    # 시설채소(원예수급 연관)
-    "딸기", "참외", "수박", "오이", "고추", "풋고추", "파프리카", "토마토",
-    "상추", "양파", "마늘", "감자", "배추", "무",
-    # 일반 원예/화훼 맥락
-    "과수", "과원", "원예", "시설", "하우스", "화훼", "국화", "장미",
-]
-
-# 양곡(벼) 방제는 과수화훼팀 관점에서 중요도가 낮아(양곡부 별도) 기본 제외/감점
-PEST_RICE_TERMS = [
-    "벼", "쌀", "미곡", "이앙",
-    "도열병", "흰잎마름병", "잎집무늬마름병",
-    "멸구", "벼멸구", "애멸구", "혹명나방",
-]
-
-# 과수 중심 핵심 병해/재해는 우선순위를 더 준다(중앙지/주요매체면 press_weight로 추가 우대)
-PEST_DISEASE_PRIORITY = {
-    "과수화상병": 7.0,
-    "탄저병": 4.5,
-    "노균병": 3.5,
-    "역병": 3.5,
-    "흰가루병": 3.0,
-    "냉해": 3.5,
-    "동해": 3.5,
-    "한파": 2.0,
-    "서리": 2.0,
-}
-
-
 
 # -----------------------------
 # NH (농협) relevance boost (농협 경제지주/임직원 대상 최적화)
@@ -555,58 +540,12 @@ def nh_boost(text: str, section_key: str) -> float:
     return 0.0
 
 
-
-# -----------------------------
-# Local coop (지역농협) 단신 페널티
-# - '○○농협 방문/점검/협의회' 류는 실무 핵심(가격/수급/정책) 신호가 약한 경우가 많아 상단 노출을 억제
-# - 단, 경제지주/중앙회/공판장/하나로마트 등 '전사·사업' 신호가 있거나,
-#   수급·가격 숫자/단위 신호가 강하면 페널티를 최소화
-# -----------------------------
-_LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
-
-_LOCAL_COOP_EVENT_TERMS = [
-    "방문", "현장점검", "점검", "간담회", "협의회", "설명회", "세미나", "교육", "워크숍",
-    "캠페인", "기부", "후원", "전달", "봉사", "발대식", "기념식", "협약", "mou",
-]
-
-_NH_NATIONAL_BUSINESS_HINTS = [
-    "농협경제지주", "경제지주", "농협중앙회", "중앙회",
-    "농협유통", "하나로마트", "농협몰", "공판장", "조합공판장", "온라인도매시장",
-]
-
-def local_coop_penalty(text: str, title: str, section_key: str) -> float:
-    ttl = (title or "").lower()
-    t = (text or "").lower()
-
-    if not _LOCAL_COOP_RX.search(title or ""):
-        return 0.0
-
-    # 전사/사업 신호면 페널티 없음
-    if has_any(t, [k.lower() for k in _NH_NATIONAL_BUSINESS_HINTS]):
-        return 0.0
-
-    # 가격/수급 등 '핵심 신호'가 숫자/단위와 함께 강하면 페널티 최소화
-    strong_core_terms = ["가격", "수급", "시세", "경락", "경락가", "반입", "출하", "물량", "재고", "대책", "지원", "할당관세", "검역", "단속"]
-    core_hits = count_any(t, [k.lower() for k in strong_core_terms])
-    if core_hits >= 2 and (_NUMERIC_HINT_RE.search(t) or _UNIT_HINT_RE.search(t)):
-        return 0.6
-
-    # 지역농협 동정성/행사성 키워드가 있으면 더 크게 감점
-    if has_any(ttl, [k.lower() for k in _LOCAL_COOP_EVENT_TERMS]):
-        return 2.8
-    if has_any(t, [k.lower() for k in _LOCAL_COOP_EVENT_TERMS]):
-        return 2.0
-
-    # 기본 감점(지역 단위 한정 이슈는 한 단계 낮춤)
-    return 1.6
-
 # -----------------------------
 # De-prioritize meeting/visit/PR-heavy articles (품질 보정)
 # - '방문/협의회/간담회/업무협약'류는 실무 의사결정 신호(가격/수급/물량/대책)가 약한 경우가 많음
 # -----------------------------
 EVENTY_TERMS = ["방문", "시찰", "간담회", "협의회", "세미나", "토론회", "업무협약", "협약", "mou", "설명회", "발대식", "기념식", "캠페인"]
 TECH_TREND_TERMS = ["스마트팜", "ai", "로봇", "자율", "연중생산", "수직농장", "빅데이터", "디지털", "혁신"]
-
 
 def eventy_penalty(text: str, title: str, section_key: str) -> float:
     t = (text or "").lower()
@@ -627,14 +566,6 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
         strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_POLICY]) + count_any(ttl, [k.lower() for k in POLICY_TITLE_CORE_TERMS])
     else:
         strong_signal = count_any(t, [k.lower() for k in PEST_TITLE_CORE_TERMS])
-
-    # pest: '협의회/간담회/회의' 등 행정 일정성 제목은 상단 배치를 억제
-    if section_key == "pest":
-        admin_title = any(w in ttl for w in ("협의회", "간담회", "회의", "설명회", "교육", "워크숍", "세미나"))
-        major_pest = has_any(t, ["과수화상병", "탄저병", "노균병", "역병", "냉해", "동해", "긴급", "무상", "지원", "공급", "예방약"])
-        if admin_title and not major_pest:
-            # 강신호가 있어도(병해충/방제) '회의/협의회' 성격이면 감점
-            return 2.4 if strong_signal >= 2 else 2.8
 
     if strong_signal >= 2:
         return 0.0
@@ -948,6 +879,164 @@ def press_weight(press: str, domain: str) -> float:
     if any(h in d for h in _UGC_HOST_HINTS):
         w -= 3.0
     return w
+
+
+# -----------------------------
+# Extra quality controls (도메인/지역농협 동정 기사 보정)
+# -----------------------------
+LOW_QUALITY_DOMAINS = {
+    # 클릭/재전송/중복이 잦았던 도메인들(필요 시 추가)
+    "m.sportsseoul.com", "sportsseoul.com",
+    "www.onews.tv", "onews.tv",
+}
+
+def low_quality_domain_penalty(domain: str) -> float:
+    d = normalize_host(domain or "")
+    if not d:
+        return 0.0
+    if d in LOW_QUALITY_DOMAINS:
+        return 3.5
+    return 0.0
+
+_LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
+
+def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> float:
+    """지역 단위 농협(지점/조합) 동정성 기사 감점.
+    - 농민신문은 '지역농협 소식'이 많아 원예수급 핵심에서 밀려야 하는 경우가 있어 보정.
+    - 단, 경제지주/공판장/하나로마트/온라인도매시장 등 '실무 신호'가 있으면 감점하지 않는다.
+    """
+    t = (text or "").lower()
+    # 실무 신호가 있으면 감점하지 않음
+    if any(k.lower() in t for k in NH_STRONG_TERMS) or any(k.lower() in t for k in NH_STRONG_COOCUR_TERMS):
+        return 0.0
+    if any(k in t for k in ("공판장", "가락시장", "도매시장", "경락", "경락가", "반입", "출하", "수급", "가격")):
+        return 0.0
+
+    if not _LOCAL_COOP_RX.search(t):
+        return 0.0
+
+    # '○○농협' + 행사/동정/기부성 기사 패널티
+    if any(w in t for w in ("기부", "후원", "봉사", "행사", "축제", "시상", "간담회", "협의회", "설명회", "업무협약", "mou")):
+        return 4.2 if section_key in ("supply", "dist", "policy") else 2.8
+
+    # 단순 지역 소식은 소폭 감점
+    return 2.0 if section_key in ("supply", "dist", "policy") else 1.2
+
+
+# -----------------------------
+# Feedback model (GitHub issues -> feedback.json) + runtime scoring boost
+# -----------------------------
+def _now_iso() -> str:
+    return datetime.now(timezone(timedelta(hours=9))).isoformat()
+
+def load_feedback_local(path: str) -> dict:
+    try:
+        p = Path(path)
+        if p.exists():
+            return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {"press": {}, "domain": {}, "token": {}, "stats": {"up": 0, "down": 0}, "updated_at": None}
+
+def save_feedback_local(path: str, data: dict):
+    try:
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+def github_list_feedback_issues(repo: str, token: str, label: str, since_iso: str | None = None, per_page: int = 100) -> list[dict]:
+    """List open issues labeled feedback."""
+    url = f"https://api.github.com/repos/{repo}/issues"
+    params = {"state": "open", "labels": label, "per_page": per_page, "page": 1, "sort": "updated", "direction": "desc"}
+    if since_iso:
+        params["since"] = since_iso
+    out: list[dict] = []
+    for _ in range(5):
+        r = SESSION.get(url, headers=github_api_headers(token), params=params, timeout=30)
+        if not r.ok:
+            break
+        items = r.json()
+        if not items:
+            break
+        out.extend(items)
+        if len(items) < per_page:
+            break
+        params["page"] = int(params.get("page", 1)) + 1
+    return out
+
+def github_close_issue(repo: str, token: str, issue_number: int):
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
+    SESSION.patch(url, headers=github_api_headers(token), json={"state": "closed"}, timeout=30)
+
+def _parse_feedback_issue_body(body: str) -> dict | None:
+    """Parse body created by our feedback links."""
+    if not body:
+        return None
+    data: dict[str, str] = {}
+    for line in body.splitlines():
+        line = line.strip()
+        if ":" not in line:
+            continue
+        k, v = line.split(":", 1)
+        k = k.strip().lower()
+        v = v.strip()
+        if k in ("vote", "url", "section", "press", "domain", "title", "date"):
+            data[k] = v
+    if "vote" not in data or "url" not in data:
+        return None
+    vote = data["vote"].lower()
+    if vote not in ("up", "down"):
+        return None
+    return data
+
+def _extract_tokens_for_feedback(title: str, desc: str) -> list[str]:
+    # 매우 단순 토큰: 한글/영문/숫자 2자 이상
+    txt = f"{title} {desc}".lower()
+    toks = re.findall(r"[0-9a-z가-힣]{2,}", txt)
+    stop = set(["기사","뉴스","농산물","농업","정부","지자체","오늘","관련","단독"])
+    out = []
+    for t in toks:
+        if t in stop:
+            continue
+        if len(out) >= 12:
+            break
+        out.append(t)
+    return out
+
+def _clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, x))
+
+def _bump(m: dict, k: str, delta: float, lo=-3.0, hi=3.0):
+    if not k:
+        return
+    m[k] = float(m.get(k, 0.0)) + float(delta)
+    m[k] = _clamp(float(m[k]), lo, hi)
+
+def update_feedback_model(model: dict, vote: str, press: str, domain: str, title: str, desc: str):
+    delta = 1.0 if vote == "up" else -1.0
+    # press: 업/다운 반영 (과도한 편향 방지 위해 step 작게)
+    _bump(model["press"], press, 0.25 * delta)
+    # domain: 품질이 낮다고 판단되는 도메인은 더 큰 감점
+    _bump(model["domain"], normalize_host(domain), (0.35 if delta > 0 else 0.60) * delta)
+    # tokens: 약하게
+    for t in _extract_tokens_for_feedback(title, desc):
+        _bump(model["token"], t, 0.05 * delta)
+    model["stats"]["up" if delta > 0 else "down"] = int(model["stats"].get("up" if delta > 0 else "down", 0)) + 1
+    model["updated_at"] = _now_iso()
+
+def feedback_bonus_for_article(model: dict, press: str, domain: str, title: str, desc: str) -> float:
+    if not model:
+        return 0.0
+    b = 0.0
+    b += float(model.get("press", {}).get(press, 0.0))
+    b += float(model.get("domain", {}).get(normalize_host(domain), 0.0))
+    # token bonus: 상위 몇 개만
+    toks = _extract_tokens_for_feedback(title, desc)[:8]
+    for t in toks:
+        b += float(model.get("token", {}).get(t, 0.0))
+    return b
 
 def _sort_key_major_first(a: Article):
     return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
@@ -1371,6 +1460,18 @@ PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
     "사과", "배", "감귤", "포도", "딸기", "복숭아", "감자", "고추", "오이", "양파", "마늘", "벼", "쌀",
 ]
+PEST_HORTI_TERMS = [
+    # 원예/과수/시설채소 중심(벼 방제 제외 판단용)
+    "원예", "과수", "과원", "시설", "하우스", "비가림", "재배",
+    "사과", "배", "감귤", "포도", "딸기", "복숭아", "단감", "곶감", "참다래", "키위",
+    "오이", "고추", "풋고추", "토마토", "파프리카", "상추", "양파", "마늘",
+    "화훼", "국화", "장미",
+]
+PEST_RICE_TERMS = [
+    # 양곡(벼) 병해충/방제(양곡부 별도 운영 시 불필요한 경우가 많아 pest 섹션에서 제외)
+    "벼", "쌀", "논", "이앙", "벼멸구", "멸구", "먹노린재", "멸강나방",
+    "도열병", "흰잎마름병", "키다리병", "잎집무늬마름병", "줄무늬잎마름병",
+]
 PEST_OFFTOPIC_TERMS = [
     # 사람/도시 방역성 기사(농업과 무관한 경우 차단)
     "코로나", "독감", "감염병", "방역", "방역당국", "모기", "진드기", "말라리아", "뎅기",
@@ -1382,7 +1483,6 @@ PEST_OFFTOPIC_TERMS = [
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷)."""
     text = (title + " " + desc).lower()
-    title_l = (title or "").lower()
     dom = (dom or "").lower().strip()
 
     # 공통 제외(광고/구인/부동산 등)
@@ -1405,13 +1505,6 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         if not policy_domain_override(dom, text):
             return False
 
-
-    # supply(품목/수급): 일반 '가격' 기사 오탐 방지를 위해 품목 단서가 최소 1개 필요
-    # - 예: '물가/주가/부동산 가격' 등은 must_terms를 통과해도 품목 단서가 없으면 제외
-    if section_conf["key"] == "supply":
-        if not has_any(text, [t.lower() for t in _SUPPLY_COMMODITY_TOKENS]):
-            return False
-
     # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
     if section_conf["key"] == "policy":
         is_major = press_priority(press, dom) >= 2
@@ -1425,16 +1518,12 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
         if agri_ctx_hits < 1:
             return False
-        # (A-1) 벼(양곡) 방제 중심 기사는 제외(양곡부 별도)
-        # - 제목에 벼/쌀이 직접 나오면 거의 양곡 이슈로 간주
-        rice_title_hits = count_any(title_l, [t.lower() for t in PEST_RICE_TERMS])
-        if rice_title_hits >= 1 and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
-            return False
-        # - 본문/설명에 벼 방제 신호가 강하고 원예(과수/채소/화훼) 단서가 없으면 제외
-        rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
-        if rice_hits >= 3 and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
-            return False
 
+    # (A-1) 양곡(벼) 방제는 제외(양곡부 별도): 벼 방제/병해충만 있는 경우 컷
+    rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
+    horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
+    if rice_hits >= 1 and horti_hits == 0:
+        return False
         # (B) 병해충/방제 핵심 단어(또는 냉해/동해 등 과수 피해) 히트 수
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
@@ -1465,150 +1554,95 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
 
 
 def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
+    """중요도 스코어.
+    목표:
+    - 원예수급(과수/화훼/시설채소) 실무에 직접 영향을 주는 의사결정 신호(가격/물량/대책/검역/방제)를 최우선
+    - 언론매체 가중치: 공식(정책/기관) > 중앙·일간·경제·방송·농민신문 > 중소/지방 > 인터넷
+    - 농협(경제지주/공판장/하나로/온라인도매) 관련성 반영
+    - 지방 방제/협의회/행사성 기사 상단 배치 억제 + 중복 이슈 억제
+    - (옵션) feedback.json 기반으로 사용자/조직의 선호를 학습하여 미세 조정
+    """
     text = (title + " " + desc).lower()
     title_l = (title or "").lower()
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
     offp = off_topic_penalty(text)
-    retail_pen = global_retail_protest_penalty(text)
 
+    # 기본: 강신호(원예수급/유통/정책/방제) 기반
     score = 0.0
-    # 1) 기본 농업/원예 수급 신호
-    score += strength * 2.0
-    score += korea * 0.7
-    score -= offp * 3.0
-    score -= retail_pen * 2.0
+    score += 0.55 * strength
+    score += 0.25 * korea
+    score -= 0.70 * offp
 
-    # 2) 섹션별 핵심 신호 가중치(원예수급 정밀화)
-    skey = section_conf["key"]
-    if skey == "supply":
-        score += weighted_hits(text, SUPPLY_WEIGHT_MAP) * 0.9
-        # 제목에 '수급/가격/작황' 같은 핵심어가 직접 있으면 더 강하게
-        score += count_any(title_l, [t for t in SUPPLY_TITLE_CORE_TERMS]) * 1.1
-        score += title_signal_bonus(title)
-    elif skey == "dist":
-        score += weighted_hits(text, DIST_WEIGHT_MAP) * 0.95
-        score += count_any(title_l, [t for t in DIST_TITLE_CORE_TERMS]) * 1.0
-        score += title_signal_bonus(title) * 0.6
-    elif skey == "policy":
-        score += weighted_hits(text, POLICY_WEIGHT_MAP) * 0.95
-        score += count_any(title_l, [t for t in POLICY_TITLE_CORE_TERMS]) * 1.0
-        # 공식 소스 보너스(정책브리핑/농식품부 등)
-        if normalize_host(dom) in ("korea.kr", "mafra.go.kr") or (press or "") in ("정책브리핑", "농식품부"):
-            score += 4.0
-    elif skey == "pest":
-        score += weighted_hits(text, PEST_WEIGHT_MAP) * 0.95
-        score += count_any(title_l, [t for t in PEST_TITLE_CORE_TERMS]) * 1.1
-        score += title_signal_bonus(title) * 0.5
+    # 섹션별 키워드 가중치
+    key = section_conf["key"]
+    if key == "supply":
+        score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+    elif key == "dist":
+        score += weighted_hits(text, DIST_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+    elif key == "policy":
+        score += weighted_hits(text, POLICY_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
+        # 공식 정책 소스 추가 가점
+        if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
+            score += 3.0
+    elif key == "pest":
+        score += weighted_hits(text, PEST_WEIGHT_MAP)
+        score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
 
-        # 과수/원예(과수화훼팀) 관점: 원예 단서가 있으면 가산
-        if has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
-            score += 1.6
+        # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
+        if "과수화상병" in text:
+            score += 6.0
+        if "탄저병" in text:
+            score += 3.0
+        if any(w in text for w in ("냉해", "동해", "저온피해", "서리")):
+            score += 2.4
 
-        # 과수 핵심 병해/재해(화상병/탄저병/냉해·동해 등) 우선 가산
-        for kw, w in PEST_DISEASE_PRIORITY.items():
-            if kw.lower() in text:
-                score += w
-
-        # 벼(양곡) 방제 중심 기사 감점(원예수급 관점에서 우선순위 낮음)
+        # 양곡(벼) 방제는 제외: 남아있더라도 강하게 감점
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
-        if rice_hits:
-            if not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
-                score -= 6.0 + 1.2 * max(0, rice_hits - 1)
-            else:
-                score -= 1.5
+        horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
+        if rice_hits >= 1 and horti_hits == 0:
+            score -= 7.0
 
-
-    # 3) 언론/출처 가중치(가장 중요한 축)
+    # 언론/기관 가중치
     score += press_weight(press, dom)
-    score += nh_boost(text, skey)
-    score -= eventy_penalty(text, title, skey)
-    score -= local_coop_penalty(text, title, skey)
 
-    # 정책 섹션: 지방 단신 감점(주요 매체면 완화)
-    pr = press_priority(press, dom)
-    if skey == "policy" and _LOCAL_GEO_PATTERN.search(title) and pr < 2:
-        score -= 5.0
+    # 도메인 품질 패널티
+    score -= low_quality_domain_penalty(dom)
 
-    # ✅ (6) 유통(dist): '현장/유통'과 무관한 인물·역사·문화성 기사(예: 제주 4.3 등) 상단 배치 방지
-    if skey == "dist":
-        dist_strong_terms = [
-            "가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "반입", "반출",
-            "중도매인", "시장도매인", "유통센터", "물류", "창고",
-            "apc", "선별", "ca저장", "저장", "저온",
-            "원산지", "부정유통", "단속", "검역", "통관",
-        ] + [t.lower() for t in WHOLESALE_MARKET_TERMS]
+    # 농협(경제지주/공판장 등) 관련성 가점
+    score += nh_boost(text, key)
 
-        dist_noise_terms = [
-            "4.3", "제주4.3", "추모", "희생", "유족", "영령", "기념", "기념식", "기념관",
-            "문화", "공연", "전시", "축제", "문학", "소설", "시집", "시인", "작가",
-            "영화", "드라마", "다큐", "연극",
-        ]
+    # 행사/동정성 패널티(실무 신호 약하면 감점)
+    score -= eventy_penalty(text, title, key)
 
-        strong_hits = sum(1 for t in dist_strong_terms if t in text)
-        noise_hits = sum(1 for t in dist_noise_terms if t in text)
+    # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
+    score -= local_coop_penalty(text, press, dom, key)
 
-        if strong_hits >= 2:
-            score += 2.5
-        elif strong_hits == 1:
+    # 최신성: 48시간 내 기사 보정(너무 과도하지 않게)
+    try:
+        now_kst = datetime.now(timezone(timedelta(hours=9)))
+        age_h = (now_kst - pub_dt_kst).total_seconds() / 3600.0
+        if age_h <= 8:
             score += 0.8
-        else:
-            score -= 2.5
+        elif age_h <= 24:
+            score += 0.4
+        elif age_h <= 48:
+            score += 0.2
+    except Exception:
+        pass
 
-        if noise_hits and strong_hits == 0:
-            score -= 6.0 + (noise_hits * 1.5)
+    # (옵션) 피드백 학습 보정
+    global FEEDBACK_MODEL  # runtime-loaded
+    try:
+        if FEEDBACK_MODEL:
+            score += feedback_bonus_for_article(FEEDBACK_MODEL, press, dom, title, desc)
+    except Exception:
+        pass
 
-    # 4) 최신성(24시간 내 가산) - 너무 과도하지 않게
-    age_hours = max(0.0, (datetime.now(tz=KST) - pub_dt_kst).total_seconds() / 3600.0)
-    score += max(0.0, 24.0 - min(age_hours, 24.0)) * 0.05
-
-    # 5) 섹션 must-term이 제목에 직접 들어가면 약간 가산
-    for t in section_conf["must_terms"]:
-        if t.lower() in title_l:
-            score += 0.8
-
-    # 6) 정책 섹션: 농식품부/정책브리핑 가산(중복 방지 위해 약하게)
-    if skey == "policy":
-        if "농식품부" in title or normalize_host(dom) == "mafra.go.kr":
-            score += 1.8
-        if "정책브리핑" in title or normalize_host(dom) == "korea.kr":
-            score += 1.0
-
-    return score
-
-
-# -----------------------------
-# Selection thresholds (섹션별 최소 점수)
-# - 동적 threshold(best-8)와 함께 사용
-# - 값이 높을수록 '정말 핵심'만 남김
-# -----------------------------
-BASE_MIN_SCORE = {
-    # 품목/수급
-        "supply": 7.5,
-    # 정책/제도(공식기관 우선)
-        "policy": 7.5,
-    # 유통/현장(시장·유통 인프라 중심)
-    "dist": 7.0,
-    # 병해충/방제(지방 이슈가 많아 상대적으로 완화)
-    "pest": 6.0,
-}
-
-def _dynamic_threshold(candidates: list[Article], section_key: str) -> float:
-    if not candidates:
-        return 10**9
-    best = max(a.score for a in candidates)
-    return max(BASE_MIN_SCORE.get(section_key, 6.5), best - 12.0)
-
-
-
-# -----------------------------
-# Headline(core2) gate: "섹션 타이틀" 급 기사만 코어로 올리기
-# -----------------------------
-_HEADLINE_STOPWORDS = [
-    "칼럼", "기고", "사설", "인터뷰", "포토", "사진", "영상", "만평", "연재",
-    "기획", "탐방", "인물", "추모", "기념", "축제", "전시", "공연", "문학", "소설", "시",
-]
-
+    return round(score, 3)
 def _token_set(s: str) -> set[str]:
     s = (s or "").lower()
     toks = re.findall(r"[0-9a-z가-힣]{2,}", s)
@@ -1616,64 +1650,43 @@ def _token_set(s: str) -> set[str]:
 
 
 # --- Near-duplicate suppression (특히 지방 방제/협의회 기사 중복 방지) ---
-_REGION_FULL_RX = re.compile(r"([가-힣]{2,6})(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
-_REGION_ORG_RX = re.compile(r"([가-힣]{2,6})(?:농업기술센터|농업기술원|농업기술과)")
+_REGION_RX = re.compile(r"[가-힣]{2,}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
+_BARE_REGION_RX = re.compile(r"([가-힣]{2,6})(?=(?:\s*)?(?:농업기술센터|농기센터|군청|시청|구청|농업기술원|농업기술과))")
 
 _PEST_CORE_TOKENS = {
-    "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역","긴급","예방약","무상"
+    "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역"
 }
 _SUPPLY_CORE_TOKENS = {"수급","가격","시세","경락","경락가","작황","출하","재고","저장","물량","반입"}
 _SUPPLY_COMMODITY_TOKENS = {
-    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","딸기","참외","수박",
-    "오이","고추","풋고추","파프리카","토마토","양파","마늘","감자","배추","무",
-    "쌀","비축미","단감","곶감"
+    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","오이","고추","풋고추","쌀","비축미","단감","곶감"
 }
 _DIST_CORE_TOKENS = {"가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","apc","물류","유통","온라인도매시장"}
 _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세","검역","통관","단속","고시","개정","보도자료","브리핑","예산","확대","연장"}
 
-_PEST_DISEASE_TOKENS = {
-    "과수화상병","탄저병","노균병","역병","흰가루병",
-    "냉해","동해","한파","서리","월동","예찰","긴급","예방약"
-}
-
-def _region_base_set(s: str) -> set[str]:
-    """지역 토큰(군/시/구 등)과 '장수농업기술센터'류에서 지역 베이스('장수')를 함께 추출."""
+def _region_set(s: str) -> set[str]:
     s = (s or "")
-    bases = set()
-    for m in _REGION_FULL_RX.finditer(s):
-        token = m.group(0)
-        base = m.group(1)
-        if token:
-            bases.add(token)
-        if base:
-            bases.add(base)
-    for m in _REGION_ORG_RX.finditer(s):
-        base = m.group(1)
-        if base:
-            bases.add(base)
-    return bases
+    return {m.group(0) for m in _REGION_RX.finditer(s)}
 
 def _pest_region_key(title: str) -> str:
-    """pest 섹션 중복 억제를 위한 대표 '지역 베이스' 키.
-    - '장수군'과 '장수농업기술센터'를 동일 지역('장수')으로 묶기 위함
+    """pest 섹션 중복 억제를 위한 대표 지역 키.
+    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
+    - 없으면 첫 지역 토큰(도 등) 사용
     """
     t = title or ""
-    ms = list(_REGION_FULL_RX.finditer(t))
-    if ms:
-        # 군/시/구가 있으면 그 base를 우선
-        for m in ms:
-            token = m.group(0)
-            base = m.group(1)
-            if token.endswith(("군", "시", "구")) and base:
-                return base
-        # 그 외(도/읍/면 등)는 첫 base
-        if ms[0].group(1):
-            return ms[0].group(1)
-
-    m2 = _REGION_ORG_RX.search(t)
-    if m2 and m2.group(1):
-        return m2.group(1)
-    return ""
+    ms = list(_REGION_RX.finditer(t))
+    if not ms:
+        # 군/시/구가 명시되지 않지만 "장수 농업기술센터"처럼 자주 등장하는 패턴 보완
+        m2 = _BARE_REGION_RX.search(t)
+        if m2:
+            return m2.group(1)
+        return ""
+    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
+    for m in ms:
+        r = m.group(0)
+        if r.endswith(("군", "시", "구")):
+            return r
+    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
+    return ms[0].group(0)
 
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
@@ -1683,26 +1696,32 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     tb = _token_set(b.title)
     jac = _jaccard(ta, tb)
 
+
+    # 문자열 유사도(표기 차이/특수문자 차이 보완)
+    sa = re.sub(r"\s+", "", (a.title_key or a.title or "")).lower()
+    sb = re.sub(r"\s+", "", (b.title_key or b.title or "")).lower()
+    try:
+        if sa and sb and difflib.SequenceMatcher(None, sa, sb).ratio() >= 0.88:
+            return True
+    except Exception:
+        pass
+
     # 강한 중복(거의 동일)
     if jac >= 0.72:
         return True
 
-    ra = _region_base_set(a.title)
-    rb = _region_base_set(b.title)
+    ra = _region_set(a.title)
+    rb = _region_set(b.title)
     same_region = bool(ra & rb)
 
     if section_key == "pest":
         common_core = len((ta & tb) & _PEST_CORE_TOKENS)
-        common_dis = len((ta & tb) & _PEST_DISEASE_TOKENS)
-
-        # 같은 지역(베이스) + 핵심 병해/방제 단서가 겹치면(제목 표현만 다른 중복 기사) 중복으로 본다.
-        if same_region and common_core >= 1:
-            if common_dis >= 1 and jac >= 0.32:
-                return True
-            if jac >= 0.40 and common_core >= 2:
-                return True
-            if jac >= 0.48:
-                return True
+        # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
+        if same_region and common_core >= 2 and jac >= 0.45:
+            return True
+        # '방제/예찰/약제' + 같은 지역이면 더 관대하게 중복 판단
+        if same_region and common_core >= 1 and jac >= 0.52:
+            return True
 
     if section_key == "supply":
         common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
@@ -1762,9 +1781,6 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     if section_key == "pest":
         # 농업 맥락 + 병해충/방제(또는 냉해/동해 피해) 가시적이어야 코어
         if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
-            return False
-        # 벼(양곡) 중심 방제는 코어에서 제외(양곡부 별도)
-        if has_any(text, [t.lower() for t in PEST_RICE_TERMS]) and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
             return False
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
@@ -1918,8 +1934,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not can_take(a, cap):
                 continue
-            if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
-                continue
+            if cap != 99:
+                if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
+                    continue
             rest.append(a)
             used_keys.add(k)
             mark_region(a)
@@ -1929,8 +1946,111 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     rest = sorted(rest, key=_sort_key_major_first, reverse=True)
 
+
     selected = core2[:2] + rest
-    return selected[:max_n]
+
+    # 최종 방어: 유사 제목/같은 지역(pest) 중복 제거
+    final: list[Article] = []
+    used_rk: dict[str, int] = {}
+    for a in selected:
+        if any(_near_duplicate_title(a, b, section_key) for b in final):
+            continue
+        if section_key == "pest":
+            rk = _pest_region_key(a.title)
+            if rk:
+                if used_rk.get(rk, 0) >= 1:
+                    continue
+                used_rk[rk] = used_rk.get(rk, 0) + 1
+        final.append(a)
+
+    final = sorted(final, key=_sort_key_major_first, reverse=True)
+    return final[:max_n]
+
+
+
+# -----------------------------
+# Optional RSS ingestion (공식/신뢰 소스 보강)
+# - WHITELIST_RSS_URLS 환경변수에 RSS URL을 넣으면 해당 소스에서 기사 후보를 추가한다.
+# - 기본은 OFF(빈 값)이며, 기존 Naver OpenAPI 기반 파이프라인은 그대로 유지한다.
+# -----------------------------
+def fetch_rss_items(rss_url: str) -> list[dict]:
+    try:
+        r = SESSION.get(rss_url, timeout=20)
+        if not r.ok:
+            return []
+        txt = r.text
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(txt)
+        items = []
+        for it in root.findall(".//item"):
+            title = (it.findtext("title") or "").strip()
+            link = (it.findtext("link") or "").strip()
+            desc = (it.findtext("description") or "").strip()
+            pub = (it.findtext("pubDate") or "").strip()
+            items.append({"title": title, "link": link, "description": desc, "pubDate": pub})
+        return items
+    except Exception:
+        return []
+
+def _rss_pub_to_kst(pub: str) -> datetime | None:
+    # RSS pubDate는 형식이 다양해 보수적으로 처리(실패 시 None)
+    if not pub:
+        return None
+    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"):
+        try:
+            dt = datetime.strptime(pub, fmt)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone(timedelta(hours=9)))
+        except Exception:
+            continue
+    return None
+
+def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex") -> list["Article"]:
+    if not WHITELIST_RSS_URLS:
+        return []
+    out: list[Article] = []
+    for rss in WHITELIST_RSS_URLS:
+        for it in fetch_rss_items(rss):
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            pub = _rss_pub_to_kst(it.get("pubDate", ""))
+            if not pub:
+                # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
+                continue
+            if pub < start_kst or pub >= end_kst:
+                continue
+            dom = domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
+            press = press_name_from_url(link)
+            if not is_relevant(title, desc, dom, section_conf, press):
+                continue
+            canon = canonicalize_url(link)
+            title_key = norm_title_key(title)
+            topic = extract_topic(title, desc)
+            norm_key = make_norm_key(canon, press, title_key)
+            if not dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+            score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+            out.append(Article(
+                section=section_conf["key"],
+                title=title,
+                description=desc,
+                link=link,
+                originallink=link,
+                domain=dom,
+                press=press,
+                pub_dt_kst=pub,
+                title_key=title_key,
+                canon_url=canon,
+                norm_key=norm_key,
+                topic=topic,
+                score=score,
+                summary="",
+            ))
+    return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: DedupeIndex) -> list[Article]:
     queries = section_conf["queries"]
@@ -1996,6 +2116,12 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 items.append(art)
 
     items.sort(key=_sort_key_major_first, reverse=True)
+    # Optional RSS candidates (신뢰 소스 보강)
+    try:
+        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst, dedupe))
+    except Exception:
+        pass
+
     return items
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
@@ -2158,6 +2284,94 @@ def weekday_label(iso_date: str) -> str:
         return ""
 
 
+
+def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, list[str]]:
+    """섹션 상단에 노출할 '한 줄 인사이트'와 태그.
+    LLM 요약이 없어도 일관되게 동작하도록 휴리스틱 기반.
+    """
+    if not arts:
+        return ("", [])
+    txt = " ".join([(a.title or "") + " " + (a.description or "") for a in arts]).lower()
+
+    tags: list[str] = []
+    line = ""
+
+    def add_tag(t: str):
+        if t and t not in tags and len(tags) < 6:
+            tags.append(t)
+
+    if section_key == "pest":
+        if "과수화상병" in txt:
+            line = "과수화상병 리스크/대응 이슈가 핵심입니다."
+            add_tag("과수화상병")
+        elif "탄저병" in txt:
+            line = "탄저병 등 주요 병해 대응 정보가 중심입니다."
+            add_tag("탄저병")
+        elif any(w in txt for w in ("냉해","동해","서리","저온")):
+            line = "저온·냉/동해 피해 및 대비 정보가 중요합니다."
+            add_tag("냉/동해")
+        else:
+            line = "병해충 예찰/방제 동향을 점검하세요."
+            add_tag("병해충")
+        # 주요 품목 태그
+        for c in ("사과","배","감귤","포도","딸기","고추","오이","토마토","파프리카"):
+            if c in txt:
+                add_tag(c)
+    elif section_key == "supply":
+        # 가격/수급 방향성
+        if any(w in txt for w in ("상승","강세","오름","급등")):
+            line = "가격 상승(강세) 신호가 포착됩니다."
+            add_tag("가격↑")
+        elif any(w in txt for w in ("하락","약세","내림","급락")):
+            line = "가격 하락(약세) 신호가 포착됩니다."
+            add_tag("가격↓")
+        else:
+            line = "수급/작황/출하 변수를 중심으로 확인하세요."
+            add_tag("수급")
+        for c in ("사과","배","감귤","포도","딸기","고추","오이","단감","곶감","샤인머스캣","만감"):
+            if c in txt:
+                add_tag(c)
+    elif section_key == "dist":
+        line = "도매시장·공판장·유통현장 이슈를 점검하세요."
+        for t in ("가락시장","도매시장","공판장","경락","반입","온라인도매시장","원산지","검역","통관"):
+            if t.lower() in txt:
+                add_tag(t)
+    elif section_key == "policy":
+        line = "대책/지원/검역/단속 등 정책 변동 여부를 확인하세요."
+        for t in ("지원","할인지원","할당관세","검역","통관","단속","고시","개정","브리핑"):
+            if t.lower() in txt:
+                add_tag(t)
+    else:
+        line = ""
+    return (line, tags)
+
+def feedback_issue_url(repo_slug: str, vote: str, report_date: str, section_key: str, section_title: str, a: Article) -> str:
+    """GitHub issue prefill 링크(정적 페이지에서도 동작)."""
+    if not repo_slug:
+        return ""
+    url = (a.originallink or a.link or "").strip()
+    dom = normalize_host(a.domain or domain_of(url) or "")
+    press = (a.press or "").strip()
+    title = (a.title or "").strip()
+    issue_title = f"[feedback][{vote.upper()}] {report_date} {section_title} | {press} | {title[:60]}"
+    body = "\n".join([
+        f"vote: {vote}",
+        f"date: {report_date}",
+        f"section: {section_key}",
+        f"press: {press}",
+        f"domain: {dom}",
+        f"url: {url}",
+        f"title: {title}",
+        "",
+        "comment: ",
+    ])
+    q = {
+        "labels": FEEDBACK_LABEL,
+        "title": issue_title,
+        "body": body,
+    }
+    return "https://github.com/" + repo_slug + "/issues/new?" + urlencode(q)
+
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict,
                       archive_dates_desc: list[str], site_path: str) -> str:
     # 상단 칩 카운트 + 섹션별 중요도 정렬
@@ -2211,11 +2425,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         title = sec["title"]
         color = sec["color"]
         lst = by_section.get(key, [])
+        insight_line, insight_tags = make_section_insight(key, lst)
 
         def render_card(a: Article, is_core: bool):
             url = a.originallink or a.link
             summary_html = "<br>".join(esc(a.summary).splitlines())
             core_badge = '<span class="badgeCore">핵심</span>' if is_core else ""
+
+            fb_up = feedback_issue_url(REPO_SLUG, "up", report_date, key, title, a)
+            fb_dn = feedback_issue_url(REPO_SLUG, "down", report_date, key, title, a)
+            feedback_html = ""
+            if fb_up and fb_dn:
+                feedback_html = f'<span class="fb"><a class="fbBtn up" href="{esc(fb_up)}" target="_blank" rel="noopener" title="좋아요">👍</a><a class="fbBtn dn" href="{esc(fb_dn)}" target="_blank" rel="noopener" title="별로예요">👎</a></span>'
             return f"""
             <div class=\"card\" style=\"border-left-color:{color}\">
               <div class=\"cardTop\">
@@ -2228,6 +2449,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                   <span class=\"topic\">{esc(a.topic)}</span>
                 </div>
                 <a class=\"btnOpen\" href=\"{esc(url)}\" target=\"_blank\" rel=\"noopener\">원문 열기</a>
+                {feedback_html}
               </div>
               <div class=\"ttl\">{esc(a.title)}</div>
               <div class=\"sum\">{summary_html}</div>
@@ -3353,6 +3575,16 @@ def main():
 
     # write index
     _raw_old2, sha_old2 = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
+    
+    # Save feedback model back to GitHub (optional)
+    try:
+        if FEEDBACK_ENABLE and FEEDBACK_MODEL and GH_TOKEN and repo:
+            _raw_fb_old, sha_fb_old = github_get_file(repo, DOCS_FEEDBACK_PATH, GH_TOKEN, ref="main")
+            github_put_file(repo, DOCS_FEEDBACK_PATH, json.dumps(FEEDBACK_MODEL, ensure_ascii=False, indent=2), GH_TOKEN,
+                            f"Update feedback model {report_date}", sha=sha_fb_old, branch="main")
+    except Exception as e:
+        log.warning("[FEEDBACK] save skipped: %s", e)
+
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
     # save manifest/state (manifest는 clean 유지)
