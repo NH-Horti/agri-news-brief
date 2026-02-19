@@ -63,6 +63,8 @@ SESSION = requests.Session()
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
+DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
+REPORT_DATE_OVERRIDE = os.getenv("REPORT_DATE_OVERRIDE", "").strip()
 
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
@@ -73,7 +75,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v11-nh-dedupe-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v14-reportdate-override-20260219")
 
 
 
@@ -501,7 +503,7 @@ def nh_boost(text: str, section_key: str) -> float:
 
     # 강신호: 경제지주/하나로마트/농협몰/공판장 등
     if strong:
-        return 4.0 if section_key in ("dist", "policy", "supply") else 2.5
+        return 6.0 if section_key in ("dist", "policy", "supply") else 3.5
 
     # 온라인도매시장은 농협 단서와 동반될 때만 강하게
     if any(k.lower() in t for k in NH_STRONG_COOCUR_TERMS) and weak:
@@ -511,7 +513,7 @@ def nh_boost(text: str, section_key: str) -> float:
     if weak:
         co = NH_COOCUR_SUPPLY if section_key == "supply" else NH_COOCUR_DIST if section_key == "dist" else NH_COOCUR_POLICY
         if sum(1 for k in co if k in t) >= 1:
-            return 1.6
+            return 2.2
 
     return 0.0
 
@@ -546,6 +548,9 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
     if strong_signal >= 2:
         return 0.0
     if strong_signal == 1:
+        # pest: '협의회/간담회/회의/교육' 등 행정 일정성 기사 상단 배치 억제
+        if section_key == "pest" and any(w in t for w in ("협의회", "간담회", "회의", "설명회", "교육", "워크숍", "세미나")):
+            return 2.0
         return 1.2
     # 시찰/협의회/방문/기술트렌드만 있는 경우는 더 크게 감점
     return 2.8 + 0.6 * max(0, hits - 1) + 0.4 * tech
@@ -1499,6 +1504,23 @@ def _region_set(s: str) -> set[str]:
     s = (s or "")
     return {m.group(0) for m in _REGION_RX.finditer(s)}
 
+def _pest_region_key(title: str) -> str:
+    """pest 섹션 중복 억제를 위한 대표 지역 키.
+    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
+    - 없으면 첫 지역 토큰(도 등) 사용
+    """
+    t = title or ""
+    ms = list(_REGION_RX.finditer(t))
+    if not ms:
+        return ""
+    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
+    for m in ms:
+        r = m.group(0)
+        if r.endswith(("군", "시", "구")):
+            return r
+    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
+    return ms[0].group(0)
+
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
     - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
@@ -1608,18 +1630,41 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     core_min = CORE_MIN_SCORE.get(section_key, 6.5)
 
     used_keys: set[str] = set()
+    used_region: dict[str, int] = {}  # pest 전용: 같은 지자체(군/시/구) 중복 억제
 
     def akey(a: Article) -> str:
         return a.norm_key or a.canon_url or a.link or a.title_key
 
+    def rkey(a: Article) -> str:
+        return _pest_region_key(a.title) if section_key == "pest" else ""
+
+    def can_take_region(a: Article, enforce: bool = True) -> bool:
+        if section_key != "pest" or not enforce:
+            return True
+        rk = rkey(a)
+        if not rk:
+            return True
+        # ✅ 같은 군/시/구는 1건만(장수군 방제 3건 중복 같은 케이스 제거)
+        return used_region.get(rk, 0) < 1
+
+    def mark_region(a: Article):
+        if section_key != "pest":
+            return
+        rk = rkey(a)
+        if rk:
+            used_region[rk] = used_region.get(rk, 0) + 1
+
     core2: list[Article] = []
 
-    def try_add_core(a: Article) -> bool:
+    def try_add_core(a: Article, *, enforce_region: bool = True) -> bool:
+        if not can_take_region(a, enforce=enforce_region):
+            return False
         k = akey(a)
         if k in used_keys:
             return False
         core2.append(a)
         used_keys.add(k)
+        mark_region(a)
         return True
 
 
@@ -1706,6 +1751,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             k = akey(a)
             if k in used_keys:
                 continue
+            # pest: 같은 군/시/구 중복 억제(마지막 cap=99 단계에서만 완화)
+            enforce_region = (section_key == "pest")
+            if not can_take_region(a, enforce=enforce_region):
+                continue
             if not can_take(a, cap):
                 continue
             if cap != 99:
@@ -1713,6 +1762,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
             rest.append(a)
             used_keys.add(k)
+            mark_region(a)
             used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
         if len(rest) >= target_rest:
             break
@@ -1801,6 +1851,18 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         key = sec["key"]
         candidates = raw_by_section.get(key, [])
         final_by_section[key] = select_top_articles(candidates, key, MAX_PER_SECTION)
+        if DEBUG_SELECTION:
+            top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
+            log.info("[DEBUG] section=%s candidates=%d selected=%d", key, len(candidates), len(final_by_section[key]))
+            for a in top:
+                try:
+                    nh = nh_boost((a.title + " " + a.description).lower(), key)
+                except Exception:
+                    nh = 0.0
+                rk = _pest_region_key(a.title) if key == "pest" else ""
+                log.info("  [DEBUG] %.2f pr=%s tier=%d region=%s nh=%.1f title=%s",
+                         a.score, press_priority(a.press, a.domain), press_tier(a.press, a.domain),
+                         rk, nh, a.title[:120])
 
     return final_by_section
 
@@ -3076,11 +3138,12 @@ def main():
     start_kst, end_kst = compute_window(repo, GH_TOKEN, end_kst)
     log.info("[INFO] Window KST: %s ~ %s", start_kst.isoformat(), end_kst.isoformat())
 
-    report_date = end_kst.date().isoformat()
+    report_date = REPORT_DATE_OVERRIDE or end_kst.date().isoformat()
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
     daily_url = f"{base_url}/archive/{report_date}.html"
+    log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE), daily_url)
 
     ensure_not_gist(base_url, "base_url")
     ensure_not_gist(daily_url, "daily_url")
