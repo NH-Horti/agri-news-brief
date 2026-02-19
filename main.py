@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v20-hotfix-businessday-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v21-hotfix-github-headers-20260219")
 
 # -----------------------------
 # -----------------------------
@@ -972,6 +972,18 @@ def _now_iso() -> str:
     return datetime.now(timezone(timedelta(hours=9))).isoformat()
 
 # (feedback buttons removed)
+
+def github_api_headers(token: str | None) -> dict:
+    """Headers for GitHub REST API calls."""
+    h = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "agri-news-brief",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if token:
+        h["Authorization"] = f"Bearer {token}"
+    return h
+
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
     r = SESSION.get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
