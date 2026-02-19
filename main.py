@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v17-hotfix-headline-stopwords-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v18-hotfix-dynamic-threshold-20260219")
 
 # -----------------------------
 # Feedback learning & extra sources (고도화)
@@ -1798,6 +1798,34 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
 
     return True
+
+# -----------------------------
+# Dynamic threshold for section selection
+# - Rest articles (beyond core2) should not be too weak.
+# - Use a base minimum per section and a relative cutoff from the best score.
+# -----------------------------
+BASE_MIN_SCORE: dict[str, float] = {
+    "supply": 6.8,
+    "policy": 6.8,
+    "dist": 7.0,
+    "pest": 6.2,
+}
+
+def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> float:
+    if not candidates_sorted:
+        return BASE_MIN_SCORE.get(section_key, 6.5)
+    try:
+        best = max(float(a.score or 0.0) for a in candidates_sorted)
+    except Exception:
+        best = float(candidates_sorted[0].score or 0.0)
+    base = BASE_MIN_SCORE.get(section_key, 6.5)
+    # Pest tends to have fewer high-score candidates; be slightly more permissive.
+    delta = 7.0 if section_key == "pest" else 8.0
+    thr = max(base, best - delta)
+    # Prevent overly aggressive cutoff when best itself is modest.
+    return min(thr, best)
+
+
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선정.
     ✅ (1) 카톡/브리핑 상단 '핵심 2'는 "진짜 상위 2"가 되도록(다양성 캡에 의해 밀려나지 않게) 고정.
