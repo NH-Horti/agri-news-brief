@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v22-hotfix-compute-rank-score-wrapper-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v23-hotfix-agri-strength-score-20260219")
 
 # -----------------------------
 # -----------------------------
@@ -518,6 +518,43 @@ PEST_WEIGHT_MAP = {
     '진딧물': 2.5, '응애': 2.3, '노린재': 2.3, '총채벌레': 2.3,
     '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
 }
+# -----------------------------
+# Section-aware agriculture strength score (v23)
+# - Backward compatible: agri_strength_score(text) works.
+# - New: agri_strength_score(text, section_key) uses section weight maps.
+#   (Fixes TypeError when called with 2 args and improves scoring precision.)
+# -----------------------------
+def agri_strength_score(text: str, section_key: str | None = None) -> float:
+    t = (text or "").lower()
+
+    # Base agriculture anchors (broad)
+    base = float(count_any(t, [w.lower() for w in AGRI_STRONG_TERMS]))
+
+    # Section-weighted signals
+    wm: dict[str, float] | None = None
+    if section_key == "supply":
+        wm = SUPPLY_WEIGHT_MAP
+    elif section_key == "dist":
+        wm = DIST_WEIGHT_MAP
+    elif section_key == "policy":
+        wm = POLICY_WEIGHT_MAP
+    elif section_key == "pest":
+        wm = PEST_WEIGHT_MAP
+
+    if wm is not None:
+        sig = float(weighted_hits(t, wm))
+        # Scale down to keep the overall rank score range stable (~0-15)
+        score = 0.55 * sig + 0.65 * base
+    else:
+        score = base
+
+    # Numeric / unit hints often indicate practical signal (prices/volumes/budgets)
+    if _NUMERIC_HINT_RE.search(t):
+        score += 0.5
+    if _UNIT_HINT_RE.search(t):
+        score += 0.5
+
+    return score
 
 
 # -----------------------------
