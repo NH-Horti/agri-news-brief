@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v16-all-upgrades-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v17-hotfix-headline-stopwords-20260219")
 
 # -----------------------------
 # Feedback learning & extra sources (고도화)
@@ -176,6 +176,17 @@ OFFTOPIC_HINTS = [
     "코스피", "코스닥", "주가", "급등", "급락", "비트코인", "환율",
     "여행", "관광", "호텔", "리조트", "레스토랑", "와인", "해변", "휴양",
 ]
+
+# 코어(섹션별 핵심 2) 선정에서 제외할 헤드라인 유형(칼럼/기고/인물/행사/홍보 등)
+# - 전체 기사 리스트(Top5)에는 포함될 수 있으나, '핵심2'에는 올리지 않기 위함
+_HEADLINE_STOPWORDS = [
+    "칼럼", "기고", "오피니언", "사설", "논설", "데스크", "기획", "인터뷰", "기자수첩",
+    "인물", "동정", "축제", "행사", "개막", "전시", "공연", "페스티벌",
+    "봉사", "기부", "후원", "시상", "캠페인", "공모",
+    "간담회", "협의회", "설명회", "세미나", "포럼", "워크숍", "교육", "연수",
+    "업무협약", "mou", "협약", "발대식", "출범", "개소식", "준공식",
+]
+
 
 # 공통 제외(광고/구인/부동산/도박 등) - text는 lower() 상태
 BAN_KWS = [
