@@ -75,7 +75,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v14-reportdate-override-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v15-scoring-dedupe-20260219")
 
 
 
@@ -466,6 +466,43 @@ PEST_WEIGHT_MAP = {
     '냉해': 2.8, '동해': 2.8, '한파': 1.8, '서리': 1.8,
 }
 
+# -----------------------------
+# Pest section focus tuning (원예수급/과수화훼팀 관점)
+# - 벼(양곡) 중심 방제/협의회성 기사는 필요도가 낮아 제외/감점
+# - 과수화상병/탄저병 등 과수 핵심 병해는 강하게 가산
+# -----------------------------
+PEST_HORTI_TERMS = [
+    # 과수/만감류/포도
+    "사과", "배", "감귤", "만감", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣",
+    "복숭아", "자두", "감", "단감", "곶감",
+    # 시설채소(원예수급 연관)
+    "딸기", "참외", "수박", "오이", "고추", "풋고추", "파프리카", "토마토",
+    "상추", "양파", "마늘", "감자", "배추", "무",
+    # 일반 원예/화훼 맥락
+    "과수", "과원", "원예", "시설", "하우스", "화훼", "국화", "장미",
+]
+
+# 양곡(벼) 방제는 과수화훼팀 관점에서 중요도가 낮아(양곡부 별도) 기본 제외/감점
+PEST_RICE_TERMS = [
+    "벼", "쌀", "미곡", "이앙",
+    "도열병", "흰잎마름병", "잎집무늬마름병",
+    "멸구", "벼멸구", "애멸구", "혹명나방",
+]
+
+# 과수 중심 핵심 병해/재해는 우선순위를 더 준다(중앙지/주요매체면 press_weight로 추가 우대)
+PEST_DISEASE_PRIORITY = {
+    "과수화상병": 7.0,
+    "탄저병": 4.5,
+    "노균병": 3.5,
+    "역병": 3.5,
+    "흰가루병": 3.0,
+    "냉해": 3.5,
+    "동해": 3.5,
+    "한파": 2.0,
+    "서리": 2.0,
+}
+
+
 
 # -----------------------------
 # NH (농협) relevance boost (농협 경제지주/임직원 대상 최적화)
@@ -518,12 +555,58 @@ def nh_boost(text: str, section_key: str) -> float:
     return 0.0
 
 
+
+# -----------------------------
+# Local coop (지역농협) 단신 페널티
+# - '○○농협 방문/점검/협의회' 류는 실무 핵심(가격/수급/정책) 신호가 약한 경우가 많아 상단 노출을 억제
+# - 단, 경제지주/중앙회/공판장/하나로마트 등 '전사·사업' 신호가 있거나,
+#   수급·가격 숫자/단위 신호가 강하면 페널티를 최소화
+# -----------------------------
+_LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
+
+_LOCAL_COOP_EVENT_TERMS = [
+    "방문", "현장점검", "점검", "간담회", "협의회", "설명회", "세미나", "교육", "워크숍",
+    "캠페인", "기부", "후원", "전달", "봉사", "발대식", "기념식", "협약", "mou",
+]
+
+_NH_NATIONAL_BUSINESS_HINTS = [
+    "농협경제지주", "경제지주", "농협중앙회", "중앙회",
+    "농협유통", "하나로마트", "농협몰", "공판장", "조합공판장", "온라인도매시장",
+]
+
+def local_coop_penalty(text: str, title: str, section_key: str) -> float:
+    ttl = (title or "").lower()
+    t = (text or "").lower()
+
+    if not _LOCAL_COOP_RX.search(title or ""):
+        return 0.0
+
+    # 전사/사업 신호면 페널티 없음
+    if has_any(t, [k.lower() for k in _NH_NATIONAL_BUSINESS_HINTS]):
+        return 0.0
+
+    # 가격/수급 등 '핵심 신호'가 숫자/단위와 함께 강하면 페널티 최소화
+    strong_core_terms = ["가격", "수급", "시세", "경락", "경락가", "반입", "출하", "물량", "재고", "대책", "지원", "할당관세", "검역", "단속"]
+    core_hits = count_any(t, [k.lower() for k in strong_core_terms])
+    if core_hits >= 2 and (_NUMERIC_HINT_RE.search(t) or _UNIT_HINT_RE.search(t)):
+        return 0.6
+
+    # 지역농협 동정성/행사성 키워드가 있으면 더 크게 감점
+    if has_any(ttl, [k.lower() for k in _LOCAL_COOP_EVENT_TERMS]):
+        return 2.8
+    if has_any(t, [k.lower() for k in _LOCAL_COOP_EVENT_TERMS]):
+        return 2.0
+
+    # 기본 감점(지역 단위 한정 이슈는 한 단계 낮춤)
+    return 1.6
+
 # -----------------------------
 # De-prioritize meeting/visit/PR-heavy articles (품질 보정)
 # - '방문/협의회/간담회/업무협약'류는 실무 의사결정 신호(가격/수급/물량/대책)가 약한 경우가 많음
 # -----------------------------
 EVENTY_TERMS = ["방문", "시찰", "간담회", "협의회", "세미나", "토론회", "업무협약", "협약", "mou", "설명회", "발대식", "기념식", "캠페인"]
 TECH_TREND_TERMS = ["스마트팜", "ai", "로봇", "자율", "연중생산", "수직농장", "빅데이터", "디지털", "혁신"]
+
 
 def eventy_penalty(text: str, title: str, section_key: str) -> float:
     t = (text or "").lower()
@@ -544,6 +627,14 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
         strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_POLICY]) + count_any(ttl, [k.lower() for k in POLICY_TITLE_CORE_TERMS])
     else:
         strong_signal = count_any(t, [k.lower() for k in PEST_TITLE_CORE_TERMS])
+
+    # pest: '협의회/간담회/회의' 등 행정 일정성 제목은 상단 배치를 억제
+    if section_key == "pest":
+        admin_title = any(w in ttl for w in ("협의회", "간담회", "회의", "설명회", "교육", "워크숍", "세미나"))
+        major_pest = has_any(t, ["과수화상병", "탄저병", "노균병", "역병", "냉해", "동해", "긴급", "무상", "지원", "공급", "예방약"])
+        if admin_title and not major_pest:
+            # 강신호가 있어도(병해충/방제) '회의/협의회' 성격이면 감점
+            return 2.4 if strong_signal >= 2 else 2.8
 
     if strong_signal >= 2:
         return 0.0
@@ -1291,6 +1382,7 @@ PEST_OFFTOPIC_TERMS = [
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷)."""
     text = (title + " " + desc).lower()
+    title_l = (title or "").lower()
     dom = (dom or "").lower().strip()
 
     # 공통 제외(광고/구인/부동산 등)
@@ -1313,6 +1405,13 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         if not policy_domain_override(dom, text):
             return False
 
+
+    # supply(품목/수급): 일반 '가격' 기사 오탐 방지를 위해 품목 단서가 최소 1개 필요
+    # - 예: '물가/주가/부동산 가격' 등은 must_terms를 통과해도 품목 단서가 없으면 제외
+    if section_conf["key"] == "supply":
+        if not has_any(text, [t.lower() for t in _SUPPLY_COMMODITY_TOKENS]):
+            return False
+
     # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
     if section_conf["key"] == "policy":
         is_major = press_priority(press, dom) >= 2
@@ -1326,6 +1425,16 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
         if agri_ctx_hits < 1:
             return False
+        # (A-1) 벼(양곡) 방제 중심 기사는 제외(양곡부 별도)
+        # - 제목에 벼/쌀이 직접 나오면 거의 양곡 이슈로 간주
+        rice_title_hits = count_any(title_l, [t.lower() for t in PEST_RICE_TERMS])
+        if rice_title_hits >= 1 and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
+            return False
+        # - 본문/설명에 벼 방제 신호가 강하고 원예(과수/채소/화훼) 단서가 없으면 제외
+        rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
+        if rice_hits >= 3 and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
+            return False
+
         # (B) 병해충/방제 핵심 단어(또는 냉해/동해 등 과수 피해) 히트 수
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
@@ -1392,10 +1501,29 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += count_any(title_l, [t for t in PEST_TITLE_CORE_TERMS]) * 1.1
         score += title_signal_bonus(title) * 0.5
 
+        # 과수/원예(과수화훼팀) 관점: 원예 단서가 있으면 가산
+        if has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
+            score += 1.6
+
+        # 과수 핵심 병해/재해(화상병/탄저병/냉해·동해 등) 우선 가산
+        for kw, w in PEST_DISEASE_PRIORITY.items():
+            if kw.lower() in text:
+                score += w
+
+        # 벼(양곡) 방제 중심 기사 감점(원예수급 관점에서 우선순위 낮음)
+        rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
+        if rice_hits:
+            if not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
+                score -= 6.0 + 1.2 * max(0, rice_hits - 1)
+            else:
+                score -= 1.5
+
+
     # 3) 언론/출처 가중치(가장 중요한 축)
     score += press_weight(press, dom)
     score += nh_boost(text, skey)
     score -= eventy_penalty(text, title, skey)
+    score -= local_coop_penalty(text, title, skey)
 
     # 정책 섹션: 지방 단신 감점(주요 매체면 완화)
     pr = press_priority(press, dom)
@@ -1488,38 +1616,64 @@ def _token_set(s: str) -> set[str]:
 
 
 # --- Near-duplicate suppression (특히 지방 방제/협의회 기사 중복 방지) ---
-_REGION_RX = re.compile(r"[가-힣]{2,}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
+_REGION_FULL_RX = re.compile(r"([가-힣]{2,6})(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
+_REGION_ORG_RX = re.compile(r"([가-힣]{2,6})(?:농업기술센터|농업기술원|농업기술과)")
 
 _PEST_CORE_TOKENS = {
-    "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역"
+    "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역","긴급","예방약","무상"
 }
 _SUPPLY_CORE_TOKENS = {"수급","가격","시세","경락","경락가","작황","출하","재고","저장","물량","반입"}
 _SUPPLY_COMMODITY_TOKENS = {
-    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","오이","고추","풋고추","쌀","비축미","단감","곶감"
+    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","딸기","참외","수박",
+    "오이","고추","풋고추","파프리카","토마토","양파","마늘","감자","배추","무",
+    "쌀","비축미","단감","곶감"
 }
 _DIST_CORE_TOKENS = {"가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","apc","물류","유통","온라인도매시장"}
 _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세","검역","통관","단속","고시","개정","보도자료","브리핑","예산","확대","연장"}
 
-def _region_set(s: str) -> set[str]:
+_PEST_DISEASE_TOKENS = {
+    "과수화상병","탄저병","노균병","역병","흰가루병",
+    "냉해","동해","한파","서리","월동","예찰","긴급","예방약"
+}
+
+def _region_base_set(s: str) -> set[str]:
+    """지역 토큰(군/시/구 등)과 '장수농업기술센터'류에서 지역 베이스('장수')를 함께 추출."""
     s = (s or "")
-    return {m.group(0) for m in _REGION_RX.finditer(s)}
+    bases = set()
+    for m in _REGION_FULL_RX.finditer(s):
+        token = m.group(0)
+        base = m.group(1)
+        if token:
+            bases.add(token)
+        if base:
+            bases.add(base)
+    for m in _REGION_ORG_RX.finditer(s):
+        base = m.group(1)
+        if base:
+            bases.add(base)
+    return bases
 
 def _pest_region_key(title: str) -> str:
-    """pest 섹션 중복 억제를 위한 대표 지역 키.
-    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
-    - 없으면 첫 지역 토큰(도 등) 사용
+    """pest 섹션 중복 억제를 위한 대표 '지역 베이스' 키.
+    - '장수군'과 '장수농업기술센터'를 동일 지역('장수')으로 묶기 위함
     """
     t = title or ""
-    ms = list(_REGION_RX.finditer(t))
-    if not ms:
-        return ""
-    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
-    for m in ms:
-        r = m.group(0)
-        if r.endswith(("군", "시", "구")):
-            return r
-    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
-    return ms[0].group(0)
+    ms = list(_REGION_FULL_RX.finditer(t))
+    if ms:
+        # 군/시/구가 있으면 그 base를 우선
+        for m in ms:
+            token = m.group(0)
+            base = m.group(1)
+            if token.endswith(("군", "시", "구")) and base:
+                return base
+        # 그 외(도/읍/면 등)는 첫 base
+        if ms[0].group(1):
+            return ms[0].group(1)
+
+    m2 = _REGION_ORG_RX.search(t)
+    if m2 and m2.group(1):
+        return m2.group(1)
+    return ""
 
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
@@ -1533,18 +1687,22 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     if jac >= 0.72:
         return True
 
-    ra = _region_set(a.title)
-    rb = _region_set(b.title)
+    ra = _region_base_set(a.title)
+    rb = _region_base_set(b.title)
     same_region = bool(ra & rb)
 
     if section_key == "pest":
         common_core = len((ta & tb) & _PEST_CORE_TOKENS)
-        # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
-        if same_region and common_core >= 2 and jac >= 0.45:
-            return True
-        # '방제/예찰/약제' + 같은 지역이면 더 관대하게 중복 판단
-        if same_region and common_core >= 1 and jac >= 0.52:
-            return True
+        common_dis = len((ta & tb) & _PEST_DISEASE_TOKENS)
+
+        # 같은 지역(베이스) + 핵심 병해/방제 단서가 겹치면(제목 표현만 다른 중복 기사) 중복으로 본다.
+        if same_region and common_core >= 1:
+            if common_dis >= 1 and jac >= 0.32:
+                return True
+            if jac >= 0.40 and common_core >= 2:
+                return True
+            if jac >= 0.48:
+                return True
 
     if section_key == "supply":
         common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
@@ -1604,6 +1762,9 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     if section_key == "pest":
         # 농업 맥락 + 병해충/방제(또는 냉해/동해 피해) 가시적이어야 코어
         if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
+            return False
+        # 벼(양곡) 중심 방제는 코어에서 제외(양곡부 별도)
+        if has_any(text, [t.lower() for t in PEST_RICE_TERMS]) and not has_any(text, [t.lower() for t in PEST_HORTI_TERMS]):
             return False
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
@@ -1757,9 +1918,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not can_take(a, cap):
                 continue
-            if cap != 99:
-                if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
-                    continue
+            if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
+                continue
             rest.append(a)
             used_keys.add(k)
             mark_region(a)
