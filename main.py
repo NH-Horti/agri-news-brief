@@ -76,7 +76,7 @@ MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
 # Build marker (for verifying deployed code)
-BUILD_TAG = os.getenv("BUILD_TAG", "v21-hotfix-github-headers-20260219")
+BUILD_TAG = os.getenv("BUILD_TAG", "v22-hotfix-compute-rank-score-wrapper-20260219")
 
 # -----------------------------
 # -----------------------------
@@ -1471,7 +1471,7 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
             return False
 
     return True
-def compute_rank_score(a: Article, section_key: str) -> float:
+def _compute_rank_score_article(a: Article, section_key: str) -> float:
     """기사 중요도 스코어(섹션별로 가중치 다르게).
     핵심 원칙:
       - 언론사 중요도(중앙지/방송/농민신문/정책브리핑 등) 반영
@@ -1526,6 +1526,56 @@ def compute_rank_score(a: Article, section_key: str) -> float:
             score -= 1.0
 
     return round(score, 2)
+
+def compute_rank_score(*args, **kwargs) -> float:
+    """Backward-compatible wrapper for rank scoring.
+
+    Supports two call styles:
+      1) compute_rank_score(article, section_key)
+      2) compute_rank_score(title, desc, dom, pub_dt_kst, section_conf, press)
+         (legacy call sites)
+
+    This prevents runtime crashes when internal refactors change the signature.
+    """
+    # Style 1: (Article, section_key)
+    if len(args) >= 1 and isinstance(args[0], Article):
+        a = args[0]
+        section_key = args[1] if len(args) >= 2 else getattr(a, "section", "")
+        return _compute_rank_score_article(a, section_key)
+
+    # Style 2: (title, desc, dom, pub_dt_kst, section_conf, press)
+    if len(args) >= 6:
+        title, desc, dom, pub, section_conf, press = args[:6]
+        skey = ""
+        if isinstance(section_conf, dict):
+            skey = section_conf.get("key", "") or section_conf.get("section", "")
+        else:
+            skey = str(section_conf or "")
+
+        title = title or ""
+        desc = desc or ""
+        dom = (dom or "").lower()
+        pub_dt = pub if isinstance(pub, datetime) else datetime.min.replace(tzinfo=KST)
+
+        a = Article(
+            section=skey,
+            title=title,
+            description=desc,
+            link="",
+            originallink="",
+            pub_dt_kst=pub_dt,
+            domain=dom,
+            press=press or "",
+            norm_key="",
+            title_key=norm_title_key(title),
+            canon_url="",
+            topic=extract_topic(title, desc),
+            score=0.0,
+            summary="",
+        )
+        return _compute_rank_score_article(a, skey)
+
+    raise TypeError("compute_rank_score() expects (Article, section_key) or (title, desc, dom, pub_dt_kst, section_conf, press)")
 def _token_set(s: str) -> set[str]:
     s = (s or "").lower()
     toks = re.findall(r"[0-9a-z가-힣]{2,}", s)
