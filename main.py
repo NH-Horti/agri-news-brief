@@ -72,6 +72,10 @@ DOCS_SEARCH_INDEX_PATH = "docs/search_index.json"
 MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
+# Build marker (for verifying deployed code)
+BUILD_TAG = os.getenv("BUILD_TAG", "v11-nh-dedupe-20260219")
+
+
 
 DEFAULT_REPO = (os.getenv("GITHUB_REPO") or os.getenv("GITHUB_REPOSITORY") or "").strip()
 GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
@@ -1477,6 +1481,67 @@ def _token_set(s: str) -> set[str]:
     toks = re.findall(r"[0-9a-z가-힣]{2,}", s)
     return {t for t in toks if t not in ("기사", "뉴스", "농산물", "농업", "정부", "지자체")}
 
+
+# --- Near-duplicate suppression (특히 지방 방제/협의회 기사 중복 방지) ---
+_REGION_RX = re.compile(r"[가-힣]{2,}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
+
+_PEST_CORE_TOKENS = {
+    "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역"
+}
+_SUPPLY_CORE_TOKENS = {"수급","가격","시세","경락","경락가","작황","출하","재고","저장","물량","반입"}
+_SUPPLY_COMMODITY_TOKENS = {
+    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","오이","고추","풋고추","쌀","비축미","단감","곶감"
+}
+_DIST_CORE_TOKENS = {"가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","apc","물류","유통","온라인도매시장"}
+_POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세","검역","통관","단속","고시","개정","보도자료","브리핑","예산","확대","연장"}
+
+def _region_set(s: str) -> set[str]:
+    s = (s or "")
+    return {m.group(0) for m in _REGION_RX.finditer(s)}
+
+def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
+    """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
+    - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
+    """
+    ta = _token_set(a.title)
+    tb = _token_set(b.title)
+    jac = _jaccard(ta, tb)
+
+    # 강한 중복(거의 동일)
+    if jac >= 0.72:
+        return True
+
+    ra = _region_set(a.title)
+    rb = _region_set(b.title)
+    same_region = bool(ra & rb)
+
+    if section_key == "pest":
+        common_core = len((ta & tb) & _PEST_CORE_TOKENS)
+        # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
+        if same_region and common_core >= 2 and jac >= 0.45:
+            return True
+        # '방제/예찰/약제' + 같은 지역이면 더 관대하게 중복 판단
+        if same_region and common_core >= 1 and jac >= 0.52:
+            return True
+
+    if section_key == "supply":
+        common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
+        common_cmd = len((ta & tb) & _SUPPLY_COMMODITY_TOKENS)
+        if common_cmd >= 1 and common_core >= 2 and jac >= 0.50:
+            return True
+
+    if section_key == "dist":
+        common_core = len((ta & tb) & _DIST_CORE_TOKENS)
+        if (same_region or common_core >= 2) and jac >= 0.50:
+            return True
+
+    if section_key == "policy":
+        common_core = len((ta & tb) & _POLICY_CORE_TOKENS)
+        if common_core >= 2 and jac >= 0.55:
+            return True
+
+    return False
+
 def _jaccard(a: set[str], b: set[str]) -> float:
     if not a or not b:
         return 0.0
@@ -1559,7 +1624,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
 
     def _too_similar(a1: Article, a2: Article) -> bool:
-        return _jaccard(_token_set(a1.title), _token_set(a2.title)) >= 0.72
+        return _near_duplicate_title(a1, a2, section_key)
 
     # ✅ (5) 코어(핵심 2)는 "정말 핵심"만: 섹션별 게이트(_headline_gate) 통과 우선
     if section_key == "policy":
@@ -1643,6 +1708,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not can_take(a, cap):
                 continue
+            if cap != 99:
+                if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
+                    continue
             rest.append(a)
             used_keys.add(k)
             used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
@@ -1981,6 +2049,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
   <title>{esc(page_title)}</title>
   <style>
     :root {{
@@ -2115,6 +2184,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       }});
     }})();
   </script>
+  <!-- build: {BUILD_TAG} -->
 </body>
 </html>
 """
@@ -2173,6 +2243,7 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="agri-build" content="{BUILD_TAG}" />
   <title>농산물 뉴스 브리핑</title>
   <style>
     :root {{
@@ -2984,6 +3055,7 @@ def compute_window(repo: str, token: str, end_kst: datetime):
 # -----------------------------
 
 def main():
+    log.info("[BUILD] %s", BUILD_TAG)
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
     if not GH_TOKEN:
