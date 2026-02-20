@@ -112,6 +112,9 @@ OFFICIAL_HTML_SOURCES = [
     # aT (KATI 모바일) 보도자료 목록
     {"name": "aT(KATI) 보도자료", "url": "https://m.kati.net/board/pressKitList.do?menu_dept3=360", "parser": "kati_press"},
 
+    # 농림축산검역본부(검역본부) 보도/설명자료
+    {"name": "농림축산검역본부 보도/설명자료", "url": "https://www.qia.go.kr/listwebQiaCom.do?type=6_18_1bdsm&key=&pager.offset=0", "parser": "qia_press"},
+
     # 가락시장(공식) 공지/싱싱정보 (RSS 미제공으로 리스트 페이지 수집)
     {"name": "가락시장(공식) 공지사항", "url": "https://neinvoice.garak.co.kr/web/board/bbsList.do?boardId=5&menuId=13", "parser": "garak_bbs"},
     {"name": "가락시장(공식) 싱싱정보", "url": "https://neinvoice.garak.co.kr/web/board/bbsList.do?boardId=13&menuId=14", "parser": "garak_bbs"},
@@ -139,6 +142,7 @@ NAVER_MIN_INTERVAL_SEC = float(os.getenv("NAVER_MIN_INTERVAL_SEC", "0.35"))  # �
 NAVER_MAX_RETRIES = int(os.getenv("NAVER_MAX_RETRIES", "6"))
 NAVER_BACKOFF_MAX_SEC = float(os.getenv("NAVER_BACKOFF_MAX_SEC", "20"))
 NAVER_MAX_WORKERS = int(os.getenv("NAVER_MAX_WORKERS", "2"))  # 동시 요청 수(속도제한 회피용)
+NAVER_MAX_QUERIES_PER_SECTION = int(os.getenv("NAVER_MAX_QUERIES_PER_SECTION", "80"))  # 섹션별 Naver 쿼리 상한(과도한 API 호출 방지)
 
 _NAVER_LOCK = threading.Lock()
 _NAVER_LAST_CALL = 0.0
@@ -272,14 +276,22 @@ SECTIONS = [
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
-            "사과 작황", "사과 생산량", "사과 저장", "사과 수급", "사과 가격",
-            "배 작황", "배 생산량", "배 저장", "배 수급", "배 가격",
-            "감귤 작황", "감귤 수급", "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하",
-            "샤인머스캣 작황", "샤인머스캣 수급", "포도 작황", "포도 수급",
-            "오이 작황", "오이 수급", "풋고추 작황", "풋고추 수급",
-            "쌀 산지 가격", "비축미 동향",
+            "화훼 출하", "절화 경매", "꽃 가격", "사과 작황", "사과 생산량",
+            "사과 저장", "사과 수급", "사과 가격", "배 작황", "배 생산량",
+            "배 저장", "배 수급", "배 가격", "단감 작황", "단감 수급",
+            "단감 가격", "떫은감 작황", "떫은감 수급", "곶감 가격", "키위 작황",
+            "참다래 수급", "키위 가격", "유자 작황", "유자 수급", "유자 가격",
+            "복숭아 작황", "복숭아 수급", "복숭아 가격", "매실 작황", "매실 수급",
+            "매실 가격", "자두 작황", "자두 수급", "자두 가격", "밤 작황",
+            "밤 수급", "밤 가격", "감귤 작황", "감귤 수급", "감귤 가격",
+            "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하", "황금향 출하",
+            "샤인머스캣 작황", "샤인머스캣 수급", "샤인머스캣 가격", "포도 작황", "포도 수급",
+            "포도 가격", "딸기 작황", "딸기 수급", "딸기 가격", "파프리카 작황",
+            "파프리카 수급", "파프리카 가격", "파프리카 수출", "참외 작황", "참외 수급",
+            "참외 가격", "오이 작황", "오이 수급", "오이 가격", "풋고추 작황",
+            "풋고추 수급", "풋고추 가격", "쌀 산지 가격", "비축미 동향",
         ],
-        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세"],
+        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세", "경매", "경락", "도매"],
     },
     {
         "key": "policy",
@@ -322,17 +334,28 @@ SECTIONS = [
 # Topic diversity
 # -----------------------------
 COMMODITY_TOPICS = [
+    ("화훼", ["화훼", "절화", "꽃", "장미", "국화", "백합", "거베라", "난"]),
     ("사과", ["사과"]),
-    ("배", ["배 ", "배(과일)", "배 가격", "배 시세"]),
-    ("감귤/만감", ["감귤", "만감", "한라봉", "레드향", "천혜향"]),
-    ("감/곶감", ["단감", "떫은감", "곶감", "감 "]),
-    ("포도", ["포도", "샤인머스캣"]),
+    ("배", ["배", "신고배"]),
+    ("감귤/만감", ["감귤", "귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향"]),
+    ("단감", ["단감"]),
+    ("감/곶감", ["떫은감", "대봉", "곶감", "감"]),
+    ("키위", ["키위", "참다래"]),
+    ("유자", ["유자"]),
+    ("포도", ["포도", "샤인머스캣", "캠벨"]),
+    ("밤", ["밤"]),
+    ("자두", ["자두"]),
+    ("복숭아", ["복숭아"]),
+    ("매실", ["매실", "청매실"]),
+    ("딸기", ["딸기"]),
+    ("파프리카", ["파프리카"]),
+    ("참외", ["참외"]),
     ("오이", ["오이"]),
     ("고추", ["고추", "풋고추", "청양"]),
-    ("쌀", ["쌀", "비축미"]),
+    ("쌀", ["쌀", "비축미", "RPC"]),
     ("도매시장", ["가락시장", "도매시장", "공판장", "경락", "경매", "반입"]),
-    ("수출", ["수출", "검역", "통관"]),
-    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "원산지"]),
+    ("수출", ["수출", "검역", "통관", "수입"]),
+    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "원산지", "온라인 도매시장"]),
     ("병해충", ["병해충", "방제", "약제", "예찰", "과수화상병", "탄저병", "냉해", "동해"]),
 ]
 
@@ -838,7 +861,7 @@ def press_priority(press: str, domain: str) -> int:
 # 최상위: 공식 정책/기관 (농식품부, 정책브리핑, aT, 농관원, KREI 등)
 OFFICIAL_HOSTS = {
     'korea.kr', 'mafra.go.kr', 'rda.go.kr', 'at.or.kr', 'm.kati.net', 'kati.net',
-    'naqs.go.kr', 'krei.re.kr',
+    'naqs.go.kr', 'krei.re.kr', 'qia.go.kr',
     # 시장/공공(공식 공지)
     'neinvoice.garak.co.kr', 'garak.co.kr',
     # 참고용(정책/통계):
@@ -1570,6 +1593,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     score -= local_coop_penalty(text, press, dom, key)
 
+    # (신호 보강) 제목에 숫자/단위가 포함된 기사(가격/물량/지표)는 가점
+    score += title_signal_bonus(title)
+
+    # (오탐 억제) 글로벌 리테일 시위/불매/쟁점성 기사 패널티
+    score -= 1.8 * global_retail_protest_penalty(text)
+
     # 최신성: 48시간 내 기사 보정(너무 과도하지 않게)
     try:
         now_kst = datetime.now(timezone(timedelta(hours=9)))
@@ -2062,6 +2091,8 @@ def _fetch_html_items(url: str, parser: str) -> list[dict]:
             items = _parse_kati_press_list(txt, base_url=url)
         elif parser == "nongmin_list":
             items = _parse_nongmin_list(txt, base_url=url)
+        elif parser == "qia_press":
+            items = _parse_qia_press_list(txt, base_url=url)
         elif parser == "garak_bbs":
             items = _parse_garak_bbs_list(txt, base_url=url)
         else:
@@ -2115,6 +2146,36 @@ def _parse_nongmin_list(txt: str, base_url: str) -> list[dict]:
         link = urljoin(base_url, href)
         out.append({"title": title, "link": link, "description": "", "pubDate": dt})
     return out
+
+
+def _parse_qia_press_list(txt: str, base_url: str) -> list[dict]:
+    """농림축산검역본부(qia.go.kr) 보도/설명자료 리스트 파싱(가능한 범위에서 보수적으로)."""
+    from urllib.parse import urljoin
+    out: list[dict] = []
+
+    # 목록 페이지: viewwebQiaCom.do 링크 + 날짜(YYYY-MM-DD 또는 YY/MM/DD)
+    pat = re.compile(
+        r'href="(?P<href>[^"]*viewwebQiaCom\.do[^"]*)"[^>]*>(?P<title>.*?)</a>.*?(?P<dt>(?:\d{4}-\d{2}-\d{2})|(?:\d{2}/\d{2}/\d{2}))',
+        re.S
+    )
+    for m in pat.finditer(txt):
+        href = m.group("href")
+        title = _strip_html_tags(m.group("title"))
+        dt_raw = m.group("dt")
+        if not title:
+            continue
+
+        # YY/MM/DD -> 20YY-MM-DD 로 보정
+        dt = dt_raw
+        if re.fullmatch(r"\d{2}/\d{2}/\d{2}", dt_raw):
+            yy, mm, dd = dt_raw.split("/")
+            dt = f"20{yy}-{mm}-{dd}"
+
+        link = urljoin(base_url, href)
+        out.append({"title": title, "link": link, "description": "", "pubDate": dt})
+
+    return out
+
 
 def _parse_garak_bbs_list(txt: str, base_url: str) -> list[dict]:
     """가락시장(공식) 게시판 리스트 파싱(공지/싱싱정보)."""
@@ -2246,7 +2307,10 @@ def collect_html_candidates(section_conf: dict, start_kst: datetime, end_kst: da
     return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: DedupeIndex) -> list[Article]:
-    queries = section_conf["queries"]
+    queries = section_conf.get("queries", [])
+    if NAVER_MAX_QUERIES_PER_SECTION > 0 and len(queries) > NAVER_MAX_QUERIES_PER_SECTION:
+        logging.info("Naver queries trimmed for section %s: %d -> %d", section_conf.get("key"), len(section_conf.get("queries", [])), len(queries[:NAVER_MAX_QUERIES_PER_SECTION]))
+        queries = queries[:NAVER_MAX_QUERIES_PER_SECTION]
     items: list[Article] = []
 
     # (Bias reduction) 공식 발표/공지(RSS/화이트리스트 페이지) 우선 수집
