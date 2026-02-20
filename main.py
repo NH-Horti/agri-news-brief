@@ -81,50 +81,6 @@ BUILD_TAG = os.getenv("BUILD_TAG", "v16-all-upgrades-20260219")
 # Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
 WHITELIST_RSS_URLS = [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]
 
-# Data source expansion (bias reduction)
-# - ENABLE_OFFICIAL_SOURCES=1 (default): fetches "official announcements" first via RSS/whitelisted pages
-# - ENABLE_OFFICIAL_SOURCES=0: disables built-in sources (still keeps WHITELIST_RSS_URLS if provided)
-ENABLE_OFFICIAL_SOURCES = os.getenv("ENABLE_OFFICIAL_SOURCES", "1").strip().lower() not in ("0", "false", "no", "off")
-OFFICIAL_FETCH_TIMEOUT = float(os.getenv("OFFICIAL_FETCH_TIMEOUT", "20"))
-OFFICIAL_MAX_ITEMS_PER_SOURCE = max(10, min(int(os.getenv("OFFICIAL_MAX_ITEMS_PER_SOURCE", "60")), 200))
-
-# 공식 소스 우선(RSS/원문 기반) - 정책브리핑/농식품부/농진청 등
-OFFICIAL_RSS_SOURCES = [
-    # 정책브리핑(정부 공식 보도자료) + 부처별
-    {"name": "정책브리핑 보도자료", "url": "https://www.korea.kr/rss/pressrelease.xml"},
-    {"name": "정책브리핑 농식품부", "url": "https://www.korea.kr/rss/dept_mafra.xml"},
-    {"name": "정책브리핑 농촌진흥청", "url": "https://www.korea.kr/rss/dept_rda.xml"},
-
-    # 농식품부(공식) RSS
-    {"name": "농식품부 보도자료", "url": "https://www.mafra.go.kr/bbs/home/792/rssList.do?row=50"},
-    {"name": "농식품부 공지사항", "url": "https://www.mafra.go.kr/bbs/home/791/rssList.do?row=50"},
-    {"name": "농식품부 해명/설명", "url": "https://www.mafra.go.kr/bbs/home/793/rssList.do?row=50"},
-    {"name": "농식품부 입법/행정예고", "url": "https://www.mafra.go.kr/bbs/home/788/rssList.do?row=50"},
-
-    # 농촌진흥청 RSS
-    {"name": "농촌진흥청 주요동정", "url": "https://www.rda.go.kr/rss/rss.jsp?board_id=ppemovent"},
-    {"name": "농촌진흥청 농업기술", "url": "https://www.rda.go.kr/rss/rss.jsp?board_id=pubctebook"},
-    {"name": "농촌진흥청 그린매거진", "url": "https://www.rda.go.kr/rss/rss.jsp?board_id=webzine"},
-]
-
-# RSS가 없거나 누락되는 구간(공식/주요 언론)은 화이트리스트 페이지 직접 수집(리스트 페이지)
-OFFICIAL_HTML_SOURCES = [
-    # aT (KATI 모바일) 보도자료 목록
-    {"name": "aT(KATI) 보도자료", "url": "https://m.kati.net/board/pressKitList.do?menu_dept3=360", "parser": "kati_press"},
-
-    # 농림축산검역본부(검역본부) 보도/설명자료
-    {"name": "농림축산검역본부 보도/설명자료", "url": "https://www.qia.go.kr/listwebQiaCom.do?type=6_18_1bdsm&key=&pager.offset=0", "parser": "qia_press"},
-
-    # 가락시장(공식) 공지/싱싱정보 (RSS 미제공으로 리스트 페이지 수집)
-    {"name": "가락시장(공식) 공지사항", "url": "https://neinvoice.garak.co.kr/web/board/bbsList.do?boardId=5&menuId=13", "parser": "garak_bbs"},
-    {"name": "가락시장(공식) 싱싱정보", "url": "https://neinvoice.garak.co.kr/web/board/bbsList.do?boardId=13&menuId=14", "parser": "garak_bbs"},
-
-    # 농민신문(주요 언론) - RSS 미제공 구간은 리스트 페이지 기반으로 누락 기사 보완
-    {"name": "농민신문 정책일반", "url": "https://www.nongmin.com/list/17", "parser": "nongmin_list"},
-    {"name": "농민신문 유통", "url": "https://www.nongmin.com/list/19", "parser": "nongmin_list"},
-    {"name": "농민신문 시세", "url": "https://www.nongmin.com/list/126", "parser": "nongmin_list"},
-]
-
 
 
 
@@ -142,7 +98,6 @@ NAVER_MIN_INTERVAL_SEC = float(os.getenv("NAVER_MIN_INTERVAL_SEC", "0.35"))  # �
 NAVER_MAX_RETRIES = int(os.getenv("NAVER_MAX_RETRIES", "6"))
 NAVER_BACKOFF_MAX_SEC = float(os.getenv("NAVER_BACKOFF_MAX_SEC", "20"))
 NAVER_MAX_WORKERS = int(os.getenv("NAVER_MAX_WORKERS", "2"))  # 동시 요청 수(속도제한 회피용)
-NAVER_MAX_QUERIES_PER_SECTION = int(os.getenv("NAVER_MAX_QUERIES_PER_SECTION", "80"))  # 섹션별 Naver 쿼리 상한(과도한 API 호출 방지)
 
 _NAVER_LOCK = threading.Lock()
 _NAVER_LAST_CALL = 0.0
@@ -239,13 +194,10 @@ WHOLESALE_MARKET_TERMS = ["가락시장", "도매시장", "공판장", "경락",
 POLICY_DOMAINS = {
     "korea.kr",
     "mafra.go.kr",
-    "rda.go.kr",
     "at.or.kr",
-    "m.kati.net", "kati.net",
     "naqs.go.kr",
     "krei.re.kr",
 }
-
 
 ALLOWED_GO_KR = {
     "mafra.go.kr",
@@ -256,15 +208,9 @@ ALLOWED_GO_KR = {
 }
 
 AGRI_POLICY_KEYWORDS = [
-    "농축수산물", "농축산물", "농산물", "농식품", "농업", "원예",
-    "성수품", "할인지원", "할당관세", "관세", "수입", "수출",
-    "검역", "검역본부", "농림축산검역본부",
-    "수급", "가격", "과일", "채소", "화훼", "비축미", "원산지",
-    "정책", "대책", "지원", "브리핑", "보도자료", "공지",
-    "농식품부", "정책브리핑", "농촌진흥청", "농진청", "aT", "KATI", "가락시장",
-    "온라인 도매시장", "도매시장",
+    "농축수산물", "농축산물", "성수품", "할인지원", "할당관세", "검역",
+    "수급", "가격", "과일", "비축미", "원산지", "정책", "대책", "브리핑", "보도자료"
 ]
-
 
 
 # -----------------------------
@@ -276,22 +222,14 @@ SECTIONS = [
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
-            "화훼 출하", "절화 경매", "꽃 가격", "사과 작황", "사과 생산량",
-            "사과 저장", "사과 수급", "사과 가격", "배 작황", "배 생산량",
-            "배 저장", "배 수급", "배 가격", "단감 작황", "단감 수급",
-            "단감 가격", "떫은감 작황", "떫은감 수급", "곶감 가격", "키위 작황",
-            "참다래 수급", "키위 가격", "유자 작황", "유자 수급", "유자 가격",
-            "복숭아 작황", "복숭아 수급", "복숭아 가격", "매실 작황", "매실 수급",
-            "매실 가격", "자두 작황", "자두 수급", "자두 가격", "밤 작황",
-            "밤 수급", "밤 가격", "감귤 작황", "감귤 수급", "감귤 가격",
-            "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하", "황금향 출하",
-            "샤인머스캣 작황", "샤인머스캣 수급", "샤인머스캣 가격", "포도 작황", "포도 수급",
-            "포도 가격", "딸기 작황", "딸기 수급", "딸기 가격", "파프리카 작황",
-            "파프리카 수급", "파프리카 가격", "파프리카 수출", "참외 작황", "참외 수급",
-            "참외 가격", "오이 작황", "오이 수급", "오이 가격", "풋고추 작황",
-            "풋고추 수급", "풋고추 가격", "쌀 산지 가격", "비축미 동향",
+            "사과 작황", "사과 생산량", "사과 저장", "사과 수급", "사과 가격",
+            "배 작황", "배 생산량", "배 저장", "배 과일 수급", "배 과일 가격",
+            "감귤 작황", "감귤 수급", "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하",
+            "샤인머스캣 작황", "샤인머스캣 수급", "포도 작황", "포도 수급",
+            "오이 작황", "오이 수급", "풋고추 작황", "풋고추 수급",
+            "쌀 산지 가격", "비축미 동향",
         ],
-        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세", "경매", "경락", "도매"],
+        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세"],
     },
     {
         "key": "policy",
@@ -334,28 +272,17 @@ SECTIONS = [
 # Topic diversity
 # -----------------------------
 COMMODITY_TOPICS = [
-    ("화훼", ["화훼", "절화", "꽃", "장미", "국화", "백합", "거베라", "난"]),
     ("사과", ["사과"]),
-    ("배", ["배", "신고배"]),
-    ("감귤/만감", ["감귤", "귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향"]),
-    ("단감", ["단감"]),
-    ("감/곶감", ["떫은감", "대봉", "곶감", "감"]),
-    ("키위", ["키위", "참다래"]),
-    ("유자", ["유자"]),
-    ("포도", ["포도", "샤인머스캣", "캠벨"]),
-    ("밤", ["밤"]),
-    ("자두", ["자두"]),
-    ("복숭아", ["복숭아"]),
-    ("매실", ["매실", "청매실"]),
-    ("딸기", ["딸기"]),
-    ("파프리카", ["파프리카"]),
-    ("참외", ["참외"]),
+    ("배", ["배 ", "배(과일)", "배 과일 가격", "배 과일 시세"]),
+    ("감귤/만감", ["감귤", "만감", "한라봉", "레드향", "천혜향"]),
+    ("감/곶감", ["단감", "떫은감", "곶감", "감 "]),
+    ("포도", ["포도", "샤인머스캣"]),
     ("오이", ["오이"]),
     ("고추", ["고추", "풋고추", "청양"]),
-    ("쌀", ["쌀", "비축미", "RPC"]),
+    ("쌀", ["쌀", "비축미"]),
     ("도매시장", ["가락시장", "도매시장", "공판장", "경락", "경매", "반입"]),
-    ("수출", ["수출", "검역", "통관", "수입"]),
-    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "원산지", "온라인 도매시장"]),
+    ("수출", ["수출", "검역", "통관"]),
+    ("정책", ["정책", "대책", "브리핑", "보도자료", "할당관세", "할인지원", "원산지"]),
     ("병해충", ["병해충", "방제", "약제", "예찰", "과수화상병", "탄저병", "냉해", "동해"]),
 ]
 
@@ -449,13 +376,111 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
-def extract_topic(title: str, desc: str) -> str:
-    text = (title + " " + desc).lower()
+# -----------------------------
+# Topic detection (robust)
+# - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
+# - topic은 카드에 노출되므로, 품목 분류 정확도가 매우 중요
+# -----------------------------
+_SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern]] = {
+    # 과일 '배' (배터리/배당/배달/배기/배포 등 오탐 방지)
+    "배": [
+        re.compile(r"(?:^|[\s\W])배(?:값|가격|시세|수급|출하|저장|작황|재배|농가)"),
+        re.compile(r"(?:^|[\s\W])배\s+과일"),
+        re.compile(r"신고배"),
+    ],
+    # '밤'(night) 오탐 방지: 알밤/밤값/밤(농산물 맥락)
+    "밤": [
+        re.compile(r"(?:^|[\s\W])밤(?:값|가격|시세|수급|출하|작황|재배|농가)"),
+        re.compile(r"알밤"),
+    ],
+    # '꽃'(일반 단어지만 화훼 기사에서 빈번): 꽃값/절화/경매 등과 함께
+    "꽃": [
+        re.compile(r"(?:^|[\s\W])꽃(?:값|가격|시세)"),
+        re.compile(r"(?:^|[\s\W])꽃\s*(경매|도매|소매|시장)"),
+    ],
+    # '귤' (감귤 맥락)
+    "귤": [
+        re.compile(r"(?:^|[\s\W])귤(?:값|가격|시세|수급|출하|작황|재배|농가)"),
+        re.compile(r"감귤"),
+        re.compile(r"만감"),
+    ],
+    # '쌀'은 원예는 아니지만 기존 로직 유지(쌀값/비축미 등)
+    "쌀": [
+        re.compile(r"(?:^|[\s\W])쌀(?:값|가격|시세|수급)"),
+        re.compile(r"비축미"),
+        re.compile(r"rpc"),
+    ],
+}
+
+_HORTI_TOPICS_SET = {
+    "화훼", "사과", "배", "감귤/만감", "단감", "감/곶감", "키위", "유자", "포도",
+    "밤", "자두", "복숭아", "매실", "딸기", "파프리카", "참외", "오이", "고추",
+}
+
+def _topic_scores(title: str, desc: str) -> dict[str, float]:
+    t = (title + " " + desc).lower()
+    tl = (title or "").lower()
+    scores: dict[str, float] = {}
+
     for topic, words in COMMODITY_TOPICS:
+        sc = 0.0
+
+        # 기본(2글자 이상 키워드): 부분문자열 매칭
         for w in words:
-            if w.lower() in text:
-                return topic
-    return "기타"
+            wl = (w or "").lower()
+            if len(wl) < 2:
+                continue
+            if wl in t:
+                sc += 1.0
+                if wl in tl:
+                    sc += 0.4
+
+        # 1글자 키워드: 맥락 패턴으로만 보강
+        # - topic 자체가 1글자 품목을 포함할 수 있어 topic명을 기반으로 패턴을 선택
+        if topic == "배":
+            if any(p.search(t) for p in _SINGLE_TERM_CONTEXT_PATTERNS["배"]):
+                sc += 1.8
+        if topic == "밤":
+            if any(p.search(t) for p in _SINGLE_TERM_CONTEXT_PATTERNS["밤"]):
+                sc += 1.6
+        if topic == "화훼":
+            if any(p.search(t) for p in _SINGLE_TERM_CONTEXT_PATTERNS["꽃"]):
+                sc += 1.3
+        if topic == "감귤/만감":
+            if any(p.search(t) for p in _SINGLE_TERM_CONTEXT_PATTERNS["귤"]):
+                sc += 1.1
+        if topic == "쌀":
+            if any(p.search(t) for p in _SINGLE_TERM_CONTEXT_PATTERNS["쌀"]):
+                sc += 1.2
+
+        if sc > 0:
+            scores[topic] = sc
+
+    return scores
+
+def best_topic_and_score(title: str, desc: str) -> tuple[str, float]:
+    scores = _topic_scores(title, desc)
+    if not scores:
+        return "기타", 0.0
+    # 최고 점수 topic, 동점이면 '품목(원예)'를 우선(정책/도매시장보다 앞서 표시)
+    best_topic = None
+    best_sc = -1.0
+    for topic, sc in scores.items():
+        if sc > best_sc:
+            best_topic, best_sc = topic, sc
+        elif sc == best_sc and best_topic is not None:
+            if topic in _HORTI_TOPICS_SET and best_topic not in _HORTI_TOPICS_SET:
+                best_topic = topic
+    return best_topic or "기타", float(best_sc)
+
+def best_horti_score(title: str, desc: str) -> float:
+    scores = _topic_scores(title, desc)
+    horti = [sc for t, sc in scores.items() if t in _HORTI_TOPICS_SET]
+    return max(horti) if horti else 0.0
+
+def extract_topic(title: str, desc: str) -> str:
+    topic, _ = best_topic_and_score(title, desc)
+    return topic
 
 def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
     if canon_url:
@@ -729,6 +754,14 @@ PRESS_HOST_MAP = {
     "sportsseoul.com": "스포츠서울",
     "sportsseoul.co.kr": "스포츠서울",
 
+    # ✅ (추가) 영문 도메인→공식 한글 매체명
+    "dailian.co.kr": "데일리안",
+    "m.dailian.co.kr": "데일리안",
+    "mdilbo.com": "무등일보",
+    "sjbnews.com": "새전북신문",
+    "gukjenews.com": "국제뉴스",
+
+    
     # 요청 매체(영문→한글)
     "mediajeju.com": "미디어제주",
     "pointdaily.co.kr": "포인트데일리",
@@ -740,11 +773,6 @@ PRESS_HOST_MAP = {
     "at.or.kr": "aT",
     "naqs.go.kr": "농관원",
     "krei.re.kr": "KREI",
-    "rda.go.kr": "농촌진흥청",
-    "m.kati.net": "aT",
-    "kati.net": "aT",
-    "neinvoice.garak.co.kr": "가락시장",
-    "garak.co.kr": "가락시장",
 }
 
 ABBR_MAP = {
@@ -758,6 +786,10 @@ ABBR_MAP = {
     "sbs": "SBS",
     "ajunews": "아주경제",
     "sportsseoul": "스포츠서울",
+    "dailian": "데일리안",
+    "mdilbo": "무등일보",
+    "sjbnews": "새전북신문",
+    "gukjenews": "국제뉴스",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -788,6 +820,9 @@ def press_name_from_url(url: str) -> str:
         return ABBR_MAP[brand]
 
     # 5) fallback
+    # (CO 등) 최상위 도메인 조각이 매체명으로 떨어지는 경우 방어
+    if brand in ("co", "go", "or", "ne", "ac", "re", "pe", "kr", "com", "net"):
+        return "미상"
     return brand.upper() if len(brand) <= 6 else brand
 
 
@@ -795,7 +830,7 @@ def press_name_from_url(url: str) -> str:
 # Press priority (중요도)
 # -----------------------------
 MAFRA_HOSTS = {"mafra.go.kr"}
-POLICY_TOP_HOSTS = {"korea.kr", "mafra.go.kr", "rda.go.kr", "at.or.kr", "m.kati.net", "kati.net", "naqs.go.kr", "krei.re.kr"}
+POLICY_TOP_HOSTS = {"korea.kr", "mafra.go.kr", "at.or.kr", "naqs.go.kr", "krei.re.kr"}
 
 # (4) 중요도 우선순위:
 #   3: 중앙지/일간지/경제지 + 농민신문 + 방송사 + 농식품부·정책브리핑(최상)
@@ -817,6 +852,8 @@ MID_TIER_PRESS = {
     "팜&마켓",
     "아주경제",
     # 스포츠서울은 한글 표기만 유지(중요도는 낮게)
+    "데일리안",
+
 }
 
 _UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
@@ -845,7 +882,7 @@ def press_priority(press: str, domain: str) -> int:
         return 2
     if d.endswith(".go.kr") or d.endswith(".re.kr") or d in ALLOWED_GO_KR:
         return 2
-    if p and (re.search(r"(일보|신문)$", p) or ("방송" in p and p not in TOP_TIER_PRESS)):
+    if p and ("방송" in p and p not in TOP_TIER_PRESS):
         return 2
 
     # UGC/커뮤니티성
@@ -860,14 +897,10 @@ def press_priority(press: str, domain: str) -> int:
 # -----------------------------
 # 최상위: 공식 정책/기관 (농식품부, 정책브리핑, aT, 농관원, KREI 등)
 OFFICIAL_HOSTS = {
-    'korea.kr', 'mafra.go.kr', 'rda.go.kr', 'at.or.kr', 'm.kati.net', 'kati.net',
-    'naqs.go.kr', 'krei.re.kr', 'qia.go.kr',
-    # 시장/공공(공식 공지)
-    'neinvoice.garak.co.kr', 'garak.co.kr',
+    'korea.kr', 'mafra.go.kr', 'at.or.kr', 'naqs.go.kr', 'krei.re.kr',
     # 참고용(정책/통계):
     'kostat.go.kr', 'customs.go.kr', 'moef.go.kr', 'kma.go.kr',
 }
-
 
 # 최상위 언론(중앙지/일간지/경제지/통신) + 방송 + 농민신문
 MAJOR_PRESS = {
@@ -920,7 +953,7 @@ def press_tier(press: str, domain: str) -> int:
         return 2
     if p in MID_TIER_PRESS:
         return 2
-    if p and (re.search(r'(일보|신문)$', p) or ('방송' in p and p not in MAJOR_PRESS)):
+    if p and ('방송' in p and p not in MAJOR_PRESS):
         return 2
     if any(h in p for h in MID_PRESS_HINTS):
         return 2
@@ -931,7 +964,7 @@ def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
-    w = {4: 12.5, 3: 9.5, 2: 4.0, 1: 0.0}.get(t, 0.0)
+    w = {4: 12.5, 3: 9.5, 2: 2.2, 1: -0.8}.get(t, -0.8)
     p = (press or '').strip()
     d = (domain or '').lower()
     # 통신/공식은 기사 생산량이 많아도 핵심성 높음: 약간 추가
@@ -944,6 +977,9 @@ def press_weight(press: str, domain: str) -> float:
     # UGC 계열은 감점
     if any(h in d for h in _UGC_HOST_HINTS):
         w -= 3.0
+    # 알 수 없는 짧은 약어(브랜드)로 추정되는 경우(지방/인터넷 재전송) 소폭 감점
+    if (p == "미상") or (p.isupper() and len(p) <= 6 and p not in ("KREI", "KBS", "MBC", "SBS", "YTN", "JTBC", "MBN")):
+        w -= 1.0
     return w
 
 
@@ -1385,6 +1421,52 @@ def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str =
 # -----------------------------
 # Relevance / scoring
 # -----------------------------
+def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = "date"):
+    """Naver Web(웹문서) 검색: 기사에 언급된 보고서/자료(예: KREI 이슈+)를 보완 수집."""
+    if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
+        raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
+    url = "https://openapi.naver.com/v1/search/webkr.json"
+    headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
+    params = {"query": query, "display": display, "start": start, "sort": sort}
+
+    last_err = None
+    for attempt in range(max(1, NAVER_MAX_RETRIES)):
+        try:
+            _naver_throttle()
+            r = SESSION.get(url, headers=headers, params=params, timeout=25)
+
+            data = None
+            try:
+                data = r.json()
+            except Exception:
+                data = None
+
+            is_rate = (r.status_code == 429) or (isinstance(data, dict) and str(data.get("errorCode", "")) == "012")
+            if r.ok and not is_rate:
+                return data if isinstance(data, dict) else {"items": []}
+
+            if is_rate:
+                ra = 0.0
+                try:
+                    ra = float(r.headers.get("Retry-After", "0") or 0)
+                except Exception:
+                    ra = 0.0
+                backoff = ra if ra > 0 else min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+                time.sleep(backoff)
+                continue
+
+            last_err = RuntimeError(f"Naver web API error: status={r.status_code} body={r.text[:300]}")
+            backoff = min(NAVER_BACKOFF_MAX_SEC, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.3))
+            time.sleep(backoff)
+        except Exception as e:
+            last_err = e
+            backoff = min(NAVER_BACKOFF_MAX_SEC, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.3))
+            time.sleep(backoff)
+
+    log.warning("[WARN] naver_web_search failed: %s", last_err)
+    return {"items": []}
+
+
 def section_must_terms_ok(text: str, must_terms) -> bool:
     return has_any(text, must_terms)
 
@@ -1459,36 +1541,56 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
 
     key = section_conf["key"]
 
+    # (핵심) 원예수급 관련성 게이트:
+    # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등)로 인한 오탐을 강하게 차단
+    horti_sc = best_horti_score(title, desc)
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
+    horti_core_terms = ["원예", "과수", "화훼", "절화", "과채", "시설채소", "시설", "하우스", "비가림", "출하", "수급", "작황", "재배", "저장", "가격", "시세", "물량", "재고"]
+    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+    horti_core_hits = count_any(text, [t.lower() for t in horti_core_terms])
+
+
     # 공급(supply): '원예/농산물 맥락'이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
     if key == "supply":
-        supply_ctx_terms = [
-            "농산물", "농업", "원예", "과수", "화훼", "시설", "청과",
-            "산지", "산지유통", "도매시장", "가락시장", "공판장", "경락", "경락가",
-            "사과", "배", "감귤", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣", "오이", "고추",
-            "수출", "검역", "apc", "산지유통센터",
-        ]
-        if count_any(text, [t.lower() for t in supply_ctx_terms]) < 1:
+        # 공급(supply) 섹션은 "원예/농산물 맥락"이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
+        # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등) 오탐을 줄이기 위해
+        #   품목/도매/원예 맥락 중 최소 하나는 반드시 충족하도록 한다.
+        if not ((horti_sc >= 1.8) or (market_hits >= 1) or (horti_core_hits >= 3)):
             return False
+
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
-        policy_agri_ctx = [
-            "농식품", "농업", "농산물", "원예", "과수", "청과", "도매시장", "온라인 도매시장",
-            "검역", "원산지", "수입", "수출", "관세", "할당관세", "할인지원", "성수품", "가격 안정",
-            "농협", "aT", "농촌진흥청", "국립농산물품질관리원", "식약처",
-        ]
-        if not policy_domain_override(dom, text):
-            if count_any(text, [t.lower() for t in policy_agri_ctx]) < 1:
+        # 정책(policy) 섹션:
+        # - 공식 발표(정책브리핑/농식품부/기관)는 폭을 조금 넓게(단, 농업 맥락은 유지)
+        # - 비공식(언론)일 경우: "농식품/농산물 + 원예수급/유통/검역/가격안정" 맥락이 없으면 제외
+        is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
+
+        if not is_official:
+            # 최소 농업/원예 맥락: (명확 품목) 또는 (도매/유통 맥락) 또는 (농산물+정책키워드 조합)
+            policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
+            agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
+            sig = count_any(text, [t.lower() for t in policy_signal_terms])
+            if not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
                 return False
+
+        # 금융/산업 일반 정책 오탐 차단
         policy_off = ["금리", "주택", "부동산", "코스피", "코스닥", "주식", "채권", "가상자산", "원화", "환율", "반도체", "배터리"]
         if any(w in text for w in policy_off):
-            if count_any(text, [t.lower() for t in ("농식품", "농산물", "농업", "원예", "과수", "청과", "도매시장")]) < 2:
+            if not ((horti_sc >= 1.8) or (market_hits >= 1) or ("농산물" in text and "가격" in text)):
+                return False
+
+        # 식품안전/위생 단독 이슈는 원예수급과 거리가 있어 제외(단, 도매시장/원산지/검역/농산물 가격과 직접 결합 시 허용)
+        safety_terms = ["식품안전", "위생", "haccp", "식중독", "표시기준", "유통기한", "알레르기"]
+        if any(w in text for w in safety_terms):
+            if not ((market_hits >= 1) or (horti_sc >= 2.0) or ("도매시장" in text) or ("원산지" in text) or ("검역" in text) or ("농산물" in text and "가격" in text)):
                 return False
 
         # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
         is_major = press_priority(press, dom) >= 2
         if (not is_major) and _LOCAL_GEO_PATTERN.search(title):
             return False
+
 
     # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
@@ -1536,6 +1638,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     """
     text = (title + " " + desc).lower()
     title_l = (title or "").lower()
+
+    # (핵심) 원예수급/품목 신호 점수(품목 라벨 + 오탐 억제)
+    horti_sc = best_horti_score(title, desc)
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
+    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
     offp = off_topic_penalty(text)
@@ -1593,11 +1701,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     score -= local_coop_penalty(text, press, dom, key)
 
-    # (신호 보강) 제목에 숫자/단위가 포함된 기사(가격/물량/지표)는 가점
-    score += title_signal_bonus(title)
-
-    # (오탐 억제) 글로벌 리테일 시위/불매/쟁점성 기사 패널티
-    score -= 1.8 * global_retail_protest_penalty(text)
+    # 식품안전/위생 단독 이슈는 원예수급 핵심에서 멀어 감점(도매시장/품목 신호가 있으면 유지)
+    if any(w in text for w in ("식품안전", "위생", "haccp", "식중독")):
+        if market_hits == 0 and horti_sc < 1.8 and count_any(text, [t.lower() for t in ("농산물", "원산지", "검역", "도매시장")]) < 1:
+            score -= 3.0
 
     # 최신성: 48시간 내 기사 보정(너무 과도하지 않게)
     try:
@@ -1666,6 +1773,12 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     tb = _token_set(b.title)
     jac = _jaccard(ta, tb)
 
+    # 제목이 다르더라도 본문(요약)까지 포함하면 사실상 같은 이슈인 경우가 많음(타매체 재전송/공동취재)
+    ta2 = _token_set((a.title or "") + " " + (a.description or ""))
+    tb2 = _token_set((b.title or "") + " " + (b.description or ""))
+    jac2 = _jaccard(ta2, tb2)
+    if jac2 >= 0.62:
+        return True
 
     # 문자열 유사도(표기 차이/특수문자 차이 보완)
     sa = re.sub(r"\s+", "", (a.title_key or a.title or "")).lower()
@@ -1719,9 +1832,18 @@ def _jaccard(a: set[str], b: set[str]) -> float:
     return inter / union if union else 0.0
 
 def _is_policy_official(a: "Article") -> bool:
+    """정책 섹션에서 '공식 발표/공지'로 취급할 소스."""
     dom = normalize_host(a.domain)
     p = (a.press or "").strip()
-    return (dom in ("mafra.go.kr", "korea.kr") or p in ("농식품부", "정책브리핑"))
+
+    if dom in OFFICIAL_HOSTS or any(dom.endswith("." + h) for h in OFFICIAL_HOSTS):
+        return True
+
+    # 도메인 매핑이 불완전할 수 있어, 기관명 기반도 보강
+    if p in ("농식품부", "정책브리핑", "aT", "농관원", "KREI", "농촌진흥청", "가락시장"):
+        return True
+
+    return False
 
 # -----------------------------
 # Headline gate constants
@@ -1740,21 +1862,32 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     title = (a.title or "").lower()
     text = (a.title + " " + a.description).lower()
 
+    # (핵심) 코어2는 "정말 핵심"만 올리기 위해, 품목/도매/원예 신호를 재확인
+    horti_sc = best_horti_score(a.title or "", a.description or "")
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
+    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+
+
     # 공통: 칼럼/기고/인물/행사성은 코어에서 제외
     if has_any(title, [w.lower() for w in _HEADLINE_STOPWORDS]):
         return False
 
     if section_key == "supply":
         core_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "물량", "재고", "저장"]
-        crop_terms = ["사과", "배", "감귤", "한라봉", "레드향", "천혜향", "포도", "샤인머스캣", "오이", "고추", "쌀", "비축미"]
-        return has_any(text, core_terms) and has_any(text, crop_terms)
+        # 코어2는 '품목 신호' 또는 '도매/산지 유통 신호'가 확실해야 한다
+        return has_any(text, core_terms) and ((horti_sc >= 1.8) or (market_hits >= 1))
 
     if section_key == "policy":
         if _is_policy_official(a):
             return True
         action_terms = ["대책", "지원", "할인", "할당관세", "검역", "고시", "개정", "발표", "추진", "확대", "연장", "단속", "브리핑", "보도자료", "예산"]
-        ctx_terms = ["농산물", "농업", "농식품", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "수출", "검역"]
-        return has_any(text, action_terms) and has_any(text, ctx_terms)
+        ctx_terms = ["농산물", "농업", "농식품", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "공영도매시장", "수출", "검역"]
+
+        # 식품안전/위생 단독(도매/품목 신호 없음)은 코어에서 제외
+        if any(w in text for w in ("식품안전", "위생", "haccp", "식중독")) and (market_hits == 0) and (horti_sc < 1.8):
+            return False
+
+        return has_any(text, action_terms) and has_any(text, ctx_terms) and ((horti_sc >= 1.4) or (market_hits >= 1))
 
     if section_key == "dist":
         dist_terms = ["가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "반입", "중도매인", "시장도매인", "apc", "선별", "ca저장", "물류", "수출", "검역", "통관", "원산지"]
@@ -1976,247 +2109,51 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 # - WHITELIST_RSS_URLS 환경변수에 RSS URL을 넣으면 해당 소스에서 기사 후보를 추가한다.
 # - 기본은 OFF(빈 값)이며, 기존 Naver OpenAPI 기반 파이프라인은 그대로 유지한다.
 # -----------------------------
-_RSS_CACHE: dict[str, list[dict]] = {}
-_HTML_CACHE: dict[str, list[dict]] = {}
-
-def _fetch_text(url: str, timeout: float = 20, *, allow_redirects: bool = True) -> str:
-    """공식/화이트리스트 소스 수집용: User-Agent 포함 + 간단 재시도."""
-    headers = {
-        "User-Agent": os.getenv(
-            "FETCH_UA",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    }
-    last_err = None
-    for i in range(3):
-        try:
-            r = SESSION.get(url, timeout=timeout, headers=headers, allow_redirects=allow_redirects)
-            if r.ok and r.text:
-                return r.text
-            last_err = RuntimeError(f"HTTP {r.status_code}")
-        except Exception as e:
-            last_err = e
-        time.sleep(0.6 + i * 0.8 + random.random() * 0.3)
-    raise last_err or RuntimeError("fetch failed")
-
 def fetch_rss_items(rss_url: str) -> list[dict]:
-    """RSS fetch + parse (cached)."""
-    if rss_url in _RSS_CACHE:
-        return _RSS_CACHE[rss_url]
     try:
-        txt = _fetch_text(rss_url, timeout=OFFICIAL_FETCH_TIMEOUT if ENABLE_OFFICIAL_SOURCES else 20)
+        r = SESSION.get(rss_url, timeout=20)
+        if not r.ok:
+            return []
+        txt = r.text
         import xml.etree.ElementTree as ET
         root = ET.fromstring(txt)
-
-        items: list[dict] = []
+        items = []
         for it in root.findall(".//item"):
             title = (it.findtext("title") or "").strip()
             link = (it.findtext("link") or "").strip()
             desc = (it.findtext("description") or "").strip()
             pub = (it.findtext("pubDate") or "").strip()
-            if title or link:
-                items.append({"title": title, "link": link, "description": desc, "pubDate": pub})
-
-        if ENABLE_OFFICIAL_SOURCES:
-            items = items[:OFFICIAL_MAX_ITEMS_PER_SOURCE]
-        _RSS_CACHE[rss_url] = items
+            items.append({"title": title, "link": link, "description": desc, "pubDate": pub})
         return items
     except Exception:
-        _RSS_CACHE[rss_url] = []
         return []
 
 def _rss_pub_to_kst(pub: str) -> datetime | None:
-    """RSS pubDate는 형식이 다양해 최대한 보수적으로 처리."""
+    # RSS pubDate는 형식이 다양해 보수적으로 처리(실패 시 None)
     if not pub:
         return None
-    pub = pub.strip()
-
-    # 1) RFC822 계열(가장 흔함)
-    try:
-        dt = parsedate_to_datetime(pub)
-        if dt is not None:
+    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"):
+        try:
+            dt = datetime.strptime(pub, fmt)
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
-            return dt.astimezone(KST)
-    except Exception:
-        pass
-
-    # 2) ISO 8601
-    try:
-        if "T" in pub:
-            dt = datetime.fromisoformat(pub.replace("Z", "+00:00"))
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return dt.astimezone(KST)
-    except Exception:
-        pass
-
-    # 3) yyyy-mm-dd [hh:mm]
-    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
-        try:
-            dt = datetime.strptime(pub[:len(fmt)], fmt)
-            return dt.replace(tzinfo=KST)
+            return dt.astimezone(timezone(timedelta(hours=9)))
         except Exception:
             continue
-
     return None
-
-def _strip_html_tags(s: str) -> str:
-    s = re.sub(r"<[^>]+>", " ", s or "")
-    s = html.unescape(s)
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
-def _parse_date_like_to_kst(s: str) -> datetime | None:
-    if not s:
-        return None
-    s = s.strip()
-    # try datetime first
-    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
-        try:
-            dt = datetime.strptime(s[:len(fmt)], fmt)
-            return dt.replace(tzinfo=KST)
-        except Exception:
-            pass
-    return None
-
-def _fetch_html_items(url: str, parser: str) -> list[dict]:
-    cache_key = f"{parser}::{url}"
-    if cache_key in _HTML_CACHE:
-        return _HTML_CACHE[cache_key]
-    try:
-        txt = _fetch_text(url, timeout=OFFICIAL_FETCH_TIMEOUT)
-        if parser == "kati_press":
-            items = _parse_kati_press_list(txt, base_url=url)
-        elif parser == "nongmin_list":
-            items = _parse_nongmin_list(txt, base_url=url)
-        elif parser == "qia_press":
-            items = _parse_qia_press_list(txt, base_url=url)
-        elif parser == "garak_bbs":
-            items = _parse_garak_bbs_list(txt, base_url=url)
-        else:
-            items = []
-        if ENABLE_OFFICIAL_SOURCES:
-            items = items[:OFFICIAL_MAX_ITEMS_PER_SOURCE]
-        _HTML_CACHE[cache_key] = items
-        return items
-    except Exception:
-        _HTML_CACHE[cache_key] = []
-        return []
-
-def _parse_kati_press_list(txt: str, base_url: str) -> list[dict]:
-    """KATI 모바일 보도자료 리스트 파싱."""
-    from urllib.parse import urljoin
-    out: list[dict] = []
-
-    # 항목 단위: 링크 + 등록일
-    # 예: <a href="pressKitView.do?..."> ... </a> ... 등록일 2026-02-20
-    pat = re.compile(
-        r'href="(?P<href>[^"]*pressKitView\.do[^"]*)"[^>]*>(?P<title>.*?)</a>.*?(?:등록일|작성일)\s*(?P<dt>\d{4}-\d{2}-\d{2})',
-        re.S
-    )
-    for m in pat.finditer(txt):
-        href = m.group("href")
-        title = _strip_html_tags(m.group("title"))
-        dt = m.group("dt")
-        if not title or "검색" in title:
-            continue
-        link = urljoin(base_url, href)
-        out.append({"title": title, "link": link, "description": "", "pubDate": dt})
-
-    return out
-
-def _parse_nongmin_list(txt: str, base_url: str) -> list[dict]:
-    """농민신문 리스트 페이지 파싱."""
-    from urllib.parse import urljoin
-    out: list[dict] = []
-    # 예: <a href="/article/20260220500007"> ... </a> ... 2026-02-20 08:35
-    pat = re.compile(
-        r'href="(?P<href>/article/\d+)"[^>]*>(?P<title>.*?)</a>.*?(?P<dt>\d{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?)',
-        re.S
-    )
-    for m in pat.finditer(txt):
-        href = m.group("href")
-        title = _strip_html_tags(m.group("title"))
-        dt = m.group("dt")
-        # 불필요 항목 제거
-        if not title or any(x in title for x in ("로그인", "회원가입", "구독", "지면보기")):
-            continue
-        link = urljoin(base_url, href)
-        out.append({"title": title, "link": link, "description": "", "pubDate": dt})
-    return out
-
-
-def _parse_qia_press_list(txt: str, base_url: str) -> list[dict]:
-    """농림축산검역본부(qia.go.kr) 보도/설명자료 리스트 파싱(가능한 범위에서 보수적으로)."""
-    from urllib.parse import urljoin
-    out: list[dict] = []
-
-    # 목록 페이지: viewwebQiaCom.do 링크 + 날짜(YYYY-MM-DD 또는 YY/MM/DD)
-    pat = re.compile(
-        r'href="(?P<href>[^"]*viewwebQiaCom\.do[^"]*)"[^>]*>(?P<title>.*?)</a>.*?(?P<dt>(?:\d{4}-\d{2}-\d{2})|(?:\d{2}/\d{2}/\d{2}))',
-        re.S
-    )
-    for m in pat.finditer(txt):
-        href = m.group("href")
-        title = _strip_html_tags(m.group("title"))
-        dt_raw = m.group("dt")
-        if not title:
-            continue
-
-        # YY/MM/DD -> 20YY-MM-DD 로 보정
-        dt = dt_raw
-        if re.fullmatch(r"\d{2}/\d{2}/\d{2}", dt_raw):
-            yy, mm, dd = dt_raw.split("/")
-            dt = f"20{yy}-{mm}-{dd}"
-
-        link = urljoin(base_url, href)
-        out.append({"title": title, "link": link, "description": "", "pubDate": dt})
-
-    return out
-
-
-def _parse_garak_bbs_list(txt: str, base_url: str) -> list[dict]:
-    """가락시장(공식) 게시판 리스트 파싱(공지/싱싱정보)."""
-    from urllib.parse import urljoin
-    out: list[dict] = []
-    # 링크 패턴은 환경에 따라 다르므로 최대한 보수적으로: bbsRead/bbsView + 날짜가 붙은 행만
-    pat = re.compile(
-        r'href="(?P<href>[^"]*(?:bbsRead|bbsView)\.do[^"]*)"[^>]*>(?P<title>.*?)</a>.*?(?P<dt>\d{4}-\d{2}-\d{2})',
-        re.S
-    )
-    for m in pat.finditer(txt):
-        href = m.group("href")
-        title = _strip_html_tags(m.group("title"))
-        dt = m.group("dt")
-        if not title or any(x in title for x in ("검색", "로그인", "회원가입")):
-            continue
-        link = urljoin(base_url, href)
-        out.append({"title": title, "link": link, "description": "", "pubDate": dt})
-    return out
 
 def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex") -> list["Article"]:
-    # built-in official feeds + optional extra RSS whitelist
-    rss_urls: list[str] = []
-    if ENABLE_OFFICIAL_SOURCES:
-        rss_urls.extend([s["url"] for s in OFFICIAL_RSS_SOURCES])
-    rss_urls.extend(WHITELIST_RSS_URLS)
-    # unique keep order
-    seen = set()
-    rss_urls = [u for u in rss_urls if not (u in seen or seen.add(u))]
-
-    if not rss_urls:
+    if not WHITELIST_RSS_URLS:
         return []
-
     out: list[Article] = []
-    for rss in rss_urls:
+    for rss in WHITELIST_RSS_URLS:
         for it in fetch_rss_items(rss):
-            title = clean_text(it.get("title", "")) or ""
-            desc = clean_text(it.get("description", "")) or ""
-            link = strip_tracking_params(it.get("link", "") or "") or ""
-            pub = _rss_pub_to_kst(it.get("pubDate", "")) or None
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            pub = _rss_pub_to_kst(it.get("pubDate", ""))
             if not pub:
+                # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
                 continue
             if pub < start_kst or pub >= end_kst:
                 continue
@@ -2226,67 +2163,12 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             press = press_name_from_url(link)
             if not is_relevant(title, desc, dom, section_conf, press):
                 continue
-
             canon = canonicalize_url(link)
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
-
             if not dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
-
-            score = compute_rank_score(title, desc, dom, pub, section_conf, press)
-            out.append(Article(
-                section=section_conf["key"],
-                title=title,
-                description=desc,
-                link=link,
-                originallink=link,
-                domain=dom,
-                press=press,
-                pub_dt_kst=pub,
-                title_key=title_key,
-                canon_url=canon,
-                norm_key=norm_key,
-                topic=topic,
-                score=score,
-                summary="",
-            ))
-    return out
-
-def collect_html_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex") -> list["Article"]:
-    if not ENABLE_OFFICIAL_SOURCES:
-        return []
-    out: list[Article] = []
-    for src in OFFICIAL_HTML_SOURCES:
-        parser = src.get("parser") or ""
-        url = src.get("url") or ""
-        if not parser or not url:
-            continue
-        for it in _fetch_html_items(url, parser):
-            title = clean_text(it.get("title", "")) or ""
-            desc = clean_text(it.get("description", "")) or ""
-            link = strip_tracking_params(it.get("link", "") or "") or ""
-            pub = _rss_pub_to_kst(it.get("pubDate", "")) or _parse_date_like_to_kst(it.get("pubDate", ""))
-            if not pub:
-                continue
-            if pub < start_kst or pub >= end_kst:
-                continue
-            dom = domain_of(link)
-            if not dom or is_blocked_domain(dom):
-                continue
-            press = press_name_from_url(link)
-            if not is_relevant(title, desc, dom, section_conf, press):
-                continue
-
-            canon = canonicalize_url(link)
-            title_key = norm_title_key(title)
-            topic = extract_topic(title, desc)
-            norm_key = make_norm_key(canon, press, title_key)
-
-            if not dedupe.add_and_check(canon, press, title_key, norm_key):
-                continue
-
             score = compute_rank_score(title, desc, dom, pub, section_conf, press)
             out.append(Article(
                 section=section_conf["key"],
@@ -2307,22 +2189,8 @@ def collect_html_candidates(section_conf: dict, start_kst: datetime, end_kst: da
     return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: DedupeIndex) -> list[Article]:
-    queries = section_conf.get("queries", [])
-    if NAVER_MAX_QUERIES_PER_SECTION > 0 and len(queries) > NAVER_MAX_QUERIES_PER_SECTION:
-        logging.info("Naver queries trimmed for section %s: %d -> %d", section_conf.get("key"), len(section_conf.get("queries", [])), len(queries[:NAVER_MAX_QUERIES_PER_SECTION]))
-        queries = queries[:NAVER_MAX_QUERIES_PER_SECTION]
+    queries = section_conf["queries"]
     items: list[Article] = []
-
-    # (Bias reduction) 공식 발표/공지(RSS/화이트리스트 페이지) 우선 수집
-    # - 네이버 검색 결과와 중복될 때, 공식 소스가 먼저 들어와야 dedupe에서 우선권을 가짐
-    try:
-        items.extend(collect_html_candidates(section_conf, start_kst, end_kst, dedupe))
-    except Exception:
-        pass
-    try:
-        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst, dedupe))
-    except Exception:
-        pass
 
     def fetch(q: str):
         return q, naver_news_search(q, display=50, start=1, sort="date")
@@ -2384,7 +2252,128 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 items.append(art)
 
     items.sort(key=_sort_key_major_first, reverse=True)
+    # Optional RSS candidates (신뢰 소스 보강)
+    try:
+        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst, dedupe))
+    except Exception:
+        pass
+
     return items
+
+
+# -----------------------------
+# Referenced reports (KREI 이슈+ 등) 자동 포함
+# -----------------------------
+_KREI_ISSUE_RX = re.compile(r"이슈\+\s*제?\s*(\d{1,4})\s*호")
+
+def _extract_krei_issue_refs(by_section: dict[str, list["Article"]]) -> dict[int, datetime]:
+    """기사 텍스트에서 '이슈+ 제NN호'를 찾아 (issue_no -> 대표 pub_dt)로 반환."""
+    out: dict[int, datetime] = {}
+    for lst in by_section.values():
+        for a in (lst or []):
+            text = f"{a.title} {a.description}"
+            for m in _KREI_ISSUE_RX.finditer(text):
+                try:
+                    n = int(m.group(1))
+                except Exception:
+                    continue
+                pub = getattr(a, "pub_dt_kst", None)
+                if not isinstance(pub, datetime):
+                    continue
+                # 가장 최근(대표) pub_dt를 사용
+                if (n not in out) or (pub > out[n]):
+                    out[n] = pub
+    return out
+
+def _pick_best_web_item(items: list[dict], issue_no: int) -> dict | None:
+    """KREI 이슈+ 링크 후보 중 최적 1개를 선택."""
+    if not items:
+        return None
+    best = None
+    for it in items:
+        link = strip_tracking_params((it.get("link") or "")).strip()
+        if not link:
+            continue
+        dom = normalize_host(domain_of(link) or "")
+        if not dom:
+            continue
+        # KREI 도메인 우선
+        if ("krei.re.kr" in dom) or ("repository.krei.re.kr" in dom):
+            score = 3
+        else:
+            score = 0
+        t = clean_text(it.get("title", ""))
+        d = clean_text(it.get("description", ""))
+        blob = (t + " " + d).lower()
+        if str(issue_no) in blob:
+            score += 1
+        if "이슈+" in blob or "issue+" in blob:
+            score += 1
+        if best is None or score > best[0]:
+            best = (score, it)
+    return best[1] if best else None
+
+def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex"):
+    """기사에서 언급된 KREI 이슈+ 보고서를 찾아 policy 섹션에 추가."""
+    refs = _extract_krei_issue_refs(raw_by_section)
+    if not refs:
+        return
+
+    policy_conf = None
+    for s in SECTIONS:
+        if s.get("key") == "policy":
+            policy_conf = s
+            break
+    if not policy_conf:
+        return
+
+    # 과도한 호출 방지: 최대 3건까지만
+    for issue_no, ref_pub in list(sorted(refs.items(), key=lambda x: x[0]))[:3]:
+        try:
+            q = f'한국농촌경제연구원 "이슈+" 제{issue_no}호'
+            data = naver_web_search(q, display=10, start=1, sort="date")
+            it = _pick_best_web_item(data.get("items", []) if isinstance(data, dict) else [], issue_no)
+            if not it:
+                continue
+
+            title = clean_text(it.get("title", "")) or f"KREI 이슈+ 제{issue_no}호"
+            desc = clean_text(it.get("description", "")) or ""
+            link = strip_tracking_params(it.get("link", "") or "")
+            if not link:
+                continue
+            dom = domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
+
+            press = "KREI"
+            canon = canonicalize_url(link)
+            title_key = norm_title_key(title)
+            topic = "보고서"
+            norm_key = make_norm_key(canon, press, title_key)
+
+            if not dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+
+            a = Article(
+                section="policy",
+                title=f"[보고서] {title}",
+                description=desc,
+                link=link,
+                originallink=link,
+                pub_dt_kst=ref_pub,  # 기사에서 언급된 날짜를 대표로
+                domain=dom,
+                press=press,
+                norm_key=norm_key,
+                title_key=title_key,
+                canon_url=canon,
+                topic=topic,
+            )
+            a.score = compute_rank_score(a.title, a.description, dom, ref_pub, policy_conf, press)
+
+            raw_by_section.setdefault("policy", []).append(a)
+
+        except Exception as e:
+            log.warning("[WARN] add KREI issue report failed: issue=%s err=%s", issue_no, e)
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     dedupe = DedupeIndex()
@@ -2393,6 +2382,12 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
     for sec in ordered:
         raw_by_section[sec["key"]] = collect_candidates_for_section(sec, start_kst, end_kst, dedupe)
+
+    # 기사에서 언급된 보고서/자료(KREI 이슈+ 등)를 policy 섹션에 자동 보완
+    try:
+        _maybe_add_krei_issues_to_policy(raw_by_section, start_kst, end_kst, dedupe)
+    except Exception as e:
+        log.warning("[WARN] report augmentation failed: %s", e)
 
     final_by_section: dict[str, list[Article]] = {}
     for sec in SECTIONS:
