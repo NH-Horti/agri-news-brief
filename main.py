@@ -174,6 +174,33 @@ BAN_KWS = [
 ]
 
 
+
+# -----------------------------
+# Additional hard filters / controls (2026-02 hotfix)
+# -----------------------------
+# 오피니언/사설/칼럼 등은 브리핑 대상에서 제외(원예수급 실무 신호가 약하고 노이즈가 큼)
+OPINION_BAN_TERMS = [
+    "[사설]", "사설", "칼럼", "오피니언", "기고", "독자기고", "기자수첩",
+    "만평", "데스크칼럼", "횡설수설", "기자의 시선", "논단",
+]
+
+# 지역 동정/기부/장학/발전기금 등 커뮤니티성 기사 제외용(특히 ○○농협 + 기금전달류 오탐 방지)
+COMMUNITY_DONATION_TERMS = [
+    "발전기금", "교육발전기금", "장학금", "장학", "성금", "기탁", "후원금",
+    "기부금", "성품", "쌀기부", "나눔", "봉사활동", "후원", "기부",
+]
+
+# 원예수급과 무관한 산업/금융/바이오 오탐 방지(농업 맥락이 약하면 컷)
+HARD_OFFTOPIC_TERMS = [
+    "반도체", "배터리", "2차전지", "코스피", "코스닥", "주식", "채권", "가상자산", "비트코인",
+    "부동산", "금리", "환율", "증시", "ipo", "상장", "인수합병", "m&a",
+    "바이오", "임상", "의약", "제약", "세포", "항암", "유전자", "플랫폼",
+]
+
+# 현재 관심도가 낮은 품목(정 없을 때만 하단에 남도록 강감점)
+DEPRIORITIZED_ITEMS = ["마늘", "양파"]
+
+
 GLOBAL_RETAIL_PROTEST_HINTS = [
     "target", "타깃", "walmart", "월마트", "costco", "코스트코",
     "starbucks", "스타벅스", "boycott", "보이콧", "시위", "protest",
@@ -452,6 +479,7 @@ class Article:
     title_key: str
     canon_url: str
     topic: str
+    is_core: bool = False
     score: float = 0.0
     summary: str = ""
 
@@ -921,6 +949,8 @@ PRESS_HOST_MAP = {
     "seoul.co.kr": "서울신문",
     "news1.kr": "뉴스1",
     "newsis.com": "뉴시스",
+    "newsgn.com": "뉴스경남",
+    "www.newsgn.com": "뉴스경남",
     "newspim.com": "뉴스핌",
     "edaily.co.kr": "이데일리",
     "asiae.co.kr": "아시아경제",
@@ -1193,7 +1223,7 @@ def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
-    w = {4: 12.5, 3: 9.5, 2: 2.2, 1: -0.8}.get(t, -0.8)
+    w = {4: 12.5, 3: 9.5, 2: 1.8, 1: -2.0}.get(t, -2.0)
     p = (press or '').strip()
     d = (domain or '').lower()
     # 통신/공식은 기사 생산량이 많아도 핵심성 높음: 약간 추가
@@ -1742,7 +1772,7 @@ PEST_OFFTOPIC_TERMS = [
     "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
     "학교", "어린이집", "환자", "감염",
 ]
-def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
+def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷).
 
     핵심 목표:
@@ -1756,6 +1786,19 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
     dom = (dom or "").lower().strip()
     key = section_conf["key"]
 
+    # URL/경로 기반 보정(지역/로컬 섹션 등)
+    url = (url or "").strip()
+    try:
+        _path = urlparse(url).path.lower()
+    except Exception:
+        _path = ""
+
+    # 오피니언/사설/칼럼은 브리핑 대상에서 제외
+    ttl_l = ttl.lower()
+    if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
+        return False
+
+
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
         return False
@@ -1766,6 +1809,24 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
     horti_core_terms = ["원예", "과수", "화훼", "절화", "과채", "시설채소", "시설", "하우스", "비가림", "출하", "수급", "작황", "재배", "저장", "가격", "시세", "물량", "재고"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
     horti_core_hits = count_any(text, [t.lower() for t in horti_core_terms])
+
+    # (강제 컷) 산업/금융/바이오 오탐: 농업/원예 맥락이 약하면 제외
+    off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
+    agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
+    if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
+        return False
+
+    # news1 로컬(/local/) 기사 과다 유입 방지: 원예/도매 강신호가 없으면 제외
+    if normalize_host(dom).endswith("news1.kr") and ("/local/" in _path):
+        if not ((horti_sc >= 2.4) or (market_hits >= 2) or (horti_core_hits >= 4)):
+            return False
+
+    # 지역 동정/기금전달(특히 ○○농협 + 발전기금/장학금 등) 오탐 제거
+    if _LOCAL_COOP_RX.search(text) and any(w.lower() in text for w in COMMUNITY_DONATION_TERMS):
+        hard_ctx_terms = ["가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","수출","검역","통관","원산지","단속","부정유통","수급","가격","시세","출하","재고","저장","선별","저온","물류"]
+        hard_hits = count_any(text, [t.lower() for t in hard_ctx_terms])
+        if hard_hits == 0 and horti_sc < 2.4:
+            return False
 
     # 정책 섹션만 정책기관/공공 도메인 허용(단, 방제(pest)는 지방 이슈가 많아 예외 허용)
     # ✅ (5) pest 섹션은 지자체/연구기관(.go.kr/.re.kr) 기사도 허용
@@ -1824,11 +1885,23 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         if (not is_major) and _LOCAL_GEO_PATTERN.search(ttl):
             return False
 
-    # 유통/현장(dist): 시장/APC/산지유통/수출/검역/원산지/부정유통/화훼자조금 등 중 최소 1개 맥락 필요
+    # 유통/현장(dist): 시장/APC/산지유통/수출/검역/원산지/부정유통/화훼자조금 등 맥락 필요
     if key == "dist":
-        dist_ctx = ["가락시장", "도매시장", "공판장", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터", "선별", "저온", "저장", "물류", "수출", "검역", "통관", "원산지", "부정유통", "원예농협", "판매농협", "브랜드", "작목반", "화훼", "절화", "꽃", "자조금", "조화"]
-        if count_any(text, [t.lower() for t in dist_ctx]) < 1:
+        dist_soft = ["apc", "산지유통", "산지유통센터", "원예농협", "판매농협", "작목반", "브랜드", "통합", "화훼", "절화", "꽃", "자조금", "조화"]
+        dist_hard = ["가락시장", "도매시장", "공판장", "청과", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장",
+                     "선별", "저온", "저장", "물류", "수출", "검역", "통관", "원산지", "단속", "부정유통"]
+        soft_hits = count_any(text, [t.lower() for t in dist_soft])
+        hard_hits = count_any(text, [t.lower() for t in dist_hard])
+
+        if (soft_hits + hard_hits) < 1:
             return False
+
+        # 'APC/산지유통/농협/브랜드' 같은 소프트 신호만 있을 땐,
+        # 인프라/유통 강신호(준공/가동/선별/저온/저장/물류/원산지/검역/수출 등) 또는 높은 원예 관련성이 있어야 통과
+        if hard_hits == 0:
+            if not ((horti_sc >= 2.3) or any(w in text for w in ("준공", "완공", "가동", "확충", "확대", "선별", "저온", "저장", "물류", "원산지", "검역", "수출"))):
+                return False
+
 
     # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
@@ -1922,6 +1995,20 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     score -= local_coop_penalty(text, press, dom, key)
+
+    # 관심도 낮은 품목(마늘/양파 등)은 다른 좋은 기사를 밀어내지 않도록 강하게 감점
+    if any(w.lower() in text for w in DEPRIORITIZED_ITEMS):
+        # 원예/과수/화훼 핵심 신호가 함께 있으면 감점을 완화
+        core_horti = count_any(text, [t.lower() for t in ("사과","배","포도","감","단감","감귤","만감","복숭아","매실","자두","밤","키위","유자","화훼","절화","꽃","딸기","파프리카","참외","오이")])
+        if core_horti == 0:
+            score -= 6.0
+        else:
+            score -= 2.0
+
+    # '영농부산물/안전처리/파쇄' 등 사업설명·행정성 정책은 하단 배치(정 없을 때만)
+    if any(w in text for w in ("영농부산물", "안전처리", "파쇄", "파쇄기", "소각", "잔가지")):
+        if market_hits == 0 and horti_sc < 2.0:
+            score -= 3.5
 
     # 식품안전/위생 단독 이슈는 원예수급 핵심에서 멀어 감점(도매시장/품목 신호가 있으면 유지)
     if any(w in text for w in ("식품안전", "위생", "haccp", "식중독")):
@@ -2159,6 +2246,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     candidates_sorted = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
+    # core 플래그 초기화(렌더링/카톡 선정을 위해 사용)
+    for a in candidates_sorted:
+        a.is_core = False
+
+
     CORE_MIN_SCORE = {
         "supply": 7.5,
         "policy": 7.5,
@@ -2243,6 +2335,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if k in used_keys:
             return False
         core2.append(a)
+        a.is_core = True
         used_keys.add(k)
         mark_region(a)
         return True
@@ -2307,6 +2400,42 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         try_add_core(a)
 
     # ------------------
+    # Source/매체 비중 제어(지방지/인터넷 과다 방지)
+    # ------------------
+    tier_count: dict[int, int] = {1: 0, 2: 0, 3: 0, 4: 0}
+    tier1_cap = 1 if section_key in ("supply", "policy") else 2
+    tier2_cap = 3 if section_key in ("supply", "policy") else 4
+    tier1_domain_cap = 1
+    tier1_domain_count: dict[str, int] = {}
+
+    def _bump_counts(a: Article) -> None:
+        t = press_tier(a.press, a.domain)
+        tier_count[t] = tier_count.get(t, 0) + 1
+        if t == 1:
+            d = normalize_host(a.domain) or ""
+            if d:
+                tier1_domain_count[d] = tier1_domain_count.get(d, 0) + 1
+
+    def _source_ok(a: Article) -> bool:
+        # 핵심/공식/주요언론은 제한 없이 통과
+        t = press_tier(a.press, a.domain)
+        if t >= 3:
+            return True
+        if t == 2 and tier_count.get(2, 0) >= tier2_cap:
+            return False
+        if t == 1:
+            if tier_count.get(1, 0) >= tier1_cap:
+                return False
+            d = normalize_host(a.domain) or ""
+            if d and tier1_domain_count.get(d, 0) >= tier1_domain_cap:
+                return False
+        return True
+
+    # 코어로 선정된 기사도 카운트에 반영
+    for a in core2:
+        _bump_counts(a)
+
+    # ------------------
     # 2) Rest selection (topic diversity)
     # ------------------
     thr = _dynamic_threshold(candidates_sorted, section_key)
@@ -2339,6 +2468,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_near_duplicate_title(a, b, section_key) for b in core2):
                 return False
             rest.append(a)
+            _bump_counts(a)
             used_keys.add(k)
             used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
             return True
@@ -2374,6 +2504,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             k = akey(a)
             if k in used_keys:
                 continue
+            if not _source_ok(a):
+                continue
             enforce_region = (section_key == "pest")
             if not can_take_region(a, enforce=enforce_region):
                 continue
@@ -2383,12 +2515,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if any(_near_duplicate_title(a, b, section_key) for b in (core2 + rest)):
                     continue
             rest.append(a)
+            _bump_counts(a)
             used_keys.add(k)
             mark_region(a)
             used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
         if len(rest) >= target_rest:
             break
 
+    core2 = sorted(core2, key=_sort_key_major_first, reverse=True)
     rest = sorted(rest, key=_sort_key_major_first, reverse=True)
 
     selected = core2[:2] + rest
@@ -2407,7 +2541,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 used_rk[rk] = used_rk.get(rk, 0) + 1
         final.append(a)
 
-    final = sorted(final, key=_sort_key_major_first, reverse=True)
     return final[:max_n]
 
 
@@ -2469,7 +2602,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             if not dom or is_blocked_domain(dom):
                 continue
             press = press_name_from_url(link)
-            if not is_relevant(title, desc, dom, section_conf, press):
+            if not is_relevant(title, desc, dom, link, section_conf, press):
                 continue
             canon = canonicalize_url(link)
             title_key = norm_title_key(title)
@@ -2531,7 +2664,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     continue
 
                 press = press_name_from_url(origin or link)
-                if not is_relevant(title, desc, dom, section_conf, press):
+                if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
                     continue
 
                 canon = canonicalize_url(origin or link)
@@ -2990,7 +3123,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if not lst:
             body_html = '<div class="empty">해당사항 없음</div>'
         else:
-            body_html = "\n".join([render_card(a, i < 2) for i, a in enumerate(lst)])
+            body_html = "\n".join([render_card(a, getattr(a, "is_core", False)) for a in lst])
 
         sections_html.append(
             f"""
@@ -3887,8 +4020,22 @@ def _get_section_conf(key: str):
 
 
 def _kakao_pick_core2(lst: list[Article]) -> list[Article]:
-    # ✅ (1) 카톡 메시지는 브리핑 상단 '핵심 2'와 동일(선정 단계에서 이미 core2를 상단에 고정)
-    return lst[:2] if lst else []
+    # ✅ 카톡 메시지 2꼭지는 "핵심 2" 우선 + 부족하면 상위 기사로 보충
+    if not lst:
+        return []
+    core = [a for a in lst if getattr(a, "is_core", False)]
+    picked: list[Article] = []
+    for a in core:
+        picked.append(a)
+        if len(picked) >= 2:
+            return picked[:2]
+    for a in lst:
+        if a in picked:
+            continue
+        picked.append(a)
+        if len(picked) >= 2:
+            break
+    return picked[:2]
 
 def build_kakao_message(report_date: str, by_section: dict) -> str:
     total = 0
