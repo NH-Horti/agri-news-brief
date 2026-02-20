@@ -222,14 +222,103 @@ SECTIONS = [
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
         "queries": [
-            "사과 작황", "사과 생산량", "사과 저장", "사과 수급", "사과 가격",
-            "배 작황", "배 생산량", "배 저장", "배 과일 수급", "배 과일 가격",
-            "감귤 작황", "감귤 수급", "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하",
-            "샤인머스캣 작황", "샤인머스캣 수급", "포도 작황", "포도 수급",
-            "오이 작황", "오이 수급", "풋고추 작황", "풋고추 수급",
-            "쌀 산지 가격", "비축미 동향",
+            "사과 수급",
+            "사과 가격",
+            "사과 작황",
+            "사과 저장",
+            "사과 출하",
+            "배 수급",
+            "배 가격",
+            "배 작황",
+            "배 저장",
+            "배 출하",
+            "감귤 수급",
+            "감귤 가격",
+            "감귤 작황",
+            "만감류 출하",
+            "한라봉 출하",
+            "레드향 출하",
+            "천혜향 출하",
+            "포도 수급",
+            "포도 가격",
+            "포도 작황",
+            "샤인머스캣 수급",
+            "샤인머스캣 가격",
+            "샤인머스캣 작황",
+            "단감 수급",
+            "단감 가격",
+            "단감 작황",
+            "곶감 수급",
+            "감 작황",
+            "키위 수급",
+            "키위 가격",
+            "유자 수급",
+            "유자 가격",
+            "밤 수급",
+            "밤 가격",
+            "자두 수급",
+            "자두 가격",
+            "복숭아 수급",
+            "복숭아 가격",
+            "매실 수급",
+            "매실 가격",
+            "딸기 수급",
+            "딸기 가격",
+            "딸기 작황",
+            "파프리카 수급",
+            "파프리카 가격",
+            "파프리카 수출",
+            "참외 수급",
+            "참외 가격",
+            "오이 수급",
+            "오이 가격",
+            "오이 작황",
+            "풋고추 수급",
+            "풋고추 가격",
+            "고추 작황",
+            "화훼 가격",
+            "절화 가격",
+            "꽃 소비",
+            "화훼 수급",
+            "화훼자조금",
+            "쌀 산지 가격",
+            "비축미 동향",
+
         ],
-        "must_terms": ["작황", "생산", "재배", "수확", "면적", "저장", "출하", "수급", "가격", "시세"],
+        "must_terms": [
+            "수급",
+            "가격",
+            "시세",
+            "작황",
+            "생산",
+            "재배",
+            "수확",
+            "면적",
+            "저장",
+            "출하",
+            "물량",
+            "재고",
+            "농가",
+            "산지",
+            "화훼",
+            "절화",
+            "꽃",
+            "딸기",
+            "파프리카",
+            "참외",
+            "오이",
+            "사과",
+            "배",
+            "감귤",
+            "포도",
+            "단감",
+            "키위",
+            "유자",
+            "밤",
+            "자두",
+            "복숭아",
+            "매실",
+        ],
     },
     {
         "key": "policy",
@@ -247,13 +336,72 @@ SECTIONS = [
         "title": "유통 및 현장 (도매시장/APC/수출)",
         "color": "#6d28d9",
         "queries": [
-            "가락시장 청과 경락", "도매시장 경락가", "도매시장 반입량", "도매시장 수급",
-            "공판장 경매", "경락가 상승", "경락가 하락",
-            "APC 선별", "CA저장 APC", "산지유통센터 APC",
-            "농산물 수출 실적", "과일 수출 실적", "검역 수출 농산물",
-            "부정유통 단속 농산물", "원산지 표시 단속",
+            "가락시장 청과 경락",
+            "도매시장 경락가",
+            "도매시장 반입량",
+            "도매시장 수급",
+            "공판장 경매",
+            "시장도매인제 도매시장",
+            "온라인 도매시장 청과",
+            "APC 선별",
+            "산지유통센터 APC",
+            "스마트 APC",
+            "스마트 APC 준공",
+            "산지유통센터 준공",
+            "CA저장 APC",
+            "저온저장 시설",
+            "선별 자동화",
+            "AI 선별",
+            "디지털 선별",
+            "농산물 통합 브랜드",
+            "원예농협 통합 브랜드",
+            "판매농협 브랜드",
+            "작목반 출하",
+            "농산물 수출 실적",
+            "과일 수출 실적",
+            "검역 수출 농산물",
+            "통관 과일",
+            "부정유통 단속 농산물",
+            "원산지 표시 단속",
+            "화훼자조금 조화 근절",
+            "플라스틱 조화 근절",
+            "공원묘원 조화 근절",
+            "화훼 소비 촉진",
+
         ],
-        "must_terms": ["가락시장", "도매시장", "공판장", "경락", "경매", "반입", "APC", "선별", "CA저장", "수출", "검역", "원산지", "부정유통"],
+        "must_terms": [
+            "가락시장",
+            "도매시장",
+            "공판장",
+            "경락",
+            "경매",
+            "반입",
+            "시장도매인",
+            "온라인 도매시장",
+            "APC",
+            "산지유통센터",
+            "산지유통",
+            "선별",
+            "CA저장",
+            "저온",
+            "저장",
+            "물류",
+            "유통",
+            "수출",
+            "검역",
+            "통관",
+            "원산지",
+            "부정유통",
+            "원예농협",
+            "판매농협",
+            "브랜드",
+            "작목반",
+            "화훼",
+            "절화",
+            "꽃",
+            "자조금",
+            "조화",
+        ],
     },
     {
         "key": "pest",
@@ -549,12 +697,57 @@ SUPPLY_WEIGHT_MAP = {
     # 변동성/리스크
     '급등': 2.5, '폭등': 2.5, '급락': 2.0, '하락': 1.5, '대란': 2.0, '비상': 2.0,
     '전망': 1.2, '동향': 1.0, '평년': 1.0, '전년': 1.0, '대비': 0.8,
+
+    '화훼': 1.8,
+    '절화': 1.6,
+    '꽃': 1.5,
+    '자조금': 1.2,
+    '딸기': 1.2,
+    '파프리카': 1.2,
+    '참외': 1.1,
+    '키위': 1.1,
+    '유자': 1.1,
+    '단감': 1.1,
+    '곶감': 1.1,
+    '밤': 1.0,
+    '자두': 1.0,
+    '복숭아': 1.0,
+    '매실': 1.0,
+    '만감': 0.9,
+    '만감류': 0.9,
+    '한라봉': 0.9,
+    '레드향': 0.9,
+    '천혜향': 0.9,
 }
 
 DIST_WEIGHT_MAP = {
     '가락시장': 3.5, '도매시장': 3.0, '공판장': 2.8, '경락': 2.8, '경매': 2.5, '청과': 1.5,
     '반입': 2.2, '중도매인': 2.0, '시장도매인': 2.0, '물류': 2.0, '유통센터': 1.5,
     'apc': 2.0, '선별': 1.8, '저온': 1.2, '저장': 1.2, '원산지': 2.0, '부정유통': 2.0,
+
+    '산지유통센터': 2.4,
+    '산지유통': 2.0,
+    '준공': 1.2,
+    '완공': 1.2,
+    '자동화': 1.5,
+    '스마트': 1.0,
+    'ai': 0.7,
+    '디지털': 0.9,
+    '통합': 0.8,
+    '브랜드': 1.6,
+    '판매농협': 1.2,
+    '원예농협': 1.6,
+    '작목반': 1.2,
+    '자조금': 1.4,
+    '화훼': 1.2,
+    '절화': 1.1,
+    '꽃': 1.1,
+    '조화': 1.2,
+    '플라스틱': 0.6,
+    '묘지': 0.5,
+    '공원묘원': 0.7,
+    '소비촉진': 1.0,
+    '캠페인': 0.5,
 }
 
 POLICY_WEIGHT_MAP = {
@@ -773,6 +966,25 @@ PRESS_HOST_MAP = {
     "at.or.kr": "aT",
     "naqs.go.kr": "농관원",
     "krei.re.kr": "KREI",
+    "agrinet.co.kr": "한국농어민신문",
+    "www.agrinet.co.kr": "한국농어민신문",
+    "nocutnews.co.kr": "노컷뉴스",
+    "ohmynews.com": "오마이뉴스",
+    "pressian.com": "프레시안",
+    "hankookilbo.com": "한국일보",
+    "segye.com": "세계일보",
+    "munhwa.com": "문화일보",
+    "dt.co.kr": "디지털타임스",
+    "etnews.com": "전자신문",
+    "zdnet.co.kr": "지디넷코리아",
+    "bloter.net": "블로터",
+    "thebell.co.kr": "더벨",
+    "sisajournal.com": "시사저널",
+    "mediatoday.co.kr": "미디어오늘",
+    "aflnews.co.kr": "농수축산신문",
+    "www.aflnews.co.kr": "농수축산신문",
+    "nongup.net": "농업정보신문",
+    "www.nongup.net": "농업정보신문",
 }
 
 ABBR_MAP = {
@@ -790,6 +1002,20 @@ ABBR_MAP = {
     "mdilbo": "무등일보",
     "sjbnews": "새전북신문",
     "gukjenews": "국제뉴스",
+    "agrinet": "한국농어민신문",
+    "nocutnews": "노컷뉴스",
+    "ohmynews": "오마이뉴스",
+    "pressian": "프레시안",
+    "hankookilbo": "한국일보",
+    "segye": "세계일보",
+    "munhwa": "문화일보",
+    "dt": "디지털타임스",
+    "etnews": "전자신문",
+    "zdnet": "지디넷코리아",
+    "bloter": "블로터",
+    "thebell": "더벨",
+    "sisajournal": "시사저널",
+    "mediatoday": "미디어오늘",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -854,6 +1080,9 @@ MID_TIER_PRESS = {
     # 스포츠서울은 한글 표기만 유지(중요도는 낮게)
     "데일리안",
 
+    "한국농어민신문",
+    "농수축산신문",
+    "농업정보신문",
 }
 
 _UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
@@ -1514,13 +1743,29 @@ PEST_OFFTOPIC_TERMS = [
     "학교", "어린이집", "환자", "감염",
 ]
 def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str) -> bool:
-    """섹션별 1차 필터(관련도/노이즈 컷)."""
-    text = (title + " " + desc).lower()
+    """섹션별 1차 필터(관련도/노이즈 컷).
+
+    핵심 목표:
+    - 동음이의어(배=배터리/배당, 밤=야간 등) 오탐을 강하게 차단
+    - 지방 행사/동정/캠페인성 노이즈를 억제(단, 유통·현장/APC/산지유통/화훼 현장성은 예외 허용)
+    - policy는 공식 소스/기관 기반을 우선
+    """
+    ttl = (title or "")
+    desc = (desc or "")
+    text = (ttl + " " + desc).lower()
     dom = (dom or "").lower().strip()
+    key = section_conf["key"]
 
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
         return False
+
+    # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
+    horti_sc = best_horti_score(ttl, desc)
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
+    horti_core_terms = ["원예", "과수", "화훼", "절화", "과채", "시설채소", "시설", "하우스", "비가림", "출하", "수급", "작황", "재배", "저장", "가격", "시세", "물량", "재고"]
+    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+    horti_core_hits = count_any(text, [t.lower() for t in horti_core_terms])
 
     # 정책 섹션만 정책기관/공공 도메인 허용(단, 방제(pest)는 지방 이슈가 많아 예외 허용)
     # ✅ (5) pest 섹션은 지자체/연구기관(.go.kr/.re.kr) 기사도 허용
@@ -1529,45 +1774,33 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
         or dom in ALLOWED_GO_KR
         or dom.endswith(".re.kr")
         or dom.endswith(".go.kr")
-    ) and section_conf["key"] not in ("policy", "pest"):
+    ) and key not in ("policy", "pest"):
         return False
 
-    # 섹션 must-term 통과 여부
+    # 섹션 must-term 통과 여부(단, supply/dist는 '강한 원예/도매 맥락'이면 예외 허용)
     if not section_must_terms_ok(text, section_conf["must_terms"]):
-        # policy는 도메인 override가 있음
-        if not policy_domain_override(dom, text):
-            return False
-
-
-    key = section_conf["key"]
+        if key == "policy":
+            # policy는 도메인 override가 있음
+            if not policy_domain_override(dom, text):
+                return False
+        else:
+            # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
+            dist_soft_ok = (market_hits >= 1) or ("apc" in text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
+            if not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
+                return False
 
     # (핵심) 원예수급 관련성 게이트:
     # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등)로 인한 오탐을 강하게 차단
-    horti_sc = best_horti_score(title, desc)
-    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
-    horti_core_terms = ["원예", "과수", "화훼", "절화", "과채", "시설채소", "시설", "하우스", "비가림", "출하", "수급", "작황", "재배", "저장", "가격", "시세", "물량", "재고"]
-    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
-    horti_core_hits = count_any(text, [t.lower() for t in horti_core_terms])
-
-
-    # 공급(supply): '원예/농산물 맥락'이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
     if key == "supply":
         # 공급(supply) 섹션은 "원예/농산물 맥락"이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
-        # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등) 오탐을 줄이기 위해
-        #   품목/도매/원예 맥락 중 최소 하나는 반드시 충족하도록 한다.
         if not ((horti_sc >= 1.8) or (market_hits >= 1) or (horti_core_hits >= 3)):
             return False
 
-
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
-        # 정책(policy) 섹션:
-        # - 공식 발표(정책브리핑/농식품부/기관)는 폭을 조금 넓게(단, 농업 맥락은 유지)
-        # - 비공식(언론)일 경우: "농식품/농산물 + 원예수급/유통/검역/가격안정" 맥락이 없으면 제외
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
         if not is_official:
-            # 최소 농업/원예 맥락: (명확 품목) 또는 (도매/유통 맥락) 또는 (농산물+정책키워드 조합)
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
@@ -1588,9 +1821,14 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
 
         # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
         is_major = press_priority(press, dom) >= 2
-        if (not is_major) and _LOCAL_GEO_PATTERN.search(title):
+        if (not is_major) and _LOCAL_GEO_PATTERN.search(ttl):
             return False
 
+    # 유통/현장(dist): 시장/APC/산지유통/수출/검역/원산지/부정유통/화훼자조금 등 중 최소 1개 맥락 필요
+    if key == "dist":
+        dist_ctx = ["가락시장", "도매시장", "공판장", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터", "선별", "저온", "저장", "물류", "수출", "검역", "통관", "원산지", "부정유통", "원예농협", "판매농협", "브랜드", "작목반", "화훼", "절화", "꽃", "자조금", "조화"]
+        if count_any(text, [t.lower() for t in dist_ctx]) < 1:
+            return False
 
     # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
@@ -1599,34 +1837,18 @@ def is_relevant(title: str, desc: str, dom: str, section_conf: dict, press: str)
             return False
 
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
-        horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
-        if rice_hits >= 1 and horti_hits == 0:
-            return False
-
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
-        if (strict_hits + weather_hits) < 2:
+
+        # 벼 방제 단독은 제외(원예/과수와의 연관이 희박)
+        if rice_hits >= 1 and strict_hits < 1 and weather_hits < 1:
             return False
 
-        off_hits = count_any(text, [t.lower() for t in PEST_OFFTOPIC_TERMS])
-        if off_hits:
-            if agri_ctx_hits < 2 or strict_hits < 2:
-                return False
-
-        title_hits = count_any((title or "").lower(), [t.lower() for t in PEST_TITLE_CORE_TERMS])
-        if title_hits == 0 and strict_hits < 3:
+        # 방제/병해충 신호가 너무 약하면 제외
+        if (strict_hits + weather_hits) < 1:
             return False
-    # 섹션별 키워드 강도(낚시성/약한 기사 컷)
-    strength = keyword_strength(text, section_conf)
-    if section_conf["key"] == "pest" and strength < 3:
-        return False
-
-    # 유통 섹션은 MUST/강도 기준을 좀 더 엄격하게 (낚시성/인물기사 방지)
-    if section_conf["key"] == "dist" and strength < 3:
-        return False
 
     return True
-
 
 def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
     """중요도 스코어.
@@ -1925,15 +2147,18 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
 
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선정.
-    ✅ (1) 카톡/브리핑 상단 '핵심 2'는 "진짜 상위 2"가 되도록(다양성 캡에 의해 밀려나지 않게) 고정.
-    ✅ 나머지는 topic 다양성을 약하게 반영해 채움.
+
+    원칙
+    - 코어(핵심 2)는 "진짜 핵심"만: (1) 오피니언/행사성 제외, (2) 섹션별 headline gate 통과 우선
+    - 유통/현장(dist)은 "APC/산지유통/현장 실무형" 기사가 오늘자에 없으면 브리핑 품질이 급락하므로,
+      코어 이후에 1~2건을 '현장 앵커'로 우선 포함(단, 코어 배지는 부여하지 않음).
+    - 나머지는 topic 다양성을 약하게 반영해 채움.
     """
     if not candidates:
         return []
 
     candidates_sorted = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
-    # --- 핵심 2: 상위 중요도 2개를 우선 확보(너무 저품질은 컷) ---
     CORE_MIN_SCORE = {
         "supply": 7.5,
         "policy": 7.5,
@@ -1957,7 +2182,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         rk = rkey(a)
         if not rk:
             return True
-        # ✅ 같은 군/시/구는 1건만(장수군 방제 3건 중복 같은 케이스 제거)
         return used_region.get(rk, 0) < 1
 
     def mark_region(a: Article):
@@ -1967,9 +2191,52 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if rk:
             used_region[rk] = used_region.get(rk, 0) + 1
 
+    def _too_similar(a1: Article, a2: Article) -> bool:
+        return _near_duplicate_title(a1, a2, section_key)
+
+    def _title_has_stopword(a: Article) -> bool:
+        ttl = (a.title or "").lower()
+        return has_any(ttl, [w.lower() for w in _HEADLINE_STOPWORDS])
+
+    def _headline_gate_relaxed(a: Article) -> bool:
+        # 공통 stopword는 항상 제외(사설/칼럼/캠페인 등)
+        if _title_has_stopword(a):
+            return False
+
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+        horti_sc = best_horti_score(a.title or "", a.description or "")
+        market_ctx_terms = ["가락시장","도매시장","공판장","청과","경락","경락가","반입","온라인 도매시장","apc","산지유통","산지유통센터"]
+        market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+
+        if section_key == "dist":
+            dist_terms = ["가락시장","도매시장","공판장","경락","경락가","경매","반입","중도매인","시장도매인","apc","산지유통센터","산지유통","선별","ca저장","물류","수출","검역","통관","원산지","부정유통","원예농협","판매농협","브랜드","작목반","화훼","절화","꽃","자조금","조화"]
+            return (count_any(text, dist_terms) >= 1) and ((horti_sc >= 1.4) or (market_hits >= 1))
+
+        if section_key == "supply":
+            core_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "물량", "재고", "저장", "화훼", "절화", "꽃"]
+            return has_any(text, core_terms) and ((horti_sc >= 1.6) or (market_hits >= 1))
+
+        if section_key == "policy":
+            # official이면 통과
+            if _is_policy_official(a):
+                return True
+            action_terms = ["대책","지원","할인","할당관세","검역","고시","개정","발표","추진","확대","연장","단속","브리핑","보도자료","예산"]
+            ctx_terms = ["농산물","농업","농식품","과일","채소","수급","가격","유통","원산지","도매시장","공영도매시장","수출","검역"]
+            return has_any(text, action_terms) and has_any(text, ctx_terms) and ((horti_sc >= 1.2) or (market_hits >= 1))
+
+        if section_key == "pest":
+            return _headline_gate(a, section_key)
+
+        return True
+
+    # ------------------
+    # 1) Core 2 selection
+    # ------------------
     core2: list[Article] = []
 
     def try_add_core(a: Article, *, enforce_region: bool = True) -> bool:
+        if _title_has_stopword(a):
+            return False
         if not can_take_region(a, enforce=enforce_region):
             return False
         k = akey(a)
@@ -1980,13 +2247,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         mark_region(a)
         return True
 
-
-    def _too_similar(a1: Article, a2: Article) -> bool:
-        return _near_duplicate_title(a1, a2, section_key)
-
-    # ✅ (5) 코어(핵심 2)는 "정말 핵심"만: 섹션별 게이트(_headline_gate) 통과 우선
+    # (우선) strict headline gate
     if section_key == "policy":
-        # (최우선) 농식품부/정책브리핑 등 공식 소스
         for a in candidates_sorted:
             if len(core2) >= 2:
                 break
@@ -2000,7 +2262,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             try_add_core(a)
 
-        # (차순) 정책 액션/제도성(대책/지원/할당관세 등) 기사
         for a in candidates_sorted:
             if len(core2) >= 2:
                 break
@@ -2011,7 +2272,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if core2 and _too_similar(core2[0], a):
                 continue
             try_add_core(a)
-
     else:
         for a in candidates_sorted:
             if len(core2) >= 2:
@@ -2024,24 +2284,31 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             try_add_core(a)
 
-    # 게이트 통과가 부족하면, 최소 점수(core_min) 이상 상위 기사로 보완(코어 2 확보)
+    # (보완) strict gate가 부족하면 relaxed gate로 2개를 채움(단, stopword는 계속 제외)
     for a in candidates_sorted:
         if len(core2) >= 2:
             break
-        if a.score < core_min:
+        if a.score < (core_min - 1.0):  # 약간 완화
+            continue
+        if core2 and _too_similar(core2[0], a):
+            continue
+        if not _headline_gate_relaxed(a):
+            continue
+        try_add_core(a)
+
+    # 그래도 부족하면 최상위에서 채움(단, stopword/유사제목은 회피)
+    for a in candidates_sorted:
+        if len(core2) >= 2:
+            break
+        if _title_has_stopword(a):
             continue
         if core2 and _too_similar(core2[0], a):
             continue
         try_add_core(a)
 
-    # 그래도 부족하면 최상위에서 채움(단, 유사 제목은 회피)
-    for a in candidates_sorted:
-        if len(core2) >= 2:
-            break
-        if core2 and _too_similar(core2[0], a):
-            continue
-        try_add_core(a)
-    # --- 나머지: 동적 임계치로 너무 약한 기사 컷 + topic 다양성 약하게 반영 ---
+    # ------------------
+    # 2) Rest selection (topic diversity)
+    # ------------------
     thr = _dynamic_threshold(candidates_sorted, section_key)
     pool = [a for a in candidates_sorted if a.score >= thr]
     if not pool:
@@ -2054,6 +2321,49 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     rest: list[Article] = []
     target_rest = max(0, max_n - len(core2))
 
+    # dist: "현장 앵커" 1~2건을 코어 다음에 우선 포함
+    if section_key == "dist" and target_rest > 0:
+        def _is_apc_anchor(a: Article) -> bool:
+            t = ((a.title or "") + " " + (a.description or "")).lower()
+            return ("apc" in t) or ("산지유통센터" in t) or ("선별" in t) or ("ca저장" in t) or ("저온" in t) or ("준공" in t) or ("완공" in t)
+
+        def _is_field_anchor(a: Article) -> bool:
+            t = ((a.title or "") + " " + (a.description or "")).lower()
+            return ("원예농협" in t) or ("판매농협" in t) or ("작목반" in t) or ("통합" in t and "브랜드" in t) or ("브랜드" in t and "농산물" in t)
+
+        def _try_add_anchor(a: Article) -> bool:
+            k = akey(a)
+            if k in used_keys:
+                return False
+            # 코어와 너무 유사한 것은 회피
+            if any(_near_duplicate_title(a, b, section_key) for b in core2):
+                return False
+            rest.append(a)
+            used_keys.add(k)
+            used_topic[a.topic] = used_topic.get(a.topic, 0) + 1
+            return True
+
+        # APC/산지유통 앵커 1개
+        for a in candidates_sorted:
+            if len(rest) >= target_rest:
+                break
+            if _title_has_stopword(a):
+                continue
+            if _is_apc_anchor(a) and _headline_gate_relaxed(a):
+                if _try_add_anchor(a):
+                    break
+
+        # 현장(브랜드/작목반/농협 유통) 앵커 1개
+        if len(rest) < target_rest:
+            for a in candidates_sorted:
+                if len(rest) >= target_rest:
+                    break
+                if _title_has_stopword(a):
+                    continue
+                if _is_field_anchor(a) and _headline_gate_relaxed(a):
+                    if _try_add_anchor(a):
+                        break
+
     def can_take(a: Article, cap: int) -> bool:
         return used_topic.get(a.topic, 0) < cap
 
@@ -2064,7 +2374,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             k = akey(a)
             if k in used_keys:
                 continue
-            # pest: 같은 군/시/구 중복 억제(마지막 cap=99 단계에서만 완화)
             enforce_region = (section_key == "pest")
             if not can_take_region(a, enforce=enforce_region):
                 continue
@@ -2081,7 +2390,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             break
 
     rest = sorted(rest, key=_sort_key_major_first, reverse=True)
-
 
     selected = core2[:2] + rest
 
