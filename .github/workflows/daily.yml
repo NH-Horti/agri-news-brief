@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 22 * * *"   # 07:00 KST
   workflow_dispatch:
+    inputs:
+      force_report_date:
+        description: "재생성할 리포트 날짜 (YYYY-MM-DD, KST 기준). 비우면 자동 날짜(정상 실행)."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -64,6 +69,10 @@ jobs:
           GLOBAL_BACKFILL_LIMIT: "160"
           MAX_PAGES_PER_QUERY: "4"
           RUN_HOUR_KST: "7"
+
+          # ✅ (방법 B) 특정 날짜 재생성용: Actions UI 입력값 → env 연결
+          # - schedule 실행에서는 inputs가 없으므로 기본값 '' 처리
+          FORCE_REPORT_DATE: ${{ github.event.inputs.force_report_date || '' }}
 
           # 테스트할 때만 1로(주말/공휴일 스킵 무시)
           FORCE_RUN_ANYDAY: "true"
