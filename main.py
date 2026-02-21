@@ -1011,7 +1011,6 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
     # 실무 신호가 충분하면 패널티 최소화
     strong_signal = 0
     if section_key == "supply":
-        title_horti_sc = best_horti_score(a.title or "", "")
         strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_SUPPLY]) + count_any(ttl, [k.lower() for k in SUPPLY_TITLE_CORE_TERMS])
     elif section_key == "dist":
         strong_signal = count_any(t, [k.lower() for k in NH_COOCUR_DIST]) + count_any(ttl, [k.lower() for k in DIST_TITLE_CORE_TERMS])
