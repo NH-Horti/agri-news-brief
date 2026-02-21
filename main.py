@@ -697,6 +697,111 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
+# -----------------------------
+# Story-level dedupe (title + description)
+# - 목적: 동일 보도자료/브리핑이 여러 매체(연합뉴스/이데일리/파이낸셜뉴스 등)로 반복될 때 1건만 남기기
+# - 제목만으로는 못 잡는 "같은 내용 다른 제목" 중복을 줄이기 위해 사용
+# - dist(유통/현장) 섹션은 보도자료 중복이 많아, '스토리 시그니처' + 앵커 기반 판정을 우선 적용
+# -----------------------------
+_STORY_ANCHORS = (
+    "서울시", "농수산물", "농산물", "부적합", "가락시장", "도매시장", "공판장", "공영도매시장",
+    "경락", "경매", "반입", "수거", "수거검사", "불시", "검사", "휴일", "심야",
+    "원산지", "부정유통", "단속", "검역", "통관", "수출",
+    "잔류농약", "방사능", "식품안전", "위해", "유통", "차단", "사전", "폐기",
+)
+
+def _norm_story_text(title: str, desc: str) -> str:
+    s = f"{title or ''} {desc or ''}".lower()
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"[^0-9a-z가-힣 ]+", " ", s)
+    return s.replace(" ", "")
+
+def _trigrams(s: str) -> set[str]:
+    if not s:
+        return set()
+    if len(s) <= 3:
+        return {s}
+    return {s[i:i+3] for i in range(len(s) - 2)}
+
+def _jaccard(a: set[str], b: set[str]) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    union = len(a | b)
+    return inter / union if union else 0.0
+
+def _anchor_hits(title: str, desc: str) -> set[str]:
+    txt = f"{title or ''} {desc or ''}"
+    return {w for w in _STORY_ANCHORS if w in txt}
+
+def _story_text(a: "Article") -> tuple[str, str]:
+    # description이 비어있는 매체가 있어 summary를 보조로 사용
+    desc = (a.description or "") if isinstance(a.description, str) else ""
+    if (not desc.strip()) and getattr(a, "summary", ""):
+        desc = str(getattr(a, "summary", "") or "")
+    return (a.title or ""), desc
+
+def _dist_story_signature(text: str) -> str | None:
+    # ✅ 서울시-가락시장-부적합 농수산물(잔류농약/방사능/수거검사/불시검사) 같은 보도자료 다매체 중복을 강하게 제거
+    if "서울시" in text and "가락시장" in text and ("농수산물" in text or "농산물" in text):
+        if ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("수거" in text or "검사" in text or "불시" in text):
+            return "SIG:SEOUL_FOODSAFETY_GARAK"
+    # 일반화: '원산지 단속', '부정유통 단속' 같은 보도자료도 다매체 중복이 잦아 시그니처로 묶는다
+    if ("원산지" in text or "부정유통" in text) and ("단속" in text or "적발" in text) and ("농산물" in text or "농수산물" in text):
+        if "서울시" in text:
+            return "SIG:SEOUL_ORIGIN_ENFORCE"
+    return None
+
+def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
+    at, ad = _story_text(a)
+    bt, bd = _story_text(b)
+    a_txt = f"{at} {ad}"
+    b_txt = f"{bt} {bd}"
+
+    # 1) dist는 '시그니처' 우선
+    if section_key == "dist":
+        sa = _dist_story_signature(a_txt)
+        sb = _dist_story_signature(b_txt)
+        if sa and sb and sa == sb:
+            return True
+
+    # 2) 앵커 겹침 + 3-gram Jaccard(섹션별 임계치)
+    ah = getattr(a, "_story_anchors", None)
+    if ah is None:
+        ah = _anchor_hits(at, ad)
+        setattr(a, "_story_anchors", ah)
+    bh = getattr(b, "_story_anchors", None)
+    if bh is None:
+        bh = _anchor_hits(bt, bd)
+        setattr(b, "_story_anchors", bh)
+
+    inter = ah & bh
+    if section_key == "dist":
+        # dist는 보도자료 중복이 많으므로 앵커 조건을 조금 완화
+        if len(ah) < 3 or len(bh) < 3 or len(inter) < 2:
+            return False
+        thr = 0.18
+    elif section_key in ("supply", "policy"):
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
+            return False
+        thr = 0.30
+    else:
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
+            return False
+        thr = 0.26
+
+    ta = getattr(a, "_story_tri", None)
+    if ta is None:
+        ta = _trigrams(_norm_story_text(at, ad))
+        setattr(a, "_story_tri", ta)
+    tb = getattr(b, "_story_tri", None)
+    if tb is None:
+        tb = _trigrams(_norm_story_text(bt, bd))
+        setattr(b, "_story_tri", tb)
+
+    return _jaccard(ta, tb) >= thr
+
+
 def _title_bigram_set(s: str) -> set[str]:
     s = (s or "").strip()
     if len(s) < 2:
@@ -746,121 +851,6 @@ def _is_similar_title(k1: str, k2: str) -> bool:
         pass
 
     return False
-
-
-
-
-# -----------------------------
-# Story-level dedupe (title+description)
-# - 목적: 동일 보도자료/브리핑이 연합뉴스/이데일리/파이낸셜뉴스 등 다매체로 반복될 때 1건만 남기기
-# - 제목만으로는 못 잡는 "같은 내용 다른 제목" 중복을 줄이기 위해 사용
-# - 안전장치: 앵커(핵심 키워드) 겹침이 충분할 때만 유사도(Jaccard 3-gram)로 판정
-# -----------------------------
-_STORY_ANCHORS = (
-    "서울시", "농수산물", "농산물", "부적합", "가락시장", "도매시장", "공판장", "경매", "경락", "반입",
-    "수거", "수거검사", "부정유통", "원산지", "단속", "검역", "통관", "수출", "잔류농약", "방사능",
-    "식품안전", "위해", "차단", "폐기", "유통", "유통단계", "유통차단",
-)
-
-def _norm_story_text(title: str, desc: str) -> str:
-    # 공백/특수문자 제거 후 비교(한국어+영문+숫자만 남김)
-    s = f"{title or ''} {desc or ''}".lower()
-    s = re.sub(r"\s+", " ", s).strip()
-    s = re.sub(r"[^0-9a-z가-힣 ]+", " ", s)
-    return s.replace(" ", "")
-
-def _trigrams(s: str) -> set[str]:
-    if not s:
-        return set()
-    if len(s) <= 3:
-        return {s}
-    return {s[i:i+3] for i in range(len(s) - 2)}
-
-def _jaccard(a: set[str], b: set[str]) -> float:
-    if not a or not b:
-        return 0.0
-    inter = len(a & b)
-    union = len(a | b)
-    return inter / union if union else 0.0
-
-def _anchor_hits(title: str, desc: str) -> set[str]:
-    txt = f"{title or ''} {desc or ''}"
-    return {w for w in _STORY_ANCHORS if w in txt}
-
-def _story_trigrams_cached(a: "Article") -> set[str]:
-    tri = getattr(a, "_story_tri", None)
-    if tri is not None:
-        return tri
-    tri = _trigrams(_norm_story_text(getattr(a, "title", "") or "", getattr(a, "description", "") or ""))
-    setattr(a, "_story_tri", tri)
-    return tri
-
-def _is_similar_story(a: "Article", b: "Article", thr: float = 0.40) -> bool:
-    # 안전장치: 앵커가 각각 2개 이상 + 공통 앵커 1개 이상일 때만 판정
-    ah = getattr(a, "_story_anchors", None)
-    if ah is None:
-        ah = _anchor_hits(getattr(a, "title", ""), getattr(a, "description", ""))
-        setattr(a, "_story_anchors", ah)
-    bh = getattr(b, "_story_anchors", None)
-    if bh is None:
-        bh = _anchor_hits(getattr(b, "title", ""), getattr(b, "description", ""))
-        setattr(b, "_story_anchors", bh)
-
-    if len(ah) < 2 or len(bh) < 2 or len(ah & bh) < 1:
-        return False
-
-    ta = _story_trigrams_cached(a)
-    tb = _story_trigrams_cached(b)
-    return _jaccard(ta, tb) >= thr
-
-def _is_similar_story_section(a: "Article", b: "Article", section_key: str) -> bool:
-    """섹션별 '스토리(제목+요약) 중복' 판정.
-    - dist(유통/현장)는 보도자료/브리핑 다매체 송고가 매우 잦아 더 적극적으로 중복 제거한다.
-    - 특히 '서울시 부적합 농수산물/수거검사 강화' 류는 제목이 달라도 거의 동일 스토리이므로
-      앵커 조합으로 확정 중복 처리한다.
-    """
-    def _desc_or_summary(x: "Article") -> str:
-        d = getattr(x, "description", "") or ""
-        if d.strip():
-            return d
-        return getattr(x, "summary", "") or ""
-
-    ta = getattr(a, "title", "") or ""
-    tb = getattr(b, "title", "") or ""
-    da = _desc_or_summary(a)
-    db = _desc_or_summary(b)
-
-    # 빠른 특례: 서울시 식품안전/부적합 농수산물 보도자료(가락시장/수거검사/휴일심야 검사)
-    if section_key == "dist":
-        ax = f"{ta} {da}"
-        bx = f"{tb} {db}"
-        def _is_seoul_fs(s: str) -> bool:
-            return ("서울시" in s and ("농수산물" in s or "가락시장" in s)
-                    and ("부적합" in s or "잔류농약" in s or "방사능" in s)
-                    and ("수거" in s or "불시" in s or "검사" in s or "유통" in s or "사전" in s or "차단" in s))
-        if _is_seoul_fs(ax) and _is_seoul_fs(bx):
-            return True
-
-    # 앵커 기반 안전장치(각각 2개 이상 + 공통 1개 이상)
-    ah = _anchor_hits(ta, da)
-    bh = _anchor_hits(tb, db)
-    common = ah & bh
-    if len(ah) < 2 or len(bh) < 2 or len(common) < 1:
-        return False
-
-    # dist에서는 앵커 겹침이 크면 제목이 달라도 중복으로 본다(보도자료 다매체 송고 방지)
-    if section_key == "dist":
-        # 공통 앵커가 3개 이상이고, 핵심 앵커가 포함되면 중복 처리
-        if ("서울시" in common and ("가락시장" in common or "농수산물" in common) and len(common) >= 3):
-            return True
-        thr = 0.22
-    else:
-        thr = 0.30
-
-    # 텍스트 유사도(트라이그램 Jaccard)
-    na = _norm_story_text(ta, da)
-    nb = _norm_story_text(tb, db)
-    return _jaccard(_trigrams(na), _trigrams(nb)) >= thr
 
 
 # -----------------------------
@@ -2256,9 +2246,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     """
     ttl = (title or "")
     desc = (desc or "")
-    # 공통 노이즈: [오늘의 주요일정] 류(지역 행사 일정 모음) 제외
-    if ttl.strip().startswith("[오늘의 주요일정]") or "오늘의 주요일정" in ttl:
-        return False
     text = (ttl + " " + desc).lower()
     dom = (dom or "").lower().strip()
     key = section_conf["key"]
@@ -3063,8 +3050,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
             continue
-        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
-        if any(_is_similar_story_section(a, b, section_key) for b in core):
+        if any(_is_similar_story(a, b, section_key) for b in core):
+            continue
+        if any(_is_similar_story(a, b, section_key) for b in core):
             continue
         if not _source_ok_local(a):
             continue
@@ -3086,9 +3074,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not _headline_gate_relaxed(a, section_key):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
-                continue
-            # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
-            if any(_is_similar_story_section(a, b, section_key) for b in core):
                 continue
             if not _source_ok_local(a):
                 continue
@@ -3130,6 +3115,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < thr:
                 continue
 
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+
             final.append(a)
             _mark_used(a)
             _source_take(a)
@@ -3152,10 +3142,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in final):
             continue
-        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
-        if any(_is_similar_story_section(a, b, section_key) for b in final):
+        if any(_is_similar_story(a, b, section_key) for b in final):
             continue
-
         final.append(a)
         _mark_used(a)
         _source_take(a)
