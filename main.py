@@ -63,17 +63,7 @@ SESSION = requests.Session()
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
-# 섹션별 최종 노출 기사 수는 "최대" 값일 뿐, 반드시 채우지 않는다.
-# - 환경변수 MAX_ARTICLES_PER_SECTION(워크플로우) / MAX_PER_SECTION(로컬 override) 를 읽되
-# - 상한은 5로 강제 캡(사용자 정책)
-MAX_PER_SECTION_CAP = 5
-MAX_PER_SECTION = max(
-    1,
-    min(
-        int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", str(MAX_PER_SECTION_CAP)))),
-        MAX_PER_SECTION_CAP,
-    ),
-)
+MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -612,51 +602,6 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
-def _is_similar_title(title_key_a: str, title_key_b: str) -> bool:
-    """유사 제목 판정(중복 제거용).
-
-    입력은 norm_title_key()로 정규화된 title_key를 기대한다.
-    - 너무 짧은 키(예: '사과가격')는 오탐이 잦아, 매우 높은 유사도에서만 True
-    - 충분히 긴 키는 (포함관계 / 시퀀스 유사도 / 바이그램 자카드)로 판정
-    """
-    a = (title_key_a or "").strip()
-    b = (title_key_b or "").strip()
-    if not a or not b:
-        return False
-    if a == b:
-        return True
-
-    # 길이가 너무 짧으면 '거의 동일'일 때만 유사로 본다(오탐 방지)
-    min_len = min(len(a), len(b))
-    max_len = max(len(a), len(b))
-    if min_len < 10:
-        if min_len < 6:
-            return False
-        r = difflib.SequenceMatcher(None, a, b).ratio()
-        return r >= 0.97
-
-    # 충분히 길면 포함관계도 유사로 본다(단, 최소 길이 조건)
-    if min_len >= 14 and (a in b or b in a):
-        return True
-
-    # 시퀀스 유사도(기본)
-    r = difflib.SequenceMatcher(None, a, b).ratio()
-    if r >= 0.91:
-        return True
-
-    # 바이그램 자카드(한글 포함, 공통 꼬리/접두어에 강함)
-    def _bigrams(s: str) -> set[str]:
-        return {s[i:i+2] for i in range(len(s) - 1)} if len(s) >= 2 else {s}
-
-    ga = _bigrams(a)
-    gb = _bigrams(b)
-    if ga and gb:
-        j = len(ga & gb) / max(1, len(ga | gb))
-        if j >= 0.86 and min_len >= 16:
-            return True
-
-    return False
-
 # -----------------------------
 # Topic detection (robust)
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
@@ -776,6 +721,19 @@ def has_any(text: str, words) -> bool:
 
 def count_any(text: str, words) -> int:
     return sum(1 for w in words if w in text)
+
+
+def has_apc_agri_context(text: str) -> bool:
+    """APC 오탐(UPS/전원장비 등)을 막기 위해, '농업/산지유통' 문맥일 때만 APC로 인정."""
+    t = (text or "").lower()
+    if "apc" not in t:
+        return False
+    agri_hints = (
+        "산지유통", "산지유통센터", "선별", "선별장", "저온", "저장고", "ca저장", "저온저장",
+        "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+        "농협", "원예", "과수", "청과", "농산물"
+    )
+    return any(h.lower() in t for h in agri_hints)
 
 def is_blocked_domain(dom: str) -> bool:
     if not dom:
@@ -989,6 +947,31 @@ SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출�
 DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지')
 POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료')
 PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
+
+def governance_interview_penalty(text: str, title: str, section_key: str, horti_sc: float, market_hits: int) -> float:
+    """행정/정치 인터뷰성 기사(도지사/시장 등)가 '부분 언급'만으로 상단에 올라오는 것을 억제."""
+    t = (text or "").lower()
+    ttl = (title or "").lower()
+
+    roles = ("도지사", "지사", "시장", "군수", "도의회", "도의원", "시의회", "국회의원", "도정", "시정", "군정", "행정")
+    if not any(r in ttl for r in roles):
+        return 0.0
+
+    strong_terms = ("할인", "할인지원", "할당관세", "수급", "가격", "출하", "재고",
+                    "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+                    "원산지", "부정유통", "단속", "검역", "통관", "수출")
+    strong_hits = count_any(t, [s.lower() for s in strong_terms])
+
+    # 예외적으로 실무 신호가 강하면 약한 감점만
+    if strong_hits >= 2 and (horti_sc >= 2.2 or market_hits >= 1 or ("농산물" in t) or ("농식품" in t)):
+        return 0.8
+
+    if horti_sc >= 2.6 and strong_hits >= 1:
+        return 1.6
+
+    # 기본은 강한 감점(코어/상단을 거의 차지하지 못하게)
+    return 3.2 if section_key in ("supply", "policy", "dist") else 2.5
+
 
 def title_signal_bonus(title: str) -> float:
     t = (title or '').lower()
@@ -1903,10 +1886,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     except Exception:
         _path = ""
 
-    # 'APC'는 일반 IT/전원장비(UPS)에서도 자주 등장하는 약어라 오탐이 잦다.
-    # 농업(산지유통/선별/저온/저장/농협 등) 맥락과 결합할 때만 APC로 인정한다.
-    has_apc_agri = ("apc" in text) and any(w in text for w in ("산지유통", "산지유통센터", "선별", "저온", "저장", "농협", "공판장", "도매시장", "가락시장"))
-
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
@@ -1923,34 +1902,24 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
     horti_sc = best_horti_score(ttl, desc)
+
+    # ✅ APC는 UPS/전원장비 문맥으로도 자주 등장하므로, '농업/산지유통' 문맥일 때만 인정한다.
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "산지유통", "산지유통센터"]
-       # 원예수급/유통 "앵커" 용어(농업 맥락을 고정하는 단어)와
-    # 일반 "신호" 용어(가격/수급/재고 등)를 분리한다.
-    # - 과거에는 '가격/수급/재고' 같은 일반어를 코어로 잡아 IT/소비재 기사도 통과하는 누수가 있었음.
-    horti_anchor_terms = [
-        "농업", "농산물", "농식품",
-        "원예", "과수", "과원", "과일", "채소", "화훼", "절화", "시설채소", "하우스", "비가림",
-        "산지", "농가", "재배", "수확",
-        "출하", "작황", "저장", "저온", "선별",
-        "가락시장", "도매시장", "공판장", "청과", "경락", "경매",
-        "산지유통", "산지유통센터", "온라인 도매시장",
-        "검역", "통관", "원산지", "부정유통", "단속",
-    ]
-    generic_signal_terms = [
-        "가격", "시세", "수급", "물량", "재고", "반입", "출하량", "생산량",
-    ]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
-    anchor_hits = count_any(text, [t.lower() for t in horti_anchor_terms])
-    signal_hits = count_any(text, [t.lower() for t in generic_signal_terms])
+    if has_apc_agri_context(text):
+        market_hits += 1
+
+    # (주의) 가격/물량/재고 등은 산업/IT 기사에도 흔한 범용 단어이므로, 원예 코어가 아니라 '신호(signal)'로만 사용한다.
+    supply_signal_terms = ["가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "경락가", "경매"]
+    signal_hits = count_any(text, [t.lower() for t in supply_signal_terms])
+
+    # 원예 코어(범용 단어 제외) — must_terms 실패 시 예외(살리기) 판단에만 사용
+    horti_core_terms = ["원예", "과수", "화훼", "절화", "과채", "시설채소", "하우스", "비가림", "재배", "선별", "산지유통", "산지유통센터", "원예농협", "과수농협", "청과"]
+    horti_core_hits = count_any(text, [t.lower() for t in horti_core_terms])
+
     # (강제 컷) 산업/금융/바이오 오탐: 농업/원예 맥락이 약하면 제외
     off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
     agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
-    # IT/테크 카테고리 경로(/it/, /future/ 등)는 원예/농산물 '앵커'가 없으면 강제 컷
-    # - 예: MK/동아/머니투데이 IT 섹션 기사(스마트폰/AI/플랫폼)에서 '가격/물량' 같은 일반어로 누수되는 현상 방지
-    if any(seg in _path for seg in ("/it/", "/tech/", "/digital/", "/mobile/", "/future/")):
-        if (anchor_hits == 0) and (agri_ctx_hits == 0) and (market_hits == 0) and (horti_sc < 1.4):
-            return _reject("it_path_no_agri_anchor")
-
     if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
         return _reject("hard_offtopic_no_agri_context")
 
@@ -1973,9 +1942,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         infra_terms = ["준공", "완공", "가동", "확충", "확대", "선별", "저온", "저장", "ca저장", "물류", "통관", "검역", "수출", "원산지", "부정유통", "단속"]
         has_infra = any(t.lower() in text for t in infra_terms)
         has_wholesale = any(t in text for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장"))
-        has_apc = has_apc_agri or ("산지유통" in text) or ("산지유통센터" in text)
+        has_apc = has_apc_agri_context(text) or ("산지유통" in text) or ("산지유통센터" in text)
 
-        local_ok = (market_hits >= 2) or (has_wholesale and (horti_sc >= 1.4 or anchor_hits >= 1)) or (has_apc and has_infra and horti_sc >= 1.6)
+        local_ok = (market_hits >= 2) or (has_wholesale and horti_core_hits >= 2) or (has_apc and has_infra and horti_sc >= 1.6)
         if not local_ok:
             return _reject("news1_local_weak_context")
 
@@ -2005,16 +1974,26 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
                 return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
-            dist_soft_ok = (market_hits >= 1) or has_apc_agri or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
-            if not ((horti_sc >= 2.0) or (anchor_hits >= 2 and signal_hits >= 1) or dist_soft_ok):
+            dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
+            if not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
                 return _reject("must_terms_fail")
 
     # (핵심) 원예수급 관련성 게이트:
     # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등)로 인한 오탐을 강하게 차단
     if key == "supply":
-        # 공급(supply) 섹션은 "원예/농산물 맥락"이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
-        if not ((horti_sc >= 1.3) or (market_hits >= 1) or (anchor_hits >= 1 and signal_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1)):
+        # 공급(supply) 섹션은 '범용 단어(가격/물량/재고)'만 있는 산업/IT 기사를 강하게 차단한다.
+        # 통과 조건(택1):
+        # - 품목/원예 점수(horti_sc)가 충분히 강함
+        # - 도매/산지유통/시장 맥락(market_hits) 존재
+        # - 농업/농산물 맥락(agri_ctx_hits) + 수급 신호(signal_hits) 동시 존재
+        supply_ok = (horti_sc >= 1.3) or (market_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1)
+        if not supply_ok:
             return _reject("supply_context_gate")
+
+        # URL이 IT/테크 섹션인데 농업/시장 맥락이 약하면 컷(범용 단어 오탐 방지)
+        if any(p in _path for p in ("/it/", "/tech/", "/future/", "/science/", "/game/", "/culture/")):
+            if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 2.2:
+                return _reject("supply_tech_path_no_agri")
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
@@ -2059,35 +2038,48 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if (not is_major) and _LOCAL_GEO_PATTERN.search(ttl):
             return _reject("policy_local_minor")
 
-    # 유통/현장(dist): 시장/APC/산지유통/수출/검역/원산지/부정유통/화훼자조금 등 맥락 필요
+    # 유통/현장(dist): '농산물/원예 유통' 맥락이 없는 일반 물류/유통/브랜드 기사는 강하게 차단
     if key == "dist":
-        dist_soft = ["apc", "산지유통", "산지유통센터", "원예농협", "판매농협", "농협공판장", "하나로마트", "로컬푸드", "화훼", "절화", "화훼자조금", "자조금"]
-        dist_hard = ["가락시장", "도매시장", "공판장", "청과", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장",
-                     "선별", "저온", "저장", "물류", "수출", "검역", "통관", "원산지", "단속", "부정유통"]
+        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
+
+        # 소프트/하드 신호 분리(일반어: 브랜드/통합/조화/꽃 등은 제거)
+        dist_soft = ["산지유통", "산지유통센터", "원예농협", "과수농협", "판매농협", "작목반", "화훼", "절화", "자조금", "하나로마트", "온라인 도매시장"]
+        dist_hard = ["가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경락가", "경매", "반입",
+                     "중도매인", "시장도매인",
+                     "선별", "저온", "저온저장", "저장고", "ca저장", "물류",
+                     "원산지", "부정유통", "단속",
+                     "검역", "통관", "수출"]
         soft_hits = count_any(text, [t.lower() for t in dist_soft])
         hard_hits = count_any(text, [t.lower() for t in dist_hard])
 
-        # soft 신호만으로는 누수가 발생할 수 있으므로, 농업/원예 앵커가 없으면 제외
-        if hard_hits == 0 and soft_hits >= 1 and (anchor_hits == 0) and (horti_sc < 1.4):
-            return _reject("dist_soft_no_agri_anchor")
+        # APC는 농업 문맥일 때만 soft 신호로 카운트
+        if has_apc_agri_context(text):
+            soft_hits += 1
 
         if (soft_hits + hard_hits) < 1:
             return _reject("dist_context_gate")
 
-        # 'APC/산지유통/농협/브랜드' 같은 소프트 신호만 있을 땐,
-        # 인프라/유통 강신호(준공/가동/선별/저온/저장/물류/원산지/검역/수출 등) 또는 높은 원예 관련성이 있어야 통과
+        # ✅ 가장 중요한 원칙: '농산물/원예' 앵커가 없고(agri_anchor_hits==0),
+        # 도매시장/산지유통/품목 점수도 약하면 일반 물류/경제 기사로 보고 컷
+        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6:
+            return _reject("dist_no_agri_anchor")
+
+        # URL이 IT/테크 섹션인데 농업 맥락이 약하면 컷
+        if any(p in _path for p in ("/it/", "/tech/", "/future/", "/science/", "/game/", "/culture/")):
+            if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 2.2:
+                return _reject("dist_tech_path_no_agri")
+
+        # '산지유통/APC/농협/화훼' 같은 소프트 신호만 있을 땐,
+        # 인프라/유통 강신호(준공/가동/선별/저온/저장/물류/원산지/검역/수출 등) + 농업 앵커/품목 신호가 함께 있어야 통과
         if hard_hits == 0:
-            infra_terms = ("준공", "완공", "가동", "확충", "확대", "선별", "저온", "저장", "ca저장", "물류", "원산지", "검역", "수출")
+            infra_terms = ("준공", "완공", "가동", "확충", "확대", "선별", "저온", "저온저장", "저장고", "ca저장", "물류", "원산지", "검역", "수출")
             has_infra = any(w in text for w in infra_terms)
 
-            # APC/산지유통 같은 소프트 신호만 있을 때는
-            # ① 유통 인프라(선별/저온/저장/물류/준공/가동 등)와 결합 + 원예 관련성(품목/화훼/시설채소)이 있을 때,
-            # 또는 ② 원예 관련성이 매우 강하고(품목 다수/과수·화훼 명시) 소프트 신호가 2개 이상일 때만 통과
-            if not ((has_infra and horti_sc >= 1.6) or (horti_sc >= 2.6 and soft_hits >= 2)):
+            # soft-only는 (인프라 + (농업앵커 or 품목점수)) 또는 (품목점수 매우 강함 + soft 2개 이상)에서만 허용
+            if not ((has_infra and (agri_anchor_hits >= 1 or horti_sc >= 1.9)) or (horti_sc >= 2.8 and soft_hits >= 2)):
                 return _reject("dist_soft_without_infra")
-
-
-    # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
+# 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
         agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
         if agri_ctx_hits < 1:
@@ -2122,6 +2114,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     horti_sc = best_horti_score(title, desc)
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+    if has_apc_agri_context(text):
+        market_hits += 1
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -2177,14 +2171,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 행사/동정성 패널티(실무 신호 약하면 감점)
     score -= eventy_penalty(text, title, key)
 
-    # 행정/정치 인터뷰(도지사/시장/군수 등)에서 '품목 언급 1문단' 수준의 기사 과대평가 방지
-    admin_terms = ("도지사", "시장", "군수", "도의회", "시의회", "도정", "시정", "행정", "지방정부", "정무", "인터뷰")
-    if any(w in text for w in admin_terms):
-        # 시장/수급/도매/유통 강신호가 없고, 품목(원예) 언급이 매우 제한적이면 하단으로 밀어낸다.
-        commodity_hits = count_any(text, [t.lower() for t in ("만감류", "감귤", "한라봉", "레드향", "천혜향", "사과", "배", "포도", "딸기", "화훼", "절화")])
-        if market_hits == 0 and horti_sc < 2.4 and commodity_hits <= 1:
-            score -= 3.2
-
+    # 행정/정치 인터뷰성(도지사/시장 등) 기사 상단 배치 억제
+    score -= governance_interview_penalty(text, title, key, horti_sc, market_hits)
 
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     score -= local_coop_penalty(text, press, dom, key)
@@ -2355,24 +2343,54 @@ _HEADLINE_STOPWORDS = [
 ]
 
 def _headline_gate(a: "Article", section_key: str) -> bool:
-    """코어(핵심2)로 올릴 자격이 있는지(섹션별)."""
+    """코어(핵심2)로 올릴 자격이 있는지(섹션별).
+
+    원칙:
+    - 코어는 "농산물/원예 맥락"이 확실한 기사만(부분 언급/인터뷰/행정 단신은 하단)
+    - APC는 농업 문맥일 때만 인정
+    """
     title = (a.title or "").lower()
     text = (a.title + " " + a.description).lower()
 
     # (핵심) 코어2는 "정말 핵심"만 올리기 위해, 품목/도매/원예 신호를 재확인
     horti_sc = best_horti_score(a.title or "", a.description or "")
-    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+    if has_apc_agri_context(text):
+        market_hits += 1
 
+    agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+    agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
 
     # 공통: 칼럼/기고/인물/행사성은 코어에서 제외
     if has_any(title, [w.lower() for w in _HEADLINE_STOPWORDS]):
         return False
 
+    # 공통: 행정/정치 인터뷰·동정성(도지사/시장 등) 기사에 대한 코어 차단(부분 언급 오탐 방지)
+    poli_roles = ("도지사", "지사", "시장", "군수", "도의회", "도의원", "시의회", "국회의원", "도정", "시정", "군정", "행정")
+    if any(r in title for r in poli_roles):
+        strong_keep = ("할인", "할인지원", "할당관세", "수급", "가격", "출하", "재고",
+                       "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+                       "원산지", "부정유통", "단속", "검역", "통관", "수출")
+        # 농산물 맥락이 강하고(앵커/시장/품목) + 실무 신호가 명확할 때만 예외적으로 코어 허용
+        if not ((agri_anchor_hits >= 2 or market_hits >= 1 or horti_sc >= 2.6) and count_any(text, [t.lower() for t in strong_keep]) >= 2):
+            return False
+
+
+    # 공통: 기사 전체가 '지자체 행정/인터뷰' 성격인데 품목이 일부 문단에만 등장하는 경우를 코어에서 제외
+    adminish = ("도청", "시청", "군청", "도의회", "시의회", "정무", "민선", "도정", "시정", "군정", "행정",
+                "관광", "복지", "청년", "교육", "교통", "SOC", "공약", "인사")
+    if any(w in title for w in adminish) or any(w in text for w in adminish):
+        strong_keep2 = ("할인", "할인지원", "할당관세", "수급", "가격", "출하", "재고",
+                        "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+                        "원산지", "부정유통", "단속", "검역", "통관", "수출")
+        if count_any(text, [t.lower() for t in strong_keep2]) < 2 and market_hits == 0 and horti_sc < 2.8:
+            return False
+
     if section_key == "supply":
-        core_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "물량", "재고", "저장"]
-        # 코어2는 '품목 신호' 또는 '도매/산지 유통 신호'가 확실해야 한다
-        return has_any(text, core_terms) and ((horti_sc >= 1.8) or (market_hits >= 1))
+        signal_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "반입", "물량", "재고", "경락", "경매"]
+        # 코어2는 '수급 신호' + (품목/시장/농산물 앵커) 결합이 확실해야 한다
+        return has_any(text, [t.lower() for t in signal_terms]) and ((horti_sc >= 2.3) or (market_hits >= 1))
 
     if section_key == "policy":
         if _is_policy_official(a):
@@ -2381,14 +2399,24 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         ctx_terms = ["농산물", "농업", "농식품", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "공영도매시장", "수출", "검역"]
 
         # 식품안전/위생 단독(도매/품목 신호 없음)은 코어에서 제외
-        if any(w in text for w in ("식품안전", "위생", "haccp", "식중독")) and (market_hits == 0) and (horti_sc < 1.8):
+        if any(w in text for w in ("식품안전", "위생", "haccp", "식중독")) and (market_hits == 0) and (horti_sc < 2.0) and (agri_anchor_hits == 0):
             return False
 
-        return has_any(text, action_terms) and has_any(text, ctx_terms) and ((horti_sc >= 1.4) or (market_hits >= 1))
+        # 정책 코어는 '정책 액션' + '농식품/유통 맥락'이 동시 충족되어야 함
+        return has_any(text, [t.lower() for t in action_terms]) and has_any(text, [t.lower() for t in ctx_terms]) and ((horti_sc >= 1.8) or (market_hits >= 1) or (agri_anchor_hits >= 2))
 
     if section_key == "dist":
-        dist_terms = ["가락시장", "도매시장", "공판장", "경락", "경락가", "경매", "반입", "중도매인", "시장도매인", "apc", "선별", "ca저장", "물류", "수출", "검역", "통관", "원산지"]
-        return count_any(text, dist_terms) >= 2
+        # 유통 코어는 '도매시장/산지유통/단속/검역' 등 강신호가 2개 이상 + 농산물/품목/시장 앵커가 필요
+        dist_terms = ["가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경락가", "경매", "반입",
+                      "중도매인", "시장도매인", "온라인 도매시장",
+                      "선별", "저온", "저온저장", "저장고", "ca저장", "물류",
+                      "수출", "검역", "통관", "원산지", "부정유통", "단속", "산지유통", "산지유통센터"]
+        dist_hits = count_any(text, [t.lower() for t in dist_terms])
+        if has_apc_agri_context(text):
+            dist_hits += 1
+        if dist_hits < 2:
+            return False
+        return (agri_anchor_hits >= 1) or (horti_sc >= 2.0) or (market_hits >= 1)
 
     if section_key == "pest":
         # 농업 맥락 + 병해충/방제(또는 냉해/동해 피해) 가시적이어야 코어
@@ -2428,6 +2456,8 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
     horti_sc = best_horti_score(a.title or "", a.description or "")
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+    if has_apc_agri_context(text):
+        market_hits += 1
 
     if section_key == "policy":
         # 공식 소스는 최대한 살림
@@ -2446,13 +2476,44 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         return True
 
     if section_key == "supply":
-        # supply는 최소한 '원예/품목' 또는 '수급/가격' 신호가 있어야 함
-        keep = ("원예", "과수", "과일", "채소", "화훼", "절화", "수급", "가격", "시세", "작황", "출하", "저장", "재고", "가락시장", "도매시장")
-        if (horti_sc < 1.1) and (market_hits == 0) and (not any(t.lower() in text for t in keep)):
+        # supply는 '품목/농산물 앵커' + '수급 신호' 결합이 약한 기사(단순 언급)를 하단으로 밀기 위해 더 보수적으로 본다.
+        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
+        signal_terms = ("가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "경매")
+
+        sig_hits = count_any(text, [t.lower() for t in signal_terms])
+
+        # 시장 맥락도 없고, 품목점수도 약하고, 신호도 약하면 제외(2~3개에서 자연 종료 가능)
+        if market_hits == 0 and horti_sc < 1.2 and agri_anchor_hits == 0 and sig_hits == 0:
+            return False
+
+        # '품목만 언급' 수준(신호 없음)인 기사는 score가 높아도 상단 노출을 막기 위해 컷(단, horti_sc가 매우 강하면 예외)
+        if sig_hits == 0 and market_hits == 0 and horti_sc < 2.4:
+            return False
+
+        return True
+
+    if section_key == "dist":
+        # dist는 is_relevant가 있어도 '일반 물류/유통' 누수가 있어, 완화 게이트에서도 농산물 앵커를 한번 더 본다.
+        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
+        dist_hard = ("가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경매", "반입",
+                     "중도매인", "시장도매인", "온라인 도매시장",
+                     "선별", "저온", "저온저장", "저장고", "ca저장", "원산지", "부정유통", "단속", "검역", "통관", "수출", "물류",
+                     "산지유통", "산지유통센터")
+        hard_hits = count_any(text, [t.lower() for t in dist_hard])
+        if has_apc_agri_context(text):
+            hard_hits += 1
+
+        # 농업 앵커도 없고 시장/품목도 약하면 제외
+        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6:
+            return False
+        # 하드 신호가 거의 없고 soft(추상)만 있으면 제외(억지 채움 방지)
+        if hard_hits == 0 and horti_sc < 2.2:
             return False
         return True
 
-    # dist/pest는 is_relevant에서 이미 맥락을 확인하므로, 여기서는 제목 품질만 관리
+    # pest는 is_relevant에서 맥락을 확인하므로, 여기서는 제목 품질만 관리
     return True
 
 
@@ -2502,15 +2563,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if not pool:
         return []
 
-    # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지용 tail-cut을 둔다
+    # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
+    # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
     tail_margin_by_section = {
-        "supply": 4.2,
-        "policy": 4.2,
-        "dist": 4.5,
-        "pest": 4.0,
+        "supply": 3.6,
+        "policy": 3.8,
+        "dist": 3.4,
+        "pest": 3.6,
     }
-    tail_margin = tail_margin_by_section.get(section_key, 4.2)
+    tail_margin = tail_margin_by_section.get(section_key, 3.6)
     tail_cut = max(thr, best_score - tail_margin)
 
     # 출처 캡(지방/인터넷 과다 방지)
@@ -2603,9 +2665,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         final.append(a)
 
     if section_key == "dist":
-        anchor_terms = ("가락시장", "도매시장", "공영도매시장", "공판장", "경락", "경매", "반입",
-                        "apc", "산지유통", "산지유통센터", "선별", "저온", "저장", "ca저장", "물류",
-                        "원산지", "부정유통", "단속", "검역", "통관", "수출", "온라인 도매시장")
+        anchor_terms = ("가락시장", "도매시장", "공영도매시장", "공판장", "청과", "경락", "경매", "반입",
+                        "산지유통", "산지유통센터", "선별", "저온", "저온저장", "저장고", "ca저장", "물류",
+                        "원산지", "부정유통", "단속", "검역", "통관", "수출", "온라인 도매시장", "하나로마트", "자조금")
         anchors = 0
         for a in pool:
             if anchors >= 2:
@@ -2615,7 +2677,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _already_used(a):
                 continue
             text = (a.title + " " + a.description).lower()
-            if not any(t.lower() in text for t in anchor_terms):
+            has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text)
+            if not has_anchor:
+                continue
+            # 추가 안전장치: 농산물/원예 앵커가 약하면 '일반 물류/경제'로 보고 제외
+            agri_anchor_hits = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
+            if agri_anchor_hits == 0 and best_horti_score(a.title, a.description) < 1.8 and count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")]) == 0:
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -2629,7 +2696,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             anchors += 1
 
-    # 4) 나머지(최대 max_n): 임계치 이상 + (tail_cut) + 출처 캡 + 중복 제거
+    # 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
     for a in pool:
         if len(final) >= max_n:
             break
@@ -2675,7 +2742,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 txt = (a.title + " " + a.description).lower()
                 return {
                     "horti_sc": round(best_horti_score(a.title, a.description), 2),
-                    "market_hits": count_any(txt, [t.lower() for t in ("가락시장","도매시장","공판장","청과","경락","경매","반입","온라인 도매시장","apc","산지유통","산지유통센터")]),
+                    "market_hits": (count_any(txt, [t.lower() for t in ("가락시장","도매시장","공판장","청과","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")]) + (1 if has_apc_agri_context(txt) else 0)),
                     "strength": round(agri_strength_score(txt), 2),
                     "korea": round(korea_context_score(txt), 2),
                     "offtopic_pen": round(off_topic_penalty(txt), 2),
@@ -2686,8 +2753,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             def _best_effort_reason(a: Article) -> str:
                 if a.score < thr:
                     return "below_threshold"
-                if a.score < tail_cut:
-                    return "below_tail_cut"
                 if not _headline_gate_relaxed(a, section_key):
                     return "headline_gate"
                 return "not_selected"
