@@ -612,6 +612,51 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
+def _is_similar_title(title_key_a: str, title_key_b: str) -> bool:
+    """유사 제목 판정(중복 제거용).
+
+    입력은 norm_title_key()로 정규화된 title_key를 기대한다.
+    - 너무 짧은 키(예: '사과가격')는 오탐이 잦아, 매우 높은 유사도에서만 True
+    - 충분히 긴 키는 (포함관계 / 시퀀스 유사도 / 바이그램 자카드)로 판정
+    """
+    a = (title_key_a or "").strip()
+    b = (title_key_b or "").strip()
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+
+    # 길이가 너무 짧으면 '거의 동일'일 때만 유사로 본다(오탐 방지)
+    min_len = min(len(a), len(b))
+    max_len = max(len(a), len(b))
+    if min_len < 10:
+        if min_len < 6:
+            return False
+        r = difflib.SequenceMatcher(None, a, b).ratio()
+        return r >= 0.97
+
+    # 충분히 길면 포함관계도 유사로 본다(단, 최소 길이 조건)
+    if min_len >= 14 and (a in b or b in a):
+        return True
+
+    # 시퀀스 유사도(기본)
+    r = difflib.SequenceMatcher(None, a, b).ratio()
+    if r >= 0.91:
+        return True
+
+    # 바이그램 자카드(한글 포함, 공통 꼬리/접두어에 강함)
+    def _bigrams(s: str) -> set[str]:
+        return {s[i:i+2] for i in range(len(s) - 1)} if len(s) >= 2 else {s}
+
+    ga = _bigrams(a)
+    gb = _bigrams(b)
+    if ga and gb:
+        j = len(ga & gb) / max(1, len(ga | gb))
+        if j >= 0.86 and min_len >= 16:
+            return True
+
+    return False
+
 # -----------------------------
 # Topic detection (robust)
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
