@@ -755,7 +755,7 @@ def _dist_story_signature(text: str) -> str | None:
         if ("보전" in text or "보전금" in text or "보전사업" in text or "기준가격" in text) and ("가락시장" in text or "도매법인" in text or "경락" in text or "출하농가" in text):
             return "SIG:KOREA_CHEONGGWA_SUPPORT"
 
-return None
+    return None
 
 def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
     at, ad = _story_text(a)
