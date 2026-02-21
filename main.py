@@ -3407,29 +3407,28 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
 
 
-# flower consumer trend bottom insert (dist only, 0~1, never replaces real dist issues)
-if section_key == "dist" and len(deduped) < max_n:
-    added = 0
-    for a in candidates:
-        if added >= 1 or len(deduped) >= max_n:
-            break
-        if a in deduped:
-            continue
-        if not is_flower_consumer_trend_context(a.title, a.description):
-            continue
-        # 중복/유사 스토리 방지
-        if any(_is_similar_title(a.title_key, b.title_key) for b in deduped):
-            continue
-        if any(_is_similar_story(a, b, section_key) for b in deduped):
-            continue
-        a.is_core = False
-        # 하단 배치 보장: 추가 감점(이미 compute_rank_score에서 감점하지만 안전하게 한 번 더)
-        a.score = (a.score or 0.0) - 4.5
-        deduped.append(a)
-        added += 1
+    # flower consumer trend bottom insert (dist only, 0~1, never replaces real dist issues)
+    if section_key == "dist" and len(deduped) < max_n:
+        added = 0
+        for a in candidates:
+            if added >= 1 or len(deduped) >= max_n:
+                break
+            if a in deduped:
+                continue
+            if not is_flower_consumer_trend_context(a.title, a.description):
+                continue
+            # 중복/유사 스토리 방지
+            if any(_is_similar_title(a.title_key, b.title_key) for b in deduped):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in deduped):
+                continue
+            a.is_core = False
+            # 하단 배치 보장: 추가 감점(이미 compute_rank_score에서 감점하지만 안전하게 한 번 더)
+            a.score = (a.score or 0.0) - 4.5
+            deduped.append(a)
+            added += 1
 
     return deduped[:max_n]
-
 
 
 # -----------------------------
