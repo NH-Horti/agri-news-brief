@@ -865,6 +865,46 @@ def supply_core_signal(text: str, title: str = "") -> bool:
 
     return False
 
+
+
+def title_has_explicit_horti_anchor(title: str) -> bool:
+    """제목에 '명시적' 원예/농산물 앵커가 있는지 판정.
+    - 원칙: core(핵심2)는 '제목만 봐도' 원예/농산물/시장 신호가 드러나야 한다.
+    - 목적: 행정/정치/인터뷰 기사에서 본문 1문단 품목 언급만으로 핵심이 되는 것을 차단.
+    """
+    ttl = (title or "").lower()
+    if not ttl:
+        return False
+
+    # 1) 범용 농업/품목 앵커
+    generic = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+    if any(g in ttl for g in generic):
+        return True
+
+    # 2) 시장/수급 신호(제목에 있으면 상당히 강한 힌트)
+    market = ("수급", "시세", "작황", "출하", "재고", "물량", "경락", "반입", "도매가격", "소매가격", "가격")
+    if any(m in ttl for m in market):
+        return True
+
+    # 3) 원예 품목 키워드(제목에 직접 등장)
+    for topic, words in COMMODITY_TOPICS:
+        if topic not in _HORTI_TOPICS_SET:
+            continue
+        for w in words:
+            wl = (w or "").lower()
+            if len(wl) < 2:
+                continue
+            if wl in ttl:
+                return True
+
+    # 4) 1글자/약칭 품목은 맥락 패턴으로만 인정(오탐 방지)
+    #    (예: 귤값/꽃값/배값 등)
+    for k in ("배", "밤", "꽃", "귤"):
+        pats = _SINGLE_TERM_CONTEXT_PATTERNS.get(k, [])
+        if any(p.search(ttl) for p in pats):
+            return True
+
+    return False
 SUPPLY_WEIGHT_MAP = {
     # 수급/가격 핵심
     '수급': 4.0, '가격': 4.0, '시세': 3.5, '경락가': 3.5, '도매가격': 3.0, '소매가격': 3.0,
@@ -2271,6 +2311,31 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 언론/기관 가중치
     score += press_weight(press, dom)
 
+
+    # 농업/원예 전문매체(한국농어민신문/농수축산신문 등)는 수급·유통 실무 맥락에서 가치가 크므로 가점을 준다.
+    # - 단, 코어(핵심2) 여부는 별도 headline_gate에서 엄격히 판정한다.
+    AGRI_SPECIALIST_HOSTS = {
+        "agrinet.co.kr", "www.agrinet.co.kr",
+        "farmersnews.co.kr", "www.farmersnews.co.kr",
+        "afnews.co.kr", "www.afnews.co.kr",
+        "nongmin.com", "www.nongmin.com",
+        "newspim.com", "www.newspim.com",
+    }
+    AGRI_SPECIALIST_PRESS = {
+        "한국농어민신문", "농수축산신문", "농업정보신문",
+    }
+    nd = normalize_host(dom)
+    if (nd in AGRI_SPECIALIST_HOSTS) or (press in AGRI_SPECIALIST_PRESS):
+        if key in ("supply", "dist"):
+            score += 2.2
+        else:
+            score += 0.8
+
+    # '부분 언급' 기사(제목은 행정/인터뷰/산업인데 본문 일부만 품목 언급)는 상단을 차지하지 못하게 감점
+    if key == "supply":
+        if (not title_has_explicit_horti_anchor(title)) and (horti_sc >= 1.6) and (market_hits == 0):
+            score -= 4.5
+
     # 도메인 품질 패널티
     score -= low_quality_domain_penalty(dom)
 
@@ -2503,6 +2568,9 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
             return False
 
     if section_key == "supply":
+        # (추가) 코어는 제목에 명시적 원예/농산물/시장 앵커가 반드시 있어야 한다(부분 언급 기사 차단)
+        if not title_has_explicit_horti_anchor(a.title or ""):
+            return False
         signal_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "반입", "물량", "재고", "경락", "경매"]
         # 코어2는 '수급 신호' + (품목/시장/농산물 앵커) 결합이 확실해야 한다
         # 코어2는 '시장/수급 신호'가 확실해야 한다(단순 '가격 협상력' 같은 조직/브랜드 소식 배제)
@@ -4596,7 +4664,10 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
         for i, a in enumerate(picks, start=1):
             press = (getattr(a, "press", "") or "").strip() or press_name_from_url(getattr(a, "originallink", "") or getattr(a, "link", ""))
             title = _shorten(getattr(a, "title", ""), 78)
-            parts.append(f"{i}. {title} ({press})")
+            if press and press != "미상":
+                parts.append(f"{i}. ({press}) {title}")
+            else:
+                parts.append(f"{i}. {title}")
 
     out = "\n".join(parts).strip()
     out = re.sub(r"\n{3,}", "\n\n", out)
