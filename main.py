@@ -5124,8 +5124,9 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
 
         for i, a in enumerate(picks, start=1):
             press = (getattr(a, "press", "") or "").strip() or press_name_from_url(getattr(a, "originallink", "") or getattr(a, "link", ""))
+            press = press or "미상"
             title = _shorten(getattr(a, "title", ""), 78)
-            parts.append(f"{i}. {title} ({press})")
+            parts.append(f"{i}. ({press}) {title}")
 
     out = "\n".join(parts).strip()
     out = re.sub(r"\n{3,}", "\n\n", out)
