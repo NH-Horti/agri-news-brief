@@ -602,6 +602,54 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
+
+def _title_bigrams(s: str) -> set[str]:
+    s = s or ""
+    if len(s) < 2:
+        return set()
+    return {s[i:i+2] for i in range(len(s) - 1)}
+
+def _is_similar_title(k1: str, k2: str) -> bool:
+    """Conservative title similarity for dedupe (prevents near-duplicate headlines).
+    Inputs are normalized keys from norm_title_key(): lowercase, no spaces/punctuation.
+    """
+    k1 = (k1 or "").strip()
+    k2 = (k2 or "").strip()
+    if not k1 or not k2:
+        return False
+    if k1 == k2:
+        return True
+
+    m = min(len(k1), len(k2))
+    if m < 12:
+        return False
+
+    # Substring for long-enough keys
+    if (k1 in k2) or (k2 in k1):
+        if m >= 16:
+            M = max(len(k1), len(k2))
+            if m / M >= 0.65:
+                return True
+
+    # Sequence similarity
+    try:
+        ratio = difflib.SequenceMatcher(None, k1, k2).ratio()
+    except Exception:
+        ratio = 0.0
+    if m >= 14 and ratio >= 0.88:
+        return True
+
+    # Bigram Jaccard
+    if m >= 18:
+        b1 = _title_bigrams(k1)
+        b2 = _title_bigrams(k2)
+        if b1 and b2:
+            j = len(b1 & b2) / max(1, len(b1 | b2))
+            if j >= 0.72:
+                return True
+
+    return False
+
 # -----------------------------
 # Topic detection (robust)
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
