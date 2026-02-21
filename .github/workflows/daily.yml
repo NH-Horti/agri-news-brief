@@ -19,6 +19,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # ✅ 태그/히스토리 포함(빌드태그 자동화를 위해 필요)
+
+      - name: Compute BUILD_TAG
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+
+          # ✅ v숫자 태그(v42, v43, ...)가 있으면 그것을 기준으로 자동 BUILD_TAG 생성
+          #    - 태그 커밋이면: v42
+          #    - 태그 이후 커밋이면: v42-3-g1a2b3c4
+          # ✅ 태그가 하나도 없으면: v0-<run_number>-<sha7>
+          LATEST_TAG="$(git tag --list 'v[0-9]*' --sort=-v:refname | head -n 1 || true)"
+
+          if [ -n "${LATEST_TAG}" ]; then
+            BUILD_TAG="$(git describe --tags --match 'v[0-9]*' --always --abbrev=7)"
+          else
+            SHA7="${GITHUB_SHA::7}"
+            BUILD_TAG="v0-${GITHUB_RUN_NUMBER}-${SHA7}"
+          fi
+
+          echo "BUILD_TAG=$BUILD_TAG" >> "$GITHUB_ENV"
+          echo "BUILD_TAG=$BUILD_TAG"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -32,6 +56,9 @@ jobs:
 
       - name: Run main
         env:
+          # ✅ 완전 자동 빌드태그
+          BUILD_TAG: ${{ env.BUILD_TAG }}
+
           # GitHub API 업로드/상태저장에 필요
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -70,8 +97,7 @@ jobs:
           MAX_PAGES_PER_QUERY: "4"
           RUN_HOUR_KST: "7"
 
-          # ✅ (방법 B) 특정 날짜 재생성용: Actions UI 입력값 → env 연결
-          # - schedule 실행에서는 inputs가 없으므로 기본값 '' 처리
+          # ✅ 특정 날짜 재생성용: Actions UI 입력값 → env 연결
           FORCE_REPORT_DATE: ${{ github.event.inputs.force_report_date || '' }}
 
           # 테스트할 때만 1로(주말/공휴일 스킵 무시)
