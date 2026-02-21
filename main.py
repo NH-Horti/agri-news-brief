@@ -3034,9 +3034,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
-        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
-        if any(_is_similar_story(a, b) for b in core):
-            continue
+            # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
+            if any(_is_similar_story(a, b) for b in core):
+                continue
             if not _source_ok_local(a):
                 continue
 
