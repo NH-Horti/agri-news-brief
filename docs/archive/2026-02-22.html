@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="agri-build" content="72560a6" />
+  <title>[2026-02-22 농산물 뉴스 Brief]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+    }
+    *{box-sizing:border-box}
+    html {
+      /* ✅ 앵커 이동 위치 보정 */
+      scroll-behavior:smooth;
+      scroll-padding-top: 150px;
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.disabled{opacity:.45;cursor:pointer}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    /* sticky chip bar */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .chip{white-space:nowrap;text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center}
+    .chip:hover{border-color:#cbd5e1}
+    .chipTitle{font-weight:800}
+    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+
+    .sec{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);
+          scroll-margin-top: 150px;
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-02-22 농산물 뉴스 Brief]</h1>
+        <div class="sub">기간: 2026-02-18 07:00 ~ 2026-02-22 07:00 · 기사 14건</div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn" href="/agri-news-brief/">최신/아카이브</a>
+        <a class="navBtn" href="/agri-news-brief/archive/2026-02-21.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-02-22.html" selected>26-02-22 (일)</option>
+<option value="/agri-news-brief/archive/2026-02-21.html">26-02-21 (토)</option>
+<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-18.html">26-02-18 (수)</option>
+          </select>
+        </div>
+        <button class="navBtn disabled" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
+      </div>
+    </div>
+
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    
+            <section id="sec-supply" class="sec">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">4건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">헤럴드경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 11:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">배</span>
+                </div>
+                <a class="btnOpen" href="https://biz.heraldcorp.com/article/10678294" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">오르는 사과 ·내리는 배값…생산량이 갈랐다</div>
+              <div class="sum">KREI 농업관측센터에 따르면 지난해 사과 생산량은 45만t으로 전년 대비 3.0% 감소했다. 작황·생산량 차이로 사과값은 오르고 배값은 내리는 등 가격 흐름이 엇갈렸다고 전했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">뉴시스</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 14:39</span>
+                  <span class="dot">·</span>
+                  <span class="topic">포도</span>
+                </div>
+                <a class="btnOpen" href="https://www.newsis.com/view/NISX20260219_0003518624" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">영천 농업대학 포도 과정 신입생 모집…&quot;샤인머스캣 대체&quot;</div>
+              <div class="sum">영천시가 19일 농업대학 포도 과정 신입생을 모집한다고 밝혔다. 가격 하락 등으로 경쟁력이 약해진 샤인머스캣을 대체할 신품종 생산기술 전수로 농가 위기 극복을 추진한다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/20 17:22</span>
+                  <span class="dot">·</span>
+                  <span class="topic">단감</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260220500385" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">경남 창원원예농협, 통합 농산물 브랜드 ‘싱싱하이’ 출범…판매농협...</div>
+              <div class="sum">경남 창원원예농협이 통합 농산물 브랜드 ‘싱싱하이’를 출범했다. 단감·딸기·포도 등 작목반을 구성해 품질을 정형화하고 가격 협상력을 높인다는 전략이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">헤럴드경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/18 13:01</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://biz.heraldcorp.com/article/10677013" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">‘꽃다발 선물’ 사라진 시대, 틈새 파고든 OO</div>
+              <div class="sum">aT 화훼사업센터 월간 거래 동향에 따르면 지난해 12월 장미 1속 가격은 1만4122원으로 전년 동월 대비 19원 올랐다. 백합 1속 가격도 전년 동월 대비 1152원 상승했다고 전했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  주요 이슈 및 정책
+                </div>
+                <div class="secCount">3건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">아시아경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/20 07:40</span>
+                  <span class="dot">·</span>
+                  <span class="topic">사과</span>
+                </div>
+                <a class="btnOpen" href="https://view.asiae.co.kr/article/2026021916341349490" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&quot;사과 하나 집었다가 동공 지진&quot;… 명절 끝났는데 집 나간 물가는 안 돌...</div>
+              <div class="sum">KOSIS 소비자물가지수 관련 보도를 통해 설 이후에도 과일·채소 등 성수품 물가가 높은 흐름이 이어진다고 전했다. ‘물가 안정대책 진단과 과제’ 보고서는 사과·배 등 과실류 가격 강세 원인을 점검했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">새전북신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/18 18:20</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="http://sjbnews.com/news/news.php?number=871987" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">설 명절 농식품 원산지 표시 위반 무더기로 적발</div>
+              <div class="sum">전북농관원은 1월 28~2월 13일 설 명절 원산지 표시 일제 단속을 실시해 위반업체 40개소(품목 16건)를 적발했다. 선물·제수용품 등 소비가 많은 품목 중심으로 단속했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">데일리안</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 10:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.dailian.co.kr/news/view/1611801/?sc=Naver" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">설 이후 가격 하락 공식 약화…사과·배 ‘버티기’ 반복</div>
+              <div class="sum">보고서가 명절 전후 농축산물 가격 흐름과 물가 안정대책의 효과·한계를 진단했다고 전했다. 공급 확대와 대규모 할인 지원 중심으로 대책이 강화돼 왔으며, 설 이후 사과·배 가격 하락 공식이 약해졌다고 분석했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장 (도매시장/APC/수출)
+                </div>
+                <div class="secCount">5건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 09:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260213500239" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">“농가 포장·운송비 부담 완화”…한국 청과 , 보전금 첫 지급</div>
+              <div class="sum">가락시장 도매법인 한국청과가 ‘출하비용 보전사업’을 시범 도입한 뒤 첫 보전금을 지급했다. 품목별 기준가격보다 경락값이 낮으면 차액을 지원해 농가 포장·운송비 부담을 완화하는 방식이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">연합뉴스</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 11:15</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260219032200004?input=1195m" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농수산물 부적합 적발 최다는 &#x27;잔류농약&#x27;…서울시, 검사 확대</div>
+              <div class="sum">서울시는 농수산물 부적합 적발 최다 항목이 잔류농약이라며 검사를 확대한다고 밝혔다. 가락 공영도매시장 반입 농산물을 휴일·심야 경매 전 불시검사하는 등 기획검사를 병행한다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">KBS</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/20 22:02</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+                <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8489808" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">제주시농협 스마트 농산물 산지유통센터 준공</div>
+              <div class="sum">제주시농협이 사업비 76억원을 들여 구축한 스마트 농산물 산지유통센터(APC) 준공식이 20일 열렸다. 스마트 APC 구축 완료 사실을 전했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">한국경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/21 08:06</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.hankyung.com/article/202602189308i" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&#x27;몸값 12조원&#x27; 英크라켄의 비결…전기국가 승부처는 &#x27;데이터&#x27; [김리안의...</div>
+              <div class="sum">영국 전력기업 크라켄의 유틸리티 OS 플랫폼(발전량 예측·도매시장 거래·요금 정산·고객관리 통합) 사례를 소개했다. 전력 수급 불균형 조정이 어려운 만큼 내부 효율을 높이는 데이터·기술 중요성을 다뤘다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">뉴시스</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/20 15:48</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+                <a class="btnOpen" href="https://www.newsis.com/view/NISX20260220_0003520396" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[제주소식]시, &quot;AI 기반&quot; 제주시농협 스마트 APC 준공 등</div>
+              <div class="sum">제주시는 총사업비 76억원을 투입해 AI 기술을 적용한 제주시농협 스마트 농산물 산지유통센터(APC) 구축을 완료했다고 밝혔다. 20일 준공식을 열었으며 지하 1층·지상 3층, 연면적 4984.05㎡ 규모다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  병해충 및 방제
+                </div>
+                <div class="secCount">2건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#b45309">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">아시아경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/20 11:56</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+                <a class="btnOpen" href="https://view.asiae.co.kr/article/2026022011533915504" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">김천시, 예방 약제 지원으로 과수화상병 선제 차단</div>
+              <div class="sum">김천시는 20일 과수화상병 청정지역 유지를 위해 사과·배 재배 1085농가에 방제 약제 4종을 배부한다고 밝혔다. 예방 약제 지원으로 과수화상병을 선제 차단한다는 계획이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#b45309">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">팜&amp;마켓</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/19 11:16</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+                <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25691" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">보은군농업기술센터, 과수화상병 예방약제 무상 공급</div>
+              <div class="sum">보은군농업기술센터가 과수화상병 예방약제를 무상 공급한다고 밝혔다. 적기·적량 살포와 방제 기록 작성·보관을 당부했다.</div>
+            </div>
+            </div>
+            </section>
+            
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+  </div>
+
+  <script>
+    (function() {
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) window.location.href = v;
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+    })();
+  </script>
+  <!-- build: 72560a6 -->
+
+</body>
+</html>
