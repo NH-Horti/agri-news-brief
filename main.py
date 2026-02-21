@@ -525,18 +525,16 @@ SECTIONS = [
             "화훼공판장 경매",
             "절화 경매",
             "화훼자조금",
-            # (추가) 화훼 소비/선물 트렌드(비핵심 하단 노출용)
-            "꽃다발 선물",
+
             "꽃다발 선물 트렌드",
-            "레고 꽃",
-            "레고 보태니컬",
             "화훼 소비 트렌드",
             "절화 선물 수요",
-            "꽃다발 대신 레고 꽃",
             "레고 꽃다발",
-            "꽃 소비 레고 꽃",
-
-],
+            "레고 꽃다발 선물",
+            "레고 보태니컬 컬렉션 꽃",
+            "레고 꽃 체험 행사",
+            "꽃다발 선물 사라진 시대",
+        ],
         "must_terms": [
             "가락시장",
             "도매시장",
@@ -1188,6 +1186,96 @@ _FOREIGN_REMOTE_MARKERS = [
 _KOREA_STRONG_CONTEXT = [
     "국내","한국","우리나라","농협","농식품부","농림축산식품부","aT","가락시장","도매시장","공판장","청과","산지유통","산지유통센터",
 ]
+
+# -----------------------------
+# Flower consumer trend (dist only) - safe allowlist insertion
+# - 목적: 10677013 같은 '꽃다발/레고꽃/보태니컬' 소비 트렌드 기사를
+#         dist 섹션 하단(비핵심)으로만 0~1건 노출
+# - 원칙: (1) dist 섹션에서만 허용 (2) 코어(핵심) 금지 (3) 빈 슬롯일 때만 추가
+#         (4) 도메인 allowlist + 엄격한 텍스트 패턴으로 오탐(유통 프로모션 등) 차단
+# -----------------------------
+FLOWER_TREND_ALLOWED_DOMAINS = {
+    "biz.heraldcorp.com",
+    "www.mk.co.kr", "mk.co.kr",
+    "www.yna.co.kr", "yna.co.kr",
+    "www.donga.com", "donga.com",
+    "www.joongang.co.kr", "joongang.co.kr",
+    "www.chosun.com", "chosun.com",
+    "www.khan.co.kr", "khan.co.kr",
+    "www.hankyung.com", "hankyung.com",
+    "www.fnnews.com", "fnnews.com",
+    "www.edaily.co.kr", "edaily.co.kr",
+}
+
+_FLOWER_TREND_POS_MARKERS = [
+    "꽃다발", "부케", "플로리스트", "절화", "화훼",
+    "선물", "기념일", "발렌타인", "화이트데이", "졸업", "입학",
+    "트렌드", "인기", "수요", "체험", "팝업",
+    "레고", "lego", "보태니컬", "botanical",
+]
+# 오탐이 많은 '일반 유통/프로모션' 기사 차단
+_FLOWER_TREND_NEG_MARKERS = [
+    "백화점", "대형마트", "마트", "편의점", "홈쇼핑", "이커머스",
+    "프로모션", "할인행사", "할인 행사", "쿠폰", "적립", "카드사", "카드 할인",
+    "설 프로모션", "명절 프로모션", "선물세트", "선물 세트",
+    "가격할인", "세일", "sale",
+]
+# 관광/축제/개화/포토존 류 차단
+_FLOWER_TREND_TRAVEL_NEG = [
+    "축제", "개화", "벚꽃", "유채꽃", "꽃축제", "포토존", "관광", "여행", "나들이",
+]
+
+def _is_allowed_flower_trend_domain(dom: str) -> bool:
+    d = (dom or "").lower().strip()
+    if not d:
+        return False
+    return d in FLOWER_TREND_ALLOWED_DOMAINS or any(d.endswith("." + x) for x in FLOWER_TREND_ALLOWED_DOMAINS)
+
+def is_flower_consumer_trend_context(title: str, desc: str) -> bool:
+    """화훼 '소비/선물 트렌드' 기사 판정(엄격).
+
+    - 긍정: 꽃다발/부케 + (선물/트렌드/수요/기념일/레고/보태니컬/체험) 결합
+    - 부정: 백화점/대형마트/프로모션/쿠폰/카드할인/명절 선물세트 류는 제외
+    - 부정: 축제/개화/관광/포토존 등 여행성 기사 제외
+    """
+    t = (title or "")
+    d = (desc or "")
+    text = (t + " " + d).lower()
+
+    # 여행/축제류 제외
+    if any(w in text for w in [x.lower() for x in _FLOWER_TREND_TRAVEL_NEG]):
+        return False
+
+    # 일반 유통 프로모션 제외(꽃다발이 실제 트렌드 주제인 경우만 예외로 통과시키려면 pos가 매우 강해야 함)
+    if any(w in text for w in [x.lower() for x in _FLOWER_TREND_NEG_MARKERS]):
+        # 레고/보태니컬/꽃다발 트렌드가 강하게 결합된 케이스만 예외
+        strong_pos = ("레고" in text or "lego" in text or "보태니컬" in text) and ("꽃다발" in text or "부케" in text)
+        if not strong_pos:
+            return False
+
+    # 반드시 꽃다발/부케/절화/화훼 중 하나는 있어야 함
+    if not any(k in text for k in ("꽃다발", "부케", "절화", "화훼")):
+        # 레고 꽃(꽃다발) 같이 '레고+꽃'만으로 오는 케이스는 허용
+        if not (("레고" in text or "lego" in text) and "꽃" in text):
+            return False
+
+    # 긍정 마커 2개 이상
+    pos_hits = 0
+    for k in _FLOWER_TREND_POS_MARKERS:
+        if k.lower() in text:
+            pos_hits += 1
+    if pos_hits < 2:
+        return False
+
+    return True
+
+
+# dist에서 '백화점/대형마트/프로모션' 같은 일반 유통 기사 차단(도매/시장 맥락 없으면 제외)
+_DIST_RETAIL_PROMO_NEG = [
+    "백화점", "대형마트", "마트", "편의점", "홈쇼핑", "이커머스",
+    "프로모션", "할인행사", "쿠폰", "적립", "카드 할인", "카드사",
+]
+
 def is_remote_foreign_horti(text: str) -> bool:
     """해외 원예/화훼 업계(특히 특정 국가 내 시장/관세 이슈) 기사 중,
     국내(한국) 수급/유통/정책과 직접 연결이 약한 경우를 제외한다.
@@ -2348,55 +2436,6 @@ PEST_OFFTOPIC_TERMS = [
     "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
     "학교", "어린이집", "환자", "감염",
 ]
-
-# -----------------------------
-# Flower consumer trend (non-core, dist bottom only)
-# -----------------------------
-_FLOWER_TREND_FLOWER_MARKERS = [
-    "꽃다발", "플라워", "화훼", "절화", "꽃집", "플로리스트", "꽃 선물", "꽃선물",
-    "레고 꽃", "레고 보태니컬", "보태니컬",
-]
-_FLOWER_TREND_TREND_MARKERS = [
-    "트렌드", "인기", "수요", "소비", "주문", "판매", "선물", "기념일", "프로포즈", "졸업", "입학",
-    "발렌타인", "화이트데이", "어버이날", "스승의날", "기념", "확산", "늘어", "증가", "급증",
-]
-_FLOWER_TREND_TRAVEL_FEST_EXCLUDE = [
-    "벚꽃", "유채꽃", "꽃축제", "축제", "개화", "만개", "포토", "포토존", "명소", "관광", "여행", "나들이",
-    "전시", "정원", "수목원", "공원", "축제장",
-]
-_FLOWER_TREND_ENT_EXCLUDE = [
-    "배우", "아이돌", "드라마", "영화", "예능", "콘서트", "화보", "인터뷰", "팬", "공연", "뮤직",
-]
-_FLOWER_TREND_BIZ_EXCLUDE = [
-    "창업", "프랜차이즈", "가맹", "상권", "임대", "권리금", "인테리어", "매장", "점포", "부동산",
-]
-
-def is_flower_consumer_trend_context(title: str, desc: str) -> bool:
-    """화훼 '소비/선물 트렌드' 유형인지 판정.
-    - 정책/수급 핵심을 오염시키지 않기 위해, dist 섹션에서만 '참고용 하단 0~1건'으로 제한해 노출한다.
-    - 축제/관광/연예/창업성은 제외한다.
-    """
-    t = f"{title or ''} {desc or ''}".lower()
-    if not t.strip():
-        return False
-
-    if any(w.lower() in t for w in _FLOWER_TREND_TRAVEL_FEST_EXCLUDE):
-        return False
-    if any(w.lower() in t for w in _FLOWER_TREND_ENT_EXCLUDE):
-        return False
-    if any(w.lower() in t for w in _FLOWER_TREND_BIZ_EXCLUDE):
-        return False
-
-    # 긍정 마커: 꽃(상품) + 트렌드/선물/소비 맥락 동시
-    flower_hit = any(w.lower() in t for w in _FLOWER_TREND_FLOWER_MARKERS)
-    trend_hit = any(w.lower() in t for w in _FLOWER_TREND_TREND_MARKERS)
-
-    # '레고 꽃/보태니컬'은 강한 시그널이라 flower_hit만으로도 허용(단, 축제/관광/창업 제외 조건은 통과한 상태)
-    if ("레고 꽃" in t) or ("보태니컬" in t):
-        return True
-
-    return flower_hit and trend_hit
-
 def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷).
 
@@ -2410,9 +2449,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     text = (ttl + " " + desc).lower()
     dom = (dom or "").lower().strip()
     key = section_conf["key"]
+    # ✅ 화훼 소비/선물 트렌드(dist 하단 0~1건) 예외 허용 여부(엄격)
+    flower_trend_ok = (
+        key == "dist"
+        and _is_allowed_flower_trend_domain(dom)
+        and is_flower_consumer_trend_context(ttl, desc)
+    )
 
-
-    is_flower_trend = (key == "dist") and is_flower_consumer_trend_context(ttl, desc)
     def _reject(reason: str) -> bool:
         # debug: collect why an item was filtered out
         dbg_add_filter_reject(key, reason, ttl, url, dom, press)
@@ -2534,7 +2577,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
                 return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
-            dist_soft_ok = (market_hits >= 1) or is_flower_trend or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
+            dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text) or flower_trend_ok
             if not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
                 return _reject("must_terms_fail")
 
@@ -2600,13 +2643,12 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 유통/현장(dist): '농산물/원예 유통' 맥락이 없는 일반 물류/유통/브랜드 기사는 강하게 차단
     if key == "dist":
+        # dist 하단 화훼 소비/선물 트렌드(허용 도메인) 예외: 도매/시장 앵커가 약해도 통과
+        if flower_trend_ok:
+            return True
+
         agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
-
-        # ✅ 화훼 소비/선물 트렌드(라이프스타일) 기사: dist 하단 참고용으로만 예외 허용
-        # - 수급/도매시장 핵심이 아니므로 core로는 절대 올리지 않으며, 선택 단계에서 0~1건만 하단 노출
-        if is_flower_trend:
-            return True
 
         # 소프트/하드 신호 분리(일반어: 브랜드/통합/조화/꽃 등은 제거)
         dist_soft = ["산지유통", "산지유통센터", "원예농협", "과수농협", "판매농협", "작목반", "화훼", "절화", "자조금", "하나로마트", "온라인 도매시장"]
@@ -2621,6 +2663,12 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         # APC는 농업 문맥일 때만 soft 신호로 카운트
         if has_apc_agri_context(text):
             soft_hits += 1
+
+        # 일반 유통(백화점/대형마트 프로모션) 기사 차단: 도매/시장 맥락이 없으면 제외
+        if any(w.lower() in text for w in _DIST_RETAIL_PROMO_NEG):
+            wholesale_anchor = ("가락시장","도매시장","공판장","공영도매시장","청과","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터","시장도매인","중도매인")
+            if count_any(text, [t.lower() for t in wholesale_anchor]) == 0 and not has_apc_agri_context(text):
+                return _reject("dist_retail_promo")
 
         if (soft_hits + hard_hits) < 1:
             return _reject("dist_context_gate")
@@ -2700,6 +2748,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+        # dist 하단 화훼 소비/선물 트렌드(레고 꽃/꽃다발 등)는 비핵심 하단 노출을 위해 강감점
+        if _is_allowed_flower_trend_domain(dom) and is_flower_consumer_trend_context(title, desc):
+            score -= 4.5
+
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
@@ -2738,10 +2790,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 행정/정치 인터뷰성(도지사/시장 등) 기사 상단 배치 억제
     score -= governance_interview_penalty(text, title, key, horti_sc, market_hits)
-
-    # 화훼 소비/선물 트렌드(비핵심 하단 전용): dist에서만 참고로 노출되며 상단을 점유하지 않도록 강하게 감점
-    if key == "dist" and is_flower_consumer_trend_context(title, desc):
-        score -= 4.5
 
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     score -= local_coop_penalty(text, press, dom, key)
@@ -2936,11 +2984,6 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     if has_any(title, [w.lower() for w in _HEADLINE_STOPWORDS]):
         return False
 
-
-    # dist 섹션의 화훼 소비/선물 트렌드 기사는 참고용 하단 노출만 허용(코어 금지)
-    if section_key == "dist" and is_flower_consumer_trend_context(a.title, a.description):
-        return False
-
     # 공통: 행정/정치 인터뷰·동정성(도지사/시장 등) 기사에 대한 코어 차단(부분 언급 오탐 방지)
     poli_roles = ("도지사", "지사", "시장", "군수", "도의회", "도의원", "시의회", "국회의원", "도정", "시정", "군정", "행정")
     if any(r in title for r in poli_roles):
@@ -3037,11 +3080,6 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
                  "인터뷰", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
     if any(w.lower() in title for w in hard_stop):
-        return False
-
-
-    # dist 섹션의 화훼 소비/선물 트렌드 기사는 참고용 하단 삽입으로만 처리(일반 선택에서도 제외)
-    if section_key == "dist" and is_flower_consumer_trend_context(a.title, a.description):
         return False
 
     # 2) '행사/캠페인/시상/축제/발대식/선포식' 등은 dist(현장) 섹션에선 일부 의미가 있을 수 있어
@@ -3162,6 +3200,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 초기화
     for a in candidates:
         a.is_core = False
+        if section_key == "dist":
+            # RSS 등 다른 경로로 들어온 후보에도 플래그를 채운다
+            if not hasattr(a, "is_flower_trend"):
+                try:
+                    a.is_flower_trend = (_is_allowed_flower_trend_domain(a.domain) and is_flower_consumer_trend_context(a.title, a.description))
+                except Exception:
+                    a.is_flower_trend = False
 
     candidates_sorted = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
@@ -3230,6 +3275,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 1) 엄격 코어 2개
     for a in pool:
+        if section_key == "dist" and getattr(a, "is_flower_trend", False):
+            continue
         if len(core) >= 2:
             break
         if a.score < core_min:
@@ -3255,6 +3302,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 2) 코어 부족 시: 약간 완화(여전히 임계치 이상 + 중복 제거) — 하지만 억지 채움 금지
     if len(core) < 2:
         for a in pool:
+            if section_key == "dist" and getattr(a, "is_flower_trend", False):
+                continue
             if len(core) >= 2:
                 break
             if a.score < thr:
@@ -3284,6 +3333,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         "원산지", "부정유통", "단속", "검역", "통관", "수출", "온라인 도매시장", "하나로마트", "자조금")
         anchors = 0
         for a in pool:
+            if section_key == "dist" and getattr(a, "is_flower_trend", False):
+                continue
             if anchors >= 2:
                 break
             if a in final:
@@ -3317,6 +3368,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
     for a in pool:
+        if section_key == "dist" and getattr(a, "is_flower_trend", False):
+            continue
         if len(final) >= max_n:
             break
         if a in final:
@@ -3337,6 +3390,30 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         final.append(a)
         _mark_used(a)
         _source_take(a)
+
+    # 4.5) dist 하단: 화훼 소비/선물 트렌드 0~1건(빈 슬롯 있을 때만, 코어/상단 침범 금지)
+    if section_key == "dist" and len(final) < max_n:
+        try:
+            if not any(getattr(x, "is_flower_trend", False) for x in final):
+                ft_candidates = [a for a in candidates_sorted if getattr(a, "is_flower_trend", False)]
+                for a in ft_candidates:
+                    if len(final) >= max_n:
+                        break
+                    if a in final:
+                        continue
+                    if _already_used(a):
+                        continue
+                    # 중복 제거(제목/스토리)
+                    if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                        continue
+                    if any(_is_similar_story(a, b, section_key) for b in final):
+                        continue
+                    final.append(a)
+                    _mark_used(a)
+                    _source_take(a)
+                    break
+        except Exception:
+            pass
 
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
@@ -3406,29 +3483,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             pass
 
 
-
-    # flower consumer trend bottom insert (dist only, 0~1, never replaces real dist issues)
-    if section_key == "dist" and len(deduped) < max_n:
-        added = 0
-        for a in candidates:
-            if added >= 1 or len(deduped) >= max_n:
-                break
-            if a in deduped:
-                continue
-            if not is_flower_consumer_trend_context(a.title, a.description):
-                continue
-            # 중복/유사 스토리 방지
-            if any(_is_similar_title(a.title_key, b.title_key) for b in deduped):
-                continue
-            if any(_is_similar_story(a, b, section_key) for b in deduped):
-                continue
-            a.is_core = False
-            # 하단 배치 보장: 추가 감점(이미 compute_rank_score에서 감점하지만 안전하게 한 번 더)
-            a.score = (a.score or 0.0) - 4.5
-            deduped.append(a)
-            added += 1
-
     return deduped[:max_n]
+
 
 
 # -----------------------------
@@ -3576,6 +3632,12 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     topic=topic,
                 )
                 art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+                # dist 하단 전용: 화훼 소비/선물 트렌드(레고 꽃/꽃다발 등) 플래그
+                art.is_flower_trend = (
+                    section_conf["key"] == "dist"
+                    and _is_allowed_flower_trend_domain(dom)
+                    and is_flower_consumer_trend_context(title, desc)
+                )
                 items.append(art)
 
     items.sort(key=_sort_key_major_first, reverse=True)
