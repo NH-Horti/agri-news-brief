@@ -708,8 +708,6 @@ _STORY_ANCHORS = (
     "경락", "경매", "반입", "수거", "수거검사", "불시", "검사", "휴일", "심야",
     "원산지", "부정유통", "단속", "검역", "통관", "수출",
     "잔류농약", "방사능", "식품안전", "위해", "유통", "차단", "사전", "폐기",
-    # 도매법인/보전사업(한국청과 등) 중복 제거용 앵커
-    "한국청과", "한국 청과", "도매법인", "출하비용", "출하 비용", "보전", "보전금", "보전사업", "기준가격",
 )
 
 def _norm_story_text(title: str, desc: str) -> str:
@@ -752,12 +750,12 @@ def _dist_story_signature(text: str) -> str | None:
     if ("원산지" in text or "부정유통" in text) and ("단속" in text or "적발" in text) and ("농산물" in text or "농수산물" in text):
         if "서울시" in text:
             return "SIG:SEOUL_ORIGIN_ENFORCE"
-    # ✅ 도매법인(한국청과) 출하비용 보전사업은 다매체로 반복 송고되므로 시그니처로 묶어 1건만 남긴다
+        # ✅ 한국청과 출하비용 보전사업(가락시장 도매법인) 기사 다매체 중복 제거
     if ("한국청과" in text or "한국 청과" in text) and ("출하비용" in text or "출하 비용" in text):
-        if ("보전" in text or "보전금" in text or "보전사업" in text or "기준가격" in text):
-            return "SIG:KOREANCHEONGGWA_SHIP_COST"
+        if ("보전" in text or "보전금" in text or "보전사업" in text or "기준가격" in text) and ("가락시장" in text or "도매법인" in text or "경락" in text or "출하농가" in text):
+            return "SIG:KOREA_CHEONGGWA_SUPPORT"
 
-    return None
+return None
 
 def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
     at, ad = _story_text(a)
@@ -920,6 +918,10 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
 
         if topic == "피망" and not is_edible_pimang_context(t):
             # 피망(게임/브랜드) 오탐 방지
+            continue
+
+        if topic == "사과" and not is_edible_apple_context(t):
+            # 사과(과일) 동음이의어(사과대/사과문 등) 오탐 방지
             continue
 
         if topic == "사과" and any(x in t for x in ("의사과학", "의사과학자", "의사과학원", "의사공학", "의과학", "의과학원")):
@@ -1105,31 +1107,101 @@ def is_edible_pimang_context(text: str) -> bool:
     return edible_hit
 
 
-# -----------------------------
-# Foreign-only (remote) filter
-# - 해외 화훼/원예 산업 동향 자체는 흥미롭지만, 국내 원예수급 실무(과수화훼/시설채소)와 거리가 먼 경우가 많음
-# - '콜롬비아 화훼업계' 같이 해외만 언급되고 국내 맥락(한국/국내/농협/도매시장/검역 등)이 전혀 없으면 제외
-# -----------------------------
+
+
+
+
+
+
+def is_edible_apple_context(text: str) -> bool:
+    """Return True only when '사과' clearly refers to the fruit (apple).
+
+    주요 오탐:
+    - 사과(謝過): 사과문/사과하다/공식 사과 등
+    - 사과대/사회과학(교육/입시 기사에서 '사과대' = 사회과학대학)
+    - 의사과학/의사과학자 등 부분문자열(이미 별도 방어가 있으나 여기서도 방어)
+
+    판정 원칙:
+    - 부정(오탐) 마커가 강하고 농업/시장 마커가 없으면 False
+    - '가격/시세/수급/출하/도매시장/과수/과일/농가' 등 실무 마커가 있으면 True
+    """
+    t = (text or "").lower()
+    if "사과" not in t:
+        return False
+
+    # 1) 강한 오탐(사회과학대학 약칭 등)
+    hard_false = (
+        "사과대", "사과대학", "사회과학", "사회과학대", "사회과학대학", "사과계열", "사과 계열"
+    )
+    if any(w in t for w in hard_false):
+        # 단, 과일/도매/수급 마커가 충분히 있으면 예외적으로 True
+        strong_pos = ("과일", "과수", "가락시장", "도매시장", "공판장", "청과", "경락", "출하", "작황", "수급", "시세", "가격", "농가", "산지")
+        if not any(w in t for w in strong_pos):
+            return False
+
+    # 2) 의사과학(부분문자열) 오탐
+    if any(x in t for x in ("의사과학", "의사과학자", "의사과학원", "의사공학", "의과학", "의과학원")):
+        return False
+
+    # 3) '사과(謝過)' 오탐: 사과문/사과하다/공식 사과 등
+    apology_markers = (
+        "사과문", "사과했다", "사과합니다", "사과드립니다", "공식 사과", "유감", "사과 요구", "사과를 요구",
+        "사과하", "사과하고", "사과할"
+    )
+    # 과일 맥락 마커
+    fruit_markers = (
+        "과일", "과수", "과원", "사과나무", "부사", "후지", "홍로", "감홍", "아오리", "시나노",
+        "가락시장", "도매시장", "공판장", "청과", "경락", "경매", "산지", "농가", "재배", "수확",
+        "출하", "작황", "수급", "시세", "가격", "저장", "재고", "선별", "apc", "산지유통"
+    )
+    if any(m in t for m in apology_markers) and not any(m in t for m in fruit_markers):
+        return False
+
+    # 4) 긍정 판단: 실무 마커가 1개 이상이면 True
+    if any(m in t for m in fruit_markers):
+        return True
+
+    # 5) 보강 패턴: '사과값/사과 가격/사과 시세' 같은 표현
+    if re.search(r"사과\s*(값|가격|시세|수급|출하|작황)", t):
+        return True
+
+    # 여기까지 왔으면 '사과' 단독 등장 가능성이 높으므로 False
+    return False
+
+
+# --- 해외 원예/화훼 업계 '원격 해외' 기사 차단(국내 실무와 무관한 경우) ---
 _FOREIGN_REMOTE_MARKERS = [
     "콜롬비아","미국","중국","일본","베트남","태국","인도","호주","뉴질랜드","유럽","eu","러시아","우크라이나",
     "브라질","칠레","페루","멕시코","캐나다","인도네시아","필리핀","말레이시아","싱가포르","남아공","케냐",
     "네덜란드","스페인","프랑스","독일","영국","trump","트럼프",
 ]
-_KOREA_CONTEXT_MARKERS = [
-    "한국","국내","우리나라","농식품부","농협","aT","kre i","krei","가락시장","도매시장","공판장","검역","통관",
-    "원산지","부정유통","단속","온라인 도매시장","농수산물 온라인 도매시장",
+_KOREA_STRONG_CONTEXT = [
+    "국내","한국","우리나라","농협","농식품부","농림축산식품부","aT","가락시장","도매시장","공판장","청과","산지유통","산지유통센터",
 ]
-
 def is_remote_foreign_horti(text: str) -> bool:
+    """해외 원예/화훼 업계(특히 특정 국가 내 시장/관세 이슈) 기사 중,
+    국내(한국) 수급/유통/정책과 직접 연결이 약한 경우를 제외한다.
+
+    - 해외국가 마커 + 원예/화훼 마커가 있고,
+    - '국내/한국/농협/도매시장' 같은 강한 국내 맥락이 없으면 원격 해외로 간주.
+    - 단, 한국 수출/검역/통관과 명시적으로 연결된 경우는 통과.
+    """
     t = (text or "").lower()
-    # 해외/외국 키워드가 있고, 원예/화훼 맥락이 있으며, 국내 맥락이 없으면 '원격 해외'로 판단
     if not any(w.lower() in t for w in _FOREIGN_REMOTE_MARKERS):
         return False
-    if not any(w in t for w in ("원예","과수","과일","채소","화훼","절화","꽃","플로리스트","floriculture")):
+    if not any(w in t for w in ("원예","과수","과일","채소","화훼","절화","꽃","floriculture")):
         return False
-    if any(w.lower() in t for w in _KOREA_CONTEXT_MARKERS):
+
+    # 한국과 직접 연결(수출/검역/통관/수입) 신호가 있으면 원격 해외로 보지 않음
+    if any(w in t for w in ("수출","수입","통관","검역","수입검역","수출길","수출길", "관세")) and any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
         return False
-    return True
+
+    # 강한 국내 맥락이 없으면 제외
+    if not any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
+        return True
+
+    return False
+
 
 
 def is_blocked_domain(dom: str) -> bool:
@@ -2313,10 +2385,14 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # - 채소/농업 맥락일 때만 통과
     if "피망" in text and not is_edible_pimang_context(text):
         return _reject("pimang_non_edible_context")
+    # ✅ '사과' 동음이의어(사과대/사과문 등) 오탐 차단: 과일/시장 맥락일 때만 통과
+    if "사과" in text and not is_edible_apple_context(text):
+        return _reject("apple_non_edible_context")
 
-    # ✅ 해외 화훼/원예 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
+    # ✅ 해외 원예/화훼 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
     if key in ("supply", "dist") and is_remote_foreign_horti(text):
         return _reject("remote_foreign_horti")
+
 
     # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
     horti_sc = best_horti_score(ttl, desc)
@@ -2337,7 +2413,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # (강제 컷) 산업/금융/바이오 오탐: 농업/원예 맥락이 약하면 제외
     off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
-    agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농수산물", "농축수산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
+    agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
     if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
         return _reject("hard_offtopic_no_agri_context")
 
@@ -2463,7 +2539,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 유통/현장(dist): '농산물/원예 유통' 맥락이 없는 일반 물류/유통/브랜드 기사는 강하게 차단
     if key == "dist":
-        agri_anchor_terms = ("농산물", "농수산물", "농축수산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
 
         # 소프트/하드 신호 분리(일반어: 브랜드/통합/조화/꽃 등은 제거)
@@ -2558,9 +2634,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
-        # ✅ '농수산물 온라인 도매시장' 제도화/법적 기반 기사 가점(도매시장 구조 변화는 핵심 이슈)
-        if ("온라인 도매시장" in text or "온라인도매시장" in text) and any(w in text for w in ("법적", "정식화", "기반", "근거", "법안", "법률", "개정", "입법")):
-            score += 3.0
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
@@ -2864,11 +2937,6 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         dist_hits = count_any(text, [t.lower() for t in dist_terms])
         if has_apc_agri_context(text):
             dist_hits += 1
-        # ✅ 온라인 도매시장 제도화/법적 기반 기사(농수산물 온라인 도매시장 정식화 등)는 핵심이 될 수 있으므로 예외 허용
-        if dist_hits < 2 and (("온라인 도매시장" in text) or ("온라인도매시장" in text)):
-            if any(w in text for w in ("법적", "정식화", "기반", "근거", "법안", "법률", "개정", "입법")):
-                dist_hits = 2
-
         if dist_hits < 2:
             return False
         return (agri_anchor_hits >= 1) or (horti_sc >= 2.0) or (market_hits >= 1)
@@ -3116,8 +3184,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not _headline_gate_relaxed(a, section_key):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
-                continue
-            if any(_is_similar_story(a, b, section_key) for b in core):
                 continue
             if not _source_ok_local(a):
                 continue
@@ -5036,15 +5102,19 @@ def compute_end_kst():
     return candidate
 
 def compute_window(repo: str, token: str, end_kst: datetime):
-    # ✅ FORCE_REPORT_DATE(수동/테스트 재생성)에서는 상태(last_end)로 윈도우를 확장하지 않고 24시간 고정
+    prev_bd = previous_business_day(end_kst.date())
+    prev_cutoff = dt_kst(prev_bd, REPORT_HOUR_KST)
+
+    # ✅ 수동/테스트 재생성(FORCE_REPORT_DATE)에서는 state(last_end)에 영향받지 않도록
+    #    '직전 영업일 07:00 ~ end_kst' 범위로 고정한다(휴일/주말 연휴 백필 포함).
     if FORCE_REPORT_DATE:
-        return end_kst - timedelta(hours=24), end_kst
+        start = prev_cutoff
+        if start >= end_kst:
+            start = end_kst - timedelta(hours=24)
+        return start, end_kst
 
     state = load_state(repo, token)
     last_end_iso = state.get("last_end_iso")
-
-    prev_bd = previous_business_day(end_kst.date())
-    prev_cutoff = dt_kst(prev_bd, REPORT_HOUR_KST)
 
     start = prev_cutoff
     if last_end_iso:
