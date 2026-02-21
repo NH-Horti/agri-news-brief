@@ -399,6 +399,27 @@ SECTIONS = [
             "오이 작황",
             "풋고추 수급",
             "풋고추 가격",
+            "토마토 수급",
+            "토마토 가격",
+            "토마토 작황",
+            "방울토마토 가격",
+            "대추방울토마토 가격",
+            "수박 수급",
+            "수박 도매가격",
+            "수박 작황",
+            "호박 가격",
+            "애호박 수급",
+            "애호박 가격",
+            "단호박 가격",
+            "쥬키니 가격",
+            "피망 수급",
+            "피망 가격",
+            "멜론 출하",
+            "멜론 도매가격",
+            "멜론 작황",
+            "멜론 재배",
+            "머스크멜론 출하",
+            "머스크멜론 도매가격",
             "고추 작황",
             "화훼 가격",
             "절화 가격",
@@ -438,6 +459,22 @@ SECTIONS = [
             "오이",
             "풋고추",
             "고추",
+            "토마토",
+            "방울토마토",
+            "대추방울토마토",
+            "수박",
+            "호박",
+            "애호박",
+            "단호박",
+            "쥬키니",
+            "피망",
+            "멜론",
+            "머스크멜론",
+            "네트멜론",
+            "얼스멜론",
+            "하미과",
+            "칸탈루프",
+            "허니듀",
             "신고배",
             "나주배",
             "배 과일",
@@ -549,6 +586,11 @@ COMMODITY_TOPICS = [
     ("복숭아", ["복숭아"]),
     ("매실", ["매실"]),
     ("딸기", ["딸기"]),
+    ("토마토", ["토마토", "방울토마토", "대추방울토마토"]),
+    ("수박", ["수박"]),
+    ("호박", ["호박", "애호박", "단호박", "쥬키니", "주키니"]),
+    ("피망", ["피망"]),
+    ("멜론", ["머스크멜론", "네트멜론", "얼스멜론", "하미과", "칸탈루프", "허니듀", "멜론"]),
     ("파프리카", ["파프리카"]),
     ("참외", ["참외"]),
     ("오이", ["오이"]),
@@ -742,6 +784,11 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern]] = {
 _HORTI_TOPICS_SET = {
     "화훼", "사과", "배", "감귤/만감", "단감", "감/곶감", "키위", "유자", "포도",
     "밤", "자두", "복숭아", "매실", "딸기", "파프리카", "참외", "오이", "고추",
+    "토마토",
+    "수박",
+    "호박",
+    "피망",
+    "멜론",
 }
 
 def _topic_scores(title: str, desc: str) -> dict[str, float]:
@@ -751,6 +798,10 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
 
     for topic, words in COMMODITY_TOPICS:
         sc = 0.0
+        if topic == "멜론" and not is_edible_melon_context(t):
+            # 멜론(음원 플랫폼) 오탐 방지
+            continue
+
 
         # 기본(2글자 이상 키워드): 부분문자열 매칭
         for w in words:
@@ -835,6 +886,63 @@ def has_apc_agri_context(text: str) -> bool:
         "농협", "원예", "과수", "청과", "농산물"
     )
     return any(h.lower() in t for h in agri_hints)
+
+# -----------------------------
+# Melon safety guards
+# - '멜론'은 음원 플랫폼(멜론)과 동음이의어라 오탐이 잦다.
+# - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 품목으로 인정한다.
+# -----------------------------
+_MELON_MUSIC_MARKERS = [
+    "멜론차트", "음원", "스트리밍", "뮤직", "앨범", "가수", "노래", "신곡",
+    "top100", "top 100", "멜론티켓", "콘서트", "공연", "팬미팅", "이용권",
+    "카카오엔터", "카카오 엔터", "멜론앱", "멜론 앱", "멜론 서비스",
+]
+_MELON_EDIBLE_MARKERS = [
+    "과일", "과채", "시설", "하우스", "비가림", "재배", "농가", "작황", "수확", "출하",
+    "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+    "산지", "산지유통", "산지유통센터", "apc", "선별", "저온", "저장", "ca저장",
+    "수급", "시세", "수출", "검역", "통관", "잔류농약",
+]
+_MELON_VARIETY_MARKERS = [
+    "머스크멜론", "네트멜론", "얼스멜론", "하미과", "칸탈루프", "허니듀",
+]
+
+def is_edible_melon_context(text: str) -> bool:
+    """Return True only when '멜론' clearly means the edible fruit (not the music service).
+
+    Heuristics:
+      - Always accept if a melon variety marker is present (머스크멜론 등)
+      - If strong music/entertainment markers exist (멜론차트/음원/앨범 등),
+        require *strong* edible markers; otherwise reject.
+      - Accept edible context when at least one agri/produce marker exists OR
+        when '멜론 값/가격/시세/도매가격' 같은 가격 패턴이 나타나고 음악마커가 없을 때.
+    """
+    t = (text or "").lower()
+    if "멜론" not in t:
+        return False
+
+    # 품종/유형이 명시되면 거의 100% 과일
+    if any(v.lower() in t for v in _MELON_VARIETY_MARKERS):
+        return True
+
+    music_hit = any(w.lower() in t for w in _MELON_MUSIC_MARKERS)
+
+    # 농업/유통/품질 신호(가격 단어 단독은 제외)
+    edible_hit = any(w.lower() in t for w in _MELON_EDIBLE_MARKERS)
+
+    # 가격 패턴(멜론 값/가격/시세/도매가격 등)이 있으면, 음악마커가 없을 때만 과일로 인정
+    price_pat = bool(re.search(r"멜론\s*(값|가격|시세|도매가격|출하가|경락가)", t))
+    if price_pat and not music_hit:
+        edible_hit = True
+
+    # 음악/엔터 맥락이 강한데 먹는 멜론 신호가 없으면 오탐으로 판단
+    if music_hit and not edible_hit:
+        return False
+
+    return edible_hit
+
+
+
 
 def is_blocked_domain(dom: str) -> bool:
     if not dom:
@@ -2000,6 +2108,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # ✅ 제외 품목(현재 관심 제외): 마늘/양파 등은 스크래핑 대상에서 제외
     if any(w in text for w in EXCLUDED_ITEMS):
         return _reject("excluded_items")
+    # ✅ '멜론' 동음이의어(음원 플랫폼) 오탐 차단:
+    # - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 통과
+    if "멜론" in text and not is_edible_melon_context(text):
+        return _reject("melon_non_edible_context")
 
     # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
     horti_sc = best_horti_score(ttl, desc)
