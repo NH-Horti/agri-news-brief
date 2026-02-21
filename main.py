@@ -748,6 +748,71 @@ def _is_similar_title(k1: str, k2: str) -> bool:
     return False
 
 
+
+
+# -----------------------------
+# Story-level dedupe (title+description)
+# - 목적: 동일 보도자료/브리핑이 연합뉴스/이데일리/파이낸셜뉴스 등 다매체로 반복될 때 1건만 남기기
+# - 제목만으로는 못 잡는 "같은 내용 다른 제목" 중복을 줄이기 위해 사용
+# - 안전장치: 앵커(핵심 키워드) 겹침이 충분할 때만 유사도(Jaccard 3-gram)로 판정
+# -----------------------------
+_STORY_ANCHORS = (
+    "서울시", "농수산물", "농산물", "부적합", "가락시장", "도매시장", "공판장", "경매", "경락", "반입",
+    "수거", "수거검사", "부정유통", "원산지", "단속", "검역", "통관", "수출", "잔류농약", "방사능",
+    "식품안전", "위해", "차단", "폐기", "유통", "유통단계", "유통차단",
+)
+
+def _norm_story_text(title: str, desc: str) -> str:
+    # 공백/특수문자 제거 후 비교(한국어+영문+숫자만 남김)
+    s = f"{title or ''} {desc or ''}".lower()
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"[^0-9a-z가-힣 ]+", " ", s)
+    return s.replace(" ", "")
+
+def _trigrams(s: str) -> set[str]:
+    if not s:
+        return set()
+    if len(s) <= 3:
+        return {s}
+    return {s[i:i+3] for i in range(len(s) - 2)}
+
+def _jaccard(a: set[str], b: set[str]) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    union = len(a | b)
+    return inter / union if union else 0.0
+
+def _anchor_hits(title: str, desc: str) -> set[str]:
+    txt = f"{title or ''} {desc or ''}"
+    return {w for w in _STORY_ANCHORS if w in txt}
+
+def _story_trigrams_cached(a: "Article") -> set[str]:
+    tri = getattr(a, "_story_tri", None)
+    if tri is not None:
+        return tri
+    tri = _trigrams(_norm_story_text(getattr(a, "title", "") or "", getattr(a, "description", "") or ""))
+    setattr(a, "_story_tri", tri)
+    return tri
+
+def _is_similar_story(a: "Article", b: "Article", thr: float = 0.40) -> bool:
+    # 안전장치: 앵커가 각각 2개 이상 + 공통 앵커 1개 이상일 때만 판정
+    ah = getattr(a, "_story_anchors", None)
+    if ah is None:
+        ah = _anchor_hits(getattr(a, "title", ""), getattr(a, "description", ""))
+        setattr(a, "_story_anchors", ah)
+    bh = getattr(b, "_story_anchors", None)
+    if bh is None:
+        bh = _anchor_hits(getattr(b, "title", ""), getattr(b, "description", ""))
+        setattr(b, "_story_anchors", bh)
+
+    if len(ah) < 2 or len(bh) < 2 or len(ah & bh) < 1:
+        return False
+
+    ta = _story_trigrams_cached(a)
+    tb = _story_trigrams_cached(b)
+    return _jaccard(ta, tb) >= thr
+
 # -----------------------------
 # Topic detection (robust)
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
@@ -2945,6 +3010,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
             continue
+        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
+        if any(_is_similar_story(a, b) for b in core):
+            continue
         if not _source_ok_local(a):
             continue
 
@@ -2966,6 +3034,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
+        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
+        if any(_is_similar_story(a, b) for b in core):
+            continue
             if not _source_ok_local(a):
                 continue
 
@@ -3027,6 +3098,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if not _source_ok_local(a):
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+            continue
+        # 스토리(제목+요약) 유사도 중복 제거(동일 보도자료 다매체 반복 방지)
+        if any(_is_similar_story(a, b) for b in final):
             continue
 
         final.append(a)
