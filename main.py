@@ -602,6 +602,57 @@ def norm_title_key(title: str) -> str:
     t = re.sub(r"[^0-9a-z가-힣]+", "", t)
     return t[:90]
 
+def _title_bigram_set(s: str) -> set[str]:
+    s = (s or "").strip()
+    if len(s) < 2:
+        return set()
+    # 연속 2글자(바이그램) 기반 유사도: 특수문자 제거된 title_key에 잘 맞음
+    return {s[i:i+2] for i in range(len(s) - 1)}
+
+def _is_similar_title(k1: str, k2: str) -> bool:
+    """제목 중복(유사) 판정.
+    - 목적: 같은 이슈가 타매체로 반복될 때 core/final에서 중복 제거
+    - 입력은 norm_title_key()로 정규화된 문자열을 가정(공백/특수문자 제거)
+    """
+    a = (k1 or "").strip()
+    b = (k2 or "").strip()
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+
+    # 너무 짧은 키는 오탐 위험이 크므로, 포함관계만 제한적으로 허용
+    la, lb = len(a), len(b)
+    shorter, longer = (a, b) if la <= lb else (b, a)
+    ls, ll = len(shorter), len(longer)
+
+    if ls < 10:
+        # 10글자 미만은 사실상 제목 키로 신뢰하기 어려움
+        return False
+
+    # 포함관계: 짧은 키가 긴 키에 포함되고 길이 차이가 크지 않으면 동일 이슈로 봄
+    if shorter in longer and (ls / ll) >= 0.78:
+        return True
+
+    # 문자열 유사도(SequenceMatcher)
+    try:
+        ratio = difflib.SequenceMatcher(None, a, b).ratio()
+        if ratio >= 0.90:
+            return True
+        # 경계 영역은 바이그램 자카드로 추가 확인(긴 제목에서만)
+        if ratio >= 0.86 and min(la, lb) >= 18:
+            ba = _title_bigram_set(a)
+            bb = _title_bigram_set(b)
+            if ba and bb:
+                jac = len(ba & bb) / max(1, len(ba | bb))
+                if jac >= 0.82:
+                    return True
+    except Exception:
+        pass
+
+    return False
+
+
 # -----------------------------
 # Topic detection (robust)
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
