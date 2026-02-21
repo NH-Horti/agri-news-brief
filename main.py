@@ -758,8 +758,10 @@ def _is_similar_title(k1: str, k2: str) -> bool:
 # -----------------------------
 _STORY_ANCHORS = (
     "서울시", "농수산물", "농산물", "부적합", "가락시장", "도매시장", "공판장", "경매", "경락", "반입",
-    "수거", "수거검사", "부정유통", "원산지", "단속", "검역", "통관", "수출", "잔류농약", "방사능",
-    "식품안전", "위해", "차단", "폐기", "유통", "유통단계", "유통차단",
+    "수거", "수거검사", "불시", "휴일", "심야", "검사", "기획검사",
+    "부정유통", "원산지", "단속", "검역", "통관", "수출",
+    "잔류농약", "방사능", "식품안전", "위해", "사전", "차단", "폐기",
+    "유통", "유통단계", "유통차단",
 )
 
 def _norm_story_text(title: str, desc: str) -> str:
@@ -791,28 +793,59 @@ def _story_trigrams_cached(a: "Article") -> set[str]:
     tri = getattr(a, "_story_tri", None)
     if tri is not None:
         return tri
-    tri = _trigrams(_norm_story_text(getattr(a, "title", "") or "", getattr(a, "description", "") or ""))
+    desc = (getattr(a, "description", "") or "")
+    if not desc:
+        desc = (getattr(a, "summary", "") or "")
+    tri = _trigrams(_norm_story_text(getattr(a, "title", "") or "", desc))
     setattr(a, "_story_tri", tri)
     return tri
 
-def _is_similar_story(a: "Article", b: "Article", thr: float = 0.22) -> bool:
-    # 안전장치: 앵커가 각각 2개 이상 + 공통 앵커 1개 이상일 때만 판정
+def _is_similar_story(a: "Article", b: "Article", thr: float | None = None) -> bool:
+    """제목+요약 기반 '스토리' 유사도 중복 제거.
+    - dist(도매시장/APC/수출) 섹션은 보도자료/브리핑 중복이 많아 더 공격적으로 제거
+    - title만으로는 다른 매체의 받아쓰기 중복이 남기 쉬워, title+desc(또는 summary)로 비교
+    """
+    sec = (getattr(a, "section", "") or getattr(b, "section", "") or "").strip()
+    base_thr = 0.22 if sec == "dist" else 0.30
+    if thr is None:
+        thr = base_thr
+
+    def _desc(x: "Article") -> str:
+        d = (getattr(x, "description", "") or "").strip()
+        if not d:
+            d = (getattr(x, "summary", "") or "").strip()
+        return d
+
+    # 앵커 히트(캐시)
     ah = getattr(a, "_story_anchors", None)
     if ah is None:
-        ah = _anchor_hits(getattr(a, "title", ""), getattr(a, "description", ""))
+        ah = _anchor_hits(getattr(a, "title", ""), _desc(a))
         setattr(a, "_story_anchors", ah)
     bh = getattr(b, "_story_anchors", None)
     if bh is None:
-        bh = _anchor_hits(getattr(b, "title", ""), getattr(b, "description", ""))
+        bh = _anchor_hits(getattr(b, "title", ""), _desc(b))
         setattr(b, "_story_anchors", bh)
+
+    common = ah & bh
+
+    # 최소 안전장치
+    if len(ah) < 2 or len(bh) < 2 or len(common) < 1:
+        return False
+
+    # dist는 앵커가 많이 겹치면(보도자료형) 유사도 계산 없이도 동일 스토리로 간주
+    if sec == "dist":
+        key_core = {"서울시", "부적합", "농수산물", "가락시장", "식품안전", "유통차단", "유통"}
+        if len(common) >= 5 and len(common & key_core) >= 2:
+            return True
+
+    # trigram 유사도(캐시)
+    ta = _story_trigrams_cached(a)
+    tb = _story_trigrams_cached(b)
+    return _jaccard(ta, tb) >= float(thr)
+
 
     if len(ah) < 2 or len(bh) < 2 or len(ah & bh) < 1:
         return False
-
-    common = ah & bh
-    # 앵커 중복이 충분히 크면(동일 보도자료/브리핑 반복) 트라이그램 유사도가 낮아도 같은 스토리로 본다.
-    if len(common) >= 5 and any(x in common for x in ("서울시", "가락시장", "농식품부", "aT", "검역", "통관", "원산지", "부정유통", "부적합", "잔류농약", "방사능", "식품안전")):
-        return True
 
     ta = _story_trigrams_cached(a)
     tb = _story_trigrams_cached(b)
@@ -2221,6 +2254,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         return False
 
     # URL/경로 기반 보정(지역/로컬 섹션 등)
+
+    # 전 섹션 공통 노이즈: 지역 '오늘의 주요일정' 류 일정 기사 제외
+    if ttl.strip().startswith("[오늘의 주요일정]") or "오늘의 주요일정" in ttl:
+        return _reject("daily_schedule")
+
     url = (url or "").strip()
     try:
         _path = urlparse(url).path.lower()
@@ -2231,10 +2269,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
         return _reject("opinion_or_editorial")
-
-    # [오늘의 주요일정] 류(로컬 일정 나열)는 브리핑 품질을 크게 떨어뜨리므로 전 섹션에서 제외
-    if ttl_l.startswith("[오늘의 주요일정") or "오늘의 주요일정" in ttl_l:
-        return _reject("daily_schedule_roundup")
 
 
     # 공통 제외(광고/구인/부동산 등)
