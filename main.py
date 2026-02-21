@@ -2333,6 +2333,47 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
     margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
     return max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
+def _is_similar_title(ka: str, kb: str) -> bool:
+    """제목키(title_key) 기반의 가벼운 중복 판정.
+    - core(핵심) 후보끼리 너무 비슷한 제목이 연속으로 들어오는 것을 방지.
+    - title_key는 norm_title_key()로 이미 정규화된 문자열(공백/특수문자 제거)이다.
+    """
+    a = (ka or "").strip()
+    b = (kb or "").strip()
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+
+    # 너무 짧은 문자열은 오탐 가능성이 커서 보수적으로 처리
+    if min(len(a), len(b)) < 10:
+        return False
+
+    # 한쪽이 다른쪽을 거의 포함하는 경우(길이가 충분할 때만)
+    if (a in b or b in a) and min(len(a), len(b)) >= 20:
+        return True
+
+    try:
+        if difflib.SequenceMatcher(None, a, b).ratio() >= 0.90:
+            return True
+    except Exception:
+        pass
+
+    # 공백이 제거된 title_key 특성상, 문자 2-gram 자카드로 추가 판정
+    def _bigrams(s: str) -> set[str]:
+        if len(s) < 2:
+            return set()
+        return {s[i:i+2] for i in range(len(s) - 1)}
+
+    sa = _bigrams(a)
+    sb = _bigrams(b)
+    if sa and sb:
+        jac = len(sa & sb) / max(1, len(sa | sb))
+        if jac >= 0.68:
+            return True
+
+    return False
+
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선택.
 
