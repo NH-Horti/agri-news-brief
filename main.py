@@ -65,7 +65,49 @@ KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
+DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
+DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
+DEBUG_REPORT_MAX_REJECTS = int(os.getenv("DEBUG_REPORT_MAX_REJECTS", "120"))
+DEBUG_REPORT_WRITE_JSON = (os.getenv("DEBUG_REPORT_WRITE_JSON", "1") == "1") if DEBUG_REPORT else False
 REPORT_DATE_OVERRIDE = os.getenv("REPORT_DATE_OVERRIDE", "").strip()
+
+# Debug report data (embedded into HTML when DEBUG_REPORT=1)
+_DEBUG_LOCK = threading.Lock()
+DEBUG_DATA = {
+    "generated_at_kst": None,
+    "build_tag": os.getenv("BUILD_TAG", ""),
+    "filter_rejects": [],  # list[{section, reason, press, domain, title, url}]
+    "sections": {},        # section_key -> {threshold, core_min, total_candidates, total_selected, top: [...]}
+}
+
+def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str):
+    if not DEBUG_REPORT:
+        return
+    try:
+        item = {
+            "section": section,
+            "reason": reason,
+            "press": press or "",
+            "domain": (domain or ""),
+            "title": (title or "")[:160],
+            "url": (url or "")[:500],
+        }
+        with _DEBUG_LOCK:
+            if len(DEBUG_DATA["filter_rejects"]) < DEBUG_REPORT_MAX_REJECTS:
+                DEBUG_DATA["filter_rejects"].append(item)
+    except Exception:
+        pass
+
+
+def dbg_set_section(section: str, payload: dict):
+    if not DEBUG_REPORT:
+        return
+    try:
+        with _DEBUG_LOCK:
+            DEBUG_DATA["sections"][section] = payload
+    except Exception:
+        pass
+
 
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
@@ -1794,6 +1836,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     dom = (dom or "").lower().strip()
     key = section_conf["key"]
 
+    def _reject(reason: str) -> bool:
+        # debug: collect why an item was filtered out
+        dbg_add_filter_reject(key, reason, ttl, url, dom, press)
+        return False
+
     # URL/경로 기반 보정(지역/로컬 섹션 등)
     url = (url or "").strip()
     try:
@@ -1804,16 +1851,16 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
-        return False
+        return _reject("opinion_or_editorial")
 
 
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
-        return False
+        return _reject("ban_keywords")
 
     # ✅ 제외 품목(현재 관심 제외): 마늘/양파 등은 스크래핑 대상에서 제외
     if any(w in text for w in EXCLUDED_ITEMS):
-        return False
+        return _reject("excluded_items")
 
     # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
     horti_sc = best_horti_score(ttl, desc)
@@ -1826,19 +1873,19 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
     agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
     if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
-        return False
+        return _reject("hard_offtopic_no_agri_context")
 
     # 금융/산업 기사(농협은행/증권/주가/실적 등) 오탐 차단
     fin_hits = count_any(text, [t.lower() for t in FINANCE_STRICT_TERMS])
     if fin_hits >= 1 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8:
-        return False
+        return _reject("finance_strict_no_agri_context")
 
     # 서울경제(sedaily) 등 경제지 일반 기사 오탐 방지:
     # - 경제/정책 섹션 검색 시 '농협/가격' 등의 단어로 비관련 기사가 섞이는 경우가 있어,
     #   원예/도매/정책 강신호가 없는 경우는 컷한다.
     if normalize_host(dom).endswith("sedaily.com"):
         if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8:
-            return False
+            return _reject("sedaily_no_agri_context")
 
     # news1 로컬(/local/) 기사 과다 유입 방지:
     # - 'APC' 같은 단어만으로는 지역 단신이 많이 유입되므로,
@@ -1851,7 +1898,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
         local_ok = (market_hits >= 2) or (has_wholesale and horti_core_hits >= 2) or (has_apc and has_infra and horti_sc >= 1.6)
         if not local_ok:
-            return False
+            return _reject("news1_local_weak_context")
 
 
     # 지역 동정/기금전달(특히 ○○농협 + 발전기금/장학금 등) 오탐 제거
@@ -1859,7 +1906,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         hard_ctx_terms = ["가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","수출","검역","통관","원산지","단속","부정유통","수급","가격","시세","출하","재고","저장","선별","저온","물류"]
         hard_hits = count_any(text, [t.lower() for t in hard_ctx_terms])
         if hard_hits == 0 and horti_sc < 2.4:
-            return False
+            return _reject("local_coop_donation")
 
     # 정책 섹션만 정책기관/공공 도메인 허용(단, 방제(pest)는 지방 이슈가 많아 예외 허용)
     # ✅ (5) pest 섹션은 지자체/연구기관(.go.kr/.re.kr) 기사도 허용
@@ -1876,19 +1923,19 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if key == "policy":
             # policy는 도메인 override가 있음
             if not policy_domain_override(dom, text):
-                return False
+                return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
             dist_soft_ok = (market_hits >= 1) or ("apc" in text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
             if not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
-                return False
+                return _reject("must_terms_fail")
 
     # (핵심) 원예수급 관련성 게이트:
     # - 네이버 검색 쿼리의 동음이의어(배=배터리/배당, 밤=야간 등)로 인한 오탐을 강하게 차단
     if key == "supply":
         # 공급(supply) 섹션은 "원예/농산물 맥락"이 없는 일반 경제/산업 기사(가격/수급 단어만 존재)를 차단
         if not ((horti_sc >= 1.3) or (market_hits >= 1) or (horti_core_hits >= 2)):
-            return False
+            return _reject("supply_context_gate")
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
@@ -1899,13 +1946,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
             if not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
-                return False
+                return _reject("policy_context_gate")
 
         # 금융/산업 일반 정책 오탐 차단
         policy_off = ["금리", "주택", "부동산", "코스피", "코스닥", "주식", "채권", "가상자산", "원화", "환율", "반도체", "배터리"]
         if any(w in text for w in policy_off):
             if not ((horti_sc >= 1.8) or (market_hits >= 1) or ("농산물" in text and "가격" in text)):
-                return False
+                return _reject("policy_offtopic_gate")
 
         # 식품안전/위생 단독 이슈는 원예수급과 거리가 있어 제외
         # (단, 도매시장/원산지 단속/검역 등 '유통·단속'과 직접 결합되거나,
@@ -1920,18 +1967,18 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             if (horti_sc >= 2.6) and ("농산물" in text) and (("가격" in text) or ("수급" in text) or ("출하" in text)):
                 safety_ok = True
             if not safety_ok:
-                return False
+                return _reject("policy_food_safety_only")
             # 영농부산물/파쇄 등 행정성 사업 안내는 원예수급 브리핑에서 제외(정 없을 때도 굳이 채우지 않음)
             admin_terms = ["영농부산물", "안전처리", "파쇄", "파쇄기", "소각", "잔가지"]
             if any(w in text for w in admin_terms):
                 if market_hits == 0 and horti_sc < 2.2:
-                    return False
+                    return _reject("policy_admin_notice")
 
 
         # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
         is_major = press_priority(press, dom) >= 2
         if (not is_major) and _LOCAL_GEO_PATTERN.search(ttl):
-            return False
+            return _reject("policy_local_minor")
 
     # 유통/현장(dist): 시장/APC/산지유통/수출/검역/원산지/부정유통/화훼자조금 등 맥락 필요
     if key == "dist":
@@ -1942,7 +1989,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         hard_hits = count_any(text, [t.lower() for t in dist_hard])
 
         if (soft_hits + hard_hits) < 1:
-            return False
+            return _reject("dist_context_gate")
 
         # 'APC/산지유통/농협/브랜드' 같은 소프트 신호만 있을 땐,
         # 인프라/유통 강신호(준공/가동/선별/저온/저장/물류/원산지/검역/수출 등) 또는 높은 원예 관련성이 있어야 통과
@@ -1954,14 +2001,14 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             # ① 유통 인프라(선별/저온/저장/물류/준공/가동 등)와 결합 + 원예 관련성(품목/화훼/시설채소)이 있을 때,
             # 또는 ② 원예 관련성이 매우 강하고(품목 다수/과수·화훼 명시) 소프트 신호가 2개 이상일 때만 통과
             if not ((has_infra and horti_sc >= 1.6) or (horti_sc >= 2.6 and soft_hits >= 2)):
-                return False
+                return _reject("dist_soft_without_infra")
 
 
     # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
         agri_ctx_hits = count_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS])
         if agri_ctx_hits < 1:
-            return False
+            return _reject("pest_no_agri_context")
 
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
@@ -1969,7 +2016,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
         # 벼 방제 단독은 제외(원예/과수와의 연관이 희박)
         if rice_hits >= 1 and strict_hits < 1 and weather_hits < 1:
-            return False
+            return _reject("pest_rice_only")
 
         # 방제/병해충 신호가 너무 약하면 제외
         if (strict_hits + weather_hits) < 1:
@@ -2451,6 +2498,64 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         seen.add(k)
         deduped.append(a)
 
+    # Debug report payload (top candidates + selection decisions)
+    if DEBUG_REPORT:
+        try:
+            selected_keys = set()
+            for _a in deduped[:max_n]:
+                selected_keys.add(_a.canon_url or _a.norm_key or _a.title_key)
+
+            top_n = max(5, min(DEBUG_REPORT_MAX_CANDIDATES, 60))
+            top_candidates = candidates_sorted[:top_n]
+
+            def _signals(a: Article) -> dict:
+                txt = (a.title + " " + a.description).lower()
+                return {
+                    "horti_sc": round(best_horti_score(a.title, a.description), 2),
+                    "market_hits": count_any(txt, [t.lower() for t in ("가락시장","도매시장","공판장","청과","경락","경매","반입","온라인 도매시장","apc","산지유통","산지유통센터")]),
+                    "strength": round(agri_strength_score(txt), 2),
+                    "korea": round(korea_context_score(txt), 2),
+                    "offtopic_pen": round(off_topic_penalty(txt), 2),
+                    "press_tier": press_tier(a.press, a.domain),
+                    "press_weight": round(press_weight(a.press, a.domain), 2),
+                }
+
+            def _best_effort_reason(a: Article) -> str:
+                if a.score < thr:
+                    return "below_threshold"
+                if not _headline_gate_relaxed(a, section_key):
+                    return "headline_gate"
+                return "not_selected"
+
+            top_rows = []
+            for a in top_candidates:
+                k = a.canon_url or a.norm_key or a.title_key
+                sel = k in selected_keys
+                top_rows.append({
+                    "selected": bool(sel),
+                    "is_core": bool(getattr(a, "is_core", False)),
+                    "score": round(a.score, 2),
+                    "tier": press_priority(a.press, a.domain),
+                    "press": a.press,
+                    "domain": a.domain,
+                    "title": (a.title or "")[:160],
+                    "url": (a.originallink or a.link or "")[:500],
+                    "reason": "" if sel else _best_effort_reason(a),
+                    "signals": _signals(a),
+                })
+
+            payload = {
+                "threshold": round(thr, 2),
+                "core_min": round(core_min, 2),
+                "total_candidates": len(candidates),
+                "total_selected": len(deduped[:max_n]),
+                "top": top_rows,
+            }
+            dbg_set_section(section_key, payload)
+        except Exception:
+            pass
+
+
     return deduped[:max_n]
 
 
@@ -2891,6 +2996,148 @@ def weekday_label(iso_date: str) -> str:
     except Exception:
         return ""
 
+def render_debug_report_html(report_date: str, site_path: str) -> str:
+    """HTML 하단에 삽입되는 디버그 리포트(옵션).
+    활성화: 환경변수 DEBUG_REPORT=1
+    - 후보 상위 N개 점수/신호/선정여부
+    - 필터링 단계에서 제외된 일부 기사와 사유
+    - (옵션) docs/debug/YYYY-MM-DD.json 링크
+    """
+    if not DEBUG_REPORT:
+        return ""
+
+    with _DEBUG_LOCK:
+        data = {
+            "generated_at_kst": DEBUG_DATA.get("generated_at_kst"),
+            "build_tag": DEBUG_DATA.get("build_tag"),
+            "filter_rejects": list(DEBUG_DATA.get("filter_rejects", [])),
+            "sections": dict(DEBUG_DATA.get("sections", {})),
+        }
+
+    # 요약(사유 카운트)
+    reason_count = {}
+    for r in data["filter_rejects"]:
+        reason = r.get("reason", "unknown")
+        reason_count[reason] = reason_count.get(reason, 0) + 1
+    reason_items = sorted(reason_count.items(), key=lambda x: x[1], reverse=True)[:12]
+
+    # JSON 링크(작성 옵션이 켜져 있을 때만)
+    json_href = ""
+    if DEBUG_REPORT_WRITE_JSON:
+        json_href = build_site_url(site_path, f"debug/{report_date}.json")
+
+    def _kv(label: str, value: str) -> str:
+        return f"<span class='dbgkv'><b>{esc(label)}:</b> {esc(value)}</span>"
+
+    # 섹션 테이블
+    sec_blocks = []
+    for sec_key, payload in data["sections"].items():
+        top = payload.get("top", [])
+        rows = []
+        for it in top:
+            sig = it.get("signals", {}) or {}
+            badge = "✅" if it.get("selected") else "—"
+            core = "핵심" if it.get("is_core") else ""
+            rows.append(
+                "<tr>"
+                f"<td class='c'>{badge}</td>"
+                f"<td class='c'>{esc(core)}</td>"
+                f"<td class='r'>{it.get('score','')}</td>"
+                f"<td class='c'>{it.get('tier','')}</td>"
+                f"<td>{esc(it.get('press',''))}</td>"
+                f"<td class='muted'>{esc(it.get('domain',''))}</td>"
+                f"<td class='r'>{sig.get('horti_sc','')}</td>"
+                f"<td class='r'>{sig.get('market_hits','')}</td>"
+                f"<td class='r'>{sig.get('strength','')}</td>"
+                f"<td class='r'>{sig.get('offtopic_pen','')}</td>"
+                f"<td class='muted'>{esc(it.get('reason',''))}</td>"
+                f"<td><a href='{esc(it.get('url',''))}' target='_blank' rel='noopener'>{esc(it.get('title',''))}</a></td>"
+                "</tr>"
+            )
+        rows_html = "".join(rows) if rows else "<tr><td colspan='12' class='muted'>표시할 후보가 없습니다.</td></tr>"
+
+        sec_blocks.append(f"""
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>{esc(sec_key)}</b>
+            <span class="muted">candidates={payload.get('total_candidates','?')} selected={payload.get('total_selected','?')} thr={payload.get('threshold','?')} core_min={payload.get('core_min','?')}</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody>{rows_html}</tbody>
+            </table>
+          </div>
+        </div>
+        """)
+
+    # 필터링 제외 표(상위 일부)
+    rej_rows = []
+    for r in data["filter_rejects"][:min(len(data["filter_rejects"]), 60)]:
+        rej_rows.append(
+            "<tr>"
+            f"<td class='c'>{esc(r.get('section',''))}</td>"
+            f"<td class='muted'>{esc(r.get('reason',''))}</td>"
+            f"<td>{esc(r.get('press',''))}</td>"
+            f"<td class='muted'>{esc(r.get('domain',''))}</td>"
+            f"<td><a href='{esc(r.get('url',''))}' target='_blank' rel='noopener'>{esc(r.get('title',''))}</a></td>"
+            "</tr>"
+        )
+    rej_html = "".join(rej_rows) if rej_rows else "<tr><td colspan='5' class='muted'>필터링 제외 로그가 없습니다.</td></tr>"
+
+    reason_line = ", ".join([f"{k}({v})" for k, v in reason_items]) if reason_items else "—"
+
+    meta_line = " ".join([
+        _kv("DEBUG_REPORT", "1"),
+        _kv("BUILD_TAG", str(data.get("build_tag", ""))),
+        _kv("generated_at_kst", str(data.get("generated_at_kst", ""))),
+    ])
+
+    link_line = ""
+    if json_href:
+        link_line = f"<div class='dbgLinks'><a href='{esc(json_href)}' target='_blank' rel='noopener'>debug json 보기</a></div>"
+
+    return f"""
+    <style>
+      details.dbgWrap {{ margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }}
+      details.dbgWrap summary {{ cursor:pointer; font-weight:700; }}
+      .dbgMeta {{ margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:8px; }}
+      .dbgkv {{ background:#f8fafc; border:1px solid var(--line); padding:6px 8px; border-radius:10px; font-size:12px; }}
+      .dbgLinks a {{ font-size:12px; color:var(--btn); }}
+      .dbgSec {{ margin-top:16px; }}
+      .dbgSecHead {{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }}
+      .dbgTableWrap {{ overflow:auto; border:1px solid var(--line); border-radius:12px; margin-top:8px; }}
+      table.dbgTable {{ width:100%; border-collapse:collapse; font-size:12px; min-width:980px; }}
+      table.dbgTable th, table.dbgTable td {{ border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:top; }}
+      table.dbgTable th {{ position:sticky; top:0; background:#f9fafb; z-index:1; }}
+      .dbgTable .c {{ text-align:center; white-space:nowrap; }}
+      .dbgTable .r {{ text-align:right; white-space:nowrap; }}
+      .muted {{ color:var(--muted); }}
+    </style>
+    <details class="dbgWrap">
+      <summary>디버그 리포트 (선정/필터 로그)</summary>
+      {link_line}
+      <div class="dbgMeta">{meta_line}</div>
+      <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: {esc(reason_line)}</div>
+      {''.join(sec_blocks)}
+      <div class="dbgSec">
+        <div class="dbgSecHead"><b>필터링 제외(샘플)</b><span class="muted">최대 60건 표시</span></div>
+        <div class="dbgTableWrap">
+          <table class="dbgTable">
+            <thead><tr><th class="c">섹션</th><th>사유</th><th>매체</th><th>도메인</th><th>제목</th></tr></thead>
+            <tbody>{rej_html}</tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    """
 
 
 def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, list[str]]:
@@ -3062,6 +3309,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         # ✅ (3) 없는 페이지로 링크하지 않고 알림으로 처리
         return f'<button class="navBtn disabled" type="button" data-msg="{esc(empty_msg)}">{esc(label)}</button>'
 
+    
+    debug_html = render_debug_report_html(report_date, site_path) if DEBUG_REPORT else ""
+
     return f"""<!doctype html>
 <html lang=\"ko\">
 <head>
@@ -3203,6 +3453,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }})();
   </script>
   <!-- build: {BUILD_TAG} -->
+{debug_html}
 </body>
 </html>
 """
@@ -4101,6 +4352,17 @@ def main():
 
     # render (✅ 2번: 전체 노출 / 중요도 정렬)
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+
+    # Optional: debug report JSON (for diagnosis)
+    if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+        try:
+            DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+            debug_path = f"docs/debug/{report_date}.json"
+            debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+            _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, GH_TOKEN, ref="main")
+            github_put_file(repo, debug_path, debug_json, GH_TOKEN, f"Update debug report {report_date}", sha=sha_dbg_old, branch="main")
+        except Exception as e:
+            log.warning("debug report upload failed: %s", e)
 
     # index는 404 방지를 위해 "검증된 날짜"만 노출
     index_manifest = {"dates": archive_dates_desc}
