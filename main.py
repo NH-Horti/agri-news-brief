@@ -795,7 +795,7 @@ def _story_trigrams_cached(a: "Article") -> set[str]:
     setattr(a, "_story_tri", tri)
     return tri
 
-def _is_similar_story(a: "Article", b: "Article", thr: float = 0.40) -> bool:
+def _is_similar_story(a: "Article", b: "Article", thr: float = 0.22) -> bool:
     # 안전장치: 앵커가 각각 2개 이상 + 공통 앵커 1개 이상일 때만 판정
     ah = getattr(a, "_story_anchors", None)
     if ah is None:
@@ -808,6 +808,11 @@ def _is_similar_story(a: "Article", b: "Article", thr: float = 0.40) -> bool:
 
     if len(ah) < 2 or len(bh) < 2 or len(ah & bh) < 1:
         return False
+
+    common = ah & bh
+    # 앵커 중복이 충분히 크면(동일 보도자료/브리핑 반복) 트라이그램 유사도가 낮아도 같은 스토리로 본다.
+    if len(common) >= 5 and any(x in common for x in ("서울시", "가락시장", "농식품부", "aT", "검역", "통관", "원산지", "부정유통", "부적합", "잔류농약", "방사능", "식품안전")):
+        return True
 
     ta = _story_trigrams_cached(a)
     tb = _story_trigrams_cached(b)
@@ -2226,6 +2231,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
         return _reject("opinion_or_editorial")
+
+    # [오늘의 주요일정] 류(로컬 일정 나열)는 브리핑 품질을 크게 떨어뜨리므로 전 섹션에서 제외
+    if ttl_l.startswith("[오늘의 주요일정") or "오늘의 주요일정" in ttl_l:
+        return _reject("daily_schedule_roundup")
 
 
     # 공통 제외(광고/구인/부동산 등)
