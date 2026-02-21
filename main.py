@@ -63,7 +63,17 @@ SESSION = requests.Session()
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
-MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
+# 섹션별 최종 노출 기사 수는 "최대" 값일 뿐, 반드시 채우지 않는다.
+# - 환경변수 MAX_ARTICLES_PER_SECTION(워크플로우) / MAX_PER_SECTION(로컬 override) 를 읽되
+# - 상한은 5로 강제 캡(사용자 정책)
+MAX_PER_SECTION_CAP = 5
+MAX_PER_SECTION = max(
+    1,
+    min(
+        int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", str(MAX_PER_SECTION_CAP)))),
+        MAX_PER_SECTION_CAP,
+    ),
+)
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -2307,6 +2317,63 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
 
     return True
+def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
+    """코어가 아닌 일반 선택에서의 '헤드라인 품질' 게이트(완화).
+    - 목적: 낚시/인물/행사/홍보성 헤드라인이 상단을 차지하는 것을 방지
+    - 1차 필터(is_relevant)가 이미 강하게 거르고 있으므로, 여기서는 '제목 품질' 중심으로만 최소 차단한다.
+    """
+    title = (a.title or "").lower()
+    text = (a.title + " " + a.description).lower()
+
+    # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
+    hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
+                 "인터뷰", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
+    if any(w.lower() in title for w in hard_stop):
+        return False
+
+    # 2) '행사/캠페인/시상/축제/발대식/선포식' 등은 dist(현장) 섹션에선 일부 의미가 있을 수 있어
+    #    dist는 더 완화하고, 나머지 섹션은 강한 수급/정책/시장 신호가 없으면 컷
+    eventy = ("행사", "축제", "기념", "시상", "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou")
+    if any(w.lower() in title for w in eventy):
+        if section_key != "dist":
+            strong_keep_terms = ("가격", "시세", "수급", "작황", "출하", "물량", "재고", "저장",
+                                 "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+                                 "검역", "통관", "원산지", "단속", "부정유통", "할당관세", "할인지원", "대책", "보도자료", "브리핑")
+            if not any(t.lower() in text for t in strong_keep_terms):
+                return False
+
+    # 3) 섹션별 최소 맥락 재확인(아주 느슨하게)
+    horti_sc = best_horti_score(a.title or "", a.description or "")
+    market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "apc", "산지유통", "산지유통센터"]
+    market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
+
+    if section_key == "policy":
+        # 공식 소스는 최대한 살림
+        try:
+            if _is_policy_official(a):
+                return True
+        except Exception:
+            pass
+        # 정책 섹션은 최소한 '정책 액션' + '농식품 맥락'이 있어야 함(완화 버전)
+        action_terms = ("대책", "지원", "할인", "할당관세", "검역", "고시", "개정", "단속", "브리핑", "보도자료", "예산")
+        ctx_terms = ("농산물", "농식품", "농업", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "온라인 도매시장")
+        if (not any(t.lower() in text for t in action_terms)) and (horti_sc < 1.6) and (market_hits == 0):
+            return False
+        if not any(t.lower() in text for t in ctx_terms):
+            return False
+        return True
+
+    if section_key == "supply":
+        # supply는 최소한 '원예/품목' 또는 '수급/가격' 신호가 있어야 함
+        keep = ("원예", "과수", "과일", "채소", "화훼", "절화", "수급", "가격", "시세", "작황", "출하", "저장", "재고", "가락시장", "도매시장")
+        if (horti_sc < 1.1) and (market_hits == 0) and (not any(t.lower() in text for t in keep)):
+            return False
+        return True
+
+    # dist/pest는 is_relevant에서 이미 맥락을 확인하므로, 여기서는 제목 품질만 관리
+    return True
+
+
 # -----------------------------
 # Selection threshold
 # -----------------------------
@@ -2352,6 +2419,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     pool = [a for a in candidates_sorted if a.score >= thr]
     if not pool:
         return []
+
+    # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지용 tail-cut을 둔다
+    best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
+    tail_margin_by_section = {
+        "supply": 4.2,
+        "policy": 4.2,
+        "dist": 4.5,
+        "pest": 4.0,
+    }
+    tail_margin = tail_margin_by_section.get(section_key, 4.2)
+    tail_cut = max(thr, best_score - tail_margin)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -2469,11 +2547,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             anchors += 1
 
-    # 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
+    # 4) 나머지(최대 max_n): 임계치 이상 + (tail_cut) + 출처 캡 + 중복 제거
     for a in pool:
         if len(final) >= max_n:
             break
         if a in final:
+            continue
+        # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
+        if a.score < tail_cut:
             continue
         if _already_used(a):
             continue
@@ -2523,6 +2604,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             def _best_effort_reason(a: Article) -> str:
                 if a.score < thr:
                     return "below_threshold"
+                if a.score < tail_cut:
+                    return "below_tail_cut"
                 if not _headline_gate_relaxed(a, section_key):
                     return "headline_gate"
                 return "not_selected"
@@ -4200,6 +4283,44 @@ def _kakao_pick_core2(lst: list[Article]) -> list[Article]:
         if len(picked) >= 2:
             break
     return picked
+
+
+def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]) -> str:
+    """카카오톡 '나에게 보내기'용 1개 메시지 텍스트 생성.
+    - 각 섹션별 '핵심 2개'만 노출(브리핑 페이지의 core2와 동일)
+    - 항목 내부 줄바꿈은 하지 않고, 섹션 사이만 한 줄 띄움(가독성)
+    """
+    def _shorten(s: str, n: int = 78) -> str:
+        s = (s or "").strip()
+        s = re.sub(r"\s+", " ", s)
+        if len(s) <= n:
+            return s
+        return s[: max(0, n-1)].rstrip() + "…"
+
+    order = list(KAKAO_MESSAGE_SECTION_ORDER) if isinstance(KAKAO_MESSAGE_SECTION_ORDER, list) else ["supply", "policy", "dist", "pest"]
+    parts: list[str] = []
+    parts.append(f"농산물 뉴스 브리핑 ({report_date})")
+
+    for key in order:
+        conf = _get_section_conf(key)
+        sec_title = conf.get("title") if isinstance(conf, dict) else key
+        parts.append(f"\n[{sec_title}]")
+
+        lst = by_section.get(key, []) if isinstance(by_section, dict) else []
+        picks = _kakao_pick_core2(lst)
+
+        if not picks:
+            parts.append("- (해당 없음)")
+            continue
+
+        for i, a in enumerate(picks, start=1):
+            press = (getattr(a, "press", "") or "").strip() or press_name_from_url(getattr(a, "originallink", "") or getattr(a, "link", ""))
+            title = _shorten(getattr(a, "title", ""), 78)
+            parts.append(f"{i}. {title} ({press})")
+
+    out = "\n".join(parts).strip()
+    out = re.sub(r"\n{3,}", "\n\n", out)
+    return out
 
 
 # -----------------------------
