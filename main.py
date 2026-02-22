@@ -2,29 +2,17 @@
 """
 agri-news-brief main.py (production)
 
-✅ 이번 수정 반영 (요청 1~6)
+✅ 코드 작동 요약 (운영/실행 흐름)
 
-1) 브리핑에서도 "핵심 뉴스 2개"가 명확히 보이도록 설계
-   - 각 섹션: 상단 2개를 '핵심' 배지로 강조 (접어두지 않고 전부 노출)
-   - 카톡 메시지도 동일 로직(섹션 상단 2개) 사용 -> "브리핑 핵심 2"와 일치
+- GitHub Actions에서 KST 기준 매일 실행되며(스케줄/수동), 실행 윈도우(기본 24h) 내 기사를 수집합니다.
+- Naver News Search API로 섹션/키워드별 쿼리를 생성하고, 페이지네이션(MAX_PAGES_PER_QUERY)까지 순회하며 기사 후보를 모읍니다.
+- URL/언론사명 정규화, 섹션 내/전체 중복 제거(사건키), UX 필터(오탐·광고·시위/보이콧 등) 적용 후 점수화하여 섹션별 상위 기사만 선정합니다.
+- OpenAI 요약은 배치 분할 + 재시도 + 캐시를 적용해 비용/실패율을 줄이고, 기사별 요약을 안정적으로 채웁니다.
+- 결과로 HTML 브리핑을 빌드하여 docs/archive/YYYY-MM-DD.html 및 docs/index.html을 업데이트하고, 최신/아카이브 링크 404를 방지합니다.
+- 상태/메타(예: .agri_state.json, manifest 등)는 레포에 저장되어 전날 fallback 및 재실행 시 일관성을 유지합니다.
+- 카카오톡 메시지는 섹션별 핵심 2개 중심으로 구성하여 전송하며, 실패 시(옵션) 전체 워크플로우 실패를 막는 fail-open 동작이 가능합니다.
 
-2) 아주뉴스, 스포츠서울 등 매체명이 영문으로 표기되는 문제 개선
-   - PRESS_HOST_MAP에 ajunews.com/ajunews.co.kr 등, sportsseoul.co.kr 추가
-   - suffix 매칭 + 2단계 TLD 처리 유지
-
-3) 상단 섹션 클릭 시 위치가 중간으로 가는 문제 개선
-   - html { scroll-padding-top } + .sec { scroll-margin-top } 적용
-
-4) "최신/아카이브"에서 최신 브리핑/날짜별 아카이브 클릭 시 404 문제 해결 + 가독성 개선
-   - GitHub Pages 프로젝트 사이트 경로(/REPO/)를 고려한 '절대 경로' 링크 생성
-   - 아카이브는 카드형(날짜 + 요일) 리스트로 표시
-
-기존 반영 유지:
-- Kakao web_url 안전장치(빈값/상대경로/비 http(s)/gist 차단) + 로그
-- (CO) 언론사명 추출 버그 수정
-- 중앙/주요매체 우선 점수/정렬
-- supply(품목) vs dist(도매시장) 분리
-- 글로벌 리테일 시위/보이콧 오탐 차단
+주요 ENV: NAVER_CLIENT_ID/SECRET, OPENAI_API_KEY/OPENAI_MODEL(및 MAX_OUTPUT_TOKENS/REASONING_EFFORT), KAKAO_REST_API_KEY/REFRESH_TOKEN, FORCE_RUN_ANYDAY 등
 """
 
 import os
