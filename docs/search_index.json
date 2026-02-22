@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-02-23T08:16:24.878816+09:00",
+  "updated_at": "2026-02-23T08:28:26.812832+09:00",
   "items": [
     {
       "id": "af80d629270e",
@@ -346,10 +346,10 @@
       "rank": 1,
       "title": "오르는 사과 ·내리는 배값…생산량이 갈랐다",
       "press": "헤럴드경제",
-      "summary": "KREI 관측에 따르면 지난해 사과 생산량은 45만톤으로 전년 대비 3.0% 감소했다. 재배면적은 2만3246ha로 전년과 비슷했지만 작황·생산량 차이가 사과·배 가격 흐름을 갈랐다.",
+      "summary": "aT KAMIS에 따르면 사과·배 가격 흐름이 엇갈렸다. 사과는 생산량 감소와 상품성 저하로 가격이 오른 반면, 배는 생산량 증가로 가격이 하락했다.",
       "url": "https://n.news.naver.com/mnews/article/016/0002602171?sid=101",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-supply",
-      "score": 27.7,
+      "score": 23.3,
       "press_tier": 3
     },
     {
@@ -360,24 +360,10 @@
       "rank": 1,
       "title": "“농가 포장·운송비 부담 완화”…한국 청과 , 보전금 첫 지급",
       "press": "농민신문",
-      "summary": "가락시장 도매법인 한국청과가 시범 도입한 ‘출하비용 보전사업’의 보전금을 처음 지급했다. 품목별 기준가격보다 경락값이 낮으면 차액을 지원해 농가 포장·운송비 부담 완화를 돕는 방식이다.",
+      "summary": "가락시장 도매법인 한국청과가 ‘출하비용 보전사업’ 첫 보전금을 지급했다. 품목별 기준가격보다 경락값이 낮으면 차액을 지원해 농가 포장·운송비 부담을 완화하는 방식이다.",
       "url": "https://n.news.naver.com/mnews/article/662/0000088918?sid=101",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-dist",
       "score": 23.0,
-      "press_tier": 3
-    },
-    {
-      "id": "6f07ffe3905a",
-      "date": "2026-02-20",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 2,
-      "title": "농수산물 부적합 적발 최다는 '잔류농약'…서울시, 검사 확대",
-      "press": "연합뉴스",
-      "summary": "서울시는 농수산물 부적합 적발 최다가 잔류농약이라며 검사 확대를 추진한다. 위해정보 발생 시 우려 품목 수거, 가락시장 반입 농산물의 휴일·심야 경매 전 불시검사와 명절·성수기 집중검사를 병행한다.",
-      "url": "https://n.news.naver.com/mnews/article/001/0015911525?sid=102",
-      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-dist",
-      "score": 21.8,
       "press_tier": 3
     },
     {
@@ -388,10 +374,52 @@
       "rank": 2,
       "title": "‘빅맥세트’ 7600원…맥도날드도 내일부터 가격 인상",
       "press": "농민신문",
-      "summary": "맥도날드가 내일부터 가격을 인상해 ‘빅맥세트’가 7600원이 된다. 양상추·토마토 등 기후 민감 채소는 가격 변동성이 커, 지난해 말 양상추 수급 불안 때 일부 외식업체가 대체 채소로 대응했다.",
+      "summary": "맥도날드가 내일부터 가격을 인상해 빅맥세트가 7600원이 된다. 기사에서는 양상추·토마토 등 기후 민감 채소의 수급 불안이 외식업계 원가와 메뉴 대응에 영향을 준 사례를 언급했다.",
       "url": "https://n.news.naver.com/mnews/article/662/0000088936?sid=102",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-supply",
       "score": 21.2,
+      "press_tier": 3
+    },
+    {
+      "id": "911b4ed1455b",
+      "date": "2026-02-20",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "경북도농업기술원, 수출용 포도 신품종 ‘글로리스타’ 재배 지침서 발...",
+      "press": "농민신문",
+      "summary": "경북도농업기술원이 수출용 포도 신품종 ‘글로리스타’ 재배 지침서를 발간했다. 샤인머스캣 과잉 생산·가격 하락 속 품종 다양화와 수출 경쟁력 확보 필요성에 대응한다는 취지다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000088957?sid=102",
+      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-supply",
+      "score": 20.8,
+      "press_tier": 3
+    },
+    {
+      "id": "bfe4993c4e5b",
+      "date": "2026-02-20",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "경북농기원, 수출용 포도 ‘글로리스타’ 재배 지침서 발간",
+      "press": "경향신문",
+      "summary": "경북농기원이 수출용 포도 ‘글로리스타’ 재배 지침서를 발간했다. 샤인머스켓 재배 확산으로 과잉 생산·가격 하락이 나타나 품종 구조 보완과 소득 안정, 수출 경쟁력 강화가 과제로 제시됐다.",
+      "url": "https://n.news.naver.com/mnews/article/032/0003428350?sid=102",
+      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-supply",
+      "score": 20.8,
+      "press_tier": 3
+    },
+    {
+      "id": "7fadfeb870bc",
+      "date": "2026-02-20",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 2,
+      "title": "서울시 \"방사능 농수산물 '0건'...부적합 식품 사전차단\"",
+      "press": "파이낸셜뉴스",
+      "summary": "서울시는 방사능 농수산물 검사에서 ‘부적합 0건’이라고 밝혔다. 위해정보 발생 시 우려 품목을 즉시 수거하고, 가락 공영도매시장 반입 농산물은 휴일·심야에도 경매 전 불시 수거검사를 실시한다.",
+      "url": "https://n.news.naver.com/mnews/article/014/0005479780?sid=102",
+      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-dist",
+      "score": 20.5,
       "press_tier": 3
     },
     {
@@ -402,24 +430,10 @@
       "rank": 1,
       "title": "보은군농업기술센터, 과수화상병 예방약제 무상 공급",
       "press": "팜&마켓",
-      "summary": "보은군농업기술센터가 과수화상병 예방약제를 무상 공급한다. 군은 인접 발생지역 영향으로 예방 관리가 중요하다며 적기·적량 살포와 방제 기록 작성·보관을 당부했다.",
+      "summary": "보은군농업기술센터가 과수화상병 예방약제를 무상 공급한다. 발생 인접지역인 점을 들어 적기·적량 살포와 방제 기록부 작성·보관을 당부했다.",
       "url": "https://www.farmnmarket.com/news/article.html?no=25691",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-pest",
       "score": 25.6,
-      "press_tier": 2
-    },
-    {
-      "id": "44db5ad45f0e",
-      "date": "2026-02-20",
-      "section": "pest",
-      "section_title": "병해충 및 방제",
-      "rank": 2,
-      "title": "천안시, 과수화상병 차단 '총력'…배 생산기술 교육 병행",
-      "press": "농수축산신문",
-      "summary": "천안시는 과수화상병 차단을 위해 공동약제방제를 5회 추진하고 배 생산기술 교육을 병행한다. 과수화상병 예방교육은 연 1회 필수이며 미이수 시 향후 발생 손실보상금이 20% 감액된다.",
-      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314711",
-      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-pest",
-      "score": 18.95,
       "press_tier": 2
     },
     {
@@ -430,10 +444,24 @@
       "rank": 1,
       "title": "설 이후 가격 하락 공식 약화…사과·배 ‘버티기’ 반복",
       "press": "데일리안",
-      "summary": "보고서는 명절 전후 농축산물 가격 하락 공식이 약화되며 사과·배의 ‘버티기’가 반복된다고 진단했다. 물가 안정대책이 공급 확대와 대규모 할인 지원 중심으로 강화돼 왔고 효과와 한계를 함께 짚었다.",
+      "summary": "보고서가 명절 전후 농축산물 가격 흐름과 물가 안정대책의 효과·한계를 진단했다. 대책이 공급 확대와 대규모 할인 지원 중심으로 강화돼 왔으며, 2026년 설 대책도 성수품 중심으로 추진됐다고 정리했다.",
       "url": "https://n.news.naver.com/mnews/article/119/0003060793?sid=101",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-policy",
-      "score": 14.3,
+      "score": 24.1,
+      "press_tier": 2
+    },
+    {
+      "id": "44db5ad45f0e",
+      "date": "2026-02-20",
+      "section": "pest",
+      "section_title": "병해충 및 방제",
+      "rank": 2,
+      "title": "천안시, 과수화상병 차단 '총력'…배 생산기술 교육 병행",
+      "press": "농수축산신문",
+      "summary": "천안시가 과수화상병 차단을 위해 공동약제방제를 5회 추진하는 등 대응에 나섰다. 예방교육은 연 1회 필수이며 미이수 시 화상병 발생 손실보상금이 20% 감액된다고 밝혔다.",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314711",
+      "archive": "/agri-news-brief/archive/2026-02-20.html#sec-pest",
+      "score": 18.95,
       "press_tier": 2
     },
     {
@@ -444,7 +472,7 @@
       "rank": 3,
       "title": "[오늘의 주요일정] 제주(20일, 금)",
       "press": "뉴스1",
-      "summary": "제주 지역 20일 주요 일정으로 농산물 산지유통센터 준공식 등이 포함됐다. 행사·회의 일정 중심 기사로, 농산물 수급·가격 관련 핵심 내용은 없다.",
+      "summary": "뉴스1 ‘제주(20일) 주요일정’으로 농산물 산지유통센터 준공식 등 지역 일정을 안내했다. 제주시 남광로에서 준공식이 열릴 예정이라고 전했다.",
       "url": "https://n.news.naver.com/mnews/article/421/0008781966?sid=102",
       "archive": "/agri-news-brief/archive/2026-02-20.html#sec-dist",
       "score": 13.2,
