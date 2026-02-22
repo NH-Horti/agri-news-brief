@@ -4378,6 +4378,110 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 
 
 # -----------------------------
+# Output URL integrity checks (press sites occasionally change/redirect)
+# -----------------------------
+OUTPUT_URL_VALIDATE_DOMAINS = set([d.strip().lower() for d in os.getenv("OUTPUT_URL_VALIDATE_DOMAINS", "nongmin.com").split(",") if d.strip()])
+OUTPUT_URL_TITLE_SIM_MIN = float(os.getenv("OUTPUT_URL_TITLE_SIM_MIN", "0.35"))
+OUTPUT_URL_VALIDATE_TIMEOUT = float(os.getenv("OUTPUT_URL_VALIDATE_TIMEOUT", "6"))
+OUTPUT_URL_VALIDATE_MAX = int(os.getenv("OUTPUT_URL_VALIDATE_MAX", "12"))
+
+_HTTP_UA = os.getenv(
+    "HTTP_UA",
+    "Mozilla/5.0 (compatible; agri-news-brief-bot/1.0; +https://github.com/NH-Horti/agri-news-brief)"
+)
+
+def _extract_html_title(html_text: str) -> str:
+    if not html_text:
+        return ""
+    try:
+        # Prefer og:title
+        m = re.search(r'<meta[^>]+property=[\'"]og:title[\'"][^>]+content=[\'"]([^\'"]+)[\'"]', html_text, re.IGNORECASE)
+        if m:
+            return clean_text(m.group(1))
+        m = re.search(r"<title[^>]*>(.*?)</title>", html_text, re.IGNORECASE | re.DOTALL)
+        if m:
+            return clean_text(m.group(1))
+    except Exception:
+        pass
+    return ""
+
+def _title_sim(a: str, b: str) -> float:
+    a = (a or "").strip()
+    b = (b or "").strip()
+    if not a or not b:
+        return 0.0
+    try:
+        import difflib
+        a2 = re.sub(r"[\s\W_]+", " ", a.lower()).strip()
+        b2 = re.sub(r"[\s\W_]+", " ", b.lower()).strip()
+        if not a2 or not b2:
+            return 0.0
+        return difflib.SequenceMatcher(None, a2, b2).ratio()
+    except Exception:
+        return 0.0
+
+def _fetch_page_title(url: str) -> str:
+    if not url:
+        return ""
+    try:
+        r = http_session().get(
+            url,
+            headers={"User-Agent": _HTTP_UA, "Accept": "text/html,application/xhtml+xml"},
+            timeout=OUTPUT_URL_VALIDATE_TIMEOUT,
+            allow_redirects=True,
+        )
+        if not r.ok:
+            return ""
+        ct = (r.headers.get("Content-Type") or "").lower()
+        if "text/html" not in ct:
+            return ""
+        text = r.text[:200000]
+        return _extract_html_title(text)
+    except Exception:
+        return ""
+
+def repair_output_urls(by_section: dict[str, list["Article"]]) -> dict[str, list["Article"]]:
+    """
+    Validate originallink for a small set of domains that sometimes redirect/reuse IDs.
+    If the fetched page title doesn't match our metadata title, fall back to Naver link.
+    This prevents cases like '농산물 기사' 메타데이터인데 원문은 전혀 다른 기사로 뜨는 문제.
+    """
+    if not OUTPUT_URL_VALIDATE_DOMAINS:
+        return by_section
+
+    checked = 0
+    for sec in SECTIONS:
+        for a in (by_section.get(sec["key"], []) or []):
+            if checked >= OUTPUT_URL_VALIDATE_MAX:
+                return by_section
+
+            origin = (getattr(a, "originallink", "") or "").strip()
+            link = (getattr(a, "link", "") or "").strip()
+            if not origin or not link:
+                continue
+
+            dom = normalize_host(domain_of(origin))
+            if dom not in OUTPUT_URL_VALIDATE_DOMAINS:
+                continue
+
+            checked += 1
+            page_title = _fetch_page_title(origin)
+            if not page_title:
+                continue
+
+            sim = _title_sim(a.title, page_title)
+            if sim < OUTPUT_URL_TITLE_SIM_MIN:
+                # fallback to Naver link (usually stable)
+                log.info("[URLFIX] origin title mismatch (dom=%s sim=%.2f) -> fallback to Naver link: %s", dom, sim, origin)
+                a.originallink = link
+                try:
+                    a.canon_url = canonicalize_url(link)
+                except Exception:
+                    pass
+    return by_section
+
+
+# -----------------------------
 # OpenAI summaries (optional)
 # -----------------------------
 def openai_extract_text(resp_json: dict) -> str:
@@ -5930,6 +6034,7 @@ def main():
 
     # collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
+    by_section = repair_output_urls(by_section)
     by_section = fill_summaries(by_section)
 
     # render (✅ 2번: 전체 노출 / 중요도 정렬)
