@@ -1795,6 +1795,9 @@ MID_TIER_PRESS = {
     "한국농어민신문",
     "농수축산신문",
     "농업정보신문",
+    "뉴스1",
+    "뉴시스",
+    "뉴스핌",
 }
 
 _UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
@@ -1852,6 +1855,11 @@ MAJOR_PRESS = {
     # 종편/보도채널 (필요시 매핑 확대)
     'TV조선', '채널A', '연합뉴스TV', 'OBS',
     '농민신문',
+}
+
+BROADCAST_PRESS = {
+    'KBS', 'MBC', 'SBS', 'YTN', 'JTBC', 'MBN',
+    'TV조선', '채널A', '연합뉴스TV', 'OBS',
 }
 
 # 중간: 농업 전문지/지방/중소/연구·지자체
@@ -2496,6 +2504,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
         return _reject("opinion_or_editorial")
 
+    # ✅ 사건/역사/정치성(예: 제주4.3) 인터뷰/스토리는 원예 브리핑 핵심 목적과 무관하므로 전체 섹션에서 배제
+    if any(t in ttl_l for t in ("제주4.3", "제주4·3", "4.3의", "4·3")):
+        return _reject("hardblock_jeju43_any_section")
+
 
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
@@ -2602,6 +2614,27 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # 예: '제주4.3/희생자/보상' 등 사건·정치성 인터뷰가 /society/ 경로로 들어오며
     #      본문에 '수급/APC/온라인 도매시장'이 한두 문장 섞여 dist 핵심으로 오르는 케이스를 차단.
     if key == "dist":
+        # HARD BLOCK: 사건/역사(예: 제주4.3) 인터뷰/기사는 본문에 APC/수급 언급이 섞여도 dist에 노출하지 않는다.
+        if any(t in ttl_l for t in ("제주4.3", "제주4·3", "4.3의", "4·3")):
+            return _reject("dist_hardblock_jeju43")
+
+        # 군(郡) 단위 지역 단신/행정 동정성 기사 억제:
+        # - 제목에 ○○군/군청/군수 등 지방 행정 신호가 있고,
+        # - 제목에 도매/유통 앵커가 없고,
+        # - 본문에도 도매/유통 실무 신호가 약하면 dist에서 제외
+        _countyish = (re.search(r"[가-힣]{2,}군", ttl) is not None) or ("군청" in ttl_l) or ("군수" in ttl_l)
+        if _countyish:
+            _title_dist_anchor = count_any(ttl_l, [t.lower() for t in (
+                "도매시장", "공판장", "가락시장", "경락", "경매", "반입",
+                "도매법인", "중도매", "시장도매인",
+                "산지유통", "산지유통센터", "apc",
+                "물류", "저온", "저장", "선별", "집하", "출하", "온라인 도매시장",
+                "원산지", "부정유통", "단속", "검역", "통관", "수출"
+            )])
+            if (_title_dist_anchor == 0) and (market_hits == 0) and (not has_apc_agri_context(text)):
+                return _reject("dist_county_local_weak_dist_signal")
+
+
         horti_title_sc = best_horti_score(ttl, "")
 
         # 제목 기반 앵커(도매/유통/농업) — 제목에 앵커가 없으면 '본문 일부 언급' 오탐 가능성이 높다.
@@ -2866,6 +2899,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 언론/기관 가중치
     score += press_weight(press, dom)
 
+    # ✅ 중앙지/방송사(티어3) 추가 가점: 공신력/파급력 높은 이슈를 상단에 더 잘 반영
+    _pt = press_tier(press, dom)
+    if _pt == 3:
+        score += 0.9
+        if (press or '').strip() in BROADCAST_PRESS:
+            score += 0.4
+
     # 도메인 품질 패널티
     score -= low_quality_domain_penalty(dom)
 
@@ -2875,6 +2915,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if any(w in text for w in ("원예","과수","화훼","절화","과일","채소","청과","사과","배","감귤","딸기","고추","오이","포도")) or horti_sc >= 1.4:
             if key in ("dist", "policy"):
                 score += 2.6
+                # 제목에 자조금이 명시된 이슈는 체크 우선(핵심성 가점)
+                if "자조금" in title_l:
+                    score += 1.6
             elif key == "supply":
                 score += 2.0
             else:
@@ -2892,6 +2935,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 3.4
         else:
             score -= 1.4
+
+    # ✅ dist에서 군(郡) 단위 지역 단신/행정 동정성 기사 추가 억제(News1 자조금 같은 핵심 이슈가 아래로 밀리는 것을 방지)
+    if key == "dist":
+        if (re.search(r"[가-힣]{2,}군", title) is not None) or ("군청" in title_l) or ("군수" in title_l):
+            if market_hits == 0 and (not has_apc_agri_context(text)):
+                score -= 5.0
 
     # 농협(경제지주/공판장 등) 관련성 가점
     score += nh_boost(text, key)
