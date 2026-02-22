@@ -834,9 +834,10 @@ def _event_key(a: "Article", section_key: str) -> str | None:
 
         # 1) APC 준공/개장/가동/개소 등 이벤트(농협/지역 단위 묶음)
         if ("apc" in text or "산지유통센터" in text or "산지유통" in text) and any(k in text for k in ("준공", "준공식", "개장", "개소", "문 열", "가동", "준비", "스마트")):
-            m = re.search(r"([가-힣]{2,12}농협)", (a.title or "") + " " + (a.description or ""))
+            m = re.search(r"([가-힣]{2,12})\s*농협", (a.title or "") + " " + (a.description or ""))
             if m:
-                return f"EV:APC:{m.group(1)}"
+                org = f"{m.group(1)}농협"
+                return f"EV:APC:{org}"
             regs = sorted(_region_set(text))
             loc = regs[0] if regs else ""
             return f"EV:APC:{loc}"
@@ -850,6 +851,53 @@ def _event_key(a: "Article", section_key: str) -> str | None:
         return None
 
     return None
+
+
+
+def _dedupe_prefer_bonus(a: "Article", section_key: str) -> float:
+    """중복(이벤트 키) 내에서 1건만 남길 때의 '선호' 보정.
+    - 특정 매체(단일) 편향이 아니라, 티어/유형(방송 vs 통신/라운드업) 중심으로 안정화한다.
+    - 같은 이벤트라면 방송(특히 전국) 1건을 남기고, 통신 '소식/브리프'는 밀어낸다.
+    """
+    try:
+        p = (getattr(a, "press", "") or "").strip()
+        d = normalize_host(getattr(a, "domain", "") or "")
+        title = (getattr(a, "title", "") or "")
+        desc = (getattr(a, "description", "") or "")
+        txt = (title + " " + desc).lower()
+
+        b = 0.0
+
+        pri = press_priority(p, d)
+        b += {3: 1.8, 2: 0.6, 1: 0.0}.get(pri, 0.0)
+
+        # 전국 방송사(중앙) 우선
+        if p in BROADCAST_PRESS:
+            b += 1.4
+
+        # 지역 방송(예: JIBS)은 통신보다는 우선, 전국 방송보다는 낮게
+        if p in ("JIBS", "JIBS제주방송", "JIBS 제주방송") or d.endswith("jibstv.com"):
+            b += 0.4
+
+        # 통신/온라인 서비스는 중복 그룹에서는 후순위(기사량/라운드업 빈도)
+        if p in WIRE_SERVICES:
+            b -= 0.8
+
+        # '○○소식/제주소식' 같은 라운드업은 중복 그룹에서는 후순위
+        if ("제주소식" in title) or title.strip().endswith("소식"):
+            b -= 1.2
+
+        # dist에서 로컬 단신/공지형이면 중복 그룹에서 강하게 밀어냄
+        if section_key == "dist" and is_local_brief_text(title, desc, "dist"):
+            b -= 2.0
+
+        # 농업 전문/현장 매체 시장 리포트는 살리는 편(중복 그룹에서도)
+        if p in AGRI_TRADE_PRESS or d in AGRI_TRADE_HOSTS:
+            b += 0.8
+
+        return b
+    except Exception:
+        return 0.0
 
 
 def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Article"]:
@@ -866,8 +914,8 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
         if cur is None:
             best[k] = a
             continue
-        cand = (float(getattr(a, "score", 0.0) or 0.0), press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None))
-        prev = (float(getattr(cur, "score", 0.0) or 0.0), press_priority(cur.press, cur.domain), getattr(cur, "pub_dt_kst", None))
+        cand = (float(getattr(a, "score", 0.0) or 0.0) + _dedupe_prefer_bonus(a, section_key), press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None))
+        prev = (float(getattr(cur, "score", 0.0) or 0.0) + _dedupe_prefer_bonus(cur, section_key), press_priority(cur.press, cur.domain), getattr(cur, "pub_dt_kst", None))
         if cand > prev:
             best[k] = a
 
@@ -3046,6 +3094,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+        # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
+        # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
+        if press in AGRI_TRADE_PRESS or normalize_host(dom) in AGRI_TRADE_HOSTS:
+            if has_any(title_l, ["대목장", "대목", "현장", "어땠나", "판매", "시장", "반응"]):
+                score += 3.2
+
+        # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
+        if is_local_brief_text(title, desc, "dist"):
+            score -= 3.5
+
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
@@ -3439,7 +3497,13 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         if is_local_brief_text(a.title or "", a.description or "", section_key):
             return False
 
+        # dist_hits(도매/유통 강신호)가 부족하면 기본적으로 코어 불가
+        # 단, 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는(유통 실무 체크 가치) 예외로 코어 허용
         if dist_hits < 2:
+            if ((a.press in AGRI_TRADE_PRESS or normalize_host(a.domain or "") in AGRI_TRADE_HOSTS)
+                    and has_any(title, ["대목장", "대목", "현장", "어땠나", "판매", "시장"])
+                    and (horti_title_sc >= 1.4 or horti_sc >= 2.0)):
+                return True
             return False
         return (agri_anchor_hits >= 1) or (horti_sc >= 2.0) or (market_hits >= 1)
 
@@ -3622,11 +3686,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
+    wire_count = 0  # 통신/온라인 서비스 과대표집 방지
     # 더 보수적으로(사용자 피드백: 지방지/인터넷 비중 과다)
     tier1_cap = 1
     tier2_cap = 2 if section_key in ("supply", "policy") else 3
 
     def _source_ok_local(a: Article) -> bool:
+        nonlocal wire_count
+        # dist에서 통신/온라인 서비스는 상단을 잠식하기 쉬워 1건만 허용
+        if section_key == "dist" and (a.press or "").strip() in WIRE_SERVICES:
+            if wire_count >= 1:
+                return False
         t = press_priority(a.press, a.domain)
         if t == 1:
             return tier_count[1] < tier1_cap
@@ -3635,6 +3705,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return True
 
     def _source_take(a: Article) -> None:
+        nonlocal wire_count
+        if section_key == "dist" and (a.press or "").strip() in WIRE_SERVICES:
+            wire_count += 1
         t = press_priority(a.press, a.domain)
         if t in tier_count:
             tier_count[t] += 1
