@@ -1567,6 +1567,71 @@ def governance_interview_penalty(text: str, title: str, section_key: str, horti_
 
 
 
+# -----------------------------
+# Local brief detection (티어 기반 하단/제외용)
+# -----------------------------
+# 목표: 특정 매체를 찍어 누르는 것이 아니라, '지역 단신/지자체 행정 공지형' 패턴 자체를 잡아낸다.
+# - 예: ○○시/○○군/○○구 + (지원/추진/협약/개최/모집/선정/간담회...) 류
+# - 단, '자조금(원예)' 같이 실무 핵심 이슈는 예외로 살린다.
+_LOCAL_REGION_IN_TITLE_RX = re.compile(r"[가-힣]{2,}(?:시|군|구|읍|면)")
+_LOCAL_BRIEF_PUNCT_RX = re.compile(r"[，,·•]|\s[-–—]\s")
+_LOCAL_ADMINISH_TERMS = (
+    "지원", "추진", "확대", "구축", "조성", "개선", "강화", "점검", "단속", "시범", "공모", "선정", "모집",
+    "협약", "간담회", "설명회", "회의", "교육", "워크숍", "세미나", "발대식", "출범", "개최", "행사",
+    "방문", "현장", "개관", "개장", "준공", "착공", "완공", "기부", "전달", "기탁"
+)
+# dist에서 '로컬 단신'으로 보기 싫은 유형을 더 강하게 걸러야 하는 이유:
+# - 후보가 적은 날, 이런 단신이 1~2위를 차지하면 진짜 체크해야 할 이슈(예: 원예 자조금)가 아래로 밀린다.
+_DIST_STRONG_ANCHORS = (
+    "가락시장", "도매시장", "공판장", "공영도매시장", "경락", "경매", "반입",
+    "도매법인", "중도매", "시장도매인", "산지유통", "산지유통센터", "apc",
+    "원산지", "부정유통", "단속", "검역", "통관", "수출", "온라인 도매시장",
+)
+
+def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
+    """지역 단신(지자체 행정 공지형) 여부.
+    - 특정 매체가 아니라 '패턴'을 기준으로 판정한다.
+    - dist에서만 보수적으로 사용(다른 섹션까지 과도하게 줄이지 않기 위함).
+    """
+    if section_key != "dist":
+        return False
+
+    ttl = (title or "")
+    txt = ((title or "") + " " + (desc or "")).lower()
+    ttl_l = (title or "").lower()
+
+    # 예외: 원예 자조금은 반드시 체크(지역기사라도 실무 핵심)
+    if "자조금" in txt and count_any(txt, [t.lower() for t in ("원예","과수","화훼","과일","채소","청과","사과","배","감귤","딸기","고추","오이","포도")]) >= 1:
+        return False
+
+    # 제목에 지역 단위(시/군/구/읍/면) 표기가 없으면 로컬 단신으로 보지 않음
+    if _LOCAL_REGION_IN_TITLE_RX.search(ttl) is None:
+        return False
+
+    # 제목이 '○○시, ...' / '○○군·...' 같은 단신형 구두점 패턴이면 강한 신호
+    punct = _LOCAL_BRIEF_PUNCT_RX.search(ttl) is not None
+
+    # 지자체 행정/공지형 단어(지원/추진/협약/모집...)가 제목/본문에 있으면 단신 가능성↑
+    adminish_hits = count_any(txt, [t.lower() for t in _LOCAL_ADMINISH_TERMS])
+
+    if (not punct) and adminish_hits == 0:
+        # 지역 표기만 있다고 단신으로 보진 않음(오탐 방지)
+        return False
+
+    # 제목/본문에 도매·유통 '강 앵커'가 있으면 로컬 단신으로 단정하지 않음
+    if any(w.lower() in txt for w in _DIST_STRONG_ANCHORS):
+        return False
+    if has_apc_agri_context(txt):
+        return False
+
+    # 제목의 원예/도매 신호가 약하면(=본문 일부 언급) 단신으로 간주
+    if best_horti_score(title or "", "") < 1.6 and count_any(ttl_l, [t.lower() for t in _DIST_STRONG_ANCHORS]) == 0:
+        return True
+
+    # 그 외는 보수적으로 False
+    return False
+
+
 def title_signal_bonus(title: str) -> float:
     t = (title or '').lower()
     bonus = 0.0
@@ -2942,6 +3007,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             if market_hits == 0 and (not has_apc_agri_context(text)):
                 score -= 5.0
 
+    # ✅ dist에서 '지역 단신/지자체 공지형' 기사(시·군·구 + 지원/추진/협약/모집...)는
+    # - 후보가 적은 날 상단(핵심2)로 올라와 진짜 체크해야 할 이슈(예: 원예 자조금)를 밀어내는 문제가 있어
+    #   점수 단계에서 미세하게 더 감점한다. (선택 단계에서도 2개 이상 채워졌으면 추가 제외)
+    if key == "dist" and is_local_brief_text(title, desc, key):
+        score -= 4.2
+
     # 농협(경제지주/공판장 등) 관련성 가점
     score += nh_boost(text, key)
 
@@ -3244,6 +3315,10 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         dist_hits = count_any(text, [t.lower() for t in dist_terms])
         if has_apc_agri_context(text):
             dist_hits += 1
+        # ✅ 지역 단신/지자체 공지형 기사(dist)는 핵심2로 올리지 않는다.
+        if is_local_brief_text(a.title or "", a.description or "", section_key):
+            return False
+
         if dist_hits < 2:
             return False
         return (agri_anchor_hits >= 1) or (horti_sc >= 2.0) or (market_hits >= 1)
@@ -3469,6 +3544,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if _already_used(a):
             continue
+        # dist: 지역 단신/공지형은 core 후보에서 제외(진짜 이슈가 밀리는 것을 방지)
+        if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
+            continue
         if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
             continue
         if not _headline_gate(a, section_key):
@@ -3493,6 +3571,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < thr:
                 continue
             if _already_used(a):
+                continue
+            # dist: 지역 단신/공지형은 core 후보에서 제외
+            if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
                 continue
@@ -3525,6 +3606,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _already_used(a):
                 continue
+            # 지역 단신/공지형은 dist 앵커 추가 단계에서도 제외
+            if is_local_brief_text(a.title or "", a.description or "", section_key):
+                continue
             text = (a.title + " " + a.description).lower()
             has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text)
             if not has_anchor:
@@ -3555,6 +3639,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if len(final) >= max_n:
             break
         if a in final:
+            continue
+        # dist: 이미 2건 이상 확보된 상태에서는 지역 단신/공지형 기사는 추가하지 않음(빈칸 메우기용으로만 허용)
+        if section_key == "dist" and len(final) >= 2 and is_local_brief_text(a.title or "", a.description or "", section_key):
             continue
         # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
         if a.score < tail_cut:
