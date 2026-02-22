@@ -2396,6 +2396,31 @@ def policy_domain_override(dom: str, text: str) -> bool:
         return has_any(text, [k.lower() for k in AGRI_POLICY_KEYWORDS])
     return False
 
+
+# -----------------------------
+# Section routing overrides
+# -----------------------------
+# 정책브리핑(예: korea.kr)은 품목/유통 쿼리에도 걸릴 수 있으므로,
+# 최종 섹션 라우팅 단계에서 policy 섹션으로 강제 이동시킨다.
+_FORCE_POLICY_DOMAIN_SUFFIXES = ("korea.kr",)
+_FORCE_POLICY_PRESS_NAMES = {"정책브리핑", "정책 브리핑"}
+
+def force_section_for_article(a: "Article") -> str:
+    """Return forced section key for certain authoritative sources."""
+    try:
+        dom = normalize_host(getattr(a, "domain", "") or "")
+    except Exception:
+        dom = (getattr(a, "domain", "") or "").strip().lower()
+        if dom.startswith("www."):
+            dom = dom[4:]
+    press = (getattr(a, "press", "") or "").strip()
+
+    if dom and any(dom == s or dom.endswith("." + s) for s in _FORCE_POLICY_DOMAIN_SUFFIXES):
+        return "policy"
+    if press in _FORCE_POLICY_PRESS_NAMES:
+        return "policy"
+    return ""
+
 _LOCAL_GEO_PATTERN = re.compile(r"[가-힣]{2,6}(군|시|구|도)\b")
 
 
@@ -3788,6 +3813,52 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         _maybe_add_krei_issues_to_policy(raw_by_section, start_kst, end_kst)
     except Exception as e:
         log.warning("[WARN] report augmentation failed: %s", e)
+
+
+    # ✅ 섹션 라우팅 override:
+    # - 정책브리핑(korea.kr) 등은 '품목/유통' 쿼리에도 걸릴 수 있어,
+    #   원천/도메인 기준으로 policy 섹션으로 강제 이동시킨다.
+    # - 섹션 간 중복 후보는 URL 기준으로 하나만 남기되(누락 방지 목적),
+    #   '강제 섹션'이 있으면 그 섹션을 우선한다.
+    sec_conf_by_key = {s["key"]: s for s in SECTIONS}
+
+    best_by_key: dict[str, Article] = {}
+    forced_section_by_key: dict[str, str] = {}
+
+    for sec_key, items in raw_by_section.items():
+        for a in items:
+            k = a.canon_url or a.norm_key or (a.link or "")
+            if not k:
+                # 최후의 수단: 제목키+언론사
+                k = f"{a.press}::{a.title_key}"
+
+            forced = force_section_for_article(a)  # "" or "policy"
+            if forced:
+                forced_section_by_key[k] = forced
+
+            prev = best_by_key.get(k)
+            if prev is None or (a.score or 0.0) > (prev.score or 0.0):
+                best_by_key[k] = a
+
+    # 강제 섹션 반영 + (필요 시) 점수 재계산
+    routed_by_section: dict[str, list[Article]] = {s["key"]: [] for s in SECTIONS}
+    for k, a in best_by_key.items():
+        forced = forced_section_by_key.get(k, "")
+        if forced and forced != a.section:
+            a.section = forced
+            try:
+                conf = sec_conf_by_key.get(forced)
+                if conf:
+                    a.score = compute_rank_score(a.title, a.description, a.domain, a.pub_dt_kst, conf, a.press)
+            except Exception:
+                pass
+
+        dest = a.section or "supply"
+        if dest not in routed_by_section:
+            routed_by_section[dest] = []
+        routed_by_section[dest].append(a)
+
+    raw_by_section = routed_by_section
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
