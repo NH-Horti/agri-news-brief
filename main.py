@@ -319,6 +319,25 @@ HARD_OFFTOPIC_TERMS = [
     "의과학원",
 ]
 
+# 축산물(한우/돼지고기/계란 등) 단독 이슈는 원예 브리핑에서 제외(완전 배제)
+# - '농축산물/농림축산식품부' 같은 중립 표현만으로는 제외하지 않도록, 보수적으로 판단한다.
+LIVESTOCK_STRICT_TERMS = [
+    "축산물", "축산", "가축", "도축", "도계", "사료", "축산업", "낙농", "양돈", "양계",
+    "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "닭고기", "계란", "달걀", "우유", "치즈",
+    "젖소", "소", "돼지", "닭", "오리",
+]
+# 농축산 정책/행정 일반 표현(오탐 방지 목적) — 제거 후 판단에 사용
+LIVESTOCK_NEUTRAL_PHRASES = [
+    "농축산물", "농축수산물", "농림축산식품부", "농림축산", "농축산", "농축수산",
+]
+# 원예/농산물(비축산) 강신호(축산 단독인지 판단용)
+HORTI_CORE_MARKERS = [
+    "원예", "과수", "화훼", "절화", "과일", "채소", "청과", "시설채소", "하우스", "비가림",
+    "사과", "배", "감귤", "포도", "딸기", "고추", "오이", "토마토", "파프리카", "상추",
+    "단감", "곶감", "참다래", "키위", "샤인머스캣", "만감", "한라봉", "레드향", "천혜향",
+    "자조금", "원예자조금", "과수자조금", "화훼", "국화", "장미",
+]
+
 
 # 금융/산업 일반 기사(농협은행/NH투자/주가/실적 등) 오탐 차단용
 FINANCE_STRICT_TERMS = [
@@ -2497,6 +2516,27 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     if "사과" in text and not is_edible_apple_context(text):
         return _reject("apple_non_edible_context")
 
+
+    # ✅ 축산물(한우/돼지고기/계란 등) 단독 이슈는 원예 브리핑 목적과 다르므로 완전 배제
+    # - 단, '농림축산식품부/농축산물' 같은 중립 표현만으로는 오탐하지 않도록 해당 문구를 제거 후 판단한다.
+    _t2 = text
+    for _ph in LIVESTOCK_NEUTRAL_PHRASES:
+        _t2 = _t2.replace(_ph.lower(), "")
+    # 원예/농산물(비축산) 신호(자조금 자체는 축산도 존재하므로 여기선 제외)
+    _horti_non_livestock = [
+        "원예","과수","화훼","절화","과일","채소","청과","시설채소","하우스","비가림",
+        "사과","배","감귤","포도","딸기","고추","오이","토마토","파프리카","상추",
+        "단감","곶감","참다래","키위","샤인머스캣","만감","한라봉","레드향","천혜향",
+        "국화","장미",
+    ]
+    livestock_hits = count_any(_t2, [t.lower() for t in LIVESTOCK_STRICT_TERMS])
+    horti_hits_pre = count_any(_t2, [t.lower() for t in _horti_non_livestock])
+    horti_sc_pre = best_horti_score(ttl, desc)
+    # 축산 강신호(축산물/한우/돼지고기/계란 등) + 원예 신호 거의 없음 → 완전 배제
+    livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
+    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2):
+        return _reject("livestock_only")
+
     # ✅ 해외 원예/화훼 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
     if key in ("supply", "dist") and is_remote_foreign_horti(text):
         return _reject("remote_foreign_horti")
@@ -2546,6 +2586,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # - 'APC' 같은 단어만으로는 지역 단신이 많이 유입되므로,
     #   도매/유통 인프라(선별/저온/저장/물류/준공/가동 등) 또는 도매시장 강신호가 함께 있을 때만 통과
     if normalize_host(dom).endswith("news1.kr") and ("/local/" in _path):
+        # ✅ 자조금(특히 원예) 이슈는 지역기사라도 반드시 체크 대상: 인프라/도매 앵커가 약해도 통과
+        if "자조금" in text and count_any(text, [t.lower() for t in ("원예","과수","화훼","과일","채소","청과","사과","배","감귤","딸기","고추","오이","포도")]) >= 1:
+            return True
         infra_terms = ["준공", "완공", "가동", "확충", "확대", "선별", "저온", "저장", "ca저장", "물류", "통관", "검역", "수출", "원산지", "부정유통", "단속"]
         has_infra = any(t.lower() in text for t in infra_terms)
         has_wholesale = any(t in text for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장"))
@@ -2825,6 +2868,30 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 도메인 품질 패널티
     score -= low_quality_domain_penalty(dom)
+
+    # ✅ 자조금(특히 원예) 이슈는 실무 체크 우선: dist/policy 우선 가점
+    if "자조금" in text:
+        # 원예/과수/화훼/청과 맥락이 있으면 강하게 가점(축산 자조금은 is_relevant에서 배제됨)
+        if any(w in text for w in ("원예","과수","화훼","절화","과일","채소","청과","사과","배","감귤","딸기","고추","오이","포도")) or horti_sc >= 1.4:
+            if key in ("dist", "policy"):
+                score += 2.6
+            elif key == "supply":
+                score += 2.0
+            else:
+                score += 1.2
+
+    # ✅ 소비자 물가/장바구니류(농산물 일부 언급) 기사: 참고용으로는 두되 핵심에서 밀리도록 감점
+    consumer_price_terms = ("장바구니", "밥상", "물가", "소비자물가", "외식물가", "대형마트", "마트", "할인행사")
+    if any(w in text for w in consumer_price_terms):
+        if market_hits == 0 and horti_sc < 2.2 and key in ("supply", "dist"):
+            score -= 2.4
+
+    # ✅ 스포츠동아(지역 단신/캠페인)류는 하단 배치(필요시만 백필로 노출)
+    if ("sports.donga.com" in dom) or (press == "스포츠동아"):
+        if market_hits == 0 and horti_sc < 2.4:
+            score -= 3.4
+        else:
+            score -= 1.4
 
     # 농협(경제지주/공판장 등) 관련성 가점
     score += nh_boost(text, key)
