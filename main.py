@@ -41,6 +41,8 @@ from email.utils import parsedate_to_datetime
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import random
@@ -52,12 +54,71 @@ import threading
 # -----------------------------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("agri-brief")
+# -----------------------------
+# Log sanitization (secrets / huge bodies)
+# -----------------------------
+_SECRET_PATTERNS = [
+    (re.compile(r'("access_token"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
+    (re.compile(r'("refresh_token"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
+    (re.compile(r'("client_secret"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
+    (re.compile(r'(Bearer\s+)[A-Za-z0-9\-_.]+', re.I), r'\1***'),
+]
+
+def _safe_body(text: str, limit: int = 500) -> str:
+    s = (text or "").strip()
+    for pat, rep in _SECRET_PATTERNS:
+        try:
+            s = pat.sub(rep, s)
+        except Exception:
+            pass
+    if len(s) > limit:
+        s = s[:limit] + "…(truncated)"
+    return s
+
+def _log_http_error(prefix: str, r: requests.Response):
+    try:
+        body = _safe_body(getattr(r, "text", ""), limit=500)
+    except Exception:
+        body = "(unavailable)"
+    try:
+        url = getattr(r, "url", "")
+    except Exception:
+        url = ""
+    log.error("%s status=%s url=%s body=%s", prefix, getattr(r, "status_code", "?"), url, body)
 
 # -----------------------------
 # HTTP session
 # -----------------------------
 SESSION = requests.Session()
 _SESSION_LOCAL = threading.local()
+
+def _configure_session(s: requests.Session) -> requests.Session:
+    """Configure a Session once: connection pooling + light retries for GET/HEAD."""
+    if getattr(s, "_agri_configured", False):
+        return s
+    retry = Retry(
+        total=int(os.getenv("HTTP_RETRY_TOTAL", "3")),
+        connect=int(os.getenv("HTTP_RETRY_CONNECT", "3")),
+        read=int(os.getenv("HTTP_RETRY_READ", "3")),
+        backoff_factor=float(os.getenv("HTTP_RETRY_BACKOFF", "0.3")),
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset(["GET", "HEAD", "OPTIONS"]),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry, pool_connections=20, pool_maxsize=20)
+    try:
+        s.mount("https://", adapter)
+        s.mount("http://", adapter)
+    except Exception:
+        pass
+    try:
+        s.headers.update({"User-Agent": "agri-news-brief-bot"})
+    except Exception:
+        pass
+    setattr(s, "_agri_configured", True)
+    return s
+
+_configure_session(SESSION)
 
 def http_session():
     """Thread-safe session accessor.
@@ -68,6 +129,7 @@ def http_session():
             s = getattr(_SESSION_LOCAL, "session", None)
             if s is None:
                 s = requests.Session()
+                _configure_session(s)
                 _SESSION_LOCAL.session = s
             return s
     except Exception:
@@ -229,6 +291,9 @@ def _naver_throttle():
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
+OPENAI_MAX_OUTPUT_TOKENS = int((os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "0") or "0").strip() or 0)
+OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "").strip()
+OPENAI_TEXT_VERBOSITY = os.getenv("OPENAI_TEXT_VERBOSITY", "").strip()
 
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
@@ -2277,13 +2342,26 @@ def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     if r.status_code == 404:
         return None, None
     if not r.ok:
-        log.error("[GitHub GET ERROR] %s", r.text)
+        _log_http_error("[GitHub GET ERROR]", r)
         r.raise_for_status()
     j = r.json()
     content_b64 = j.get("content", "")
     sha = j.get("sha")
     raw = base64.b64decode(content_b64).decode("utf-8", errors="replace") if content_b64 else ""
     return raw, sha
+
+
+def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> list[dict]:
+    """List a directory via GitHub Contents API. Returns [] on 404."""
+    url = f"https://api.github.com/repos/{repo}/contents/{dir_path}"
+    r = http_session().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
+    if r.status_code == 404:
+        return []
+    if not r.ok:
+        _log_http_error("[GitHub LIST ERROR]", r)
+        r.raise_for_status()
+    j = r.json()
+    return j if isinstance(j, list) else []
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
     """GitHub Contents API로 파일 생성/업데이트.
@@ -2318,7 +2396,7 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
         break
 
     if last_err is not None:
-        log.error("[GitHub PUT ERROR] %s", last_err.text)
+        _log_http_error("[GitHub PUT ERROR]", last_err)
         last_err.raise_for_status()
     raise RuntimeError("GitHub PUT failed without response")  # should not happen
 
@@ -2355,20 +2433,51 @@ def sanitize_dates(dates: list[str]) -> list[str]:
 def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], report_date: str,
                                 verify_n: int = 120, max_workers: int = 8) -> list[str]:
     """최근 N개(기본 120개)만 GitHub에 실제 파일 존재 여부를 확인해, UI에 노출되는 링크 404를 방지한다.
-    - report_date는 이번 실행에서 생성/업로드하므로 존재한다고 간주.
+    최적화:
+    - 기존: 날짜마다 Contents API를 호출(최대 verify_n번)
+    - 개선: docs/archive 디렉터리를 1회 listing → set으로 존재여부 확인
+    - listing 실패 시에만 기존 방식(날짜별 확인)으로 fallback
     """
+    head = (dates_desc or [])[:verify_n]
+    if not head:
+        return []
+
+    # 이번 실행에서 생성/업로드하므로 존재한다고 간주.
+    if report_date and report_date not in head:
+        head = [report_date] + head
+
+    try:
+        items = github_list_dir(repo, DOCS_ARCHIVE_DIR, token, ref="main")
+        names = {it.get("name") for it in items if isinstance(it, dict)}
+        avail_dates = set()
+        for nm in names:
+            if not isinstance(nm, str) or not nm.endswith(".html"):
+                continue
+            d = nm[:-5]
+            if is_iso_date_str(d):
+                avail_dates.add(d)
+
+        verified = []
+        for d in head:
+            if d == report_date:
+                verified.append(d)
+            elif d in avail_dates:
+                verified.append(d)
+        return verified
+
+    except Exception as e:
+        log.warning("[WARN] archive directory listing failed; fallback to per-date checks: %s", e)
+
     from concurrent.futures import ThreadPoolExecutor
 
-    head = dates_desc[:verify_n]
     to_check = [d for d in head if d != report_date]
-
     exists: dict[str, bool] = {}
 
     def _check(d: str) -> bool:
         try:
             return archive_page_exists(repo, token, d)
-        except Exception as e:
-            log.warning("[WARN] archive exists check failed for %s: %s", d, e)
+        except Exception as e2:
+            log.warning("[WARN] archive exists check failed for %s: %s", d, e2)
             return False
 
     if to_check:
@@ -2383,7 +2492,6 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
         else:
             if exists.get(d, False):
                 verified.append(d)
-
     return verified
 
 
@@ -2621,7 +2729,7 @@ def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str =
 
             # 그 외 오류는 즉시 raise (호출부에서 처리)
             if not r.ok:
-                log.error("[NAVER ERROR] %s", r.text)
+                _log_http_error("[NAVER ERROR]", r)
                 r.raise_for_status()
 
             # r.ok인데도 error 구조가 이상한 경우
@@ -4479,6 +4587,13 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             {"role": "user", "content": user},
         ],
     }
+    if OPENAI_MAX_OUTPUT_TOKENS and OPENAI_MAX_OUTPUT_TOKENS > 0:
+        payload["max_output_tokens"] = int(OPENAI_MAX_OUTPUT_TOKENS)
+    if OPENAI_REASONING_EFFORT:
+        # GPT-5 계열에서 지원되는 옵션 (예: minimal/low/medium/high/xhigh/none)
+        payload["reasoning"] = {"effort": OPENAI_REASONING_EFFORT}
+    if OPENAI_TEXT_VERBOSITY:
+        payload["text"] = {"verbosity": OPENAI_TEXT_VERBOSITY}
 
     try:
         r = http_session().post(
@@ -4488,7 +4603,7 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
             timeout=60,
         )
         if not r.ok:
-            log.warning("[OpenAI] summarize skipped: %s", r.text)
+            log.warning("[OpenAI] summarize skipped: %s", _safe_body(r.text, limit=500))
             return {}
 
         text = openai_extract_text(r.json()).strip()
@@ -5730,9 +5845,9 @@ def ensure_absolute_http_url(u: str) -> str:
 def log_kakao_link(url: str):
     try:
         p = urlparse(url)
-        print(f"[KAKAO LINK] {url}  (host={p.netloc})")
+        log.info("[KAKAO LINK] %s (host=%s)", url, p.netloc)
     except Exception:
-        print(f"[KAKAO LINK] {url}")
+        log.info("[KAKAO LINK] %s", url)
 
 
 # -----------------------------
@@ -5826,7 +5941,7 @@ def kakao_refresh_access_token() -> str:
 
     r = http_session().post(url, data=data, timeout=30)
     if not r.ok:
-        log.error("[KAKAO TOKEN ERROR] %s", r.text)
+        _log_http_error("[KAKAO TOKEN ERROR]", r)
         r.raise_for_status()
     j = r.json()
     return j["access_token"]
@@ -5850,7 +5965,7 @@ def kakao_send_to_me(text: str, web_url: str):
 
     r = http_session().post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
     if not r.ok:
-        log.error("[KAKAO SEND ERROR] %s", r.text)
+        _log_http_error("[KAKAO SEND ERROR]", r)
         r.raise_for_status()
     return r.json()
 
