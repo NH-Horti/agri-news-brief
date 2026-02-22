@@ -57,13 +57,31 @@ log = logging.getLogger("agri-brief")
 # HTTP session
 # -----------------------------
 SESSION = requests.Session()
+_SESSION_LOCAL = threading.local()
+
+def http_session():
+    """Thread-safe session accessor.
+    - When NAVER_MAX_WORKERS>1, use per-thread Session to avoid cross-thread issues.
+    """
+    try:
+        if int(os.getenv("NAVER_MAX_WORKERS", "1")) > 1:
+            s = getattr(_SESSION_LOCAL, "session", None)
+            if s is None:
+                s = requests.Session()
+                _SESSION_LOCAL.session = s
+            return s
+    except Exception:
+        pass
+    return SESSION
+
 
 # -----------------------------
 # Config
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
-MAX_PER_SECTION = max(1, min(int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5"))), 5))
+MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
+MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -195,17 +213,22 @@ _NAVER_LOCK = threading.Lock()
 _NAVER_LAST_CALL = 0.0
 
 def _naver_throttle():
-    """전역 최소 간격을 보장(멀티스레드 안전)."""
+    """전역 최소 간격을 보장(멀티스레드 안전).
+    ⚠️ 병목 방지: sleep은 락 밖에서 수행.
+    """
     global _NAVER_LAST_CALL
+    wait = 0.0
     with _NAVER_LOCK:
         now = time.monotonic()
         wait = NAVER_MIN_INTERVAL_SEC - (now - _NAVER_LAST_CALL)
-        if wait > 0:
-            time.sleep(wait)
-        _NAVER_LAST_CALL = time.monotonic()
+        if wait < 0:
+            wait = 0.0
+        _NAVER_LAST_CALL = now + wait
+    if wait > 0:
+        time.sleep(wait)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.2").strip()
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
 
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
@@ -739,7 +762,7 @@ def _trigrams(s: str) -> set[str]:
         return {s}
     return {s[i:i+3] for i in range(len(s) - 2)}
 
-def _jaccard(a: set[str], b: set[str]) -> float:
+def _jaccard_legacy(a: set[str], b: set[str]) -> float:
     if not a or not b:
         return 0.0
     inter = len(a & b)
@@ -1972,7 +1995,7 @@ def github_api_headers(token: str):
 
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
-    r = SESSION.get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
+    r = http_session().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
     if r.status_code == 404:
         return None, None
     if not r.ok:
@@ -2266,7 +2289,7 @@ def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str =
     for attempt in range(max(1, NAVER_MAX_RETRIES)):
         try:
             _naver_throttle()
-            r = SESSION.get(url, headers=headers, params=params, timeout=25)
+            r = http_session().get(url, headers=headers, params=params, timeout=25)
 
             # JSON 파싱 시도 (에러 본문에 errorCode가 오는 경우 대응)
             data = None
@@ -2331,7 +2354,7 @@ def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = 
     for attempt in range(max(1, NAVER_MAX_RETRIES)):
         try:
             _naver_throttle()
-            r = SESSION.get(url, headers=headers, params=params, timeout=25)
+            r = http_session().get(url, headers=headers, params=params, timeout=25)
 
             data = None
             try:
@@ -2795,7 +2818,39 @@ def _token_set(s: str) -> set[str]:
 
 
 # --- Near-duplicate suppression (특히 지방 방제/협의회 기사 중복 방지) ---
-_REGION_RX = re.compile(r"[가-힣]{2,}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구|읍|면)")
+# ✅ Region detection (conservative) — avoid false positives like '당도/가격도/수급도/출하도'
+_PROVINCE_NAMES = [
+    "서울특별시","부산광역시","대구광역시","인천광역시","광주광역시","대전광역시","울산광역시","세종특별자치시",
+    "경기도","강원특별자치도","충청북도","충청남도","전라북도","전라남도","경상북도","경상남도","제주특별자치도",
+]
+_PROVINCE_RX = re.compile("|".join(map(re.escape, _PROVINCE_NAMES)))
+
+# 시/군/구/읍/면 단위는 오탐이 많아 '도'는 제외하고, 단어 경계에 가깝게만 매칭
+_CITY_COUNTY_RX = re.compile(r"(?:(?<=\s)|^)([가-힣]{2,})(시|군|구|읍|면)(?=\s|$|[\]\[\)\(\.,·!\?\"'“”‘’:/-])")
+
+# 지역처럼 보이지만 실제로는 농업/기사 용어인 경우가 많아 제외(보수적)
+_REGION_STOP_PREFIX = {
+    "방제","예찰","지원","대책","정책","수급","출하","가격","물량","품질","생산","소비","확대","감소",
+    "개최","진행","발표","추진","확보","개선","강화","단속","점검","조사","확산","주의","경보","전망",
+}
+
+def _region_set(s: str) -> set[str]:
+    s = (s or "")
+    out: set[str] = set()
+
+    # 1) 광역/도 단위는 명시 리스트만 허용
+    for mm in _PROVINCE_RX.finditer(s):
+        out.add(mm.group(0))
+
+    # 2) 시/군/구/읍/면 단위는 보수적으로 추출(오탐 방지)
+    for mm in _CITY_COUNTY_RX.finditer(s):
+        stem = mm.group(1)
+        suf = mm.group(2)
+        if stem in _REGION_STOP_PREFIX:
+            continue
+        out.add(f"{stem}{suf}")
+
+    return out
 _BARE_REGION_RX = re.compile(r"([가-힣]{2,6})(?=(?:\s*)?(?:농업기술센터|농기센터|군청|시청|구청|농업기술원|농업기술과))")
 
 _PEST_CORE_TOKENS = {
@@ -2807,10 +2862,6 @@ _SUPPLY_COMMODITY_TOKENS = {
 }
 _DIST_CORE_TOKENS = {"가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","apc","물류","유통","온라인도매시장"}
 _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세","검역","통관","단속","고시","개정","보도자료","브리핑","예산","확대","연장"}
-
-def _region_set(s: str) -> set[str]:
-    s = (s or "")
-    return {m.group(0) for m in _REGION_RX.finditer(s)}
 
 def _pest_region_key(title: str) -> str:
     """pest 섹션 중복 억제를 위한 대표 지역 키.
@@ -3456,7 +3507,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 # -----------------------------
 def fetch_rss_items(rss_url: str) -> list[dict]:
     try:
-        r = SESSION.get(rss_url, timeout=20)
+        r = http_session().get(rss_url, timeout=20)
         if not r.ok:
             return []
         txt = r.text
@@ -3487,10 +3538,11 @@ def _rss_pub_to_kst(pub: str) -> datetime | None:
             continue
     return None
 
-def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex") -> list["Article"]:
+def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list["Article"]:
     if not WHITELIST_RSS_URLS:
         return []
     out: list[Article] = []
+    _local_dedupe = DedupeIndex()
     for rss in WHITELIST_RSS_URLS:
         for it in fetch_rss_items(rss):
             title = clean_text(it.get("title", ""))
@@ -3512,7 +3564,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
-            if not dedupe.add_and_check(canon, press, title_key, norm_key):
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
             score = compute_rank_score(title, desc, dom, pub, section_conf, press)
             out.append(Article(
@@ -3533,9 +3585,10 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             ))
     return out
 
-def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime, dedupe: DedupeIndex) -> list[Article]:
+def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
     queries = section_conf["queries"]
     items: list[Article] = []
+    _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
     def fetch(q: str):
         return q, naver_news_search(q, display=50, start=1, sort="date")
@@ -3576,7 +3629,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 topic = extract_topic(title, desc)
                 norm_key = make_norm_key(canon, press, title_key)
 
-                if not dedupe.add_and_check(canon, press, title_key, norm_key):
+                if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                     continue
 
                 art = Article(
@@ -3599,7 +3652,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     items.sort(key=_sort_key_major_first, reverse=True)
     # Optional RSS candidates (신뢰 소스 보강)
     try:
-        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst, dedupe))
+        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
     except Exception:
         pass
 
@@ -3661,7 +3714,7 @@ def _pick_best_web_item(items: list[dict], issue_no: int) -> dict | None:
             best = (score, it)
     return best[1] if best else None
 
-def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime, dedupe: "DedupeIndex"):
+def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime):
     """기사에서 언급된 KREI 이슈+ 보고서를 찾아 policy 섹션에 추가."""
     refs = _extract_krei_issue_refs(raw_by_section)
     if not refs:
@@ -3699,7 +3752,7 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
             topic = "보고서"
             norm_key = make_norm_key(canon, press, title_key)
 
-            if not dedupe.add_and_check(canon, press, title_key, norm_key):
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
 
             a = Article(
@@ -3724,24 +3777,39 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
             log.warning("[WARN] add KREI issue report failed: issue=%s err=%s", issue_no, e)
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
-    dedupe = DedupeIndex()
     raw_by_section: dict[str, list[Article]] = {}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
     for sec in ordered:
-        raw_by_section[sec["key"]] = collect_candidates_for_section(sec, start_kst, end_kst, dedupe)
+        raw_by_section[sec["key"]] = collect_candidates_for_section(sec, start_kst, end_kst)
 
     # 기사에서 언급된 보고서/자료(KREI 이슈+ 등)를 policy 섹션에 자동 보완
     try:
-        _maybe_add_krei_issues_to_policy(raw_by_section, start_kst, end_kst, dedupe)
+        _maybe_add_krei_issues_to_policy(raw_by_section, start_kst, end_kst)
     except Exception as e:
         log.warning("[WARN] report augmentation failed: %s", e)
 
     final_by_section: dict[str, list[Article]] = {}
+    global_dedupe = DedupeIndex()
+
+    # ✅ 전역 dedupe는 '후보 수집'이 아니라 '최종 선택'에서 적용(섹션 간 누락 방지)
     for sec in SECTIONS:
         key = sec["key"]
         candidates = raw_by_section.get(key, [])
-        final_by_section[key] = select_top_articles(candidates, key, MAX_PER_SECTION)
+
+        # 섹션 내부 품질/임계치/근접중복 억제는 기존 로직 유지하되,
+        # 전역 dedupe로 인해 스킵될 수 있으니 여유분을 더 뽑아둔다.
+        buffer_n = max(MAX_PER_SECTION * 8, 60)
+        pre = select_top_articles(candidates, key, buffer_n)
+
+        picked: list[Article] = []
+        for a in pre:
+            if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                picked.append(a)
+                if len(picked) >= MAX_PER_SECTION:
+                    break
+
+        final_by_section[key] = picked
         if DEBUG_SELECTION:
             top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
             log.info("[DEBUG] section=%s candidates=%d selected=%d", key, len(candidates), len(final_by_section[key]))
@@ -3806,7 +3874,7 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
     }
 
     try:
-        r = SESSION.post(
+        r = http_session().post(
             "https://api.openai.com/v1/responses",
             headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
             json=payload,
@@ -5149,7 +5217,7 @@ def kakao_refresh_access_token() -> str:
     if KAKAO_CLIENT_SECRET:
         data["client_secret"] = KAKAO_CLIENT_SECRET
 
-    r = SESSION.post(url, data=data, timeout=30)
+    r = http_session().post(url, data=data, timeout=30)
     if not r.ok:
         log.error("[KAKAO TOKEN ERROR] %s", r.text)
         r.raise_for_status()
@@ -5173,7 +5241,7 @@ def kakao_send_to_me(text: str, web_url: str):
         "button_title": "브리핑 열기",
     }
 
-    r = SESSION.post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
+    r = http_session().post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
     if not r.ok:
         log.error("[KAKAO SEND ERROR] %s", r.text)
         r.raise_for_status()
