@@ -805,22 +805,96 @@ def _dist_story_signature(text: str) -> str | None:
     if "서울시" in text and "가락시장" in text and ("농수산물" in text or "농산물" in text):
         if ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("수거" in text or "검사" in text or "불시" in text):
             return "SIG:SEOUL_FOODSAFETY_GARAK"
+
+    # ✅ 서울시-부적합 농수산물 유통 차단(가락시장 언급이 없어도) 보도자료 다매체 중복을 제거
+    if "서울시" in text and ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("농수산물" in text or "농산물" in text):
+        if ("유통" in text or "반입" in text) and ("차단" in text or "검사" in text or "수거" in text or "점검" in text):
+            return "SIG:SEOUL_FOODSAFETY"
+
     # 일반화: '원산지 단속', '부정유통 단속' 같은 보도자료도 다매체 중복이 잦아 시그니처로 묶는다
     if ("원산지" in text or "부정유통" in text) and ("단속" in text or "적발" in text) and ("농산물" in text or "농수산물" in text):
         if "서울시" in text:
             return "SIG:SEOUL_ORIGIN_ENFORCE"
-        # ✅ 한국청과 출하비용 보전사업(가락시장 도매법인) 기사 다매체 중복 제거
+
+    # ✅ 한국청과 출하비용 보전사업(가락시장 도매법인) 기사 다매체 중복 제거
     if ("한국청과" in text or "한국 청과" in text) and ("출하비용" in text or "출하 비용" in text):
         if ("보전" in text or "보전금" in text or "보전사업" in text or "기준가격" in text) and ("가락시장" in text or "도매법인" in text or "경락" in text or "출하농가" in text):
             return "SIG:KOREA_CHEONGGWA_SUPPORT"
 
     return None
 
+
+
+def _event_key(a: "Article", section_key: str) -> str | None:
+    """섹션별 '사실상 같은 이슈'를 더 강하게 묶기 위한 이벤트 키.
+    - 제목이 다르더라도 같은 이벤트(APC 준공/개장 등)면 1건만 남겨 핵심을 보호한다.
+    """
+    try:
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+
+        # 1) APC 준공/개장/가동/개소 등 이벤트(농협/지역 단위 묶음)
+        if ("apc" in text or "산지유통센터" in text or "산지유통" in text) and any(k in text for k in ("준공", "준공식", "개장", "개소", "문 열", "가동", "준비", "스마트")):
+            m = re.search(r"([가-힣]{2,12}농협)", (a.title or "") + " " + (a.description or ""))
+            if m:
+                return f"EV:APC:{m.group(1)}"
+            regs = sorted(_region_set(text))
+            loc = regs[0] if regs else ""
+            return f"EV:APC:{loc}"
+
+        # 2) 서울시 부적합 농수산물 유통 차단(보도자료 다매체 중복)
+        if "서울시" in text and ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("농수산물" in text or "농산물" in text):
+            if ("유통" in text or "반입" in text) and ("차단" in text or "검사" in text or "수거" in text or "점검" in text):
+                return "EV:SEOUL_FOODSAFETY"
+
+    except Exception:
+        return None
+
+    return None
+
+
+def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Article"]:
+    """이벤트 키 기준으로 중복 후보를 1건만 남긴다(점수/티어/최신 순)."""
+    if not items:
+        return items
+
+    best: dict[str, "Article"] = {}
+    for a in items:
+        k = _event_key(a, section_key)
+        if not k:
+            continue
+        cur = best.get(k)
+        if cur is None:
+            best[k] = a
+            continue
+        cand = (float(getattr(a, "score", 0.0) or 0.0), press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None))
+        prev = (float(getattr(cur, "score", 0.0) or 0.0), press_priority(cur.press, cur.domain), getattr(cur, "pub_dt_kst", None))
+        if cand > prev:
+            best[k] = a
+
+    if not best:
+        return items
+
+    out: list["Article"] = []
+    for a in items:
+        k = _event_key(a, section_key)
+        if k and best.get(k) is not a:
+            continue
+        out.append(a)
+    return out
+
 def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
     at, ad = _story_text(a)
     bt, bd = _story_text(b)
     a_txt = f"{at} {ad}"
     b_txt = f"{bt} {bd}"
+
+    # 0) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
+    try:
+        if _near_duplicate_title(a, b, section_key):
+            return True
+    except Exception:
+        pass
+
 
     # 1) dist는 '시그니처' 우선
     if section_key == "dist":
@@ -1578,7 +1652,7 @@ _LOCAL_BRIEF_PUNCT_RX = re.compile(r"[，,·•]|\s[-–—]\s")
 _LOCAL_ADMINISH_TERMS = (
     "지원", "추진", "확대", "구축", "조성", "개선", "강화", "점검", "단속", "시범", "공모", "선정", "모집",
     "협약", "간담회", "설명회", "회의", "교육", "워크숍", "세미나", "발대식", "출범", "개최", "행사",
-    "방문", "현장", "개관", "개장", "준공", "착공", "완공", "기부", "전달", "기탁"
+    "방문", "현장", "개관", "개장", "준공", "착공", "완공", "기부", "전달", "기탁", "투입", "예산", "억원"
 )
 # dist에서 '로컬 단신'으로 보기 싫은 유형을 더 강하게 걸러야 하는 이유:
 # - 후보가 적은 날, 이런 단신이 1~2위를 차지하면 진짜 체크해야 할 이슈(예: 원예 자조금)가 아래로 밀린다.
@@ -1635,6 +1709,15 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
     official_meeting = (_LOCAL_OFFICIAL_IN_TITLE_RX.search(ttl) is not None) and (count_any(txt, [t.lower() for t in _LOCAL_OFFICIAL_MEETING_TERMS]) >= 1)
     if count_any(txt, [t.lower() for t in _LOCAL_NATIONAL_LEVEL_HINTS]) >= 1:
         official_meeting = False
+
+
+    # 예산/투입/사업비/억원 등 '지자체 사업 종합' 단신은(특히 통신·지방면) 유통 핵심 이슈를 밀어내는 경우가 많아
+    # 도매시장/공판장/경락/수출 같은 강 앵커가 뚜렷하지 않으면 로컬 단신으로 본다.
+    if ("투입" in txt or "예산" in txt or "사업비" in txt or "억원" in txt) and re.search(r"\d{2,5}\s*억", txt):
+        strong_market = count_any(txt, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","수출","검역","통관")])
+        if strong_market == 0 and not has_apc_agri_context(txt):
+            return True
+
     if any(w.lower() in txt for w in _DIST_STRONG_ANCHORS):
         if not official_meeting:
             return False
@@ -1933,7 +2016,7 @@ OFFICIAL_HOSTS = {
 
 # 최상위 언론(중앙지/일간지/경제지/통신) + 방송 + 농민신문
 MAJOR_PRESS = {
-    '연합뉴스', '뉴스1', '뉴시스',
+    '연합뉴스',
     '중앙일보', '동아일보', '조선일보', '한겨레', '경향신문', '국민일보', '서울신문',
     '매일경제', '머니투데이', '서울경제', '한국경제', '파이낸셜뉴스', '이데일리', '아시아경제', '헤럴드경제',
     'KBS', 'MBC', 'SBS', 'YTN', 'JTBC', 'MBN',
@@ -1942,10 +2025,18 @@ MAJOR_PRESS = {
     '농민신문',
 }
 
+
 BROADCAST_PRESS = {
     'KBS', 'MBC', 'SBS', 'YTN', 'JTBC', 'MBN',
     'TV조선', '채널A', '연합뉴스TV', 'OBS',
 }
+
+# 통신/온라인 뉴스 서비스(기사량이 많아 과대표집되기 쉬움): '가점'이 아니라 품질/이슈로 평가
+WIRE_SERVICES = {"뉴스1", "뉴시스", "뉴스핌"}
+
+# 농업 전문/현장 매체(원예·유통 실무에서 참고 가치가 높음) — 너무 과도하게 밀어주진 않되, '하단 고착'을 방지
+AGRI_TRADE_PRESS = {"한국농어민신문", "농수축산신문", "농업정보신문", "팜&마켓"}
+AGRI_TRADE_HOSTS = {"agrinet.co.kr", "farmnmarket.com", "afnews.co.kr"}
 
 # 중간: 농업 전문지/지방/중소/연구·지자체
 MID_PRESS_HINTS = (
@@ -1998,7 +2089,7 @@ def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
-    w = {4: 12.5, 3: 9.5, 2: 1.8, 1: -2.0}.get(t, -2.0)
+    w = {4: 12.5, 3: 9.5, 2: 4.5, 1: -2.0}.get(t, -2.0)
     p = (press or '').strip()
     d = (domain or '').lower()
     # 통신/공식은 기사 생산량이 많아도 핵심성 높음: 약간 추가
@@ -2006,6 +2097,14 @@ def press_weight(press: str, domain: str) -> float:
         w += 0.8
     if d in ('korea.kr', 'mafra.go.kr'):
         w += 1.0
+
+    # 농업 전문 매체는 '현장 정보' 가치가 있어 소폭 가점(단, 로컬 단신 필터/임계치로 과대표집 방지)
+    if p in AGRI_TRADE_PRESS or normalize_host(d) in AGRI_TRADE_HOSTS:
+        w += 1.2
+
+    # 통신/온라인 서비스는 기사량이 많아 상단을 잠식하기 쉬움: 약간 감점(이슈 점수로 승부)
+    if p in WIRE_SERVICES:
+        w -= 0.8
     if p in LOW_QUALITY_PRESS:
         w -= 2.0
     # UGC 계열은 감점
@@ -2060,7 +2159,8 @@ def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> 
 
 
 def _sort_key_major_first(a: Article):
-    return (press_priority(a.press, a.domain), a.score, a.pub_dt_kst)
+    # 점수(관련성/품질)를 1순위로, 매체 티어는 2순위로 반영
+    return (a.score, press_priority(a.press, a.domain), a.pub_dt_kst)
 
 
 # -----------------------------
@@ -3498,6 +3598,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 임계치 이상 후보만 사용(없으면 빈 리스트)
     pool = [a for a in candidates_sorted if a.score >= thr]
+
+
+    # dist: 동일 이슈(APC 준공/개장, 서울시 부적합 유통 차단 등)가 여러 매체로 반복되는 경우가 많아
+    # '이벤트 키'로 먼저 1차 클러스터링하여 중복으로 핵심이 밀리는 문제를 완화한다.
+    if section_key == "dist":
+        pool = _dedupe_by_event_key(pool, section_key)
+
     if not pool:
         return []
 
