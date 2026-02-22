@@ -1383,6 +1383,124 @@ def is_retail_promo_context(text: str) -> bool:
         return True
     return False
 
+
+
+# -----------------------------
+# Consumer fast-food price noise guard
+# -----------------------------
+_FASTFOOD_BRANDS = [
+    "맥도날드", "빅맥", "맥런치", "버거킹", "롯데리아", "맘스터치", "kfc", "써브웨이", "서브웨이",
+    "도미노피자", "피자헛", "미스터피자", "파파존스",
+]
+_FASTFOOD_MENU_HINTS = [
+    "세트", "단품", "버거", "햄버거", "프렌치프라이", "후렌치후라이", "콜라", "탄산음료",
+]
+_PRICE_HIKE_HINTS = [
+    "가격 인상", "가격인상", "인상", "올린다", "올려", "조정", "원", "%", "물가",
+]
+_AGRI_STRONG_HINTS = [
+    # 농업/원예 직접 맥락(이게 있으면 단순 프랜차이즈 기사로 단정하지 않음)
+    "농가", "산지", "재배", "작황", "출하", "생산", "수급", "도매시장", "가락시장", "공판장", "경락",
+    "apc", "산지유통", "산지유통센터", "청과", "원예", "과수", "화훼", "절화",
+]
+def is_fastfood_price_story(title: str, desc: str) -> bool:
+    """패스트푸드/프랜차이즈 가격 인상·세트 가격 기사(원예 브리핑 핵심 목적과 무관)를 판정."""
+    t = ((title or "") + " " + (desc or "")).lower()
+    brand = any(b.lower() in t for b in _FASTFOOD_BRANDS)
+    if not brand:
+        return False
+    # 가격/메뉴 힌트가 함께 있어야 차단(브랜드가 들어간 다른 기사 오탐 방지)
+    if not (any(h.lower() in t for h in _FASTFOOD_MENU_HINTS) or any(h.lower() in t for h in _PRICE_HIKE_HINTS)):
+        return False
+    # 농업 직접 맥락이 강하게 있으면 예외(아주 드문 케이스)
+    if any(h.lower() in t for h in _AGRI_STRONG_HINTS):
+        return False
+    return True
+
+
+# -----------------------------
+# Consumer-price / franchise noise guard (bundle)
+# -----------------------------
+# 목적: 원예(과수/채소/화훼) 브리핑에서 '외식/프랜차이즈/소비자 가격' 기사(예: 스타벅스/커피값, 외식 물가)를
+#      품목 키워드(토마토/양상추 등)로 오탐하여 핵심에 올라오는 것을 방지한다.
+# 원칙:
+#   - (브랜드/외식/편의점) + (메뉴/가격/인상) 패턴이 있고
+#   - 농업/유통 "강 앵커"가 없으면 => 노이즈로 차단
+#   - 반대로, 산지/도매/APC/수급/출하 등 강 앵커가 있으면 차단하지 않는다(예외)
+
+_COFFEE_BRANDS = [
+    "스타벅스", "투썸", "투썸플레이스", "이디야", "메가커피", "빽다방", "컴포즈", "컴포즈커피",
+    "할리스", "폴바셋", "탐앤탐스", "커피빈", "엔제리너스", "파스쿠찌", "카페베네",
+    "공차", "곤차", "쥬씨", "더벤티", "더리터", "매머드커피", "드롭탑",
+]
+_COFFEE_MENU_HINTS = [
+    "아메리카노", "라떼", "카푸치노", "콜드브루", "프라푸치노", "디카페인",
+    "커피", "카페", "티", "음료", "디저트", "케이크",
+    "그란데", "벤티", "톨", "샷", "시럽",
+]
+
+_CONVENIENCE_BRANDS = [
+    "cu", "gs25", "세븐일레븐", "이마트24", "편의점",
+]
+_CONVENIENCE_MENU_HINTS = [
+    "도시락", "삼각김밥", "김밥", "라면", "컵라면", "샌드위치", "샐러드", "빵", "주먹밥",
+]
+
+_EATINGOUT_GENERIC_HINTS = [
+    "외식", "점심값", "밥값", "커피값", "물가", "메뉴",
+]
+_PRICE_ACTION_HINTS = [
+    "가격 인상", "가격인상", "값 인상", "인상", "올린다", "올려", "인상폭", "조정", "상승",
+    "원", "%", "가격", "값",
+]
+
+def _has_any(text_l: str, terms) -> bool:
+    return any(t.lower() in text_l for t in terms)
+
+def is_coffee_chain_price_story(title: str, desc: str) -> bool:
+    t = ((title or "") + " " + (desc or "")).lower()
+    if not _has_any(t, _COFFEE_BRANDS):
+        return False
+    if not (_has_any(t, _PRICE_ACTION_HINTS) or _has_any(t, _COFFEE_MENU_HINTS)):
+        return False
+    if _has_any(t, _AGRI_STRONG_HINTS):
+        return False
+    return True
+
+def is_convenience_food_price_story(title: str, desc: str) -> bool:
+    t = ((title or "") + " " + (desc or "")).lower()
+    if not _has_any(t, _CONVENIENCE_BRANDS):
+        return False
+    # 메뉴 또는 가격 힌트가 함께 있을 때만
+    if not (_has_any(t, _CONVENIENCE_MENU_HINTS) and _has_any(t, _PRICE_ACTION_HINTS)):
+        return False
+    if _has_any(t, _AGRI_STRONG_HINTS):
+        return False
+    return True
+
+def is_generic_eatingout_price_story(title: str, desc: str) -> bool:
+    # 브랜드가 없더라도 '외식/점심값/커피값' 류 + 가격행동 힌트가 강하면 노이즈로 본다.
+    t = ((title or "") + " " + (desc or "")).lower()
+    if not (_has_any(t, _EATINGOUT_GENERIC_HINTS) and _has_any(t, _PRICE_ACTION_HINTS)):
+        return False
+    # 농업 강맥락이 있으면 제외하지 않음(예: 산지/수급/도매/APC 기반 기사)
+    if _has_any(t, _AGRI_STRONG_HINTS):
+        return False
+    # 품목명 1~2개(예: 토마토/양상추) 언급만으로는 예외로 보지 않는다.
+    return True
+
+def consumer_noise_reason(title: str, desc: str) -> str | None:
+    # 세부 reason을 반환(로그/디버깅에 유리)
+    if is_fastfood_price_story(title, desc):
+        return "consumer_fastfood_price_story"
+    if is_coffee_chain_price_story(title, desc):
+        return "consumer_coffee_chain_price_story"
+    if is_convenience_food_price_story(title, desc):
+        return "consumer_convenience_food_price_story"
+    if is_generic_eatingout_price_story(title, desc):
+        return "consumer_eatingout_price_story"
+    return None
+
 _FLOWER_TREND_CORE_MARKERS = [
     "꽃다발", "부케", "생화", "절화", "화훼", "플라워",
 ]
@@ -2736,6 +2854,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
         return _reject("opinion_or_editorial")
+
+    # ✅ 소비자 가격(외식/프랜차이즈) 노이즈 기사 차단(패스트푸드/커피/편의점/외식물가)
+    _noise_reason = consumer_noise_reason(ttl, desc)
+    if _noise_reason:
+        return _reject(_noise_reason)
 
     # ✅ 사건/역사/정치성(예: 제주4.3) 인터뷰/스토리는 원예 브리핑 핵심 목적과 무관하므로 전체 섹션에서 배제
     if any(t in ttl_l for t in ("제주4.3", "제주4·3", "4.3의", "4·3")):
