@@ -631,11 +631,12 @@ SECTIONS = [
         "title": "주요 이슈 및 정책",
         "color": "#1d4ed8",
         "queries": [
-            "농식품부 정책브리핑", "농식품부 보도자료 농산물", "정책브리핑 농축수산물",
-            "농축수산물 할인지원", "성수품 가격 안정 대책", "할당관세 과일 검역",
-            "원산지 단속 농산물", "온라인 도매시장 농식품부",
+            "농식품부 정책브리핑", "농식품부 보도자료 농산물", "정책브리핑 농축수산물", "농축수산물 할인지원",
+            "성수품 가격 안정 대책", "할당관세 과일 검역", "원산지 단속 농산물", "온라인 도매시장 농식품부",
+            "설 이후 과일 가격 하락", "사과 배 가격 하락", "성수품 물가 과일", "차례상 물가 과일",
+            "소비자물가 과일 사과 배", "KOSIS 소비자물가 사과 배", "물가정보 설 과일",
         ],
-        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장", "원산지"],
+        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장", "원산지", "물가", "가격", "상승", "하락", "급등", "성수품", "차례상", "소비자물가", "물가지수", "통계", "KOSIS"],
     },
     {
         "key": "dist",
@@ -1632,6 +1633,18 @@ POLICY_WEIGHT_MAP = {
     '대책': 3.0, '지원': 2.8, '할인지원': 3.0, '할당관세': 3.0, '검역': 2.5, '단속': 2.3,
     '고시': 2.0, '개정': 2.0, '발표': 1.8, '추진': 1.8, '확대': 1.3, '연장': 1.3,
     '예산': 1.8, '브리핑': 2.0, '보도자료': 1.8,
+    # ✅ 주요 이슈(물가/가격) 확장
+    '물가': 3.0,
+    '가격': 2.4,
+    '성수품': 2.2,
+    '차례상': 2.4,
+    '소비자물가': 2.4,
+    '물가지수': 2.0,
+    '통계': 1.2,
+    'kosis': 2.0,
+    '상승': 0.9,
+    '하락': 1.0,
+    '급등': 1.1,
 }
 
 PEST_WEIGHT_MAP = {
@@ -1732,7 +1745,7 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
 
 SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출하','재고','저장','물량')
 DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지')
-POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료')
+POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료','물가','가격','성수품','차례상','소비자물가','물가지수','통계','kosis')
 PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
 
 def governance_interview_penalty(text: str, title: str, section_key: str, horti_sc: float, market_hits: int) -> float:
@@ -2176,6 +2189,11 @@ LOW_QUALITY_PRESS = {
     # '포인트데일리',
 }
 
+# 지역지(로컬) 중 과대표집 시 체감 품질을 떨어뜨린 사례가 있었던 매체는 별도 감점/티어 하향
+REGIONAL_LOW_TIER_PRESS = {
+    "새전북신문",
+}
+
 def press_tier(press: str, domain: str) -> int:
     """
     4: 공식 정책/기관(농식품부, 정책브리핑 등)
@@ -2191,6 +2209,10 @@ def press_tier(press: str, domain: str) -> int:
     if any(h in d for h in _UGC_HOST_HINTS):
         return 1
 
+
+    # ✅ 특정 로컬 매체(과대표집 방지): 중간 티어 힌트와 무관하게 최하 티어로 분류
+    if p in REGIONAL_LOW_TIER_PRESS:
+        return 1
     # 공식(정책/기관) 우선
     if d in OFFICIAL_HOSTS or any(d.endswith('.' + h) for h in OFFICIAL_HOSTS):
         return 4
@@ -2220,6 +2242,10 @@ def press_weight(press: str, domain: str) -> float:
     w = {4: 12.5, 3: 9.5, 2: 4.5, 1: -2.0}.get(t, -2.0)
     p = (press or '').strip()
     d = (domain or '').lower()
+    # 로컬 매체(특정): 기본 가중치에 추가 감점(핵심 상단 잠식 방지)
+    if p in REGIONAL_LOW_TIER_PRESS:
+        w -= 2.4
+
     # 통신/공식은 기사 생산량이 많아도 핵심성 높음: 약간 추가
     if p == '연합뉴스':
         w += 0.8
@@ -3358,6 +3384,22 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 언론/기관 가중치
     score += press_weight(press, dom)
+
+    # ✅ dist(유통/현장): 전문 매체(농업/유통) 실무 신호를 더 반영하고, 통신(연합뉴스)이 상단을 과도하게 잠식하는 경우를 억제
+    if key == "dist":
+        wholesale_hits = count_any(text, [t.lower() for t in WHOLESALE_MARKET_TERMS])
+        apc_ctx = has_apc_agri_context(text)
+        dist_anchor = market_hits + wholesale_hits + (1 if apc_ctx else 0)    # 연합뉴스는 범용 기사량이 많아 dist 상단을 잠식하기 쉬움: 기본 감점 + 앵커 약하면 추가 감점
+        if (press or "").strip() == "연합뉴스":
+            score -= 1.8
+            if dist_anchor < 2:
+                score -= 1.4
+        # 농업 전문/현장 매체는 '도매/현장' 정보 가치가 높아 추가 가점
+        if (press or "").strip() in AGRI_TRADE_PRESS or normalize_host(dom) in AGRI_TRADE_HOSTS:
+            if dist_anchor >= 1:
+                score += 2.2
+            if any(w in title_l for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "수출", "검역", "통관")):
+                score += 1.0
 
     # ✅ 중앙지/방송사(티어3) 추가 가점: 공신력/파급력 높은 이슈를 상단에 더 잘 반영
     _pt = press_tier(press, dom)
@@ -4505,6 +4547,45 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
         except Exception as e:
             log.warning("[WARN] add KREI issue report failed: issue=%s err=%s", issue_no, e)
 
+
+def is_macro_policy_issue(text: str) -> bool:
+    """'주요 이슈' 성격의 물가/가격 기사인지 판단.
+    - 정책 발표(대책/지원 등) 형태가 아니어도, 성수품(사과/배 등) 가격/물가 흐름은 policy 섹션에서 다룬다.
+    - 특히 명절(설/추석) 전후 가격 급등·급락 이슈는 '주요 이슈'로 취급한다.
+    """
+    t = (text or "").lower()
+
+    # 1) 물가/통계/성수품 신호(명시적)
+    macro_terms = ("물가", "소비자물가", "물가지수", "cpi", "kosis", "차례상", "성수품", "체감", "물가정보")
+    macro_hit = count_any(t, [w.lower() for w in macro_terms])
+
+    # 2) 명절 전후 가격 이슈(암시적) — '물가' 단어가 없어도 주요 이슈로 라우팅
+    if macro_hit == 0 and any(w in t for w in ("설", "명절", "추석", "대목")):
+        if ("가격" in t) and ("상승" in t or "하락" in t or "급등" in t or "급락" in t):
+            macro_hit = 1
+
+    if macro_hit < 1:
+        return False
+
+    if ("가격" not in t) and ("상승" not in t) and ("하락" not in t) and ("급등" not in t) and ("급락" not in t):
+        return False
+
+    # 농업/원예 맥락 또는 원예 점수
+    try:
+        horti = best_horti_score("", t)
+    except Exception:
+        horti = 0.0
+
+    # 너무 약한 경우(일반 소비 기사) 방지: 원예 점수 또는 품목/농산물 키워드 필요
+    if horti >= 1.4:
+        return True
+    if any(w in t for w in ("농산물", "농식품", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도")):
+        return True
+
+    return False
+
+
+
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     raw_by_section: dict[str, list[Article]] = {}
 
@@ -4533,7 +4614,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 except Exception:
                     d = (a.domain or "").lower()
                 p = (a.press or "").strip()
-                if (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부")):
+                if (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부")) or is_macro_policy_issue((a.title + " " + a.description).lower()):
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
