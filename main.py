@@ -296,6 +296,7 @@ BAN_KWS = [
 # 오피니언/사설/칼럼 등은 브리핑 대상에서 제외(원예수급 실무 신호가 약하고 노이즈가 큼)
 OPINION_BAN_TERMS = [
     "[사설]", "사설", "칼럼", "오피니언", "기고", "독자기고", "기자수첩",
+    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
     "만평", "데스크칼럼", "횡설수설", "기자의 시선", "논단",
 ]
 
@@ -2396,31 +2397,6 @@ def policy_domain_override(dom: str, text: str) -> bool:
         return has_any(text, [k.lower() for k in AGRI_POLICY_KEYWORDS])
     return False
 
-
-# -----------------------------
-# Section routing overrides
-# -----------------------------
-# 정책브리핑(예: korea.kr)은 품목/유통 쿼리에도 걸릴 수 있으므로,
-# 최종 섹션 라우팅 단계에서 policy 섹션으로 강제 이동시킨다.
-_FORCE_POLICY_DOMAIN_SUFFIXES = ("korea.kr",)
-_FORCE_POLICY_PRESS_NAMES = {"정책브리핑", "정책 브리핑"}
-
-def force_section_for_article(a: "Article") -> str:
-    """Return forced section key for certain authoritative sources."""
-    try:
-        dom = normalize_host(getattr(a, "domain", "") or "")
-    except Exception:
-        dom = (getattr(a, "domain", "") or "").strip().lower()
-        if dom.startswith("www."):
-            dom = dom[4:]
-    press = (getattr(a, "press", "") or "").strip()
-
-    if dom and any(dom == s or dom.endswith("." + s) for s in _FORCE_POLICY_DOMAIN_SUFFIXES):
-        return "policy"
-    if press in _FORCE_POLICY_PRESS_NAMES:
-        return "policy"
-    return ""
-
 _LOCAL_GEO_PATTERN = re.compile(r"[가-힣]{2,6}(군|시|구|도)\b")
 
 
@@ -2470,7 +2446,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl = (title or "")
     desc = (desc or "")
     text = (ttl + " " + desc).lower()
-    dom = (dom or "").lower().strip()
+    dom = normalize_host(dom or "")
     key = section_conf["key"]
 
     def _reject(reason: str) -> bool:
@@ -2579,6 +2555,26 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if not local_ok:
             return _reject("news1_local_weak_context")
 
+    # dist 섹션 정치/역사/사건 인터뷰성 기사 누수 방지(본문 일부 농업 언급으로 상단 유입되는 케이스 차단)
+    # 예: '제주4.3/희생자/보상' 등 정치·사건성 인터뷰 + /society/ 경로 + 제목에 농업 앵커가 거의 없는 경우
+    if key == "dist":
+        horti_title_sc = best_horti_score(ttl, "")
+        politics_title_terms = (
+            "4.3", "제주4.3", "희생자", "보상", "추모", "내란", "탄핵", "계엄", "정당", "총선", "대선", "국회",
+            "검찰", "재판", "선고", "구속", "기소", "특별법", "사건", "참사"
+        )
+        politics_hits = count_any(ttl_l, [t.lower() for t in politics_title_terms])
+        if politics_hits >= 1 and ("/society/" in _path or "/politics/" in _path or "/the300/" in _path):
+            # 제목에 농업/도매 앵커가 없고(=본문 일부 언급 오탐 가능) 시장 맥락도 없으면 dist에서 제외
+            dist_anchor_in_title = count_any(ttl_l, [t.lower() for t in ("도매시장", "공판장", "가락시장", "경락", "경매", "반입",
+                                                                         "도매법인", "중도매", "시장도매인",
+                                                                         "산지유통", "산지유통센터", "apc",
+                                                                         "원산지", "부정유통", "단속", "검역", "통관", "수출", "자조금")])
+            agri_anchor_in_title = count_any(ttl_l, [t.lower() for t in ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과",
+                                                                         "사과", "배", "감귤", "딸기", "고추", "오이", "포도", "월동채소")])
+            if dist_anchor_in_title == 0 and agri_anchor_in_title == 0 and horti_title_sc < 1.3 and market_hits == 0:
+                return _reject("dist_politics_heavy_title")
+
 
     # 지역 동정/기금전달(특히 ○○농협 + 발전기금/장학금 등) 오탐 제거
     if _LOCAL_COOP_RX.search(text) and any(w.lower() in text for w in COMMUNITY_DONATION_TERMS):
@@ -2589,9 +2585,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 정책 섹션만 정책기관/공공 도메인 허용(단, 방제(pest)는 지방 이슈가 많아 예외 허용)
     # ✅ (5) pest 섹션은 지자체/연구기관(.go.kr/.re.kr) 기사도 허용
+    # 정책/기관 도메인은 다른 섹션에서 수집될 수 있으나, 최종적으로 policy 섹션으로 강제 라우팅한다.
+    # 따라서 여기서 컷하지 않는다(누락 방지). 단, 일반 .go.kr/.re.kr은 노이즈가 많아 기존처럼 차단.
+    if dom in POLICY_DOMAINS and key not in ("policy", "pest"):
+        return True
+
     if (
-        dom in POLICY_DOMAINS
-        or dom in ALLOWED_GO_KR
+        dom in ALLOWED_GO_KR
         or dom.endswith(".re.kr")
         or dom.endswith(".go.kr")
     ) and key not in ("policy", "pest"):
@@ -2784,6 +2784,17 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if any(w in text for w in ("냉해", "동해", "저온피해", "서리")):
             score += 2.4
 
+        # 수필/일기/연재/칼럼성(개인 에세이) + 정치/외교 제목은 pest 핵심성에서 멀어 감점
+        # - 본문에 병해충 사례가 있더라도 '핵심2'로 올라가지 않도록 점수도 함께 낮춘다.
+        narrative_terms = ("일기", "농막일기", "수필", "에세이", "연재", "칼럼", "오피니언", "기고")
+        if any(w in text for w in narrative_terms) or any(w in title_l for w in narrative_terms):
+            score -= 3.8
+
+        foreign_politics = ("트럼프", "바이든", "푸틴", "시진핑", "백악관", "미국 대통령")
+        if any(w in title_l for w in foreign_politics):
+            # 제목이 정치/외교이고 방제 신호가 제목에서 드러나지 않으면 추가 감점
+            if count_any(title_l, [t.lower() for t in PEST_STRICT_TERMS]) == 0 and count_any(title_l, [t.lower() for t in PEST_WEATHER_TERMS]) == 0:
+                score -= 4.2
         # 양곡(벼) 방제는 제외: 남아있더라도 강하게 감점
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
@@ -2995,6 +3006,7 @@ def _is_policy_official(a: "Article") -> bool:
 # 코어(핵심 2)로 올리기엔 부적절한 헤드라인 패턴(칼럼/기고/행사/인물/홍보성)
 _HEADLINE_STOPWORDS = [
     "칼럼", "기고", "사설", "오피니언", "독자기고", "기자수첩",
+    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
     "인터뷰", "대담", "신간", "책", "추천", "여행", "맛집",
     "포토", "화보", "영상", "스케치", "행사", "축제", "기념", "시상",
     "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou",
@@ -3105,6 +3117,11 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # 농업 맥락 + 병해충/방제(또는 냉해/동해 피해) 가시적이어야 코어
         if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
             return False
+        # 코어는 '헤드라인'에서 병해충/방제/기상피해 신호가 드러나야 한다(수필/일기/정치 제목 누수 방지).
+        title_hits = count_any(title, [t.lower() for t in PEST_STRICT_TERMS]) + count_any(title, [t.lower() for t in PEST_WEATHER_TERMS])
+        if title_hits == 0:
+            return False
+
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
         return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
@@ -3120,6 +3137,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
 
     # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
+    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
                  "인터뷰", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
     if any(w.lower() in title for w in hard_stop):
         return False
@@ -3421,6 +3439,53 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         _source_take(a)
 
 
+
+
+    # 4.2) dist(유통/현장) 섹션 소프트 백필:
+    # - 어떤 날은 동적 임계치/꼬리 컷으로 1~2건만 남는 경우가 있음.
+    # - 이때 '지방지라도 내용이 유의미한 기사'를 하단에 1~2건 정도 추가 노출(억지 채움은 금지).
+    if section_key == "dist" and len(final) < min(3, max_n):
+        need = min(3, max_n) - len(final)
+        # 임계치보다 살짝 완화하되, BASE_MIN_SCORE 아래로는 내려가지 않음
+        relax_cut = max(BASE_MIN_SCORE.get("dist", 7.2) - 0.6, thr - 2.0)
+        # 출처 캡도 아주 소폭 완화(로컬 1건 추가 허용)
+        tier1_cap_relax = max(tier1_cap, 2)
+        tier2_cap_relax = max(tier2_cap, 4)
+
+        def _source_ok_relaxed(a: Article) -> bool:
+            t = press_priority(a.press, a.domain)
+            if t == 1:
+                return tier_count[1] < tier1_cap_relax
+            if t == 2:
+                return tier_count[2] < tier2_cap_relax
+            return True
+
+        for a in candidates_sorted:
+            if need <= 0 or len(final) >= max_n:
+                break
+            if a in final:
+                continue
+            if a.score < relax_cut:
+                continue
+            if _already_used(a):
+                continue
+            # 정치/사건성 제목 누수는 다시 한번 방어(점수는 높아도 dist 핵심과 무관한 경우가 있음)
+            ttl_l = (a.title or "").lower()
+            if any(w in ttl_l for w in ("제주4.3", "4.3", "희생자", "보상", "내란", "탄핵", "계엄")) and best_horti_score(a.title or "", "") < 1.3:
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            if not _source_ok_relaxed(a):
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            a.is_core = False
+            final.append(a)
+            _mark_used(a)
+            _source_take(a)
+            need -= 1
     # 4.5) supply 보강: 화훼 소비/선물 트렌드(예: 레고 꽃다발/꽃다발 선물 트렌드)는
     # - 품목 및 수급 동향에서만 "비핵심"으로 0~1건 하단 편입
     # - core(핵심2)에는 절대 포함하지 않음
@@ -3814,51 +3879,44 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
     except Exception as e:
         log.warning("[WARN] report augmentation failed: %s", e)
 
-
-    # ✅ 섹션 라우팅 override:
-    # - 정책브리핑(korea.kr) 등은 '품목/유통' 쿼리에도 걸릴 수 있어,
-    #   원천/도메인 기준으로 policy 섹션으로 강제 이동시킨다.
-    # - 섹션 간 중복 후보는 URL 기준으로 하나만 남기되(누락 방지 목적),
-    #   '강제 섹션'이 있으면 그 섹션을 우선한다.
-    sec_conf_by_key = {s["key"]: s for s in SECTIONS}
-
-    best_by_key: dict[str, Article] = {}
-    forced_section_by_key: dict[str, str] = {}
-
-    for sec_key, items in raw_by_section.items():
-        for a in items:
-            k = a.canon_url or a.norm_key or (a.link or "")
-            if not k:
-                # 최후의 수단: 제목키+언론사
-                k = f"{a.press}::{a.title_key}"
-
-            forced = force_section_for_article(a)  # "" or "policy"
-            if forced:
-                forced_section_by_key[k] = forced
-
-            prev = best_by_key.get(k)
-            if prev is None or (a.score or 0.0) > (prev.score or 0.0):
-                best_by_key[k] = a
-
-    # 강제 섹션 반영 + (필요 시) 점수 재계산
-    routed_by_section: dict[str, list[Article]] = {s["key"]: [] for s in SECTIONS}
-    for k, a in best_by_key.items():
-        forced = forced_section_by_key.get(k, "")
-        if forced and forced != a.section:
-            a.section = forced
+    # ✅ 정책/기관 도메인(정책브리핑/농식품부/aT/농관원/KREI 등)은 수급/유통 쿼리에도 걸릴 수 있다.
+    #    수집 단계에서는 살려두되, 최종 섹션은 policy로 강제 이동(누락/오분류 방지).
+    policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), None)
+    if policy_conf is not None:
+        moved = 0
+        for sk, lst in list(raw_by_section.items()):
+            if sk == "policy" or not lst:
+                continue
+            keep = []
+            for a in lst:
+                try:
+                    d = normalize_host(a.domain)
+                except Exception:
+                    d = (a.domain or "").lower()
+                p = (a.press or "").strip()
+                if (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부")):
+                    a.section = "policy"
+                    # policy 섹션 기준으로 재스코어링
+                    try:
+                        a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, policy_conf, p)
+                    except Exception:
+                        pass
+                    raw_by_section.setdefault("policy", []).append(a)
+                    moved += 1
+                else:
+                    keep.append(a)
+            raw_by_section[sk] = keep
+        if moved:
+            # policy 내부에서도 섹션-내 dedupe를 한번 더 적용
             try:
-                conf = sec_conf_by_key.get(forced)
-                if conf:
-                    a.score = compute_rank_score(a.title, a.description, a.domain, a.pub_dt_kst, conf, a.press)
+                _p_dedupe = DedupeIndex()
+                uniq = []
+                for a in raw_by_section.get("policy", []):
+                    if _p_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                        uniq.append(a)
+                raw_by_section["policy"] = uniq
             except Exception:
                 pass
-
-        dest = a.section or "supply"
-        if dest not in routed_by_section:
-            routed_by_section[dest] = []
-        routed_by_section[dest].append(a)
-
-    raw_by_section = routed_by_section
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
