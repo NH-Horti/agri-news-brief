@@ -1588,6 +1588,16 @@ _DIST_STRONG_ANCHORS = (
     "원산지", "부정유통", "단속", "검역", "통관", "수출", "온라인 도매시장",
 )
 
+# 공직자(시장/군수/구청장/도지사 등) 동정성/현장점검성 기사 탐지
+# - '도매시장'이 들어가도 실제로는 지자체 동정 기사인 경우가 많아, dist 상단을 오염시키는 원인.
+# - 특정 매체가 아니라 '패턴'을 기준으로 판정한다.
+_LOCAL_OFFICIAL_IN_TITLE_RX = re.compile(r"(?:^|[\s·,，])(?:[가-힣]{2,4}\s+)?[가-힣]{2,4}\s+(?:시장|군수|구청장|도지사|지사)(?=$|[\s·,，])")
+_LOCAL_OFFICIAL_MEETING_TERMS = (
+    "현장간부회의", "간부회의", "현장회의", "업무보고", "주재", "점검", "현장점검", "방문", "현장 방문",
+    "청취", "애로사항", "간담회", "설명회", "회의",
+)
+_LOCAL_NATIONAL_LEVEL_HINTS = ("국회", "장관", "농식품부", "정부", "국정", "법안", "개정", "예산", "대책", "대응")
+
 def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
     """지역 단신(지자체 행정 공지형) 여부.
     - 특정 매체가 아니라 '패턴'을 기준으로 판정한다.
@@ -1605,7 +1615,8 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
         return False
 
     # 제목에 지역 단위(시/군/구/읍/면) 표기가 없으면 로컬 단신으로 보지 않음
-    if _LOCAL_REGION_IN_TITLE_RX.search(ttl) is None:
+    # 단, '안산 시장'처럼 (지자체장) 표기는 있는데 '안산시'가 없는 케이스가 있어 보완한다.
+    if (_LOCAL_REGION_IN_TITLE_RX.search(ttl) is None) and (_LOCAL_OFFICIAL_IN_TITLE_RX.search(ttl) is None):
         return False
 
     # 제목이 '○○시, ...' / '○○군·...' 같은 단신형 구두점 패턴이면 강한 신호
@@ -1619,10 +1630,19 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
         return False
 
     # 제목/본문에 도매·유통 '강 앵커'가 있으면 로컬 단신으로 단정하지 않음
+    # 단, '○○ 시장/군수 … 도매시장 현장간부회의/점검'류는 앵커가 있어도 실무 핵심도가 낮은 동정성 기사이므로
+    # 로컬 단신으로 간주(빈칸 메우기용으로만 남도록)한다.
+    official_meeting = (_LOCAL_OFFICIAL_IN_TITLE_RX.search(ttl) is not None) and (count_any(txt, [t.lower() for t in _LOCAL_OFFICIAL_MEETING_TERMS]) >= 1)
+    if count_any(txt, [t.lower() for t in _LOCAL_NATIONAL_LEVEL_HINTS]) >= 1:
+        official_meeting = False
     if any(w.lower() in txt for w in _DIST_STRONG_ANCHORS):
+        if not official_meeting:
+            return False
+    if has_apc_agri_context(txt) and (not official_meeting):
         return False
-    if has_apc_agri_context(txt):
-        return False
+    # 공직자 동정 + 회의/점검/방문이면 로컬 단신으로 처리
+    if official_meeting:
+        return True
 
     # 제목의 원예/도매 신호가 약하면(=본문 일부 언급) 단신으로 간주
     if best_horti_score(title or "", "") < 1.6 and count_any(ttl_l, [t.lower() for t in _DIST_STRONG_ANCHORS]) == 0:
