@@ -144,6 +144,8 @@ KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
+MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
+MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -294,11 +296,19 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
 OPENAI_MAX_OUTPUT_TOKENS = int((os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "0") or "0").strip() or 0)
 OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "").strip()
 OPENAI_TEXT_VERBOSITY = os.getenv("OPENAI_TEXT_VERBOSITY", "").strip()
+OPENAI_BATCH_SIZE = int((os.getenv("OPENAI_BATCH_SIZE", "25") or "25").strip() or 25)
+OPENAI_BATCH_SIZE = max(5, min(OPENAI_BATCH_SIZE, 80))
+OPENAI_SUMMARY_CACHE_PATH = os.getenv("OPENAI_SUMMARY_CACHE_PATH", ".agri_summary_cache.json").strip() or ".agri_summary_cache.json"
+OPENAI_SUMMARY_CACHE_MAX = int((os.getenv("OPENAI_SUMMARY_CACHE_MAX", "2000") or "2000").strip() or 2000)
+OPENAI_SUMMARY_CACHE_MAX = max(200, min(OPENAI_SUMMARY_CACHE_MAX, 20000))
+OPENAI_RETRY_MAX = int((os.getenv("OPENAI_RETRY_MAX", "3") or "3").strip() or 3)
+OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
 
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
 KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
+KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -2365,7 +2375,10 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
     """GitHub Contents API로 파일 생성/업데이트.
-    - 409(sha mismatch) 발생 시: 최신 sha를 다시 가져와 1회 재시도한다(동시 실행/중복 실행 대비).
+
+    안정성 강화:
+    - 409(sha mismatch): 최신 sha를 다시 가져와 재시도
+    - 429/5xx/일시 네트워크 오류: Retry-After/지수백오프 재시도
     """
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
     payload = {
@@ -2376,29 +2389,54 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
     if sha:
         payload["sha"] = sha
 
-    last_err = None
-    for attempt in range(2):
-        r = SESSION.put(url, headers=github_api_headers(token), json=payload, timeout=30)
+    max_try = max(2, int(os.getenv("GH_PUT_MAX_RETRIES", "4")))
+    max_try = max(2, min(max_try, 10))
+
+    last_resp = None
+    refreshed_sha = False
+
+    for attempt in range(max_try):
+        try:
+            r = http_session().put(url, headers=github_api_headers(token), json=payload, timeout=40)
+        except Exception as exc:
+            backoff = min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[GitHub PUT] transient network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, max_try, exc, backoff)
+            time.sleep(backoff)
+            continue
+
         if r.ok:
             return r.json()
 
-        # sha mismatch conflict → refetch sha and retry once
-        if r.status_code == 409 and attempt == 0:
+        last_resp = r
+
+        if r.status_code == 409 and not refreshed_sha:
             try:
                 _raw, latest_sha = github_get_file(repo, path, token, ref=branch)
             except Exception:
                 latest_sha = None
             if latest_sha:
                 payload["sha"] = latest_sha
+                refreshed_sha = True
                 continue
 
-        last_err = r
+        if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
+            ra = 0.0
+            try:
+                ra = float(r.headers.get("Retry-After", "0") or 0)
+            except Exception:
+                ra = 0.0
+            backoff = ra if ra > 0 else min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[GitHub PUT] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, max_try, backoff)
+            time.sleep(backoff)
+            continue
+
         break
 
-    if last_err is not None:
-        _log_http_error("[GitHub PUT ERROR]", last_err)
-        last_err.raise_for_status()
-    raise RuntimeError("GitHub PUT failed without response")  # should not happen
+    if last_resp is not None:
+        _log_http_error("[GitHub PUT ERROR]", last_resp)
+        last_resp.raise_for_status()
+    raise RuntimeError("GitHub PUT failed without response")
+
 
 def archive_page_exists(repo: str, token: str, d: str) -> bool:
     path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
@@ -2747,6 +2785,33 @@ def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str =
     return {"items": []}
 
 
+
+def naver_news_search_paged(query: str, display: int = 50, pages: int = 1, sort: str = "date") -> dict:
+    """Naver News 검색을 페이지네이션해서 수집.
+    - pages=1이면 기존 동작과 동일(1페이지)
+    - 각 페이지는 start=1 + (page_idx*display)
+    - 중간에 items가 비면 조기 종료
+    """
+    pages = max(1, int(pages or 1))
+    items: list[dict] = []
+    last_meta: dict = {}
+    for i in range(pages):
+        st = 1 + (i * display)
+        data = naver_news_search(query, display=display, start=st, sort=sort)
+        if isinstance(data, dict):
+            last_meta = data
+            chunk = data.get("items", []) or []
+        else:
+            chunk = []
+        if not chunk:
+            break
+        items.extend(chunk)
+        if len(chunk) < display:
+            break
+    out = dict(last_meta) if isinstance(last_meta, dict) else {}
+    out["items"] = items
+    return out
+
 # -----------------------------
 # Relevance / scoring
 # -----------------------------
@@ -2784,7 +2849,7 @@ def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = 
                 time.sleep(backoff)
                 continue
 
-            last_err = RuntimeError(f"Naver web API error: status={r.status_code} body={r.text[:300]}")
+            last_err = RuntimeError(f"Naver web API error: status={r.status_code} body={_safe_body(getattr(r, 'text', ''), limit=300)}")
             backoff = min(NAVER_BACKOFF_MAX_SEC, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.3))
             time.sleep(backoff)
         except Exception as e:
@@ -4267,7 +4332,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
     def fetch(q: str):
-        return q, naver_news_search(q, display=50, start=1, sort="date")
+        return q, naver_news_search_paged(q, display=50, pages=MAX_PAGES_PER_QUERY, sort="date")
 
     max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
     futures = []
@@ -4557,26 +4622,66 @@ def openai_extract_text(resp_json: dict) -> str:
     except Exception:
         return ""
 
-def openai_summarize_batch(articles: list[Article]) -> dict:
-    if not OPENAI_API_KEY or not articles:
+def load_summary_cache(repo: str, token: str) -> dict:
+    """요약 캐시를 repo 파일에서 로드.
+    구조:
+      { norm_key: {"s": "요약", "t": "2026-02-22T..."} }
+    """
+    path = OPENAI_SUMMARY_CACHE_PATH
+    raw, _sha = github_get_file(repo, path, token, ref="main")
+    if not raw:
+        return {}
+    try:
+        obj = json.loads(raw)
+        return obj if isinstance(obj, dict) else {}
+    except Exception:
         return {}
 
-    rows = []
-    for a in articles:
-        rows.append({
-            "id": a.norm_key,
-            "press": a.press,
-            "title": a.title[:180],
-            "desc": a.description[:260],
-            "section": a.section,
-            "url": a.originallink or a.link,
-        })
+def _prune_summary_cache(cache: dict) -> dict:
+    if not isinstance(cache, dict) or not cache:
+        return {}
+    items = []
+    for k, v in cache.items():
+        if not k:
+            continue
+        if isinstance(v, str):
+            s = v.strip()
+            t = ""
+        elif isinstance(v, dict):
+            s = str(v.get("s", "") or "").strip()
+            t = str(v.get("t", "") or "").strip()
+        else:
+            continue
+        if not s:
+            continue
+        items.append((t, k, {"s": s, "t": t}))
+    items.sort(key=lambda x: x[0], reverse=True)
+    kept = {}
+    for _t, k, v in items[:OPENAI_SUMMARY_CACHE_MAX]:
+        kept[k] = v
+    return kept
+
+def save_summary_cache(repo: str, token: str, cache: dict):
+    path = OPENAI_SUMMARY_CACHE_PATH
+    cache2 = _prune_summary_cache(cache or {})
+    raw_new = json.dumps(cache2, ensure_ascii=False, indent=2)
+    raw_old, sha = github_get_file(repo, path, token, ref="main")
+    if (raw_old or "").strip() == raw_new.strip():
+        return
+    github_put_file(repo, path, raw_new, token, f"Update summary cache ({len(cache2)})", sha=sha, branch="main")
+
+def _openai_summarize_rows(rows: list[dict]) -> dict:
+    """OpenAI Responses API를 호출해 rows를 요약.
+    출력 형식: 각 줄 'id\t요약'
+    """
+    if not OPENAI_API_KEY or not rows:
+        return {}
 
     system = (
         "너는 농협 경제지주 원예수급부(과수화훼) 실무자를 위한 '농산물 뉴스 요약가'다.\n"
         "- 절대 상상/추정으로 사실을 만들지 마라.\n"
         "- 각 기사 요약은 2문장 내, 110~200자 내. 핵심 팩트 중심.\n"
-        "출력 형식: 각 줄 'id\\t요약' 형태로만 출력."
+        "출력 형식: 각 줄 'id\t요약' 형태로만 출력."
     )
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
 
@@ -4590,47 +4695,120 @@ def openai_summarize_batch(articles: list[Article]) -> dict:
     if OPENAI_MAX_OUTPUT_TOKENS and OPENAI_MAX_OUTPUT_TOKENS > 0:
         payload["max_output_tokens"] = int(OPENAI_MAX_OUTPUT_TOKENS)
     if OPENAI_REASONING_EFFORT:
-        # GPT-5 계열에서 지원되는 옵션 (예: minimal/low/medium/high/xhigh/none)
         payload["reasoning"] = {"effort": OPENAI_REASONING_EFFORT}
     if OPENAI_TEXT_VERBOSITY:
         payload["text"] = {"verbosity": OPENAI_TEXT_VERBOSITY}
 
-    try:
-        r = http_session().post(
-            "https://api.openai.com/v1/responses",
-            headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=60,
-        )
-        if not r.ok:
-            log.warning("[OpenAI] summarize skipped: %s", _safe_body(r.text, limit=500))
-            return {}
+    last_resp = None
+    for attempt in range(max(1, OPENAI_RETRY_MAX)):
+        try:
+            r = http_session().post(
+                "https://api.openai.com/v1/responses",
+                headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=70,
+            )
+        except Exception as exc:
+            backoff = min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[OpenAI] network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, OPENAI_RETRY_MAX, exc, backoff)
+            time.sleep(backoff)
+            continue
 
-        text = openai_extract_text(r.json()).strip()
-        out = {}
-        for line in text.splitlines():
-            if "\t" not in line:
-                continue
-            k, v = line.split("\t", 1)
-            k = k.strip()
-            v = v.strip()
-            if k:
-                out[k] = v
-        return out
+        last_resp = r
+        if r.ok:
+            text = openai_extract_text(r.json()).strip()
+            out = {}
+            for line in text.splitlines():
+                if "\t" not in line:
+                    continue
+                k, v = line.split("\t", 1)
+                k = k.strip()
+                v = v.strip()
+                if k and v:
+                    out[k] = v
+            return out
 
-    except Exception as e:
-        log.warning("[OpenAI] summarize failed, fallback: %s", e)
+        if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
+            ra = 0.0
+            try:
+                ra = float(r.headers.get("Retry-After", "0") or 0)
+            except Exception:
+                ra = 0.0
+            backoff = ra if ra > 0 else min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[OpenAI] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, OPENAI_RETRY_MAX, backoff)
+            time.sleep(backoff)
+            continue
+
+        log.warning("[OpenAI] summarize skipped: %s", _safe_body(getattr(r, "text", ""), limit=500))
         return {}
 
-def fill_summaries(by_section: dict):
+    if last_resp is not None:
+        log.warning("[OpenAI] summarize failed after retries: %s", _safe_body(getattr(last_resp, "text", ""), limit=500))
+    return {}
+
+def openai_summarize_batch(articles: list[Article], cache: dict | None = None) -> dict:
+    """기사들을 배치로 요약. cache가 있으면 캐시된 키는 호출에서 제외."""
+    if not OPENAI_API_KEY or not articles:
+        return {}
+
+    cache = cache or {}
+    now_iso = datetime.now(tz=KST).isoformat()
+
+    to_sum = []
+    for a in articles:
+        ck = cache.get(a.norm_key)
+        if isinstance(ck, dict) and str(ck.get("s", "")).strip():
+            continue
+        if isinstance(ck, str) and ck.strip():
+            continue
+        to_sum.append(a)
+
+    if not to_sum:
+        return {}
+
+    rows_all = []
+    for a in to_sum:
+        rows_all.append({
+            "id": a.norm_key,
+            "press": a.press,
+            "title": a.title[:180],
+            "desc": a.description[:260],
+            "section": a.section,
+            "url": a.originallink or a.link,
+        })
+
+    mapping = {}
+    bs = max(5, int(OPENAI_BATCH_SIZE or 25))
+    for i in range(0, len(rows_all), bs):
+        rows = rows_all[i:i+bs]
+        part = _openai_summarize_rows(rows)
+        if part:
+            mapping.update(part)
+            for k, v in part.items():
+                if k and v:
+                    cache[k] = {"s": v, "t": now_iso}
+
+    return mapping
+
+def fill_summaries(by_section: dict, cache: dict | None = None):
     all_articles: list[Article] = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
 
-    mapping = openai_summarize_batch(all_articles)
+    cache = cache or {}
+    mapping = openai_summarize_batch(all_articles, cache=cache)
 
     for a in all_articles:
-        s = (mapping.get(a.norm_key) or "").strip()
+        s = ""
+        ck = cache.get(a.norm_key)
+        if isinstance(ck, dict):
+            s = str(ck.get("s", "") or "").strip()
+        elif isinstance(ck, str):
+            s = ck.strip()
+
+        if not s:
+            s = (mapping.get(a.norm_key) or "").strip()
+
         if not s:
             s = a.description.strip() or a.title.strip()
         a.summary = s
@@ -5951,23 +6129,69 @@ def kakao_send_to_me(text: str, web_url: str):
     log_kakao_link(web_url)
     ensure_not_gist(web_url, "Kakao web_url")
 
+    url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
+
+    max_try = max(1, int(os.getenv("KAKAO_RETRY_MAX", "3")))
+    max_try = max(1, min(max_try, 6))
+
+    last_resp = None
+    last_exc = None
+
     access_token = kakao_refresh_access_token()
 
-    url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
-    headers = {"Authorization": f"Bearer {access_token}"}
+    for attempt in range(max_try):
+        headers = {"Authorization": f"Bearer {access_token}"}
+        template = {
+            "object_type": "text",
+            "text": text,
+            "link": {"web_url": web_url, "mobile_web_url": web_url},
+            "button_title": "브리핑 열기",
+        }
 
-    template = {
-        "object_type": "text",
-        "text": text,
-        "link": {"web_url": web_url, "mobile_web_url": web_url},
-        "button_title": "브리핑 열기",
-    }
+        try:
+            r = http_session().post(
+                url,
+                headers=headers,
+                data={"template_object": json.dumps(template, ensure_ascii=False)},
+                timeout=35,
+            )
+        except Exception as exc:
+            last_exc = exc
+            backoff = min(15.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[KAKAO SEND] network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, max_try, exc, backoff)
+            time.sleep(backoff)
+            continue
 
-    r = http_session().post(url, headers=headers, data={"template_object": json.dumps(template, ensure_ascii=False)}, timeout=30)
-    if not r.ok:
+        last_resp = r
+
+        if r.ok:
+            return r.json()
+
+        if r.status_code in (401, 403):
+            _log_http_error("[KAKAO SEND AUTH ERROR]", r)
+            access_token = kakao_refresh_access_token()
+            continue
+
+        if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
+            ra = 0.0
+            try:
+                ra = float(r.headers.get("Retry-After", "0") or 0)
+            except Exception:
+                ra = 0.0
+            backoff = ra if ra > 0 else min(15.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            log.warning("[KAKAO SEND] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, max_try, backoff)
+            time.sleep(backoff)
+            continue
+
         _log_http_error("[KAKAO SEND ERROR]", r)
         r.raise_for_status()
-    return r.json()
+
+    if last_resp is not None:
+        _log_http_error("[KAKAO SEND ERROR]", last_resp)
+        last_resp.raise_for_status()
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("Kakao send failed without response")
 
 
 # -----------------------------
@@ -6101,7 +6325,12 @@ def main():
 
     # collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
-    by_section = fill_summaries(by_section)
+    summary_cache = load_summary_cache(repo, GH_TOKEN)
+    by_section = fill_summaries(by_section, cache=summary_cache)
+    try:
+        save_summary_cache(repo, GH_TOKEN, summary_cache)
+    except Exception as e:
+        log.warning("[WARN] save_summary_cache failed: %s", e)
 
     # render (✅ 2번: 전체 노출 / 중요도 정렬)
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
@@ -6153,8 +6382,14 @@ def main():
 
     daily_url = ensure_absolute_http_url(daily_url)
     log_kakao_link(daily_url)
-    kakao_send_to_me(kakao_text, daily_url)
-    log.info("[OK] Kakao message sent. URL=%s", daily_url)
+    try:
+        kakao_send_to_me(kakao_text, daily_url)
+        log.info("[OK] Kakao message sent. URL=%s", daily_url)
+    except Exception as e:
+        if KAKAO_FAIL_OPEN:
+            log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+        else:
+            raise
 
 
 if __name__ == "__main__":
