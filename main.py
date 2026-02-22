@@ -2556,22 +2556,41 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             return _reject("news1_local_weak_context")
 
     # dist 섹션 정치/역사/사건 인터뷰성 기사 누수 방지(본문 일부 농업 언급으로 상단 유입되는 케이스 차단)
-    # 예: '제주4.3/희생자/보상' 등 정치·사건성 인터뷰 + /society/ 경로 + 제목에 농업 앵커가 거의 없는 경우
+    # 예: '제주4.3/희생자/보상' 등 사건·정치성 인터뷰가 /society/ 경로로 들어오며
+    #      본문에 '수급/APC/온라인 도매시장'이 한두 문장 섞여 dist 핵심으로 오르는 케이스를 차단.
     if key == "dist":
         horti_title_sc = best_horti_score(ttl, "")
+
+        # 제목 기반 앵커(도매/유통/농업) — 제목에 앵커가 없으면 '본문 일부 언급' 오탐 가능성이 높다.
+        dist_anchor_in_title = count_any(ttl_l, [t.lower() for t in (
+            "도매시장", "공판장", "가락시장", "경락", "경매", "반입",
+            "도매법인", "중도매", "시장도매인",
+            "산지유통", "산지유통센터", "apc",
+            "원산지", "부정유통", "단속", "검역", "통관", "수출", "자조금"
+        )])
+        agri_anchor_in_title = count_any(ttl_l, [t.lower() for t in (
+            "농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과",
+            "사과", "배", "감귤", "딸기", "고추", "오이", "포도", "월동채소"
+        )])
+
+        # (강) 사건/정치/역사 이슈가 제목에 있으면, 본문에 시장 키워드가 섞여도 dist에서 제외(핵심/비핵심 모두 차단)
+        # - '제주4.3' 같은 명백한 사건 키워드는 dist 핵심으로 절대 올리면 안 됨.
+        hard_politics_terms = (
+            "제주4.3", "제주4·3", "4.3의", "4·3", "희생자", "추모", "보상",
+            "탄핵", "계엄", "내란", "참사", "특별법"
+        )
+        hard_hits = count_any(ttl_l, [t.lower() for t in hard_politics_terms])
+        if hard_hits >= 1 and ("/society/" in _path or "/politics/" in _path or "/the300/" in _path):
+            if dist_anchor_in_title == 0 and agri_anchor_in_title == 0:
+                return _reject("dist_politics_hard_title")
+
+        # (약) 정치/사건성 단어가 있고 제목 앵커가 매우 약하며 시장 맥락도 없으면 dist에서 제외
         politics_title_terms = (
             "4.3", "제주4.3", "희생자", "보상", "추모", "내란", "탄핵", "계엄", "정당", "총선", "대선", "국회",
             "검찰", "재판", "선고", "구속", "기소", "특별법", "사건", "참사"
         )
         politics_hits = count_any(ttl_l, [t.lower() for t in politics_title_terms])
         if politics_hits >= 1 and ("/society/" in _path or "/politics/" in _path or "/the300/" in _path):
-            # 제목에 농업/도매 앵커가 없고(=본문 일부 언급 오탐 가능) 시장 맥락도 없으면 dist에서 제외
-            dist_anchor_in_title = count_any(ttl_l, [t.lower() for t in ("도매시장", "공판장", "가락시장", "경락", "경매", "반입",
-                                                                         "도매법인", "중도매", "시장도매인",
-                                                                         "산지유통", "산지유통센터", "apc",
-                                                                         "원산지", "부정유통", "단속", "검역", "통관", "수출", "자조금")])
-            agri_anchor_in_title = count_any(ttl_l, [t.lower() for t in ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과",
-                                                                         "사과", "배", "감귤", "딸기", "고추", "오이", "포도", "월동채소")])
             if dist_anchor_in_title == 0 and agri_anchor_in_title == 0 and horti_title_sc < 1.3 and market_hits == 0:
                 return _reject("dist_politics_heavy_title")
 
