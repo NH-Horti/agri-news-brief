@@ -3036,20 +3036,27 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # (강제 컷) 전력/에너지/유틸리티 '도매시장/수급' 동음이의어 오탐 차단
     energy_hits = count_any(text, [t.lower() for t in ENERGY_CONTEXT_TERMS])
+
+    # '도매시장'은 전력/금융 등에서도 흔히 등장하므로, 농산물 유통 디스앰비규에이터가 없으면 보수적으로 차단한다.
+    has_wholesale_disambig = False
+    if ("도매시장" in text) or (market_hits > 0):
+        has_wholesale_disambig = any(t in text for t in AGRI_WHOLESALE_DISAMBIGUATORS)
+
     # 전력/에너지 문맥이 강한데(>=2) 농업/원예 문맥이 전무하면, '도매시장/수급' 단어가 있어도 비농산물로 판단
-    if energy_hits >= 2 and agri_ctx_hits == 0 and horti_core_hits == 0 and market_hits > 0 and horti_sc < 1.8:
+    # - 가격/수급/재고 같은 범용 단어로 horti_sc가 올라가도 통과하지 않도록, 점수 조건을 두지 않는다.
+    if energy_hits >= 2 and market_hits > 0 and (not has_wholesale_disambig) and agri_ctx_hits == 0 and horti_core_hits == 0:
         return _reject("energy_market_offtopic")
 
-    # dist에서 '도매시장'은 전력/금융 등에서도 흔히 등장한다.
-    # - 농산물 유통 디스앰비규에이터가 없고 원예 점수도 낮으면(dist 목적과 무관) 제외
-    if key == "dist" and ("도매시장" in text):
-        has_disambig = any(t in text for t in AGRI_WHOLESALE_DISAMBIGUATORS)
-        if (not has_disambig) and (agri_ctx_hits == 0) and (horti_core_hits == 0) and (horti_sc < 2.0):
+    # dist에서 '도매시장'이 등장했는데 유통 디스앰비규에이터가 없으면(전력/금융 등 동음이의어 가능성),
+    # 에너지 문맥이 조금이라도 있거나 농업 문맥이 없으면 차단한다.
+    if key == "dist" and ("도매시장" in text) and (not has_wholesale_disambig):
+        if energy_hits >= 1 or agri_ctx_hits == 0:
             return _reject("dist_wholesale_ambiguous_no_agri")
 
-    # supply에서도 '전력 수급/에너지 가격' 류는 '수급/가격' 단어로 오탐되므로 컷
-    if key == "supply" and energy_hits >= 2 and agri_ctx_hits == 0 and horti_core_hits == 0 and horti_sc < 1.8:
+    # supply에서도 '전력 수급/에너지 가격' 류는 '수급/가격' 단어로 오탐되므로 컷(보수적)
+    if key == "supply" and energy_hits >= 2 and agri_ctx_hits == 0 and horti_core_hits == 0:
         return _reject("energy_supply_offtopic")
+
     if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
         return _reject("hard_offtopic_no_agri_context")
 
@@ -4014,6 +4021,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if any(_is_similar_story(a, b, section_key) for b in core):
             continue
+        # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
+        if section_key == "policy" and press_priority(a.press, a.domain) == 1:
+            continue
+
         if not _source_ok_local(a):
             continue
 
@@ -4040,6 +4051,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
+            # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
+            if section_key == "policy" and press_priority(a.press, a.domain) == 1:
+                continue
+
             if not _source_ok_local(a):
                 continue
 
@@ -4768,6 +4783,8 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
     if OPENAI_TEXT_VERBOSITY:
         payload["text"] = {"verbosity": OPENAI_TEXT_VERBOSITY}
 
+    simplified = False  # HTTP 400 시 optional 파라미터 제거 후 1회 재시도
+
     last_resp = None
     for attempt in range(max(1, OPENAI_RETRY_MAX)):
         try:
@@ -4806,6 +4823,16 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
             backoff = ra if ra > 0 else min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
             log.warning("[OpenAI] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, OPENAI_RETRY_MAX, backoff)
             time.sleep(backoff)
+            continue
+
+        # HTTP 400: 모델/옵션 파라미터 불일치(예: reasoning/text 옵션 미지원) 가능
+        # - optional 파라미터(reasoning/text)를 제거하고 1회만 재시도한다.
+        if r.status_code == 400 and (("reasoning" in payload) or ("text" in payload)) and (not simplified):
+            simplified = True
+            payload.pop("reasoning", None)
+            payload.pop("text", None)
+            log.warning("[OpenAI] HTTP 400 -> retry once without optional params: %s", _safe_body(getattr(r, "text", ""), limit=400))
+            time.sleep(0.6)
             continue
 
         log.warning("[OpenAI] summarize skipped: %s", _safe_body(getattr(r, "text", ""), limit=500))
