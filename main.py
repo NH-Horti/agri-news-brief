@@ -319,6 +319,23 @@ HARD_OFFTOPIC_TERMS = [
     "의과학원",
 ]
 
+
+# 전력/에너지/유틸리티(전력 도매시장 등) 동음이의어 오탐 방지용 컨텍스트
+ENERGY_CONTEXT_TERMS = [
+    "전력", "전력망", "전력계통", "전력계통", "발전", "발전소", "발전량", "송전", "배전",
+    "전기요금", "요금", "정산", "유틸리티", "에너지", "가스", "수소", "전력시장", "전력 도매시장",
+    "도매시장 거래", "전력 소매시장", "계통", "계통운영", "수요반응", "전력거래소", "kpx",
+    "옥토퍼스", "octopus", "크라켄", "kraken", "유틸리티 os", "운영체제(os)",
+]
+
+# '도매시장'이 비농산물(전력/에너지/금융 등) 기사에서 쓰이는 경우를 걸러내기 위한 디스앰비규에이터
+# - text는 lower()로 처리되므로, 여기도 소문자/한글 그대로 사용
+AGRI_WHOLESALE_DISAMBIGUATORS = [
+    "농산물", "농수산물", "청과", "가락시장", "공판장", "도매시장법인", "경락", "경락가",
+    "중도매인", "시장도매인", "반입", "경매", "산지", "apc", "산지유통", "산지유통센터",
+    "농협", "원예농협", "과수농협", "청과물",
+]
+
 # 축산물(한우/돼지고기/계란 등) 단독 이슈는 원예 브리핑에서 제외(완전 배제)
 # - '농축산물/농림축산식품부' 같은 중립 표현만으로는 제외하지 않도록, 보수적으로 판단한다.
 LIVESTOCK_STRICT_TERMS = [
@@ -2269,6 +2286,9 @@ def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     return raw, sha
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
+    """GitHub Contents API로 파일 생성/업데이트.
+    - 409(sha mismatch) 발생 시: 최신 sha를 다시 가져와 1회 재시도한다(동시 실행/중복 실행 대비).
+    """
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
     payload = {
         "message": message,
@@ -2277,11 +2297,30 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
     }
     if sha:
         payload["sha"] = sha
-    r = SESSION.put(url, headers=github_api_headers(token), json=payload, timeout=30)
-    if not r.ok:
-        log.error("[GitHub PUT ERROR] %s", r.text)
-        r.raise_for_status()
-    return r.json()
+
+    last_err = None
+    for attempt in range(2):
+        r = SESSION.put(url, headers=github_api_headers(token), json=payload, timeout=30)
+        if r.ok:
+            return r.json()
+
+        # sha mismatch conflict → refetch sha and retry once
+        if r.status_code == 409 and attempt == 0:
+            try:
+                _raw, latest_sha = github_get_file(repo, path, token, ref=branch)
+            except Exception:
+                latest_sha = None
+            if latest_sha:
+                payload["sha"] = latest_sha
+                continue
+
+        last_err = r
+        break
+
+    if last_err is not None:
+        log.error("[GitHub PUT ERROR] %s", last_err.text)
+        last_err.raise_for_status()
+    raise RuntimeError("GitHub PUT failed without response")  # should not happen
 
 def archive_page_exists(repo: str, token: str, d: str) -> bool:
     path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
@@ -2807,6 +2846,23 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # (강제 컷) 산업/금융/바이오 오탐: 농업/원예 맥락이 약하면 제외
     off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
     agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
+
+    # (강제 컷) 전력/에너지/유틸리티 '도매시장/수급' 동음이의어 오탐 차단
+    energy_hits = count_any(text, [t.lower() for t in ENERGY_CONTEXT_TERMS])
+    # 전력/에너지 문맥이 강한데(>=2) 농업/원예 문맥이 전무하면, '도매시장/수급' 단어가 있어도 비농산물로 판단
+    if energy_hits >= 2 and agri_ctx_hits == 0 and horti_core_hits == 0 and market_hits > 0 and horti_sc < 1.8:
+        return _reject("energy_market_offtopic")
+
+    # dist에서 '도매시장'은 전력/금융 등에서도 흔히 등장한다.
+    # - 농산물 유통 디스앰비규에이터가 없고 원예 점수도 낮으면(dist 목적과 무관) 제외
+    if key == "dist" and ("도매시장" in text):
+        has_disambig = any(t in text for t in AGRI_WHOLESALE_DISAMBIGUATORS)
+        if (not has_disambig) and (agri_ctx_hits == 0) and (horti_core_hits == 0) and (horti_sc < 2.0):
+            return _reject("dist_wholesale_ambiguous_no_agri")
+
+    # supply에서도 '전력 수급/에너지 가격' 류는 '수급/가격' 단어로 오탐되므로 컷
+    if key == "supply" and energy_hits >= 2 and agri_ctx_hits == 0 and horti_core_hits == 0 and horti_sc < 1.8:
+        return _reject("energy_supply_offtopic")
     if off_hits >= 2 and agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.6:
         return _reject("hard_offtopic_no_agri_context")
 
@@ -2948,26 +3004,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         supply_ok = (horti_sc >= 1.3) or (market_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1)
         if not supply_ok:
             return _reject("supply_context_gate")
-
-        # NEW(2026-02-22): 패스트푸드/외식 '메뉴 가격' 기사처럼
-        # - 본문에 토마토/채소 등이 언급되어도(재료/원재료 맥락),
-        # - 산지/농가/재배/출하/도매 등 '공급망 앵커'가 전혀 없고,
-        # - 제목에도 원예/품목/시장 신호가 없으면 supply에서 제외한다.
-        supply_chain_anchors = (
-            "농가", "산지", "재배", "수확", "출하",
-            "도매시장", "가락시장", "공판장", "공영도매시장",
-            "경락", "경락가", "경매", "반입", "중도매", "도매법인", "시장도매인",
-            "도매가격", "물량", "재고", "저장", "저장고", "ca저장",
-            "apc", "산지유통", "산지유통센터", "선별", "저온", "저온저장", "물류",
-        )
-        title_focus_ok = (
-            best_horti_score(ttl, "") >= 1.0
-            or any(w in ttl_l for w in ("농산물", "원예", "과수", "과일", "채소", "화훼", "절화", "청과", "시설채소", "과채"))
-            or any(w in ttl_l for w in ("가락시장", "도매시장", "공판장", "공영도매시장", "경락", "경매", "반입", "apc", "산지유통", "산지유통센터"))
-        )
-        supply_chain_hits = count_any(text, [t.lower() for t in supply_chain_anchors])
-        if (not title_focus_ok) and (market_hits == 0) and (supply_chain_hits == 0):
-            return _reject("supply_ingredient_noise_guard")
 
         # URL이 IT/테크 섹션인데 농업/시장 맥락이 약하면 컷(범용 단어 오탐 방지)
         if any(p in _path for p in ("/it/", "/tech/", "/future/", "/science/", "/game/", "/culture/")):
