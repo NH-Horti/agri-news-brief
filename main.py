@@ -6395,6 +6395,14 @@ def compute_end_kst():
     if FORCE_END_NOW:
         return now_kst()
 
+    # ✅ workflow_dispatch(수동 실행)인데 날짜 입력이 없으면: '오늘자'로 생성되게 end를 now로 잡는다.
+    #    (기존 로직은 07:00 이전 실행 시 전날로 떨어질 수 있음)
+    try:
+        if (os.getenv("GITHUB_EVENT_NAME", "").strip().lower() == "workflow_dispatch") and (not FORCE_REPORT_DATE):
+            return now_kst()
+    except Exception:
+        pass
+
     n = now_kst()
     candidate = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
     if n < candidate:
@@ -6632,19 +6640,36 @@ def backfill_rebuild_recent_archives(
     except Exception:
         return search_idx
 
-    # rebuild targets: report_date 제외, 과거 N일
+        # Determine existing archive dates from docs/archive listing (avoid relying on manifest correctness)
+    avail: set[str] = set()
+    try:
+        items = github_list_dir(repo, DOCS_ARCHIVE_DIR, token, ref="main")
+        for it in (items or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    avail.add(dd)
+    except Exception as e:
+        log.warning("[BACKFILL] archive dir listing failed; fallback to manifest-derived list: %s", e)
+        avail = set(archive_dates_desc or [])
+
+    if not avail:
+        log.warning("[BACKFILL] no available archive dates found; skip backfill rebuild")
+        return search_idx
+
+    # rebuild targets: report_date 제외, 과거 N일 중 실제 파일이 있는 날짜만
     targets: list[str] = []
     for i in range(1, days + 1):
         d = (today - timedelta(days=i)).isoformat()
-        # 최근 N일은 보통 manifest/verified 목록에 있음. 없으면 스킵(불필요 생성 방지)
-        if archive_dates_desc and d not in archive_dates_desc:
+        if d not in avail:
             continue
         targets.append(d)
 
     if not targets:
         return search_idx
 
-    log.info("[BACKFILL] rebuild %d day(s): %s", len(targets), ", ".join(targets))
+    log.info("[BACKFILL] available archives=%d | rebuild %d day(s): %s", len(avail), len(targets), ", ".join(targets))
 
     for d in targets:
         try:
