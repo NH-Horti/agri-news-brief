@@ -1497,6 +1497,50 @@ def is_flower_consumer_trend_context(text: str) -> bool:
         return True
     return False
 
+
+# -----------------------------
+# Consumer / non-agri noise helpers
+# -----------------------------
+_FASTFOOD_BRAND_MARKERS = [
+    "빅맥", "맥도날드", "버거킹", "롯데리아", "맘스터치", "kfc", "서브웨이",
+    "와퍼", "맥런치", "후렌치후라이", "프렌치후라이",
+]
+_FASTFOOD_PRICE_MARKERS = [
+    "가격 인상", "가격인상", "인상", "값 올", "가격 올", "요금 인상", "조정", "물가지수", "물가 부담",
+]
+
+def is_fastfood_price_context(text: str) -> bool:
+    """햄버거/패스트푸드 프랜차이즈 가격 인상/물가 기사(농산물 브리핑 관점에서 노이즈)를 판정."""
+    t = (text or "").lower()
+    # 제목/본문에 '빅맥'이 있으면 거의 항상 프랜차이즈 가격 기사
+    if "빅맥" in t:
+        return True
+    if any(b.lower() in t for b in _FASTFOOD_BRAND_MARKERS) and any(m.lower() in t for m in _FASTFOOD_PRICE_MARKERS):
+        return True
+    # '햄버거 물가지수' 류도 제외(대부분 외식 물가 기사)
+    if ("햄버거" in t and "물가지수" in t) or ("햄버거" in t and "가격" in t and "인상" in t):
+        return True
+    return False
+
+_FRUIT_FOODSERVICE_EVENT_BRANDS = [
+    "애슐리", "애슐리퀸즈", "이랜드이츠", "뷔페", "외식", "매장", "방문", "대기 시간", "대기시간",
+]
+_FRUIT_FOODSERVICE_EVENT_MARKERS = [
+    "딸기축제", "딸기 축제", "시즌", "시즌행사", "행사", "프로모션", "디저트", "메뉴", "바스켓",
+    "투입", "톤", "콘텐츠", "재방문",
+]
+
+def is_fruit_foodservice_event_context(text: str) -> bool:
+    """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
+    - 공급/작황/도매시장 수급 신호보다 소비 이벤트 성격이 강해 '품목 및 수급'의 핵심(core)에서 제외/감점.
+    """
+    t = (text or "").lower()
+    brand_hit = any(w.lower() in t for w in _FRUIT_FOODSERVICE_EVENT_BRANDS)
+    marker_hit = any(w.lower() in t for w in _FRUIT_FOODSERVICE_EVENT_MARKERS)
+    # '딸기' 등 과일 키워드가 함께 있을 때만 활성화(일반 외식 기사 오탐 방지)
+    fruit_hit = any(k in t for k in ("딸기", "과일", "생딸기", "딸기 디저트"))
+    return fruit_hit and (brand_hit or marker_hit)
+
 def is_remote_foreign_horti(text: str) -> bool:
     """해외 원예/화훼 업계(특히 특정 국가 내 시장/관세 이슈) 기사 중,
     국내(한국) 수급/유통/정책과 직접 연결이 약한 경우를 제외한다.
@@ -2932,6 +2976,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl = (title or "")
     desc = (desc or "")
     text = (ttl + " " + desc).lower()
+    # HARD BLOCK: 패스트푸드(빅맥/맥도날드 등) 가격 인상/외식 물가 기사(농산물 브리핑 노이즈)
+    if is_fastfood_price_context(text):
+        return _reject("hardblock_fastfood_price")
+
     dom = normalize_host(dom or "")
     key = section_conf["key"]
 
@@ -3496,6 +3544,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     except Exception:
         pass
 
+    # supply 섹션: 외식/뷔페/프랜차이즈 '딸기축제' 류는 소비 이벤트 성격이 강해 핵심 신호에서 감점
+    if section_conf.get("key") == "supply" and is_fruit_foodservice_event_context(text):
+        score -= 2.8
+
+    # 전 섹션: 패스트푸드 가격 기사 방어(필터를 통과하더라도 점수 하락)
+    if is_fastfood_price_context(text):
+        score -= 6.0
+
     return round(score, 3)
 def _token_set(s: str) -> set[str]:
     s = (s or "").lower()
@@ -4013,7 +4069,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         # dist: 지역 단신/공지형은 core 후보에서 제외(진짜 이슈가 밀리는 것을 방지)
         if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
             continue
-        if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
+        if section_key == "supply" and (is_flower_consumer_trend_context((a.title + " " + a.description).lower()) or is_fruit_foodservice_event_context((a.title + " " + a.description).lower())):
             continue
         if not _headline_gate(a, section_key):
             continue
@@ -6152,6 +6208,12 @@ def _kakao_pick_core2(lst: list[Article]) -> list[Article]:
     for a in lst:
         if a.score < 7.0:
             continue
+        # supply 섹션에서는 외식/딸기축제(소비 이벤트)류를 카톡 '핵심2' 대체 후보에서 제외
+        if (a.section or "") == "supply" and is_fruit_foodservice_event_context(((a.title or "") + " " + (a.description or "")).lower()):
+            continue
+        # 안전망: 패스트푸드 가격 기사는 제외
+        if is_fastfood_price_context(((a.title or "") + " " + (a.description or "")).lower()):
+            continue
         picked.append(a)
         if len(picked) >= 2:
             break
@@ -6366,6 +6428,155 @@ def compute_window(repo: str, token: str, end_kst: datetime):
 # Main
 # -----------------------------
 
+
+# -----------------------------
+# Backfill archive navigation (fix: older pages missing "다음 ▶" when new day is added)
+# - GitHub Pages는 정적 HTML이므로, 기존 아카이브 페이지(예: 02-22)는 다음날(02-23) 생성 후에도 자동으로 업데이트되지 않는다.
+# - 해결: 매 실행마다 report_date의 "인접" 아카이브(전날/다음날) 1~2개를 읽어 navRow(이전/다음 버튼 + 날짜 드롭다운)만 갱신한다.
+# -----------------------------
+
+_NAVROW_OPEN_RE = re.compile(r'<div[^>]*\bclass\s*=\s*["\']navRow["\'][^>]*>', re.I)
+
+def _find_div_block(html_text: str, open_match_start: int) -> tuple[int, int] | None:
+    """Given start index of a <div ...> opening tag, find the matching </div> end index (balanced by <div>/<\div>).
+    Returns (start, end) where end is exclusive.
+    """
+    if open_match_start < 0 or open_match_start >= len(html_text):
+        return None
+
+    token_re = re.compile(r"</div\s*>|<div\b", re.I)
+    depth = 0
+    started = False
+    end = None
+
+    for m in token_re.finditer(html_text, open_match_start):
+        tok = m.group(0).lower()
+        if tok.startswith("<div"):
+            depth += 1
+            started = True
+        else:  # </div>
+            if started:
+                depth -= 1
+                if depth <= 0:
+                    end = m.end()
+                    break
+
+    if end is None:
+        return None
+    return (open_match_start, end)
+
+def _extract_navrow_block(html_text: str) -> tuple[int, int, str] | None:
+    m = _NAVROW_OPEN_RE.search(html_text or "")
+    if not m:
+        return None
+    rng = _find_div_block(html_text, m.start())
+    if not rng:
+        return None
+    s, e = rng
+    return (s, e, html_text[s:e])
+
+def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], site_path: str) -> str:
+    prev_href = None
+    next_href = None
+    if cur_date in archive_dates_desc:
+        idx = archive_dates_desc.index(cur_date)
+        # prev(더 과거) = idx+1
+        if idx + 1 < len(archive_dates_desc):
+            prev_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx+1]}.html")
+        # next(더 최신) = idx-1
+        if idx - 1 >= 0:
+            next_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
+
+    # 날짜 select (value도 절대경로)
+    options = []
+    for d in archive_dates_desc[:60]:
+        sel = " selected" if d == cur_date else ""
+        options.append(
+            f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
+            f'{esc(short_date_label(d))} ({esc(weekday_label(d))})</option>'
+        )
+    if not options:
+        options_html = f'<option value="{esc(build_site_url(site_path, f"archive/{cur_date}.html"))}" selected>{esc(short_date_label(cur_date))}</option>'
+    else:
+        options_html = "\n".join(options)
+
+    def nav_btn(href: str | None, label: str, msg: str) -> str:
+        if href:
+            return f'<a class="navBtn" href="{esc(href)}">{esc(label)}</a>'
+        return f'<button class="navBtn disabled" type="button" data-msg="{esc(msg)}">{esc(label)}</button>'
+
+    home_href = site_path
+
+    # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
+    return (
+        '<div class="navRow">\n'
+        f'  <a class="navBtn" href="{esc(home_href)}">최신/아카이브</a>\n'
+        f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}\n'
+        '  <div class="dateSelWrap">\n'
+        '    <select id="dateSelect" aria-label="날짜 선택">\n'
+        f'      {options_html}\n'
+        '    </select>\n'
+        '  </div>\n'
+        f'  {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.")}\n'
+        '</div>'
+    )
+
+def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_dates_desc: list[str], site_path: str) -> bool:
+    """Patch docs/archive/{target_date}.html navRow (prev/next + dropdown) in-place. Returns True if updated."""
+    if not repo or not token or not target_date:
+        return False
+    path = f"{DOCS_ARCHIVE_DIR}/{target_date}.html"
+    raw, sha = github_get_file(repo, path, token, ref="main")
+    if not raw or not sha:
+        return False
+
+    got = _extract_navrow_block(raw)
+    if not got:
+        return False
+    s, e, old_block = got
+
+    new_block = _build_navrow_html_for_date(target_date, archive_dates_desc, site_path)
+
+    # Skip if identical (avoid unnecessary commits)
+    if old_block.strip() == new_block.strip():
+        return False
+
+    new_html = raw[:s] + new_block + raw[e:]
+    github_put_file(repo, path, new_html, token, f"Backfill archive nav {target_date}", sha=sha, branch="main")
+    return True
+
+def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archive_dates_desc: list[str], site_path: str, max_neighbors: int = 2):
+    """Backfill navRow for report_date's neighbors so older pages can navigate forward to newly generated pages."""
+    if not repo or not token or not report_date:
+        return
+    if not archive_dates_desc or report_date not in archive_dates_desc:
+        return
+
+    idx = archive_dates_desc.index(report_date)
+    targets: list[str] = []
+    # (1) 전날/더 과거 페이지: "다음 ▶"가 report_date로 연결되도록(이번 이슈의 핵심)
+    if idx + 1 < len(archive_dates_desc):
+        targets.append(archive_dates_desc[idx + 1])
+    # (2) 다음날/더 최신 페이지: out-of-order 재생성 시 prev/next가 꼬이지 않도록 방어
+    if idx - 1 >= 0:
+        targets.append(archive_dates_desc[idx - 1])
+
+    # Dedup + cap
+    uniq = []
+    for d in targets:
+        if d not in uniq and d != report_date:
+            uniq.append(d)
+    uniq = uniq[:max(0, max_neighbors)]
+
+    for d in uniq:
+        try:
+            updated = patch_archive_page_nav(repo, token, d, archive_dates_desc, site_path)
+            if updated:
+                log.info("[NAV BACKFILL] patched %s (neighbor of %s)", d, report_date)
+        except Exception as e:
+            log.warning("[WARN] nav backfill failed for %s: %s", d, e)
+
+
 def main():
     log.info("[BUILD] %s", BUILD_TAG)
     if not DEFAULT_REPO:
@@ -6462,7 +6673,14 @@ def main():
 
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
-    # save manifest/state (manifest는 clean 유지)
+    
+    # backfill neighbor archive nav (fix: older pages missing "다음 ▶" after new day is generated)
+    try:
+        backfill_neighbor_archive_nav(repo, GH_TOKEN, report_date, archive_dates_desc, site_path)
+    except Exception as e:
+        log.warning("[WARN] backfill_neighbor_archive_nav failed: %s", e)
+
+# save manifest/state (manifest는 clean 유지)
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
     save_state(repo, GH_TOKEN, end_kst)
 
