@@ -2228,9 +2228,8 @@ BROADCAST_PRESS = {
 WIRE_SERVICES = {"뉴스1", "뉴시스", "뉴스핌"}
 
 # 농업 전문/현장 매체(원예·유통 실무에서 참고 가치가 높음) — 너무 과도하게 밀어주진 않되, '하단 고착'을 방지
-AGRI_TRADE_PRESS = {"한국농어민신문", "농수축산신문", "농업정보신문", "팜&마켓"}
-AGRI_TRADE_HOSTS = {"agrinet.co.kr", "farmnmarket.com", "afnews.co.kr"}
-
+AGRI_TRADE_PRESS = {"농민신문", "농수축산신문", "농업정보신문", "팜&마켓", "한국농어민신문"}
+AGRI_TRADE_HOSTS = {"afnews.co.kr", "agrinet.co.kr", "farmnmarket.com", "nongmin.com"}
 # 중간: 농업 전문지/지방/중소/연구·지자체
 MID_PRESS_HINTS = (
     '농업', '팜', '축산', '유통', '식품', '경남', '전북', '전남', '충북', '충남', '강원', '제주',
