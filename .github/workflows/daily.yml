@@ -13,6 +13,18 @@ on:
         description: "재생성할 리포트 날짜 (YYYY-MM-DD, KST 기준). 비우면 자동 날짜(정상 실행)."
         required: false
         default: ""
+      backfill_days:
+        description: "최근 N일 아카이브를 재생성(backfill rebuild). 0이면 OFF."
+        required: false
+        default: "0"
+      backfill_skip_openai:
+        description: "backfill 시 OpenAI 요약 생략(true/false). (비용/시간 절감)"
+        required: false
+        default: "true"
+      backfill_sleep_sec:
+        description: "backfill 날짜 간 sleep(초). 0.2~0.5 권장."
+        required: false
+        default: "0.2"
 
 permissions:
   contents: write
@@ -21,9 +33,10 @@ jobs:
   run:
     runs-on: ubuntu-latest
     env:
-      # Backfill: rebuild recent N days of archive pages (set to 0 to disable)
-      BACKFILL_REBUILD_DAYS: "7"
-      BACKFILL_REBUILD_SLEEP_SEC: "0.2"
+      # Backfill: rebuild recent N days of archive pages (0 = disable)
+      BACKFILL_REBUILD_DAYS: ${{ github.event.inputs.backfill_days || '0' }}
+      BACKFILL_REBUILD_SLEEP_SEC: ${{ github.event.inputs.backfill_sleep_sec || '0.2' }}
+      BACKFILL_REBUILD_SKIP_OPENAI: ${{ github.event.inputs.backfill_skip_openai || 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -111,9 +124,11 @@ jobs:
 
           # ✅ 특정 날짜 재생성용: Actions UI 입력값 → env 연결
           FORCE_REPORT_DATE: ${{ github.event.inputs.force_report_date || '' }}
+          # ✅ 수동 실행(workflow_dispatch)에서 날짜 미입력 시: '오늘자'로 생성되도록 end=now
+          FORCE_END_NOW: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.force_report_date || '') == '' && 'true' || 'false' }}
 
           # 테스트할 때만 1로(주말/공휴일 스킵 무시)
-          FORCE_RUN_ANYDAY: "true"
-          FORCE_SEND: "1"
+          FORCE_RUN_ANYDAY: "false"
+          FORCE_SEND: "0"
 
         run: python main.py
