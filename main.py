@@ -1538,6 +1538,92 @@ _FRUIT_FOODSERVICE_EVENT_MARKERS = [
     "투입", "톤", "콘텐츠", "재방문",
 ]
 
+
+# 거시경제/무역/일반 소비물가 기사 중 '농산물' 단어만 스치듯 포함된 노이즈 차단용
+_WEAK_HORTI_MARKERS = (
+    "농산물", "농식품", "먹거리", "식재료", "물가", "장바구니", "소비자물가", "성수품"
+)
+_STRONG_HORTI_MARKERS = (
+    "사과", "배", "감귤", "만감", "딸기", "포도", "참외", "오이", "토마토", "파프리카", "자두", "매실", "밤", "복숭아",
+    "가락시장", "도매시장", "공판장", "경락", "경매", "반입", "출하", "재고", "저장", "저온", "산지", "작황", "선별"
+)
+
+def is_macro_trade_noise_context(text: str) -> bool:
+    """국제통상/산업 기사에서 농산물이 주변적으로만 언급되는 경우를 차단."""
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    geo_trade = ("트럼프", "미국", "중국", "eu", "유럽", "관세", "보복관세", "301조", "상호관세", "fta", "ustr", "통상")
+    industry = ("반도체", "자동차", "배터리", "철강", "석유화학", "조선", "플랫폼", "ai", "인공지능")
+    weak_horti = ("농산물", "농식품", "식품", "먹거리")
+    strong_horti = _STRONG_HORTI_MARKERS + ("원예", "과수", "채소", "화훼", "절화", "청과")
+
+    geo_hit = count_any(t, [w.lower() for w in geo_trade])
+    ind_hit = count_any(t, [w.lower() for w in industry])
+    weak_hit = count_any(t, [w.lower() for w in weak_horti])
+    strong_hit = count_any(t, [w.lower() for w in strong_horti])
+
+    if geo_hit >= 2 and ind_hit >= 1 and weak_hit >= 1 and strong_hit == 0:
+        return True
+    if geo_hit >= 1 and ind_hit >= 2 and ("농산물" in t or "농식품" in t) and strong_hit == 0:
+        return True
+    return False
+
+def is_general_consumer_price_noise(text: str) -> bool:
+    """장바구니/CPI 나열형 기사 중 원예 수급 신호가 약한 경우를 차단."""
+    t = (text or "").lower()
+    if not t:
+        return False
+    basket_terms = ("전기요금", "가스요금", "통신비", "휘발유", "교통비", "월세", "외식비", "가공식품", "공공요금")
+    weak_hit = count_any(t, [w.lower() for w in _WEAK_HORTI_MARKERS])
+    strong_hit = count_any(t, [w.lower() for w in _STRONG_HORTI_MARKERS])
+    basket_hit = count_any(t, [w.lower() for w in basket_terms])
+
+    if basket_hit >= 2 and weak_hit >= 1 and strong_hit == 0:
+        return True
+    if ("장바구니" in t or "소비자물가" in t or "물가지수" in t) and basket_hit >= 1 and strong_hit == 0:
+        return True
+    return False
+
+def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> bool:
+    """정책/기관 발표성 기사인지 판정(공급/유통 섹션 과다 유입 방지용).
+    단, 일반 언론의 '품목 가격/수급' 중심 기사까지 과하게 policy로 보내지 않도록 시장/품목 강신호는 예외 처리.
+    """
+    t = (text or "").lower()
+    d = normalize_host(dom or "")
+    p = (press or "").strip()
+    if not t:
+        return False
+
+    official = (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부"))
+    agency_terms = ("농식품부", "농림축산식품부", "정부", "기재부", "관세청", "검역본부", "aT", "농관원")
+    policy_action_terms = (
+        "대책", "지원", "할인지원", "점검", "회의", "간담회", "발표", "추진", "시행", "협의", "예산",
+        "수급안정", "안정 대책", "긴급", "대응", "관계부처", "지시"
+    )
+    market_terms = ("가락시장", "도매시장", "공판장", "경락", "반입", "출하", "재고", "저장", "작황", "산지", "시세")
+    commodity_terms = ("사과", "배", "감귤", "만감", "딸기", "포도", "참외", "오이", "토마토", "파프리카", "자두", "매실", "밤")
+    agency_hit = count_any(t, [w.lower() for w in agency_terms])
+    action_hit = count_any(t, [w.lower() for w in policy_action_terms])
+    market_hit = count_any(t, [w.lower() for w in market_terms])
+    commodity_hit = count_any(t, [w.lower() for w in commodity_terms])
+    price_move = (("가격" in t) or ("시세" in t)) and any(k in t for k in ("상승", "하락", "급등", "급락", "약세", "강세"))
+
+    # 일반언론의 품목/시장 가격기사(예: 사과·배 가격 흐름)는 supply에 남긴다.
+    if (commodity_hit >= 1 and (market_hit >= 1 or price_move)) or best_horti_score("", t) >= 2.2:
+        if not official:
+            return False
+
+    if official:
+        return (agency_hit + action_hit) >= 1
+
+    # 비공식 도메인이어도 정부/부처 발표성 재인용 기사면 policy 라우팅
+    if agency_hit >= 1 and action_hit >= 2 and market_hit == 0 and not price_move:
+        return True
+
+    return False
+
 def is_fruit_foodservice_event_context(text: str) -> bool:
     """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
     - 공급/작황/도매시장 수급 신호보다 소비 이벤트 성격이 강해 '품목 및 수급'의 핵심(core)에서 제외/감점.
@@ -2994,6 +3080,15 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # HARD BLOCK: 패스트푸드(빅맥/맥도날드 등) 가격 인상/외식 물가 기사(농산물 브리핑 노이즈)
     if is_fastfood_price_context(text):
         return _reject("hardblock_fastfood_price")
+
+    # HARD BLOCK: 국제통상/산업 일반 기사에서 농산물이 부수적으로만 등장하는 경우
+    if is_macro_trade_noise_context(text):
+        return _reject("hardblock_macro_trade_noise")
+
+    # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
+    if is_general_consumer_price_noise(text):
+        if best_horti_score(ttl, desc) < 1.8:
+            return _reject("hardblock_consumer_price_noise")
 
     # URL/경로 기반 보정(지역/로컬 섹션 등)
     url = (url or "").strip()
@@ -4626,12 +4721,21 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
             log.warning("[WARN] add KREI issue report failed: issue=%s err=%s", issue_no, e)
 
 
+
 def is_macro_policy_issue(text: str) -> bool:
     """'주요 이슈' 성격의 물가/가격 기사인지 판단.
     - 정책 발표(대책/지원 등) 형태가 아니어도, 성수품(사과/배 등) 가격/물가 흐름은 policy 섹션에서 다룬다.
     - 특히 명절(설/추석) 전후 가격 급등·급락 이슈는 '주요 이슈'로 취급한다.
+    - 단, 국제통상/산업 일반 기사나 소비자물가 나열형 기사는 제외한다.
     """
     t = (text or "").lower()
+    if not t:
+        return False
+
+    if is_macro_trade_noise_context(t):
+        return False
+    if is_general_consumer_price_noise(t) and best_horti_score("", t) < 1.6:
+        return False
 
     # 1) 물가/통계/성수품 신호(명시적)
     macro_terms = ("물가", "소비자물가", "물가지수", "cpi", "kosis", "차례상", "성수품", "체감", "물가정보")
@@ -4662,8 +4766,6 @@ def is_macro_policy_issue(text: str) -> bool:
 
     return False
 
-
-
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     raw_by_section: dict[str, list[Article]] = {}
 
@@ -4692,7 +4794,8 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 except Exception:
                     d = (a.domain or "").lower()
                 p = (a.press or "").strip()
-                if (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부")) or is_macro_policy_issue((a.title + " " + a.description).lower()):
+                _mix_text = (a.title + " " + a.description).lower()
+                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text):
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
@@ -6394,11 +6497,13 @@ def compute_end_kst():
     if FORCE_END_NOW:
         return now_kst()
 
-    # ✅ workflow_dispatch(수동 실행)인데 날짜 입력이 없으면: '오늘자'로 생성되게 end를 now로 잡는다.
-    #    (기존 로직은 07:00 이전 실행 시 전날로 떨어질 수 있음)
+    # ✅ workflow_dispatch(수동 실행)인데 날짜 입력이 없으면:
+    #    '오늘자 페이지'는 유지하되, 기사 수집 윈도우는 항상 당일 07:00 cutoff 기준으로 고정한다.
+    #    (수동 실행 시각(예: 15:54) 이후 기사가 섞여 들어오는 문제 방지)
     try:
         if (os.getenv("GITHUB_EVENT_NAME", "").strip().lower() == "workflow_dispatch") and (not FORCE_REPORT_DATE):
-            return now_kst()
+            n = now_kst()
+            return n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
     except Exception:
         pass
 
