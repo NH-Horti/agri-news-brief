@@ -20,6 +20,10 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      # Backfill: rebuild recent N days of archive pages (set to 0 to disable)
+      BACKFILL_REBUILD_DAYS: "7"
+      BACKFILL_REBUILD_SLEEP_SEC: "0.2"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
