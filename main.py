@@ -3403,7 +3403,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
         # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
         if press in AGRI_TRADE_PRESS or normalize_host(dom) in AGRI_TRADE_HOSTS:
-            if has_any(title_l, ["대목장", "대목", "현장", "어땠나", "판매", "시장", "반응"]):
+            if (has_any(text, ["대목장", "대목", "현장", "시장", "판매", "반응", "결산", "시장결산", "시장 결산", "과일시장", "설 대목", "대목 과일시장"])
+                    and (horti_sc >= 2.0 or market_hits >= 1)):
                 score += 3.2
 
         # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
@@ -3830,9 +3831,10 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # dist_hits(도매/유통 강신호)가 부족하면 기본적으로 코어 불가
         # 단, 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는(유통 실무 체크 가치) 예외로 코어 허용
         if dist_hits < 2:
+            # 농업 전문/현장 매체의 '대목/시장결산/현장 리포트'는(유통 실무 체크 가치) 예외로 코어 허용
             if ((a.press in AGRI_TRADE_PRESS or normalize_host(a.domain or "") in AGRI_TRADE_HOSTS)
-                    and has_any(title, ["대목장", "대목", "현장", "어땠나", "판매", "시장"])
-                    and (horti_title_sc >= 1.4 or horti_sc >= 2.0)):
+                    and has_any(text, ["대목장", "대목", "현장", "어땠나", "판매", "시장", "반응", "결산", "시장결산", "시장 결산", "과일시장", "설 대목", "대목 과일시장"])
+                    and (horti_title_sc >= 1.4 or horti_sc >= 2.0 or market_hits >= 1)):
                 return True
             return False
         return (agri_anchor_hits >= 1) or (horti_sc >= 2.0) or (market_hits >= 1)
