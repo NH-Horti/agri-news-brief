@@ -303,6 +303,14 @@ FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1
 FORCE_END_NOW = os.getenv("FORCE_END_NOW", "false").strip().lower() in ("1", "true", "yes")
 STRICT_KAKAO_LINK_CHECK = os.getenv("STRICT_KAKAO_LINK_CHECK", "false").strip().lower() in ("1", "true", "yes")
 
+# Backfill rebuild (최근 N일 아카이브를 재생성하여 필터/스코어 개선을 과거 페이지에도 반영)
+# - 기본 OFF (0). 필요할 때 workflow env로 켜서 사용.
+BACKFILL_REBUILD_DAYS = int((os.getenv("BACKFILL_REBUILD_DAYS", "0") or "0").strip() or 0)
+BACKFILL_REBUILD_DAYS = max(0, min(BACKFILL_REBUILD_DAYS, 31))
+BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
+BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
+BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
+
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
@@ -2976,9 +2984,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     ttl = (title or "")
     desc = (desc or "")
     text = (ttl + " " + desc).lower()
-    # HARD BLOCK: 패스트푸드(빅맥/맥도날드 등) 가격 인상/외식 물가 기사(농산물 브리핑 노이즈)
-    if is_fastfood_price_context(text):
-        return _reject("hardblock_fastfood_price")
 
     dom = normalize_host(dom or "")
     key = section_conf["key"]
@@ -2987,6 +2992,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         # debug: collect why an item was filtered out
         dbg_add_filter_reject(key, reason, ttl, url, dom, press)
         return False
+    # HARD BLOCK: 패스트푸드(빅맥/맥도날드 등) 가격 인상/외식 물가 기사(농산물 브리핑 노이즈)
+    if is_fastfood_price_context(text):
+        return _reject("hardblock_fastfood_price")
 
     # URL/경로 기반 보정(지역/로컬 섹션 등)
     url = (url or "").strip()
@@ -6575,6 +6583,98 @@ def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archi
                 log.info("[NAV BACKFILL] patched %s (neighbor of %s)", d, report_date)
         except Exception as e:
             log.warning("[WARN] nav backfill failed for %s: %s", d, e)
+
+
+
+# -----------------------------
+# Backfill rebuild recent archives (최근 N일 아카이브 재생성)
+# - 필터/스코어/티어 개선이 생겼을 때 과거 N일 페이지에도 자동 반영
+# - 기본: BACKFILL_REBUILD_DAYS=0 (OFF)
+# - 주의: N이 크면 Naver/OpenAI 호출량이 커질 수 있음
+# -----------------------------
+
+def _compute_window_for_report_date(report_date: str) -> tuple[datetime, datetime]:
+    """FORCE_REPORT_DATE 모드와 동일한 방식으로 윈도우를 계산한다.
+    - end: report_date 07:00(KST)
+    - start: 직전 영업일 07:00(KST) (연휴/주말이면 더 길어질 수 있음)
+    """
+    d = date.fromisoformat(report_date)
+    end_kst = dt_kst(d, REPORT_HOUR_KST)
+    prev_bd = previous_business_day(d)
+    start_kst = dt_kst(prev_bd, REPORT_HOUR_KST)
+    if start_kst >= end_kst:
+        start_kst = end_kst - timedelta(hours=24)
+    return start_kst, end_kst
+
+
+def backfill_rebuild_recent_archives(
+    repo: str,
+    token: str,
+    report_date: str,
+    archive_dates_desc: list[str],
+    site_path: str,
+    summary_cache: dict,
+    search_idx: dict,
+) -> dict:
+    """최근 BACKFILL_REBUILD_DAYS 만큼의 과거 아카이브를 재생성하여 커밋한다.
+    - daily html (docs/archive/YYYY-MM-DD.html) 업데이트
+    - docs/search_index.json 엔트리도 해당 날짜로 재생성
+    - 카카오 전송/manifest/state는 건드리지 않는다(오늘자에서만 처리)
+    """
+    days = int(BACKFILL_REBUILD_DAYS or 0)
+    if days <= 0:
+        return search_idx
+    if not repo or not token:
+        return search_idx
+
+    try:
+        today = date.fromisoformat(report_date)
+    except Exception:
+        return search_idx
+
+    # rebuild targets: report_date 제외, 과거 N일
+    targets: list[str] = []
+    for i in range(1, days + 1):
+        d = (today - timedelta(days=i)).isoformat()
+        # 최근 N일은 보통 manifest/verified 목록에 있음. 없으면 스킵(불필요 생성 방지)
+        if archive_dates_desc and d not in archive_dates_desc:
+            continue
+        targets.append(d)
+
+    if not targets:
+        return search_idx
+
+    log.info("[BACKFILL] rebuild %d day(s): %s", len(targets), ", ".join(targets))
+
+    for d in targets:
+        try:
+            start_kst, end_kst = _compute_window_for_report_date(d)
+            log.info("[BACKFILL] %s window: %s ~ %s", d, start_kst.isoformat(), end_kst.isoformat())
+
+            bf_by_section = collect_all_sections(start_kst, end_kst)
+
+            # 요약은 비용/레이트리밋이 걸릴 수 있어 옵션 제공(기본: 수행)
+            if not BACKFILL_REBUILD_SKIP_OPENAI:
+                bf_by_section = fill_summaries(bf_by_section, cache=summary_cache)
+
+            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, archive_dates_desc, site_path)
+
+            bf_path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
+            raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
+            github_put_file(repo, bf_path, bf_html, token, f"Backfill rebuild {d}", sha=sha_old, branch="main")
+
+            # search index update for that day
+            search_idx = update_search_index(search_idx, d, bf_by_section, site_path)
+
+            if BACKFILL_REBUILD_SLEEP_SEC and BACKFILL_REBUILD_SLEEP_SEC > 0:
+                time.sleep(BACKFILL_REBUILD_SLEEP_SEC)
+
+        except Exception as e:
+            log.warning("[BACKFILL] failed for %s: %s", d, e)
+            continue
+
+    return search_idx
+
 
 
 def main():
