@@ -1502,48 +1502,37 @@ _RETAIL_SALES_TREND_EXCLUDE = [
     # 거시 물가/통계는 policy에서 다루므로 제외하지 않음(아래 로직에서 따로 판단)
 ]
 def is_retail_sales_trend_context(text: str) -> bool:
-    """소매/유통 채널의 '판매/매출 데이터 기반 과일·채소 소비 트렌드' 기사인지 판정.
-    - 예: 무인 과일가게/편의점/마트 판매 데이터 분석, 설 소비 트렌드 등
-    - 정책/대책/통계(CPI/KOSIS/소비자물가) 중심 기사는 여기서 True로 보지 않음(=policy 우선)
+    """소매/리테일 판매 데이터 기반 트렌드 기사 판정.
+    - 예: '매출/판매 데이터/분석/트렌드/랭킹' 중심의 소비 트렌드 기사
+    - 목적: 이런 유형은 '주요 이슈 및 정책'으로 과흡수되지 않도록 supply 쪽으로 남기기
     """
     t = (text or "").lower()
     if not t:
         return False
 
-    # 소매 매출/판매 데이터 기반 트렌드 기사(예: 무인 과일가게 판매 데이터)는 supply로 보내고 policy 라우팅에서 제외
-    if is_retail_sales_trend_context(t):
+    retail_terms = [
+        "매출", "판매", "판매량", "판매량", "판매 데이터", "데이터", "분석", "트렌드", "랭킹", "top", "순위",
+        "리테일", "소매", "마트", "편의점", "유통업계", "오프라인", "온라인몰", "이커머스", "쿠팡", "네이버쇼핑",
+        "매장", "프로모션", "행사", "구매", "소비", "장바구니",
+    ]
+    # 너무 범용적인 '데이터' 단독은 제외(노이즈 방지)
+    if not any(k in t for k in retail_terms):
         return False
-    # 거시 물가/통계는 policy 우선
-    if any(w in t for w in ("소비자물가", "물가지수", "kosis", "통계청", "cpi")):
+
+    horti_terms = [
+        "과일", "과수", "채소", "원예", "농산물", "사과", "배", "딸기", "포도", "감귤", "만감류",
+        "샤인머스캣", "키위", "참다래", "복숭아", "자두", "감", "토마토", "파프리카", "오이", "참외",
+    ]
+    if not any(k in t for k in horti_terms):
         return False
-    # 판매/매출/데이터 신호
-    hit = count_any(t, [w.lower() for w in _RETAIL_SALES_TREND_MARKERS])
-    if hit < 2:
+
+    # 정책/제도 기사로 볼 만한 강신호가 있으면 소매 트렌드로 보지 않는다(오분류 방지)
+    policy_hard = ["대책", "지원", "단속", "점검", "회의", "발표", "추진", "법", "제도", "개정", "관세", "검역", "규제"]
+    if any(k in t for k in policy_hard) and ("매출" not in t and "판매" not in t):
         return False
-    # 과일/채소/원예(또는 대표 품목) 맥락
-    if best_horti_score("", t) >= 1.2:
-        return True
-    if any(w in t for w in ("과일", "채소", "청과", "사과", "배", "딸기", "감귤", "만감", "레드향", "천혜향", "한라봉", "포도", "샤인머스캣")):
-        return True
-    return False
 
+    return True
 
-
-_FLOWER_TREND_CORE_MARKERS = [
-    "꽃다발", "부케", "생화", "절화", "화훼", "플라워",
-]
-_FLOWER_TREND_TREND_MARKERS = [
-    "트렌드", "인기", "틈새", "선물", "소비", "소비액", "소비촉진", "클래스", "체험",
-    "레고", "보태니컬", "블록", "장난감 꽃", "장난감 꽃다발",
-]
-_FLOWER_TREND_EXCLUDE_MARKERS = [
-    # 관광/개화/축제류
-    "벚꽃", "유채꽃", "개화", "만개", "꽃축제", "축제", "명소", "포토존", "관광", "여행",
-    # 연예/화보/드라마
-    "배우", "아이돌", "화보", "드라마", "공연",
-    # 창업/상권/프랜차이즈
-    "프랜차이즈", "가맹", "창업", "상권", "임대", "인테리어",
-]
 def is_flower_consumer_trend_context(text: str) -> bool:
     """화훼 '소비/선물 트렌드' 유형(예: 레고 꽃다발 논란/꽃다발 선물 트렌드)을 판정한다.
     - 품목 및 수급 동향(supply)에서 '화훼 이슈'로 비핵심(하단) 편입하는 용도.
@@ -6942,28 +6931,28 @@ def _parse_force_report_date(s: str):
 
 
 def compute_end_kst():
-    if FORCE_REPORT_DATE:
-        d = _parse_force_report_date(FORCE_REPORT_DATE)
-        return dt_kst(d, REPORT_HOUR_KST)
-
+    """End timestamp (KST) for collection window.
+    - 기본은 'KST 07:00' 컷오프에 스냅(07:00~07:00 윈도우 보장)
+    - workflow_dispatch(수동 실행)에서 날짜 미입력 시: 항상 '오늘 07:00'로 고정(새벽 실행 시 전날로 떨어지는 문제 방지)
+    - FORCE_END_NOW=1이면 예외적으로 now() 사용(디버그/임시용)
+    """
     if FORCE_END_NOW:
         return now_kst()
 
-    # ✅ workflow_dispatch(수동 실행)인데 날짜 입력이 없으면:
-    #    '오늘자 페이지'는 유지하되, 기사 수집 윈도우는 항상 당일 07:00 cutoff 기준으로 고정한다.
-    #    (수동 실행 시각(예: 15:54) 이후 기사가 섞여 들어오는 문제 방지)
+    n = now_kst()
+    cutoff_today = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
+
+    # 수동 실행 + 날짜 미입력: 무조건 오늘 07:00으로 고정
     try:
         if (os.getenv("GITHUB_EVENT_NAME", "").strip().lower() == "workflow_dispatch") and (not FORCE_REPORT_DATE):
-            n = now_kst()
-            return n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
+            return cutoff_today
     except Exception:
         pass
 
-    n = now_kst()
-    candidate = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
-    if n < candidate:
-        candidate -= timedelta(days=1)
-    return candidate
+    # 스케줄/일반 실행: 07:00 이전이면 직전 07:00, 이후면 오늘 07:00
+    if n < cutoff_today:
+        return cutoff_today - timedelta(days=1)
+    return cutoff_today
 
 def compute_window(repo: str, token: str, end_kst: datetime):
     prev_bd = previous_business_day(end_kst.date())
@@ -7263,18 +7252,6 @@ def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archi
         except Exception as e:
             log.warning("[WARN] nav backfill failed for %s: %s", d, e)
 
-# -----------------------------
-# UX patch for recent archives (swipe/sticky/loading)
-# -----------------------------
-if UX_PATCH_DAYS and int(UX_PATCH_DAYS) > 0:
-    try:
-        base = date.fromisoformat(report_date)
-        for i in range(0, int(UX_PATCH_DAYS)):
-            d2 = (base - timedelta(days=i)).isoformat()
-            patch_archive_page_ux(repo, GH_TOKEN, d2, site_path)
-    except Exception as e:
-        log.warning("[WARN] UX PATCH failed: %s", e)
-# [UX PATCH]
 
 
 
