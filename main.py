@@ -311,6 +311,12 @@ BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
 
+
+# UX patch (과거 아카이브에 UI/UX 업데이트를 '패치'로 반영: 스와이프/로딩/스티키 nav 등)
+# - 기본: 최근 30일만 패치
+UX_PATCH_DAYS = int((os.getenv("UX_PATCH_DAYS", "30") or "30").strip() or 30)
+UX_PATCH_DAYS = max(0, min(UX_PATCH_DAYS, 365))
+
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
 
@@ -1487,6 +1493,41 @@ def is_retail_promo_context(text: str) -> bool:
     if store and deal:
         return True
     return False
+_RETAIL_SALES_TREND_MARKERS = [
+    "매출", "판매", "판매량", "판매비중", "비중", "데이터", "분석", "트렌드", "나침반",
+    "무인", "무인과일", "과일가게", "판매점", "매장", "소매", "편의점", "마트", "백화점",
+    "프랜차이즈", "체인", "온라인몰", "구매", "소비",
+]
+_RETAIL_SALES_TREND_EXCLUDE = [
+    # 거시 물가/통계는 policy에서 다루므로 제외하지 않음(아래 로직에서 따로 판단)
+]
+def is_retail_sales_trend_context(text: str) -> bool:
+    """소매/유통 채널의 '판매/매출 데이터 기반 과일·채소 소비 트렌드' 기사인지 판정.
+    - 예: 무인 과일가게/편의점/마트 판매 데이터 분석, 설 소비 트렌드 등
+    - 정책/대책/통계(CPI/KOSIS/소비자물가) 중심 기사는 여기서 True로 보지 않음(=policy 우선)
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    # 소매 매출/판매 데이터 기반 트렌드 기사(예: 무인 과일가게 판매 데이터)는 supply로 보내고 policy 라우팅에서 제외
+    if is_retail_sales_trend_context(t):
+        return False
+    # 거시 물가/통계는 policy 우선
+    if any(w in t for w in ("소비자물가", "물가지수", "kosis", "통계청", "cpi")):
+        return False
+    # 판매/매출/데이터 신호
+    hit = count_any(t, [w.lower() for w in _RETAIL_SALES_TREND_MARKERS])
+    if hit < 2:
+        return False
+    # 과일/채소/원예(또는 대표 품목) 맥락
+    if best_horti_score("", t) >= 1.2:
+        return True
+    if any(w in t for w in ("과일", "채소", "청과", "사과", "배", "딸기", "감귤", "만감", "레드향", "천혜향", "한라봉", "포도", "샤인머스캣")):
+        return True
+    return False
+
+
 
 _FLOWER_TREND_CORE_MARKERS = [
     "꽃다발", "부케", "생화", "절화", "화훼", "플라워",
@@ -3350,6 +3391,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
             dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
+            if key == "dist":
+                if (("유통" in text) or ("도매" in text) or ("출하" in text) or ("하역" in text) or ("물류" in text)) and (horti_sc >= 1.8 or agri_ctx_hits >= 1):
+                    dist_soft_ok = True
             if not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
                 return _reject("must_terms_fail")
 
@@ -3375,6 +3419,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
         if not is_official:
+            # 소매 매출/판매 데이터 기반 트렌드 기사는 policy가 아니라 supply로 보내는 것이 자연스럽다
+            if is_retail_sales_trend_context(text):
+                return _reject("policy_retail_sales_trend")
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
@@ -3419,8 +3466,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
 
         # 소프트/하드 신호 분리(일반어: 브랜드/통합/조화/꽃 등은 제거)
-        dist_soft = ["산지유통", "산지유통센터", "원예농협", "과수농협", "판매농협", "작목반", "화훼", "절화", "자조금", "하나로마트", "온라인 도매시장"]
+        dist_soft = ["산지유통", "산지유통센터", "원예농협", "과수농협", "판매농협", "작목반", "화훼", "절화", "자조금", "하나로마트", "온라인 도매시장", "유통", "도매", "도매법인", "하역", "하역비", "하역대란", "출하", "집하", "물류센터"]
         dist_hard = ["가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경락가", "경매", "반입",
+                     "도매법인", "하역", "하역비", "하역대란", "출하",
                      "중도매인", "시장도매인",
                      "선별", "저온", "저온저장", "저장고", "ca저장", "물류",
                      "원산지", "부정유통", "단속",
@@ -4219,6 +4267,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     used_title_keys: set[str] = set()
     used_url_keys: set[str] = set()
 
+    # 코어(핵심2)에서 농업 전문 인터넷 매체가 과도하게 잠식하지 않도록(다양성),
+    # supply/policy에서는 trade-press 코어를 1건으로 제한(필요시 완화)
+    trade_core_cap = 1 if section_key in ("supply", "policy") else 2
+    trade_core_count = 0
+    def _is_trade_press(a: Article) -> bool:
+        try:
+            d = normalize_host(a.domain or "")
+        except Exception:
+            d = (a.domain or "").lower()
+        return ((a.press or "").strip() in AGRI_TRADE_PRESS) or (d in AGRI_TRADE_HOSTS)
+
     def _dup_key(a: Article) -> str:
         return a.norm_key or a.canon_url or a.title_key
 
@@ -4253,6 +4312,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
         if section_key == "policy" and press_priority(a.press, a.domain) == 1:
             continue
+        if _is_trade_press(a) and trade_core_count >= trade_core_cap:
+            continue
 
         if not _source_ok_local(a):
             continue
@@ -4261,6 +4322,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         core.append(a)
         _mark_used(a)
         _source_take(a)
+        if _is_trade_press(a):
+            trade_core_count += 1
+        if _is_trade_press(a):
+            trade_core_count += 1
 
     # 2) 코어 부족 시: 약간 완화(여전히 임계치 이상 + 중복 제거) — 하지만 억지 채움 금지
     if len(core) < 2:
@@ -4286,7 +4351,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
             market_anchor_hits = count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")])
             apc_ctx_local = has_apc_agri_context(text)
-            if ops_hits >= 1 and market_anchor_hits == 0 and (not apc_ctx_local) and agri_anchor_hits == 0 and best_horti_score(a.title or "", a.description or "") < 1.9:
+            agri_anchor_hits_local = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
+            if ops_hits >= 1 and market_anchor_hits == 0 and (not apc_ctx_local) and agri_anchor_hits_local == 0 and best_horti_score(a.title or "", a.description or "") < 1.9:
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -4294,6 +4360,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
             if section_key == "policy" and press_priority(a.press, a.domain) == 1:
+                continue
+            if _is_trade_press(a) and trade_core_count >= trade_core_cap:
                 continue
 
             if not _source_ok_local(a):
@@ -4901,6 +4969,71 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 raw_by_section["policy"] = uniq
             except Exception:
                 pass
+
+
+    # ✅ 섹션 재조정(rebalancing)
+    # - policy가 '판매 데이터 기반 소비 트렌드/소매 분석' 기사로 과밀해지는 것을 방지
+    # - dist가 비는 날(도매시장/APC 기사 표현이 간접적인 경우) supply에서 dist로 이동시켜 누락을 줄임
+    supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), None)
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), None)
+
+    if supply_conf is not None and policy_conf is not None:
+        moved_ps = 0
+        keep_policy = []
+        for a in raw_by_section.get("policy", []) or []:
+            txt = (a.title + " " + a.description).lower()
+            d = normalize_host(a.domain or "")
+            p = (a.press or "").strip()
+            # 소매 매출/판매 데이터 기반 트렌드(예: 무인 과일가게 판매 데이터)는 supply가 자연스러움
+            if is_retail_sales_trend_context(txt) and (not policy_domain_override(d, txt)):
+                # supply로 재평가해서 통과할 때만 이동
+                try:
+                    if is_relevant(a.title, a.description, d, a.canon_url or a.url, supply_conf, p):
+                        a.section = "supply"
+                        a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, supply_conf, p)
+                        raw_by_section.setdefault("supply", []).append(a)
+                        moved_ps += 1
+                        continue
+                except Exception:
+                    pass
+            keep_policy.append(a)
+        raw_by_section["policy"] = keep_policy
+        if moved_ps:
+            log.info("[REBALANCE] moved %d retail-sales-trend item(s): policy -> supply", moved_ps)
+
+    if dist_conf is not None and supply_conf is not None:
+        # dist 후보가 너무 적으면 supply에서 '유통/도매/APC/수출' 신호가 강한 기사를 dist로 이동
+        dist_now = len(raw_by_section.get("dist", []) or [])
+        if dist_now < 4:
+            moved_sd = 0
+            keep_supply = []
+            for a in raw_by_section.get("supply", []) or []:
+                txt = (a.title + " " + a.description).lower()
+                d = normalize_host(a.domain or "")
+                p = (a.press or "").strip()
+
+                # dist-like 판정(보수적): 유통/도매/APC/도매법인/하역/물류/수출/검역 등 + 원예 맥락
+                dist_like_hits = count_any(txt, [t.lower() for t in (
+                    "가락시장","도매시장","공판장","공영도매시장","경락","경매","반입",
+                    "산지유통","산지유통센터","apc","도매법인","중도매","시장도매인",
+                    "하역","하역비","하역대란","물류","물류센터","출하","집하",
+                    "원산지","부정유통","단속","검역","통관","수출","유통","도매"
+                )])
+                if dist_like_hits >= 3 and (best_horti_score(a.title, a.description) >= 1.6 or count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")]) >= 1):
+                    # dist 기준으로도 통과할 때만 이동
+                    try:
+                        if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
+                            a.section = "dist"
+                            a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, dist_conf, p)
+                            raw_by_section.setdefault("dist", []).append(a)
+                            moved_sd += 1
+                            continue
+                    except Exception:
+                        pass
+                keep_supply.append(a)
+            raw_by_section["supply"] = keep_supply
+            if moved_sd:
+                log.info("[REBALANCE] moved %d dist-like item(s): supply -> dist", moved_sd)
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
@@ -5619,7 +5752,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow.swipeActive{{transition:none}}
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
-      .topin .navRow{{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(14,16,19,.96), rgba(14,16,19,.88));backdrop-filter: blur(6px);border-bottom:1px solid var(--line)}}
+      .topin .navRow{{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(14,16,19,.96), rgba(14,16,19,.88));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}}
     }}
   </style>
 </head>
@@ -6984,6 +7117,121 @@ def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_date
     github_put_file(repo, path, new_html, token, f"Backfill archive nav {target_date}", sha=sha, branch="main")
     return True
 
+    def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
+        """Patch existing archive HTML to include latest swipe/sticky/loading UX and fix dark mobile bar."""
+        try:
+            path = f"{DOCS_ARCHIVE_DIR}/{iso_date}.html"
+            raw, sha = github_get_file(repo, path, token, ref="main")
+            if not raw or not sha:
+                return False
+
+            html_text = raw
+
+            # 1) Fix invalid/dark rgba in older pages (safety)
+            html_new = html_text.replace("rgba(14,16,19,96)", "rgba(255,255,255,0.96)").replace("rgba(14,16,19,88)", "rgba(255,255,255,0.90)")
+
+            # 2) Ensure swipe hint + loading blocks exist (insert after navRow within topin)
+            if 'id="swipeHint"' not in html_new:
+                html_new = re.sub(
+                    r'(</div>\s*</div>\s*\n\s*\n\s*<div class="chipbar")',
+                    '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
+                    '        <span class="arrow">◀</span>\n'
+                    '        <span class="txt pill">좌우 스와이프로 날짜 이동</span>\n'
+                    '        <span class="arrow">▶</span>\n'
+                    '      </div>\n'
+                    '      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">\n'
+                    '        <span class="badge">날짜 이동 중…</span>\n'
+                    '      </div>\n\n'
+                    '<div class="chipbar"',
+                    html_new,
+                    count=1,
+                    flags=re.M,
+                )
+
+            # 3) Ensure CSS exists
+            if ".swipeHint" not in html_new or ".navLoading" not in html_new:
+                css_snip = (
+                    "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
+                    "\n    .swipeHint.show{display:flex}"
+                    "\n    .swipeHint.hide{opacity:0;transform:translateY(-4px)}"
+                    "\n    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}"
+                    "\n    .swipeHint .txt{letter-spacing:-0.1px}"
+                    "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
+                    "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
+                    "\n    .navLoading.show{display:flex}"
+                    "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}"
+                    "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
+                    "\n    .navRow.swipeActive{transition:none}"
+                    "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
+                    "\n    @media (max-width: 840px){"
+                    "\n      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}"
+                    "\n    }"
+                    "\n    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }"
+                    "\n    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }\n"
+                )
+                html_new = re.sub(r"(</style>)", css_snip + r"\1", html_new, count=1, flags=re.I)
+
+            # 4) Ensure JS swipe exists (append near end if missing)
+            if "touchstart" not in html_new or "ArrowLeft" not in html_new:
+                js_snip = """\n<script>
+      (function() {
+        var navRow = document.querySelector('.navRow');
+        var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
+        var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+        var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+        var navLoading = document.getElementById('navLoading');
+        var isNavigating = false;
+        function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
+        function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
+        function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
+        function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
+        function navigateBy(el){
+          if(!el || isNavigating) return;
+          if(el.tagName && el.tagName.toLowerCase()==='a'){
+            var href = el.getAttribute('href');
+            if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
+          }
+          el.click();
+        }
+        var sx=0, sy=0, st=0, tracking=false, blocked=false;
+        document.addEventListener('touchstart', function(e){
+          if(!e.touches || e.touches.length!==1) return;
+          blocked = isEditableTarget(e.target);
+          tracking = !blocked;
+          var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+        }, {passive:true});
+        document.addEventListener('touchend', function(e){
+          if(!e.changedTouches || e.changedTouches.length!==1) return;
+          if(blocked || isEditableTarget(e.target)) return;
+          var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+          if(dt>800 || Math.abs(dx)<70 || Math.abs(dx) < Math.abs(dy)*1.3) return;
+          showNavLoading();
+          if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
+        }, {passive:true});
+        document.addEventListener('keydown', function(e){
+          if(!e) return;
+          if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+          if(isEditableTarget(e.target)) return;
+          if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav);} }
+          else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav);} }
+        });
+        window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
+      })();
+    </script>
+"""
+                html_new = re.sub(r"(</body>)", js_snip + r"\1", html_new, count=1, flags=re.I)
+
+            if html_new == html_text:
+                return False
+
+            github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
+            return True
+        except Exception as e:
+            log.warning("[WARN] ux patch failed for %s: %s", iso_date, e)
+            return False
+
+
+
 def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archive_dates_desc: list[str], site_path: str, max_neighbors: int = 2):
     """Backfill navRow for report_date's neighbors so older pages can navigate forward to newly generated pages."""
     if not repo or not token or not report_date:
@@ -7014,6 +7262,20 @@ def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archi
                 log.info("[NAV BACKFILL] patched %s (neighbor of %s)", d, report_date)
         except Exception as e:
             log.warning("[WARN] nav backfill failed for %s: %s", d, e)
+
+# -----------------------------
+# UX patch for recent archives (swipe/sticky/loading)
+# -----------------------------
+if UX_PATCH_DAYS and int(UX_PATCH_DAYS) > 0:
+    try:
+        base = date.fromisoformat(report_date)
+        for i in range(0, int(UX_PATCH_DAYS)):
+            d2 = (base - timedelta(days=i)).isoformat()
+            patch_archive_page_ux(repo, GH_TOKEN, d2, site_path)
+    except Exception as e:
+        log.warning("[WARN] UX PATCH failed: %s", e)
+# [UX PATCH]
+
 
 
 
