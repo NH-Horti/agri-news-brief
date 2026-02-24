@@ -4267,8 +4267,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         for a in pool:
             if len(core) >= 2:
                 break
+            # dist 완화 선발 임계값: APC 인프라/시설 기사(준공/가동/선별/저온저장 등)는 소폭 완화
+            text = ((a.title or "") + " " + (a.description or "")).lower()
+            apc_ctx_local = has_apc_agri_context(text)
             dist_eff_thr = thr
-            if apc_ctx_local and any(w in text for w in ("준공","완공","개장","개소","가동","선별","선과","저온","저온저장","저장고","ca저장")):
+            if section_key == "dist" and apc_ctx_local and any(w in text for w in ("준공","완공","개장","개소","가동","선별","선과","저온","저온저장","저장고","ca저장")):
                 dist_eff_thr = max(0.0, thr - 0.8)
             if a.score < dist_eff_thr:
                 continue
