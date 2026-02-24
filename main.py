@@ -5604,6 +5604,23 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
     .footer{{margin-top:18px;color:var(--muted);font-size:12px}}
+    .swipeHint{{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}}
+    .swipeHint.show{{display:flex}}
+    .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
+    .swipeHint .arrow{{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}}
+    .swipeHint .txt{{letter-spacing:-0.1px}}
+    .swipeHint .pill{{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}}
+    @media (hover:hover) and (pointer:fine){{ .swipeHint{{display:none !important;}} }}
+    @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
+    .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
+    .navLoading.show{{display:flex}}
+    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}}
+    .navRow{{transition:transform .18s ease, opacity .18s ease}}
+    .navRow.swipeActive{{transition:none}}
+    .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
+    @media (max-width: 840px){{
+      .topin .navRow{{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(14,16,19,.96), rgba(14,16,19,.88));backdrop-filter: blur(6px);border-bottom:1px solid var(--line)}}
+    }}
   </style>
 </head>
 <body>
@@ -5614,7 +5631,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn\" href=\"{esc(home_href)}\">최신/아카이브</a>
+        <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"최신 브리핑/날짜별 아카이브 목록\">최신/아카이브</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -5622,6 +5639,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           </select>
         </div>
         {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.")}
+      </div>
+      <div id=\"swipeHint\" class=\"swipeHint\" aria-hidden=\"true\">
+        <span class=\"arrow\">◀</span>
+        <span class=\"txt pill\">좌우 스와이프로 날짜 이동</span>
+        <span class=\"arrow\">▶</span>
+      </div>
+      <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
+        <span class=\"badge\">날짜 이동 중…</span>
       </div>
     </div>
 
@@ -5641,6 +5666,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     (function() {{
       var sel = document.getElementById("dateSelect");
       if (sel) {{
+        sel.setAttribute("data-swipe-ignore", "1");
         sel.addEventListener("change", function() {{
           var v = sel.value;
           if (v) window.location.href = v;
@@ -5650,11 +5676,221 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
       var btns = document.querySelectorAll("button.navBtn[data-msg]");
       btns.forEach(function(b) {{
+        b.setAttribute("data-swipe-ignore", "1");
         b.addEventListener("click", function() {{
           var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
           alert(msg);
         }});
       }});
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 + 인디케이터 + 미세 피드백
+      var navRow = document.querySelector(".navRow");
+      var navBtns = Array.prototype.slice.call(document.querySelectorAll(".navRow .navBtn"));
+      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+      var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function hasHref(el) {{
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }}
+
+      function showNavLoading() {{
+        if (!navLoading) return;
+        navLoading.classList.add("show");
+      }}
+
+      function hideNavLoading() {{
+        if (!navLoading) return;
+        navLoading.classList.remove("show");
+      }}
+
+      function navigateBy(el) {{
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {{
+          var href = el.getAttribute("href");
+          if (href) {{
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }}
+        }}
+        el.click();
+      }}
+
+      function isEditableTarget(target) {{
+        return !!(target && target.closest && target.closest("a, button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']"));
+      }}
+
+      // 모바일/터치 환경에서만 힌트 표시 (최초 1회, 자동 숨김)
+      function maybeShowSwipeHint() {{
+        if (!swipeHint) return;
+        var touchLike = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+        if (!touchLike) return;
+        if (!hasHref(prevNav) && !hasHref(nextNav)) return;
+        try {{
+          if (window.localStorage && localStorage.getItem("agri_swipe_hint_seen") === "1") return;
+        }} catch (e) {{}}
+        swipeHint.classList.add("show");
+        window.setTimeout(function() {{
+          swipeHint.classList.add("hide");
+        }}, 2600);
+        window.setTimeout(function() {{
+          swipeHint.classList.remove("show");
+          swipeHint.classList.remove("hide");
+        }}, 3100);
+        try {{
+          if (window.localStorage) localStorage.setItem("agri_swipe_hint_seen", "1");
+        }} catch (e) {{}}
+      }}
+
+      function flashSwipeHint(direction) {{
+        if (!swipeHint) return;
+        var touchLike = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+        if (!touchLike) return;
+        swipeHint.classList.remove("hide");
+        swipeHint.classList.add("show");
+        var txt = swipeHint.querySelector(".txt");
+        if (txt) {{
+          txt.textContent = direction === "next" ? "← 스와이프: 다음 날짜" : "→ 스와이프: 이전 날짜";
+          window.clearTimeout(flashSwipeHint._t);
+          flashSwipeHint._t = window.setTimeout(function() {{
+            txt.textContent = "좌우 스와이프로 날짜 이동";
+            swipeHint.classList.add("hide");
+            window.setTimeout(function() {{
+              swipeHint.classList.remove("show");
+              swipeHint.classList.remove("hide");
+            }}, 220);
+          }}, 900);
+        }}
+      }}
+
+      function resetNavRowFeedback() {{
+        if (!navRow) return;
+        navRow.classList.remove("swipeActive");
+        navRow.classList.add("swipeSettling");
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+        window.clearTimeout(resetNavRowFeedback._t);
+        resetNavRowFeedback._t = window.setTimeout(function() {{
+          if (!navRow) return;
+          navRow.classList.remove("swipeSettling");
+        }}, 220);
+      }}
+
+      var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
+
+      document.addEventListener("touchstart", function(e) {{
+        if (!e.touches || e.touches.length !== 1) return;
+        var target = e.target;
+        blockedSwipe = isEditableTarget(target);
+        trackingSwipe = !blockedSwipe;
+        var t = e.touches[0];
+        sx = t.clientX; sy = t.clientY; st = Date.now();
+        lastDx = 0;
+      }}, {{passive:true}});
+
+      document.addEventListener("touchmove", function(e) {{
+        if (!trackingSwipe || blockedSwipe || !e.touches || e.touches.length !== 1) return;
+        var t = e.touches[0];
+        var dx = t.clientX - sx;
+        var dy = t.clientY - sy;
+
+        // 수평 제스처로 판단되기 전에는 반응하지 않음
+        if (Math.abs(dx) < 12) return;
+        if (Math.abs(dx) < Math.abs(dy) * 1.05) return;
+
+        lastDx = dx;
+        if (navRow) {{
+          navRow.classList.add("swipeActive");
+          navRow.classList.remove("swipeSettling");
+          var limited = Math.max(-16, Math.min(16, dx * 0.12));
+          navRow.style.transform = "translateX(" + limited + "px)";
+          navRow.style.opacity = "0.98";
+        }}
+      }}, {{passive:true}});
+
+      document.addEventListener("touchcancel", function() {{
+        trackingSwipe = false;
+        blockedSwipe = false;
+        resetNavRowFeedback();
+      }}, {{passive:true}});
+
+      document.addEventListener("touchend", function(e) {{
+        if (!e.changedTouches || e.changedTouches.length !== 1) {{
+          trackingSwipe = false;
+          blockedSwipe = false;
+          resetNavRowFeedback();
+          return;
+        }}
+
+        var target = e.target;
+        if (blockedSwipe || isEditableTarget(target)) {{
+          trackingSwipe = false;
+          blockedSwipe = false;
+          resetNavRowFeedback();
+          return;
+        }}
+
+        var t = e.changedTouches[0];
+        var dx = t.clientX - sx;
+        var dy = t.clientY - sy;
+        var dt = Date.now() - st;
+        trackingSwipe = false;
+        blockedSwipe = false;
+
+        // 너무 느리거나, 수직 스크롤 성격이 강하면 무시
+        if (dt > 800 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.3) {{
+          resetNavRowFeedback();
+          return;
+        }}
+
+        // 왼쪽 스와이프 => 다음 날짜, 오른쪽 스와이프 => 이전 날짜
+        if (dx < 0) {{
+          flashSwipeHint("next");
+          showNavLoading();
+          navigateBy(nextNav);
+        }} else {{
+          flashSwipeHint("prev");
+          showNavLoading();
+          navigateBy(prevNav);
+        }}
+
+        // 실제 이동이 없거나 막힌 경우를 대비한 UI 복구
+        window.setTimeout(function() {{
+          if (!isNavigating) hideNavLoading();
+          resetNavRowFeedback();
+        }}, 120);
+      }}, {{passive:true}});
+
+      // ✅ (5) 데스크톱 보너스 UX: 좌/우 화살표 키로 날짜 이동 (입력 중/수정 중 제외)
+      document.addEventListener("keydown", function(e) {{
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isEditableTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {{
+          if (hasHref(prevNav)) {{
+            showNavLoading();
+            navigateBy(prevNav);
+          }}
+        }} else if (e.key === "ArrowRight") {{
+          if (hasHref(nextNav)) {{
+            showNavLoading();
+            navigateBy(nextNav);
+          }}
+        }}
+      }});
+
+      // 페이지 이동이 취소되거나 히스토리 복귀 시 로딩 배지 정리
+      window.addEventListener("pageshow", function() {{
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      }});
+
+      maybeShowSwipeHint();
     }})();
   </script>
   <!-- build: {BUILD_TAG} -->
