@@ -1533,6 +1533,27 @@ def is_retail_sales_trend_context(text: str) -> bool:
 
     return True
 
+
+# -----------------------------
+# Flower consumer-trend helpers (화훼 소비/선물 트렌드 기사)
+# -----------------------------
+_FLOWER_TREND_CORE_MARKERS = [
+    "화훼", "꽃", "꽃다발", "절화", "생화", "플라워", "보태니컬", "화원", "꽃집", "꽃시장",
+    "장미", "튤립", "카네이션", "국화", "프리지아",
+]
+
+_FLOWER_TREND_TREND_MARKERS = [
+    "트렌드", "인기", "유행", "소비", "선물", "기념일", "밸런타인", "졸업", "입학",
+    "화이트데이", "프로포즈", "선호", "랭킹", "주목", "판매", "매출", "레고", "콜라보", "논란",
+]
+
+_FLOWER_TREND_EXCLUDE_MARKERS = [
+    "축제", "박람회", "전시회", "공연", "콘서트", "포토존", "야경", "관광", "여행", "데이트코스",
+    "연예", "아이돌", "드라마", "배우", "인플루언서", "셀럽", "패션",
+    "창업", "프랜차이즈", "카페 창업", "매장 오픈",
+    "게임", "피규어", "애니메이션", "캐릭터 굿즈",
+]
+
 def is_flower_consumer_trend_context(text: str) -> bool:
     """화훼 '소비/선물 트렌드' 유형(예: 레고 꽃다발 논란/꽃다발 선물 트렌드)을 판정한다.
     - 품목 및 수급 동향(supply)에서 '화훼 이슈'로 비핵심(하단) 편입하는 용도.
@@ -6930,31 +6951,49 @@ def _parse_force_report_date(s: str):
     raise ValueError(f"Invalid FORCE_REPORT_DATE='{s}'. Use YYYY-MM-DD or YYYYMMDD (e.g., 2026-02-20).")
 
 
+
 def compute_end_kst():
     """End timestamp (KST) for collection window.
-    - 기본은 'KST 07:00' 컷오프에 스냅(07:00~07:00 윈도우 보장)
-    - workflow_dispatch(수동 실행)에서 날짜 미입력 시: 항상 '오늘 07:00'로 고정(새벽 실행 시 전날로 떨어지는 문제 방지)
-    - FORCE_END_NOW=1이면 예외적으로 now() 사용(디버그/임시용)
+    운영 기본은 항상 KST 07:00 컷오프에 스냅한다.
+    FORCE_END_NOW는 디버그/수동재생성(= FORCE_REPORT_DATE 존재)일 때만 허용한다.
     """
-    if FORCE_END_NOW:
+    # FORCE_END_NOW 안전장치:
+    # 실운영에서 실수로 true가 남아 있어도 윈도우가 '실행시각'까지 늘어나지 않도록 제한.
+    if FORCE_END_NOW and FORCE_REPORT_DATE:
         return now_kst()
+    elif FORCE_END_NOW and (not FORCE_REPORT_DATE):
+        try:
+            log.warning("[WARN] FORCE_END_NOW ignored (requires FORCE_REPORT_DATE for safe use)")
+        except Exception:
+            pass
 
     n = now_kst()
     cutoff_today = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
 
-    # 수동 실행 + 날짜 미입력: 무조건 오늘 07:00으로 고정
+    # workflow_dispatch(수동 실행) + 날짜 미입력: 무조건 오늘 07:00으로 고정
     try:
         if (os.getenv("GITHUB_EVENT_NAME", "").strip().lower() == "workflow_dispatch") and (not FORCE_REPORT_DATE):
             return cutoff_today
     except Exception:
         pass
 
-    # 스케줄/일반 실행: 07:00 이전이면 직전 07:00, 이후면 오늘 07:00
+    # 일반/스케줄 실행: 07:00 이전이면 직전 07:00, 이후면 오늘 07:00
     if n < cutoff_today:
         return cutoff_today - timedelta(days=1)
     return cutoff_today
 
 def compute_window(repo: str, token: str, end_kst: datetime):
+
+    # 안전장치: 운영 기본은 end_kst를 항상 07:00 cutoff 경계로 유지
+    # (예: 외부 호출/패치 로직 중 now()가 들어와도 윈도우 오염 방지)
+    if not (FORCE_END_NOW and FORCE_REPORT_DATE):
+        ek = end_kst.astimezone(KST)
+        cutoff_of_end_day = ek.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
+        if ek != cutoff_of_end_day:
+            if ek < cutoff_of_end_day:
+                end_kst = cutoff_of_end_day - timedelta(days=1)
+            else:
+                end_kst = cutoff_of_end_day
     prev_bd = previous_business_day(end_kst.date())
     prev_cutoff = dt_kst(prev_bd, REPORT_HOUR_KST)
 
