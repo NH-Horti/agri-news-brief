@@ -5740,6 +5740,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
     .navBtn:hover{{border-color:#cbd5e1}}
     .navBtn.disabled{{opacity:.45;cursor:pointer}}
+    .navBtn.navArchive, .navRow .navBtn:first-child{{background:linear-gradient(135deg, var(--btn), #6d28d9);border-color:transparent;color:#fff;font-weight:900}}
+    .navBtn.navArchive:hover, .navRow .navBtn:first-child:hover{{filter:brightness(0.96)}}
     .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
     select{{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
             width:165px; max-width:165px;}}
@@ -5828,7 +5830,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
+        <a class=\"navBtn navArchive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -5888,7 +5890,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var navRow = document.querySelector(".navRow");
       var navBtns = Array.prototype.slice.call(document.querySelectorAll(".navRow .navBtn"));
       var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
       var swipeHint = document.getElementById("swipeHint");
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
@@ -5922,7 +5924,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       }}
 
       function isEditableTarget(target) {{
-        return !!(target && target.closest && target.closest("a, button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']"));
+        return !!(target && target.closest && target.closest("select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']"));
       }}
 
       // 모바일/터치 환경에서만 힌트 표시 (최초 1회, 자동 숨김)
@@ -5982,7 +5984,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       }}
 
       var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
-      var swipeArea = document.querySelector(".topbar") || document.documentElement || document.body || document;
+      var swipeArea = document.querySelector(".wrap") || document.querySelector(".content") || document.body || document.documentElement || document;
 
       swipeArea.addEventListener("touchstart", function(e) {{
         if (!e.touches || e.touches.length !== 1) return;
@@ -7169,7 +7171,7 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
     # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
-        f'  <a class="navBtn" href="{esc(home_href)}">아카이브</a>\n'
+        f'  <a class="navBtn navArchive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
         f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}\n'
         '  <div class="dateSelWrap">\n'
         '    <select id="dateSelect" aria-label="날짜 선택">\n'
@@ -7252,10 +7254,10 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 count=1,
                 flags=re.I,
             )
-        if "document.addEventListener(\"touchstart\"" in html_new and "var swipeArea = document.querySelector(\".topbar\")" not in html_new:
+        if "document.addEventListener(\"touchstart\"" in html_new and "var swipeArea = document.querySelector(\".wrap\")" not in html_new:
             html_new = html_new.replace(
                 'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;',
-                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;\n      var swipeArea = document.querySelector(\".topbar\") || document.documentElement || document.body || document;',
+                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;\n      var swipeArea = document.querySelector(\".wrap\") || document.documentElement || document.body || document;',
                 1,
             )
             html_new = html_new.replace('document.addEventListener("touchstart"', 'swipeArea.addEventListener("touchstart"', 1)
@@ -7263,17 +7265,17 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             html_new = html_new.replace('document.addEventListener("touchcancel"', 'swipeArea.addEventListener("touchcancel"', 1)
             html_new = html_new.replace('document.addEventListener("touchend"', 'swipeArea.addEventListener("touchend"', 1)
 
-        if "document.addEventListener('touchstart'" in html_new and "var swipeArea = document.querySelector('.topbar')" not in html_new:
+        if "document.addEventListener('touchstart'" in html_new and "var swipeArea = document.querySelector('.wrap')" not in html_new:
             html_new = html_new.replace(
                 "var sx=0, sy=0, st=0, tracking=false, blocked=false;",
-                "var sx=0, sy=0, st=0, tracking=false, blocked=false;\n    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;",
+                "var sx=0, sy=0, st=0, tracking=false, blocked=false;\n    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;",
                 1,
             )
             html_new = html_new.replace("document.addEventListener('touchstart'", "swipeArea.addEventListener('touchstart'", 1)
             html_new = html_new.replace("document.addEventListener('touchend'", "swipeArea.addEventListener('touchend'", 1)
 
-        # 2) Ensure swipe hint + loading blocks exist (insert before chipbar, preserve closing divs)
-        if 'id="swipeHint"' not in html_new:
+                # 2) Ensure swipe hint + loading blocks exist (insert right after navRow; avoid breaking </div> nesting)
+        if 'id="swipeHint"' not in html_new or 'id="navLoading"' not in html_new:
             hint_loading = (
                 '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
                 '        <span class="arrow">◀</span>\n'
@@ -7284,40 +7286,30 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 '        <span class="badge">날짜 이동 중…</span>\n'
                 '      </div>\n'
             )
-            # legacy layout: chipbar is outside topbar (two closing divs before chipbar)
-            html_new, n_insert = re.subn(
-                r'(</div>\s*</div>\s*\n?\s*\n?\s*<div class="chipbar")',
-                hint_loading + r'\1',
-                html_new,
-                count=1,
-                flags=re.M,
-            )
-            # current layout fallback: chipbar is inside topbar (one closing div before chipbar)
-            if n_insert == 0:
-                html_new, _n2 = re.subn(
-                    r'(</div>\s*\n?\s*\n?\s*<div class="chipbar")',
-                    hint_loading + r'\1',
-                    html_new,
-                    count=1,
-                    flags=re.M,
-                )
+            got_nav = _extract_navrow_block(html_new)
+            if got_nav:
+                _s, _e, _blk = got_nav
+                html_new = html_new[:_e] + hint_loading + html_new[_e:]
+            else:
+                # fallback: insert right before chipbar opening tag (safe; no tag deletion)
+                html_new, _n = re.subn(r'(\n\s*<div class="chipbar")', hint_loading + r'\1', html_new, count=1, flags=re.I)
 
-        # 2-1) Repair malformed HTML from older UX patch (missing closing </div> before chipbar)
-        html_new = re.sub(
-            r'(<div id="navLoading"[^>]*>.*?</div>)(\s*)(<div class="chipbar")',
-            r'\1\n    </div>\n\n\3',
-            html_new,
-            count=1,
-            flags=re.I | re.S,
-        )
-        html_new = re.sub(
-            r'(<div id="swipeHint"[^>]*>.*?</div>)(\s*)(<div class="chipbar")',
-            r'\1\n    </div>\n\n\3',
-            html_new,
-            count=1,
-            flags=re.I | re.S,
-        )
-        # 3) Ensure CSS exists
+        # 2-1) Repair malformed HTML: ensure <div class="topin"> is closed before chipbar
+        try:
+            mt = re.search(r'<div[^>]*\bclass\s*=\s*["\']topin["\'][^>]*>', html_new, flags=re.I)
+            mc = re.search(r'<div[^>]*\bclass\s*=\s*["\']chipbar["\'][^>]*>', html_new, flags=re.I)
+            if mt and mc and mt.start() < mc.start():
+                seg = html_new[mt.start():mc.start()]
+                opens = len(re.findall(r'<div\b', seg, flags=re.I))
+                closes = len(re.findall(r'</div\s*>', seg, flags=re.I))
+                diff = opens - closes
+                # typical corruption: diff=1 (missing </div> for .topin) or diff=2
+                if diff > 0 and diff <= 3:
+                    html_new = html_new[:mc.start()] + ('\n    </div>' * diff) + '\n' + html_new[mc.start():]
+        except Exception:
+            pass
+
+# 3) Ensure CSS exists
         if ".swipeHint" not in html_new or ".navLoading" not in html_new:
             css_snip = (
                 "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
@@ -7328,7 +7320,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
                 "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
                 "\n    .navLoading.show{display:flex}"
-                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}"
+                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}\n    .navBtn.navArchive, .navRow .navBtn:first-child{background:linear-gradient(135deg, var(--btn), #6d28d9);border-color:transparent;color:#fff;font-weight:900}\n    .navBtn.navArchive:hover, .navRow .navBtn:first-child:hover{filter:brightness(0.96)}"
                 "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
                 "\n    .navRow.swipeActive{transition:none}"
                 "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
@@ -7360,13 +7352,13 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
     var navRow = document.querySelector('.navRow');
     var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
     var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-    var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+    var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
     var navLoading = document.getElementById('navLoading');
     var isNavigating = false;
     function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
     function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
     function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-    function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
+    function isEditableTarget(target){ return !!(target && target.closest && target.closest('select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
     function navigateBy(el){
       if(!el || isNavigating) return;
       if(el.tagName && el.tagName.toLowerCase()==='a'){
@@ -7376,7 +7368,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       el.click();
     }
     var sx=0, sy=0, st=0, tracking=false, blocked=false;
-    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;
+    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
     swipeArea.addEventListener('touchstart', function(e){
       if(!e.touches || e.touches.length!==1) return;
       blocked = isEditableTarget(e.target);
@@ -7403,6 +7395,27 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 </script>
 """
             html_new = re.sub(r"(</body>)", js_snip + r"\1", html_new, count=1, flags=re.I)
+
+        # 4-1) Normalize older swipe scripts: nextNav indexing + allow swipe on article links
+        html_new = html_new.replace(
+            "var nextNav = navBtns.length >= 4 ? navBtns[3] : null;",
+            "var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;",
+        )
+        html_new = html_new.replace(
+            "target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')",
+            "target.closest('select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')",
+        )
+        html_new = html_new.replace(
+            'target.closest("a, button, select, input, textarea, [contenteditable=\'true\'], [data-swipe-ignore=\'1\']")',
+            'target.closest("select, input, textarea, [contenteditable=\'true\'], [data-swipe-ignore=\'1\']")',
+        )
+
+
+        # sanity: avoid committing malformed HTML (prevents blank-page regressions)
+        lower = html_new.lower()
+        if "<body" not in lower or "</body>" not in lower or "</html>" not in lower:
+            log.warning("[WARN] ux patch produced malformed html for %s; skip commit", iso_date)
+            return False
 
         if html_new == html_text:
             return False
