@@ -118,7 +118,10 @@
       .dateSelWrap{width:100%}
       .dateSelWrap select{width:100%;max-width:none}
     }
-  </style>
+  
+    .navBtn.navArchive,.navRow > .navBtn:first-child{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}
+    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -153,8 +156,10 @@
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
+    </div>
+    </div>
 
-    <div class="chipbar">
+<div class="chipbar">
       <div class="chipwrap">
         <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
@@ -415,6 +420,9 @@
       }
 
       // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var allNavBtns = document.querySelectorAll(".navRow .navBtn");
+      allNavBtns.forEach(function(b) { b.setAttribute("data-swipe-ignore", "1"); });
+
       var btns = document.querySelectorAll("button.navBtn[data-msg]");
       btns.forEach(function(b) {
         b.setAttribute("data-swipe-ignore", "1");
