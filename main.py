@@ -5029,7 +5029,10 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                     "하역","하역비","하역대란","물류","물류센터","출하","집하",
                     "원산지","부정유통","단속","검역","통관","수출","유통","도매"
                 )])
-                if dist_like_hits >= 3 and (best_horti_score(a.title, a.description) >= 1.6 or count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")]) >= 1):
+                agri_media_bonus = 1 if d in {"agrinet.co.kr","nongmin.com","aflnews.co.kr","farminsight.net"} else 0
+                dist_min_hits = 2 if agri_media_bonus else 3
+                # 농업전문매체 기사라도 유통/도매/APC/출하/물류 신호가 최소 2개는 있어야 dist로 이동
+                if dist_like_hits >= dist_min_hits and (best_horti_score(a.title, a.description) >= 1.6 or count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")]) >= 1):
                     # dist 기준으로도 통과할 때만 이동
                     try:
                         if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
@@ -5078,6 +5081,41 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 log.info("  [DEBUG] %.2f pr=%s tier=%d region=%s nh=%.1f title=%s",
                          a.score, press_priority(a.press, a.domain), press_tier(a.press, a.domain),
                          rk, nh, a.title[:120])
+
+
+    # dist_empty_fallback_from_supply:
+    # 유통/현장 섹션이 비었는데 supply에 유통 성격 기사가 남아 있으면 1건 보정 이동
+    try:
+        if (not final_by_section.get("dist")) and final_by_section.get("supply"):
+            dist_conf = next((s for s in SECTIONS if s["key"] == "dist"), None)
+            moved_one = None
+            keep_supply2 = []
+            for a in final_by_section.get("supply", []):
+                txt = ((a.title or "") + " " + (a.description or "")).lower()
+                d = normalize_host(a.domain or "")
+                p = (a.press or "").strip()
+                dist_signals = count_any(txt, [t.lower() for t in (
+                    "도매시장","공판장","가락시장","apc","산지유통","도매법인","중도매","시장도매인",
+                    "하역","물류","출하","집하","수출","통관","검역","유통","도매"
+                )])
+                horti_signals = count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")])
+                agri_media = d in {"agrinet.co.kr","nongmin.com","aflnews.co.kr","farminsight.net"}
+                if moved_one is None and dist_conf and dist_signals >= (2 if agri_media else 3) and horti_signals >= 1:
+                    try:
+                        if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
+                            a.section = "dist"
+                            a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, dist_conf, p)
+                            moved_one = a
+                            continue
+                    except Exception:
+                        pass
+                keep_supply2.append(a)
+            if moved_one is not None:
+                final_by_section["supply"] = keep_supply2
+                final_by_section["dist"] = [moved_one]
+                log.info("[REBALANCE] dist empty fallback moved 1 item: supply -> dist (%s)", normalize_host(moved_one.domain or ""))
+    except Exception as e:
+        log.warning("[WARN] dist empty fallback failed: %s", e)
 
     return final_by_section
 
@@ -7145,118 +7183,119 @@ def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_date
     github_put_file(repo, path, new_html, token, f"Backfill archive nav {target_date}", sha=sha, branch="main")
     return True
 
-    def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
-        """Patch existing archive HTML to include latest swipe/sticky/loading UX and fix dark mobile bar."""
-        try:
-            path = f"{DOCS_ARCHIVE_DIR}/{iso_date}.html"
-            raw, sha = github_get_file(repo, path, token, ref="main")
-            if not raw or not sha:
-                return False
 
-            html_text = raw
-
-            # 1) Fix invalid/dark rgba in older pages (safety)
-            html_new = html_text.replace("rgba(14,16,19,96)", "rgba(255,255,255,0.96)").replace("rgba(14,16,19,88)", "rgba(255,255,255,0.90)")
-
-            # 2) Ensure swipe hint + loading blocks exist (insert after navRow within topin)
-            if 'id="swipeHint"' not in html_new:
-                html_new = re.sub(
-                    r'(</div>\s*</div>\s*\n\s*\n\s*<div class="chipbar")',
-                    '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
-                    '        <span class="arrow">◀</span>\n'
-                    '        <span class="txt pill">좌우 스와이프로 날짜 이동</span>\n'
-                    '        <span class="arrow">▶</span>\n'
-                    '      </div>\n'
-                    '      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">\n'
-                    '        <span class="badge">날짜 이동 중…</span>\n'
-                    '      </div>\n\n'
-                    '<div class="chipbar"',
-                    html_new,
-                    count=1,
-                    flags=re.M,
-                )
-
-            # 3) Ensure CSS exists
-            if ".swipeHint" not in html_new or ".navLoading" not in html_new:
-                css_snip = (
-                    "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
-                    "\n    .swipeHint.show{display:flex}"
-                    "\n    .swipeHint.hide{opacity:0;transform:translateY(-4px)}"
-                    "\n    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}"
-                    "\n    .swipeHint .txt{letter-spacing:-0.1px}"
-                    "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
-                    "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
-                    "\n    .navLoading.show{display:flex}"
-                    "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}"
-                    "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
-                    "\n    .navRow.swipeActive{transition:none}"
-                    "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
-                    "\n    @media (max-width: 840px){"
-                    "\n      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}"
-                    "\n    }"
-                    "\n    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }"
-                    "\n    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }\n"
-                )
-                html_new = re.sub(r"(</style>)", css_snip + r"\1", html_new, count=1, flags=re.I)
-
-            # 4) Ensure JS swipe exists (append near end if missing)
-            if "touchstart" not in html_new or "ArrowLeft" not in html_new:
-                js_snip = """\n<script>
-      (function() {
-        var navRow = document.querySelector('.navRow');
-        var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
-        var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-        var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
-        var navLoading = document.getElementById('navLoading');
-        var isNavigating = false;
-        function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
-        function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
-        function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-        function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
-        function navigateBy(el){
-          if(!el || isNavigating) return;
-          if(el.tagName && el.tagName.toLowerCase()==='a'){
-            var href = el.getAttribute('href');
-            if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
-          }
-          el.click();
-        }
-        var sx=0, sy=0, st=0, tracking=false, blocked=false;
-        document.addEventListener('touchstart', function(e){
-          if(!e.touches || e.touches.length!==1) return;
-          blocked = isEditableTarget(e.target);
-          tracking = !blocked;
-          var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-        }, {passive:true});
-        document.addEventListener('touchend', function(e){
-          if(!e.changedTouches || e.changedTouches.length!==1) return;
-          if(blocked || isEditableTarget(e.target)) return;
-          var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-          if(dt>800 || Math.abs(dx)<70 || Math.abs(dx) < Math.abs(dy)*1.3) return;
-          showNavLoading();
-          if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-        }, {passive:true});
-        document.addEventListener('keydown', function(e){
-          if(!e) return;
-          if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-          if(isEditableTarget(e.target)) return;
-          if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav);} }
-          else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav);} }
-        });
-        window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
-      })();
-    </script>
-"""
-                html_new = re.sub(r"(</body>)", js_snip + r"\1", html_new, count=1, flags=re.I)
-
-            if html_new == html_text:
-                return False
-
-            github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
-            return True
-        except Exception as e:
-            log.warning("[WARN] ux patch failed for %s: %s", iso_date, e)
+def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
+    """Patch existing archive HTML to include latest swipe/sticky/loading UX and fix dark mobile bar."""
+    try:
+        path = f"{DOCS_ARCHIVE_DIR}/{iso_date}.html"
+        raw, sha = github_get_file(repo, path, token, ref="main")
+        if not raw or not sha:
             return False
+
+        html_text = raw
+
+        # 1) Fix invalid/dark rgba in older pages (safety)
+        html_new = html_text.replace("rgba(255,255,255,0.96)", "rgba(255,255,255,0.96)").replace("rgba(255,255,255,0.90)", "rgba(255,255,255,0.90)")
+
+        # 2) Ensure swipe hint + loading blocks exist (insert after navRow within topin)
+        if 'id="swipeHint"' not in html_new:
+            html_new = re.sub(
+                r'(</div>\s*</div>\s*\n\s*\n\s*<div class="chipbar")',
+                '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
+                '        <span class="arrow">◀</span>\n'
+                '        <span class="txt pill">좌우 스와이프로 날짜 이동</span>\n'
+                '        <span class="arrow">▶</span>\n'
+                '      </div>\n'
+                '      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">\n'
+                '        <span class="badge">날짜 이동 중…</span>\n'
+                '      </div>\n\n'
+                '<div class="chipbar"',
+                html_new,
+                count=1,
+                flags=re.M,
+            )
+
+        # 3) Ensure CSS exists
+        if ".swipeHint" not in html_new or ".navLoading" not in html_new:
+            css_snip = (
+                "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
+                "\n    .swipeHint.show{display:flex}"
+                "\n    .swipeHint.hide{opacity:0;transform:translateY(-4px)}"
+                "\n    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}"
+                "\n    .swipeHint .txt{letter-spacing:-0.1px}"
+                "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
+                "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
+                "\n    .navLoading.show{display:flex}"
+                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}"
+                "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
+                "\n    .navRow.swipeActive{transition:none}"
+                "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
+                "\n    @media (max-width: 840px){"
+                "\n      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}"
+                "\n    }"
+                "\n    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }"
+                "\n    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }\n"
+            )
+            html_new = re.sub(r"(</style>)", css_snip + r"\1", html_new, count=1, flags=re.I)
+
+        # 4) Ensure JS swipe exists (append near end if missing)
+        if "touchstart" not in html_new or "ArrowLeft" not in html_new:
+            js_snip = """\n<script>
+  (function() {
+    var navRow = document.querySelector('.navRow');
+    var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
+    var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+    var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+    var navLoading = document.getElementById('navLoading');
+    var isNavigating = false;
+    function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
+    function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
+    function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
+    function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
+    function navigateBy(el){
+      if(!el || isNavigating) return;
+      if(el.tagName && el.tagName.toLowerCase()==='a'){
+        var href = el.getAttribute('href');
+        if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
+      }
+      el.click();
+    }
+    var sx=0, sy=0, st=0, tracking=false, blocked=false;
+    document.addEventListener('touchstart', function(e){
+      if(!e.touches || e.touches.length!==1) return;
+      blocked = isEditableTarget(e.target);
+      tracking = !blocked;
+      var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+    }, {passive:true});
+    document.addEventListener('touchend', function(e){
+      if(!e.changedTouches || e.changedTouches.length!==1) return;
+      if(blocked || isEditableTarget(e.target)) return;
+      var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+      if(dt>800 || Math.abs(dx)<70 || Math.abs(dx) < Math.abs(dy)*1.3) return;
+      showNavLoading();
+      if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
+    }, {passive:true});
+    document.addEventListener('keydown', function(e){
+      if(!e) return;
+      if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+      if(isEditableTarget(e.target)) return;
+      if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav);} }
+      else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav);} }
+    });
+    window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
+  })();
+</script>
+"""
+            html_new = re.sub(r"(</body>)", js_snip + r"\1", html_new, count=1, flags=re.I)
+
+        if html_new == html_text:
+            return False
+
+        github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
+        return True
+    except Exception as e:
+        log.warning("[WARN] ux patch failed for %s: %s", iso_date, e)
+        return False
 
 
 
@@ -7437,6 +7476,22 @@ def main():
 
     # site path (✅ 4번: 404 방지 링크용)
     site_path = get_site_path(repo)
+
+    # 최근 아카이브 UI/UX 패치 (스와이프/스티키/로딩 배지)
+    if UX_PATCH_DAYS and int(UX_PATCH_DAYS) > 0:
+        try:
+            base = date.fromisoformat(report_date)
+            ux_patched = 0
+            ux_skipped = 0
+            for i in range(0, int(UX_PATCH_DAYS)):
+                d2 = (base - timedelta(days=i)).isoformat()
+                if patch_archive_page_ux(repo, GH_TOKEN, d2, site_path):
+                    ux_patched += 1
+                else:
+                    ux_skipped += 1
+            log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", ux_patched, ux_skipped, int(UX_PATCH_DAYS))
+        except Exception as e:
+            log.warning("[WARN] UX PATCH failed: %s", e)
 
     # manifest load + sanitize (✅ 4번: 이상한 엔트리 제거)
     manifest, msha = load_archive_manifest(repo, GH_TOKEN)
