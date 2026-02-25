@@ -85,7 +85,25 @@
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
-  </style>
+  
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 840px){
+      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}
+    }
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -109,10 +127,17 @@
     </select>
   </div>
   <a class="navBtn" href="/agri-news-brief/archive/2026-02-24.html">다음 ▶</a>
-</div>
-    </div>
 
-    <div class="chipbar">
+      <div id="swipeHint" class="swipeHint" aria-hidden="true">
+        <span class="arrow">◀</span>
+        <span class="txt pill">좌우 스와이프로 날짜 이동</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+
+<div class="chipbar">
       <div class="chipwrap">
         <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
@@ -345,5 +370,51 @@
   </script>
   <!-- build: 25fbb08 -->
 
+
+<script>
+  (function() {
+    var navRow = document.querySelector('.navRow');
+    var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
+    var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+    var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+    var navLoading = document.getElementById('navLoading');
+    var isNavigating = false;
+    function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
+    function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
+    function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
+    function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable="true"],[data-swipe-ignore="1"]')); }
+    function navigateBy(el){
+      if(!el || isNavigating) return;
+      if(el.tagName && el.tagName.toLowerCase()==='a'){
+        var href = el.getAttribute('href');
+        if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
+      }
+      el.click();
+    }
+    var sx=0, sy=0, st=0, tracking=false, blocked=false;
+    document.addEventListener('touchstart', function(e){
+      if(!e.touches || e.touches.length!==1) return;
+      blocked = isEditableTarget(e.target);
+      tracking = !blocked;
+      var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+    }, {passive:true});
+    document.addEventListener('touchend', function(e){
+      if(!e.changedTouches || e.changedTouches.length!==1) return;
+      if(blocked || isEditableTarget(e.target)) return;
+      var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+      if(dt>800 || Math.abs(dx)<70 || Math.abs(dx) < Math.abs(dy)*1.3) return;
+      showNavLoading();
+      if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
+    }, {passive:true});
+    document.addEventListener('keydown', function(e){
+      if(!e) return;
+      if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+      if(isEditableTarget(e.target)) return;
+      if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav);} }
+      else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav);} }
+    });
+    window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
+  })();
+</script>
 </body>
 </html>
