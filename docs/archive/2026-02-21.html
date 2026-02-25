@@ -145,7 +145,41 @@
       .chipN{min-width:26px;padding:2px 6px}
       html{scroll-padding-top:230px}
       .sec{scroll-margin-top:230px}
-    }</style>
+    }
+    /* UX_PATCH_BEGIN v20260226 */
+    .navRow .navBtn.navArchive{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
+    .navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button (older pages without navArchive class) */
+    .navRow > a.navBtn:first-child{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
+    .swipeHint{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}
+    .swipeHint .pill{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}
+    .swipeHint .arrow{font-size:12px;opacity:.85}
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08))}
+    /* make mobile nav stable (match latest spec) */
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top:170px}
+      .sec{scroll-margin-top:170px}
+    }
+    @media (max-width: 640px){
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
+      .navRow > .navBtn{height:40px;border-radius:14px}
+      .navRow > a.navBtn:first-child{grid-column:1 / span 1;width:100%}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1;width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      /* chips: show 2 columns so counts are visible at a glance */
+      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
+      .chip{width:100%;justify-content:space-between}
+    }
+    /* UX_PATCH_END v20260226 */
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -155,7 +189,7 @@
         <div class="sub">기간: 2026-02-20 07:00 ~ 2026-02-21 07:00 · 기사 8건</div>
       </div>
       <div class="navRow">
-  <a class="navBtn navArchive" href="/agri-news-brief/">아카이브</a>
+  <a class="navBtn navArchive navArchive" href="/agri-news-brief/">아카이브</a>
   <a class="navBtn" href="/agri-news-brief/archive/2026-02-20.html">◀ 이전</a>
   <div class="dateSelWrap">
     <select id="dateSelect" aria-label="날짜 선택">
@@ -188,9 +222,9 @@
     </div>
     </div>
 
-<div class="chipbar">
+<div class="chipbar" data-swipe-ignore="1">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
+        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
@@ -454,5 +488,73 @@
     window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
   })();
 </script>
+
+  <!-- UX_PATCH_BEGIN v20260226 -->
+  <script>
+  (function(){
+    try {
+      var navRow = document.querySelector('.navRow');
+      if(!navRow) return;
+      var navBtns = navRow.querySelectorAll('a.navBtn');
+      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
+
+      var navLoading = document.getElementById('navLoading');
+      var isNavigating = false;
+
+      function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
+      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
+      function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
+
+      function isBlockedTarget(target){
+        if(!target || !target.closest) return false;
+        if(target.closest('[data-swipe-ignore="1"]')) return true;
+        // block topbar gestures (nav buttons / date select / section chips)
+        if(target.closest('.topbar')) return true;
+        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+        return false;
+      }
+
+      function navigateBy(el){
+        if(!el || isNavigating) return;
+        if(el.tagName && el.tagName.toLowerCase()==='a'){
+          var href = el.getAttribute('href');
+          if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
+        }
+        try{ el.click(); }catch(e){}
+      }
+
+      var sx=0, sy=0, st=0, blocked=false;
+      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
+
+      swipeArea.addEventListener('touchstart', function(e){
+        if(!e.touches || e.touches.length!==1) return;
+        blocked = isBlockedTarget(e.target);
+        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+      }, {passive:true});
+
+      swipeArea.addEventListener('touchend', function(e){
+        if(!e.changedTouches || e.changedTouches.length!==1) return;
+        if(blocked || isBlockedTarget(e.target)) return;
+        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+        // stronger threshold to avoid accidental navigations while scrolling
+        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
+        showNavLoading();
+        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
+      }, {passive:true});
+
+      document.addEventListener('keydown', function(e){
+        if(!e) return;
+        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+        if(isBlockedTarget(e.target)) return;
+        if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav); } }
+        else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav); } }
+      });
+
+      window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
+    } catch(e){}
+  })();
+  </script>
+  <!-- UX_PATCH_END v20260226 -->
 </body>
 </html>
