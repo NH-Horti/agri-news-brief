@@ -8,7 +8,7 @@ agri-news-brief main.py (production)
 - Naver News Search API로 섹션/키워드별 쿼리를 생성하고, 페이지네이션(MAX_PAGES_PER_QUERY)까지 순회하며 기사 후보를 모읍니다.
 - URL/언론사명 정규화, 섹션 내/전체 중복 제거(사건키), UX 필터(오탐·광고·시위/보이콧 등) 적용 후 점수화하여 섹션별 상위 기사만 선정합니다.
 - OpenAI 요약은 배치 분할 + 재시도 + 캐시를 적용해 비용/실패율을 줄이고, 기사별 요약을 안정적으로 채웁니다.
-- 결과로 HTML 브리핑을 빌드하여 docs/archive/YYYY-MM-DD.html 및 docs/index.html을 업데이트하고, 아카이브 링크 404를 방지합니다.
+- 결과로 HTML 브리핑을 빌드하여 docs/archive/YYYY-MM-DD.html 및 docs/index.html을 업데이트하고, 최신/아카이브 링크 404를 방지합니다.
 - 상태/메타(예: .agri_state.json, manifest 등)는 레포에 저장되어 전날 fallback 및 재실행 시 일관성을 유지합니다.
 - 카카오톡 메시지는 섹션별 핵심 2개 중심으로 구성하여 전송하며, 실패 시(옵션) 전체 워크플로우 실패를 막는 fail-open 동작이 가능합니다.
 
@@ -5716,7 +5716,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --btn:#1d4ed8;
       --btnHover:#1e40af;
       --btnBg:#ffffff;
-      --shadow:0 4px 12px rgba(17,24,39,.08);
+      --shadow: 0 1px 2px rgba(0,0,0,0.06);
     }}
     *{{box-sizing:border-box}}
     html {{
@@ -5729,22 +5729,33 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .wrap{{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
-    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
+    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}}
     h1{{margin:0;font-size:18px;letter-spacing:-0.2px}}
     .sub{{color:var(--muted);font-size:12.5px;margin-top:4px}}
-    .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}}
-    .navRow > *{{min-width:0}}
-    .navBtn{{white-space:nowrap}}
+    .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap}}
     .navBtn{{display:inline-flex;align-items:center;justify-content:center;
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
     .navBtn:hover{{border-color:#cbd5e1}}
+    .navBtn.navArchive,.navRow > .navBtn:first-child{{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}}
+    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}}
     .navBtn.disabled{{opacity:.45;cursor:pointer}}
     .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
     select{{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
             width:165px; max-width:165px;}}
     @media (max-width: 520px) {{
       select{{width:145px; max-width:145px;}}
+    }}
+    @media (max-width: 640px) {{
+      .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}}
+      .navRow > *{{min-width:0}}
+      .navBtn{{white-space:nowrap}}
+      .navRow > .navBtn:first-child{{grid-column:1}}
+      .navRow > .navBtn:nth-child(2){{grid-column:2}}
+      .navRow > .dateSelWrap{{grid-column:1;width:100%}}
+      .navRow > .navBtn:last-child{{grid-column:2}}
+      .dateSelWrap{{width:100%}}
+      .dateSelWrap select{{width:100%;max-width:none}}
     }}
 
     /* sticky chip bar */
@@ -5799,24 +5810,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
     .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
     .navLoading.show{{display:flex}}
-    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}}
+    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}}
     .navRow{{transition:transform .18s ease, opacity .18s ease}}
     .navRow.swipeActive{{transition:none}}
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      html{{scroll-padding-top: 170px;}}
-      .sec{{scroll-margin-top: 170px;}}
-    }}
-    @media (max-width: 640px){{
-      .topin{{gap:8px}}
-      .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}}
-      .navRow > .navBtn:first-child{{grid-column:1}}
-      .navRow > .navBtn:nth-child(2){{grid-column:2}}
-      .navRow > .dateSelWrap{{grid-column:1; width:100%}}
-      .navRow > .navBtn:last-child{{grid-column:2}}
-      .dateSelWrap{{width:100%}}
-      .dateSelWrap select{{width:100%;max-width:none}}
+      html{{scroll-padding-top:170px}}
+      .sec{{scroll-margin-top:170px}}
     }}
   </style>
 </head>
@@ -5849,7 +5850,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     <div class=\"chipbar\">
       <div class=\"chipwrap\">
-        <div class=\"chips\" data-swipe-ignore=\"1\">{chips_html}</div>
+        <div class=\"chips\">{chips_html}</div>
       </div>
     </div>
   </div>
@@ -5866,15 +5867,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         sel.setAttribute("data-swipe-ignore", "1");
         sel.addEventListener("change", function() {{
           var v = sel.value;
-          if (v) {{
-            var ld = document.getElementById("navLoading");
-            if (ld) ld.classList.add("show");
-            window.location.href = v;
-          }}
+          if (v) window.location.href = v;
         }});
       }}
 
       // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var allNavBtns = document.querySelectorAll(".navRow .navBtn");
+      allNavBtns.forEach(function(b) {{ b.setAttribute("data-swipe-ignore", "1"); }});
+
       var btns = document.querySelectorAll("button.navBtn[data-msg]");
       btns.forEach(function(b) {{
         b.setAttribute("data-swipe-ignore", "1");
@@ -5982,9 +5982,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       }}
 
       var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
-      var swipeArea = document.querySelector(".wrap") || document.querySelector(".topbar") || document.documentElement || document.body || document;
 
-      swipeArea.addEventListener("touchstart", function(e) {{
+      document.addEventListener("touchstart", function(e) {{
         if (!e.touches || e.touches.length !== 1) return;
         var target = e.target;
         blockedSwipe = isEditableTarget(target);
@@ -5994,7 +5993,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         lastDx = 0;
       }}, {{passive:true}});
 
-      swipeArea.addEventListener("touchmove", function(e) {{
+      document.addEventListener("touchmove", function(e) {{
         if (!trackingSwipe || blockedSwipe || !e.touches || e.touches.length !== 1) return;
         var t = e.touches[0];
         var dx = t.clientX - sx;
@@ -6014,13 +6013,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         }}
       }}, {{passive:true}});
 
-      swipeArea.addEventListener("touchcancel", function() {{
+      document.addEventListener("touchcancel", function() {{
         trackingSwipe = false;
         blockedSwipe = false;
         resetNavRowFeedback();
       }}, {{passive:true}});
 
-      swipeArea.addEventListener("touchend", function(e) {{
+      document.addEventListener("touchend", function(e) {{
         if (!e.changedTouches || e.changedTouches.length !== 1) {{
           trackingSwipe = false;
           blockedSwipe = false;
@@ -6330,10 +6329,15 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 
       function escHtml(s) {{
         return (s || "").replace(/[&<>"']/g, function(c) {{
-          return ({{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#39;"}})[c] || c;
+          if (c === "&") return "&amp;";
+          if (c === "<") return "&lt;";
+          if (c === ">") return "&gt;";
+          if (c === '"') return "&quot;";
+          return "&#39;";
         }});
       }}
-      function norm(s) {{ return (s || "").toLowerCase(); }}
+
+function norm(s) {{ return (s || "").toLowerCase(); }}
 
       function escapeRegExp(s) {{
         return (s || "").replace(/[.*+?^${{}}()|[\\]\\\\]/g, "\\\\$&");
@@ -7169,7 +7173,7 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
     # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
-        f'  <a class="navBtn navArchive" href="{esc(home_href)}">아카이브</a>\n'
+        f'  <a class="navBtn navArchive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
         f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}\n'
         '  <div class="dateSelWrap">\n'
         '    <select id="dateSelect" aria-label="날짜 선택">\n'
@@ -7206,7 +7210,7 @@ def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_date
 
 
 def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
-    """Patch existing archive HTML to include latest swipe/sticky/loading UX and fix dark mobile bar."""
+    """Patch existing archive HTML to include latest swipe/sticky/loading UX and normalize old/broken patch variants."""
     try:
         path = f"{DOCS_ARCHIVE_DIR}/{iso_date}.html"
         raw, sha = github_get_file(repo, path, token, ref="main")
@@ -7214,79 +7218,46 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             return False
 
         html_text = raw
-
-        # 1) Fix invalid/dark rgba in older pages (safety)
         html_new = html_text
-        # Root-cause fix for older broken pages: a prior regex replacement accidentally inserted control char \x01
-        # (intended as regex backreference \1) in place of </style>, causing the rest of the page to be parsed as CSS.
+
+        # 0) Repair malformed style-close token created by old regex replacement bug (\x01 from "\1")
         if "\x01" in html_new:
             html_new = html_new.replace("\x01", "</style>")
-        # normalize broken mobile navRow sticky style introduced by prior UX patch versions
+
+        # 1) Normalize archive button label/title/class across generations
+        html_new = html_new.replace("최신/아키이브", "아카이브")
+        html_new = html_new.replace("최신/아카이브", "아카이브")
+        html_new = html_new.replace("최신 브리핑/날짜별 아키이브 목록", "날짜별 아카이브 목록")
+        html_new = html_new.replace("최신 브리핑/날짜별 아카이브 목록", "날짜별 아카이브 목록")
         html_new = re.sub(
-            r"@media\s*\(max-width:\s*840px\)\s*\{\s*\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?background:\s*linear-gradient\([^)]*\)[^}]*?\}\s*\}",
+            r'(<div class="navRow">\s*<a class=")([^"\n>]*)"([^>]*>)\s*(?:최신/아카이브|최신/아키이브|아카이브)\s*(</a>)',
+            lambda m: f'{m.group(1)}' + (m.group(2) if 'navArchive' in m.group(2).split() else (m.group(2) + ' navArchive').strip()) + f'"{m.group(3)}아카이브{m.group(4)}',
+            html_new,
+            count=1,
+            flags=re.I | re.S,
+        )
+
+        # 2) Normalize/repair problematic old mobile sticky nav overrides (layout break source)
+        html_new = re.sub(
+            r"@media\s*\(max-width:\s*840px\)\s*\{\s*\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?\}\s*\}",
             "@media (max-width: 840px){\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}\n      html{scroll-padding-top:170px}\n      .sec{scroll-margin-top:170px}\n    }",
             html_new,
             count=1,
             flags=re.I | re.S,
         )
-        # 추가 방어: 이전 패치가 남긴 .topin .navRow sticky/dark 규칙을 더 넓게 제거
-        html_new = re.sub(
-            r"@media\s*\(max-width:\s*840px\)\s*\{[^{}]*?\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?\}[^{}]*?\}",
-            "@media (max-width: 840px){\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}\n      html{scroll-padding-top:170px}\n      .sec{scroll-margin-top:170px}\n    }",
-            html_new,
-            count=1,
-            flags=re.I | re.S,
-        )
-        # 규칙만 단독으로 남은 경우도 제거(칩바/본문 레이아웃 깨짐 방지)
         html_new = re.sub(r"\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?\}", "", html_new, flags=re.I | re.S)
-        html_new = html_new.replace(".topin .navRow{position:sticky;", ".topin .navRow{", 1)
-        html_new = html_new.replace(".topin .navRow {position:sticky;", ".topin .navRow {", 1)
-        # add fallback CSS vars/use if page was generated before --btnBg/--shadow were defined
+
+        # 3) Add fallback CSS vars (older pages may miss these)
         html_new = html_new.replace("background:var(--btnBg);", "background:var(--btnBg, #fff);")
         html_new = html_new.replace("box-shadow:var(--shadow)", "box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))")
         if "--btnBg:" not in html_new:
             html_new = html_new.replace("--btnHover:#1e40af;", "--btnHover:#1e40af;\n      --btnBg:#ffffff;\n      --shadow:0 4px 12px rgba(17,24,39,.08);", 1)
+
+        # 4) Swipe-ignore attrs on chip bar/select controls
         if 'class="chips"' in html_new and 'data-swipe-ignore="1"' not in html_new:
             html_new = html_new.replace('class="chips"', 'class="chips" data-swipe-ignore="1"', 1)
-        if 'class="navBtn navArchive"' not in html_new:
-            html_new = html_new.replace('class="navBtn" href=', 'class="navBtn navArchive" href=', 1)
-        if ".navBtn.navArchive" not in html_new:
-            html_new = re.sub(
-                r"(\.navBtn:hover\s*\{[^}]*?\})",
-                r"\1\n    .navBtn.navArchive,.navRow .navBtn:first-child{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:#1d4ed8;color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.22)}\n    .navBtn.navArchive:hover,.navRow .navBtn:first-child:hover{background:linear-gradient(135deg,#1d4ed8,#1e40af);border-color:#1e40af}",
-                html_new,
-                count=1,
-                flags=re.I | re.S,
-            )
-        if "@media (max-width: 640px)" not in html_new and ".navRow > .navBtn:first-child" not in html_new:
-            html_new = re.sub(
-                r"(</style>)",
-                "\n    @media (max-width: 640px){\n      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}\n      .navRow > *{min-width:0}\n      .navBtn{white-space:nowrap}\n      .navRow > .navBtn:first-child{grid-column:1}\n      .navRow > .navBtn:nth-child(2){grid-column:2}\n      .navRow > .dateSelWrap{grid-column:1;width:100%}\n      .navRow > .navBtn:last-child{grid-column:2}\n      .dateSelWrap{width:100%}\n      .dateSelWrap select{width:100%;max-width:none}\n    }\n\\1",
-                html_new,
-                count=1,
-                flags=re.I,
-            )
-        if "document.addEventListener(\"touchstart\"" in html_new and "var swipeArea = document.querySelector(\".topbar\")" not in html_new:
-            html_new = html_new.replace(
-                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;',
-                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;\n      var swipeArea = document.querySelector(\".wrap\") || document.querySelector(\".topbar\") || document.documentElement || document.body || document;',
-                1,
-            )
-            html_new = html_new.replace('document.addEventListener("touchstart"', 'swipeArea.addEventListener("touchstart"', 1)
-            html_new = html_new.replace('document.addEventListener("touchmove"', 'swipeArea.addEventListener("touchmove"', 1)
-            html_new = html_new.replace('document.addEventListener("touchcancel"', 'swipeArea.addEventListener("touchcancel"', 1)
-            html_new = html_new.replace('document.addEventListener("touchend"', 'swipeArea.addEventListener("touchend"', 1)
 
-        if "document.addEventListener('touchstart'" in html_new and "var swipeArea = document.querySelector('.topbar')" not in html_new:
-            html_new = html_new.replace(
-                "var sx=0, sy=0, st=0, tracking=false, blocked=false;",
-                "var sx=0, sy=0, st=0, tracking=false, blocked=false;\n    var swipeArea = document.querySelector('.wrap') || document.querySelector('.topbar') || document.documentElement || document.body || document;",
-                1,
-            )
-            html_new = html_new.replace("document.addEventListener('touchstart'", "swipeArea.addEventListener('touchstart'", 1)
-            html_new = html_new.replace("document.addEventListener('touchend'", "swipeArea.addEventListener('touchend'", 1)
-
-        # 2) Ensure swipe hint + loading blocks exist (insert before chipbar, preserve closing divs)
+        # 5) Ensure swipe hint + loading blocks exist (insert before chipbar, preserving closing divs)
         if 'id="swipeHint"' not in html_new:
             hint_loading = (
                 '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
@@ -7298,7 +7269,6 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 '        <span class="badge">날짜 이동 중…</span>\n'
                 '      </div>\n'
             )
-            # legacy layout: chipbar is outside topbar (two closing divs before chipbar)
             html_new, n_insert = re.subn(
                 r'(</div>\s*</div>\s*\n?\s*\n?\s*<div class="chipbar")',
                 hint_loading + r'\1',
@@ -7306,7 +7276,6 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 count=1,
                 flags=re.M,
             )
-            # current layout fallback: chipbar is inside topbar (one closing div before chipbar)
             if n_insert == 0:
                 html_new, _n2 = re.subn(
                     r'(</div>\s*\n?\s*\n?\s*<div class="chipbar")',
@@ -7316,7 +7285,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                     flags=re.M,
                 )
 
-        # 2-1) Repair malformed HTML from older UX patch (missing closing </div> before chipbar)
+        # 5-1) Repair malformed HTML from older UX patch (missing closing </div> before chipbar)
         html_new = re.sub(
             r'(<div id="navLoading"[^>]*>.*?</div>)(\s*)(<div class="chipbar")',
             r'\1\n    </div>\n\n\3',
@@ -7331,7 +7300,8 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             count=1,
             flags=re.I | re.S,
         )
-        # 3) Ensure CSS exists
+
+        # 6) Ensure CSS exists/normalized (swipe, loading, mobile grid, archive button highlight)
         if ".swipeHint" not in html_new or ".navLoading" not in html_new:
             css_snip = (
                 "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
@@ -7346,6 +7316,8 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
                 "\n    .navRow.swipeActive{transition:none}"
                 "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
+                "\n    .navBtn.navArchive,.navRow > .navBtn:first-child{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}"
+                "\n    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}"
                 "\n    @media (max-width: 840px){"
                 "\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}"
                 "\n      html{scroll-padding-top:170px}"
@@ -7366,10 +7338,30 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 "\n    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }\n"
             )
             html_new = re.sub(r"(</style>)", css_snip + r"\1", html_new, count=1, flags=re.I)
+        elif ".navBtn.navArchive" not in html_new:
+            nav_archive_css = (
+                "\n    .navBtn.navArchive,.navRow > .navBtn:first-child{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}"
+                "\n    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}\n"
+            )
+            html_new = re.sub(r"(</style>)", nav_archive_css + r"\1", html_new, count=1, flags=re.I)
 
-        # 4) Ensure JS swipe exists (append near end if missing)
+        # 7) Normalize existing swipe JS on old pages (23일 등 구버전 JS 보정)
+        html_new = html_new.replace("var nextNav = navBtns.length >= 4 ? navBtns[3] : null;", "var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;")
+        html_new = html_new.replace('var swipeArea = document.querySelector(".topbar") || document.documentElement || document.body || document;', 'var swipeArea = document.querySelector(".wrap") || document.querySelector(".topbar") || document.documentElement || document.body || document;')
+        html_new = html_new.replace("var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;", "var swipeArea = document.querySelector('.wrap') || document.querySelector('.topbar') || document.documentElement || document.body || document;")
+        html_new = html_new.replace("target.closest(\"a, button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']\")", "target.closest(\"button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']\")")
+        html_new = html_new.replace("target.closest('a,button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')", "target.closest('button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')")
+        if '.navRow .navBtn' in html_new and "allNavBtns = document.querySelectorAll(\".navRow .navBtn\")" not in html_new:
+            html_new = html_new.replace(
+                "var btns = document.querySelectorAll(\"button.navBtn[data-msg]\");",
+                "var allNavBtns = document.querySelectorAll(\".navRow .navBtn\");\n      allNavBtns.forEach(function(b) { b.setAttribute(\"data-swipe-ignore\", \"1\"); });\n\n      var btns = document.querySelectorAll(\"button.navBtn[data-msg]\");",
+                1,
+            )
+
+        # 8) If swipe JS missing entirely, append fallback script
         if "touchstart" not in html_new or "ArrowLeft" not in html_new:
-            js_snip = """\n<script>
+            js_snip = """
+<script>
   (function() {
     var navRow = document.querySelector('.navRow');
     var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
@@ -7380,7 +7372,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
     function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
     function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
     function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-    function isEditableTarget(target){ return !!(target && target.closest && target.closest('button,select,input,textarea,[contenteditable=\"true\"],[data-swipe-ignore=\"1\"]')); }
+    function isEditableTarget(target){ return !!(target && target.closest && target.closest('button,select,input,textarea,[contenteditable="true"],[data-swipe-ignore="1"]')); }
     function navigateBy(el){
       if(!el || isNavigating) return;
       if(el.tagName && el.tagName.toLowerCase()==='a'){
@@ -7418,18 +7410,13 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 """
             html_new = re.sub(r"(</body>)", js_snip + r"\1", html_new, count=1, flags=re.I)
 
-        if html_new == html_text:
+        # 9) Structural safety guard: never commit broken html/css patch
+        low = html_new.lower()
+        if "\x01" in html_new or "</style>" not in low or "</body>" not in low or "</html>" not in low:
+            log.warning("[WARN] UX patch aborted for %s due to invalid HTML after patch", iso_date)
             return False
 
-        # Safety guard: avoid committing malformed archive pages
-        if "\x01" in html_new:
-            html_new = html_new.replace("\x01", "</style>")
-        low = html_new.lower()
-        if "<body" not in low or "</body>" not in low or "</html>" not in low:
-            log.warning("[WARN] ux patch skipped for %s: malformed html after patch (body/html closing tags missing)", iso_date)
-            return False
-        if "<style" in low and "</style>" not in low:
-            log.warning("[WARN] ux patch skipped for %s: style tag not closed after patch", iso_date)
+        if html_new == html_text:
             return False
 
         github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
@@ -7437,7 +7424,6 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
     except Exception as e:
         log.warning("[WARN] ux patch failed for %s: %s", iso_date, e)
         return False
-
 
 
 def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archive_dates_desc: list[str], site_path: str, max_neighbors: int = 2):
