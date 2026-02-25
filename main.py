@@ -5716,7 +5716,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --btn:#1d4ed8;
       --btnHover:#1e40af;
       --btnBg:#ffffff;
-      --shadow: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow:0 4px 12px rgba(17,24,39,.08);
     }}
     *{{box-sizing:border-box}}
     html {{
@@ -5729,10 +5729,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .wrap{{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
-    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}}
+    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
     h1{{margin:0;font-size:18px;letter-spacing:-0.2px}}
     .sub{{color:var(--muted);font-size:12.5px;margin-top:4px}}
-    .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap}}
+    .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}}
+    .navRow > *{{min-width:0}}
+    .navBtn{{white-space:nowrap}}
     .navBtn{{display:inline-flex;align-items:center;justify-content:center;
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
@@ -5797,12 +5799,24 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
     .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
     .navLoading.show{{display:flex}}
-    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}}
+    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}}
     .navRow{{transition:transform .18s ease, opacity .18s ease}}
     .navRow.swipeActive{{transition:none}}
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
-      .topin .navRow{{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(14,16,19,.96), rgba(14,16,19,.88));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}}
+      .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
+      html{{scroll-padding-top: 170px;}}
+      .sec{{scroll-margin-top: 170px;}}
+    }}
+    @media (max-width: 640px){{
+      .topin{{gap:8px}}
+      .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}}
+      .navRow > .navBtn:first-child{{grid-column:1}}
+      .navRow > .navBtn:nth-child(2){{grid-column:2}}
+      .navRow > .dateSelWrap{{grid-column:1; width:100%}}
+      .navRow > .navBtn:last-child{{grid-column:2}}
+      .dateSelWrap{{width:100%}}
+      .dateSelWrap select{{width:100%;max-width:none}}
     }}
   </style>
 </head>
@@ -5835,7 +5849,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     <div class=\"chipbar\">
       <div class=\"chipwrap\">
-        <div class=\"chips\">{chips_html}</div>
+        <div class=\"chips\" data-swipe-ignore=\"1\">{chips_html}</div>
       </div>
     </div>
   </div>
@@ -5852,7 +5866,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         sel.setAttribute("data-swipe-ignore", "1");
         sel.addEventListener("change", function() {{
           var v = sel.value;
-          if (v) window.location.href = v;
+          if (v) {{
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            window.location.href = v;
+          }}
         }});
       }}
 
@@ -5964,8 +5982,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       }}
 
       var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
+      var swipeArea = document.querySelector(".topbar") || document.documentElement || document.body || document;
 
-      document.addEventListener("touchstart", function(e) {{
+      swipeArea.addEventListener("touchstart", function(e) {{
         if (!e.touches || e.touches.length !== 1) return;
         var target = e.target;
         blockedSwipe = isEditableTarget(target);
@@ -5975,7 +5994,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         lastDx = 0;
       }}, {{passive:true}});
 
-      document.addEventListener("touchmove", function(e) {{
+      swipeArea.addEventListener("touchmove", function(e) {{
         if (!trackingSwipe || blockedSwipe || !e.touches || e.touches.length !== 1) return;
         var t = e.touches[0];
         var dx = t.clientX - sx;
@@ -5995,13 +6014,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         }}
       }}, {{passive:true}});
 
-      document.addEventListener("touchcancel", function() {{
+      swipeArea.addEventListener("touchcancel", function() {{
         trackingSwipe = false;
         blockedSwipe = false;
         resetNavRowFeedback();
       }}, {{passive:true}});
 
-      document.addEventListener("touchend", function(e) {{
+      swipeArea.addEventListener("touchend", function(e) {{
         if (!e.changedTouches || e.changedTouches.length !== 1) {{
           trackingSwipe = false;
           blockedSwipe = false;
@@ -6311,15 +6330,10 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 
       function escHtml(s) {{
         return (s || "").replace(/[&<>"']/g, function(c) {{
-          if (c === "&") return "&amp;";
-          if (c === "<") return "&lt;";
-          if (c === ">") return "&gt;";
-          if (c === '"') return "&quot;";
-          return "&#39;";
+          return ({{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#39;"}})[c] || c;
         }});
       }}
-
-function norm(s) {{ return (s || "").toLowerCase(); }}
+      function norm(s) {{ return (s || "").toLowerCase(); }}
 
       function escapeRegExp(s) {{
         return (s || "").replace(/[.*+?^${{}}()|[\\]\\\\]/g, "\\\\$&");
@@ -7202,7 +7216,49 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         html_text = raw
 
         # 1) Fix invalid/dark rgba in older pages (safety)
-        html_new = html_text.replace("rgba(255,255,255,0.96)", "rgba(255,255,255,0.96)").replace("rgba(255,255,255,0.90)", "rgba(255,255,255,0.90)")
+        html_new = html_text
+        # normalize broken mobile navRow sticky style introduced by prior UX patch versions
+        html_new = re.sub(
+            r"@media\s*\(max-width:\s*840px\)\s*\{\s*\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?background:\s*linear-gradient\([^)]*\)[^}]*?\}\s*\}",
+            "@media (max-width: 840px){\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}\n      html{scroll-padding-top:170px}\n      .sec{scroll-margin-top:170px}\n    }",
+            html_new,
+            count=1,
+            flags=re.I | re.S,
+        )
+        # add fallback CSS vars/use if page was generated before --btnBg/--shadow were defined
+        html_new = html_new.replace("background:var(--btnBg);", "background:var(--btnBg, #fff);")
+        html_new = html_new.replace("box-shadow:var(--shadow)", "box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))")
+        if "--btnBg:" not in html_new:
+            html_new = html_new.replace("--btnHover:#1e40af;", "--btnHover:#1e40af;\n      --btnBg:#ffffff;\n      --shadow:0 4px 12px rgba(17,24,39,.08);", 1)
+        if 'class="chips"' in html_new and 'data-swipe-ignore="1"' not in html_new:
+            html_new = html_new.replace('class="chips"', 'class="chips" data-swipe-ignore="1"', 1)
+        if "@media (max-width: 640px)" not in html_new and ".navRow > .navBtn:first-child" not in html_new:
+            html_new = re.sub(
+                r"(</style>)",
+                "\n    @media (max-width: 640px){\n      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}\n      .navRow > *{min-width:0}\n      .navBtn{white-space:nowrap}\n      .navRow > .navBtn:first-child{grid-column:1}\n      .navRow > .navBtn:nth-child(2){grid-column:2}\n      .navRow > .dateSelWrap{grid-column:1;width:100%}\n      .navRow > .navBtn:last-child{grid-column:2}\n      .dateSelWrap{width:100%}\n      .dateSelWrap select{width:100%;max-width:none}\n    }\n\1",
+                html_new,
+                count=1,
+                flags=re.I,
+            )
+        if "document.addEventListener(\"touchstart\"" in html_new and "var swipeArea = document.querySelector(\".topbar\")" not in html_new:
+            html_new = html_new.replace(
+                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;',
+                'var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;\n      var swipeArea = document.querySelector(\".topbar\") || document.documentElement || document.body || document;',
+                1,
+            )
+            html_new = html_new.replace('document.addEventListener("touchstart"', 'swipeArea.addEventListener("touchstart"', 1)
+            html_new = html_new.replace('document.addEventListener("touchmove"', 'swipeArea.addEventListener("touchmove"', 1)
+            html_new = html_new.replace('document.addEventListener("touchcancel"', 'swipeArea.addEventListener("touchcancel"', 1)
+            html_new = html_new.replace('document.addEventListener("touchend"', 'swipeArea.addEventListener("touchend"', 1)
+
+        if "document.addEventListener('touchstart'" in html_new and "var swipeArea = document.querySelector('.topbar')" not in html_new:
+            html_new = html_new.replace(
+                "var sx=0, sy=0, st=0, tracking=false, blocked=false;",
+                "var sx=0, sy=0, st=0, tracking=false, blocked=false;\n    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;",
+                1,
+            )
+            html_new = html_new.replace("document.addEventListener('touchstart'", "swipeArea.addEventListener('touchstart'", 1)
+            html_new = html_new.replace("document.addEventListener('touchend'", "swipeArea.addEventListener('touchend'", 1)
 
         # 2) Ensure swipe hint + loading blocks exist (insert after navRow within topin)
         if 'id="swipeHint"' not in html_new:
@@ -7233,12 +7289,25 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
                 "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
                 "\n    .navLoading.show{display:flex}"
-                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}"
+                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}"
                 "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
                 "\n    .navRow.swipeActive{transition:none}"
                 "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
                 "\n    @media (max-width: 840px){"
-                "\n      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}"
+                "\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}"
+                "\n      html{scroll-padding-top:170px}"
+                "\n      .sec{scroll-margin-top:170px}"
+                "\n    }"
+                "\n    @media (max-width: 640px){"
+                "\n      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}"
+                "\n      .navRow > *{min-width:0}"
+                "\n      .navBtn{white-space:nowrap}"
+                "\n      .navRow > .navBtn:first-child{grid-column:1}"
+                "\n      .navRow > .navBtn:nth-child(2){grid-column:2}"
+                "\n      .navRow > .dateSelWrap{grid-column:1;width:100%}"
+                "\n      .navRow > .navBtn:last-child{grid-column:2}"
+                "\n      .dateSelWrap{width:100%}"
+                "\n      .dateSelWrap select{width:100%;max-width:none}"
                 "\n    }"
                 "\n    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }"
                 "\n    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }\n"
@@ -7268,13 +7337,14 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       el.click();
     }
     var sx=0, sy=0, st=0, tracking=false, blocked=false;
-    document.addEventListener('touchstart', function(e){
+    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;
+    swipeArea.addEventListener('touchstart', function(e){
       if(!e.touches || e.touches.length!==1) return;
       blocked = isEditableTarget(e.target);
       tracking = !blocked;
       var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
     }, {passive:true});
-    document.addEventListener('touchend', function(e){
+    swipeArea.addEventListener('touchend', function(e){
       if(!e.changedTouches || e.changedTouches.length!==1) return;
       if(blocked || isEditableTarget(e.target)) return;
       var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
