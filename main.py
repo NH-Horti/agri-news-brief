@@ -8,7 +8,7 @@ agri-news-brief main.py (production)
 - Naver News Search API로 섹션/키워드별 쿼리를 생성하고, 페이지네이션(MAX_PAGES_PER_QUERY)까지 순회하며 기사 후보를 모읍니다.
 - URL/언론사명 정규화, 섹션 내/전체 중복 제거(사건키), UX 필터(오탐·광고·시위/보이콧 등) 적용 후 점수화하여 섹션별 상위 기사만 선정합니다.
 - OpenAI 요약은 배치 분할 + 재시도 + 캐시를 적용해 비용/실패율을 줄이고, 기사별 요약을 안정적으로 채웁니다.
-- 결과로 HTML 브리핑을 빌드하여 docs/archive/YYYY-MM-DD.html 및 docs/index.html을 업데이트하고, 최신/아카이브 링크 404를 방지합니다.
+- 결과로 HTML 브리핑을 빌드하여 docs/archive/YYYY-MM-DD.html 및 docs/index.html을 업데이트하고, 아카이브 링크 404를 방지합니다.
 - 상태/메타(예: .agri_state.json, manifest 등)는 레포에 저장되어 전날 fallback 및 재실행 시 일관성을 유지합니다.
 - 카카오톡 메시지는 섹션별 핵심 2개 중심으로 구성하여 전송하며, 실패 시(옵션) 전체 워크플로우 실패를 막는 fail-open 동작이 가능합니다.
 
@@ -5828,7 +5828,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"최신 브리핑/날짜별 아카이브 목록\">최신/아카이브</a>
+        <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -7169,7 +7169,7 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
     # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
-        f'  <a class="navBtn" href="{esc(home_href)}">최신/아카이브</a>\n'
+        f'  <a class="navBtn" href="{esc(home_href)}">아카이브</a>\n'
         f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}\n'
         '  <div class="dateSelWrap">\n'
         '    <select id="dateSelect" aria-label="날짜 선택">\n'
