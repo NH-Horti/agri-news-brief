@@ -9,6 +9,10 @@ on:
     - cron: "0 22 * * *"   # 07:00 KST
   workflow_dispatch:
     inputs:
+    ux_patch_days:
+      description: "최근 N일 아카이브에 UI/UX 패치 적용 (스와이프/스티키/로딩). 0이면 OFF"
+      required: false
+      default: "30"
       force_report_date:
         description: "재생성할 리포트 날짜 (YYYY-MM-DD, KST 기준). 비우면 자동 날짜(정상 실행)."
         required: false
@@ -33,10 +37,12 @@ jobs:
   run:
     runs-on: ubuntu-latest
     env:
+      # UX patch: apply swipe/sticky/loading UI fixes to recent archive pages
+      UX_PATCH_DAYS: "${{ inputs.ux_patch_days || '30' }}"
       # Backfill: rebuild recent N days of archive pages (0 = disable)
-      BACKFILL_REBUILD_DAYS: ${{ github.event.inputs.backfill_days || '0' }}
-      BACKFILL_REBUILD_SLEEP_SEC: ${{ github.event.inputs.backfill_sleep_sec || '0.2' }}
-      BACKFILL_REBUILD_SKIP_OPENAI: ${{ github.event.inputs.backfill_skip_openai || 'true' }}
+      BACKFILL_REBUILD_DAYS: "${{ inputs.backfill_days || '0' }}"
+      BACKFILL_REBUILD_SLEEP_SEC: "${{ inputs.backfill_sleep_sec || '0.2' }}"
+      BACKFILL_REBUILD_SKIP_OPENAI: "${{ inputs.backfill_skip_openai || 'true' }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -123,7 +129,7 @@ jobs:
           RUN_HOUR_KST: "7"
 
           # ✅ 특정 날짜 재생성용: Actions UI 입력값 → env 연결
-          FORCE_REPORT_DATE: ${{ github.event.inputs.force_report_date || '' }}
+      FORCE_REPORT_DATE: "${{ inputs.force_report_date || '' }}"
           # ✅ 수동 실행(workflow_dispatch)에서 날짜 미입력 시: '오늘자'로 생성되도록 end=now
           FORCE_END_NOW: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.force_report_date || '') == '' && 'true' || 'false' }}
 
