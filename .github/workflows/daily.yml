@@ -9,24 +9,24 @@ on:
     - cron: "0 22 * * *"   # 07:00 KST
   workflow_dispatch:
     inputs:
-    ux_patch_days:
-      description: "최근 N일 아카이브에 UI/UX 패치 적용 (스와이프/스티키/로딩). 0이면 OFF"
-      required: false
-      default: "30"
+      ux_patch_days:
+        description: "최근 N일 아카이브에 UI/UX 패치 적용 (스와이프/스티키/로딩). 0이면 OFF"
+        required: false
+        default: "30"
       force_report_date:
-        description: "재생성할 리포트 날짜 (YYYY-MM-DD, KST 기준). 비우면 자동 날짜(정상 실행)."
+        description: "보고서 날짜(YYYY-MM-DD). 비우면 자동(07:00 컷오프 기준)"
         required: false
         default: ""
       backfill_days:
-        description: "최근 N일 아카이브를 재생성(backfill rebuild). 0이면 OFF."
+        description: "최근 N일 아카이브 재빌드(필터/스코어 반영). 0이면 OFF"
         required: false
         default: "0"
       backfill_skip_openai:
-        description: "backfill 시 OpenAI 요약 생략(true/false). (비용/시간 절감)"
+        description: "백필 재빌드시 OpenAI 요약 생략(true/false)"
         required: false
         default: "true"
       backfill_sleep_sec:
-        description: "backfill 날짜 간 sleep(초). 0.2~0.5 권장."
+        description: "백필 날짜 간 sleep(초). 레이트리밋 완화용"
         required: false
         default: "0.2"
 
@@ -36,13 +36,6 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    env:
-      # UX patch: apply swipe/sticky/loading UI fixes to recent archive pages
-      UX_PATCH_DAYS: "${{ inputs.ux_patch_days || '30' }}"
-      # Backfill: rebuild recent N days of archive pages (0 = disable)
-      BACKFILL_REBUILD_DAYS: "${{ inputs.backfill_days || '0' }}"
-      BACKFILL_REBUILD_SLEEP_SEC: "${{ inputs.backfill_sleep_sec || '0.2' }}"
-      BACKFILL_REBUILD_SKIP_OPENAI: "${{ inputs.backfill_skip_openai || 'true' }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -128,10 +121,17 @@ jobs:
           MAX_PAGES_PER_QUERY: "4"
           RUN_HOUR_KST: "7"
 
-          # ✅ 특정 날짜 재생성용: Actions UI 입력값 → env 연결
-      FORCE_REPORT_DATE: "${{ inputs.force_report_date || '' }}"
-          # ✅ 수동 실행(workflow_dispatch)에서 날짜 미입력 시: '오늘자'로 생성되도록 end=now
-          FORCE_END_NOW: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.force_report_date || '') == '' && 'true' || 'false' }}
+          # ✅ 특정 날짜/백필/UX 패치: Actions UI 입력값 → env 연결 (스케줄 실행에도 안전)
+          FORCE_REPORT_DATE: "${{ github.event.inputs.force_report_date || '' }}"
+          FORCE_END_NOW: "false"
+
+          # UX patch (기존 아카이브 UI/UX 패치)
+          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '30' }}"
+
+          # Backfill rebuild (최근 N일 아카이브 재생성)
+          BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '0' }}"
+          BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'true' }}"
+          BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
 
           # 테스트할 때만 1로(주말/공휴일 스킵 무시)
           FORCE_RUN_ANYDAY: "false"
