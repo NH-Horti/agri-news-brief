@@ -412,13 +412,13 @@
     var navRow = document.querySelector('.navRow');
     var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
     var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-    var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+    var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
     var navLoading = document.getElementById('navLoading');
     var isNavigating = false;
     function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
     function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
     function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-    function isEditableTarget(target){ return !!(target && target.closest && target.closest('a,button,select,input,textarea,[contenteditable="true"],[data-swipe-ignore="1"]')); }
+    function isEditableTarget(target){ return !!(target && target.closest && target.closest('select,input,textarea,[contenteditable="true"],[data-swipe-ignore="1"]')); }
     function navigateBy(el){
       if(!el || isNavigating) return;
       if(el.tagName && el.tagName.toLowerCase()==='a'){
