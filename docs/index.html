@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="62cbcf4" />
+  <meta name="agri-build" content="737f680" />
   <title>농산물 뉴스 브리핑</title>
   <style>
     :root {
@@ -225,10 +225,15 @@
 
       function escHtml(s) {
         return (s || "").replace(/[&<>"']/g, function(c) {
-          return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c] || c;
+          if (c === "&") return "&amp;";
+          if (c === "<") return "&lt;";
+          if (c === ">") return "&gt;";
+          if (c === '"') return "&quot;";
+          return "&#39;";
         });
       }
-      function norm(s) { return (s || "").toLowerCase(); }
+
+function norm(s) { return (s || "").toLowerCase(); }
 
       function escapeRegExp(s) {
         return (s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
