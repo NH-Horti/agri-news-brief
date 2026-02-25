@@ -428,7 +428,7 @@
       var navRow = document.querySelector(".navRow");
       var navBtns = Array.prototype.slice.call(document.querySelectorAll(".navRow .navBtn"));
       var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 4 ? navBtns[3] : null;
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
       var swipeHint = document.getElementById("swipeHint");
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
@@ -462,7 +462,7 @@
       }
 
       function isEditableTarget(target) {
-        return !!(target && target.closest && target.closest("a, button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']"));
+        return !!(target && target.closest && target.closest("select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1']"));
       }
 
       // 모바일/터치 환경에서만 힌트 표시 (최초 1회, 자동 숨김)
