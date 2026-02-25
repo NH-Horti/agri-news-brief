@@ -7225,6 +7225,18 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             count=1,
             flags=re.I | re.S,
         )
+        # 추가 방어: 이전 패치가 남긴 .topin .navRow sticky/dark 규칙을 더 넓게 제거
+        html_new = re.sub(
+            r"@media\s*\(max-width:\s*840px\)\s*\{[^{}]*?\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?\}[^{}]*?\}",
+            "@media (max-width: 840px){\n      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}\n      html{scroll-padding-top:170px}\n      .sec{scroll-margin-top:170px}\n    }",
+            html_new,
+            count=1,
+            flags=re.I | re.S,
+        )
+        # 규칙만 단독으로 남은 경우도 제거(칩바/본문 레이아웃 깨짐 방지)
+        html_new = re.sub(r"\.topin\s+\.navRow\s*\{[^}]*?position\s*:\s*sticky;[^}]*?\}", "", html_new, flags=re.I | re.S)
+        html_new = html_new.replace(".topin .navRow{position:sticky;", ".topin .navRow{", 1)
+        html_new = html_new.replace(".topin .navRow {position:sticky;", ".topin .navRow {", 1)
         # add fallback CSS vars/use if page was generated before --btnBg/--shadow were defined
         html_new = html_new.replace("background:var(--btnBg);", "background:var(--btnBg, #fff);")
         html_new = html_new.replace("box-shadow:var(--shadow)", "box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))")
@@ -7260,10 +7272,9 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             html_new = html_new.replace("document.addEventListener('touchstart'", "swipeArea.addEventListener('touchstart'", 1)
             html_new = html_new.replace("document.addEventListener('touchend'", "swipeArea.addEventListener('touchend'", 1)
 
-        # 2) Ensure swipe hint + loading blocks exist (insert after navRow within topin)
+        # 2) Ensure swipe hint + loading blocks exist (insert before chipbar, preserve closing divs)
         if 'id="swipeHint"' not in html_new:
-            html_new = re.sub(
-                r'(</div>\s*</div>\s*\n\s*\n\s*<div class="chipbar")',
+            hint_loading = (
                 '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">\n'
                 '        <span class="arrow">◀</span>\n'
                 '        <span class="txt pill">좌우 스와이프로 날짜 이동</span>\n'
@@ -7271,13 +7282,41 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 '      </div>\n'
                 '      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">\n'
                 '        <span class="badge">날짜 이동 중…</span>\n'
-                '      </div>\n\n'
-                '<div class="chipbar"',
+                '      </div>\n'
+            )
+            # legacy layout: chipbar is outside topbar (two closing divs before chipbar)
+            html_new, n_insert = re.subn(
+                r'(</div>\s*</div>\s*\n?\s*\n?\s*<div class="chipbar")',
+                hint_loading + r'\1',
                 html_new,
                 count=1,
                 flags=re.M,
             )
+            # current layout fallback: chipbar is inside topbar (one closing div before chipbar)
+            if n_insert == 0:
+                html_new, _n2 = re.subn(
+                    r'(</div>\s*\n?\s*\n?\s*<div class="chipbar")',
+                    hint_loading + r'\1',
+                    html_new,
+                    count=1,
+                    flags=re.M,
+                )
 
+        # 2-1) Repair malformed HTML from older UX patch (missing closing </div> before chipbar)
+        html_new = re.sub(
+            r'(<div id="navLoading"[^>]*>.*?</div>)(\s*)(<div class="chipbar")',
+            r'\1\n    </div>\n\n\3',
+            html_new,
+            count=1,
+            flags=re.I | re.S,
+        )
+        html_new = re.sub(
+            r'(<div id="swipeHint"[^>]*>.*?</div>)(\s*)(<div class="chipbar")',
+            r'\1\n    </div>\n\n\3',
+            html_new,
+            count=1,
+            flags=re.I | re.S,
+        )
         # 3) Ensure CSS exists
         if ".swipeHint" not in html_new or ".navLoading" not in html_new:
             css_snip = (
