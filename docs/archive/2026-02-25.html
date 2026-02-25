@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="da8fc15" />
+  <meta name="agri-build" content="7477f73" />
   <title>[2026-02-25 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -16,7 +16,7 @@
       --btn:#1d4ed8;
       --btnHover:#1e40af;
       --btnBg:#ffffff;
-      --shadow:0 4px 12px rgba(17,24,39,.08);
+      --shadow: 0 1px 2px rgba(0,0,0,0.06);
     }
     *{box-sizing:border-box}
     html {
@@ -29,22 +29,33 @@
     .wrap{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}
     .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}
-    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
-    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
-    .navRow > *{min-width:0}
-    .navBtn{white-space:nowrap}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .navBtn{display:inline-flex;align-items:center;justify-content:center;
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
     .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive,.navRow > .navBtn:first-child{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}
+    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}
     .navBtn.disabled{opacity:.45;cursor:pointer}
     .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
     select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
             width:165px; max-width:165px;}
     @media (max-width: 520px) {
       select{width:145px; max-width:145px;}
+    }
+    @media (max-width: 640px) {
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
+      .navRow > *{min-width:0}
+      .navBtn{white-space:nowrap}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1;width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
     }
 
     /* sticky chip bar */
@@ -99,29 +110,16 @@
     @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
     .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
     .navLoading.show{display:flex}
-    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}
     .navRow{transition:transform .18s ease, opacity .18s ease}
     .navRow.swipeActive{transition:none}
     .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
     @media (max-width: 840px){
       .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
-      html{scroll-padding-top: 170px;}
-      .sec{scroll-margin-top: 170px;}
+      html{scroll-padding-top:170px}
+      .sec{scroll-margin-top:170px}
     }
-    @media (max-width: 640px){
-      .topin{gap:8px}
-      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
-      .navRow > .navBtn:first-child{grid-column:1}
-      .navRow > .navBtn:nth-child(2){grid-column:2}
-      .navRow > .dateSelWrap{grid-column:1; width:100%}
-      .navRow > .navBtn:last-child{grid-column:2}
-      .dateSelWrap{width:100%}
-      .dateSelWrap select{width:100%;max-width:none}
-    }
-  
-    .navBtn.navArchive,.navRow > .navBtn:first-child{border-color:#2563eb;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.28)}
-    .navBtn.navArchive:hover,.navRow > .navBtn:first-child:hover{border-color:#1d4ed8;background:linear-gradient(180deg,#2563eb,#1d4ed8)}
-</style>
+  </style>
 </head>
 <body>
   <div class="topbar">
@@ -156,12 +154,10 @@
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
-    </div>
-    </div>
 
-<div class="chipbar">
+    <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+        <div class="chips"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">3</span></a></div>
@@ -193,7 +189,7 @@
                 <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=401916" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">AI 기반 제주시농협 스마트 APC 가동···농산물 유통 혁신 선도</div>
-              <div class="sum">제주시농협이 감귤 입고~선별·포장·출하 전 과정을 실시간 관리하는 AI 기반 스마트 APC 디지털 정보시스템을 가동했다. 품질관리 강화와 수급 예측을 통해 산지유통 경쟁력 향상이 기대된다.</div>
+              <div class="sum">제주시농협이 AI 기반 스마트 APC를 가동해 감귤 입고~선별·포장·출하 전 과정을 실시간 관리하는 디지털 정보시스템을 도입했다. 품질관리 강화와 수급 예측을 통한 산지유통 경쟁력 향상이 기대된다고 밝혔다.</div>
             </div>
             
 
@@ -210,7 +206,7 @@
                 <a class="btnOpen" href="https://www.newsis.com/view/NISX20260224_0003523564" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">예천 참외 출하 본격 시작…&quot;당도 높고 식감 아삭&quot;</div>
-              <div class="sum">예천 참외 출하가 본격 시작됐으며 “당도 높고 식감이 아삭하다”고 전했다. 안동농협 농산물공판장에서는 10㎏ 상자당 8만5000원~10만원 선 가격을 형성했다.</div>
+              <div class="sum">예천 참외 출하가 본격 시작됐으며 “당도 높고 식감이 아삭하다”고 전했다. 안동농협 농산물공판장 기준 10㎏ 1상자 가격은 8만5000원~10만원 선을 형성했다.</div>
             </div>
             
 
@@ -227,7 +223,7 @@
                 <a class="btnOpen" href="https://www.nongmin.com/article/20260223500666" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">‘싱싱하이’ 브랜드화…판매사업 적극 나서</div>
-              <div class="sum">단감·딸기·포도 작목반을 구성해 기존 개별 출하 구조에서 ‘싱싱하이’ 브랜드 공동 판매를 강화한다. 작목반 운영으로 품질을 정형화하고 가격 협상력을 높이겠다는 전략이다.</div>
+              <div class="sum">단감·딸기·포도 작목반을 구성해 ‘싱싱하이’ 브랜드 농산물 판매사업을 적극 추진한다. 작목반 운영으로 품질을 정형화하고 가격 협상력을 높이겠다는 전략을 밝혔다.</div>
             </div>
             
 
@@ -244,7 +240,7 @@
                 <a class="btnOpen" href="https://www.kmib.co.kr/article/view.asp?arcid=0029434816&amp;code=61121111&amp;cp=nv" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“추위 이겨내고 황금빛 결실”…예천 참외 본격 출하 시작</div>
-              <div class="sum">예천 참외가 본격 출하를 시작했으며, 고품질 생산을 위해 예천새움 참외 작목반의 노력이 뒷받침된다고 소개했다. 작목반은 회원 28명으로 구성돼 있다.</div>
+              <div class="sum">예천 참외가 본격 출하를 시작했으며 고품질 생산을 위한 작목반의 노력이 소개됐다. 예천새움 참외 작목반은 회원 28명으로 구성돼 호명읍 등에서 재배한다고 전했다.</div>
             </div>
             
 
@@ -261,7 +257,7 @@
                 <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8492331" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">한 번 들고 10만 원?…축하하기 무서운 꽃다발 가격 [이슈픽]</div>
-              <div class="sum">꽃다발 가격이 높아지면서 축하 선물 선택에 부담이 커졌다는 내용을 다뤘다. 화훼 농가부터 유통·소비자까지 부담 없이 구매할 수 있는 방안 필요성을 짚었다.</div>
+              <div class="sum">꽃다발 가격 부담이 커지면서 축하 선물 선택부터 고민하게 된 현실을 다뤘다. 화훼 농가·유통·소비자 모두가 부담 없이 구매할 수 있는 방안 필요성을 언급했다.</div>
             </div>
             </div>
             </section>
@@ -289,7 +285,7 @@
                 <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=401973" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">쌀값부터 농지제도까지…새 정부 농정 현안에 &#x27;질문 쇄도&#x27;</div>
-              <div class="sum">새 정부 농정 현안을 두고 쌀값·농지제도 등 다양한 질문이 이어졌다는 내용이다. 이상기후로 생산량이 줄어 가격이 오른 상황을 외면한 채 사과 수입 확대·할당관세로 대응하는 건 부적절하다는 지적이 나왔다.</div>
+              <div class="sum">새 정부 농정 현안을 두고 쌀값·농지제도 등 다양한 질문이 쏟아졌다고 전했다. 이상기후로 생산량이 줄어 가격이 오른 점을 외면한 채 사과 수입 확대 등으로 대응하는 건 엉뚱한 처방이란 지적이 나왔다.</div>
             </div>
             
 
@@ -306,7 +302,7 @@
                 <a class="btnOpen" href="https://www.mk.co.kr/article/11970030" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">올해 설 명절 과일은 사과 ∙ 배 대신 만감류 상에 올랐다</div>
-              <div class="sum">올해 설 명절 과일 소비에서 만감류가 부상하고 배(2%)·사과(1%)는 4~5위로 내려갔다고 전했다. 지난해 폭염·폭우로 수확량이 줄어 사과·배 가격이 상승한 영향이 컸다고 분석했다.</div>
+              <div class="sum">올해 설에는 사과·배 대신 만감류가 상에 오른 변화가 나타났다고 분석했다. 지난해 폭염·폭우로 수확량이 줄며 사과·배 가격이 상승한 영향으로 설 선호 순위가 하락했다고 전했다.</div>
             </div>
             </div>
             </section>
@@ -334,7 +330,7 @@
                 <a class="btnOpen" href="https://www.nongmin.com/article/20260223500704" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">가정용 분화 소비 위축…경락값 ‘뚝’</div>
-              <div class="sum">가정용 분화 소비가 위축되며 경락값이 하락했다는 내용이다. aT 화훼사업센터 자료로 스킨답서스 2월 초중반 5회 경매 일 평균 반입량이 4599단이라고 전했다.</div>
+              <div class="sum">가정용 분화 소비가 위축되며 화훼 경락값이 하락했다고 전했다. aT 화훼사업센터 자료로 2월 초중반 스킨답서스의 경매일 평균 반입량이 4599단 수준이라고 소개했다.</div>
             </div>
             </div>
             </section>
@@ -362,7 +358,7 @@
                 <a class="btnOpen" href="https://www.nongmin.com/article/20260223500017" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">포항시, 방제 약제 무상 공급…“ 과수화상병 차단 총력”</div>
-              <div class="sum">포항시가 과수화상병 차단을 위해 방제 약제를 무상 공급하고 예방을 당부했다. 농업기술센터는 과수화상병은 사전 예방이 유일한 방법이며 적기 방제·전염원 제거가 중요하다고 밝혔다.</div>
+              <div class="sum">포항시가 과수화상병 차단을 위해 방제 약제를 무상 공급하며 예방에 총력을 기울인다고 밝혔다. 농업기술센터는 사전 예방이 유일한 방제 방법이라며 적기 살포와 전염원 제거를 당부했다.</div>
             </div>
             
 
@@ -379,7 +375,7 @@
                 <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260224035300062?input=1195m" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">양구군, 과수화상병 선제 대응 총력…추가 방제 지원</div>
-              <div class="sum">양구군이 과수화상병 확산에 선제 대응하기 위해 기본 4회 방제에 추가 2회를 더해 총 6회 방제 지원을 추진한다. 동계 방제와 개화기 1·2·3차 방제 등 예방 중점기간 운영도 병행한다.</div>
+              <div class="sum">양구군이 과수화상병 선제 대응을 위해 기본 4회 방제에 추가 2회를 더해 총 6회 방제 지원을 추진한다. 사전 예방 중점기간 운영 등 종합 대책을 함께 시행한다고 밝혔다.</div>
             </div>
             
 
@@ -396,7 +392,7 @@
                 <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260224117300055?input=1195m" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">익산시, 과수 병해충 예방 총력…교육· 방제 약제 지원 병행</div>
-              <div class="sum">익산시가 과수 병해충 예방을 위해 과수화상병 교육과 방제 약제 지원을 병행한다. 27일 과수 농가 대상 예방 교육을 실시하고, 과수화상병·돌발해충 방제약제를 전달할 예정이다.</div>
+              <div class="sum">익산시가 과수 병해충 예방을 위해 교육과 방제 약제 지원을 병행한다고 밝혔다. 27일 과수화상병 예방 교육을 진행하고 과수화상병·돌발해충 방제약제를 전달할 예정이다.</div>
             </div>
             </div>
             </section>
@@ -411,11 +407,7 @@
         sel.setAttribute("data-swipe-ignore", "1");
         sel.addEventListener("change", function() {
           var v = sel.value;
-          if (v) {
-            var ld = document.getElementById("navLoading");
-            if (ld) ld.classList.add("show");
-            window.location.href = v;
-          }
+          if (v) window.location.href = v;
         });
       }
 
@@ -530,9 +522,8 @@
       }
 
       var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
-      var swipeArea = document.querySelector(".wrap") || document.querySelector(".topbar") || document.documentElement || document.body || document;
 
-      swipeArea.addEventListener("touchstart", function(e) {
+      document.addEventListener("touchstart", function(e) {
         if (!e.touches || e.touches.length !== 1) return;
         var target = e.target;
         blockedSwipe = isEditableTarget(target);
@@ -542,7 +533,7 @@
         lastDx = 0;
       }, {passive:true});
 
-      swipeArea.addEventListener("touchmove", function(e) {
+      document.addEventListener("touchmove", function(e) {
         if (!trackingSwipe || blockedSwipe || !e.touches || e.touches.length !== 1) return;
         var t = e.touches[0];
         var dx = t.clientX - sx;
@@ -562,13 +553,13 @@
         }
       }, {passive:true});
 
-      swipeArea.addEventListener("touchcancel", function() {
+      document.addEventListener("touchcancel", function() {
         trackingSwipe = false;
         blockedSwipe = false;
         resetNavRowFeedback();
       }, {passive:true});
 
-      swipeArea.addEventListener("touchend", function(e) {
+      document.addEventListener("touchend", function(e) {
         if (!e.changedTouches || e.changedTouches.length !== 1) {
           trackingSwipe = false;
           blockedSwipe = false;
@@ -643,7 +634,7 @@
       maybeShowSwipeHint();
     })();
   </script>
-  <!-- build: da8fc15 -->
+  <!-- build: 7477f73 -->
 
 </body>
 </html>
