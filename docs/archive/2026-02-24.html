@@ -121,7 +121,31 @@
       .dateSelWrap{width:100%}
       .dateSelWrap select{width:100%;max-width:none}
     }
-</style>
+
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top:170px}
+      .sec{scroll-margin-top:170px}
+    }
+    @media (max-width: 640px){
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
+      .navRow > *{min-width:0}
+      .navBtn{white-space:nowrap}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1;width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      .chipwrap{padding:8px 14px 10px}
+      .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;-webkit-overflow-scrolling:auto}
+      .chip{width:100%;justify-content:space-between;white-space:normal}
+      .chipTitle{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .chipN{min-width:26px;padding:2px 6px}
+      html{scroll-padding-top:230px}
+      .sec{scroll-margin-top:230px}
+    }</style>
 </head>
 <body>
   <div class="topbar">
@@ -155,6 +179,15 @@
       <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
+      </div>
+    </div>
+
 
 
   <div class="wrap">
