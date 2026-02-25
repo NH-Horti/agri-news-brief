@@ -5715,6 +5715,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --chip:#f8fafc;
       --btn:#1d4ed8;
       --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow: 0 1px 2px rgba(0,0,0,0.06);
     }}
     *{{box-sizing:border-box}}
     html {{
@@ -5788,14 +5790,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .swipeHint{{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}}
     .swipeHint.show{{display:flex}}
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
-    .swipeHint .arrow{{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}}
+    .swipeHint .arrow{{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}}
     .swipeHint .txt{{letter-spacing:-0.1px}}
     .swipeHint .pill{{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}}
     @media (hover:hover) and (pointer:fine){{ .swipeHint{{display:none !important;}} }}
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
     .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
     .navLoading.show{{display:flex}}
-    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}}
+    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}}
     .navRow{{transition:transform .18s ease, opacity .18s ease}}
     .navRow.swipeActive{{transition:none}}
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
@@ -6309,10 +6311,15 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 
       function escHtml(s) {{
         return (s || "").replace(/[&<>"']/g, function(c) {{
-          return ({{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#39;"}})[c] || c;
+          if (c === "&") return "&amp;";
+          if (c === "<") return "&lt;";
+          if (c === ">") return "&gt;";
+          if (c === '"') return "&quot;";
+          return "&#39;";
         }});
       }}
-      function norm(s) {{ return (s || "").toLowerCase(); }}
+
+function norm(s) {{ return (s || "").toLowerCase(); }}
 
       function escapeRegExp(s) {{
         return (s || "").replace(/[.*+?^${{}}()|[\\]\\\\]/g, "\\\\$&");
@@ -7221,12 +7228,12 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 "\n    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}"
                 "\n    .swipeHint.show{display:flex}"
                 "\n    .swipeHint.hide{opacity:0;transform:translateY(-4px)}"
-                "\n    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}"
+                "\n    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}"
                 "\n    .swipeHint .txt{letter-spacing:-0.1px}"
                 "\n    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}"
                 "\n    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}"
                 "\n    .navLoading.show{display:flex}"
-                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}"
+                "\n    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}"
                 "\n    .navRow{transition:transform .18s ease, opacity .18s ease}"
                 "\n    .navRow.swipeActive{transition:none}"
                 "\n    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}"
