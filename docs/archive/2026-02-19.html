@@ -15,6 +15,8 @@
       --chip:#f8fafc;
       --btn:#1d4ed8;
       --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
     }
     *{box-sizing:border-box}
     html {
@@ -89,21 +91,35 @@
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
-    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);font-size:11px;line-height:1}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
     .swipeHint .txt{letter-spacing:-0.1px}
     .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
     .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
     .navLoading.show{display:flex}
-    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg);box-shadow:var(--shadow)}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
     .navRow{transition:transform .18s ease, opacity .18s ease}
     .navRow.swipeActive{transition:none}
     .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
     @media (max-width: 840px){
-      .topin .navRow{position:sticky;top:0;z-index:20;padding:8px 0 8px;margin:0 0 4px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90));backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line)}
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top:170px}
+      .sec{scroll-margin-top:170px}
     }
     @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
     @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
-</style>
+
+    @media (max-width: 640px){
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
+      .navRow > *{min-width:0}
+      .navBtn{white-space:nowrap}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1;width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+    }
+
 </head>
 <body>
   <div class="topbar">
@@ -134,6 +150,8 @@
       <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
+    </div>
+    </div>
 
 <div class="chipbar">
       <div class="chipwrap">
@@ -441,13 +459,14 @@
       el.click();
     }
     var sx=0, sy=0, st=0, tracking=false, blocked=false;
-    document.addEventListener('touchstart', function(e){
+    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;
+    swipeArea.addEventListener('touchstart', function(e){
       if(!e.touches || e.touches.length!==1) return;
       blocked = isEditableTarget(e.target);
       tracking = !blocked;
       var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
     }, {passive:true});
-    document.addEventListener('touchend', function(e){
+    swipeArea.addEventListener('touchend', function(e){
       if(!e.changedTouches || e.changedTouches.length!==1) return;
       if(blocked || isEditableTarget(e.target)) return;
       var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
