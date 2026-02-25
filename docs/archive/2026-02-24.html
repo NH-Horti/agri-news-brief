@@ -37,6 +37,8 @@
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
     .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive,.navRow .navBtn:first-child{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:#1d4ed8;color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.22)}
+    .navBtn.navArchive:hover,.navRow .navBtn:first-child:hover{background:linear-gradient(135deg,#1d4ed8,#1e40af);border-color:#1e40af}
     .navBtn.disabled{opacity:.45;cursor:pointer}
     .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
     select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
@@ -119,7 +121,7 @@
       .dateSelWrap{width:100%}
       .dateSelWrap select{width:100%;max-width:none}
     }
-
+</style>
 </head>
 <body>
   <div class="topbar">
