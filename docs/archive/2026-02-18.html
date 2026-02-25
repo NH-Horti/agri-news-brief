@@ -131,7 +131,7 @@
         <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-18 07:00 · 기사 13건</div>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive" href="/agri-news-brief/">최신/아카이브</a>
+        <a class="navBtn navArchive" href="/agri-news-brief/">아카이브</a>
         <button class="navBtn disabled" type="button" data-msg="이전 브리핑이 없습니다.">◀ 이전</button>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
@@ -152,6 +152,8 @@
       <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
+    </div>
+    </div>
     </div>
     </div>
     </div>
@@ -449,6 +451,9 @@
       }
 
       // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var allNavBtns = document.querySelectorAll(".navRow .navBtn");
+      allNavBtns.forEach(function(b) { b.setAttribute("data-swipe-ignore", "1"); });
+
       var btns = document.querySelectorAll("button.navBtn[data-msg]");
       btns.forEach(function(b) {
         b.addEventListener("click", function() {
@@ -482,7 +487,7 @@
       el.click();
     }
     var sx=0, sy=0, st=0, tracking=false, blocked=false;
-    var swipeArea = document.querySelector('.topbar') || document.documentElement || document.body || document;
+    var swipeArea = document.querySelector('.wrap') || document.querySelector('.topbar') || document.documentElement || document.body || document;
     swipeArea.addEventListener('touchstart', function(e){
       if(!e.touches || e.touches.length!==1) return;
       blocked = isEditableTarget(e.target);
