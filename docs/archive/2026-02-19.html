@@ -149,56 +149,68 @@
     
     
     
-    /* UX_PATCH_BEGIN v20260226 */
-    .navRow .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
-    .navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
-    /* fallback: first nav button (older pages without navArchive class) */
-    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
-    /* layout normalization (override legacy variations) */
-    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}
-    .sec{margin-top:14px !important;border-radius:14px !important;}
-    /* chipbar/chips normalization */
-    .chipbar{border-top:1px solid var(--line);}
-    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
-    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-    .chips::-webkit-scrollbar{height:8px}
-    .chip{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;background:var(--chip);
-          font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}
-    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
-    @media (max-width: 640px){
-      .chips{display:grid !important;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
-      .chip{width:100%;justify-content:space-between;padding:6px 10px;font-size:12.5px}
-      .chipN{min-width:24px;padding:0 8px;background:#111827;color:#fff}
-    }
-    .swipeHint{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}
-    .swipeHint .pill{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}
-    .swipeHint .arrow{font-size:12px;opacity:.85}
-    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
-    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
-    .navLoading.show{display:flex}
-    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08))}
-    /* make mobile nav stable (match latest spec) */
-    @media (max-width: 840px){
-      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
-      html{scroll-padding-top:170px}
-      .sec{scroll-margin-top:170px}
-    }
-    @media (max-width: 640px){
-      .topin{gap:8px}
-      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
-      .navRow > .navBtn{height:40px;border-radius:14px}
-      .navRow > a.navBtn:first-child{grid-column:1 / span 1;width:100%}
-      .navRow > .navBtn:nth-child(2){grid-column:2}
-      .navRow > .dateSelWrap{grid-column:1;width:100%}
-      .navRow > .navBtn:last-child{grid-column:2}
-      .dateSelWrap{width:100%}
-      .dateSelWrap select{width:100%;max-width:none}
-      /* chips: show 2 columns so counts are visible at a glance */
-      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
-      .chip{width:100%;justify-content:space-between}
-    }
-    /* UX_PATCH_END v20260226 */
+    </style>
+<style id="uxPatchStyle">
+/* UX_PATCH_BEGIN v20260226 */
+.navRow .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+.navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
+/* fallback: first nav button (older pages without navArchive class) */
+.navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+/* layout normalization (override legacy variations) */
+.wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;box-sizing:border-box !important;}
+.sec{margin-top:14px !important;border-radius:14px !important;box-sizing:border-box !important;}
+
+/* chipbar/chips normalization (match 2026-02-26 spec) */
+.chipbar{border-top:1px solid var(--line) !important;}
+.chipwrap{max-width:1100px !important;margin:0 auto !important;padding:8px 14px !important;box-sizing:border-box !important;}
+.chips{display:flex !important;gap:8px !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;}
+.chips::-webkit-scrollbar{height:8px}
+.chip{text-decoration:none !important;border:1px solid var(--line) !important;padding:7px 10px !important;border-radius:999px !important;
+      background:var(--chip) !important;font-size:13px !important;color:#111827 !important;display:inline-flex !important;gap:8px !important;
+      align-items:center !important;min-width:0 !important;max-width:100% !important;box-sizing:border-box !important;}
+.chipTitle{font-weight:800 !important;min-width:0 !important;overflow:hidden !important;text-overflow:ellipsis !important;white-space:nowrap !important;}
+.chipN{min-width:28px !important;text-align:center !important;background:#111827 !important;color:#fff !important;
+      padding:2px 8px !important;border-radius:999px !important;font-size:12px !important;flex:0 0 auto !important;}
+
+@media (max-width: 640px){
+  /* show 2 columns so counts are visible at a glance, avoid horizontal overflow */
+  .chips{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;overflow:visible !important;}
+  .chip{width:100% !important;justify-content:space-between !important;padding:6px 10px !important;font-size:12.5px !important;}
+  .chipN{min-width:24px !important;padding:0 8px !important;}
+}
+
+/* swipe hint + loading badge */
+.swipeHint{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;margin-top:-2px !important;
+          color:var(--muted) !important;font-size:12px !important;opacity:.95 !important;}
+.swipeHint .pill{padding:3px 10px !important;border:1px solid var(--line) !important;border-radius:999px !important;
+          background:rgba(255,255,255,0.9) !important;}
+.swipeHint .arrow{font-size:12px !important;opacity:.85 !important;}
+@media (prefers-reduced-motion: reduce){ .swipeHint{transition:none !important} }
+.navLoading{display:none !important;align-items:center !important;justify-content:center !important;margin:4px 0 0 !important;
+          color:var(--muted) !important;font-size:12px !important;}
+.navLoading.show{display:flex !important;}
+.navLoading .badge{padding:3px 10px !important;border:1px solid var(--line) !important;border-radius:999px !important;
+          background:var(--btnBg, #fff) !important;box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08)) !important;}
+
+/* make mobile nav stable (match latest spec) */
+@media (max-width: 840px){
+  .topbar{background:rgba(255,255,255,0.98) !important;backdrop-filter:none !important;}
+  html{scroll-padding-top:170px !important;}
+  .sec{scroll-margin-top:170px !important;}
+}
+@media (max-width: 640px){
+  .topin{gap:8px !important;}
+  .navRow{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;gap:8px !important;align-items:stretch !important;}
+  .navRow > .navBtn{height:40px !important;border-radius:14px !important;}
+  .navRow > a.navBtn:first-child{grid-column:1 / span 1 !important;width:100% !important;}
+  .navRow > .navBtn:nth-child(2){grid-column:2 !important;}
+  .navRow > .dateSelWrap{grid-column:1 !important;width:100% !important;}
+  .navRow > .navBtn:last-child{grid-column:2 !important;}
+  .dateSelWrap{width:100% !important;}
+  .dateSelWrap select{width:100% !important;max-width:none !important;}
+}
+/* UX_PATCH_END v20260226 */
 </style>
 </head>
 <body>
@@ -209,7 +221,7 @@
         <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-19 07:00 · 기사 12건</div>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive navArchive navArchive navArchive navArchive" href="/agri-news-brief/">아카이브</a>
+        <a class="navBtn navArchive navArchive navArchive navArchive navArchive navArchive" href="/agri-news-brief/">아카이브</a>
         <a class="navBtn" href="/agri-news-brief/archive/2026-02-18.html">◀ 이전</a>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
@@ -241,9 +253,9 @@
     </div>
     </div>
 
-<div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
+<div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
+        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">4</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
@@ -503,148 +515,70 @@
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
   </div>
 
-  <script>
-    (function() {
-      var sel = document.getElementById("dateSelect");
-      if (sel) {
-        sel.addEventListener("change", function() {
-          var v = sel.value;
-          if (v) window.location.href = v;
-        });
-      }
-
-      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
-      var allNavBtns = document.querySelectorAll(".navRow .navBtn");
-      allNavBtns.forEach(function(b) { b.setAttribute("data-swipe-ignore", "1"); });
-
-      var btns = document.querySelectorAll("button.navBtn[data-msg]");
-      btns.forEach(function(b) {
-        b.addEventListener("click", function() {
-          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
-          alert(msg);
-        });
-      });
-    })();
-  </script>
-  <!-- build: fd2c50f -->
-
-
-<script>
-  (function() {
+  <!-- UX_PATCH_BEGIN v20260226 -->
+  <!-- UX_PATCH_END v20260226 -->
+<script id="uxPatchScript">
+(function(){
+  try {
     var navRow = document.querySelector('.navRow');
-    var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navRow .navBtn'));
+    if(!navRow) return;
+    var navBtns = navRow.querySelectorAll('a.navBtn');
     var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
     var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
+
     var navLoading = document.getElementById('navLoading');
     var isNavigating = false;
+
     function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
     function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
     function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-    function isEditableTarget(target){ return !!(target && target.closest && target.closest('select,input,textarea,[contenteditable="true"],[data-swipe-ignore="1"]')); }
+
+    function isBlockedTarget(target){
+      if(!target || !target.closest) return false;
+      if(target.closest('[data-swipe-ignore="1"]')) return true;
+      if(target.closest('.topbar')) return true;
+      if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+      return false;
+    }
+
     function navigateBy(el){
       if(!el || isNavigating) return;
       if(el.tagName && el.tagName.toLowerCase()==='a'){
         var href = el.getAttribute('href');
         if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
       }
-      el.click();
+      try{ el.click(); }catch(e){}
     }
-    var sx=0, sy=0, st=0, tracking=false, blocked=false;
-    var swipeArea = document.querySelector('.wrap') || document.querySelector('.topbar') || document.documentElement || document.body || document;
+
+    var sx=0, sy=0, st=0, blocked=false;
+    var swipeArea = document.querySelector('.wrap') || document.body || document.documentElement;
+
     swipeArea.addEventListener('touchstart', function(e){
       if(!e.touches || e.touches.length!==1) return;
-      blocked = isEditableTarget(e.target);
-      tracking = !blocked;
+      blocked = isBlockedTarget(e.target);
       var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
     }, {passive:true});
+
     swipeArea.addEventListener('touchend', function(e){
       if(!e.changedTouches || e.changedTouches.length!==1) return;
-      if(blocked || isEditableTarget(e.target)) return;
+      if(blocked || isBlockedTarget(e.target)) return;
       var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-      if(dt>800 || Math.abs(dx)<70 || Math.abs(dx) < Math.abs(dy)*1.3) return;
+      if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
       showNavLoading();
       if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
     }, {passive:true});
+
     document.addEventListener('keydown', function(e){
       if(!e) return;
       if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-      if(isEditableTarget(e.target)) return;
-      if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav);} }
-      else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav);} }
+      if(isBlockedTarget(e.target)) return;
+      if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav); } }
+      else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav); } }
     });
+
     window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
-  })();
+  } catch(e){}
+})();
 </script>
-
-  
-  
-  
-  <!-- UX_PATCH_BEGIN v20260226 -->
-  <script>
-  (function(){
-    try {
-      var navRow = document.querySelector('.navRow');
-      if(!navRow) return;
-      var navBtns = navRow.querySelectorAll('a.navBtn');
-      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
-
-      var navLoading = document.getElementById('navLoading');
-      var isNavigating = false;
-
-      function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
-      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
-      function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-
-      function isBlockedTarget(target){
-        if(!target || !target.closest) return false;
-        if(target.closest('[data-swipe-ignore="1"]')) return true;
-        // block topbar gestures (nav buttons / date select / section chips)
-        if(target.closest('.topbar')) return true;
-        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
-        return false;
-      }
-
-      function navigateBy(el){
-        if(!el || isNavigating) return;
-        if(el.tagName && el.tagName.toLowerCase()==='a'){
-          var href = el.getAttribute('href');
-          if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
-        }
-        try{ el.click(); }catch(e){}
-      }
-
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
-
-      swipeArea.addEventListener('touchstart', function(e){
-        if(!e.touches || e.touches.length!==1) return;
-        blocked = isBlockedTarget(e.target);
-        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-      }, {passive:true});
-
-      swipeArea.addEventListener('touchend', function(e){
-        if(!e.changedTouches || e.changedTouches.length!==1) return;
-        if(blocked || isBlockedTarget(e.target)) return;
-        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-        // stronger threshold to avoid accidental navigations while scrolling
-        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-        showNavLoading();
-        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-      }, {passive:true});
-
-      document.addEventListener('keydown', function(e){
-        if(!e) return;
-        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-        if(isBlockedTarget(e.target)) return;
-        if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav); } }
-        else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav); } }
-      });
-
-      window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
-    } catch(e){}
-  })();
-  </script>
-  <!-- UX_PATCH_END v20260226 -->
 </body>
 </html>
