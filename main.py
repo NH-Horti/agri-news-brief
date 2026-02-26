@@ -132,62 +132,8 @@ KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
-
-# 최소 기사 수(섹션별)
-MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", os.getenv("MIN_ARTICLES_PER_SECTION", "0")) or 0)
-MIN_PER_SECTION = max(0, min(MIN_PER_SECTION, MAX_PER_SECTION))
-
-# 기존 ENV(MAX_PAGES_PER_QUERY)는 "상한(cap)"으로만 유지한다.
-# - 기본 수집은 1페이지 유지
-# - 필요할 때만 추가 페이지(2..N)를 조건부로 호출
 MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
 MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
-
-# --- Conditional pagination safety (BASE=1 page, only use extra pages when needed)
-# ✅ daily_v7.yml과 정합:
-# - MAX_PAGES_PER_QUERY는 워크플로우/운영에서 넉넉히 잡아도 되고(예: 4),
-#   본 코드는 이를 '최대 허용치'로만 사용한다.
-# - 기본은 1페이지, 섹션별 후보 풀이 부족할 때만 2페이지(start=51) 등을 추가 호출한다.
-COND_PAGING_BASE_PAGES = int(os.getenv("COND_PAGING_BASE_PAGES", "1") or 1)
-COND_PAGING_BASE_PAGES = max(1, min(COND_PAGING_BASE_PAGES, MAX_PAGES_PER_QUERY))
-
-# 기본값은 2페이지까지만(=1→2) 보강하되,
-# 필요 시 ENV로 늘릴 수 있게 한다(상한은 MAX_PAGES_PER_QUERY).
-COND_PAGING_MAX_PAGES = int(os.getenv("COND_PAGING_MAX_PAGES", "2") or 2)
-COND_PAGING_MAX_PAGES = max(COND_PAGING_BASE_PAGES, min(COND_PAGING_MAX_PAGES, MAX_PAGES_PER_QUERY))
-COND_PAGING_ENABLED = (COND_PAGING_MAX_PAGES > COND_PAGING_BASE_PAGES)
-
-# 섹션당 '추가 호출'에 참여할 쿼리 수 상한(기본: MAX_PER_SECTION+1)
-_default_qcap = max(3, min(10, MAX_PER_SECTION + 1))
-COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION", str(_default_qcap)) or _default_qcap)
-COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION, 25))
-
-# 전체 런에서 추가 호출 예산(기본: qcap*2)
-_default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
-COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = int(os.getenv("COND_PAGING_EXTRA_CALL_BUDGET_TOTAL", str(_default_budget)) or _default_budget)
-COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = max(0, min(COND_PAGING_EXTRA_CALL_BUDGET_TOTAL, 80))
-
-# 후보가 충분히 많은데(예: 50개+) 선택이 적은 날은 '품질이 낮은 날'일 가능성이 크므로
-# 추가 페이지를 무의미하게 호출하지 않도록 상한을 둔다.
-_default_trigger_cap = max(25, min(120, MAX_PER_SECTION * 8))
-COND_PAGING_TRIGGER_CANDIDATE_CAP = int(os.getenv("COND_PAGING_TRIGGER_CANDIDATE_CAP", str(_default_trigger_cap)) or _default_trigger_cap)
-COND_PAGING_TRIGGER_CANDIDATE_CAP = max(5, min(COND_PAGING_TRIGGER_CANDIDATE_CAP, 250))
-
-_COND_PAGING_LOCK = threading.Lock()
-_COND_PAGING_EXTRA_CALLS_USED = 0
-
-def _cond_paging_take_budget(n: int = 1) -> bool:
-    """Return True if we can spend extra-page call budget (thread-safe)."""
-    global _COND_PAGING_EXTRA_CALLS_USED
-    if not COND_PAGING_ENABLED:
-        return False
-    n = max(1, int(n or 1))
-    with _COND_PAGING_LOCK:
-        if _COND_PAGING_EXTRA_CALLS_USED + n > COND_PAGING_EXTRA_CALL_BUDGET_TOTAL:
-            return False
-        _COND_PAGING_EXTRA_CALLS_USED += n
-        return True
-
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -810,7 +756,7 @@ COMMODITY_TOPICS = [
     ("도매시장", ["가락시장", "도매시장", "공영도매시장", "공판장", "청과", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장"]),
     ("APC/산지유통", ["apc", "산지유통", "산지유통센터", "선별", "저온", "저장", "ca저장", "물류"]),
     ("수출/검역", ["수출", "검역", "통관", "수입검역", "잔류농약"]),
-    ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정", "기후변화", "기후위기", "기후플레이션", "재해보험", "농작물재해보험", "climateflation"]),
+    ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정"]),
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해"]),
 ]
 
@@ -3205,15 +3151,6 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # HARD BLOCK: 국제통상/산업 일반 기사에서 농산물이 부수적으로만 등장하는 경우
     if is_macro_trade_noise_context(text):
         return _reject("hardblock_macro_trade_noise")
-    # HARD BLOCK: 전기차/자동차/배터리/캐즘 등 비농업 산업 기사 오탐 차단
-    # - 일부 기사에 '사과·배' 같은 문구가 섞여도, 제목이 자동차/전기차/배터리 맥락이면 농산물 브리핑 목적과 무관한 경우가 대부분
-    auto_title_terms = ("전기차", "자동차", "캐즘", "배터리", "충전", "주행", "테슬라", "가격 전쟁", "가격전쟁", "전기차시장", "차량")
-    ttl_l2 = ttl.lower()
-    if any(w.lower() in ttl_l2 for w in auto_title_terms):
-        # 제목에 농업/원예 앵커가 함께 있으면 예외 허용(예: 농업용 전기차/농산물 물류)
-        if best_horti_score(ttl, "") < 2.2 and count_any((ttl + " " + desc).lower(), [t.lower() for t in ("농산물","농업","농가","원예","과수","과일","채소","화훼","절화","도매시장","공판장","경락","수급")]) == 0:
-            return _reject("hardblock_auto_ev_offtopic")
-
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
@@ -3634,22 +3571,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
     offp = off_topic_penalty(text)
-    # Offtopic 강화: 자동차/전기차/배터리류는 농산물 기사에 '사과·배'가 섞여도 본질이 다른 경우가 많아 점수에서 강하게 감점
-    _AUTO_OFFTOPIC_TERMS = ("전기차", "자동차", "테슬라", "캐즘", "배터리", "충전", "주행", "차량", "가격 전쟁", "가격전쟁")
-    auto_hits_title = count_any(title_l, [t.lower() for t in _AUTO_OFFTOPIC_TERMS])
-    auto_hits_text = count_any(text, [t.lower() for t in _AUTO_OFFTOPIC_TERMS])
-    if auto_hits_title >= 1:
-        auto_pen = 8.0 + 1.2 * auto_hits_text
-        # 제목에 농업/원예 앵커가 있으면 일부 완화
-        if best_horti_score(title, "") >= 2.2 or ("농업" in title_l) or ("농산물" in title_l):
-            auto_pen *= 0.35
-        offp += auto_pen
-
-    # Climate/재해 리스크는 정책·수급 의사결정에 중요하므로 소폭 가산 (오프토픽 패널티를 줄이는 방식)
-    if any(w in text for w in ("기후변화", "기후위기", "기후플레이션", "climateflation", "극한", "집중호우", "폭염", "재해보험", "농작물재해보험")):
-        if count_any(text, [t.lower() for t in ("농가", "농업", "농산물", "과수", "사과", "배", "벼", "배추", "토마토")]) >= 1:
-            offp -= 2.0  # 2점 상한
-
 
     # 기본: 강신호(원예수급/유통/정책/방제) 기반
     score = 0.0
@@ -4770,92 +4691,70 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
     return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
-    """Collect candidates for a section.
-
-    기본 동작은 1페이지(=기존과 동일)이며, 아래 조건을 만족할 때에만 일부 쿼리에 대해 2페이지(start=51)를 추가 호출한다.
-    - COND_PAGING_ENABLED(상한 2페이지 허용) AND
-    - 후보 풀(pool: dynamic threshold 이상)이 max_n 미만 AND
-    - 후보 개수 자체가 너무 적음(=품질 문제가 아니라 풀 부족 가능성) AND
-    - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
-    """
-    queries = section_conf.get("queries") or []
+    queries = section_conf["queries"]
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
-    section_key = str(section_conf.get("key") or "")
-    max_n = MAX_PER_SECTION
+    def fetch(q: str):
+        return q, naver_news_search_paged(q, display=50, pages=MAX_PAGES_PER_QUERY, sort="date")
 
-    hits_by_query: dict[str, int] = {}
+    max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
+    futures = []
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        for q in queries:
+            futures.append(ex.submit(fetch, q))
 
-    def _ingest_naver_items(q: str, data: dict):
-        nonlocal items, _local_dedupe
-        if not isinstance(data, dict):
-            return
-        for it in (data.get("items", []) or []):
-            title = clean_text(it.get("title", ""))
-            desc = clean_text(it.get("description", ""))
-            link = strip_tracking_params(it.get("link", "") or "")
-            origin = strip_tracking_params(it.get("originallink", "") or link)
-            pub = parse_pubdate_to_kst(it.get("pubDate", ""))
-
-            if pub < start_kst or pub >= end_kst:
+        for fut in as_completed(futures):
+            try:
+                _q, data = fut.result()
+            except Exception as e:
+                log.warning("[WARN] query failed: %s", e)
                 continue
 
-            dom = domain_of(origin) or domain_of(link)
-            if not dom or is_blocked_domain(dom):
-                continue
+            for it in data.get("items", []):
+                title = clean_text(it.get("title", ""))
+                desc = clean_text(it.get("description", ""))
+                link = strip_tracking_params(it.get("link", "") or "")
+                origin = strip_tracking_params(it.get("originallink", "") or link)
+                pub = parse_pubdate_to_kst(it.get("pubDate", ""))
 
-            press = press_name_from_url(origin or link)
-            if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
-                continue
-
-            canon = canonicalize_url(origin or link)
-            title_key = norm_title_key(title)
-            topic = extract_topic(title, desc)
-            norm_key = make_norm_key(canon, press, title_key)
-
-            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
-                continue
-
-            art = Article(
-                section=section_key,
-                title=title,
-                description=desc,
-                link=link,
-                originallink=origin,
-                pub_dt_kst=pub,
-                domain=dom,
-                press=press,
-                norm_key=norm_key,
-                title_key=title_key,
-                canon_url=canon,
-                topic=topic,
-            )
-            art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
-            items.append(art)
-            hits_by_query[q] = hits_by_query.get(q, 0) + 1
-
-    # -----------------------------
-    # 1) Base pass: always 1 page
-    # -----------------------------
-    def fetch_page1(q: str):
-        return q, naver_news_search_paged(q, display=50, pages=COND_PAGING_BASE_PAGES, sort="date")
-
-    if queries:
-        max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
-        futures = []
-        with ThreadPoolExecutor(max_workers=max_workers) as ex:
-            for q in queries:
-                futures.append(ex.submit(fetch_page1, q))
-
-            for fut in as_completed(futures):
-                try:
-                    _q, data = fut.result()
-                except Exception as e:
-                    log.warning("[WARN] query failed: %s", e)
+                if pub < start_kst or pub >= end_kst:
                     continue
-                _ingest_naver_items(_q, data)
 
+                dom = domain_of(origin) or domain_of(link)
+                if not dom or is_blocked_domain(dom):
+                    continue
+
+                press = press_name_from_url(origin or link)
+                if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                    continue
+
+                canon = canonicalize_url(origin or link)
+                title_key = norm_title_key(title)
+                topic = extract_topic(title, desc)
+                norm_key = make_norm_key(canon, press, title_key)
+
+                if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                    continue
+
+                art = Article(
+                    section=section_conf["key"],
+                    title=title,
+                    description=desc,
+                    link=link,
+                    originallink=origin,
+                    pub_dt_kst=pub,
+                    domain=dom,
+                    press=press,
+                    norm_key=norm_key,
+                    title_key=title_key,
+                    canon_url=canon,
+                    topic=topic,
+                )
+                art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+                items.append(art)
+
+    items.sort(key=_sort_key_major_first, reverse=True)
     # Optional RSS candidates (신뢰 소스 보강)
     try:
         items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
@@ -4864,100 +4763,9 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
     # 최종 안전장치: 수집 경로(RSS/추가소스)와 무관하게 윈도우 밖 기사는 제외
     items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
-    items.sort(key=_sort_key_major_first, reverse=True)
-
-    # -----------------------------
-    # 2) Conditional extra pass: only when pool is lacking
-    # -----------------------------
-    try:
-        if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
-            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
-            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
-                candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
-                thr = _dynamic_threshold(candidates_sorted, section_key)
-                pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
-
-                # 최소 목표(환경설정 반영): MIN_PER_SECTION이 0이면 3을 기본으로
-                min_n = (MIN_PER_SECTION if MIN_PER_SECTION > 0 else 3)
-                min_n = max(1, min(min_n, max_n))
-
-                # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
-                need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
-                if need_more:
-                    # 어떤 쿼리에 추가 페이지를 붙일지 선택
-                    # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
-                    # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
-                    _qpos = {q: i for i, q in enumerate(queries)}
-                    ranked = sorted(list(queries), key=lambda q: (hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
-
-                    picked: list[str] = []
-                    for q in ranked:
-                        if hits_by_query.get(q, 0) <= 0:
-                            continue
-                        picked.append(q)
-                        if len(picked) >= COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION:
-                            break
-
-                    min_seed = min(3, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION)
-                    if len(picked) < min_seed:
-                        for q in queries:
-                            if q in picked:
-                                continue
-                            picked.append(q)
-                            if len(picked) >= min_seed:
-                                break
-
-                    # 추가 페이지 수집 (2..COND_PAGING_MAX_PAGES) — 예산/조기종료 포함
-                    extra_added = 0
-                    pages_tried = 0
-
-                    for q in picked:
-                        # 이미 충분해지면 그만
-                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
-                        thr = _dynamic_threshold(candidates_sorted, section_key)
-                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
-                        if pool_cnt >= max_n:
-                            break
-
-                        for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
-                            if not _cond_paging_take_budget(1):
-                                break
-                            st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
-                            pages_tried += 1
-                            try:
-                                dataN = naver_news_search(q, display=50, start=st, sort="date")
-                            except Exception as e:
-                                log.warning("[WARN] query page%d failed: %s", p, e)
-                                continue
-
-                            before = len(items)
-                            _ingest_naver_items(q, dataN)
-                            extra_added += max(0, len(items) - before)
-
-                            # 조기 종료: pool이 충분해지면 그만
-                            candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
-                            thr = _dynamic_threshold(candidates_sorted, section_key)
-                            pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
-
-                            # 후보가 충분히 커졌거나 pool 목표 도달 시 중단
-                            if pool_cnt >= max_n or len(items) >= COND_PAGING_TRIGGER_CANDIDATE_CAP:
-                                break
-
-                        if not COND_PAGING_ENABLED:
-                            break
-
-                    if extra_added > 0:
-                        log.info(
-                            "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
-                            section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
-                        )
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
-                        items.sort(key=_sort_key_major_first, reverse=True)
-    except Exception:
-        # extra pass should never break the pipeline
-        pass
 
     return items
+
 
 # -----------------------------
 # Referenced reports (KREI 이슈+ 등) 자동 포함
@@ -6212,6 +6020,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (navLoading) navLoading.classList.remove("show");
       }}
 
+
+      function _navMsg(el, fallback) {{
+        try {{
+          var msg = (el && (el.getAttribute("data-msg") || el.getAttribute("title") || "")) || "";
+          msg = (msg || "").trim();
+          if (!msg) msg = (fallback || "").trim();
+          if (!msg) msg = "다음 브리핑이 없습니다.";
+          return msg;
+        }} catch (e) {{
+          return (fallback || "다음 브리핑이 없습니다.");
+        }}
+      }}
+
+      function showNoBriefing(el, fallback) {{
+        try {{ window.alert(_navMsg(el, fallback)); }} catch (e) {{}}
+      }}
       function isBlockedTarget(target) {{
         if (!target || !target.closest) return false;
         if (target.closest('[data-swipe-ignore="1"]')) return true;
@@ -6266,10 +6090,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        showNavLoading();
-        if (dx < 0) navigateBy(nextNav);
-        else navigateBy(prevNav);
-      }}, {{ passive: true }});
+        if (dx < 0) {{
+          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
+          else {{ showNoBriefing(nextNav, "다음 브리핑이 없습니다."); }}
+        }} else {{
+          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
+          else {{ showNoBriefing(prevNav, "이전 브리핑이 없습니다."); }}
+        }}
+}}, {{ passive: true }});
 
       document.addEventListener("keydown", function(e) {{
         if (!e) return;
@@ -7507,9 +7335,6 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         html_new = re.sub(r'(<div\s+class="chipbar")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
         html_new = re.sub(r'(<div\s+class="chips")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
-        # Section title normalization (legacy pages): '유통 및 현장 (도매시장/APC/수출)' -> '유통 및 현장'
-        html_new = re.sub(r"(유통\s*및\s*현장)\s*\([^\)]*\)", r"\1", html_new)
-
 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
@@ -7568,7 +7393,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
     /* UX_PATCH_END v{UX_VER} */
 """
         # replace existing UX_PATCH block in <style>, else insert before </style>
-        if re.search(r"/\*\s*UX_PATCH_BEGIN", html_new, flags=re.I):
+        if "UX_PATCH_BEGIN" in html_new:
             html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", css_block, html_new, flags=re.S)
         else:
             html_new, n = re.subn(r"(</style>)", css_block + r"\1", html_new, count=1, flags=re.I)
@@ -7580,22 +7405,16 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # 5) Upsert canonical swipe JS (upgrade old patched pages too)
         # - Scope: article area (.wrap), ignore topbar interactions (chip sliding)
         # -----------------------------
-                js_block = f"""
+        js_block = f"""
   <!-- UX_PATCH_BEGIN v{UX_VER} -->
   <script>
   (function(){{
     try {{
       var navRow = document.querySelector('.navRow');
       if(!navRow) return;
-
-      // Resolve prev/next by label (robust when one side is missing / disabled)
-      var aBtns = navRow.querySelectorAll('a.navBtn');
-      var prevNav = null, nextNav = null;
-      for(var i=0;i<aBtns.length;i++) {{
-        var t = (aBtns[i].textContent||'').trim();
-        if(t.indexOf('이전')>=0) prevNav = aBtns[i];
-        else if(t.indexOf('다음')>=0) nextNav = aBtns[i];
-      }}
+      var navBtns = navRow.querySelectorAll('a.navBtn');
+      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
 
       var navLoading = document.getElementById('navLoading');
       var isNavigating = false;
@@ -7615,9 +7434,11 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
       function navigateBy(el){{
         if(!el || isNavigating) return;
-        var href = el.getAttribute('href');
-        if(href){{ isNavigating=true; window.location.href=href; return; }}
-        try {{ el.click(); }} catch(e){{}}
+        if(el.tagName && el.tagName.toLowerCase()==='a'){{
+          var href = el.getAttribute('href');
+          if(href){{ isNavigating=true; showNavLoading(); window.location.href=href; return; }}
+        }}
+        try{{ el.click(); }}catch(e){{}}
       }}
 
       var sx=0, sy=0, st=0, blocked=false;
@@ -7635,11 +7456,8 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
         // stronger threshold to avoid accidental navigations while scrolling
         if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-
-        var target = (dx < 0) ? nextNav : prevNav;
-        if(!hasHref(target)) return; // ✅ prevent "loading stuck" when next/prev is absent
         showNavLoading();
-        navigateBy(target);
+        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
       }}, {{passive:true}});
 
       document.addEventListener('keydown', function(e){{
@@ -7651,16 +7469,11 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       }});
 
       window.addEventListener('pageshow', function(){{ isNavigating=false; hideNavLoading(); }});
-      window.addEventListener('pagehide', function(){{ hideNavLoading(); }});
-      // safety: auto-hide loading after 2s (in case navigation was blocked)
-      setTimeout(hideNavLoading, 2000);
-
     }} catch(e){{}}
   }})();
   </script>
   <!-- UX_PATCH_END v{UX_VER} -->
 """
-
         if "UX_PATCH_BEGIN" in html_new and "<!-- UX_PATCH_BEGIN" in html_new:
             html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", js_block, html_new, flags=re.S|re.I)
         else:
