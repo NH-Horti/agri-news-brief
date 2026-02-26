@@ -31,6 +31,20 @@ on:
         default: "0.2"
 
 
+      backfill_start_date:
+        description: "백필 재생성 시작일(YYYY-MM-DD). 비우면 backfill_days 기준(과거 N일)"
+        required: false
+        default: ""
+      backfill_end_date:
+        description: "백필 재생성 종료일(YYYY-MM-DD). 비우면 report_date-1(어제)까지"
+        required: false
+        default: ""
+      backfill_days_max:
+        description: "백필 최대 일수 상한(안전장치). 기본 120"
+        required: false
+        default: "120"
+
+
       purge_archives_before:
         description: "이 날짜 이전(<) 아카이브 HTML을 삭제(YYYY-MM-DD). 비우면 OFF"
         required: false
@@ -228,6 +242,10 @@ jobs:
           BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '0' }}"
           BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'true' }}"
           BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
+
+          BACKFILL_START_DATE: "${{ github.event.inputs.backfill_start_date || '' }}"
+          BACKFILL_END_DATE: "${{ github.event.inputs.backfill_end_date || '' }}"
+          BACKFILL_REBUILD_DAYS_MAX: "${{ github.event.inputs.backfill_days_max || '120' }}"
 
           # Purge + Rebuild (선택): 특정 날짜 이전 아카이브 삭제 후 재생성에 사용
           PURGE_ARCHIVES_BEFORE: "${{ github.event.inputs.purge_archives_before || '' }}"
