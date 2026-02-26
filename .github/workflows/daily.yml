@@ -121,9 +121,9 @@ jobs:
           CAND_B64_LIST="$(echo "${RESP}" | jq -r --arg before "${BEFORE}" '
             .[]
             | select(.type=="file")
-            | select(.name|test("^[0-9]{4}-[0-9]{2}-[0-9]{2}\.html$"))
+            | select(.name|test("^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.html$"))
             | .name as $n
-            | ($n | sub("\\.html$"; "")) as $d
+            | ($n | sub("\.html$"; "")) as $d
             | select($d < $before)
             | {name:$n, sha:.sha}
             | @base64
