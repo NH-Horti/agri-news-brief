@@ -364,8 +364,6 @@ BACKFILL_REBUILD_DAYS = max(0, min(BACKFILL_REBUILD_DAYS, 31))
 BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
-BACKFILL_REBUILD_CREATE_MISSING = os.getenv("BACKFILL_REBUILD_CREATE_MISSING", "false").strip().lower() in ("1", "true", "yes", "y")
-
 
 
 # UX patch (과거 아카이브에 UI/UX 업데이트를 '패치'로 반영: 스와이프/로딩/스티키 nav 등)
@@ -450,6 +448,12 @@ HARD_OFFTOPIC_TERMS = [
     "의사공학",
     "의과학",
     "의과학원",
+    "전기차",
+    "자동차",
+    "캐즘",
+    "테슬라",
+    "충전",
+    "완성차",
 ]
 
 
@@ -698,7 +702,7 @@ SECTIONS = [
     },
     {
         "key": "policy",
-        "title": "주요 이슈 및 정책",
+        "title": "정책 및 주요 이슈",
         "color": "#1d4ed8",
         "queries": [
             "농식품부 정책브리핑", "농식품부 보도자료 농산물", "정책브리핑 농축수산물", "농축수산물 할인지원",
@@ -1560,7 +1564,7 @@ _RETAIL_SALES_TREND_EXCLUDE = [
 def is_retail_sales_trend_context(text: str) -> bool:
     """소매/리테일 판매 데이터 기반 트렌드 기사 판정.
     - 예: '매출/판매 데이터/분석/트렌드/랭킹' 중심의 소비 트렌드 기사
-    - 목적: 이런 유형은 '주요 이슈 및 정책'으로 과흡수되지 않도록 supply 쪽으로 남기기
+    - 목적: 이런 유형은 '정책 및 주요 이슈'으로 과흡수되지 않도록 supply 쪽으로 남기기
     """
     t = (text or "").lower()
     if not t:
@@ -1723,7 +1727,8 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
     agency_terms = ("농식품부", "농림축산식품부", "정부", "기재부", "관세청", "검역본부", "aT", "농관원")
     policy_action_terms = (
         "대책", "지원", "할인지원", "점검", "회의", "간담회", "발표", "추진", "시행", "협의", "예산",
-        "수급안정", "안정 대책", "긴급", "대응", "관계부처", "지시"
+        "수급안정", "안정 대책", "긴급", "대응", "관계부처", "지시",
+        "관리", "강화", "단속", "보세", "보세구역", "할당관세", "반입", "보관", "창고", "장기 보관"
     )
     market_terms = ("가락시장", "도매시장", "공판장", "경락", "반입", "출하", "재고", "저장", "작황", "산지", "시세")
     commodity_terms = ("사과", "배", "감귤", "만감", "딸기", "포도", "참외", "오이", "토마토", "파프리카", "자두", "매실", "밤")
@@ -3231,6 +3236,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if not has_agri:
             return _reject("dist_retail_promo_no_agri")
 
+    # dist: "오늘, 서울시" 등 지자체 행사/캠페인성 알림 기사 차단(도매시장 문구가 있어도 핵심성 낮음)
+    if key == "dist":
+        ttl_l2 = ttl.lower()
+        if ("오늘, 서울시" in ttl_l2) or ("서울청년문화패스" in ttl_l2) or ("서울청년" in ttl_l2 and "패스" in ttl_l2):
+            return _reject("dist_city_notice_event")
+
+
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
@@ -3634,6 +3646,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score += 0.25 * korea
     score -= 0.70 * offp
 
+
+    # 지방 "인구감소/생활인구" 예산 기사(원예 키워드가 섞여도 핵심성 낮음) 감점
+    if ("인구감소" in text) or ("생활인구" in text):
+        score -= 2.2
+    # "오늘, 서울시"류 알림성 기사 감점
+    if ("오늘, 서울시" in title_l) or ("서울청년문화패스" in title_l):
+        score -= 1.8
     # 섹션별 키워드 가중치
     key = section_conf["key"]
     if key == "supply":
@@ -5564,10 +5583,14 @@ def esc(s: str) -> str:
     return html.escape(s or "")
 
 def display_section_title(title: str) -> str:
-    # 칩바(상단 섹션 버튼)에서만 쓰는 축약 라벨
-    t = (title or "").strip()
+    # 표준화: 과거 페이지의 섹션 표기를 최신 포맷으로 통일
+    if not title:
+        return ""
+    t = str(title)
     if t.startswith("유통 및 현장"):
         return "유통 및 현장"
+    if t == "주요 이슈 및 정책":
+        return "정책 및 주요 이슈"
     return t
 
 
@@ -5886,7 +5909,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     # 날짜 select (value도 절대경로)
     options = []
-    for d in archive_dates_desc[:60]:
+    for d in archive_dates_desc[:120]:
         sel = " selected" if d == report_date else ""
         options.append(
             f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
@@ -5963,11 +5986,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
     home_href = site_path
 
-    def nav_btn(href: str | None, label: str, empty_msg: str):
+    def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str):
         if href:
-            return f'<a class="navBtn" href="{esc(href)}">{esc(label)}</a>'
+            return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
         # ✅ (3) 없는 페이지로 링크하지 않고 알림으로 처리
-        return f'<button class="navBtn disabled" type="button" data-msg="{esc(empty_msg)}">{esc(label)}</button>'
+        return f'<button class="navBtn disabled" data-nav="{esc(nav_key)}" type="button" data-msg="{esc(empty_msg)}">{esc(label)}</button>'
 
     
     debug_html = render_debug_report_html(report_date, site_path) if DEBUG_REPORT else ""
@@ -6113,13 +6136,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       </div>
       <div class=\"navRow\">
         <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
-        {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}
+        {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.", "prev")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
             {options_html}
           </select>
         </div>
-        {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.")}
+        {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}
       </div>
       <div id=\"swipeHint\" class=\"swipeHint\" aria-hidden=\"true\">
         <span class=\"arrow\">◀</span>
@@ -6170,9 +6193,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
       var navRow = document.querySelector(".navRow");
-      var navBtns = navRow ? Array.prototype.slice.call(navRow.querySelectorAll("a.navBtn")) : [];
-      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
       var swipeHint = document.getElementById("swipeHint");
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
@@ -6187,6 +6209,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       function hideNavLoading() {{
         if (navLoading) navLoading.classList.remove("show");
+      }}
+
+      function showNoBrief(el, fallbackMsg) {{
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {{
+          if (el && el.getAttribute) {{
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }}
+        }} catch (e) {{}}
+        hideNavLoading();
+        try {{ alert(msg); }} catch (e2) {{}}
       }}
 
       function isBlockedTarget(target) {{
@@ -6243,9 +6276,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        showNavLoading();
-        if (dx < 0) navigateBy(nextNav);
-        else navigateBy(prevNav);
+        if (dx < 0) {{
+          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
+          else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
+        }} else {{
+          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
+          else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
+        }}
       }}, {{ passive: true }});
 
       document.addEventListener("keydown", function(e) {{
@@ -6256,11 +6293,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           if (hasHref(prevNav)) {{
             showNavLoading();
             navigateBy(prevNav);
+          }} else {{
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
           }}
         }} else if (e.key === "ArrowRight") {{
           if (hasHref(nextNav)) {{
             showNavLoading();
             navigateBy(nextNav);
+          }} else {{
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
           }}
         }}
       }});
@@ -7342,7 +7383,7 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
 
     # 날짜 select (value도 절대경로)
     options = []
-    for d in archive_dates_desc[:60]:
+    for d in archive_dates_desc[:120]:
         sel = " selected" if d == cur_date else ""
         options.append(
             f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
@@ -7355,7 +7396,7 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
 
     def nav_btn(href: str | None, label: str, msg: str) -> str:
         if href:
-            return f'<a class="navBtn" href="{esc(href)}">{esc(label)}</a>'
+            return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
         return f'<button class="navBtn disabled" type="button" data-msg="{esc(msg)}">{esc(label)}</button>'
 
     home_href = site_path
@@ -7363,14 +7404,14 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
     # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
-        f'  <a class="navBtn navArchive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
-        f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.")}\n'
+        f'  <a class="navBtn navArchive" data-nav="archive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
+        f'  {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.", "prev")}\n'
         '  <div class="dateSelWrap">\n'
         '    <select id="dateSelect" aria-label="날짜 선택">\n'
         f'      {options_html}\n'
         '    </select>\n'
         '  </div>\n'
-        f'  {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.")}\n'
+        f'  {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}\n'
         '</div>'
     )
 
@@ -7749,40 +7790,46 @@ def backfill_rebuild_recent_archives(
         log.warning("[BACKFILL] no available archive dates found; skip backfill rebuild")
         return search_idx
 
-    # rebuild targets
-    # - 기본: 과거 N일 중 '기존 파일이 있는 날짜만' 재생성
-    # - BACKFILL_REBUILD_CREATE_MISSING=true 인 경우: 과거 N일 범위의 (영업일) 날짜를 '파일 유무와 무관하게' 생성/재생성
-    targets: list[str] = []
+    # rebuild targets: report_date 제외, (1) BACKFILL_START_DATE~BACKFILL_END_DATE 범위 또는 (2) 과거 N일
     create_missing = bool(BACKFILL_REBUILD_CREATE_MISSING)
-
-    for i in range(1, days + 1):
-        d = (today - timedelta(days=i)).isoformat()
-
-        # 주말/휴일은 기본적으로 스킵
+    start_d = None
+    end_d = None
+    if BACKFILL_END_DATE:
         try:
-            dd = date.fromisoformat(d)
+            end_d = date.fromisoformat(BACKFILL_END_DATE)
         except Exception:
-            continue
-        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(dd)):
-            continue
+            end_d = None
+    if end_d is None:
+        end_d = today - timedelta(days=1)
+    if BACKFILL_START_DATE:
+        try:
+            start_d = date.fromisoformat(BACKFILL_START_DATE)
+        except Exception:
+            start_d = None
+    if start_d is None:
+        start_d = end_d - timedelta(days=max(0, days - 1))
 
+    total_days = (end_d - start_d).days + 1
+    if total_days > BACKFILL_REBUILD_DAYS_MAX and BACKFILL_REBUILD_DAYS_MAX > 0:
+        log.warning("[BACKFILL] requested %d day(s) exceeds cap %d; trimming", total_days, BACKFILL_REBUILD_DAYS_MAX)
+        start_d = end_d - timedelta(days=BACKFILL_REBUILD_DAYS_MAX - 1)
+
+    targets: list[str] = []
+    cur = end_d
+    while cur >= start_d:
+        d = cur.isoformat()
+        if d == report_date:
+            cur -= timedelta(days=1)
+            continue
         if (not create_missing) and (d not in avail):
+            cur -= timedelta(days=1)
             continue
         targets.append(d)
+        cur -= timedelta(days=1)
 
     if not targets:
         return search_idx
 
-    # 페이지 내 네비/셀렉트에 넣을 날짜 목록(재생성 대상 포함)
-    nav_dates_desc = sorted(set(avail).union(set(targets)).union({report_date}), reverse=True)
-
-    log.info(
-        "[BACKFILL] available archives=%d | rebuild %d day(s) (create_missing=%s): %s",
-        len(avail),
-        len(targets),
-        "true" if create_missing else "false",
-        ", ".join(targets),
-    )
     log.info("[BACKFILL] available archives=%d | rebuild %d day(s): %s", len(avail), len(targets), ", ".join(targets))
 
     for d in targets:
@@ -7796,16 +7843,11 @@ def backfill_rebuild_recent_archives(
             if not BACKFILL_REBUILD_SKIP_OPENAI:
                 bf_by_section = fill_summaries(bf_by_section, cache=summary_cache)
 
-            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, nav_dates_desc, site_path)
+            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, archive_dates_desc, site_path)
 
             bf_path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
-            sha_old = None
-            try:
-                _raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
-            except Exception:
-                sha_old = None
+            raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
             github_put_file(repo, bf_path, bf_html, token, f"Backfill rebuild {d}", sha=sha_old, branch="main")
-            avail.add(d)
 
             # search index update for that day
             search_idx = update_search_index(search_idx, d, bf_by_section, site_path)
@@ -7872,44 +7914,27 @@ def main():
         except Exception as e:
             log.warning("[WARN] UX PATCH failed: %s", e)
 
-    # manifest load + sanitize (✅ 4번: 이상한 엔트리 제거)
+    # manifest load + sanitize (manifest는 유지하되, UI 날짜 목록은 docs/archive 실제 파일을 기준으로 만든다)
     manifest, msha = load_archive_manifest(repo, GH_TOKEN)
     manifest = _normalize_manifest(manifest)
 
-    clean_dates = sanitize_dates(manifest.get("dates", []))
-    clean_dates.append(report_date)
-    clean_dates = sorted(set(clean_dates))
-    dates_desc = sorted(clean_dates, reverse=True)
+    # ✅ UI 날짜 목록: docs/archive 디렉터리 listing 기반(날짜 셀렉트/이전/다음 일관성 보장)
+    avail_dates: set[str] = set()
+    try:
+        items = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
+        for it in (items or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    avail_dates.add(dd)
+    except Exception as e:
+        log.warning("[WARN] archive listing failed; fallback to manifest dates: %s", e)
+        avail_dates = set(sanitize_dates(manifest.get("dates", [])))
 
-    # ✅ (3,4) 최근 N개는 실제 파일 존재 여부를 확인해 UI 링크 404 제거
-
-    # --- BACKFILL REBUILD HOOK (PURGE+REBUILD 지원) ---
-    # Purge(원격 삭제)는 workflow 단계에서 수행됩니다.
-    # 여기서는 삭제된(또는 누락된) 최근 N일 아카이브를 다시 생성/재생성합니다.
-    if BACKFILL_REBUILD_DAYS and int(BACKFILL_REBUILD_DAYS) > 0:
-        try:
-            _tmp_search_idx = {}
-            _tmp_cache = {}
-            backfill_rebuild_recent_archives(
-                repo=repo,
-                token=GH_TOKEN,
-                report_date=report_date,
-                archive_dates_desc=dates_desc,
-                site_path=site_path,
-                summary_cache=_tmp_cache,
-                search_idx=_tmp_search_idx,
-            )
-        except Exception as e:
-            log.warning("[WARN] backfill_rebuild_recent_archives failed: %s", e)
-    # --- END BACKFILL REBUILD HOOK ---
-
-    verified_desc = verify_recent_archive_dates(repo, GH_TOKEN, dates_desc, report_date, verify_n=120)
-
-    # manifest에는 "검증된 최근" + "오래된 tail"(검증 생략)만 유지
-    tail = [d for d in dates_desc[120:] if d not in verified_desc]
-    manifest["dates"] = sorted(set(verified_desc + tail))
-
-    archive_dates_desc = verified_desc  # UI용(이전/다음/셀렉트/인덱스에 사용)
+    avail_dates.add(report_date)
+    archive_dates_desc = sorted(avail_dates, reverse=True)
+    manifest["dates"] = sorted(set(sanitize_dates(list(avail_dates))))
 
     # collect + summarize
     by_section = collect_all_sections(start_kst, end_kst)
@@ -7941,6 +7966,11 @@ def main():
     # update keyword search index (docs/search_index.json)
     search_idx, ssha = load_search_index(repo, GH_TOKEN)
     search_idx = update_search_index(search_idx, report_date, by_section, site_path)
+    # (옵션) 백필 재생성: 과거 페이지/검색 인덱스까지 최신 로직으로 재생성
+    try:
+        search_idx = backfill_rebuild_recent_archives(repo, GH_TOKEN, report_date, archive_dates_desc, site_path, summary_cache, search_idx)
+    except Exception as e:
+        log.warning("[WARN] backfill rebuild failed: %s", e)
     save_search_index(repo, GH_TOKEN, search_idx, ssha)
 
 
