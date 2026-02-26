@@ -132,8 +132,62 @@ KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
+
+# 최소 기사 수(섹션별)
+MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", os.getenv("MIN_ARTICLES_PER_SECTION", "0")) or 0)
+MIN_PER_SECTION = max(0, min(MIN_PER_SECTION, MAX_PER_SECTION))
+
+# 기존 ENV(MAX_PAGES_PER_QUERY)는 "상한(cap)"으로만 유지한다.
+# - 기본 수집은 1페이지 유지
+# - 필요할 때만 추가 페이지(2..N)를 조건부로 호출
 MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
 MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
+
+# --- Conditional pagination safety (BASE=1 page, only use extra pages when needed)
+# ✅ daily_v7.yml과 정합:
+# - MAX_PAGES_PER_QUERY는 워크플로우/운영에서 넉넉히 잡아도 되고(예: 4),
+#   본 코드는 이를 '최대 허용치'로만 사용한다.
+# - 기본은 1페이지, 섹션별 후보 풀이 부족할 때만 2페이지(start=51) 등을 추가 호출한다.
+COND_PAGING_BASE_PAGES = int(os.getenv("COND_PAGING_BASE_PAGES", "1") or 1)
+COND_PAGING_BASE_PAGES = max(1, min(COND_PAGING_BASE_PAGES, MAX_PAGES_PER_QUERY))
+
+# 기본값은 2페이지까지만(=1→2) 보강하되,
+# 필요 시 ENV로 늘릴 수 있게 한다(상한은 MAX_PAGES_PER_QUERY).
+COND_PAGING_MAX_PAGES = int(os.getenv("COND_PAGING_MAX_PAGES", "2") or 2)
+COND_PAGING_MAX_PAGES = max(COND_PAGING_BASE_PAGES, min(COND_PAGING_MAX_PAGES, MAX_PAGES_PER_QUERY))
+COND_PAGING_ENABLED = (COND_PAGING_MAX_PAGES > COND_PAGING_BASE_PAGES)
+
+# 섹션당 '추가 호출'에 참여할 쿼리 수 상한(기본: MAX_PER_SECTION+1)
+_default_qcap = max(3, min(10, MAX_PER_SECTION + 1))
+COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION", str(_default_qcap)) or _default_qcap)
+COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION, 25))
+
+# 전체 런에서 추가 호출 예산(기본: qcap*2)
+_default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
+COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = int(os.getenv("COND_PAGING_EXTRA_CALL_BUDGET_TOTAL", str(_default_budget)) or _default_budget)
+COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = max(0, min(COND_PAGING_EXTRA_CALL_BUDGET_TOTAL, 80))
+
+# 후보가 충분히 많은데(예: 50개+) 선택이 적은 날은 '품질이 낮은 날'일 가능성이 크므로
+# 추가 페이지를 무의미하게 호출하지 않도록 상한을 둔다.
+_default_trigger_cap = max(25, min(120, MAX_PER_SECTION * 8))
+COND_PAGING_TRIGGER_CANDIDATE_CAP = int(os.getenv("COND_PAGING_TRIGGER_CANDIDATE_CAP", str(_default_trigger_cap)) or _default_trigger_cap)
+COND_PAGING_TRIGGER_CANDIDATE_CAP = max(5, min(COND_PAGING_TRIGGER_CANDIDATE_CAP, 250))
+
+_COND_PAGING_LOCK = threading.Lock()
+_COND_PAGING_EXTRA_CALLS_USED = 0
+
+def _cond_paging_take_budget(n: int = 1) -> bool:
+    """Return True if we can spend extra-page call budget (thread-safe)."""
+    global _COND_PAGING_EXTRA_CALLS_USED
+    if not COND_PAGING_ENABLED:
+        return False
+    n = max(1, int(n or 1))
+    with _COND_PAGING_LOCK:
+        if _COND_PAGING_EXTRA_CALLS_USED + n > COND_PAGING_EXTRA_CALL_BUDGET_TOTAL:
+            return False
+        _COND_PAGING_EXTRA_CALLS_USED += n
+        return True
+
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -4691,70 +4745,92 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
     return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
-    queries = section_conf["queries"]
+    """Collect candidates for a section.
+
+    기본 동작은 1페이지(=기존과 동일)이며, 아래 조건을 만족할 때에만 일부 쿼리에 대해 2페이지(start=51)를 추가 호출한다.
+    - COND_PAGING_ENABLED(상한 2페이지 허용) AND
+    - 후보 풀(pool: dynamic threshold 이상)이 max_n 미만 AND
+    - 후보 개수 자체가 너무 적음(=품질 문제가 아니라 풀 부족 가능성) AND
+    - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
+    """
+    queries = section_conf.get("queries") or []
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
-    def fetch(q: str):
-        return q, naver_news_search_paged(q, display=50, pages=MAX_PAGES_PER_QUERY, sort="date")
+    section_key = str(section_conf.get("key") or "")
+    max_n = MAX_PER_SECTION
 
-    max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
-    futures = []
-    with ThreadPoolExecutor(max_workers=max_workers) as ex:
-        for q in queries:
-            futures.append(ex.submit(fetch, q))
+    hits_by_query: dict[str, int] = {}
 
-        for fut in as_completed(futures):
-            try:
-                _q, data = fut.result()
-            except Exception as e:
-                log.warning("[WARN] query failed: %s", e)
+    def _ingest_naver_items(q: str, data: dict):
+        nonlocal items, _local_dedupe
+        if not isinstance(data, dict):
+            return
+        for it in (data.get("items", []) or []):
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            origin = strip_tracking_params(it.get("originallink", "") or link)
+            pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+
+            if pub < start_kst or pub >= end_kst:
                 continue
 
-            for it in data.get("items", []):
-                title = clean_text(it.get("title", ""))
-                desc = clean_text(it.get("description", ""))
-                link = strip_tracking_params(it.get("link", "") or "")
-                origin = strip_tracking_params(it.get("originallink", "") or link)
-                pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+            dom = domain_of(origin) or domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
 
-                if pub < start_kst or pub >= end_kst:
+            press = press_name_from_url(origin or link)
+            if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+
+            canon = canonicalize_url(origin or link)
+            title_key = norm_title_key(title)
+            topic = extract_topic(title, desc)
+            norm_key = make_norm_key(canon, press, title_key)
+
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+
+            art = Article(
+                section=section_key,
+                title=title,
+                description=desc,
+                link=link,
+                originallink=origin,
+                pub_dt_kst=pub,
+                domain=dom,
+                press=press,
+                norm_key=norm_key,
+                title_key=title_key,
+                canon_url=canon,
+                topic=topic,
+            )
+            art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+            items.append(art)
+            hits_by_query[q] = hits_by_query.get(q, 0) + 1
+
+    # -----------------------------
+    # 1) Base pass: always 1 page
+    # -----------------------------
+    def fetch_page1(q: str):
+        return q, naver_news_search_paged(q, display=50, pages=COND_PAGING_BASE_PAGES, sort="date")
+
+    if queries:
+        max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
+        futures = []
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            for q in queries:
+                futures.append(ex.submit(fetch_page1, q))
+
+            for fut in as_completed(futures):
+                try:
+                    _q, data = fut.result()
+                except Exception as e:
+                    log.warning("[WARN] query failed: %s", e)
                     continue
+                _ingest_naver_items(_q, data)
 
-                dom = domain_of(origin) or domain_of(link)
-                if not dom or is_blocked_domain(dom):
-                    continue
-
-                press = press_name_from_url(origin or link)
-                if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
-                    continue
-
-                canon = canonicalize_url(origin or link)
-                title_key = norm_title_key(title)
-                topic = extract_topic(title, desc)
-                norm_key = make_norm_key(canon, press, title_key)
-
-                if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
-                    continue
-
-                art = Article(
-                    section=section_conf["key"],
-                    title=title,
-                    description=desc,
-                    link=link,
-                    originallink=origin,
-                    pub_dt_kst=pub,
-                    domain=dom,
-                    press=press,
-                    norm_key=norm_key,
-                    title_key=title_key,
-                    canon_url=canon,
-                    topic=topic,
-                )
-                art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
-                items.append(art)
-
-    items.sort(key=_sort_key_major_first, reverse=True)
     # Optional RSS candidates (신뢰 소스 보강)
     try:
         items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
@@ -4763,9 +4839,100 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
     # 최종 안전장치: 수집 경로(RSS/추가소스)와 무관하게 윈도우 밖 기사는 제외
     items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+    items.sort(key=_sort_key_major_first, reverse=True)
+
+    # -----------------------------
+    # 2) Conditional extra pass: only when pool is lacking
+    # -----------------------------
+    try:
+        if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
+            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
+            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                thr = _dynamic_threshold(candidates_sorted, section_key)
+                pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+
+                # 최소 목표(환경설정 반영): MIN_PER_SECTION이 0이면 3을 기본으로
+                min_n = (MIN_PER_SECTION if MIN_PER_SECTION > 0 else 3)
+                min_n = max(1, min(min_n, max_n))
+
+                # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
+                need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
+                if need_more:
+                    # 어떤 쿼리에 추가 페이지를 붙일지 선택
+                    # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
+                    # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
+                    _qpos = {q: i for i, q in enumerate(queries)}
+                    ranked = sorted(list(queries), key=lambda q: (hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
+
+                    picked: list[str] = []
+                    for q in ranked:
+                        if hits_by_query.get(q, 0) <= 0:
+                            continue
+                        picked.append(q)
+                        if len(picked) >= COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION:
+                            break
+
+                    min_seed = min(3, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION)
+                    if len(picked) < min_seed:
+                        for q in queries:
+                            if q in picked:
+                                continue
+                            picked.append(q)
+                            if len(picked) >= min_seed:
+                                break
+
+                    # 추가 페이지 수집 (2..COND_PAGING_MAX_PAGES) — 예산/조기종료 포함
+                    extra_added = 0
+                    pages_tried = 0
+
+                    for q in picked:
+                        # 이미 충분해지면 그만
+                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                        thr = _dynamic_threshold(candidates_sorted, section_key)
+                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+                        if pool_cnt >= max_n:
+                            break
+
+                        for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
+                            if not _cond_paging_take_budget(1):
+                                break
+                            st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
+                            pages_tried += 1
+                            try:
+                                dataN = naver_news_search(q, display=50, start=st, sort="date")
+                            except Exception as e:
+                                log.warning("[WARN] query page%d failed: %s", p, e)
+                                continue
+
+                            before = len(items)
+                            _ingest_naver_items(q, dataN)
+                            extra_added += max(0, len(items) - before)
+
+                            # 조기 종료: pool이 충분해지면 그만
+                            candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                            thr = _dynamic_threshold(candidates_sorted, section_key)
+                            pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+
+                            # 후보가 충분히 커졌거나 pool 목표 도달 시 중단
+                            if pool_cnt >= max_n or len(items) >= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                                break
+
+                        if not COND_PAGING_ENABLED:
+                            break
+
+                    if extra_added > 0:
+                        log.info(
+                            "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
+                            section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
+                        )
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items.sort(key=_sort_key_major_first, reverse=True)
+    except Exception:
+        # extra pass should never break the pipeline
+        pass
 
     return items
-
 
 # -----------------------------
 # Referenced reports (KREI 이슈+ 등) 자동 포함
@@ -5406,23 +5573,53 @@ def display_section_title(title: str) -> str:
 def _normalize_existing_chipbar_titles(html_text: str) -> str:
     """Normalize chipbar title labels on already-existing chipbars (do not require rebuild).
 
-    Some older archived pages already have a chipbar generated by older code, so
-    `display_section_title()` did not run and long labels (e.g. "유통 및 현장 (...)")
-    remain. This function updates only the visible label text inside `.chipTitle`.
+    Older archived pages may already have a chipbar generated by older code, so
+    `display_section_title()` did not run and long labels (e.g. "유통 및 현장 (도매시장/APC/수출)")
+    remain. We normalize ONLY the visible label text, without changing anchors or counts.
+
+    Handles both markup variants:
+      1) <span class="chipTitle">...</span>
+      2) <a class="chip ...">TEXT<span class="chipN">N</span></a> (no chipTitle span)
     """
-    if not html_text or 'class="chipTitle"' not in html_text:
+    if not html_text or 'class="chipbar"' not in html_text:
         return html_text
 
-    def _repl(m: re.Match) -> str:
-        prefix, inner, suffix = m.group(1), m.group(2), m.group(3)
-        raw = html.unescape(inner or "")
-        norm = display_section_title(raw)
-        if norm == raw:
-            return m.group(0)
-        return prefix + esc(norm) + suffix
+    # Variant 1: explicit chipTitle span
+    if 'class="chipTitle"' in html_text:
+        def _repl_span(m: re.Match) -> str:
+            prefix, inner, suffix = m.group(1), m.group(2), m.group(3)
+            raw = html.unescape(inner or "")
+            norm = display_section_title(raw)
+            if norm == raw:
+                return m.group(0)
+            return prefix + esc(norm) + suffix
 
-    # chipTitle content should not include '<', so use a safe class-specific pattern
-    return re.sub(r'(<span\s+class="chipTitle">)([^<]*)(</span>)', _repl, html_text, flags=re.I)
+        html_text = re.sub(
+            r'(<span\s+class="chipTitle">)([^<]*)(</span>)',
+            _repl_span,
+            html_text,
+            flags=re.I,
+        )
+
+    # Variant 2: anchor text directly before chipN
+    def _repl_anchor(m: re.Match) -> str:
+        prefix, inner, mid = m.group(1), m.group(2), m.group(3)
+        raw = html.unescape((inner or "").strip())
+        norm = display_section_title(raw)
+        if not norm or norm == raw:
+            return m.group(0)
+        # keep a single trailing space before chipN span if it existed in the original
+        return prefix + esc(norm) + mid
+
+    html_text = re.sub(
+        r'(<a\s+[^>]*class="[^"]*\bchip\b[^"]*"[^>]*>)([^<]*?)(\s*<span\s+class="chipN")',
+        _repl_anchor,
+        html_text,
+        flags=re.I,
+    )
+    return html_text
+
+
 
 def _rebuild_missing_chipbar_from_sections(html_text: str) -> str:
     """Rebuild chipbar from section blocks when broken legacy pages lost it.
@@ -7318,153 +7515,167 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
+        #    IMPORTANT: insert as a dedicated <style id="uxPatchStyle"> at end of <head>
+        #    so it consistently overrides older pages that may have multiple <style> tags.
         # -----------------------------
         UX_VER = "20260226"
-        css_block = f"""
-    /* UX_PATCH_BEGIN v{UX_VER} */
-    .navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
-    .navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
-    /* fallback: first nav button (older pages without navArchive class) */
-    .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
-    /* layout normalization (override legacy variations) */
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
-    .sec{{margin-top:14px !important;border-radius:14px !important;}}
-    /* chipbar/chips normalization */
-    .chipbar{{border-top:1px solid var(--line);}}
-    .chipwrap{{max-width:1100px;margin:0 auto;padding:8px 14px;}}
-    .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
-    .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;background:var(--chip);
-          font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
-    .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
-    @media (max-width: 640px){{
-      .chips{{display:grid !important;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between;padding:6px 10px;font-size:12.5px}}
-      .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
-    }}
-    .swipeHint{{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}}
-    .swipeHint .pill{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}}
-    .swipeHint .arrow{{font-size:12px;opacity:.85}}
-    @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
-    .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
-    .navLoading.show{{display:flex}}
-    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08))}}
-    /* make mobile nav stable (match latest spec) */
-    @media (max-width: 840px){{
-      .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      html{{scroll-padding-top:170px}}
-      .sec{{scroll-margin-top:170px}}
-    }}
-    @media (max-width: 640px){{
-      .topin{{gap:8px}}
-      .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}}
-      .navRow > .navBtn{{height:40px;border-radius:14px}}
-      .navRow > a.navBtn:first-child{{grid-column:1 / span 1;width:100%}}
-      .navRow > .navBtn:nth-child(2){{grid-column:2}}
-      .navRow > .dateSelWrap{{grid-column:1;width:100%}}
-      .navRow > .navBtn:last-child{{grid-column:2}}
-      .dateSelWrap{{width:100%}}
-      .dateSelWrap select{{width:100%;max-width:none}}
-      /* chips: show 2 columns so counts are visible at a glance */
-      .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between}}
-    }}
-    /* UX_PATCH_END v{UX_VER} */
-"""
-        # replace existing UX_PATCH block in <style>, else insert before </style>
-        if "UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", css_block, html_new, flags=re.S)
+        css_text = f"""/* UX_PATCH_BEGIN v{UX_VER} */
+.navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
+.navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
+/* fallback: first nav button (older pages without navArchive class) */
+.navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
+
+/* layout normalization (override legacy variations) */
+.wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;box-sizing:border-box !important;}}
+.sec{{margin-top:14px !important;border-radius:14px !important;box-sizing:border-box !important;}}
+
+/* chipbar/chips normalization (match 2026-02-26 spec) */
+.chipbar{{border-top:1px solid var(--line) !important;}}
+.chipwrap{{max-width:1100px !important;margin:0 auto !important;padding:8px 14px !important;box-sizing:border-box !important;}}
+.chips{{display:flex !important;gap:8px !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;}}
+.chips::-webkit-scrollbar{{height:8px}}
+.chip{{text-decoration:none !important;border:1px solid var(--line) !important;padding:7px 10px !important;border-radius:999px !important;
+      background:var(--chip) !important;font-size:13px !important;color:#111827 !important;display:inline-flex !important;gap:8px !important;
+      align-items:center !important;min-width:0 !important;max-width:100% !important;box-sizing:border-box !important;}}
+.chipTitle{{font-weight:800 !important;min-width:0 !important;overflow:hidden !important;text-overflow:ellipsis !important;white-space:nowrap !important;}}
+.chipN{{min-width:28px !important;text-align:center !important;background:#111827 !important;color:#fff !important;
+      padding:2px 8px !important;border-radius:999px !important;font-size:12px !important;flex:0 0 auto !important;}}
+
+@media (max-width: 640px){{
+  /* show 2 columns so counts are visible at a glance, avoid horizontal overflow */
+  .chips{{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;overflow:visible !important;}}
+  .chip{{width:100% !important;justify-content:space-between !important;padding:6px 10px !important;font-size:12.5px !important;}}
+  .chipN{{min-width:24px !important;padding:0 8px !important;}}
+}}
+
+/* swipe hint + loading badge */
+.swipeHint{{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;margin-top:-2px !important;
+          color:var(--muted) !important;font-size:12px !important;opacity:.95 !important;}}
+.swipeHint .pill{{padding:3px 10px !important;border:1px solid var(--line) !important;border-radius:999px !important;
+          background:rgba(255,255,255,0.9) !important;}}
+.swipeHint .arrow{{font-size:12px !important;opacity:.85 !important;}}
+@media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none !important}} }}
+.navLoading{{display:none !important;align-items:center !important;justify-content:center !important;margin:4px 0 0 !important;
+          color:var(--muted) !important;font-size:12px !important;}}
+.navLoading.show{{display:flex !important;}}
+.navLoading .badge{{padding:3px 10px !important;border:1px solid var(--line) !important;border-radius:999px !important;
+          background:var(--btnBg, #fff) !important;box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08)) !important;}}
+
+/* make mobile nav stable (match latest spec) */
+@media (max-width: 840px){{
+  .topbar{{background:rgba(255,255,255,0.98) !important;backdrop-filter:none !important;}}
+  html{{scroll-padding-top:170px !important;}}
+  .sec{{scroll-margin-top:170px !important;}}
+}}
+@media (max-width: 640px){{
+  .topin{{gap:8px !important;}}
+  .navRow{{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;gap:8px !important;align-items:stretch !important;}}
+  .navRow > .navBtn{{height:40px !important;border-radius:14px !important;}}
+  .navRow > a.navBtn:first-child{{grid-column:1 / span 1 !important;width:100% !important;}}
+  .navRow > .navBtn:nth-child(2){{grid-column:2 !important;}}
+  .navRow > .dateSelWrap{{grid-column:1 !important;width:100% !important;}}
+  .navRow > .navBtn:last-child{{grid-column:2 !important;}}
+  .dateSelWrap{{width:100% !important;}}
+  .dateSelWrap select{{width:100% !important;max-width:none !important;}}
+}}
+/* UX_PATCH_END v{UX_VER} */""".strip()
+
+        # Remove any legacy inline UX_PATCH blocks left in old pages (avoid mixed styling)
+        html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", "", html_new, flags=re.S)
+
+        style_tag = f'<style id="uxPatchStyle">\n{css_text}\n</style>\n'
+        if 'id="uxPatchStyle"' in html_new:
+            html_new = re.sub(r'<style\s+id="uxPatchStyle"[^>]*>.*?</style>\s*', style_tag, html_new, flags=re.S | re.I)
         else:
-            html_new, n = re.subn(r"(</style>)", css_block + r"\1", html_new, count=1, flags=re.I)
-            if n == 0:
-                # no style tag? do nothing (avoid breaking)
-                pass
+            # Append at end of <head> so it overrides any previous <style> blocks
+            if re.search(r'</head>', html_new, flags=re.I):
+                html_new = re.sub(r'(</head>)', style_tag + r'\1', html_new, count=1, flags=re.I)
+            else:
+                html_new = re.sub(r'(</body>)', style_tag + r'\1', html_new, count=1, flags=re.I)
 
         # -----------------------------
         # 5) Upsert canonical swipe JS (upgrade old patched pages too)
-        # - Scope: article area (.wrap), ignore topbar interactions (chip sliding)
+        #    Scope: article area (.wrap). Ignore topbar/chips/inputs to prevent conflicts.
         # -----------------------------
-        js_block = f"""
-  <!-- UX_PATCH_BEGIN v{UX_VER} -->
-  <script>
-  (function(){{
-    try {{
-      var navRow = document.querySelector('.navRow');
-      if(!navRow) return;
-      var navBtns = navRow.querySelectorAll('a.navBtn');
-      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
+        js_inner = f"""(function(){{
+  try {{
+    var navRow = document.querySelector('.navRow');
+    if(!navRow) return;
+    var navBtns = navRow.querySelectorAll('a.navBtn');
+    var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+    var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
 
-      var navLoading = document.getElementById('navLoading');
-      var isNavigating = false;
+    var navLoading = document.getElementById('navLoading');
+    var isNavigating = false;
 
-      function hasHref(el){{ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }}
-      function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); }}
-      function hideNavLoading(){{ if(navLoading) navLoading.classList.remove('show'); }}
+    function hasHref(el){{ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }}
+    function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); }}
+    function hideNavLoading(){{ if(navLoading) navLoading.classList.remove('show'); }}
 
-      function isBlockedTarget(target){{
-        if(!target || !target.closest) return false;
-        if(target.closest('[data-swipe-ignore="1"]')) return true;
-        // block topbar gestures (nav buttons / date select / section chips)
-        if(target.closest('.topbar')) return true;
-        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
-        return false;
+    function isBlockedTarget(target){{
+      if(!target || !target.closest) return false;
+      if(target.closest('[data-swipe-ignore="1"]')) return true;
+      if(target.closest('.topbar')) return true;
+      if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+      return false;
+    }}
+
+    function navigateBy(el){{
+      if(!el || isNavigating) return;
+      if(el.tagName && el.tagName.toLowerCase()==='a'){{
+        var href = el.getAttribute('href');
+        if(href){{ isNavigating=true; showNavLoading(); window.location.href=href; return; }}
       }}
+      try{{ el.click(); }}catch(e){{}}
+    }}
 
-      function navigateBy(el){{
-        if(!el || isNavigating) return;
-        if(el.tagName && el.tagName.toLowerCase()==='a'){{
-          var href = el.getAttribute('href');
-          if(href){{ isNavigating=true; showNavLoading(); window.location.href=href; return; }}
-        }}
-        try{{ el.click(); }}catch(e){{}}
-      }}
+    var sx=0, sy=0, st=0, blocked=false;
+    var swipeArea = document.querySelector('.wrap') || document.body || document.documentElement;
 
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
+    swipeArea.addEventListener('touchstart', function(e){{
+      if(!e.touches || e.touches.length!==1) return;
+      blocked = isBlockedTarget(e.target);
+      var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+    }}, {{passive:true}});
 
-      swipeArea.addEventListener('touchstart', function(e){{
-        if(!e.touches || e.touches.length!==1) return;
-        blocked = isBlockedTarget(e.target);
-        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-      }}, {{passive:true}});
+    swipeArea.addEventListener('touchend', function(e){{
+      if(!e.changedTouches || e.changedTouches.length!==1) return;
+      if(blocked || isBlockedTarget(e.target)) return;
+      var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+      if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
+      showNavLoading();
+      if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
+    }}, {{passive:true}});
 
-      swipeArea.addEventListener('touchend', function(e){{
-        if(!e.changedTouches || e.changedTouches.length!==1) return;
-        if(blocked || isBlockedTarget(e.target)) return;
-        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-        // stronger threshold to avoid accidental navigations while scrolling
-        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-        showNavLoading();
-        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-      }}, {{passive:true}});
+    document.addEventListener('keydown', function(e){{
+      if(!e) return;
+      if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+      if(isBlockedTarget(e.target)) return;
+      if(e.key==='ArrowLeft'){{ if(hasHref(prevNav)){{ showNavLoading(); navigateBy(prevNav); }} }}
+      else if(e.key==='ArrowRight'){{ if(hasHref(nextNav)){{ showNavLoading(); navigateBy(nextNav); }} }}
+    }});
 
-      document.addEventListener('keydown', function(e){{
-        if(!e) return;
-        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-        if(isBlockedTarget(e.target)) return;
-        if(e.key==='ArrowLeft'){{ if(hasHref(prevNav)){{ showNavLoading(); navigateBy(prevNav); }} }}
-        else if(e.key==='ArrowRight'){{ if(hasHref(nextNav)){{ showNavLoading(); navigateBy(nextNav); }} }}
-      }});
+    window.addEventListener('pageshow', function(){{ isNavigating=false; hideNavLoading(); }});
+  }} catch(e){{}}
+}})();"""
 
-      window.addEventListener('pageshow', function(){{ isNavigating=false; hideNavLoading(); }});
-    }} catch(e){{}}
-  }})();
-  </script>
-  <!-- UX_PATCH_END v{UX_VER} -->
-"""
-        if "UX_PATCH_BEGIN" in html_new and "<!-- UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", js_block, html_new, flags=re.S|re.I)
+        js_block = f'<script id="uxPatchScript">\n{js_inner}\n</script>\n'
+
+        if 'id="uxPatchScript"' in html_new:
+            html_new = re.sub(r'<script\s+id="uxPatchScript"[^>]*>.*?</script>\s*', js_block, html_new, flags=re.S | re.I)
         else:
-            # remove older inline swipe scripts we previously injected (best-effort), then insert
-            # Remove legacy swipe scripts (some older versions listened on document and caused chip sliding → date navigation)
-            html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend)[\s\S]*?</script>\s*", "", html_new, flags=re.S|re.I)
-
-            html_new = re.sub(r"(</body>)", js_block + r"\1", html_new, count=1, flags=re.I)
+            # Remove legacy swipe scripts that caused chip-sliding → date navigation (best-effort)
+            html_new = re.sub(
+                r"<script>[\s\S]*?(좌우\s*스와이프|navigateBy\(|navLoading|ArrowLeft)[\s\S]*?(touchstart|touchend)[\s\S]*?</script>\s*",
+                "",
+                html_new,
+                flags=re.S | re.I,
+            )
+            html_new = re.sub(r'(</body>)', js_block + r'\1', html_new, count=1, flags=re.I)
 
         # -----------------------------
         # 6) Safety: never commit if HTML looks broken
+
         # -----------------------------
         if "</html>" not in html_new.lower() or "</body>" not in html_new.lower():
             return False
