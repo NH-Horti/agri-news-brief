@@ -4994,6 +4994,11 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
             txt = (a.title + " " + a.description).lower()
             d = normalize_host(a.domain or "")
             p = (a.press or "").strip()
+            tpc = (a.topic or "").strip()
+            # topic이 '정책' 성격이면 policy를 유지 (섹션/태그 불일치 방지)
+            if tpc and ("정책" in tpc or tpc in ("정부", "제도", "법", "관세", "예산", "지원")):
+                keep_policy.append(a)
+                continue
             # 소매 매출/판매 데이터 기반 트렌드(예: 무인 과일가게 판매 데이터)는 supply가 자연스러움
             if is_retail_sales_trend_context(txt) and (not policy_domain_override(d, txt)):
                 # supply로 재평가해서 통과할 때만 이동
@@ -5047,6 +5052,28 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
             raw_by_section["supply"] = keep_supply
             if moved_sd:
                 log.info("[REBALANCE] moved %d dist-like item(s): supply -> dist", moved_sd)
+
+
+    # -----------------------------
+    # Topic↔Section 일관성 강제 (특히 '정책' 토픽은 policy 섹션으로)
+    # -----------------------------
+    moved_topic = 0
+    for _sec_key in list(raw_by_section.keys()):
+        items = raw_by_section.get(_sec_key, []) or []
+        if not items:
+            continue
+        keep_items = []
+        for a in items:
+            tpc = (a.topic or "").strip()
+            if tpc == "정책" and a.section != "policy":
+                a.section = "policy"
+                raw_by_section.setdefault("policy", []).append(a)
+                moved_topic += 1
+                continue
+            keep_items.append(a)
+        raw_by_section[_sec_key] = keep_items
+    if moved_topic:
+        log.info("[REBALANCE] moved %d item(s) by topic override: -> policy", moved_topic)
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
@@ -5367,6 +5394,13 @@ def build_site_url(site_path: str, rel: str) -> str:
 def esc(s: str) -> str:
     return html.escape(s or "")
 
+def display_section_title(title: str) -> str:
+    # 칩바(상단 섹션 버튼)에서만 쓰는 축약 라벨
+    t = (title or "").strip()
+    if t.startswith("유통 및 현장"):
+        return "유통 및 현장"
+    return t
+
 
 def _rebuild_missing_chipbar_from_sections(html_text: str) -> str:
     """Rebuild chipbar from section blocks when broken legacy pages lost it.
@@ -5402,7 +5436,7 @@ def _rebuild_missing_chipbar_from_sections(html_text: str) -> str:
     for k, title, n, color in chips:
         parts.append(
             f'<a class="chip" style="border-color:{color};" href="#sec-{k}">'
-            f'<span class="chipTitle">{esc(title)}</span><span class="chipN">{n}</span></a>'
+            f'<span class="chipTitle">{esc(display_section_title(title))}</span><span class="chipN">{n}</span></a>'
         )
     chips_html = "\n".join(parts)
     chipbar_block = (
@@ -5675,7 +5709,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     def chip_html(k, title, n, color):
         return (
             f'<a class="chip" style="border-color:{color};" href="#sec-{k}">'
-            f'<span class="chipTitle">{esc(title)}</span><span class="chipN">{n}</span></a>'
+            f'<span class="chipTitle">{esc(display_section_title(title))}</span><span class="chipN">{n}</span></a>'
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
@@ -5723,7 +5757,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
               <div class=\"secHead\" style=\"border-left:8px solid {color};\">
                 <div class=\"secTitle\">
                   <span class=\"dotColor\" style=\"background:{color}\"></span>
-                  {esc(title)}
+                  {esc(display_section_title(title))}
                 </div>
                 <div class=\"secCount\">{len(lst)}건</div>
               </div>
@@ -5775,7 +5809,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}}
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
     .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
@@ -5788,10 +5822,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
     .navBtn:hover{{border-color:#cbd5e1}}
-    .navBtn.navArchive{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
+    .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     .navBtn.navArchive:hover{{filter:brightness(0.98)}}
     /* fallback: first nav button */
-    .navRow > a.navBtn:first-child{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
+    .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
 
     .navBtn.disabled{{opacity:.45;cursor:pointer}}
     .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
@@ -5806,13 +5840,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .chipwrap{{max-width:1100px;margin:0 auto;padding:8px 14px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{white-space:nowrap;text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
-          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center}}
+    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
     .chip:hover{{border-color:#cbd5e1}}
-    .chipTitle{{font-weight:800}}
+    .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
     .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
 
-    .sec{{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);
+    .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
           scroll-margin-top: 150px;
     }}
     .secHead{{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}}
@@ -5874,6 +5908,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
+      .chip{{padding:6px 10px;font-size:12.5px}}
+      .chipN{{min-width:24px;padding:0 8px}}
     }}
   </style>
 </head>
@@ -7263,10 +7299,27 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         UX_VER = "20260226"
         css_block = f"""
     /* UX_PATCH_BEGIN v{UX_VER} */
-    .navRow .navBtn.navArchive{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
+    .navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     .navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
     /* fallback: first nav button (older pages without navArchive class) */
-    .navRow > a.navBtn:first-child{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
+    .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
+    /* layout normalization (override legacy variations) */
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
+    .sec{{margin-top:14px !important;border-radius:14px !important;}}
+    /* chipbar/chips normalization */
+    .chipbar{{border-top:1px solid var(--line);}}
+    .chipwrap{{max-width:1100px;margin:0 auto;padding:8px 14px;}}
+    .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
+    .chips::-webkit-scrollbar{{height:8px}}
+    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;background:var(--chip);
+          font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
+    .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+    .chipN{{min-width:28px;text-align:center;background:rgba(17,24,39,0.08);padding:0 10px;border-radius:999px;font-size:12px}}
+    @media (max-width: 640px){{
+      .chips{{display:grid !important;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
+      .chip{{width:100%;justify-content:space-between;padding:6px 10px;font-size:12.5px}}
+      .chipN{{min-width:24px;padding:0 8px}}
+    }}
     .swipeHint{{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}}
     .swipeHint .pill{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}}
     .swipeHint .arrow{{font-size:12px;opacity:.85}}
@@ -7382,7 +7435,9 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", js_block, html_new, flags=re.S|re.I)
         else:
             # remove older inline swipe scripts we previously injected (best-effort), then insert
-            html_new = re.sub(r"<script>\s*\(function\(\)\{.*?좌우\s*스와이프로\s*날짜\s*이동.*?\}\)\(\);\s*</script>\s*", "", html_new, flags=re.S|re.I)
+            # Remove legacy swipe scripts (some older versions listened on document and caused chip sliding → date navigation)
+            html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend)[\s\S]*?</script>\s*", "", html_new, flags=re.S|re.I)
+
             html_new = re.sub(r"(</body>)", js_block + r"\1", html_new, count=1, flags=re.I)
 
         # -----------------------------
