@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="agri-build" content="761dad4" />
+  <title>[2026-02-11 농산물 뉴스 Brief]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
+    }
+    *{box-sizing:border-box}
+    html {
+      /* ✅ 앵커 이동 위치 보정 */
+      scroll-behavior:smooth;
+      scroll-padding-top: 150px;
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+    .navBtn.disabled{opacity:.45;cursor:pointer}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    /* sticky chip bar */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .chip{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}
+    .chip:hover{border-color:#cbd5e1}
+    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+
+    .sec{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
+          scroll-margin-top: 150px;
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top: 170px;}
+      .sec{scroll-margin-top: 170px;}
+    }
+    @media (max-width: 640px){
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      /* mobile chips: 2 columns so counts are always visible */
+      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
+      .chip{width:100%;justify-content:space-between}
+      .chip{padding:6px 10px;font-size:12.5px}
+      .chipN{min-width:24px;padding:0 8px;background:#111827;color:#fff}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-02-11 농산물 뉴스 Brief]</h1>
+        <div class="sub">기간: 2026-02-10 07:00 ~ 2026-02-11 07:00 · 기사 9건</div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" href="/agri-news-brief/archive/2026-02-10.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-11.html" selected>26-02-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (월)</option>
+          </select>
+        </div>
+        <a class="navBtn" href="/agri-news-brief/archive/2026-02-12.html">다음 ▶</a>
+      </div>
+      <div id="swipeHint" class="swipeHint" aria-hidden="true">
+        <span class="arrow">◀</span>
+        <span class="txt pill">좌우 스와이프로 날짜 이동</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+    </div>
+
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">2</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">2</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">1</span></a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    
+            <section id="sec-supply" class="sec">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">4건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">한국경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 11:02</span>
+                  <span class="dot">·</span>
+                  <span class="topic">고추</span>
+                </div>
+                <a class="btnOpen" href="https://www.hankyung.com/article/202602105897i" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">난방비 부담돼서 놔뒀더니 생육 부진…풋고추 가격 급등</div>
+              <div class="sum">난방비 부담으로 시설재배 생육이 부진해지며 주요 채소 가격이 1주일 전보다 상승했다. 풋고추는 전주 대비 16.9% 오른 kg당 1만1828원으로 상승폭이 가장 컸다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">YTN</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/11 02:20</span>
+                  <span class="dot">·</span>
+                  <span class="topic">감귤/만감</span>
+                </div>
+                <a class="btnOpen" href="https://www.ytn.co.kr/_ln/0115_202602110220233163" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">제주산 만감류 , 품질·신선도로 수입산과 경쟁</div>
+              <div class="sum">제주산 만감류는 수확 후 선별·포장해 2~3일 내 소비자 구매가 가능해 품질·신선도로 수입산과 경쟁하고 있다. 일부 농협은 만감류 전용 선과기 도입으로 유통시간 단축과 신선도 관리를 강화했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">팜&amp;마켓</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 10:26</span>
+                  <span class="dot">·</span>
+                  <span class="topic">사과</span>
+                </div>
+                <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25621" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">설 차례상 고민된다면? 가락몰이 정답… 대형마트보다 24% 저렴</div>
+              <div class="sum">가락몰이 설 장보기에서 대형마트보다 24% 저렴하다는 내용을 전했다. 채소는 생산량 증가와 양호한 작황으로 수급·가격이 안정적 전망이나, 사과 등 일부 품목은 강세가 예상된다고 했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">매일경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 13:02</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.mk.co.kr/article/11958621" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">가락시장 도매시장법인들, 샤인머스켓 1만상자 이웃에 기부</div>
+              <div class="sum">가락시장 도매시장법인들이 샤인머스켓 1만 상자를 서울사회복지공동모금회를 통해 어려운 이웃에 기부했다. 수급 불균형과 가격 하락으로 어려움을 겪는 포도 농가를 지원하기 위한 취지다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  주요 이슈 및 정책
+                </div>
+                <div class="secCount">2건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농업정보신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 11:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">호박</span>
+                </div>
+                <a class="btnOpen" href="http://www.nongup.net/news/articleView.html?idxno=32436" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">올해 4인 가족 설 차례상 차림비용 20만 3천원 선</div>
+              <div class="sum">aT 조사에서 4인 가족 설 차례상 차림비용이 20만3000원 선으로 제시됐다. 24개 품목 중 시금치·애호박·한우 등 14개 품목은 전통시장이 더 저렴했으며, 성수품 공급·할인지원 확대가 언급됐다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">서울신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/11 05:04</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.seoul.co.kr/news/peoples/2026/02/11/20260211023006?wlog_tag3=naver" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">가락시장 ‘1만 상자 샤인머스캣’ 온정</div>
+              <div class="sum">가락시장에서 샤인머스캣 1만 상자 나눔 행사가 열려 저소득층에 전달됐다. 샤인머스캣 수급 불균형과 가격 하락으로 어려운 포도 농가 지원과 설 명절 나눔 취지로 진행됐다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장
+                </div>
+                <div class="secCount">2건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">EKN</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 11:48</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+                <a class="btnOpen" href="https://www.ekn.kr/web/view.php?key=20260210029168111" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">［E-로컬뉴스］김천시,구미시, 상주시, 문경시, 성주군,고령군 소식</div>
+              <div class="sum">김천·구미·상주·문경·성주·고령 등 지자체 소식으로, 고아읍 이례리 일대 농산물 산지유통센터(APC) 조성과 공공급식 본격화 계획이 소개됐다. 해당 APC는 3월 준공 목표로 추진된다고 전했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">KJMBC</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 20:40</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://kjmbc.co.kr/NewsArticle/1504763" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림</div>
+              <div class="sum">새벽 도매시장 현장에서 채소·과일 경매 분위기는 비교적 활발하고 수산물·육류는 상대적으로 부진하다고 전했다. 출하시기가 늦어지며 2월 설을 앞두고 물량이 증가했다는 현장 발언이 담겼다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  병해충 및 방제
+                </div>
+                <div class="secCount">1건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#b45309">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">EROUN</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/10 09:38</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+                <a class="btnOpen" href="https://www.eroun.net/news/articleView.html?idxno=73020" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">고창군, &quot;농작물 병해충 예찰· 방제 협의회&quot; 열려</div>
+              <div class="sum">고창군이 농작물 병해충 예찰·방제 협의회를 열고 방제 지원사업을 논의했다. 벼 병해충 약제 지원과 무·배추 뿌리혹병, 돌발해충, 과수 탄저병, 토마토뿔나방 등 적용약제 지원 내용이 포함됐다.</div>
+            </div>
+            </div>
+            </section>
+            
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+  </div>
+
+  <script>
+    (function() {
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            window.location.href = v;
+          }
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var navBtns = navRow ? Array.prototype.slice.call(navRow.querySelectorAll("a.navBtn")) : [];
+      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        blocked = isBlockedTarget(e.target);
+        var t = e.touches[0];
+        sx = t.clientX;
+        sy = t.clientY;
+        st = Date.now();
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        if (blocked || isBlockedTarget(e.target)) return;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - sx;
+        var dy = t.clientY - sy;
+        var dt = Date.now() - st;
+
+        // accidental 방지: 더 강한 임계치
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+        showNavLoading();
+        if (dx < 0) navigateBy(nextNav);
+        else navigateBy(prevNav);
+      }, { passive: true });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
+  </script>
+  <!-- build: 761dad4 -->
+
+</body>
+</html>
