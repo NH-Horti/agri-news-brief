@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="bff470f" />
+  <meta name="agri-build" content="e5c02cd" />
   <title>[2026-02-26 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -16,7 +16,7 @@
       --btn:#1d4ed8;
       --btnHover:#1e40af;
       --btnBg:#ffffff;
-      --shadow: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow:0 4px 12px rgba(17,24,39,.08);
     }
     *{box-sizing:border-box}
     html {
@@ -29,16 +29,21 @@
     .wrap{max-width:1100px;margin:0 auto;padding:12px 14px 80px;}
     .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}
-    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
-    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
     .navBtn{display:inline-flex;align-items:center;justify-content:center;
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
     .navBtn:hover{border-color:#cbd5e1}
-    .navBtn.navArchive{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;font-weight:900}
-    .navBtn.navArchive:hover{background:#dbeafe;border-color:#60a5fa}
+    .navBtn.navArchive{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
+
     .navBtn.disabled{opacity:.45;cursor:pointer}
     .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
     select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
@@ -99,70 +104,29 @@
     @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
     .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
     .navLoading.show{display:flex}
-    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 1px 2px rgba(0,0,0,0.06))}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
     .navRow{transition:transform .18s ease, opacity .18s ease}
     .navRow.swipeActive{transition:none}
     .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
     @media (max-width: 840px){
-  .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
-  html{scroll-padding-top:170px;}
-  .sec{scroll-margin-top:170px;}
-}
-@media (max-width: 640px){
-  .topin{gap:8px}
-  .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
-  .navRow > *{min-width:0}
-  .navBtn{white-space:nowrap}
-  .navRow > .navBtn:first-child{grid-column:1}
-  .navRow > .navBtn:nth-child(2){grid-column:2}
-  .navRow > .dateSelWrap{grid-column:1;width:100%}
-  .navRow > .navBtn:last-child{grid-column:2}
-  .dateSelWrap{width:100%}
-  .dateSelWrap select{width:100%;max-width:none}
-  .chipwrap{padding:8px 14px 10px}
-  .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;-webkit-overflow-scrolling:auto}
-  .chip{width:100%;justify-content:space-between;white-space:normal}
-  .chipTitle{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .chipN{min-width:26px;padding:2px 6px}
-  html{scroll-padding-top:230px;}
-  .sec{scroll-margin-top:230px;}
-}
-  
-    
-    /* UX_PATCH_BEGIN v20260226 */
-    .navRow .navBtn.navArchive{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
-    .navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
-    /* fallback: first nav button (older pages without navArchive class) */
-    .navRow > a.navBtn:first-child{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
-    .swipeHint{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}
-    .swipeHint .pill{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}
-    .swipeHint .arrow{font-size:12px;opacity:.85}
-    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
-    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
-    .navLoading.show{display:flex}
-    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08))}
-    /* make mobile nav stable (match latest spec) */
-    @media (max-width: 840px){
       .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
-      html{scroll-padding-top:170px}
-      .sec{scroll-margin-top:170px}
+      html{scroll-padding-top: 170px;}
+      .sec{scroll-margin-top: 170px;}
     }
     @media (max-width: 640px){
       .topin{gap:8px}
-      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
-      .navRow > .navBtn{height:40px;border-radius:14px}
-      .navRow > a.navBtn:first-child{grid-column:1 / span 1;width:100%}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
       .navRow > .navBtn:nth-child(2){grid-column:2}
-      .navRow > .dateSelWrap{grid-column:1;width:100%}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
       .navRow > .navBtn:last-child{grid-column:2}
       .dateSelWrap{width:100%}
       .dateSelWrap select{width:100%;max-width:none}
-      /* chips: show 2 columns so counts are visible at a glance */
+      /* mobile chips: 2 columns so counts are always visible */
       .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
       .chip{width:100%;justify-content:space-between}
     }
-    /* UX_PATCH_END v20260226 */
-</style>
+  </style>
 </head>
 <body>
   <div class="topbar">
@@ -172,7 +136,7 @@
         <div class="sub">기간: 2026-02-25 07:00 ~ 2026-02-26 07:00 · 기사 7건</div>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive navArchive navArchive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
         <a class="navBtn" href="/agri-news-brief/archive/2026-02-25.html">◀ 이전</a>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
@@ -199,9 +163,9 @@
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1">
+    <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">주요 이슈 및 정책</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장 (도매시장/APC/수출)</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
@@ -233,7 +197,7 @@
                 <a class="btnOpen" href="https://www.nongmin.com/article/20260225500424" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">성주 참외 원예농협, ‘풍년기원제’…농가소득 증대 기원</div>
-              <div class="sum">성주 참외 원예농협이 ‘풍년기원제’를 열고 농가소득 증대를 기원했다. 경매에서 10㎏들이 3550상자 출하, 평균 8만2000원(특3단)으로 비교적 좋은 가격을 기록했다.</div>
+              <div class="sum">성주 참외 원예농협이 ‘풍년기원제’를 열고 농가소득 증대를 기원했다. 경매에서 10㎏ 3550상자 출하, 평균 경매가 8만2000원(특3단)으로 비교적 좋은 가격을 기록했다.</div>
             </div>
             
 
@@ -250,7 +214,7 @@
                 <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315113" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">강원도·강원농협, 2026년 농산물 수급 안정 대책 본격 추진</div>
-              <div class="sum">강원도와 강원농협이 2026년 농산물 수급 안정 대책을 본격 추진한다. 고추류·토마토·오이·호박·브로콜리·양배추 6개 품목에 생산·출하안정제 사업 추진과 소비 촉진 홍보를 의결했다.</div>
+              <div class="sum">강원도와 강원농협이 2026년 농산물 수급 안정 대책을 본격 추진하기로 했다. 고추류·토마토·오이·호박·브로콜리·양배추 6개 품목에 생산안정제·출하안정제 추진 및 소비 촉진 홍보를 병행한다.</div>
             </div>
             </div>
             </section>
@@ -278,7 +242,7 @@
                 <a class="btnOpen" href="http://www.edaily.co.kr/news/newspath.asp?newsid=03794966645354128" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">설 끝나자마자 뛰는 밥상 물가…한우는 20% 껑충</div>
-              <div class="sum">설 이후 밥상물가가 다시 뛰며 한우 가격이 20% 급등했다고 전했다. 사과·배·배추 등 농산물 가격도 상승세로, 단기 공급·할인뿐 아니라 수급·유통 구조의 중장기 개선 필요성이 제기됐다.</div>
+              <div class="sum">설 이후 밥상 물가가 오르며 사과·배·배추 등 농산물 가격도 상승 조짐을 보인다고 전했다. 사과 10개 2만9423원(전주 대비 +3.0%) 등 가격 변동과 함께 수급·유통 구조의 중장기 개선 필요성이 제기됐다.</div>
             </div>
             </div>
             </section>
@@ -306,7 +270,7 @@
                 <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260225075200004?input=1195m" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">서울시, 농산물 가격변동 줄인다…전국 첫 &#x27;출하비용 보전사업&#x27;</div>
-              <div class="sum">서울시가 농산물 가격변동 완화를 위해 전국 최초로 ‘출하비용 보전사업’을 추진한다. 가락시장 청과 6개 도매시장법인(공판장) 참여로, 경락가 하락 시 포장비·운송비 등 농가 부담 비용을 보전한다.</div>
+              <div class="sum">서울시가 가락시장 청과 6개 도매시장법인(공판장)과 함께 전국 첫 ‘출하비용 보전사업’을 추진한다. 도매시장 출하 농산물 경락가가 하락하면 포장비·운송비 등 농가 부담 비용 일부를 보전해 가격 변동을 줄인다는 내용이다.</div>
             </div>
             
 
@@ -323,7 +287,7 @@
                 <a class="btnOpen" href="http://www.fnnews.com/news/202602251042343505" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">전남 농산물 온라인 시장 에서도 인기...지난해 도매시장 거래액 692억원...</div>
-              <div class="sum">전남 농산물 온라인 도매시장 거래가 확대돼 지난해 도매시장 거래액이 692억원을 기록했다고 밝혔다. 청과·양곡·축산물·국산 가공품 등 202개 품목이 거래되며, 전남도는 산지 참여 확대에 주력했다.</div>
+              <div class="sum">전남 농산물 온라인 도매시장 거래가 확대돼 지난해 거래액이 692억원을 기록했다고 전했다. 청과·양곡·축산물·국산 가공품 등 202개 품목이 거래되며, 전남도는 산지 참여 유도 등 온라인 도매시장 활성화를 추진했다.</div>
             </div>
             </div>
             </section>
@@ -351,7 +315,7 @@
                 <a class="btnOpen" href="https://www.newsis.com/view/NISX20260225_0003526295" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[고창소식]3월 준공 &#x27;청년 농업인 스마트팜&#x27; 입주자 모집 등</div>
-              <div class="sum">뉴시스 고창소식으로 고창군이 농작물 병해충 피해 예방을 위한 방제 약제 지원 계획을 안내했다. 과수화상병·과수탄저병·토마토뿔나방·복숭아심식나방·무/배추 뿌리혹병·돌발해충 등이 지원 대상이다.</div>
+              <div class="sum">뉴시스 고창소식으로, 고창군이 농작물 병해충 피해 예방을 위한 방제 약제 지원 신청을 안내했다. 과수화상병·과수 탄저병·토마토뿔나방·복숭아 심식나방·무배추 뿌리혹병·돌발해충 등이 지원 대상이다.</div>
             </div>
             
 
@@ -368,7 +332,7 @@
                 <a class="btnOpen" href="https://www.eroun.net/news/articleView.html?idxno=74094" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">고창군, 농작물 병해충 방제 약제 지원 신청 접수</div>
-              <div class="sum">고창군이 농작물 병해충 방제 약제 지원 신청을 25일부터 접수한다. 과수화상병·토마토뿔나방·복숭아심식나방은 3월6일, 과수탄저병·무/배추 뿌리혹병·돌발해충은 3월13일까지 신청받는다.</div>
+              <div class="sum">고창군이 돌발해충 등 농작물 병해충 방제 약제 지원 신청을 접수한다. 과수화상병·토마토뿔나방·복숭아 심식나방은 3월 6일까지, 과수 탄저병·무배추 뿌리혹병·돌발해충은 3월 13일까지 신청받는다.</div>
             </div>
             </div>
             </section>
@@ -383,7 +347,11 @@
         sel.setAttribute("data-swipe-ignore", "1");
         sel.addEventListener("change", function() {
           var v = sel.value;
-          if (v) window.location.href = v;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            window.location.href = v;
+          }
         });
       }
 
@@ -397,11 +365,11 @@
         });
       });
 
-      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 + 인디케이터 + 미세 피드백
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
       var navRow = document.querySelector(".navRow");
-      var navBtns = Array.prototype.slice.call(document.querySelectorAll(".navRow .navBtn"));
+      var navBtns = navRow ? Array.prototype.slice.call(navRow.querySelectorAll("a.navBtn")) : [];
       var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 4 ? navBtns[3] : (navBtns.length >= 3 ? navBtns[2] : null);
+      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
       var swipeHint = document.getElementById("swipeHint");
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
@@ -411,13 +379,20 @@
       }
 
       function showNavLoading() {
-        if (!navLoading) return;
-        navLoading.classList.add("show");
+        if (navLoading) navLoading.classList.add("show");
       }
 
       function hideNavLoading() {
-        if (!navLoading) return;
-        navLoading.classList.remove("show");
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
       }
 
       function navigateBy(el) {
@@ -431,160 +406,49 @@
             return;
           }
         }
-        el.click();
-      }
-
-      function isEditableTarget(target) {
-        return !!(target && target.closest && target.closest("a, button, select, input, textarea, [contenteditable='true'], [data-swipe-ignore='1'], .chipbar, .chipbar *"));
-      }
-
-      // 모바일/터치 환경에서만 힌트 표시 (최초 1회, 자동 숨김)
-      function maybeShowSwipeHint() {
-        if (!swipeHint) return;
-        var touchLike = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-        if (!touchLike) return;
-        if (!hasHref(prevNav) && !hasHref(nextNav)) return;
         try {
-          if (window.localStorage && localStorage.getItem("agri_swipe_hint_seen") === "1") return;
+          el.click();
         } catch (e) {}
-        swipeHint.classList.add("show");
-        window.setTimeout(function() {
-          swipeHint.classList.add("hide");
-        }, 2600);
-        window.setTimeout(function() {
-          swipeHint.classList.remove("show");
-          swipeHint.classList.remove("hide");
-        }, 3100);
-        try {
-          if (window.localStorage) localStorage.setItem("agri_swipe_hint_seen", "1");
-        } catch (e) {}
-      }
-
-      function flashSwipeHint(direction) {
-        if (!swipeHint) return;
-        var touchLike = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-        if (!touchLike) return;
-        swipeHint.classList.remove("hide");
-        swipeHint.classList.add("show");
-        var txt = swipeHint.querySelector(".txt");
-        if (txt) {
-          txt.textContent = direction === "next" ? "← 스와이프: 다음 날짜" : "→ 스와이프: 이전 날짜";
-          window.clearTimeout(flashSwipeHint._t);
-          flashSwipeHint._t = window.setTimeout(function() {
-            txt.textContent = "좌우 스와이프로 날짜 이동";
-            swipeHint.classList.add("hide");
-            window.setTimeout(function() {
-              swipeHint.classList.remove("show");
-              swipeHint.classList.remove("hide");
-            }, 220);
-          }, 900);
-        }
       }
 
       function resetNavRowFeedback() {
         if (!navRow) return;
-        navRow.classList.remove("swipeActive");
-        navRow.classList.add("swipeSettling");
         navRow.style.transform = "";
         navRow.style.opacity = "";
-        window.clearTimeout(resetNavRowFeedback._t);
-        resetNavRowFeedback._t = window.setTimeout(function() {
-          if (!navRow) return;
-          navRow.classList.remove("swipeSettling");
-        }, 220);
       }
 
-      var sx = 0, sy = 0, st = 0, lastDx = 0, trackingSwipe = false, blockedSwipe = false;
-      var swipeArea = document.querySelector(".wrap") || document.querySelector(".topbar") || document.documentElement || document.body || document;
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
       swipeArea.addEventListener("touchstart", function(e) {
         if (!e.touches || e.touches.length !== 1) return;
-        var target = e.target;
-        blockedSwipe = isEditableTarget(target);
-        trackingSwipe = !blockedSwipe;
+        blocked = isBlockedTarget(e.target);
         var t = e.touches[0];
-        sx = t.clientX; sy = t.clientY; st = Date.now();
-        lastDx = 0;
-      }, {passive:true});
-
-      swipeArea.addEventListener("touchmove", function(e) {
-        if (!trackingSwipe || blockedSwipe || !e.touches || e.touches.length !== 1) return;
-        var t = e.touches[0];
-        var dx = t.clientX - sx;
-        var dy = t.clientY - sy;
-
-        // 수평 제스처로 판단되기 전에는 반응하지 않음
-        if (Math.abs(dx) < 12) return;
-        if (Math.abs(dx) < Math.abs(dy) * 1.05) return;
-
-        lastDx = dx;
-        if (navRow) {
-          navRow.classList.add("swipeActive");
-          navRow.classList.remove("swipeSettling");
-          var limited = Math.max(-16, Math.min(16, dx * 0.12));
-          navRow.style.transform = "translateX(" + limited + "px)";
-          navRow.style.opacity = "0.98";
-        }
-      }, {passive:true});
-
-      swipeArea.addEventListener("touchcancel", function() {
-        trackingSwipe = false;
-        blockedSwipe = false;
-        resetNavRowFeedback();
-      }, {passive:true});
+        sx = t.clientX;
+        sy = t.clientY;
+        st = Date.now();
+      }, { passive: true });
 
       swipeArea.addEventListener("touchend", function(e) {
-        if (!e.changedTouches || e.changedTouches.length !== 1) {
-          trackingSwipe = false;
-          blockedSwipe = false;
-          resetNavRowFeedback();
-          return;
-        }
-
-        var target = e.target;
-        if (blockedSwipe || isEditableTarget(target)) {
-          trackingSwipe = false;
-          blockedSwipe = false;
-          resetNavRowFeedback();
-          return;
-        }
-
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        if (blocked || isBlockedTarget(e.target)) return;
         var t = e.changedTouches[0];
         var dx = t.clientX - sx;
         var dy = t.clientY - sy;
         var dt = Date.now() - st;
-        trackingSwipe = false;
-        blockedSwipe = false;
 
-        // 너무 느리거나, 수직 스크롤 성격이 강하면 무시
-        if (dt > 800 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.3) {
-          resetNavRowFeedback();
-          return;
-        }
+        // accidental 방지: 더 강한 임계치
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        // 왼쪽 스와이프 => 다음 날짜, 오른쪽 스와이프 => 이전 날짜
-        if (dx < 0) {
-          flashSwipeHint("next");
-          showNavLoading();
-          navigateBy(nextNav);
-        } else {
-          flashSwipeHint("prev");
-          showNavLoading();
-          navigateBy(prevNav);
-        }
+        showNavLoading();
+        if (dx < 0) navigateBy(nextNav);
+        else navigateBy(prevNav);
+      }, { passive: true });
 
-        // 실제 이동이 없거나 막힌 경우를 대비한 UI 복구
-        window.setTimeout(function() {
-          if (!isNavigating) hideNavLoading();
-          resetNavRowFeedback();
-        }, 120);
-      }, {passive:true});
-
-      // ✅ (5) 데스크톱 보너스 UX: 좌/우 화살표 키로 날짜 이동 (입력 중/수정 중 제외)
       document.addEventListener("keydown", function(e) {
         if (!e) return;
         if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-        if (isEditableTarget(e.target)) return;
+        if (isBlockedTarget(e.target)) return;
         if (e.key === "ArrowLeft") {
           if (hasHref(prevNav)) {
             showNavLoading();
@@ -598,86 +462,31 @@
         }
       });
 
-      // 페이지 이동이 취소되거나 히스토리 복귀 시 로딩 배지 정리
       window.addEventListener("pageshow", function() {
         isNavigating = false;
         hideNavLoading();
         resetNavRowFeedback();
       });
 
-      maybeShowSwipeHint();
-    })();
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
   </script>
-  <!-- build: bff470f -->
+  <!-- build: e5c02cd -->
 
-
-  
-  <!-- UX_PATCH_BEGIN v20260226 -->
-  <script>
-  (function(){
-    try {
-      var navRow = document.querySelector('.navRow');
-      if(!navRow) return;
-      var navBtns = navRow.querySelectorAll('a.navBtn');
-      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
-
-      var navLoading = document.getElementById('navLoading');
-      var isNavigating = false;
-
-      function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
-      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
-      function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
-
-      function isBlockedTarget(target){
-        if(!target || !target.closest) return false;
-        if(target.closest('[data-swipe-ignore="1"]')) return true;
-        // block topbar gestures (nav buttons / date select / section chips)
-        if(target.closest('.topbar')) return true;
-        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
-        return false;
-      }
-
-      function navigateBy(el){
-        if(!el || isNavigating) return;
-        if(el.tagName && el.tagName.toLowerCase()==='a'){
-          var href = el.getAttribute('href');
-          if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
-        }
-        try{ el.click(); }catch(e){}
-      }
-
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
-
-      swipeArea.addEventListener('touchstart', function(e){
-        if(!e.touches || e.touches.length!==1) return;
-        blocked = isBlockedTarget(e.target);
-        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-      }, {passive:true});
-
-      swipeArea.addEventListener('touchend', function(e){
-        if(!e.changedTouches || e.changedTouches.length!==1) return;
-        if(blocked || isBlockedTarget(e.target)) return;
-        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-        // stronger threshold to avoid accidental navigations while scrolling
-        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-        showNavLoading();
-        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-      }, {passive:true});
-
-      document.addEventListener('keydown', function(e){
-        if(!e) return;
-        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-        if(isBlockedTarget(e.target)) return;
-        if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav); } }
-        else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav); } }
-      });
-
-      window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
-    } catch(e){}
-  })();
-  </script>
-  <!-- UX_PATCH_END v20260226 -->
 </body>
 </html>
