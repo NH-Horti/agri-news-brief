@@ -132,8 +132,62 @@ KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
+
+# 최소 기사 수(섹션별)
+MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", os.getenv("MIN_ARTICLES_PER_SECTION", "0")) or 0)
+MIN_PER_SECTION = max(0, min(MIN_PER_SECTION, MAX_PER_SECTION))
+
+# 기존 ENV(MAX_PAGES_PER_QUERY)는 "상한(cap)"으로만 유지한다.
+# - 기본 수집은 1페이지 유지
+# - 필요할 때만 추가 페이지(2..N)를 조건부로 호출
 MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
 MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
+
+# --- Conditional pagination safety (BASE=1 page, only use extra pages when needed)
+# ✅ daily_v7.yml과 정합:
+# - MAX_PAGES_PER_QUERY는 워크플로우/운영에서 넉넉히 잡아도 되고(예: 4),
+#   본 코드는 이를 '최대 허용치'로만 사용한다.
+# - 기본은 1페이지, 섹션별 후보 풀이 부족할 때만 2페이지(start=51) 등을 추가 호출한다.
+COND_PAGING_BASE_PAGES = int(os.getenv("COND_PAGING_BASE_PAGES", "1") or 1)
+COND_PAGING_BASE_PAGES = max(1, min(COND_PAGING_BASE_PAGES, MAX_PAGES_PER_QUERY))
+
+# 기본값은 2페이지까지만(=1→2) 보강하되,
+# 필요 시 ENV로 늘릴 수 있게 한다(상한은 MAX_PAGES_PER_QUERY).
+COND_PAGING_MAX_PAGES = int(os.getenv("COND_PAGING_MAX_PAGES", "2") or 2)
+COND_PAGING_MAX_PAGES = max(COND_PAGING_BASE_PAGES, min(COND_PAGING_MAX_PAGES, MAX_PAGES_PER_QUERY))
+COND_PAGING_ENABLED = (COND_PAGING_MAX_PAGES > COND_PAGING_BASE_PAGES)
+
+# 섹션당 '추가 호출'에 참여할 쿼리 수 상한(기본: MAX_PER_SECTION+1)
+_default_qcap = max(3, min(10, MAX_PER_SECTION + 1))
+COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION", str(_default_qcap)) or _default_qcap)
+COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION, 25))
+
+# 전체 런에서 추가 호출 예산(기본: qcap*2)
+_default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
+COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = int(os.getenv("COND_PAGING_EXTRA_CALL_BUDGET_TOTAL", str(_default_budget)) or _default_budget)
+COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = max(0, min(COND_PAGING_EXTRA_CALL_BUDGET_TOTAL, 80))
+
+# 후보가 충분히 많은데(예: 50개+) 선택이 적은 날은 '품질이 낮은 날'일 가능성이 크므로
+# 추가 페이지를 무의미하게 호출하지 않도록 상한을 둔다.
+_default_trigger_cap = max(25, min(120, MAX_PER_SECTION * 8))
+COND_PAGING_TRIGGER_CANDIDATE_CAP = int(os.getenv("COND_PAGING_TRIGGER_CANDIDATE_CAP", str(_default_trigger_cap)) or _default_trigger_cap)
+COND_PAGING_TRIGGER_CANDIDATE_CAP = max(5, min(COND_PAGING_TRIGGER_CANDIDATE_CAP, 250))
+
+_COND_PAGING_LOCK = threading.Lock()
+_COND_PAGING_EXTRA_CALLS_USED = 0
+
+def _cond_paging_take_budget(n: int = 1) -> bool:
+    """Return True if we can spend extra-page call budget (thread-safe)."""
+    global _COND_PAGING_EXTRA_CALLS_USED
+    if not COND_PAGING_ENABLED:
+        return False
+    n = max(1, int(n or 1))
+    with _COND_PAGING_LOCK:
+        if _COND_PAGING_EXTRA_CALLS_USED + n > COND_PAGING_EXTRA_CALL_BUDGET_TOTAL:
+            return False
+        _COND_PAGING_EXTRA_CALLS_USED += n
+        return True
+
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
 DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25"))
@@ -310,6 +364,8 @@ BACKFILL_REBUILD_DAYS = max(0, min(BACKFILL_REBUILD_DAYS, 31))
 BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
+BACKFILL_REBUILD_CREATE_MISSING = os.getenv("BACKFILL_REBUILD_CREATE_MISSING", "false").strip().lower() in ("1", "true", "yes", "y")
+
 
 
 # UX patch (과거 아카이브에 UI/UX 업데이트를 '패치'로 반영: 스와이프/로딩/스티키 nav 등)
@@ -4691,70 +4747,92 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
     return out
 
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
-    queries = section_conf["queries"]
+    """Collect candidates for a section.
+
+    기본 동작은 1페이지(=기존과 동일)이며, 아래 조건을 만족할 때에만 일부 쿼리에 대해 2페이지(start=51)를 추가 호출한다.
+    - COND_PAGING_ENABLED(상한 2페이지 허용) AND
+    - 후보 풀(pool: dynamic threshold 이상)이 max_n 미만 AND
+    - 후보 개수 자체가 너무 적음(=품질 문제가 아니라 풀 부족 가능성) AND
+    - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
+    """
+    queries = section_conf.get("queries") or []
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
-    def fetch(q: str):
-        return q, naver_news_search_paged(q, display=50, pages=MAX_PAGES_PER_QUERY, sort="date")
+    section_key = str(section_conf.get("key") or "")
+    max_n = MAX_PER_SECTION
 
-    max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
-    futures = []
-    with ThreadPoolExecutor(max_workers=max_workers) as ex:
-        for q in queries:
-            futures.append(ex.submit(fetch, q))
+    hits_by_query: dict[str, int] = {}
 
-        for fut in as_completed(futures):
-            try:
-                _q, data = fut.result()
-            except Exception as e:
-                log.warning("[WARN] query failed: %s", e)
+    def _ingest_naver_items(q: str, data: dict):
+        nonlocal items, _local_dedupe
+        if not isinstance(data, dict):
+            return
+        for it in (data.get("items", []) or []):
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            origin = strip_tracking_params(it.get("originallink", "") or link)
+            pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+
+            if pub < start_kst or pub >= end_kst:
                 continue
 
-            for it in data.get("items", []):
-                title = clean_text(it.get("title", ""))
-                desc = clean_text(it.get("description", ""))
-                link = strip_tracking_params(it.get("link", "") or "")
-                origin = strip_tracking_params(it.get("originallink", "") or link)
-                pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+            dom = domain_of(origin) or domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
 
-                if pub < start_kst or pub >= end_kst:
+            press = press_name_from_url(origin or link)
+            if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+
+            canon = canonicalize_url(origin or link)
+            title_key = norm_title_key(title)
+            topic = extract_topic(title, desc)
+            norm_key = make_norm_key(canon, press, title_key)
+
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+
+            art = Article(
+                section=section_key,
+                title=title,
+                description=desc,
+                link=link,
+                originallink=origin,
+                pub_dt_kst=pub,
+                domain=dom,
+                press=press,
+                norm_key=norm_key,
+                title_key=title_key,
+                canon_url=canon,
+                topic=topic,
+            )
+            art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+            items.append(art)
+            hits_by_query[q] = hits_by_query.get(q, 0) + 1
+
+    # -----------------------------
+    # 1) Base pass: always 1 page
+    # -----------------------------
+    def fetch_page1(q: str):
+        return q, naver_news_search_paged(q, display=50, pages=COND_PAGING_BASE_PAGES, sort="date")
+
+    if queries:
+        max_workers = min(NAVER_MAX_WORKERS, max(1, len(queries)))
+        futures = []
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            for q in queries:
+                futures.append(ex.submit(fetch_page1, q))
+
+            for fut in as_completed(futures):
+                try:
+                    _q, data = fut.result()
+                except Exception as e:
+                    log.warning("[WARN] query failed: %s", e)
                     continue
+                _ingest_naver_items(_q, data)
 
-                dom = domain_of(origin) or domain_of(link)
-                if not dom or is_blocked_domain(dom):
-                    continue
-
-                press = press_name_from_url(origin or link)
-                if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
-                    continue
-
-                canon = canonicalize_url(origin or link)
-                title_key = norm_title_key(title)
-                topic = extract_topic(title, desc)
-                norm_key = make_norm_key(canon, press, title_key)
-
-                if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
-                    continue
-
-                art = Article(
-                    section=section_conf["key"],
-                    title=title,
-                    description=desc,
-                    link=link,
-                    originallink=origin,
-                    pub_dt_kst=pub,
-                    domain=dom,
-                    press=press,
-                    norm_key=norm_key,
-                    title_key=title_key,
-                    canon_url=canon,
-                    topic=topic,
-                )
-                art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
-                items.append(art)
-
-    items.sort(key=_sort_key_major_first, reverse=True)
     # Optional RSS candidates (신뢰 소스 보강)
     try:
         items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
@@ -4763,9 +4841,100 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
     # 최종 안전장치: 수집 경로(RSS/추가소스)와 무관하게 윈도우 밖 기사는 제외
     items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+    items.sort(key=_sort_key_major_first, reverse=True)
+
+    # -----------------------------
+    # 2) Conditional extra pass: only when pool is lacking
+    # -----------------------------
+    try:
+        if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
+            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
+            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                thr = _dynamic_threshold(candidates_sorted, section_key)
+                pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+
+                # 최소 목표(환경설정 반영): MIN_PER_SECTION이 0이면 3을 기본으로
+                min_n = (MIN_PER_SECTION if MIN_PER_SECTION > 0 else 3)
+                min_n = max(1, min(min_n, max_n))
+
+                # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
+                need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
+                if need_more:
+                    # 어떤 쿼리에 추가 페이지를 붙일지 선택
+                    # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
+                    # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
+                    _qpos = {q: i for i, q in enumerate(queries)}
+                    ranked = sorted(list(queries), key=lambda q: (hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
+
+                    picked: list[str] = []
+                    for q in ranked:
+                        if hits_by_query.get(q, 0) <= 0:
+                            continue
+                        picked.append(q)
+                        if len(picked) >= COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION:
+                            break
+
+                    min_seed = min(3, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION)
+                    if len(picked) < min_seed:
+                        for q in queries:
+                            if q in picked:
+                                continue
+                            picked.append(q)
+                            if len(picked) >= min_seed:
+                                break
+
+                    # 추가 페이지 수집 (2..COND_PAGING_MAX_PAGES) — 예산/조기종료 포함
+                    extra_added = 0
+                    pages_tried = 0
+
+                    for q in picked:
+                        # 이미 충분해지면 그만
+                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                        thr = _dynamic_threshold(candidates_sorted, section_key)
+                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+                        if pool_cnt >= max_n:
+                            break
+
+                        for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
+                            if not _cond_paging_take_budget(1):
+                                break
+                            st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
+                            pages_tried += 1
+                            try:
+                                dataN = naver_news_search(q, display=50, start=st, sort="date")
+                            except Exception as e:
+                                log.warning("[WARN] query page%d failed: %s", p, e)
+                                continue
+
+                            before = len(items)
+                            _ingest_naver_items(q, dataN)
+                            extra_added += max(0, len(items) - before)
+
+                            # 조기 종료: pool이 충분해지면 그만
+                            candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                            thr = _dynamic_threshold(candidates_sorted, section_key)
+                            pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+
+                            # 후보가 충분히 커졌거나 pool 목표 도달 시 중단
+                            if pool_cnt >= max_n or len(items) >= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                                break
+
+                        if not COND_PAGING_ENABLED:
+                            break
+
+                    if extra_added > 0:
+                        log.info(
+                            "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
+                            section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
+                        )
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items.sort(key=_sort_key_major_first, reverse=True)
+    except Exception:
+        # extra pass should never break the pipeline
+        pass
 
     return items
-
 
 # -----------------------------
 # Referenced reports (KREI 이슈+ 등) 자동 포함
@@ -6020,22 +6189,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (navLoading) navLoading.classList.remove("show");
       }}
 
-
-      function _navMsg(el, fallback) {{
-        try {{
-          var msg = (el && (el.getAttribute("data-msg") || el.getAttribute("title") || "")) || "";
-          msg = (msg || "").trim();
-          if (!msg) msg = (fallback || "").trim();
-          if (!msg) msg = "다음 브리핑이 없습니다.";
-          return msg;
-        }} catch (e) {{
-          return (fallback || "다음 브리핑이 없습니다.");
-        }}
-      }}
-
-      function showNoBriefing(el, fallback) {{
-        try {{ window.alert(_navMsg(el, fallback)); }} catch (e) {{}}
-      }}
       function isBlockedTarget(target) {{
         if (!target || !target.closest) return false;
         if (target.closest('[data-swipe-ignore="1"]')) return true;
@@ -6090,14 +6243,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        if (dx < 0) {{
-          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
-          else {{ showNoBriefing(nextNav, "다음 브리핑이 없습니다."); }}
-        }} else {{
-          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
-          else {{ showNoBriefing(prevNav, "이전 브리핑이 없습니다."); }}
-        }}
-}}, {{ passive: true }});
+        showNavLoading();
+        if (dx < 0) navigateBy(nextNav);
+        else navigateBy(prevNav);
+      }}, {{ passive: true }});
 
       document.addEventListener("keydown", function(e) {{
         if (!e) return;
@@ -7600,17 +7749,40 @@ def backfill_rebuild_recent_archives(
         log.warning("[BACKFILL] no available archive dates found; skip backfill rebuild")
         return search_idx
 
-    # rebuild targets: report_date 제외, 과거 N일 중 실제 파일이 있는 날짜만
+    # rebuild targets
+    # - 기본: 과거 N일 중 '기존 파일이 있는 날짜만' 재생성
+    # - BACKFILL_REBUILD_CREATE_MISSING=true 인 경우: 과거 N일 범위의 (영업일) 날짜를 '파일 유무와 무관하게' 생성/재생성
     targets: list[str] = []
+    create_missing = bool(BACKFILL_REBUILD_CREATE_MISSING)
+
     for i in range(1, days + 1):
         d = (today - timedelta(days=i)).isoformat()
-        if d not in avail:
+
+        # 주말/휴일은 기본적으로 스킵
+        try:
+            dd = date.fromisoformat(d)
+        except Exception:
+            continue
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(dd)):
+            continue
+
+        if (not create_missing) and (d not in avail):
             continue
         targets.append(d)
 
     if not targets:
         return search_idx
 
+    # 페이지 내 네비/셀렉트에 넣을 날짜 목록(재생성 대상 포함)
+    nav_dates_desc = sorted(set(avail).union(set(targets)).union({report_date}), reverse=True)
+
+    log.info(
+        "[BACKFILL] available archives=%d | rebuild %d day(s) (create_missing=%s): %s",
+        len(avail),
+        len(targets),
+        "true" if create_missing else "false",
+        ", ".join(targets),
+    )
     log.info("[BACKFILL] available archives=%d | rebuild %d day(s): %s", len(avail), len(targets), ", ".join(targets))
 
     for d in targets:
@@ -7624,11 +7796,16 @@ def backfill_rebuild_recent_archives(
             if not BACKFILL_REBUILD_SKIP_OPENAI:
                 bf_by_section = fill_summaries(bf_by_section, cache=summary_cache)
 
-            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, archive_dates_desc, site_path)
+            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, nav_dates_desc, site_path)
 
             bf_path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
-            raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
+            sha_old = None
+            try:
+                _raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
+            except Exception:
+                sha_old = None
             github_put_file(repo, bf_path, bf_html, token, f"Backfill rebuild {d}", sha=sha_old, branch="main")
+            avail.add(d)
 
             # search index update for that day
             search_idx = update_search_index(search_idx, d, bf_by_section, site_path)
@@ -7705,6 +7882,27 @@ def main():
     dates_desc = sorted(clean_dates, reverse=True)
 
     # ✅ (3,4) 최근 N개는 실제 파일 존재 여부를 확인해 UI 링크 404 제거
+
+    # --- BACKFILL REBUILD HOOK (PURGE+REBUILD 지원) ---
+    # Purge(원격 삭제)는 workflow 단계에서 수행됩니다.
+    # 여기서는 삭제된(또는 누락된) 최근 N일 아카이브를 다시 생성/재생성합니다.
+    if BACKFILL_REBUILD_DAYS and int(BACKFILL_REBUILD_DAYS) > 0:
+        try:
+            _tmp_search_idx = {}
+            _tmp_cache = {}
+            backfill_rebuild_recent_archives(
+                repo=repo,
+                token=GH_TOKEN,
+                report_date=report_date,
+                archive_dates_desc=dates_desc,
+                site_path=site_path,
+                summary_cache=_tmp_cache,
+                search_idx=_tmp_search_idx,
+            )
+        except Exception as e:
+            log.warning("[WARN] backfill_rebuild_recent_archives failed: %s", e)
+    # --- END BACKFILL REBUILD HOOK ---
+
     verified_desc = verify_recent_archive_dates(repo, GH_TOKEN, dates_desc, report_date, verify_n=120)
 
     # manifest에는 "검증된 최근" + "오래된 tail"(검증 생략)만 유지
