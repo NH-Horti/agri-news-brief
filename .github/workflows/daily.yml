@@ -12,7 +12,7 @@ on:
       ux_patch_days:
         description: "최근 N일 아카이브에 UI/UX 패치 적용 (스와이프/스티키/로딩). 0이면 OFF"
         required: false
-        default: "30"
+        default: "0"
       force_report_date:
         description: "보고서 날짜(YYYY-MM-DD). 비우면 자동(07:00 컷오프 기준)"
         required: false
@@ -126,7 +126,8 @@ jobs:
           FORCE_END_NOW: "false"
 
           # UX patch (기존 아카이브 UI/UX 패치)
-          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '30' }}"
+          # ✅ schedule 실행에서도 UX patch가 자동으로 누적되지 않도록 기본값을 0(OFF)으로 둡니다.
+          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '0' }}"
 
           # Backfill rebuild (최근 N일 아카이브 재생성)
           BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '0' }}"
