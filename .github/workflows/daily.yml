@@ -118,7 +118,7 @@ jobs:
           fi
 
           # 2) Build deletion candidates: YYYY-MM-DD.html files where YYYY-MM-DD < BEFORE
-CAND_B64_LIST="$(echo "${RESP}" | jq -r --arg before "${BEFORE}" '
+          CAND_B64_LIST="$(echo "${RESP}" | jq -r --arg before "${BEFORE}" '
             .[]
             | select(.type=="file")
             | select(.name|endswith(".html"))
