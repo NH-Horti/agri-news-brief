@@ -5788,10 +5788,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
             background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}}
     .navBtn:hover{{border-color:#cbd5e1}}
-    .navBtn.navArchive{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
-    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    .navBtn.navArchive{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
+    .navBtn.navArchive:hover{{filter:brightness(0.98)}}
     /* fallback: first nav button */
-    .navRow > a.navBtn:first-child{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}
+    .navRow > a.navBtn:first-child{{background:#eef5ff;border-color:#b7d4ff;color:#1d4ed8;font-weight:800}}
 
     .navBtn.disabled{{opacity:.45;cursor:pointer}}
     .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
@@ -5872,8 +5872,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .dateSelWrap{{width:100%}}
       .dateSelWrap select{{width:100%;max-width:none}}
       /* mobile chips: 2 columns so counts are always visible */
-      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
-      .chip{width:100%;justify-content:space-between}
+      .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
+      .chip{{width:100%;justify-content:space-between}}
     }}
   </style>
 </head>
