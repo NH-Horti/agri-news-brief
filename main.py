@@ -161,6 +161,11 @@ COND_PAGING_ENABLED = (COND_PAGING_MAX_PAGES > COND_PAGING_BASE_PAGES)
 _default_qcap = max(3, min(10, MAX_PER_SECTION + 1))
 COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION", str(_default_qcap)) or _default_qcap)
 COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION, 25))
+# pool 부족 시 1페이지 추가 수집에 사용할 '보강 쿼리' 수 상한(기본: 6)
+_default_fbqcap = max(0, min(10, MAX_PER_SECTION + 1))
+COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION", str(min(6, _default_fbqcap))) or 6)
+COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION, 20))
+
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
 _default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
@@ -363,14 +368,9 @@ BACKFILL_REBUILD_DAYS = int((os.getenv("BACKFILL_REBUILD_DAYS", "0") or "0").str
 BACKFILL_REBUILD_DAYS_MAX = int((os.getenv("BACKFILL_REBUILD_DAYS_MAX", "120") or "120").strip() or 120)
 BACKFILL_REBUILD_DAYS_MAX = max(0, min(BACKFILL_REBUILD_DAYS_MAX, 400))
 BACKFILL_REBUILD_DAYS = max(0, min(BACKFILL_REBUILD_DAYS, BACKFILL_REBUILD_DAYS_MAX))
-BACKFILL_REBUILD_CREATE_MISSING = os.getenv("BACKFILL_REBUILD_CREATE_MISSING", "false").strip().lower() in ("1", "true", "yes", "y")
+BACKFILL_REBUILD_CREATE_MISSING = os.getenv("BACKFILL_REBUILD_CREATE_MISSING", "false").strip().lower() in ("1","true","yes","y")
 BACKFILL_START_DATE = (os.getenv("BACKFILL_START_DATE", "") or "").strip()
 BACKFILL_END_DATE = (os.getenv("BACKFILL_END_DATE", "") or "").strip()
-# safety: in case of partial merges, ensure globals exist
-globals().setdefault("BACKFILL_START_DATE", BACKFILL_START_DATE)
-globals().setdefault("BACKFILL_END_DATE", BACKFILL_END_DATE)
-globals().setdefault("BACKFILL_REBUILD_DAYS_MAX", BACKFILL_REBUILD_DAYS_MAX)
-globals().setdefault("BACKFILL_REBUILD_CREATE_MISSING", BACKFILL_REBUILD_CREATE_MISSING)
 BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
@@ -828,6 +828,29 @@ COMMODITY_TOPICS = [
     ("수출/검역", ["수출", "검역", "통관", "수입검역", "잔류농약"]),
     ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정"]),
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해"]),
+]
+# -----------------------------
+# Cross-topic signals (generalized)
+# -----------------------------
+# 전체 토픽 키워드(소문자). 특정 기사/이슈에 맞춘 하드코딩이 아니라,
+# '품목(원예) 신호' + '무역/정책 신호'가 함께 나올 때 핵심성을 일반적으로 올려준다.
+ALL_TOPIC_TERMS_L = sorted({
+    (t or "").strip().lower()
+    for _tn, _terms in TOPICS
+    for t in (_terms or [])
+    if (t or "").strip()
+})
+
+TRADE_POLICY_TERMS_L = [
+    "수입", "수입산", "수입 과일", "수입 농산물",
+    "관세", "할당관세", "무관세", "fta", "통관", "검역", "수입검역",
+    "보세", "보세구역", "반입", "반출", "수입신고", "관세청",
+]
+
+TRADE_IMPACT_TERMS_L = [
+    "잠식", "대체", "경쟁", "타격", "우려", "압박", "충격",
+    "가격 하락", "가격 상승", "수급", "물량", "재고", "출하",
+    "국내산", "농가", "생산자", "산지",
 ]
 
 
@@ -3671,7 +3694,21 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # "오늘, 서울시"류 알림성 기사 감점
     if ("오늘, 서울시" in title_l) or ("서울청년문화패스" in title_l):
         score -= 1.8
-    # 섹션별 키워드 가중치
+    
+    # -----------------------------
+    # Generalized boost: '원예 품목 신호' + '무역/정책(관세/무관세/FTA/수입/통관/검역 등)' + '시장 영향' 조합
+    # 특정 기사 하나를 위해 키워드를 추가하는 방식이 아니라,
+    # 전반적으로 "수입/관세 이슈가 품목 수급에 미치는 영향" 기사들을 더 잘 끌어올리기 위한 규칙이다.
+    horti_hits = count_any(text, ALL_TOPIC_TERMS_L)
+    trade_hits = count_any(text, TRADE_POLICY_TERMS_L)
+    impact_hits = count_any(text, TRADE_IMPACT_TERMS_L)
+
+    if horti_hits > 0 and trade_hits > 0:
+        score += 1.6 + min(1.2, 0.35 * trade_hits)
+        if impact_hits > 0:
+            score += 1.0
+
+# 섹션별 키워드 가중치
     key = section_conf["key"]
     if key == "supply":
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
@@ -4427,8 +4464,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         _source_take(a)
         if _is_trade_press(a):
             trade_core_count += 1
-        if _is_trade_press(a):
-            trade_core_count += 1
 
     # 2) 코어 부족 시: 약간 완화(여전히 임계치 이상 + 중복 제거) — 하지만 억지 채움 금지
     if len(core) < 2:
@@ -4898,6 +4933,69 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
                 need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
                 if need_more:
+
+                    # (보강) pool 부족일 때만, '무역/관세/무관세/FTA/수입' 조합 쿼리를 소량 추가로 1페이지 수집
+                    # - 특정 기사 맞춤이 아니라, 전반적으로 "수입/관세 이슈가 품목 수급에 미치는 영향" 기사들을 더 안정적으로 포착하기 위함
+                    fallback_qs: list[str] = []
+                    try:
+                        if section_key in ("supply", "policy"):
+                            # pool 내 토픽 커버리지(0/저커버 토픽) 추정
+                            topic_cnt: dict[str, int] = {}
+                            for a in candidates_sorted:
+                                if getattr(a, "score", 0.0) < thr:
+                                    continue
+                                tn = (getattr(a, "topic", "") or "").strip()
+                                if not tn:
+                                    continue
+                                topic_cnt[tn] = topic_cnt.get(tn, 0) + 1
+
+                            skip_topics = {"도매시장", "APC/산지유통", "수출/검역", "정책", "병해충"}
+                            wanted_terms: list[str] = []
+                            for tn, syns in TOPICS:
+                                if tn in skip_topics:
+                                    continue
+                                if topic_cnt.get(tn, 0) >= 1:
+                                    continue
+                                # 대표 검색어(첫 동의어) 사용
+                                term = (syns[0] if syns else tn.split("/")[0]).strip()
+                                if term and (term not in wanted_terms):
+                                    wanted_terms.append(term)
+                                if len(wanted_terms) >= 3:
+                                    break
+
+                            trade_sigs = ["무관세", "FTA", "할당관세", "관세", "수입"]
+                            for term in wanted_terms:
+                                for sig in trade_sigs:
+                                    fallback_qs.append(f"{term} {sig}")
+
+                            # 범용 보강 쿼리(수입/관세 관련 품목 기사 포착)
+                            fallback_qs.extend(["수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"])
+
+                            # cap
+                            cap = COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION
+                            if cap > 0:
+                                fallback_qs = fallback_qs[:cap]
+                            else:
+                                fallback_qs = []
+                    except Exception:
+                        fallback_qs = []
+
+                    if fallback_qs:
+                        for fq in fallback_qs:
+                            if fq in queries:
+                                continue
+                            if not _cond_paging_take_budget(1):
+                                break
+                            try:
+                                dataF = naver_news_search_paged(fq, display=50, pages=1, sort="date")
+                            except Exception as e:
+                                log.warning("[WARN] fallback query failed: %s", e)
+                                continue
+                            _ingest_naver_items(fq, dataF)
+
+                        # 재정렬
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items.sort(key=_sort_key_major_first, reverse=True)
                     # 어떤 쿼리에 추가 페이지를 붙일지 선택
                     # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
                     # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
@@ -5607,7 +5705,7 @@ def display_section_title(title: str) -> str:
     t = str(title)
     if t.startswith("유통 및 현장"):
         return "유통 및 현장"
-    if t == "주요 이슈 및 정책":
+    if t == "정책 및 주요 이슈":
         return "정책 및 주요 이슈"
     return t
 
@@ -6153,7 +6251,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
+        <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.", "prev")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -7805,8 +7903,8 @@ def backfill_rebuild_recent_archives(
         log.warning("[BACKFILL] archive dir listing failed; fallback to manifest-derived list: %s", e)
         avail = set(archive_dates_desc or [])
 
-    if not avail:
-        log.warning("[BACKFILL] no available archive dates found; skip backfill rebuild")
+    if (not avail) and (not BACKFILL_REBUILD_CREATE_MISSING):
+        log.warning("[BACKFILL] no available archive dates found; skip backfill rebuild (create_missing=false)")
         return search_idx
 
     # rebuild targets: report_date 제외, (1) BACKFILL_START_DATE~BACKFILL_END_DATE 범위 또는 (2) 과거 N일
