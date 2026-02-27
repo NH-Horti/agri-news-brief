@@ -1129,11 +1129,24 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
         out.append(a)
     return out
 
+def _has_trade_signal(txt: str) -> bool:
+    t = (txt or "").lower()
+    return any(x in t for x in (
+        "관세", "할당관세", "무관세", "fta", "수입", "통관", "검역", "보세", "보세구역",
+        "추천 취소", "집중관리", "관리 강화", "판매가격 보고", "유통 의무"
+    ))
+
+
 def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
     at, ad = _story_text(a)
     bt, bd = _story_text(b)
     a_txt = f"{at} {ad}"
     b_txt = f"{bt} {bd}"
+
+    # supply/policy: 무역/관세/FTA/수입 신호 유무가 다르면 같은 이슈로 묶지 않음(핵심 이슈 누락 방지)
+    if section_key in ("supply", "policy"):
+        if _has_trade_signal(a_txt) != _has_trade_signal(b_txt):
+            return False
 
     # 0) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
     try:
@@ -2402,6 +2415,7 @@ POLICY_TOP_HOSTS = {"korea.kr", "mafra.go.kr", "at.or.kr", "naqs.go.kr", "krei.r
 #   2: 중소매체/지방언론/전문지/지자체·연구기관(중간)
 #   1: 그 외(인터넷/기타)
 TOP_TIER_PRESS = {
+    "세계일보",
     "연합뉴스",
     "중앙일보", "동아일보", "조선일보", "한겨레", "경향신문", "국민일보", "서울신문",
     "매일경제", "머니투데이", "서울경제", "한국경제", "파이낸셜뉴스", "이데일리", "아시아경제", "헤럴드경제",
@@ -2475,6 +2489,7 @@ OFFICIAL_HOSTS = {
 
 # 최상위 언론(중앙지/일간지/경제지/통신) + 방송 + 농민신문
 MAJOR_PRESS = {
+    "세계일보",
     '연합뉴스',
     '중앙일보', '동아일보', '조선일보', '한겨레', '경향신문', '국민일보', '서울신문',
     '매일경제', '머니투데이', '서울경제', '한국경제', '파이낸셜뉴스', '이데일리', '아시아경제', '헤럴드경제',
@@ -5388,10 +5403,19 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         for a in items:
             tpc = (a.topic or "").strip()
             if tpc == "정책" and a.section != "policy":
-                a.section = "policy"
-                raw_by_section.setdefault("policy", []).append(a)
-                moved_topic += 1
-                continue
+                # ✅ 정책 신호가 있어도 특정 품목(과수/채소/화훼 등) 영향이 강하면 supply에 남김
+                try:
+                    bt, bs = best_topic_and_score(a.title, a.description)
+                except Exception:
+                    bt, bs = ("", 0.0)
+                if bt and bs >= 2.2:
+                    # 품목 영향이 강하면 토픽을 해당 품목으로 교정(섹션 이동 방지)
+                    a.topic = bt
+                else:
+                    a.section = "policy"
+                    raw_by_section.setdefault("policy", []).append(a)
+                    moved_topic += 1
+                    continue
             keep_items.append(a)
         raw_by_section[_sec_key] = keep_items
     if moved_topic:
@@ -6425,12 +6449,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
         // 스와이프 방향을 "버튼 화살표" 감각과 일치: 왼쪽 스와이프(←) = 이전, 오른쪽 스와이프(→) = 다음
+        // 스와이프: 왼쪽 스와이프(←) = 다음, 오른쪽 스와이프(→) = 이전
         if (dx < 0) {{
-          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
-          else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
-        }} else {{
           if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
           else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
+        }} else {{
+          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
+          else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
+        }}
         }}
       }}, {{ passive: true }});
 
