@@ -794,7 +794,7 @@ COMMODITY_TOPICS = [
     ("배", ["신고배", "나주배", "배 과일", "배(과일)"]),
     ("단감", ["단감"]),
     ("감/곶감", ["떫은감", "곶감"]),
-    ("감귤/만감", ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향"]),
+    ("감귤/만감", ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴", "무관세", "FTA"]),
     ("포도", ["포도", "샤인머스캣"]),
     ("키위", ["키위", "참다래"]),
     ("유자", ["유자"]),
@@ -1297,6 +1297,14 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
 
         if sc > 0:
             scores[topic] = sc
+    # ✅ 정책 강신호(관세/통관/보세/할당관세/정부)면 '정책' 토픽 가중치 부여
+    POLICY_STRONG_TERMS = (
+        "관세", "할당관세", "무관세", "fta", "통관", "수입신고", "보세", "보세구역", "반출", "반입",
+        "관세청", "기재부", "농식품부", "정부", "대책", "지원", "단속", "고시", "개정", "시행",
+    )
+    if any(x in t for x in POLICY_STRONG_TERMS):
+        scores["정책"] = scores.get("정책", 0.0) + 4.5
+
 
     return scores
 
@@ -3649,7 +3657,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # 지방 "인구감소/생활인구" 예산 기사(원예 키워드가 섞여도 핵심성 낮음) 감점
     if ("인구감소" in text) or ("생활인구" in text):
-        score -= 2.2
+        score -= 6.0
     # "오늘, 서울시"류 알림성 기사 감점
     if ("오늘, 서울시" in title_l) or ("서울청년문화패스" in title_l):
         score -= 1.8
@@ -6276,12 +6284,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
+        // 스와이프 방향을 "버튼 화살표" 감각과 일치: 왼쪽 스와이프(←) = 이전, 오른쪽 스와이프(→) = 다음
         if (dx < 0) {{
-          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
-          else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
-        }} else {{
           if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
           else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
+        }} else {{
+          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
+          else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
         }}
       }}, {{ passive: true }});
 
@@ -7830,6 +7839,8 @@ def backfill_rebuild_recent_archives(
     if not targets:
         return search_idx
 
+    nav_dates_desc = sorted(set((archive_dates_desc or []) + targets + [report_date]), reverse=True)
+
     log.info("[BACKFILL] available archives=%d | rebuild %d day(s): %s", len(avail), len(targets), ", ".join(targets))
 
     for d in targets:
@@ -7843,7 +7854,7 @@ def backfill_rebuild_recent_archives(
             if not BACKFILL_REBUILD_SKIP_OPENAI:
                 bf_by_section = fill_summaries(bf_by_section, cache=summary_cache)
 
-            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, archive_dates_desc, site_path)
+            bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, nav_dates_desc, site_path)
 
             bf_path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
             raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
@@ -7934,6 +7945,27 @@ def main():
 
     avail_dates.add(report_date)
     archive_dates_desc = sorted(avail_dates, reverse=True)
+
+    # ✅ 전체 기간 재생성(backfill_start_date 지정) 시, 드롭다운/이전/다음 목록을 '기간 범위'로 고정(날짜별 UX 불일치 방지)
+    if BACKFILL_START_DATE:
+        try:
+            _s = date.fromisoformat(BACKFILL_START_DATE)
+        except Exception:
+            _s = None
+        try:
+            _e = date.fromisoformat(BACKFILL_END_DATE) if BACKFILL_END_DATE else date.fromisoformat(report_date)
+        except Exception:
+            _e = date.fromisoformat(report_date)
+        if _s is not None and _e is not None and _s <= _e:
+            nav_override_dates = []
+            cur = _e
+            while cur >= _s:
+                nav_override_dates.append(cur.isoformat())
+                cur -= timedelta(days=1)
+            if report_date not in nav_override_dates:
+                nav_override_dates.insert(0, report_date)
+            archive_dates_desc = nav_override_dates
+            manifest["dates"] = sorted(set(sanitize_dates(nav_override_dates)))
     manifest["dates"] = sorted(set(sanitize_dates(list(avail_dates))))
 
     # collect + summarize
@@ -7992,6 +8024,21 @@ def main():
         log.warning("[WARN] backfill_neighbor_archive_nav failed: %s", e)
 
 # save manifest/state (manifest는 clean 유지)
+
+    # ✅ 백필 재생성 후: archive listing을 다시 읽어 manifest dates를 최신화(다음 실행에서도 날짜 목록 일관성 유지)
+    try:
+        items2 = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
+        dset2: set[str] = set()
+        for it in (items2 or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    dset2.add(dd)
+        dset2.add(report_date)
+        manifest["dates"] = sorted(set(sanitize_dates(list(dset2))))
+    except Exception as e:
+        log.warning("[WARN] manifest refresh after backfill failed: %s", e)
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
     save_state(repo, GH_TOKEN, end_kst)
 
