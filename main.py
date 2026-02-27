@@ -366,6 +366,11 @@ BACKFILL_REBUILD_DAYS = max(0, min(BACKFILL_REBUILD_DAYS, BACKFILL_REBUILD_DAYS_
 BACKFILL_REBUILD_CREATE_MISSING = os.getenv("BACKFILL_REBUILD_CREATE_MISSING", "false").strip().lower() in ("1", "true", "yes", "y")
 BACKFILL_START_DATE = (os.getenv("BACKFILL_START_DATE", "") or "").strip()
 BACKFILL_END_DATE = (os.getenv("BACKFILL_END_DATE", "") or "").strip()
+# safety: in case of partial merges, ensure globals exist
+globals().setdefault("BACKFILL_START_DATE", BACKFILL_START_DATE)
+globals().setdefault("BACKFILL_END_DATE", BACKFILL_END_DATE)
+globals().setdefault("BACKFILL_REBUILD_DAYS_MAX", BACKFILL_REBUILD_DAYS_MAX)
+globals().setdefault("BACKFILL_REBUILD_CREATE_MISSING", BACKFILL_REBUILD_CREATE_MISSING)
 BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
