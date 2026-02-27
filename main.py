@@ -7911,8 +7911,12 @@ def backfill_rebuild_recent_archives(
     - 카카오 전송/manifest/state는 건드리지 않는다(오늘자에서만 처리)
     """
     days = int(BACKFILL_REBUILD_DAYS or 0)
-    if days <= 0:
+    use_range = bool((BACKFILL_START_DATE or "").strip() or (BACKFILL_END_DATE or "").strip())
+    if use_range:
+        log.info("[BACKFILL] range mode enabled: %s ~ %s (days_arg=%s create_missing=%s)", BACKFILL_START_DATE or "", BACKFILL_END_DATE or "", days, BACKFILL_REBUILD_CREATE_MISSING)
+    if days <= 0 and not use_range:
         return search_idx
+    # range 모드에서는 backfill_days=0이어도 BACKFILL_START_DATE~BACKFILL_END_DATE를 기준으로 재생성한다.
     if not repo or not token:
         return search_idx
 
