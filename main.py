@@ -3699,6 +3699,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score -= 0.70 * offp
 
 
+
+    # trade_policy_core_boost: 품목(토픽) + 무역/정책(관세/FTA/통관/수입) + 영향(수급/가격/잠식 등) 조합이면 핵심성 가산
+    trade_terms = ("관세", "할당관세", "무관세", "fta", "통관", "보세", "수입", "검역")
+    impact_terms = ("수급", "가격", "물량", "잠식", "경쟁", "타격", "부추", "압박", "급등", "급락")
+    if any(x in text for x in trade_terms) and any(x in text for x in impact_terms):
+        if any(_term in text for _tn,_terms in TOPICS for _term in _terms[:3]):
+            score += 1.6
     # 지방 "인구감소/생활인구" 예산 기사(원예 키워드가 섞여도 핵심성 낮음) 감점
     if ("인구감소" in text) or ("생활인구" in text):
         score -= 6.0
@@ -6322,6 +6329,19 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var navRow = document.querySelector(".navRow");
       var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
       var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {{
+        if (!prevNav) {{
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {{
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          }});
+        }}
+        if (!nextNav) {{
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {{
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          }});
+        }}
+      }}
       var swipeHint = document.getElementById("swipeHint");
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
@@ -6332,6 +6352,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       function showNavLoading() {{
         if (navLoading) navLoading.classList.add("show");
+        try {{ setTimeout(function(){{ hideNavLoading(); }}, 1500); }} catch(e) {{}}
       }}
 
       function hideNavLoading() {{
@@ -8067,27 +8088,8 @@ def main():
 
     avail_dates.add(report_date)
     archive_dates_desc = sorted(avail_dates, reverse=True)
-
-    # ✅ 전체 기간 재생성(backfill_start_date 지정) 시, 드롭다운/이전/다음 목록을 '기간 범위'로 고정(날짜별 UX 불일치 방지)
-    if BACKFILL_START_DATE:
-        try:
-            _s = date.fromisoformat(BACKFILL_START_DATE)
-        except Exception:
-            _s = None
-        try:
-            _e = date.fromisoformat(BACKFILL_END_DATE) if BACKFILL_END_DATE else date.fromisoformat(report_date)
-        except Exception:
-            _e = date.fromisoformat(report_date)
-        if _s is not None and _e is not None and _s <= _e:
-            nav_override_dates = []
-            cur = _e
-            while cur >= _s:
-                nav_override_dates.append(cur.isoformat())
-                cur -= timedelta(days=1)
-            if report_date not in nav_override_dates:
-                nav_override_dates.insert(0, report_date)
-            archive_dates_desc = nav_override_dates
-            manifest["dates"] = sorted(set(sanitize_dates(nav_override_dates)))
+    # (비활성화) 기간 범위를 강제로 드롭다운에 표시하지 않습니다.
+    # 실제로 생성된 docs/archive 파일 목록(listing)만 드롭다운/이전/다음에 반영합니다.
     manifest["dates"] = sorted(set(sanitize_dates(list(avail_dates))))
 
     # collect + summarize
