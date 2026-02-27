@@ -8006,6 +8006,7 @@ def backfill_rebuild_recent_archives(
             bf_path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
             raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
             github_put_file(repo, bf_path, bf_html, token, f"Backfill rebuild {d}", sha=sha_old, branch="main")
+            log.info("[BACKFILL PUT] %s", bf_path)
 
             # search index update for that day
             search_idx = update_search_index(search_idx, d, bf_by_section, site_path)
@@ -8129,6 +8130,38 @@ def main():
     # (옵션) 백필 재생성: 과거 페이지/검색 인덱스까지 최신 로직으로 재생성
     try:
         search_idx = backfill_rebuild_recent_archives(repo, GH_TOKEN, report_date, archive_dates_desc, site_path, summary_cache, search_idx)
+        # ✅ backfill 후: 새로 생성된 docs/archive 파일을 기준으로 날짜 목록/이전/다음/드롭다운을 즉시 갱신
+        try:
+            dset = set()
+            items_bf = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
+            for it in (items_bf or []):
+                nm = it.get("name") if isinstance(it, dict) else None
+                if isinstance(nm, str) and nm.endswith(".html"):
+                    dd = nm[:-5]
+                    if is_iso_date_str(dd):
+                        dset.add(dd)
+            dset.add(report_date)
+            # listing이 일시적으로 비어도, 기간 재생성 모드라면 범위 기반 목록으로 fallback
+            if (not dset) and (BACKFILL_START_DATE or BACKFILL_END_DATE):
+                try:
+                    s = date.fromisoformat(BACKFILL_START_DATE) if BACKFILL_START_DATE else None
+                except Exception:
+                    s = None
+                try:
+                    e2 = date.fromisoformat(BACKFILL_END_DATE) if BACKFILL_END_DATE else date.fromisoformat(report_date)
+                except Exception:
+                    e2 = date.fromisoformat(report_date)
+                if s is not None and e2 is not None and s <= e2:
+                    cur = e2
+                    while cur >= s:
+                        dset.add(cur.isoformat())
+                        cur -= timedelta(days=1)
+            archive_dates_desc = sorted(dset, reverse=True)
+            manifest["dates"] = sorted(set(sanitize_dates(list(dset))))
+            # 오늘 페이지도 최신 날짜목록으로 다시 렌더(◀ 이전 링크/스와이프/드롭다운 통일)
+            daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+        except Exception as e2:
+            log.warning("[WARN] refresh archive dates after backfill failed: %s", e2)
     except Exception as e:
         log.warning("[WARN] backfill rebuild failed: %s", e)
     save_search_index(repo, GH_TOKEN, search_idx, ssha)
