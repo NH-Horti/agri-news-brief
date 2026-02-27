@@ -906,9 +906,17 @@ def clean_text(s: str) -> str:
     return s
 
 def domain_of(url: str) -> str:
+    """URL의 도메인(호스트명).
+    - m., www. 같은 일반 서브도메인은 제거해 매체 매핑/중복키/필터가 일관되게 동작하도록 한다.
+    """
     try:
         u = urlparse(url)
-        return (u.hostname or "").lower()
+        host = (u.hostname or "").lower()
+        if host.startswith("www."):
+            host = host[4:]
+        if host.startswith("m."):
+            host = host[2:]
+        return host
     except Exception:
         return ""
 
@@ -7912,6 +7920,9 @@ def backfill_rebuild_recent_archives(
 
     # rebuild targets: report_date 제외, (1) BACKFILL_START_DATE~BACKFILL_END_DATE 범위 또는 (2) 과거 N일
     create_missing = bool(BACKFILL_REBUILD_CREATE_MISSING)
+    # start_date 지정 시(기간 재생성 모드) 누락 파일 생성이 기본값이 되도록 보정
+    if BACKFILL_START_DATE and (not create_missing):
+        create_missing = True
     start_d = None
     end_d = None
     if BACKFILL_END_DATE:
@@ -8051,8 +8062,8 @@ def main():
                 if is_iso_date_str(dd):
                     avail_dates.add(dd)
     except Exception as e:
-        log.warning("[WARN] archive listing failed; fallback to manifest dates: %s", e)
-        avail_dates = set(sanitize_dates(manifest.get("dates", [])))
+        log.warning("[WARN] archive listing failed; treat as empty to avoid stale 404 links: %s", e)
+        avail_dates = set()
 
     avail_dates.add(report_date)
     archive_dates_desc = sorted(avail_dates, reverse=True)
