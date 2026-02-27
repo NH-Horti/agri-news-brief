@@ -829,6 +829,9 @@ COMMODITY_TOPICS = [
     ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정"]),
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해"]),
 ]
+
+# Alias for generalized topic signals & fallback query generation
+TOPICS = COMMODITY_TOPICS
 # -----------------------------
 # Cross-topic signals (generalized)
 # -----------------------------
