@@ -56,6 +56,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
 
       - name: Install deps
         run: |
@@ -112,8 +114,33 @@ jobs:
           # ux_patch
           UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '30' }}"
 
+          # 수집 윈도우/중복 방지 튜닝
+          WINDOW_MIN_HOURS: "72"
+          CROSSDAY_DEDUPE_DAYS: "7"
+          CROSSDAY_DEDUPE_ENABLED: "false"
+
           # backfill
           BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '7' }}"
           BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'false' }}"
           BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
         run: python main.py
+
+- name: Sync workspace to origin/main (after API writes)
+  if: ${{ always() }}
+  run: |
+    git fetch origin main
+    git reset --hard origin/main
+
+- name: Pack artifact (docs + state)
+  if: ${{ always() }}
+  run: |
+    tar --ignore-failed-read -czf agri-news-brief_artifact.tgz docs .agri_state.json .agri_archive.json .agri_summary_cache.json || true
+    ls -lh agri-news-brief_artifact.tgz || true
+
+- name: Upload artifact
+  if: ${{ always() }}
+  uses: actions/upload-artifact@v4
+  with:
+    name: agri-news-brief-maint-${{ github.run_id }}
+    path: agri-news-brief_artifact.tgz
+    retention-days: 30
