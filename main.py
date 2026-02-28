@@ -75,6 +75,45 @@ def _log_http_error(prefix: str, r: requests.Response):
     log.error("%s status=%s url=%s body=%s", prefix, getattr(r, "status_code", "?"), url, body)
 
 # -----------------------------
+# Manifest normalization (defensive)
+# -----------------------------
+_ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+def _normalize_manifest(manifest):
+    """Normalize an archive manifest dict.
+
+    Historically, various parts of this project expect a dict with a 'dates' list.
+    This helper keeps backward compatibility and prevents crashes if the manifest
+    is missing/invalid.
+    """
+    if manifest is None:
+        manifest = {}
+    if not isinstance(manifest, dict):
+        manifest = {}
+    dates = manifest.get("dates", [])
+    if not isinstance(dates, list):
+        dates = []
+    clean = []
+    seen = set()
+    for d in dates:
+        if not isinstance(d, str):
+            continue
+        d = d.strip()
+        if not _ISO_DATE_RE.match(d):
+            continue
+        if d in seen:
+            continue
+        seen.add(d)
+        clean.append(d)
+    out = dict(manifest)
+    out["dates"] = clean
+    out["count"] = len(clean)
+    # optional metadata
+    if "version" not in out:
+        out["version"] = 1
+    return out
+
+# -----------------------------
 # HTTP session
 # -----------------------------
 SESSION = requests.Session()
