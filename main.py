@@ -4984,6 +4984,12 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
                             skip_topics = {"도매시장", "APC/산지유통", "수출/검역", "정책", "병해충"}
                             wanted_terms: list[str] = []
+                            # ✅ 감귤/만감(만다린 무관세/FTA) 유형은 이미 토픽 커버가 있어도
+                            #    '만다린/만감류' 키워드를 보강해서 기획성 기사 누락을 줄인다.
+                            if topic_cnt.get("감귤/만감", 0) >= 1:
+                                for _t in ("만다린", "만감류"):
+                                    if _t not in wanted_terms:
+                                        wanted_terms.append(_t)
                             for tn, syns in TOPICS:
                                 if tn in skip_topics:
                                     continue
@@ -5002,7 +5008,12 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                                     fallback_qs.append(f"{term} {sig}")
 
                             # 범용 보강 쿼리(수입/관세 관련 품목 기사 포착)
-                            fallback_qs.extend(["수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"])
+                            fallback_qs.extend([
+                                # 만다린/만감류(무관세/FTA) 포착 강화
+                                "만다린 무관세", "미국 만다린 무관세", "만감류 무관세",
+                                # 범용 보강
+                                "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA",
+                            ])
 
                             # cap
                             cap = COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION
@@ -5689,13 +5700,13 @@ def openai_summarize_batch(articles: list[Article], cache: dict | None = None) -
 
     return mapping
 
-def fill_summaries(by_section: dict, cache: dict | None = None):
+def fill_summaries(by_section: dict, cache: dict | None = None, allow_openai: bool = True):
     all_articles: list[Article] = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
 
     cache = cache or {}
-    mapping = openai_summarize_batch(all_articles, cache=cache)
+    mapping = openai_summarize_batch(all_articles, cache=cache) if allow_openai else {}
 
     for a in all_articles:
         s = ""
@@ -6129,7 +6140,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
               <div class=\"secHead\" style=\"border-left:8px solid {color};\">
                 <div class=\"secTitle\">
                   <span class=\"dotColor\" style=\"background:{color}\"></span>
-                  {esc(display_section_title(title))}
+                  {esc(title)}
                 </div>
                 <div class=\"secCount\">{len(lst)}건</div>
               </div>
@@ -6448,15 +6459,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        // 스와이프 방향을 "버튼 화살표" 감각과 일치: 왼쪽 스와이프(←) = 이전, 오른쪽 스와이프(→) = 다음
-        // 스와이프: 왼쪽 스와이프(←) = 다음, 오른쪽 스와이프(→) = 이전
+        // 스와이프 동작: 왼쪽(←, dx<0)=다음 / 오른쪽(→, dx>0)=이전
         if (dx < 0) {{
           if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
           else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
         }} else {{
           if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
           else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
-        }}
         }}
       }}, {{ passive: true }});
 
@@ -7436,6 +7445,18 @@ def compute_end_kst():
         except Exception:
             pass
 
+    # ✅ 특정 날짜 재생성: FORCE_REPORT_DATE가 있으면 해당 날짜의 cutoff(07:00 KST)로 end_kst를 고정
+    #    (FORCE_END_NOW=true인 경우는 예외: 디버그 목적)
+    if FORCE_REPORT_DATE and (not FORCE_END_NOW):
+        try:
+            d = _parse_force_report_date(FORCE_REPORT_DATE)
+            return dt_kst(d, REPORT_HOUR_KST)
+        except Exception as e:
+            try:
+                log.warning("[WARN] Invalid FORCE_REPORT_DATE=%s (%s)", FORCE_REPORT_DATE, e)
+            except Exception:
+                pass
+
     n = now_kst()
     cutoff_today = n.replace(hour=REPORT_HOUR_KST, minute=0, second=0, microsecond=0)
 
@@ -8021,11 +8042,22 @@ def backfill_rebuild_recent_archives(
             start_kst, end_kst = _compute_window_for_report_date(d)
             log.info("[BACKFILL] %s window: %s ~ %s", d, start_kst.isoformat(), end_kst.isoformat())
 
+            # ✅ 정책: 주말/공휴일은 백필에서도 기본 스킵 (필요 시 FORCE_RUN_ANYDAY=true로 허용)
+            try:
+                if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(date.fromisoformat(d))):
+                    log.info("[BACKFILL] skip non-business day: %s", d)
+                    continue
+            except Exception:
+                pass
+
             bf_by_section = collect_all_sections(start_kst, end_kst)
 
-            # 요약은 비용/레이트리밋이 걸릴 수 있어 옵션 제공(기본: 수행)
-            if not BACKFILL_REBUILD_SKIP_OPENAI:
-                bf_by_section = fill_summaries(bf_by_section, cache=summary_cache)
+            # 요약은 비용/레이트리밋이 걸릴 수 있어 옵션 제공(기본: 수행). skip_openai=True여도 캐시로 요약을 채울 수 있게 allow_openai로 제어.
+            bf_by_section = fill_summaries(
+                bf_by_section,
+                cache=summary_cache,
+                allow_openai=(not BACKFILL_REBUILD_SKIP_OPENAI),
+            )
 
             bf_html = render_daily_page(d, start_kst, end_kst, bf_by_section, nav_dates_desc, site_path)
 
@@ -8054,13 +8086,51 @@ def main():
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
     if not GH_TOKEN:
         raise RuntimeError("GH_TOKEN or GITHUB_TOKEN is not set")
+
+    maintenance_task = (os.getenv("MAINTENANCE_TASK", "") or "").strip().lower()
+
+    repo = DEFAULT_REPO
+    end_kst = compute_end_kst()
+
+    # -----------------------------
+    # Maintenance-only tasks
+    # -----------------------------
+    if maintenance_task == "ux_patch":
+        # 과거 아카이브 UI/UX 패치만 수행하고 종료(브리핑 생성/카톡 발송 없음)
+        try:
+            site_path = get_site_path(repo)
+        except Exception:
+            site_path = "/"
+
+        try:
+            base_d = _parse_force_report_date(FORCE_REPORT_DATE) if FORCE_REPORT_DATE else end_kst.date()
+        except Exception:
+            base_d = end_kst.date()
+
+        days = int(UX_PATCH_DAYS or 0)
+        if days <= 0:
+            log.info("[UX PATCH] days=0 -> nothing to do")
+            return
+
+        ux_patched = 0
+        ux_skipped = 0
+        for i in range(0, days):
+            d2 = (base_d - timedelta(days=i)).isoformat()
+            try:
+                if patch_archive_page_ux(repo, GH_TOKEN, d2, site_path):
+                    ux_patched += 1
+                else:
+                    ux_skipped += 1
+            except Exception:
+                ux_skipped += 1
+        log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", ux_patched, ux_skipped, days)
+        return
+
+    # Normal run requires external API credentials
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
     if not KAKAO_REST_API_KEY or not KAKAO_REFRESH_TOKEN:
         raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN is not set")
-
-    repo = DEFAULT_REPO
-    end_kst = compute_end_kst()
 
     is_bd = is_business_day_kr(end_kst.date())
     if (not FORCE_RUN_ANYDAY) and (not is_bd):
@@ -8070,12 +8140,18 @@ def main():
     start_kst, end_kst = compute_window(repo, GH_TOKEN, end_kst)
     log.info("[INFO] Window KST: %s ~ %s", start_kst.isoformat(), end_kst.isoformat())
 
-    report_date = REPORT_DATE_OVERRIDE or end_kst.date().isoformat()
+    force_iso = ""
+    if FORCE_REPORT_DATE:
+        try:
+            force_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+        except Exception:
+            force_iso = ""
+    report_date = REPORT_DATE_OVERRIDE or force_iso or end_kst.date().isoformat()
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
     daily_url = f"{base_url}/archive/{report_date}.html"
-    log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE), daily_url)
+    log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE or force_iso), daily_url)
 
     ensure_not_gist(base_url, "base_url")
     ensure_not_gist(daily_url, "daily_url")
