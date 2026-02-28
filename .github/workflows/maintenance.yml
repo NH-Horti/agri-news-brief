@@ -1,0 +1,119 @@
+name: agri-news-brief (maintenance)
+
+concurrency:
+  group: agri-news-brief-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "수행할 작업 선택"
+        required: true
+        type: choice
+        options:
+          - ux_patch
+          - rebuild_date
+          - backfill_rebuild
+      force_report_date:
+        description: "rebuild_date용 날짜(YYYY-MM-DD). 비우면 작업 실패"
+        required: false
+        default: ""
+      allow_weekend:
+        description: "주말/공휴일에도 실행 허용(true/false). 기본 false"
+        required: false
+        default: "false"
+      ux_patch_days:
+        description: "ux_patch: 최근 N일 아카이브에 UI/UX 패치 적용"
+        required: false
+        default: "30"
+      backfill_days:
+        description: "backfill_rebuild: 최근 N일 아카이브 재생성"
+        required: false
+        default: "7"
+      backfill_skip_openai:
+        description: "backfill_rebuild: OpenAI 요약 생략(true/false). 기본 false"
+        required: false
+        default: "false"
+      backfill_sleep_sec:
+        description: "backfill_rebuild: 날짜 간 sleep(초)"
+        required: false
+        default: "0.2"
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate inputs
+        if: ${{ github.event.inputs.task == 'rebuild_date' && github.event.inputs.force_report_date == '' }}
+        run: |
+          echo "force_report_date is required for task=rebuild_date"
+          exit 1
+
+      - name: Run maintenance task
+        env:
+          # GitHub
+          GITHUB_TOKEN: ${{ github.token }}
+
+          # Naver (rebuild/backfill에서 필요)
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NAVER_MAX_WORKERS: "1"
+          NAVER_MIN_INTERVAL_SEC: "0.6"
+
+          # OpenAI (기본 ON)
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: "gpt-5.2"
+          OPENAI_REASONING_EFFORT: "low"
+          OPENAI_MAX_OUTPUT_TOKENS: "1200"
+          OPENAI_BATCH_SIZE: "25"
+          OPENAI_RETRY_MAX: "3"
+          OPENAI_SUMMARY_CACHE_MAX: "2000"
+
+          # Kakao (maintenance에서는 기본 FAIL-OPEN)
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          KAKAO_FAIL_OPEN: "true"
+
+          # 운영 모드
+          KAKAO_SEND_MODE: "single_text"
+          PUBLISH_MODE: "github_pages"
+          PAGES_BRANCH: "main"
+          PAGES_FILE_PATH: "docs/index.html"
+          BRIEF_VIEW_URL: ${{ vars.BRIEF_VIEW_URL }}
+          STATE_FILE_PATH: ".agri_state.json"
+          GH_PUT_MAX_RETRIES: "4"
+
+          # task
+          MAINTENANCE_TASK: "${{ github.event.inputs.task }}"
+          FORCE_REPORT_DATE: "${{ github.event.inputs.force_report_date || '' }}"
+          FORCE_RUN_ANYDAY: "${{ github.event.inputs.allow_weekend || 'false' }}"
+          FORCE_END_NOW: "false"
+
+          # ux_patch
+          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '30' }}"
+
+          # backfill
+          BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '7' }}"
+          BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'false' }}"
+          BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
+        run: python main.py
