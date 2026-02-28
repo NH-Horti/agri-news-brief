@@ -405,6 +405,8 @@ KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
 KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
+MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
+
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -3000,6 +3002,28 @@ def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dic
     _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token,
                     "Update state", sha=sha, branch="main")
+
+# --- per-run cache: manifest dates (DESC) ---
+_MANIFEST_DATES_DESC_CACHE: dict[str, list[str]] = {}
+
+def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
+    """Return archive dates DESC from archive manifest (.agri_archive.json).
+
+    This list should represent navigable dates (business days), and is used to rebuild navRow
+    so navigation never points to non-existent (holiday) pages.
+    """
+    key = f"{repo}"
+    if key in _MANIFEST_DATES_DESC_CACHE:
+        return _MANIFEST_DATES_DESC_CACHE[key]
+    try:
+        manifest, _sha = load_archive_manifest(repo, token)
+        manifest = _normalize_manifest(manifest)
+        dates = manifest.get("dates", []) or []
+        dates_desc = sorted(set(sanitize_dates(list(dates))), reverse=True)
+    except Exception:
+        dates_desc = []
+    _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
+    return dates_desc
 
 def load_archive_manifest(repo: str, token: str):
     raw, sha = github_get_file(repo, ARCHIVE_MANIFEST_PATH, token, ref="main")
@@ -8381,6 +8405,22 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         if html_new == raw:
             return False
 
+        
+        # -----------------------------
+        # NAVROW_PATCH_IN_UX: rebuild prev/next + dropdown from manifest
+        # (fixes 404 navigation to weekends/holidays like 2026-02-22)
+        # -----------------------------
+        try:
+            dates_desc = _get_manifest_dates_desc_cached(repo, token)
+            if dates_desc:
+                nav_block = _extract_navrow_block(html_new)
+                if nav_block:
+                    s, e, _old = nav_block
+                    new_nav = _build_navrow_html_for_date(iso_date, dates_desc, site_path)
+                    html_new = html_new[:s] + new_nav + html_new[e:]
+        except Exception:
+            pass
+
         github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
         return True
     except Exception as e:
@@ -8716,6 +8756,25 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         save_summary_cache(repo, token, summary_cache)
     except Exception as e:
         log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
+
+
+    # optional Kakao send (maintenance rebuild_date)
+    if MAINTENANCE_SEND_KAKAO:
+        try:
+            base_url = get_pages_base_url(repo).rstrip("/")
+            daily_url = f"{base_url}/archive/{report_date}.html"
+            kakao_text = build_kakao_message(report_date, by_section)
+            if KAKAO_INCLUDE_LINK_IN_TEXT:
+                kakao_text = kakao_text + "\n" + daily_url
+            daily_url = ensure_absolute_http_url(daily_url)
+            log_kakao_link(daily_url)
+            kakao_send_to_me(kakao_text, daily_url)
+            log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
+        except Exception as e:
+            if KAKAO_FAIL_OPEN:
+                log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+            else:
+                raise
 
 def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str):
     """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
