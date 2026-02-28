@@ -1,0 +1,68 @@
+name: agri-news-brief (rebuild a date)
+
+on:
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: 'Date to rebuild (YYYY-MM-DD)'
+        required: true
+        type: string
+      ux_patch_days:
+        description: 'Also patch recent archives after rebuild (0 = off)'
+        required: false
+        default: '0'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agri-news-brief-rebuild
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Rebuild
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+
+          PUBLISH_MODE: github_pages
+          PAGES_BRANCH: main
+          PAGES_FILE_PATH: docs/index.html
+          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+
+          MAINTENANCE_TASK: rebuild_date
+          FORCE_REPORT_DATE: ${{ inputs.report_date }}
+          FORCE_RUN_ANYDAY: "false"
+          UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+
+          WINDOW_MIN_HOURS: "72"
+          CROSSDAY_DEDUPE_ENABLED: "false"
+
+          NAVER_MAX_WORKERS: "1"
+          NAVER_MIN_INTERVAL_SEC: "0.6"
+
+        run: |
+          python main.py

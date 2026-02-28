@@ -1,0 +1,52 @@
+name: agri-news-brief (ux patch)
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Patch archives in the last N days'
+        required: false
+        default: '180'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agri-news-brief-uxpatch
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: UX patch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          PUBLISH_MODE: github_pages
+          PAGES_BRANCH: main
+          PAGES_FILE_PATH: docs/index.html
+          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+
+          MAINTENANCE_TASK: ux_patch
+          UX_PATCH_DAYS: ${{ inputs.days }}
+          FORCE_REPORT_DATE: ""
+          FORCE_RUN_ANYDAY: "false"
+
+        run: |
+          python main.py
