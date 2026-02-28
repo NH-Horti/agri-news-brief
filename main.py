@@ -6591,12 +6591,37 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (navLoading) navLoading.classList.remove("show");
       }}
 
+      function _toast(msg) {{
+        try {{
+          var id = "noBriefToast";
+          var t = document.getElementById(id);
+          if (!t) {{
+            t = document.createElement("div");
+            t.id = id;
+            t.setAttribute("data-swipe-ignore", "1");
+            t.style.cssText = "position:fixed;left:50%;top:16px;transform:translateX(-50%);background:rgba(17,24,39,0.94);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;z-index:99999;max-width:92vw;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.25);";
+            document.body.appendChild(t);
+          }}
+          t.textContent = msg || "이동할 브리핑이 없습니다.";
+          t.style.display = "block";
+          if (window.__noBriefToastTimer) clearTimeout(window.__noBriefToastTimer);
+          window.__noBriefToastTimer = setTimeout(function() {{ t.style.display = "none"; }}, 1800);
+        }} catch (e) {{}}
+      }}
+
       function showNoBrief(el, fallbackMsg) {{
         var msg = fallbackMsg || "이동할 페이지가 없습니다.";
         try {{
           if (el && el.getAttribute) {{
             msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
           }}
+        }} catch (e) {{}}
+        hideNavLoading();
+        _toast(msg);
+        // alert() can be blocked on some mobile browsers if called after async/await; keep as best-effort.
+        try {{ alert(msg); }} catch (e2) {{}}
+      }}
+
         }} catch (e) {{}}
         hideNavLoading();
         try {{ alert(msg); }} catch (e2) {{}}
@@ -8124,7 +8149,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
         # -----------------------------
-        UX_VER = "20260228-nohint"
+        UX_VER = "20260301-nobrief-toast"
         css_block = f"""
     /* UX_PATCH_BEGIN v{UX_VER} */
     .swipeHint, #swipeHint{display:none !important;visibility:hidden !important;}
@@ -8202,53 +8227,28 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       var isNavigating = false;
 
       function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); try{{ setTimeout(function(){{ if(navLoading) navLoading.classList.remove('show'); }}, 1500); }}catch(e){{}} }}
-      function showNoBrief(el, fallbackMsg){{
-        var msg = fallbackMsg || "이동할 브리핑이 없습니다.";
-        try {{
-          if (el && el.getAttribute) {{
-            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
-          }}
-        }} catch (e) {{}}
-        try {{ if (navLoading) navLoading.classList.remove("show"); }} catch (e2) {{}}
-
-        // 모바일 Safari 등에서 alert()가 비동기(await) 이후 호출되면 막히는 경우가 있어,
-        // 항상 보이는 "토스트" 안내를 우선 사용한다.
-        try {{
-          var t = document.getElementById("noBriefToast");
-          if (!t) {{
-            t = document.createElement("div");
-            t.id = "noBriefToast";
-            t.setAttribute("data-swipe-ignore", "1");
-            t.style.position = "fixed";
-            t.style.left = "50%";
-            t.style.top = "12px";
-            t.style.transform = "translateX(-50%)";
-            t.style.zIndex = "9999";
-            t.style.maxWidth = "92vw";
-            t.style.padding = "10px 14px";
-            t.style.border = "1px solid rgba(0,0,0,0.15)";
-            t.style.borderRadius = "14px";
-            t.style.background = "rgba(17,24,39,0.92)";
-            t.style.color = "#fff";
-            t.style.fontSize = "14px";
-            t.style.fontWeight = "800";
-            t.style.boxShadow = "0 10px 24px rgba(0,0,0,0.22)";
-            t.style.display = "none";
+      function _toast(msg){{ 
+        try{{ 
+          var id="noBriefToast";
+          var t=document.getElementById(id);
+          if(!t){{ 
+            t=document.createElement("div");
+            t.id=id;
+            t.setAttribute("data-swipe-ignore","1");
+            t.style.cssText="position:fixed;left:50%;top:16px;transform:translateX(-50%);background:rgba(17,24,39,0.94);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;z-index:99999;max-width:92vw;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.25);";
             document.body.appendChild(t);
           }}
-          t.textContent = msg;
-          t.style.display = "block";
-          t.style.opacity = "1";
-          if (window.__agriNoBriefTimer) clearTimeout(window.__agriNoBriefTimer);
-          window.__agriNoBriefTimer = setTimeout(function() {{
-            try {{ t.style.display = "none"; }} catch (e3) {{}}
-          }}, 1600);
-          return;
-        }} catch (e4) {{}}
-
-        // fallback (rare)
-        try {{ alert(msg); }} catch (e5) {{}}
+          t.textContent=msg||"이동할 브리핑이 없습니다.";
+          t.style.display="block";
+          if(window.__noBriefToastTimer) clearTimeout(window.__noBriefToastTimer);
+          window.__noBriefToastTimer=setTimeout(function(){{ t.style.display="none"; }},1800);
+        }}catch(e){{}}
       }}
+      function showNoBrief(_el, msg){{ 
+        try{{ if(navLoading) navLoading.classList.remove('show'); }}catch(e0){{}}
+        _toast(msg || '이동할 브리핑이 없습니다.');
+        try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}}
+      }}catch(e){{}} }}
 
       function _getRootPrefix() {{
         try {{
@@ -8383,24 +8383,10 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
           el.setAttribute && el.setAttribute("data-swipe-ignore","1");
           el.addEventListener("click", function(ev) {{
             try {{ ev.preventDefault(); }} catch(e) {{}}
-
-            // ✅ 마지막/최초 날짜에서 (href 없는 button.navBtn.disabled)일 때는
-            //    비동기 로직(gotoByOffset)을 타지 말고 즉시 안내를 띄운다.
-            try {{
-              var tag = (el.tagName || "").toLowerCase();
-              var href = "";
-              try {{ href = (el.getAttribute && el.getAttribute("href")) || ""; }} catch(eh) {{ href = ""; }}
-              if (tag === "button" || tag === "input" || !href || (el.classList && el.classList.contains("disabled"))) {{
-                showNoBrief(el, msg);
-                return;
-              }}
-            }} catch(e0) {{}}
-
             gotoByOffset(delta, msg);
           }});
         }} catch(e2) {{}}
       }}
-
 
       var prevNav = _pickNav("prev");
       var nextNav = _pickNav("next");
