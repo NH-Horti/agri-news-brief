@@ -65,6 +65,201 @@ _SECRET_PATTERNS = [
     (re.compile(r'(Bearer\s+)[A-Za-z0-9\-_.]+', re.I), r'\1***'),
 ]
 
+
+
+def build_archive_ux_script() -> str:
+    """Return an inline <script> block that powers archive navigation UX.
+    - No swipe-hint (0s exposure)
+    - Date select navigates reliably
+    - Boundary (no prev/next) shows an in-page toast immediately (no async alert issues)
+    - Prevents navLoading from getting stuck
+    """
+    # NOTE: Do NOT use f-strings here (JS uses braces). Keep it a plain string.
+    return r"""<script>
+/* AGRI_UX_BIND_V5 */
+(function(){
+  var navLoading = document.getElementById("navLoading");
+  var navRow = document.querySelector(".navRow");
+  var sel = document.getElementById("dateSelect");
+  var toastId = "agriToast";
+
+  function showNavLoading(){
+    try { if (navLoading) navLoading.classList.add("show"); } catch(e){}
+  }
+  function hideNavLoading(){
+    try { if (navLoading) navLoading.classList.remove("show"); } catch(e){}
+  }
+
+  function showToast(msg){
+    hideNavLoading();
+    try {
+      var t = document.getElementById(toastId);
+      if (!t){
+        t = document.createElement("div");
+        t.id = toastId;
+        t.style.position = "fixed";
+        t.style.left = "50%";
+        t.style.top = "14px";
+        t.style.transform = "translateX(-50%)";
+        t.style.zIndex = "99999";
+        t.style.maxWidth = "92vw";
+        t.style.padding = "10px 14px";
+        t.style.borderRadius = "12px";
+        t.style.background = "rgba(17,24,39,0.92)";
+        t.style.color = "#fff";
+        t.style.fontSize = "13px";
+        t.style.lineHeight = "1.25";
+        t.style.boxShadow = "0 10px 22px rgba(0,0,0,0.28)";
+        t.style.display = "none";
+        t.style.textAlign = "center";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg || "이동할 브리핑이 없습니다.";
+      t.style.display = "block";
+      clearTimeout(t._tm);
+      t._tm = setTimeout(function(){ try{ t.style.display="none"; }catch(e){} }, 1600);
+    } catch(e2){}
+    // best-effort: some users still prefer alert, but do not rely on it
+    // try { alert(msg); } catch(e3){}
+  }
+
+  function currentIndex(){
+    if (!sel || !sel.options || !sel.options.length) return -1;
+    if (sel.selectedIndex >= 0) return sel.selectedIndex;
+    // fallback: infer from current URL
+    var path = (location.pathname||"");
+    for (var i=0;i<sel.options.length;i++){
+      var v = sel.options[i].value || "";
+      if (v && path && v.indexOf(path) >= 0) return i;
+    }
+    return -1;
+  }
+
+  function navigateTo(url){
+    if (!url) { showToast("이동할 브리핑이 없습니다."); return; }
+    showNavLoading();
+    window.location.href = url;
+  }
+
+  // Date select navigation (must be synchronous)
+  if (sel){
+    try { sel.setAttribute("data-swipe-ignore","1"); } catch(e){}
+    sel.addEventListener("change", function(){
+      try {
+        var v = sel.value;
+        if (!v) return;
+        // avoid stuck loading when re-selecting same date
+        if ((location.pathname||"").endsWith(v.replace(/^.*\/archive\//, "/archive/"))) { hideNavLoading(); return; }
+        navigateTo(v);
+      } catch(e2){ hideNavLoading(); }
+    });
+  }
+
+  // Disabled nav buttons: immediate toast
+  try {
+    var disabledBtns = document.querySelectorAll('button.navBtn.disabled[data-msg]');
+    disabledBtns.forEach(function(b){
+      try { b.setAttribute("data-swipe-ignore","1"); } catch(e){}
+      b.addEventListener("click", function(ev){
+        try { ev.preventDefault(); ev.stopPropagation(); } catch(e2){}
+        var msg = (b.getAttribute("data-msg")||"이동할 브리핑이 없습니다.");
+        showToast(msg);
+      });
+    });
+  } catch(e3){}
+
+  // Prev/Next anchors: navigate; if missing, toast (covers edge pages)
+  function bindAnchor(navKey, fallbackMsg){
+    if (!navRow) return;
+    var a = navRow.querySelector('a.navBtn[data-nav="'+navKey+'"]');
+    if (!a) return;
+    try { a.setAttribute("data-swipe-ignore","1"); } catch(e){}
+    a.addEventListener("click", function(ev){
+      try { ev.preventDefault(); ev.stopPropagation(); } catch(e2){}
+      var href = a.getAttribute("href");
+      if (!href) { showToast(fallbackMsg); return; }
+      navigateTo(href);
+    });
+  }
+  bindAnchor("prev", "이전 브리핑이 없습니다.");
+  bindAnchor("next", "다음 브리핑이 없습니다.");
+
+  // Swipe (content area only)
+  var area = document.querySelector(".wrap") || document.body;
+  var sx=0, sy=0, ex=0, ey=0;
+  var TH=50;
+  function swipeNavigate(dir){
+    // dir: -1 => prev(older), +1 => next(newer)
+    if (!sel || !sel.options || !sel.options.length) return;
+    var i = currentIndex();
+    if (i < 0) i = 0;
+    var j = (dir < 0) ? (i + 1) : (i - 1); // options are desc (latest first)
+    if (j < 0 || j >= sel.options.length) {
+      showToast(dir < 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다.");
+      return;
+    }
+    var url = sel.options[j].value;
+    if (!url) { showToast("이동할 브리핑이 없습니다."); return; }
+    navigateTo(url);
+  }
+
+  try {
+    area.addEventListener("touchstart", function(e){
+      try{
+        var t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        sx = t.screenX; sy = t.screenY;
+      }catch(e2){}
+    }, {passive:true});
+
+    area.addEventListener("touchend", function(e){
+      try{
+        var t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        ex = t.screenX; ey = t.screenY;
+        var dx = ex - sx;
+        var dy = ey - sy;
+        if (Math.abs(dx) >= TH && Math.abs(dx) > Math.abs(dy)){
+          // right swipe => prev (older); left swipe => next (newer)
+          if (dx > 0) swipeNavigate(-1);
+          else swipeNavigate(+1);
+        }
+      }catch(e3){}
+    }, {passive:true});
+  } catch(e4){}
+
+})();
+</script>"""
+
+
+
+def _upsert_archive_ux_script(html: str, script_block: str) -> str:
+    """Remove older inline UX scripts and insert the canonical one (idempotent).
+    We only target our own old blocks (markers / function names) to avoid touching unrelated scripts.
+    """
+    if not html:
+        return html
+    if not script_block:
+        return html
+    # Remove any previous injected UX scripts (legacy)
+    patterns = [
+        r"<script[^>]*>[\s\S]*?AGRI_UX_BIND_[Vv]\d+[\s\S]*?</script>",
+        r"<script[^>]*>[\s\S]*?gotoUrlChecked[\s\S]*?</script>",
+        r"<script[^>]*>[\s\S]*?gotoByOffset[\s\S]*?</script>",
+    ]
+    html2 = html
+    for pat in patterns:
+        try:
+            html2 = re.sub(pat, "", html2, flags=re.I)
+        except Exception:
+            pass
+    # Insert before </body>
+    if "</body>" in html2:
+        html2 = html2.replace("</body>", script_block + "\n</body>", 1)
+    else:
+        html2 = html2 + "\n" + script_block
+    return html2
+
 def _safe_body(text: str, limit: int = 500) -> str:
     s = (text or "").strip()
     for pat, rep in _SECRET_PATTERNS:
@@ -6348,6 +6543,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     
     debug_html = render_debug_report_html(report_date, site_path) if DEBUG_REPORT else ""
 
+    ux_script = build_archive_ux_script()
+
     return f"""<!doctype html>
 <html lang=\"ko\">
 <head>
@@ -6519,398 +6716,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     <div class=\"footer\">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
   </div>
 
-  <script>
-    (function() {{
-      var sel = document.getElementById("dateSelect");
-      if (sel) {{
-        sel.setAttribute("data-swipe-ignore", "1");
-        sel.addEventListener("change", function() {{
-          var v = sel.value;
-          if (v) {{
-            var ld = document.getElementById("navLoading");
-            if (ld) ld.classList.add("show");
-            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
-          }}
-        }});
-      }}
-
-      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
-      var btns = document.querySelectorAll("button.navBtn[data-msg]");
-      btns.forEach(function(b) {{
-        b.setAttribute("data-swipe-ignore", "1");
-        b.addEventListener("click", function() {{
-          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
-          alert(msg);
-        }});
-      }});
-
-      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
-      var navRow = document.querySelector(".navRow");
-      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
-      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
-      // fallback: old pages without data-nav
-      if (navRow) {{
-        if (!prevNav) {{
-          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {{
-            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
-          }});
-        }}
-        if (!nextNav) {{
-          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {{
-            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
-          }});
-        }}
-      }}
-      var swipeHint = document.getElementById("swipeHint");
-      var navLoading = document.getElementById("navLoading");
-      var isNavigating = false;
-
-      function _bindNavClick(el, delta, msg) {{
-        if (!el || !el.addEventListener) return;
-        try {{ el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); }} catch (e) {{}}
-        try {{
-          el.addEventListener("click", function(ev) {{
-            try {{ ev.preventDefault(); }} catch (e2) {{}}
-            try {{ gotoByOffset(delta, msg); }} catch (e3) {{}}
-          }});
-        }} catch (e4) {{}}
-      }}
-      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
-      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
-
-      function hasHref(el) {{
-        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
-      }}
-
-      function showNavLoading() {{
-        if (navLoading) navLoading.classList.add("show");
-        try {{ setTimeout(function(){{ hideNavLoading(); }}, 1500); }} catch(e) {{}}
-      }}
-
-      function hideNavLoading() {{
-        if (navLoading) navLoading.classList.remove("show");
-      }}
-
-      function _toast(msg) {{
-        try {{
-          var id = "noBriefToast";
-          var t = document.getElementById(id);
-          if (!t) {{
-            t = document.createElement("div");
-            t.id = id;
-            t.setAttribute("data-swipe-ignore", "1");
-            t.style.cssText = "position:fixed;left:50%;top:16px;transform:translateX(-50%);background:rgba(17,24,39,0.94);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;z-index:99999;max-width:92vw;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.25);";
-            document.body.appendChild(t);
-          }}
-          t.textContent = msg || "이동할 브리핑이 없습니다.";
-          t.style.display = "block";
-          if (window.__noBriefToastTimer) clearTimeout(window.__noBriefToastTimer);
-          window.__noBriefToastTimer = setTimeout(function() {{ t.style.display = "none"; }}, 1800);
-        }} catch (e) {{}}
-      }}
-
-      function showNoBrief(el, fallbackMsg) {{
-        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
-        try {{
-          if (el && el.getAttribute) {{
-            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
-          }}
-        }} catch (e) {{}}
-        hideNavLoading();
-        _toast(msg);
-        // alert() can be blocked on some mobile browsers if called after async/await; keep as best-effort.
-        try {{ alert(msg); }} catch (e2) {{}}
-      }}
-
-        }} catch (e) {{}}
-        hideNavLoading();
-        try {{ alert(msg); }} catch (e2) {{}}
-      }}
-
-      function isBlockedTarget(target) {{
-        if (!target || !target.closest) return false;
-        if (target.closest('[data-swipe-ignore="1"]')) return true;
-        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
-        if (target.closest(".topbar")) return true;
-        if (target.closest("select,input,textarea,button,[contenteditable=\\"true\\"]")) return true;
-        return false;
-      }}
-
-      function navigateBy(el) {{
-        if (!el || isNavigating) return;
-        if (el.tagName && el.tagName.toLowerCase() === "a") {{
-          var href = el.getAttribute("href");
-          if (href) {{
-            isNavigating = true;
-            showNavLoading();
-            window.location.href = href;
-            return;
-          }}
-        }}
-        try {{
-          el.click();
-        }} catch (e) {{}}
-      }}
-
-
-
-// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
-var __manifestDates = null;
-var __rootPrefix = null;
-
-function _getRootPrefix() {{
-  if (__rootPrefix) return __rootPrefix;
-  try {{
-    var href = String(window.location.href || "");
-    var i = href.indexOf("/archive/");
-    if (i >= 0) {{
-      __rootPrefix = href.slice(0, i + 1);
-      return __rootPrefix;
-    }}
-    // fallback: current directory
-    var p = href.replace(/[#?].*$/, "");
-    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
-    return __rootPrefix;
-  }} catch (e) {{
-    return "/";
-  }}
-}}
-
-function _dateToUrl(d) {{
-  return _getRootPrefix() + "archive/" + d + ".html";
-}}
-
-function _extractDate(s) {{
-  if (!s) return "";
-  var str = String(s);
-  var m = str.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
-  if (m && m[1]) return m[1];
-  if (/^\d{{4}}-\d{{2}}-\d{{2}}$/.test(str)) return str;
-  return "";
-}}
-
-function _currentDateIso() {{
-  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
-}}
-
-function _getDatesFromSelect() {{
-  var sel = document.getElementById("dateSelect");
-  if (!sel) return [];
-  var ds = [];
-  for (var i = 0; i < sel.options.length; i++) {{
-    var opt = sel.options[i];
-    var v = (opt && opt.value) ? opt.value : "";
-    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
-    if (d) ds.push(d);
-  }}
-  ds = Array.from(new Set(ds));
-  ds.sort(); ds.reverse();
-  return ds;
-}}
-
-function _setSelectDates(dates) {{
-  var sel = document.getElementById("dateSelect");
-  if (!sel) return;
-  var cur = _currentDateIso();
-  try {{ sel.innerHTML = ""; }} catch (e) {{}}
-  for (var i = 0; i < dates.length; i++) {{
-    var d = dates[i];
-    var opt = document.createElement("option");
-    opt.value = _dateToUrl(d);
-    opt.textContent = d;
-    if (d === cur) opt.selected = true;
-    sel.appendChild(opt);
-  }}
-}}
-
-async function _fetchManifestDates() {{
-  try {{
-    var url = _getRootPrefix() + "archive_manifest.json";
-    var r = await fetch(url, {{ cache: "no-store" }});
-    if (!r || !r.ok) return null;
-    var obj = await r.json();
-    var dates = (obj && obj.dates) ? obj.dates : null;
-    if (!dates || !Array.isArray(dates)) return null;
-    var clean = [];
-    for (var i = 0; i < dates.length; i++) {{
-      var d = dates[i];
-      if (typeof d === "string" && /^\d{{4}}-\d{{2}}-\d{{2}}$/.test(d)) clean.push(d);
-    }}
-    clean = Array.from(new Set(clean));
-    clean.sort(); clean.reverse();
-    return clean;
-  }} catch (e) {{
-    return null;
-  }}
-}}
-
-async function _ensureDates() {{
-  if (__manifestDates && __manifestDates.length) return __manifestDates;
-  var dates = await _fetchManifestDates();
-  if (dates && dates.length) {{
-    __manifestDates = dates;
-    _setSelectDates(dates);
-    return __manifestDates;
-  }}
-  __manifestDates = _getDatesFromSelect();
-  return __manifestDates;
-}}
-
-async function _urlExists(url) {{
-  try {{
-    var r = await fetch(url, {{ method: "HEAD", cache: "no-store" }});
-    if (r && r.ok) return true;
-  }} catch (e) {{}}
-  try {{
-    var r2 = await fetch(url, {{ method: "GET", cache: "no-store" }});
-    return !!(r2 && r2.ok);
-  }} catch (e2) {{}}
-  return false;
-}}
-
-async function gotoUrlChecked(url, msg) {{
-  if (!url || isNavigating) return;
-  var dates = await _ensureDates();
-  var d = _extractDate(url);
-  if (d) url = _dateToUrl(d);
-
-  // If manifest/derived list exists and date is not in it, block early
-  if (d && dates && dates.length && dates.indexOf(d) < 0) {{
-    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
-    return;
-  }}
-
-  var ok = await _urlExists(url);
-  if (ok) {{
-    isNavigating = true;
-    showNavLoading();
-    window.location.href = url;
-    return;
-  }}
-  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
-  // restore selection
-  try {{
-    var sel = document.getElementById("dateSelect");
-    if (sel) {{
-      var cur = _currentDateIso();
-      for (var i = 0; i < sel.options.length; i++) {{
-        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
-        if (dd && dd === cur) sel.selectedIndex = i;
-      }}
-    }}
-  }} catch (e) {{}}
-}}
-
-async function gotoByOffset(delta, msg) {{
-  var dates = await _ensureDates();
-  if (!dates || !dates.length) {{ showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }}
-  var cur = _currentDateIso();
-  var idx = dates.indexOf(cur);
-  if (idx < 0) idx = 0;
-  var step = (delta >= 0) ? 1 : -1;
-  var j = idx + delta;
-  while (j >= 0 && j < dates.length) {{
-    var d = dates[j];
-    var url = _dateToUrl(d);
-    // Always verify existence (manifest can be stale; Pages deploy can lag)
-    var ok = await _urlExists(url);
-    if (ok) {{
-      if (isNavigating) return;
-      isNavigating = true;
-      showNavLoading();
-      window.location.href = url;
-      return;
-    }}
-    j += step;
-  }}
-  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
-}}
-
-// non-blocking: try to load manifest & prune date list
-try {{ _ensureDates(); }} catch (e) {{}}
-
-      function resetNavRowFeedback() {{
-        if (!navRow) return;
-        navRow.style.transform = "";
-        navRow.style.opacity = "";
-      }}
-
-      var sx = 0, sy = 0, st = 0, blocked = false;
-      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
-
-      swipeArea.addEventListener("touchstart", function(e) {{
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx = t.clientX;
-        sy = t.clientY;
-        st = Date.now();
-      }}, {{ passive: true }});
-
-      swipeArea.addEventListener("touchend", function(e) {{
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx = t.clientX - sx;
-        var dy = t.clientY - sy;
-        var dt = Date.now() - st;
-
-        // accidental 방지: 더 강한 임계치
-        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-
-        // 스와이프 동작: 왼쪽(←, dx<0)=다음(신규) / 오른쪽(→, dx>0)=이전(과거)
-        if (dx < 0) {{
-          gotoByOffset(-1, "다음 브리핑이 없습니다.");
-        }} else {{
-          gotoByOffset(+1, "이전 브리핑이 없습니다.");
-        }}
-      }}, {{ passive: true }});
-
-      document.addEventListener("keydown", function(e) {{
-        if (!e) return;
-        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-        if (isBlockedTarget(e.target)) return;
-        if (e.key === "ArrowLeft") {{
-          if (hasHref(prevNav)) {{
-            showNavLoading();
-            navigateBy(prevNav);
-          }} else {{
-            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
-          }}
-        }} else if (e.key === "ArrowRight") {{
-          if (hasHref(nextNav)) {{
-            showNavLoading();
-            navigateBy(nextNav);
-          }} else {{
-            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
-          }}
-        }}
-      }});
-
-      window.addEventListener("pageshow", function() {{
-        isNavigating = false;
-        hideNavLoading();
-        resetNavRowFeedback();
-      }});
-
-      // 힌트는 1번만 잠깐 노출(가독성 유지)
-      (function maybeShowSwipeHint() {{
-        if (!swipeHint) return;
-        try {{
-          var k = "agri_swipe_hint_shown";
-          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {{
-            swipeHint.style.display = "none";
-            return;
-          }}
-          swipeHint.style.display = "flex";
-          if (window.sessionStorage) sessionStorage.setItem(k, "1");
-          window.setTimeout(function() {{
-            swipeHint.style.display = "none";
-          }}, 1200);
-        }} catch (e) {{}}
-      }})();
-}})();
-  </script>
+  {ux_script}
   <!-- build: {BUILD_TAG} -->
 {debug_html}
 </body>
@@ -8149,7 +7955,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
         # -----------------------------
-        UX_VER = "20260301-nobrief-toast"
+        UX_VER = "20260301-uxnav-v5"
         css_block = f"""
     /* UX_PATCH_BEGIN v{UX_VER} */
     .swipeHint, #swipeHint{display:none !important;visibility:hidden !important;}
@@ -8227,28 +8033,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       var isNavigating = false;
 
       function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); try{{ setTimeout(function(){{ if(navLoading) navLoading.classList.remove('show'); }}, 1500); }}catch(e){{}} }}
-      function _toast(msg){{ 
-        try{{ 
-          var id="noBriefToast";
-          var t=document.getElementById(id);
-          if(!t){{ 
-            t=document.createElement("div");
-            t.id=id;
-            t.setAttribute("data-swipe-ignore","1");
-            t.style.cssText="position:fixed;left:50%;top:16px;transform:translateX(-50%);background:rgba(17,24,39,0.94);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;z-index:99999;max-width:92vw;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.25);";
-            document.body.appendChild(t);
-          }}
-          t.textContent=msg||"이동할 브리핑이 없습니다.";
-          t.style.display="block";
-          if(window.__noBriefToastTimer) clearTimeout(window.__noBriefToastTimer);
-          window.__noBriefToastTimer=setTimeout(function(){{ t.style.display="none"; }},1800);
-        }}catch(e){{}}
-      }}
-      function showNoBrief(_el, msg){{ 
-        try{{ if(navLoading) navLoading.classList.remove('show'); }}catch(e0){{}}
-        _toast(msg || '이동할 브리핑이 없습니다.');
-        try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}}
-      }}catch(e){{}} }}
+      function showNoBrief(_el, msg){{ try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}} }}
 
       function _getRootPrefix() {{
         try {{
@@ -8475,6 +8260,9 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                     html_new = html_new[:s] + new_nav + html_new[e:]
         except Exception:
             pass
+
+        # Upsert canonical archive UX script (navigation + boundary toast)
+        html_new = _upsert_archive_ux_script(html_new, build_archive_ux_script())
 
         github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
         return True
