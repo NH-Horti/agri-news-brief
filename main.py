@@ -75,6 +75,45 @@ def _log_http_error(prefix: str, r: requests.Response):
     log.error("%s status=%s url=%s body=%s", prefix, getattr(r, "status_code", "?"), url, body)
 
 # -----------------------------
+# Manifest normalization (defensive)
+# -----------------------------
+_ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+def _normalize_manifest(manifest):
+    """Normalize an archive manifest dict.
+
+    Historically, various parts of this project expect a dict with a 'dates' list.
+    This helper keeps backward compatibility and prevents crashes if the manifest
+    is missing/invalid.
+    """
+    if manifest is None:
+        manifest = {}
+    if not isinstance(manifest, dict):
+        manifest = {}
+    dates = manifest.get("dates", [])
+    if not isinstance(dates, list):
+        dates = []
+    clean = []
+    seen = set()
+    for d in dates:
+        if not isinstance(d, str):
+            continue
+        d = d.strip()
+        if not _ISO_DATE_RE.match(d):
+            continue
+        if d in seen:
+            continue
+        seen.add(d)
+        clean.append(d)
+    out = dict(manifest)
+    out["dates"] = clean
+    out["count"] = len(clean)
+    # optional metadata
+    if "version" not in out:
+        out["version"] = 1
+    return out
+
+# -----------------------------
 # HTTP session
 # -----------------------------
 SESSION = requests.Session()
@@ -130,6 +169,15 @@ def http_session():
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
+WINDOW_MIN_HOURS = int(os.getenv("WINDOW_MIN_HOURS", "72"))  # 최소 후보 수집 윈도우(시간)
+CROSSDAY_DEDUPE_DAYS = int(os.getenv("CROSSDAY_DEDUPE_DAYS", "7"))  # 최근 N일 URL/사건키 중복 방지
+CROSSDAY_DEDUPE_ENABLED_ENV = (os.getenv("CROSSDAY_DEDUPE_ENABLED", "true").strip().lower() == "true")
+
+# 최근 히스토리(크로스데이 중복 방지) - main()에서 state를 읽어 채움
+CROSSDAY_DEDUPE_ENABLED = False
+RECENT_HISTORY_CANON: set[str] = set()
+RECENT_HISTORY_NORM: set[str] = set()
+
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
 
@@ -243,6 +291,7 @@ ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
 DOCS_INDEX_PATH = "docs/index.html"
 DOCS_ARCHIVE_DIR = "docs/archive"
 DOCS_SEARCH_INDEX_PATH = "docs/search_index.json"
+DOCS_ARCHIVE_MANIFEST_JSON_PATH = "docs/archive_manifest.json"
 MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
 MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
 
@@ -356,6 +405,8 @@ KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
 KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
+MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
+
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -374,8 +425,6 @@ BACKFILL_END_DATE = (os.getenv("BACKFILL_END_DATE", "") or "").strip()
 BACKFILL_REBUILD_SLEEP_SEC = float((os.getenv("BACKFILL_REBUILD_SLEEP_SEC", "0.2") or "0.2").strip() or 0.2)
 BACKFILL_REBUILD_SLEEP_SEC = max(0.0, min(BACKFILL_REBUILD_SLEEP_SEC, 3.0))
 BACKFILL_REBUILD_SKIP_OPENAI = os.getenv("BACKFILL_REBUILD_SKIP_OPENAI", "false").strip().lower() in ("1", "true", "yes", "y")
-
-BACKFILL_INCLUDE_NONBUSINESS_DAYS = os.getenv("BACKFILL_INCLUDE_NONBUSINESS_DAYS", "false").strip().lower() in ("1","true","yes","y")
 
 
 # UX patch (과거 아카이브에 UI/UX 업데이트를 '패치'로 반영: 스와이프/로딩/스티키 nav 등)
@@ -2885,6 +2934,7 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
 # -----------------------------
 # State / archive manifest
 # -----------------------------
+
 def load_state(repo: str, token: str):
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     if not raw:
@@ -2895,25 +2945,85 @@ def load_state(repo: str, token: str):
     except Exception:
         return {"last_end_iso": None}
 
-def save_state(repo: str, token: str, last_end: datetime):
-    payload = {"last_end_iso": last_end.isoformat()}
+def _parse_ymd(s: str) -> date | None:
+    if not s:
+        return None
+    try:
+        return date.fromisoformat(s[:10])
+    except Exception:
+        return None
+
+def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
+    """state.recent_items를 표준화하고, base_day 기준 최근 N일만 남긴다."""
+    if not isinstance(recent_items, list):
+        return []
+    cutoff = base_day - timedelta(days=max(CROSSDAY_DEDUPE_DAYS, 0))
+    out: list[dict] = []
+    for it in recent_items:
+        if not isinstance(it, dict):
+            continue
+        canon = (it.get("canon") or it.get("url") or "").strip()
+        norm = (it.get("norm") or it.get("norm_key") or "").strip()
+        d = _parse_ymd(str(it.get("date") or ""))
+        if not d:
+            continue
+        if d < cutoff:
+            continue
+        if not (canon or norm):
+            continue
+        out.append({"date": d.isoformat(), "canon": canon, "norm": norm})
+    # 키 중복 제거(최근 것을 우선)
+    uniq = {}
+    for it in sorted(out, key=lambda x: x.get("date", ""), reverse=True):
+        k = it.get("norm") or it.get("canon")
+        if not k:
+            continue
+        if k not in uniq:
+            uniq[k] = it
+    # 파일 크기 제한
+    return list(sorted(uniq.values(), key=lambda x: x.get("date", ""), reverse=True))[:2000]
+
+def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dict] | None = None):
+    # 기존 state를 읽어 스키마 확장에 대응(호환성 유지)
+    old = load_state(repo, token)
+    base_day = last_end.astimezone(KST).date()
+
+    if recent_items is None:
+        recent_items = normalize_recent_items(old.get("recent_items", []), base_day)
+    else:
+        recent_items = normalize_recent_items(recent_items, base_day)
+
+    payload = {
+        "last_end_iso": last_end.isoformat(),
+        "recent_keep_days": CROSSDAY_DEDUPE_DAYS,
+        "recent_items": recent_items,
+    }
+
     _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token,
-                    f"Update state {last_end.date().isoformat()}", sha=sha, branch="main")
+                    "Update state", sha=sha, branch="main")
 
-def _normalize_manifest(obj):
-    if obj is None:
-        return {"dates": []}
-    if isinstance(obj, list):
-        return {"dates": [str(x) for x in obj if str(x).strip()]}
-    if isinstance(obj, dict):
-        dates = obj.get("dates", [])
-        if isinstance(dates, list):
-            return {"dates": [str(x) for x in dates if str(x).strip()]}
-        if isinstance(dates, str) and dates.strip():
-            return {"dates": [dates.strip()]}
-        return {"dates": []}
-    return {"dates": []}
+# --- per-run cache: manifest dates (DESC) ---
+_MANIFEST_DATES_DESC_CACHE: dict[str, list[str]] = {}
+
+def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
+    """Return archive dates DESC from archive manifest (.agri_archive.json).
+
+    This list should represent navigable dates (business days), and is used to rebuild navRow
+    so navigation never points to non-existent (holiday) pages.
+    """
+    key = f"{repo}"
+    if key in _MANIFEST_DATES_DESC_CACHE:
+        return _MANIFEST_DATES_DESC_CACHE[key]
+    try:
+        manifest, _sha = load_archive_manifest(repo, token)
+        manifest = _normalize_manifest(manifest)
+        dates = manifest.get("dates", []) or []
+        dates_desc = sorted(set(sanitize_dates(list(dates))), reverse=True)
+    except Exception:
+        dates_desc = []
+    _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
+    return dates_desc
 
 def load_archive_manifest(repo: str, token: str):
     raw, sha = github_get_file(repo, ARCHIVE_MANIFEST_PATH, token, ref="main")
@@ -2929,6 +3039,29 @@ def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
     github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token,
                     "Update archive manifest", sha=sha, branch="main")
 
+
+
+
+
+def save_docs_archive_manifest(repo: str, token: str, dates: list[str]):
+    """Publish archive date manifest to docs/ so client JS can avoid 404 navigation.
+
+    Output path: docs/archive_manifest.json
+    Format: {"version":1,"updated_at_kst":"...","dates":["YYYY-MM-DD", ...]} (dates are DESC sorted)
+    """
+    try:
+        clean = [d for d in (dates or []) if isinstance(d, str) and is_iso_date_str(d)]
+        clean = sorted(set(clean), reverse=True)
+        payload = {
+            "version": 1,
+            "updated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+            "dates": clean,
+        }
+        body = json.dumps(payload, ensure_ascii=False, indent=2)
+        _raw_old, sha_old = github_get_file(repo, DOCS_ARCHIVE_MANIFEST_JSON_PATH, token, ref="main")
+        github_put_file(repo, DOCS_ARCHIVE_MANIFEST_JSON_PATH, body, token, "Update archive manifest", sha=sha_old, branch="main")
+    except Exception as e:
+        log.warning("[WARN] save_docs_archive_manifest failed: %s", e)
 
 
 def load_search_index(repo: str, token: str):
@@ -4820,7 +4953,17 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             if not pub:
                 # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
                 continue
-            if pub < start_kst or pub >= end_kst:
+            soft_start = start_kst
+            try:
+                min_hours = WINDOW_MIN_HOURS
+                if min_hours and min_hours > 0:
+                    min_start = end_kst - timedelta(hours=min_hours)
+                    if min_start < soft_start:
+                        soft_start = min_start
+            except Exception:
+                soft_start = start_kst
+
+            if pub < soft_start or pub >= end_kst:
                 continue
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
@@ -4832,6 +4975,10 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
+
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
+
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
             score = compute_rank_score(title, desc, dom, pub, section_conf, press)
@@ -4882,7 +5029,17 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             origin = strip_tracking_params(it.get("originallink", "") or link)
             pub = parse_pubdate_to_kst(it.get("pubDate", ""))
 
-            if pub < start_kst or pub >= end_kst:
+            soft_start = start_kst
+            try:
+                min_hours = WINDOW_MIN_HOURS
+                if min_hours and min_hours > 0:
+                    min_start = end_kst - timedelta(hours=min_hours)
+                    if min_start < soft_start:
+                        soft_start = min_start
+            except Exception:
+                soft_start = start_kst
+
+            if pub < soft_start or pub >= end_kst:
                 continue
 
             dom = domain_of(origin) or domain_of(link)
@@ -4897,6 +5054,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
+
+            # 크로스데이(최근 N일) 중복 방지: 72h 윈도우 확장 시 같은 기사가 반복 노출되는 것 최소화
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
 
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
@@ -5206,6 +5367,10 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
             title_key = norm_title_key(title)
             topic = "보고서"
             norm_key = make_norm_key(canon, press, title_key)
+
+            # 크로스데이(최근 N일) 중복 방지: 72h 윈도우 확장 시 같은 기사가 반복 노출되는 것 최소화
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
 
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
@@ -6194,7 +6359,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
     .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
@@ -6267,7 +6432,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
     .swipeHint .arrow{{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}}
     .swipeHint .txt{{letter-spacing:-0.1px}}
-    .swipeHint.show{display:flex;opacity:.95}
     .swipeHint .pill{{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}}
     @media (hover:hover) and (pointer:fine){{ .swipeHint{{display:none !important;}} }}
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
@@ -6316,11 +6480,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         </div>
         {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}
       </div>
-      <div id=\"swipeHint\" class=\"swipeHint\" aria-hidden=\"true\">
-        <span class=\"arrow\">◀</span>
-        <span class=\"txt pill\">좌우 스와이프로 날짜 이동</span>
-        <span class=\"arrow\">▶</span>
-      </div>
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
@@ -6348,7 +6507,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           if (v) {{
             var ld = document.getElementById("navLoading");
             if (ld) ld.classList.add("show");
-            window.location.href = v;
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
           }}
         }});
       }}
@@ -6381,8 +6540,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         }}
       }}
       var swipeHint = document.getElementById("swipeHint");
+      if (swipeHint) {{ try {{ swipeHint.style.display = "none"; swipeHint.setAttribute("aria-hidden","true"); }} catch (e) {{}} }}
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {{
+        if (!el || !el.addEventListener) return;
+        try {{ el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); }} catch (e) {{}}
+        try {{
+          el.addEventListener("click", function(ev) {{
+            try {{ ev.preventDefault(); }} catch (e2) {{}}
+            try {{ gotoByOffset(delta, msg); }} catch (e3) {{}}
+          }});
+        }} catch (e4) {{}}
+      }}
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
 
       function hasHref(el) {{
         return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
@@ -6433,6 +6606,183 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         }} catch (e) {{}}
       }}
 
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {{
+  if (__rootPrefix) return __rootPrefix;
+  try {{
+    var href = String(window.location.href || "");
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {{
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
+    }}
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  }} catch (e) {{
+    return "/";
+  }}
+}}
+
+function _dateToUrl(d) {{
+  return _getRootPrefix() + "archive/" + d + ".html";
+}}
+
+function _extractDate(s) {{
+  if (!s) return "";
+  var str = String(s);
+  var m = str.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{{4}}-\d{{2}}-\d{{2}}$/.test(str)) return str;
+  return "";
+}}
+
+function _currentDateIso() {{
+  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+}}
+
+function _getDatesFromSelect() {{
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {{
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }}
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}}
+
+function _setSelectDates(dates) {{
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try {{ sel.innerHTML = ""; }} catch (e) {{}}
+  for (var i = 0; i < dates.length; i++) {{
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }}
+}}
+
+async function _fetchManifestDates() {{
+  try {{
+    var url = _getRootPrefix() + "archive_manifest.json";
+    var r = await fetch(url, {{ cache: "no-store" }});
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {{
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{{4}}-\d{{2}}-\d{{2}}$/.test(d)) clean.push(d);
+    }}
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  }} catch (e) {{
+    return null;
+  }}
+}}
+
+async function _ensureDates() {{
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {{
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }}
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}}
+
+async function _urlExists(url) {{
+  try {{
+    var r = await fetch(url, {{ method: "HEAD", cache: "no-store" }});
+    if (r && r.ok) return true;
+  }} catch (e) {{}}
+  try {{
+    var r2 = await fetch(url, {{ method: "GET", cache: "no-store" }});
+    return !!(r2 && r2.ok);
+  }} catch (e2) {{}}
+  return false;
+}}
+
+async function gotoUrlChecked(url, msg) {{
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {{
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }}
+
+  var ok = await _urlExists(url);
+  if (ok) {{
+    isNavigating = true;
+    showNavLoading();
+    window.location.href = url;
+    return;
+  }}
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {{
+    var sel = document.getElementById("dateSelect");
+    if (sel) {{
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {{
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }}
+    }}
+  }} catch (e) {{}}
+}}
+
+async function gotoByOffset(delta, msg) {{
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) {{ showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }}
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {{
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {{
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      window.location.href = url;
+      return;
+    }}
+    j += step;
+  }}
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}}
+
+// non-blocking: try to load manifest & prune date list
+try {{ _ensureDates(); }} catch (e) {{}}
+
       function resetNavRowFeedback() {{
         if (!navRow) return;
         navRow.style.transform = "";
@@ -6462,13 +6812,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
-        // 스와이프 동작: 왼쪽(←, dx<0)=다음 / 오른쪽(→, dx>0)=이전
+        // 스와이프 동작: 왼쪽(←, dx<0)=다음(신규) / 오른쪽(→, dx>0)=이전(과거)
         if (dx < 0) {{
-          if (hasHref(nextNav)) {{ showNavLoading(); navigateBy(nextNav); }}
-          else {{ showNoBrief(nextNav, "다음 브리핑이 없습니다."); }}
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
         }} else {{
-          if (hasHref(prevNav)) {{ showNavLoading(); navigateBy(prevNav); }}
-          else {{ showNoBrief(prevNav, "이전 브리핑이 없습니다."); }}
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
         }}
       }}, {{ passive: true }});
 
@@ -6498,23 +6846,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         hideNavLoading();
         resetNavRowFeedback();
       }});
-
-      // 힌트는 1번만 잠깐 노출(가독성 유지)
-      (function maybeShowSwipeHint() {{
-        if (!swipeHint) return;
-        try {{
-          var k = "agri_swipe_hint_shown";
-          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {{
-            swipeHint.style.display = "none";
-            return;
-          }}
-          swipeHint.style.display = "flex";
-          if (window.sessionStorage) sessionStorage.setItem(k, "1");
-          window.setTimeout(function() {{
-            swipeHint.style.display = "none";
-          }}, 1200);
-        }} catch (e) {{}}
-      }})();
+      // swipe hint disabled (never show)
 }})();
   </script>
   <!-- build: {BUILD_TAG} -->
@@ -7569,18 +7901,24 @@ def _extract_navrow_block(html_text: str) -> tuple[int, int, str] | None:
     return (s, e, html_text[s:e])
 
 def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], site_path: str) -> str:
-    prev_href = None
-    next_href = None
+    """Build the navRow HTML (archive button + prev/next + date select) for a given date.
+
+    IMPORTANT: archive_dates_desc must contain ONLY dates that have an existing archive page.
+    This prevents navigating to non-existent (holiday/missing) pages and avoids 404.
+    """
+    prev_href: str | None = None
+    next_href: str | None = None
+
     if cur_date in archive_dates_desc:
         idx = archive_dates_desc.index(cur_date)
-        # prev(더 과거) = idx+1
+        # prev (older) = idx+1
         if idx + 1 < len(archive_dates_desc):
             prev_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx+1]}.html")
-        # next(더 최신) = idx-1
+        # next (newer) = idx-1
         if idx - 1 >= 0:
             next_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
 
-    # 날짜 select (value도 절대경로)
+    # date select options (limit for performance)
     options = []
     for d in archive_dates_desc[:120]:
         sel = " selected" if d == cur_date else ""
@@ -7588,19 +7926,18 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
             f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
             f'{esc(short_date_label(d))} ({esc(weekday_label(d))})</option>'
         )
-    if not options:
-        options_html = f'<option value="{esc(build_site_url(site_path, f"archive/{cur_date}.html"))}" selected>{esc(short_date_label(cur_date))}</option>'
-    else:
-        options_html = "\n".join(options)
+    options_html = "\n".join(options) if options else (
+        f'<option value="{esc(build_site_url(site_path, f"archive/{cur_date}.html"))}" selected>'
+        f'{esc(short_date_label(cur_date))}</option>'
+    )
 
     def nav_btn(href: str | None, label: str, msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
-        return f'<button class="navBtn disabled" type="button" data-msg="{esc(msg)}">{esc(label)}</button>'
+        return f'<button class="navBtn disabled" type="button" data-nav="{esc(nav_key)}" data-msg="{esc(msg)}">{esc(label)}</button>'
 
     home_href = site_path
 
-    # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
         f'  <a class="navBtn navArchive" data-nav="archive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
@@ -7613,6 +7950,11 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
         f'  {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}\n'
         '</div>'
     )
+
+
+def render_nav_row(cur_date: str, archive_dates_desc: list[str], site_path: str) -> str:
+    """Compat helper used by UX patcher."""
+    return _build_navrow_html_for_date(cur_date, archive_dates_desc, site_path)
 
 def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_dates_desc: list[str], site_path: str) -> bool:
     """Patch docs/archive/{target_date}.html navRow (prev/next + dropdown) in-place. Returns True if updated."""
@@ -7639,6 +7981,19 @@ def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_date
     return True
 
 
+
+# UX patch run-level cache: list existing archive dates once to rebuild navRow without 404
+_UX_NAV_DATES_DESC: list[str] | None = None
+def _get_ux_nav_dates_desc(repo: str, token: str) -> list[str]:
+    global _UX_NAV_DATES_DESC
+    if _UX_NAV_DATES_DESC is None:
+        try:
+            s = _list_archive_dates(repo, token)
+            _UX_NAV_DATES_DESC = sorted(set(sanitize_dates(list(s))), reverse=True)
+        except Exception:
+            _UX_NAV_DATES_DESC = []
+    return _UX_NAV_DATES_DESC
+
 def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
     """Patch existing archive HTML to normalize UI/UX (nav label/style, swipe, chipbar) in-place.
 
@@ -7657,6 +8012,22 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
         html_new = _rebuild_missing_chipbar_from_sections(html_new)
         html_new = _normalize_existing_chipbar_titles(html_new)
+        # Remove swipe hint element entirely (requested: never show)
+        html_new = re.sub(r'\s*<div id="swipeHint"[^>]*>.*?</div>\s*', '\n', html_new, flags=re.S)
+        # -----------------------------
+        # 0.5) Rebuild navRow from existing archive pages (avoid stale href -> 404)
+        # -----------------------------
+        try:
+            nav_dates_desc = _get_ux_nav_dates_desc(repo, token)
+            if nav_dates_desc and iso_date not in nav_dates_desc:
+                nav_dates_desc = [iso_date] + nav_dates_desc
+            got_nav = _extract_navrow_block(html_new)
+            if got_nav and nav_dates_desc:
+                s0, e0, _blk = got_nav
+                html_new = html_new[:s0] + render_nav_row(iso_date, nav_dates_desc, site_path) + html_new[e0:]
+        except Exception as _e_nav:
+            log.warning("[WARN] navRow rebuild in ux_patch failed: %s", _e_nav)
+
         # -----------------------------
         # 0) Canonicalize label (older pages may have "최신/아카이브")
         # -----------------------------
@@ -7694,33 +8065,20 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
             )
 
         # -----------------------------
-        # 2) Ensure swipe hint + loading badge exist (insert safely after navRow block)
+        # 2) Ensure loading badge exists (insert safely after navRow block)
         # -----------------------------
-        hint_loading = (
-            '\n      <div id="swipeHint" class="swipeHint" aria-hidden="true">'
-            '\n        <span class="arrow">◀</span>'
-            '\n        <span class="txt pill">좌우 스와이프로 날짜 이동</span>'
-            '\n        <span class="arrow">▶</span>'
-            '\n      </div>'
+        loading_block = (
             '\n      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">'
             '\n        <span class="badge">날짜 이동 중…</span>'
             '\n      </div>\n'
         )
-        if 'id="swipeHint"' not in html_new or 'id="navLoading"' not in html_new:
+        if 'id="navLoading"' not in html_new:
             got = _extract_navrow_block(html_new)
             if got:
                 s, e, nav_block = got
-                insert = ""
-                if 'id="swipeHint"' not in html_new:
-                    insert += hint_loading
-                # if swipeHint exists but navLoading not, still add navLoading (keep both for script)
-                if 'id="swipeHint"' in html_new and 'id="navLoading"' not in html_new:
-                    insert += '\n      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">\n        <span class="badge">날짜 이동 중…</span>\n      </div>\n'
-                if insert:
-                    html_new = html_new[:e] + insert + html_new[e:]
+                html_new = html_new[:e] + loading_block + html_new[e:]
 
-        # -----------------------------
-        # 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
+# 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
         # -----------------------------
         html_new = re.sub(r'(<div\s+class="chipbar")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
         html_new = re.sub(r'(<div\s+class="chips")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
@@ -7728,15 +8086,16 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
         # -----------------------------
-        UX_VER = "20260226"
+        UX_VER = "20260228"
         css_block = f"""
     /* UX_PATCH_BEGIN v{UX_VER} */
+    #swipeHint,.swipeHint{{display:none !important;visibility:hidden !important;opacity:0 !important;height:0 !important;margin:0 !important;padding:0 !important;}}
     .navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     .navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
     /* fallback: first nav button (older pages without navArchive class) */
     .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     /* layout normalization (override legacy variations) */
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .sec{{margin-top:14px !important;border-radius:14px !important;}}
     /* chipbar/chips normalization */
     .chipbar{{border-top:1px solid var(--line);}}
@@ -7753,7 +8112,6 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
     }}
     .swipeHint{{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}}
-    .swipeHint.show{display:flex;opacity:.95}
     .swipeHint .pill{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}}
     .swipeHint .arrow{{font-size:12px;opacity:.85}}
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
@@ -7795,114 +8153,208 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # 5) Upsert canonical swipe JS (upgrade old patched pages too)
         # - Scope: article area (.wrap), ignore topbar interactions (chip sliding)
         # -----------------------------
-        js_block = f"""
+                js_block = f"""
   <!-- UX_PATCH_BEGIN v{UX_VER} -->
   <script>
   (function(){{
     try {{
       var navRow = document.querySelector('.navRow');
-      if(!navRow) return;
-      // robust prev/next detection
-      var prevNav = navRow.querySelector('a.navBtn[data-nav="prev"]');
-      var nextNav = navRow.querySelector('a.navBtn[data-nav="next"]');
-      if(!prevNav){{
-        var as1 = Array.prototype.slice.call(navRow.querySelectorAll('a.navBtn'));
-        prevNav = as1.find(function(a){{ return /이전|◀/.test((a.textContent||'')); }}) || null;
-      }}
-      if(!nextNav){{
-        var as2 = Array.prototype.slice.call(navRow.querySelectorAll('a.navBtn')).reverse();
-        nextNav = as2.find(function(a){{ return /다음|▶/.test((a.textContent||'')); }}) || null;
-      }}
-
       var navLoading = document.getElementById('navLoading');
       var isNavigating = false;
 
-      // Swipe hint: show briefly (avoid sticking)
-      var swipeHint = document.getElementById('swipeHint');
-      (function(){{
+      function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); try{{ setTimeout(function(){{ if(navLoading) navLoading.classList.remove('show'); }}, 1500); }}catch(e){{}} }}
+      function showNoBrief(_el, msg){{ try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}} }}
+
+      function _getRootPrefix() {{
         try {{
-          if(!swipeHint) return;
-          swipeHint.classList.remove('show');
-          var key = 'agri_swipe_hint_seen_v1';
-          var seen = false;
-          try {{ seen = window.localStorage && localStorage.getItem(key)==='1'; }} catch(e){{}}
-          if(seen) return;
-          if(window.matchMedia && !window.matchMedia('(max-width: 840px)').matches) return;
-          swipeHint.classList.add('show');
-          window.setTimeout(function(){{
-            try {{ swipeHint.classList.remove('show'); }} catch(e){{}}
-          }}, 2500);
-          try {{ window.localStorage && localStorage.setItem(key,'1'); }} catch(e){{}}
-        }} catch(e){{}}
-      }})();
+          var href = String(window.location.href || "");
+          var i = href.indexOf("/archive/");
+          if (i >= 0) return href.slice(0, i + 1);
+          var p = href.replace(/[#?].*$/, "");
+          return p.substring(0, p.lastIndexOf("/") + 1);
+        }} catch (e) {{
+          return "/";
+        }}
+      }}
+      function _dateToUrl(d){{ return _getRootPrefix() + "archive/" + d + ".html"; }}
+      function _extractDate(s) {{
+        if (!s) return "";
+        var str = String(s);
+        var m = str.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
+        if (m && m[1]) return m[1];
+        if (/^\d{{4}}-\d{{2}}-\d{{2}}$/.test(str)) return str;
+        return "";
+      }}
+      function _currentDateIso() {{
+        return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+      }}
 
+      var __manifestDates = null;
 
-      // Date select navigation (older pages may miss handler)
-      var sel = document.getElementById('dateSelect');
-      if(sel && !sel.getAttribute('data-bound')){{
-        sel.setAttribute('data-swipe-ignore','1');
-        sel.setAttribute('data-bound','1');
-        sel.addEventListener('change', function(){{
+      function _setSelectDates(dates) {{
+        var sel = document.getElementById("dateSelect");
+        if (!sel) return;
+        var cur = _currentDateIso();
+        try {{ sel.innerHTML = ""; }} catch(e) {{}}
+        for (var i = 0; i < dates.length; i++) {{
+          var d = dates[i];
+          var opt = document.createElement("option");
+          opt.value = _dateToUrl(d);
+          opt.textContent = d;
+          if (d === cur) opt.selected = true;
+          sel.appendChild(opt);
+        }}
+      }}
+
+      async function _fetchManifestDates() {{
+        try {{
+          var url = _getRootPrefix() + "archive_manifest.json";
+          var r = await fetch(url, {{ cache: "no-store" }});
+          if (!r || !r.ok) return null;
+          var obj = await r.json();
+          var dates = (obj && obj.dates) ? obj.dates : null;
+          if (!dates || !Array.isArray(dates)) return null;
+          var clean = [];
+          for (var i = 0; i < dates.length; i++) {{
+            var d = dates[i];
+            if (typeof d === "string" && /^\d{{4}}-\d{{2}}-\d{{2}}$/.test(d)) clean.push(d);
+          }}
+          clean = Array.from(new Set(clean));
+          clean.sort(); clean.reverse();
+          return clean;
+        }} catch (e) {{
+          return null;
+        }}
+      }}
+
+      async function _ensureDates() {{
+        if (__manifestDates && __manifestDates.length) return __manifestDates;
+        var dates = await _fetchManifestDates();
+        if (dates && dates.length) {{
+          __manifestDates = dates;
+          _setSelectDates(dates);
+          return __manifestDates;
+        }}
+        // fallback: derive from select options
+        var sel = document.getElementById("dateSelect");
+        var ds = [];
+        if (sel) {{
+          for (var i = 0; i < sel.options.length; i++) {{
+            var opt = sel.options[i];
+            var d = _extractDate(opt.value) || _extractDate(opt.textContent || "");
+            if (d) ds.push(d);
+          }}
+        }}
+        ds = Array.from(new Set(ds));
+        ds.sort(); ds.reverse();
+        __manifestDates = ds;
+        return __manifestDates;
+      }}
+
+      async function gotoByOffset(delta, msg) {{
+        var dates = await _ensureDates();
+        if (!dates || !dates.length) {{ showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }}
+        var cur = _currentDateIso();
+        var idx = dates.indexOf(cur);
+        if (idx < 0) idx = 0;
+        var j = idx + delta;
+        if (j < 0 || j >= dates.length) {{ showNoBrief(null, msg || (delta>0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다.")); return; }}
+        if (isNavigating) return;
+        isNavigating = true;
+        showNavLoading();
+        window.location.href = _dateToUrl(dates[j]);
+      }}
+
+      async function gotoUrlChecked(url, msg) {{
+        if (!url || isNavigating) return;
+        var dates = await _ensureDates();
+        var d = _extractDate(url);
+        if (d && dates && dates.indexOf(d) >= 0) {{
+          isNavigating = true;
+          showNavLoading();
+          window.location.href = _dateToUrl(d);
+          return;
+        }}
+        showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+      }}
+
+      // bind prev/next buttons (text based)
+      function _pickNav(kind) {{
+        if (!navRow) return null;
+        var el = navRow.querySelector('[data-nav="' + kind + '"]');
+        if (el) return el;
+        var links = navRow.querySelectorAll('a.navBtn,button.navBtn');
+        for (var i = 0; i < links.length; i++) {{
+          var t = (links[i].textContent || "") + " " + (links[i].getAttribute ? (links[i].getAttribute("title") || "") : "");
+          if (kind === "prev" && t.indexOf("이전") >= 0) return links[i];
+          if (kind === "next" && t.indexOf("다음") >= 0) return links[i];
+        }}
+        return null;
+      }}
+
+      function _bindNavClick(el, delta, msg) {{
+        if (!el || !el.addEventListener) return;
+        try {{
+          el.setAttribute && el.setAttribute("data-swipe-ignore","1");
+          el.addEventListener("click", function(ev) {{
+            try {{ ev.preventDefault(); }} catch(e) {{}}
+            gotoByOffset(delta, msg);
+          }});
+        }} catch(e2) {{}}
+      }}
+
+      var prevNav = _pickNav("prev");
+      var nextNav = _pickNav("next");
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      // date select
+      var sel = document.getElementById("dateSelect");
+      if (sel) {{
+        try {{ sel.setAttribute("data-swipe-ignore","1"); }} catch(e) {{}}
+        sel.addEventListener("change", function() {{
           var v = sel.value;
-          if(v){{ isNavigating=true; showNavLoading(); window.location.href = v; }}
+          if (v) gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
         }});
       }}
 
-      function hasHref(el){{ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }}
-      function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); }}
-      function hideNavLoading(){{ if(navLoading) navLoading.classList.remove('show'); }}
-
-      function isBlockedTarget(target){{
-        if(!target || !target.closest) return false;
-        if(target.closest('[data-swipe-ignore="1"]')) return true;
-        // block topbar gestures (nav buttons / date select / section chips)
-        if(target.closest('.topbar')) return true;
-        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+      // swipe
+      var sx=0, sy=0, st=0, blocked=false;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+      function _isBlockedTarget(target) {{
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\\"true\\"]")) return true;
         return false;
       }}
+      swipeArea.addEventListener("touchstart", function(e) {{
+        if (!e.touches || e.touches.length !== 1) return;
+        blocked = _isBlockedTarget(e.target);
+        var t = e.touches[0];
+        sx=t.clientX; sy=t.clientY; st=Date.now();
+      }}, {{ passive:true }});
+      swipeArea.addEventListener("touchend", function(e) {{
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        if (blocked || _isBlockedTarget(e.target)) return;
+        var t = e.changedTouches[0];
+        var dx=t.clientX-sx;
+        var dy=t.clientY-sy;
+        var dt=Date.now()-st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        else gotoByOffset(+1, "이전 브리핑이 없습니다.");
+      }}, {{ passive:true }});
 
-      function navigateBy(el){{
-        if(!el || isNavigating) return;
-        if(el.tagName && el.tagName.toLowerCase()==='a'){{
-          var href = el.getAttribute('href');
-          if(href){{ isNavigating=true; showNavLoading(); window.location.href=href; return; }}
-        }}
-        try{{ el.click(); }}catch(e){{}}
-      }}
+      // kick: load manifest (non-blocking)
+      try {{ _ensureDates(); }} catch(e) {{}}
 
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
-
-      swipeArea.addEventListener('touchstart', function(e){{
-        if(!e.touches || e.touches.length!==1) return;
-        blocked = isBlockedTarget(e.target);
-        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-      }}, {{passive:true}});
-
-      swipeArea.addEventListener('touchend', function(e){{
-        if(!e.changedTouches || e.changedTouches.length!==1) return;
-        if(blocked || isBlockedTarget(e.target)) return;
-        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-        // stronger threshold to avoid accidental navigations while scrolling
-        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-        showNavLoading();
-        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-      }}, {{passive:true}});
-
-      document.addEventListener('keydown', function(e){{
-        if(!e) return;
-        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-        if(isBlockedTarget(e.target)) return;
-        if(e.key==='ArrowLeft'){{ if(hasHref(prevNav)){{ showNavLoading(); navigateBy(prevNav); }} }}
-        else if(e.key==='ArrowRight'){{ if(hasHref(nextNav)){{ showNavLoading(); navigateBy(nextNav); }} }}
-      }});
-
-      window.addEventListener('pageshow', function(){{ isNavigating=false; hideNavLoading(); }});
-    }} catch(e){{}}
+    }} catch(e) {{}}
   }})();
   </script>
-  <!-- UX_PATCH_END v{UX_VER} -->
+  <!-- UX_PATCH_END -->
 """
+
         if "UX_PATCH_BEGIN" in html_new and "<!-- UX_PATCH_BEGIN" in html_new:
             html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", js_block, html_new, flags=re.S|re.I)
         else:
@@ -7922,6 +8374,22 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
         if html_new == raw:
             return False
+
+        
+        # -----------------------------
+        # NAVROW_PATCH_IN_UX: rebuild prev/next + dropdown from manifest
+        # (fixes 404 navigation to weekends/holidays like 2026-02-22)
+        # -----------------------------
+        try:
+            dates_desc = _get_manifest_dates_desc_cached(repo, token)
+            if dates_desc:
+                nav_block = _extract_navrow_block(html_new)
+                if nav_block:
+                    s, e, _old = nav_block
+                    new_nav = _build_navrow_html_for_date(iso_date, dates_desc, site_path)
+                    html_new = html_new[:s] + new_nav + html_new[e:]
+        except Exception:
+            pass
 
         github_put_file(repo, path, html_new, token, f"UX patch {iso_date}", sha=sha, branch="main")
         return True
@@ -8067,13 +8535,6 @@ def backfill_rebuild_recent_archives(
         if d == report_date:
             cur -= timedelta(days=1)
             continue
-        # 기본 정책: 비영업일(주말/공휴일)은 백필 대상에서 제외(필요 시 BACKFILL_INCLUDE_NONBUSINESS_DAYS=true로 override)
-        try:
-            if (not BACKFILL_INCLUDE_NONBUSINESS_DAYS) and (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(cur)):
-                cur -= timedelta(days=1)
-                continue
-        except Exception:
-            pass
         if (not create_missing) and (d not in avail):
             cur -= timedelta(days=1)
             continue
@@ -8083,7 +8544,23 @@ def backfill_rebuild_recent_archives(
     if not targets:
         return search_idx
 
-    nav_dates_desc = sorted(set((archive_dates_desc or []) + targets + [report_date]), reverse=True)
+
+    # ✅ Prevent 404: exclude non-business days from navigation/date list by default
+    include_nonbiz = (os.getenv("BACKFILL_INCLUDE_NONBUSINESS_DAYS", "false") or "").strip().lower() in ("1", "true", "yes", "y")
+    if (not include_nonbiz) and (not FORCE_RUN_ANYDAY):
+        try:
+            targets = [d for d in targets if is_business_day_kr(date.fromisoformat(d))]
+        except Exception:
+            pass
+
+    # navigation pool: existing archives + targets + report_date
+    nav_pool = set((archive_dates_desc or [])) | set(targets) | {report_date}
+    if (not include_nonbiz) and (not FORCE_RUN_ANYDAY):
+        try:
+            nav_pool = {d for d in nav_pool if is_business_day_kr(date.fromisoformat(d))}
+        except Exception:
+            pass
+    nav_dates_desc = sorted(nav_pool, reverse=True)
 
     log.info("[BACKFILL] available archives=%d | rebuild %d day(s): %s", len(avail), len(targets), ", ".join(targets))
 
@@ -8130,6 +8607,212 @@ def backfill_rebuild_recent_archives(
 
 
 
+# -----------------------------
+# Maintenance helpers (rebuild/backfill) - no Kakao, no state update
+# -----------------------------
+
+def _list_archive_dates(repo: str, token: str) -> set[str]:
+    """Return set of YYYY-MM-DD existing under docs/archive (best-effort)."""
+    dset: set[str] = set()
+    try:
+        items = github_list_dir(repo, DOCS_ARCHIVE_DIR, token, ref="main")
+        for it in (items or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    dset.add(dd)
+    except Exception:
+        pass
+    return dset
+
+
+def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
+    """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso."""
+    try:
+        days = int(UX_PATCH_DAYS or 0)
+    except Exception:
+        days = 0
+    if days <= 0:
+        return
+    try:
+        base = date.fromisoformat(base_iso)
+    except Exception:
+        return
+    patched = 0
+    skipped = 0
+    for i in range(0, days):
+        d2 = (base - timedelta(days=i)).isoformat()
+        try:
+            if patch_archive_page_ux(repo, token, d2, site_path):
+                patched += 1
+            else:
+                skipped += 1
+        except Exception:
+            skipped += 1
+    log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", patched, skipped, days)
+
+
+def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True):
+    """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
+    if not report_date or not is_iso_date_str(report_date):
+        raise ValueError("report_date must be YYYY-MM-DD")
+    # business-day guard (override with FORCE_RUN_ANYDAY)
+    try:
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(date.fromisoformat(report_date))):
+            log.info("[MAINT] rebuild_date skip non-business day: %s", report_date)
+            return
+    except Exception:
+        pass
+
+    start_kst, end_kst = _compute_window_for_report_date(report_date)
+    log.info("[MAINT] rebuild_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+
+    # collect + summarize
+    by_section = collect_all_sections(start_kst, end_kst)
+    summary_cache = load_summary_cache(repo, token)
+    by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
+
+    # nav dates from actual archive listing
+    avail = _list_archive_dates(repo, token)
+    avail.add(report_date)
+    archive_dates_desc = sorted(avail, reverse=True)
+
+    # render
+    daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+    daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
+    raw_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
+    github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
+    log.info("[MAINT PUT] %s", daily_path)
+
+    # update search index
+    search_idx, ssha = load_search_index(repo, token)
+    search_idx = update_search_index(search_idx, report_date, by_section, site_path)
+    save_search_index(repo, token, search_idx, ssha)
+
+    # refresh index based on archive listing
+    avail2 = _list_archive_dates(repo, token)
+    avail2.add(report_date)
+    archive_dates_desc2 = sorted(avail2, reverse=True)
+    index_html = render_index_page({"dates": archive_dates_desc2}, site_path)
+    raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
+    github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index {report_date}", sha=sha_i, branch="main")
+
+
+    # refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        avail3 = _list_archive_dates(repo, token)
+        avail3.add(report_date)
+        dates_sorted = sorted(set(sanitize_dates(list(avail3))))
+        manifest3, msha3 = load_archive_manifest(repo, token)
+        manifest3 = _normalize_manifest(manifest3)
+        manifest3["dates"] = dates_sorted
+        save_archive_manifest(repo, token, manifest3, msha3)
+        save_docs_archive_manifest(repo, token, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] manifest update after rebuild_date failed: %s", e)
+
+    # neighbor nav repair (older pages may miss next/prev)
+    try:
+        backfill_neighbor_archive_nav(repo, token, report_date, archive_dates_desc2, site_path)
+    except Exception as e:
+        log.warning("[WARN] neighbor nav backfill failed: %s", e)
+
+    # optional UX patch sweep
+    _maybe_ux_patch(repo, token, report_date, site_path)
+
+    # save summary cache (rebuild may create new summaries)
+    try:
+        save_summary_cache(repo, token, summary_cache)
+    except Exception as e:
+        log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
+
+
+    # optional Kakao send (maintenance rebuild_date)
+    if MAINTENANCE_SEND_KAKAO:
+        try:
+            base_url = get_pages_base_url(repo).rstrip("/")
+            daily_url = f"{base_url}/archive/{report_date}.html"
+            kakao_text = build_kakao_message(report_date, by_section)
+            if KAKAO_INCLUDE_LINK_IN_TEXT:
+                kakao_text = kakao_text + "\n" + daily_url
+            daily_url = ensure_absolute_http_url(daily_url)
+            log_kakao_link(daily_url)
+            kakao_send_to_me(kakao_text, daily_url)
+            log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
+        except Exception as e:
+            if KAKAO_FAIL_OPEN:
+                log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+            else:
+                raise
+
+def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str):
+    """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
+    if not base_date_iso or not is_iso_date_str(base_date_iso):
+        raise ValueError("base_date_iso must be YYYY-MM-DD")
+    # if base date is weekend/holiday and not allowed, shift to previous business day
+    try:
+        bd = date.fromisoformat(base_date_iso)
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(bd)):
+            bd2 = previous_business_day(bd)
+            base_date_iso = bd2.isoformat()
+            log.info("[MAINT] backfill base shifted to previous business day: %s", base_date_iso)
+    except Exception:
+        pass
+
+    summary_cache = load_summary_cache(repo, token)
+    search_idx, ssha = load_search_index(repo, token)
+
+    avail = _list_archive_dates(repo, token)
+    avail.add(base_date_iso)
+    archive_dates_desc = sorted(avail, reverse=True)
+
+    search_idx = backfill_rebuild_recent_archives(
+        repo, token, base_date_iso, archive_dates_desc, site_path, summary_cache, search_idx
+    )
+    save_search_index(repo, token, search_idx, ssha)
+
+    # index refresh (in case create_missing enabled)
+    avail2 = _list_archive_dates(repo, token)
+    avail2.add(base_date_iso)
+    archive_dates_desc2 = sorted(avail2, reverse=True)
+    index_html = render_index_page({"dates": archive_dates_desc2}, site_path)
+    raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
+    github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index after backfill {base_date_iso}", sha=sha_i, branch="main")
+
+
+    # refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        dates_sorted = sorted(set(sanitize_dates(list(avail2))))
+        manifest3, msha3 = load_archive_manifest(repo, token)
+        manifest3 = _normalize_manifest(manifest3)
+        manifest3["dates"] = dates_sorted
+        save_archive_manifest(repo, token, manifest3, msha3)
+        save_docs_archive_manifest(repo, token, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] manifest update after maintenance backfill failed: %s", e)
+
+    # neighbor nav repair (older pages may miss next/prev)
+    try:
+        backfill_neighbor_archive_nav(repo, token, base_date_iso, archive_dates_desc2, site_path)
+    except Exception as e:
+        log.warning("[WARN] neighbor nav backfill failed: %s", e)
+
+    # optional UX patch sweep
+    _maybe_ux_patch(repo, token, base_date_iso, site_path)
+
+    # save summary cache (backfill may create new summaries)
+    try:
+        save_summary_cache(repo, token, summary_cache)
+    except Exception as e:
+        log.warning("[WARN] save_summary_cache after backfill failed: %s", e)
+
+
+
+
+
+
+
 def main():
     log.info("[BUILD] %s", BUILD_TAG)
     if not DEFAULT_REPO:
@@ -8164,32 +8847,9 @@ def main():
 
         ux_patched = 0
         ux_skipped = 0
-
-        # Build navigation dates from actual existing archive files (so nav never points to missing holidays)
-        archive_dates_desc: list[str] = []
-        try:
-            items = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
-            ds: list[str] = []
-            for it in (items or []):
-                nm = it.get("name") if isinstance(it, dict) else None
-                if isinstance(nm, str) and nm.endswith(".html"):
-                    dd = nm[:-5]
-                    if is_iso_date_str(dd):
-                        ds.append(dd)
-            archive_dates_desc = sorted(set(ds), reverse=True)
-        except Exception as e:
-            log.warning("[WARN] build archive_dates_desc failed: %s", e)
-            archive_dates_desc = []
-
         for i in range(0, days):
             d2 = (base_d - timedelta(days=i)).isoformat()
             try:
-                # Patch navRow first so href 자체가 휴일로 가지 않게 함
-                if archive_dates_desc and (d2 in archive_dates_desc):
-                    try:
-                        patch_archive_page_nav(repo, GH_TOKEN, d2, archive_dates_desc, site_path)
-                    except Exception as e:
-                        log.warning("[WARN] nav patch failed for %s: %s", d2, e)
                 if patch_archive_page_ux(repo, GH_TOKEN, d2, site_path):
                     ux_patched += 1
                 else:
@@ -8197,6 +8857,52 @@ def main():
             except Exception:
                 ux_skipped += 1
         log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", ux_patched, ux_skipped, days)
+        return
+
+    # -----------------------------
+    # Maintenance tasks (rebuild/backfill) - no Kakao, no state update
+    # -----------------------------
+    if maintenance_task in ("rebuild_date", "backfill_rebuild"):
+        if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
+            raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
+        try:
+            site_path = get_site_path(repo)
+        except Exception:
+            site_path = "/"
+
+        if maintenance_task == "rebuild_date":
+            if not FORCE_REPORT_DATE:
+                raise RuntimeError("FORCE_REPORT_DATE(force_report_date) is required for task=rebuild_date")
+            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+            maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)
+            return
+
+        # maintenance_task == "backfill_rebuild"
+        base_iso = ""
+        try:
+            base_iso = (_parse_force_report_date(FORCE_REPORT_DATE).isoformat() if FORCE_REPORT_DATE else end_kst.date().isoformat())
+        except Exception:
+            base_iso = end_kst.date().isoformat()
+        maintenance_backfill_rebuild(repo, GH_TOKEN, base_iso, site_path)
+        return
+
+    # -----------------------------
+    # Manual rebuild (workflow_dispatch force_report_date)
+    # - Use the same safe path as maintenance: correct window, no Kakao, no state update
+    # -----------------------------
+    if FORCE_REPORT_DATE:
+        if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
+            raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
+        try:
+            site_path = get_site_path(repo)
+        except Exception:
+            site_path = "/"
+        d_iso = ""
+        try:
+            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+        except Exception:
+            d_iso = str(FORCE_REPORT_DATE).strip()
+        maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)
         return
 
     # Normal run requires external API credentials
@@ -8220,6 +8926,25 @@ def main():
         except Exception:
             force_iso = ""
     report_date = REPORT_DATE_OVERRIDE or force_iso or end_kst.date().isoformat()
+
+    # -----------------------------
+    # 72h 슬라이딩 윈도우 + 크로스데이(최근 N일) 중복 방지 초기화
+    # - FORCE_REPORT_DATE(수동 재생성) / maintenance에서는 중복 방지를 기본 OFF(재현성/작업 편의)
+    # - 정상 daily run에서만 ON (필요 시 env CROSSDAY_DEDUPE_ENABLED로 끄기)
+    global CROSSDAY_DEDUPE_ENABLED, RECENT_HISTORY_CANON, RECENT_HISTORY_NORM
+    CROSSDAY_DEDUPE_ENABLED = bool(CROSSDAY_DEDUPE_ENABLED_ENV) and (maintenance_task == "") and (not bool(FORCE_REPORT_DATE))
+    if CROSSDAY_DEDUPE_ENABLED:
+        try:
+            _st = load_state(repo, GH_TOKEN)
+            _recent = normalize_recent_items(_st.get("recent_items", []), end_kst.date())
+            RECENT_HISTORY_CANON = set([it.get("canon","") for it in _recent if it.get("canon")])
+            RECENT_HISTORY_NORM = set([it.get("norm","") for it in _recent if it.get("norm")])
+        except Exception:
+            RECENT_HISTORY_CANON = set()
+            RECENT_HISTORY_NORM = set()
+    else:
+        RECENT_HISTORY_CANON = set()
+        RECENT_HISTORY_NORM = set()
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
@@ -8339,6 +9064,12 @@ def main():
             log.warning("[WARN] refresh archive dates after backfill failed: %s", e2)
     except Exception as e:
         log.warning("[WARN] backfill rebuild failed: %s", e)
+    # ✅ backfill 후 요약 캐시 저장(백필에서 새로 생성된 요약 반영)
+    try:
+        save_summary_cache(repo, GH_TOKEN, summary_cache)
+    except Exception as e2:
+        log.warning("[WARN] save_summary_cache after backfill failed: %s", e2)
+
     save_search_index(repo, GH_TOKEN, search_idx, ssha)
 
 
@@ -8359,24 +9090,69 @@ def main():
     except Exception as e:
         log.warning("[WARN] backfill_neighbor_archive_nav failed: %s", e)
 
-# save manifest/state (manifest는 clean 유지)
-
-    # ✅ 백필 재생성 후: archive listing을 다시 읽어 manifest dates를 최신화(다음 실행에서도 날짜 목록 일관성 유지)
+    # ---- manifest & index hygiene ----
+    # Build a date list ONLY from existing docs/archive/*.html to avoid 404 navigation
     try:
-        items2 = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
-        dset2: set[str] = set()
-        for it in (items2 or []):
-            nm = it.get("name") if isinstance(it, dict) else None
-            if isinstance(nm, str) and nm.endswith(".html"):
-                dd = nm[:-5]
-                if is_iso_date_str(dd):
-                    dset2.add(dd)
-        dset2.add(report_date)
-        manifest["dates"] = sorted(set(sanitize_dates(list(dset2))))
+        avail = _list_archive_dates(repo, GH_TOKEN)
+        avail.add(report_date)
+        dates_sorted = sorted(set(sanitize_dates(list(avail))))
     except Exception as e:
-        log.warning("[WARN] manifest refresh after backfill failed: %s", e)
-    save_archive_manifest(repo, GH_TOKEN, manifest, msha)
-    save_state(repo, GH_TOKEN, end_kst)
+        log.warning("[WARN] list archives for manifest failed: %s", e)
+        dates_sorted = [report_date] if is_iso_date_str(report_date) else []
+
+    # Ensure manifest object exists
+    try:
+        _m = manifest if isinstance(manifest, dict) else {"dates": []}
+    except Exception:
+        _m = {"dates": []}
+    try:
+        _m = _normalize_manifest(_m)
+    except Exception:
+        if not isinstance(_m, dict):
+            _m = {"dates": []}
+        _m.setdefault("dates", [])
+    _m["dates"] = dates_sorted
+    manifest = _m
+
+    # Save manifests (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        save_archive_manifest(repo, GH_TOKEN, manifest, msha)
+    except Exception as e:
+        log.warning("[WARN] save_archive_manifest failed: %s", e)
+    try:
+        save_docs_archive_manifest(repo, GH_TOKEN, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] save_docs_archive_manifest failed: %s", e)
+
+    # Re-render index using manifest dates (avoid listing dates without pages)
+    try:
+        dates_desc_fixed = sorted(set(dates_sorted or []), reverse=True)
+        index_html_fixed = render_index_page({"dates": dates_desc_fixed}, site_path)
+        _raw_i_fix, sha_i_fix = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
+        github_put_file(repo, DOCS_INDEX_PATH, index_html_fixed, GH_TOKEN, f"Update index (fixed) {report_date}", sha=sha_i_fix, branch="main")
+    except Exception as e:
+        log.warning("[WARN] index re-render after manifest refresh failed: %s", e)
+
+    # Update state (cross-day dedupe history) before Kakao send
+    recent_items2 = None
+    try:
+        st0 = load_state(repo, GH_TOKEN)
+        base_day = end_kst.astimezone(KST).date()
+        recent_items2 = normalize_recent_items(st0.get("recent_items", []), base_day)
+        if isinstance(by_section, dict):
+            for _sec_items in by_section.values():
+                for a in (_sec_items or []):
+                    try:
+                        recent_items2.append({"date": report_date, "canon": getattr(a, "canon_url", None), "norm": getattr(a, "norm_key", None)})
+                    except Exception:
+                        pass
+        recent_items2 = normalize_recent_items(recent_items2, base_day)
+    except Exception:
+        recent_items2 = None
+    try:
+        save_state(repo, GH_TOKEN, end_kst, recent_items=recent_items2)
+    except Exception as e:
+        log.warning("[WARN] save_state failed: %s", e)
 
     # Kakao message (핵심2)
     kakao_text = build_kakao_message(report_date, by_section)
@@ -8398,6 +9174,7 @@ def main():
             log.error("[KAKAO] send failed but continue (fail-open): %s", e)
         else:
             raise
+
 
 
 if __name__ == "__main__":
