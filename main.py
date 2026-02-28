@@ -6267,6 +6267,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
     .swipeHint .arrow{{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}}
     .swipeHint .txt{{letter-spacing:-0.1px}}
+    .swipeHint.show{display:flex;opacity:.95}
     .swipeHint .pill{{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}}
     @media (hover:hover) and (pointer:fine){{ .swipeHint{{display:none !important;}} }}
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
@@ -7752,6 +7753,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
     }}
     .swipeHint{{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}}
+    .swipeHint.show{display:flex;opacity:.95}
     .swipeHint .pill{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}}
     .swipeHint .arrow{{font-size:12px;opacity:.85}}
     @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
@@ -7814,6 +7816,26 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
       var navLoading = document.getElementById('navLoading');
       var isNavigating = false;
+
+      // Swipe hint: show briefly (avoid sticking)
+      var swipeHint = document.getElementById('swipeHint');
+      (function(){
+        try {
+          if(!swipeHint) return;
+          swipeHint.classList.remove('show');
+          var key = 'agri_swipe_hint_seen_v1';
+          var seen = false;
+          try { seen = window.localStorage && localStorage.getItem(key)==='1'; } catch(e){}
+          if(seen) return;
+          if(window.matchMedia && !window.matchMedia('(max-width: 840px)').matches) return;
+          swipeHint.classList.add('show');
+          window.setTimeout(function(){
+            try { swipeHint.classList.remove('show'); } catch(e){}
+          }, 2500);
+          try { window.localStorage && localStorage.setItem(key,'1'); } catch(e){}
+        } catch(e){}
+      })();
+
 
       // Date select navigation (older pages may miss handler)
       var sel = document.getElementById('dateSelect');
