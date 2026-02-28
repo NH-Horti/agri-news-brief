@@ -130,6 +130,15 @@ def http_session():
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
+WINDOW_MIN_HOURS = int(os.getenv("WINDOW_MIN_HOURS", "72"))  # 최소 후보 수집 윈도우(시간)
+CROSSDAY_DEDUPE_DAYS = int(os.getenv("CROSSDAY_DEDUPE_DAYS", "7"))  # 최근 N일 URL/사건키 중복 방지
+CROSSDAY_DEDUPE_ENABLED_ENV = (os.getenv("CROSSDAY_DEDUPE_ENABLED", "true").strip().lower() == "true")
+
+# 최근 히스토리(크로스데이 중복 방지) - main()에서 state를 읽어 채움
+CROSSDAY_DEDUPE_ENABLED = False
+RECENT_HISTORY_CANON: set[str] = set()
+RECENT_HISTORY_NORM: set[str] = set()
+
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
 
@@ -2883,6 +2892,7 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
 # -----------------------------
 # State / archive manifest
 # -----------------------------
+
 def load_state(repo: str, token: str):
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     if not raw:
@@ -2893,25 +2903,63 @@ def load_state(repo: str, token: str):
     except Exception:
         return {"last_end_iso": None}
 
-def save_state(repo: str, token: str, last_end: datetime):
-    payload = {"last_end_iso": last_end.isoformat()}
+def _parse_ymd(s: str) -> date | None:
+    if not s:
+        return None
+    try:
+        return date.fromisoformat(s[:10])
+    except Exception:
+        return None
+
+def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
+    """state.recent_items를 표준화하고, base_day 기준 최근 N일만 남긴다."""
+    if not isinstance(recent_items, list):
+        return []
+    cutoff = base_day - timedelta(days=max(CROSSDAY_DEDUPE_DAYS, 0))
+    out: list[dict] = []
+    for it in recent_items:
+        if not isinstance(it, dict):
+            continue
+        canon = (it.get("canon") or it.get("url") or "").strip()
+        norm = (it.get("norm") or it.get("norm_key") or "").strip()
+        d = _parse_ymd(str(it.get("date") or ""))
+        if not d:
+            continue
+        if d < cutoff:
+            continue
+        if not (canon or norm):
+            continue
+        out.append({"date": d.isoformat(), "canon": canon, "norm": norm})
+    # 키 중복 제거(최근 것을 우선)
+    uniq = {}
+    for it in sorted(out, key=lambda x: x.get("date", ""), reverse=True):
+        k = it.get("norm") or it.get("canon")
+        if not k:
+            continue
+        if k not in uniq:
+            uniq[k] = it
+    # 파일 크기 제한
+    return list(sorted(uniq.values(), key=lambda x: x.get("date", ""), reverse=True))[:2000]
+
+def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dict] | None = None):
+    # 기존 state를 읽어 스키마 확장에 대응(호환성 유지)
+    old = load_state(repo, token)
+    base_day = last_end.astimezone(KST).date()
+
+    if recent_items is None:
+        recent_items = normalize_recent_items(old.get("recent_items", []), base_day)
+    else:
+        recent_items = normalize_recent_items(recent_items, base_day)
+
+    payload = {
+        "last_end_iso": last_end.isoformat(),
+        "recent_keep_days": CROSSDAY_DEDUPE_DAYS,
+        "recent_items": recent_items,
+    }
+
     _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token,
-                    f"Update state {last_end.date().isoformat()}", sha=sha, branch="main")
-
-def _normalize_manifest(obj):
-    if obj is None:
-        return {"dates": []}
-    if isinstance(obj, list):
-        return {"dates": [str(x) for x in obj if str(x).strip()]}
-    if isinstance(obj, dict):
-        dates = obj.get("dates", [])
-        if isinstance(dates, list):
-            return {"dates": [str(x) for x in dates if str(x).strip()]}
-        if isinstance(dates, str) and dates.strip():
-            return {"dates": [dates.strip()]}
-        return {"dates": []}
-    return {"dates": []}
+                    "Update state", sha=sha, branch="main")
 
 def load_archive_manifest(repo: str, token: str):
     raw, sha = github_get_file(repo, ARCHIVE_MANIFEST_PATH, token, ref="main")
@@ -4818,7 +4866,17 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             if not pub:
                 # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
                 continue
-            if pub < start_kst or pub >= end_kst:
+            soft_start = start_kst
+            try:
+                min_hours = WINDOW_MIN_HOURS
+                if min_hours and min_hours > 0:
+                    min_start = end_kst - timedelta(hours=min_hours)
+                    if min_start < soft_start:
+                        soft_start = min_start
+            except Exception:
+                soft_start = start_kst
+
+            if pub < soft_start or pub >= end_kst:
                 continue
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
@@ -4830,6 +4888,10 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
+
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
+
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
             score = compute_rank_score(title, desc, dom, pub, section_conf, press)
@@ -4880,7 +4942,17 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             origin = strip_tracking_params(it.get("originallink", "") or link)
             pub = parse_pubdate_to_kst(it.get("pubDate", ""))
 
-            if pub < start_kst or pub >= end_kst:
+            soft_start = start_kst
+            try:
+                min_hours = WINDOW_MIN_HOURS
+                if min_hours and min_hours > 0:
+                    min_start = end_kst - timedelta(hours=min_hours)
+                    if min_start < soft_start:
+                        soft_start = min_start
+            except Exception:
+                soft_start = start_kst
+
+            if pub < soft_start or pub >= end_kst:
                 continue
 
             dom = domain_of(origin) or domain_of(link)
@@ -4895,6 +4967,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             title_key = norm_title_key(title)
             topic = extract_topic(title, desc)
             norm_key = make_norm_key(canon, press, title_key)
+
+            # 크로스데이(최근 N일) 중복 방지: 72h 윈도우 확장 시 같은 기사가 반복 노출되는 것 최소화
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
 
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
@@ -5204,6 +5280,10 @@ def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]],
             title_key = norm_title_key(title)
             topic = "보고서"
             norm_key = make_norm_key(canon, press, title_key)
+
+            # 크로스데이(최근 N일) 중복 방지: 72h 윈도우 확장 시 같은 기사가 반복 노출되는 것 최소화
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
 
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
@@ -6192,7 +6272,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
     .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
@@ -7733,7 +7813,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
     /* fallback: first nav button (older pages without navArchive class) */
     .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     /* layout normalization (override legacy variations) */
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}}
+    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .sec{{margin-top:14px !important;border-radius:14px !important;}}
     /* chipbar/chips normalization */
     .chipbar{{border-top:1px solid var(--line);}}
@@ -8080,6 +8160,159 @@ def backfill_rebuild_recent_archives(
 
 
 
+# -----------------------------
+# Maintenance helpers (rebuild/backfill) - no Kakao, no state update
+# -----------------------------
+
+def _list_archive_dates(repo: str, token: str) -> set[str]:
+    """Return set of YYYY-MM-DD existing under docs/archive (best-effort)."""
+    dset: set[str] = set()
+    try:
+        items = github_list_dir(repo, DOCS_ARCHIVE_DIR, token, ref="main")
+        for it in (items or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    dset.add(dd)
+    except Exception:
+        pass
+    return dset
+
+
+def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
+    """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso."""
+    try:
+        days = int(UX_PATCH_DAYS or 0)
+    except Exception:
+        days = 0
+    if days <= 0:
+        return
+    try:
+        base = date.fromisoformat(base_iso)
+    except Exception:
+        return
+    patched = 0
+    skipped = 0
+    for i in range(0, days):
+        d2 = (base - timedelta(days=i)).isoformat()
+        try:
+            if patch_archive_page_ux(repo, token, d2, site_path):
+                patched += 1
+            else:
+                skipped += 1
+        except Exception:
+            skipped += 1
+    log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", patched, skipped, days)
+
+
+def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True):
+    """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
+    if not report_date or not is_iso_date_str(report_date):
+        raise ValueError("report_date must be YYYY-MM-DD")
+    # business-day guard (override with FORCE_RUN_ANYDAY)
+    try:
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(date.fromisoformat(report_date))):
+            log.info("[MAINT] rebuild_date skip non-business day: %s", report_date)
+            return
+    except Exception:
+        pass
+
+    start_kst, end_kst = _compute_window_for_report_date(report_date)
+    log.info("[MAINT] rebuild_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+
+    # collect + summarize
+    by_section = collect_all_sections(start_kst, end_kst)
+    summary_cache = load_summary_cache(repo, token)
+    by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
+
+    # nav dates from actual archive listing
+    avail = _list_archive_dates(repo, token)
+    avail.add(report_date)
+    archive_dates_desc = sorted(avail, reverse=True)
+
+    # render
+    daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+    daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
+    raw_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
+    github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
+    log.info("[MAINT PUT] %s", daily_path)
+
+    # update search index
+    search_idx, ssha = load_search_index(repo, token)
+    search_idx = update_search_index(search_idx, report_date, by_section, site_path)
+    save_search_index(repo, token, search_idx, ssha)
+
+    # refresh index based on archive listing
+    avail2 = _list_archive_dates(repo, token)
+    avail2.add(report_date)
+    archive_dates_desc2 = sorted(avail2, reverse=True)
+    index_html = render_index_page({"dates": archive_dates_desc2}, site_path)
+    raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
+    github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index {report_date}", sha=sha_i, branch="main")
+
+    # neighbor nav repair (older pages may miss next/prev)
+    try:
+        backfill_neighbor_archive_nav(repo, token, report_date, archive_dates_desc2, site_path)
+    except Exception as e:
+        log.warning("[WARN] neighbor nav backfill failed: %s", e)
+
+    # optional UX patch sweep
+    _maybe_ux_patch(repo, token, report_date, site_path)
+
+    # save summary cache (rebuild may create new summaries)
+    try:
+        save_summary_cache(repo, token, summary_cache)
+    except Exception as e:
+        log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
+
+
+def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str):
+    """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
+    if not base_date_iso or not is_iso_date_str(base_date_iso):
+        raise ValueError("base_date_iso must be YYYY-MM-DD")
+    # if base date is weekend/holiday and not allowed, shift to previous business day
+    try:
+        bd = date.fromisoformat(base_date_iso)
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(bd)):
+            bd2 = previous_business_day(bd)
+            base_date_iso = bd2.isoformat()
+            log.info("[MAINT] backfill base shifted to previous business day: %s", base_date_iso)
+    except Exception:
+        pass
+
+    summary_cache = load_summary_cache(repo, token)
+    search_idx, ssha = load_search_index(repo, token)
+
+    avail = _list_archive_dates(repo, token)
+    avail.add(base_date_iso)
+    archive_dates_desc = sorted(avail, reverse=True)
+
+    search_idx = backfill_rebuild_recent_archives(
+        repo, token, base_date_iso, archive_dates_desc, site_path, summary_cache, search_idx
+    )
+    save_search_index(repo, token, search_idx, ssha)
+
+    # index refresh (in case create_missing enabled)
+    avail2 = _list_archive_dates(repo, token)
+    avail2.add(base_date_iso)
+    archive_dates_desc2 = sorted(avail2, reverse=True)
+    index_html = render_index_page({"dates": archive_dates_desc2}, site_path)
+    raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
+    github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index after backfill {base_date_iso}", sha=sha_i, branch="main")
+
+    # optional UX patch sweep
+    _maybe_ux_patch(repo, token, base_date_iso, site_path)
+
+    # save summary cache (backfill may create new summaries)
+    try:
+        save_summary_cache(repo, token, summary_cache)
+    except Exception as e:
+        log.warning("[WARN] save_summary_cache after backfill failed: %s", e)
+
+
+
+
 def main():
     log.info("[BUILD] %s", BUILD_TAG)
     if not DEFAULT_REPO:
@@ -8126,6 +8359,52 @@ def main():
         log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", ux_patched, ux_skipped, days)
         return
 
+    # -----------------------------
+    # Maintenance tasks (rebuild/backfill) - no Kakao, no state update
+    # -----------------------------
+    if maintenance_task in ("rebuild_date", "backfill_rebuild"):
+        if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
+            raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
+        try:
+            site_path = get_site_path(repo)
+        except Exception:
+            site_path = "/"
+
+        if maintenance_task == "rebuild_date":
+            if not FORCE_REPORT_DATE:
+                raise RuntimeError("FORCE_REPORT_DATE(force_report_date) is required for task=rebuild_date")
+            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+            maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)
+            return
+
+        # maintenance_task == "backfill_rebuild"
+        base_iso = ""
+        try:
+            base_iso = (_parse_force_report_date(FORCE_REPORT_DATE).isoformat() if FORCE_REPORT_DATE else end_kst.date().isoformat())
+        except Exception:
+            base_iso = end_kst.date().isoformat()
+        maintenance_backfill_rebuild(repo, GH_TOKEN, base_iso, site_path)
+        return
+
+    # -----------------------------
+    # Manual rebuild (workflow_dispatch force_report_date)
+    # - Use the same safe path as maintenance: correct window, no Kakao, no state update
+    # -----------------------------
+    if FORCE_REPORT_DATE:
+        if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
+            raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
+        try:
+            site_path = get_site_path(repo)
+        except Exception:
+            site_path = "/"
+        d_iso = ""
+        try:
+            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+        except Exception:
+            d_iso = str(FORCE_REPORT_DATE).strip()
+        maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)
+        return
+
     # Normal run requires external API credentials
     if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
@@ -8147,6 +8426,25 @@ def main():
         except Exception:
             force_iso = ""
     report_date = REPORT_DATE_OVERRIDE or force_iso or end_kst.date().isoformat()
+
+    # -----------------------------
+    # 72h 슬라이딩 윈도우 + 크로스데이(최근 N일) 중복 방지 초기화
+    # - FORCE_REPORT_DATE(수동 재생성) / maintenance에서는 중복 방지를 기본 OFF(재현성/작업 편의)
+    # - 정상 daily run에서만 ON (필요 시 env CROSSDAY_DEDUPE_ENABLED로 끄기)
+    global CROSSDAY_DEDUPE_ENABLED, RECENT_HISTORY_CANON, RECENT_HISTORY_NORM
+    CROSSDAY_DEDUPE_ENABLED = bool(CROSSDAY_DEDUPE_ENABLED_ENV) and (maintenance_task == "") and (not bool(FORCE_REPORT_DATE))
+    if CROSSDAY_DEDUPE_ENABLED:
+        try:
+            _st = load_state(repo, GH_TOKEN)
+            _recent = normalize_recent_items(_st.get("recent_items", []), end_kst.date())
+            RECENT_HISTORY_CANON = set([it.get("canon","") for it in _recent if it.get("canon")])
+            RECENT_HISTORY_NORM = set([it.get("norm","") for it in _recent if it.get("norm")])
+        except Exception:
+            RECENT_HISTORY_CANON = set()
+            RECENT_HISTORY_NORM = set()
+    else:
+        RECENT_HISTORY_CANON = set()
+        RECENT_HISTORY_NORM = set()
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
@@ -8266,6 +8564,12 @@ def main():
             log.warning("[WARN] refresh archive dates after backfill failed: %s", e2)
     except Exception as e:
         log.warning("[WARN] backfill rebuild failed: %s", e)
+    # ✅ backfill 후 요약 캐시 저장(백필에서 새로 생성된 요약 반영)
+    try:
+        save_summary_cache(repo, GH_TOKEN, summary_cache)
+    except Exception as e2:
+        log.warning("[WARN] save_summary_cache after backfill failed: %s", e2)
+
     save_search_index(repo, GH_TOKEN, search_idx, ssha)
 
 
@@ -8303,7 +8607,24 @@ def main():
     except Exception as e:
         log.warning("[WARN] manifest refresh after backfill failed: %s", e)
     save_archive_manifest(repo, GH_TOKEN, manifest, msha)
-    save_state(repo, GH_TOKEN, end_kst)
+    # 최근 N일 중복 방지용 히스토리 업데이트(72h 윈도우 확장 시 반복 노출 억제)
+    recent_items = None
+    try:
+        st0 = load_state(repo, GH_TOKEN)
+        base_day = end_kst.date()
+        recent_items = normalize_recent_items(st0.get("recent_items", []), base_day)
+        # 현재 브리핑에 포함된 기사들을 히스토리에 추가
+        for _sec_items in (by_section.values() if isinstance(by_section, dict) else []):
+            for a in (_sec_items or []):
+                try:
+                    recent_items.append({"date": report_date, "canon": a.canon_url, "norm": a.norm_key})
+                except Exception:
+                    pass
+        recent_items = normalize_recent_items(recent_items, base_day)
+    except Exception:
+        recent_items = None
+
+    save_state(repo, GH_TOKEN, end_kst, recent_items=recent_items)
 
     # Kakao message (핵심2)
     kakao_text = build_kakao_message(report_date, by_section)
