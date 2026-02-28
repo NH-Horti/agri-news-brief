@@ -7819,22 +7819,22 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
       // Swipe hint: show briefly (avoid sticking)
       var swipeHint = document.getElementById('swipeHint');
-      (function(){
-        try {
+      (function(){{
+        try {{
           if(!swipeHint) return;
           swipeHint.classList.remove('show');
           var key = 'agri_swipe_hint_seen_v1';
           var seen = false;
-          try { seen = window.localStorage && localStorage.getItem(key)==='1'; } catch(e){}
+          try {{ seen = window.localStorage && localStorage.getItem(key)==='1'; }} catch(e){{}}
           if(seen) return;
           if(window.matchMedia && !window.matchMedia('(max-width: 840px)').matches) return;
           swipeHint.classList.add('show');
-          window.setTimeout(function(){
-            try { swipeHint.classList.remove('show'); } catch(e){}
-          }, 2500);
-          try { window.localStorage && localStorage.setItem(key,'1'); } catch(e){}
-        } catch(e){}
-      })();
+          window.setTimeout(function(){{
+            try {{ swipeHint.classList.remove('show'); }} catch(e){{}}
+          }}, 2500);
+          try {{ window.localStorage && localStorage.setItem(key,'1'); }} catch(e){{}}
+        }} catch(e){{}}
+      }})();
 
 
       // Date select navigation (older pages may miss handler)
