@@ -1,60 +1,21 @@
-name: agri-news-brief
+name: agri-news-brief (daily)
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: agri-news-brief-${{ github.ref }}
   cancel-in-progress: false
 
 on:
   schedule:
-    - cron: "0 22 * * *"   # 07:00 KST
+    # 07:00 KST on business days (Mon-Fri KST) == 22:00 UTC on Sun-Thu
+    - cron: "0 22 * * 0-4"
   workflow_dispatch:
     inputs:
-      ux_patch_days:
-        description: "최근 N일 아카이브에 UI/UX 패치 적용 (스와이프/스티키/로딩). 0이면 OFF"
-        required: false
-        default: "0"
       force_report_date:
-        description: "보고서 날짜(YYYY-MM-DD). 비우면 자동(07:00 컷오프 기준)"
+        description: "특정 날짜(YYYY-MM-DD) 브리핑 재생성. 비우면 자동(07:00 컷오프 기준)"
         required: false
         default: ""
-      backfill_days:
-        description: "최근 N일 아카이브 재빌드(필터/스코어 반영). 0이면 OFF"
-        required: false
-        default: "0"
-      backfill_skip_openai:
-        description: "백필 재빌드시 OpenAI 요약 생략(true/false)"
-        required: false
-        default: "true"
-      backfill_sleep_sec:
-        description: "백필 날짜 간 sleep(초). 레이트리밋 완화용"
-        required: false
-        default: "0.2"
-
-
-      backfill_start_date:
-        description: "백필 재생성 시작일(YYYY-MM-DD). 비우면 backfill_days 기준(과거 N일)"
-        required: false
-        default: ""
-      backfill_end_date:
-        description: "백필 재생성 종료일(YYYY-MM-DD). 비우면 report_date-1(어제)까지"
-        required: false
-        default: ""
-      backfill_days_max:
-        description: "백필 최대 일수 상한(안전장치). 기본 120"
-        required: false
-        default: "120"
-
-
-      purge_archives_before:
-        description: "이 날짜 이전(<) 아카이브 HTML을 삭제(YYYY-MM-DD). 비우면 OFF"
-        required: false
-        default: ""
-      purge_archives_dry_run:
-        description: "아카이브 삭제 드라이런(true/false). true면 로그만 남기고 삭제하지 않음"
-        required: false
-        default: "true"
-      backfill_create_missing:
-        description: "백필 재빌드 시 누락된 날짜 파일도 생성(true/false)"
+      allow_weekend:
+        description: "주말/공휴일에도 실행 허용(true/false). 기본 false"
         required: false
         default: "false"
 
@@ -68,29 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # ✅ 태그/히스토리 포함(빌드태그 자동화를 위해 필요)
-
-      - name: Compute BUILD_TAG
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch --tags --force
-
-          # ✅ v숫자 태그(v42, v43, ...)가 있으면 그것을 기준으로 자동 BUILD_TAG 생성
-          #    - 태그 커밋이면: v42
-          #    - 태그 이후 커밋이면: v42-3-g1a2b3c4
-          # ✅ 태그가 하나도 없으면: v0-<run_number>-<sha7>
-          LATEST_TAG="$(git tag --list 'v[0-9]*' --sort=-v:refname | head -n 1 || true)"
-
-          if [ -n "${LATEST_TAG}" ]; then
-            BUILD_TAG="$(git describe --tags --match 'v[0-9]*' --always --abbrev=7)"
-          else
-            SHA7="${GITHUB_SHA::7}"
-            BUILD_TAG="v0-${GITHUB_RUN_NUMBER}-${SHA7}"
-          fi
-
-          echo "BUILD_TAG=$BUILD_TAG" >> "$GITHUB_ENV"
-          echo "BUILD_TAG=$BUILD_TAG"
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -102,110 +41,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Purge archives before date (optional)
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.purge_archives_before != '' }}
-        shell: bash
+      - name: Run main.py
         env:
+          # GitHub
           GITHUB_TOKEN: ${{ github.token }}
-          PURGE_ARCHIVES_BEFORE: ${{ github.event.inputs.purge_archives_before }}
-          PURGE_ARCHIVES_DRY_RUN: ${{ github.event.inputs.purge_archives_dry_run || 'true' }}
-        run: |
-          set -euo pipefail
-          BEFORE="${PURGE_ARCHIVES_BEFORE}"
-          DRY="${PURGE_ARCHIVES_DRY_RUN}"
-          OWNER="${GITHUB_REPOSITORY%/*}"
-          REPO="${GITHUB_REPOSITORY#*/}"
-          BRANCH="main"
-          DIR="docs/archive"
-
-          echo "[PURGE] before=${BEFORE} dry_run=${DRY} repo=${OWNER}/${REPO} branch=${BRANCH}"
-
-          # 1) Remote list
-          API="https://api.github.com"
-          RESP="$(curl -sS -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json"                  "${API}/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BRANCH}")"
-
-          # Guard: ensure we got an array
-          if ! echo "${RESP}" | jq -e 'type=="array"' >/dev/null 2>&1; then
-            echo "[PURGE] ERROR: Unexpected response from GitHub contents API:"
-            echo "${RESP}" | head -c 2000 || true
-            exit 1
-          fi
-
-          # 2) Build deletion candidates: YYYY-MM-DD.html files where YYYY-MM-DD < BEFORE
-          CAND_B64_LIST="$(echo "${RESP}" | jq -r --arg before "${BEFORE}" '
-            .[]
-            | select(.type=="file")
-            | select(.name|endswith(".html"))
-            | (.name | rtrimstr(".html")) as $d
-            | select($d|test("^[0-9]{4}-[0-9]{2}-[0-9]{2}$"))
-            | select($d < $before)
-            | {name:.name, sha:.sha}
-            | @base64
-          ')"
-
-          COUNT="$(echo "${CAND_B64_LIST}" | sed '/^$/d' | wc -l | tr -d ' ')"
-          echo "[PURGE] candidates=${COUNT}"
-
-          if [ "${COUNT}" = "0" ]; then
-            echo "[PURGE] Nothing to purge."
-            exit 0
-          fi
-
-          # 3) Dry run: list files
-          if [ "${DRY}" = "true" ] || [ "${DRY}" = "TRUE" ]; then
-            echo "[PURGE] DRY RUN - files that would be deleted:"
-            echo "${CAND_B64_LIST}" | while read -r b; do
-              [ -z "${b}" ] && continue
-              json="$(echo "${b}" | base64 -d)"
-              name="$(echo "${json}" | jq -r '.name')"
-              echo "  - ${DIR}/${name}"
-            done
-            exit 0
-          fi
-
-          # 4) Actual purge: delete locally + delete remote via contents API
-          echo "${CAND_B64_LIST}" | while read -r b; do
-            [ -z "${b}" ] && continue
-            json="$(echo "${b}" | base64 -d)"
-            name="$(echo "${json}" | jq -r '.name')"
-            sha="$(echo "${json}" | jq -r '.sha')"
-
-            echo "[PURGE] deleting ${DIR}/${name}"
-
-            # Local delete (prevent accidental re-upload from local state)
-            rm -f "${DIR}/${name}" || true
-
-            # Remote delete
-            BODY="$(jq -n --arg msg "Purge archives before ${BEFORE}" --arg sha "${sha}" --arg branch "${BRANCH}"                  '{message:$msg, sha:$sha, branch:$branch}')"
-
-            curl -sS -X DELETE -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json"               "${API}/repos/${OWNER}/${REPO}/contents/${DIR}/${name}"               -d "${BODY}" >/dev/null
-          done
-
-          echo "[PURGE] Done."
-
-      - name: Run main
-        env:
-          # ✅ 완전 자동 빌드태그
-          BUILD_TAG: ${{ env.BUILD_TAG }}
-
-          # GitHub API 업로드/상태저장에 필요
-          GITHUB_TOKEN: ${{ github.token }}
-
-          # OpenAI
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5.2
-          OPENAI_REASONING_EFFORT: low
-          OPENAI_MAX_OUTPUT_TOKENS: "1200"
-          OPENAI_BATCH_SIZE: "25"  # ✅ 요약 배치 분할
-          OPENAI_RETRY_MAX: "3"
-          OPENAI_SUMMARY_CACHE_MAX: "2000"  # ✅ 요약 캐시(키 개수)
-
-          # Kakao
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
-          KAKAO_FAIL_OPEN: "true"  # ✅ 카카오 실패해도 페이지 발행 성공 처리
-          KAKAO_RETRY_MAX: "3"
 
           # Naver
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
@@ -213,14 +52,28 @@ jobs:
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
 
-          # 운영 모드 (핵심)
-          KAKAO_SEND_MODE: single_text      # ✅ 카톡 1메시지
-          PUBLISH_MODE: github_pages        # ✅ gist 대신 Pages로 보기
-          PAGES_BRANCH: main
-          PAGES_FILE_PATH: docs/index.html  # ✅ Pages 루트로 바로 열림
+          # OpenAI
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: "gpt-5.2"
+          OPENAI_REASONING_EFFORT: "low"
+          OPENAI_MAX_OUTPUT_TOKENS: "1200"
+          OPENAI_BATCH_SIZE: "25"
+          OPENAI_RETRY_MAX: "3"
+          OPENAI_SUMMARY_CACHE_MAX: "2000"
+
+          # Kakao
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          KAKAO_FAIL_OPEN: "true"
+
+          # 운영 모드
+          KAKAO_SEND_MODE: "single_text"
+          PUBLISH_MODE: "github_pages"
+          PAGES_BRANCH: "main"
+          PAGES_FILE_PATH: "docs/index.html"
           BRIEF_VIEW_URL: ${{ vars.BRIEF_VIEW_URL }}
-          # 상태 저장(권장: repo에 저장해서 gist 제거)
-          STATE_FILE_PATH: .agri_state.json
+          STATE_FILE_PATH: ".agri_state.json"
           GH_PUT_MAX_RETRIES: "4"
 
           # 수집량 튜닝
@@ -230,30 +83,13 @@ jobs:
           MAX_PAGES_PER_QUERY: "4"
           RUN_HOUR_KST: "7"
 
-          # ✅ 특정 날짜/백필/UX 패치: Actions UI 입력값 → env 연결 (스케줄 실행에도 안전)
+          # 수동 재생성
           FORCE_REPORT_DATE: "${{ github.event.inputs.force_report_date || '' }}"
+          FORCE_RUN_ANYDAY: "${{ github.event.inputs.allow_weekend || 'false' }}"
           FORCE_END_NOW: "false"
 
-          # UX patch (기존 아카이브 UI/UX 패치)
-          # ✅ schedule 실행에서도 UX patch가 자동으로 누적되지 않도록 기본값을 0(OFF)으로 둡니다.
-          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '0' }}"
-
-          # Backfill rebuild (최근 N일 아카이브 재생성)
-          BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '0' }}"
-          BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'true' }}"
-          BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
-
-          BACKFILL_START_DATE: "${{ github.event.inputs.backfill_start_date || '' }}"
-          BACKFILL_END_DATE: "${{ github.event.inputs.backfill_end_date || '' }}"
-          BACKFILL_REBUILD_DAYS_MAX: "${{ github.event.inputs.backfill_days_max || '120' }}"
-
-          # Purge + Rebuild (선택): 특정 날짜 이전 아카이브 삭제 후 재생성에 사용
-          PURGE_ARCHIVES_BEFORE: "${{ github.event.inputs.purge_archives_before || '' }}"
-          PURGE_ARCHIVES_DRY_RUN: "${{ github.event.inputs.purge_archives_dry_run || 'true' }}"
-          BACKFILL_REBUILD_CREATE_MISSING: "${{ github.event.inputs.backfill_create_missing || 'false' }}"
-
-          # 테스트할 때만 1로(주말/공휴일 스킵 무시)
-          FORCE_RUN_ANYDAY: "false"
-          FORCE_SEND: "0"
-
+          # 유지보수 기능은 daily에서 OFF (필요 시 maintenance workflow 사용)
+          UX_PATCH_DAYS: "0"
+          BACKFILL_REBUILD_DAYS: "0"
+          BACKFILL_REBUILD_SKIP_OPENAI: "false"
         run: python main.py
