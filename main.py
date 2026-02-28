@@ -7928,6 +7928,19 @@ def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_date
     return True
 
 
+
+# UX patch run-level cache: list existing archive dates once to rebuild navRow without 404
+_UX_NAV_DATES_DESC: list[str] | None = None
+def _get_ux_nav_dates_desc(repo: str, token: str) -> list[str]:
+    global _UX_NAV_DATES_DESC
+    if _UX_NAV_DATES_DESC is None:
+        try:
+            s = _list_archive_dates(repo, token)
+            _UX_NAV_DATES_DESC = sorted(set(sanitize_dates(list(s))), reverse=True)
+        except Exception:
+            _UX_NAV_DATES_DESC = []
+    return _UX_NAV_DATES_DESC
+
 def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) -> bool:
     """Patch existing archive HTML to normalize UI/UX (nav label/style, swipe, chipbar) in-place.
 
@@ -7946,6 +7959,20 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
         html_new = _rebuild_missing_chipbar_from_sections(html_new)
         html_new = _normalize_existing_chipbar_titles(html_new)
+        # -----------------------------
+        # 0.5) Rebuild navRow from existing archive pages (avoid stale href -> 404)
+        # -----------------------------
+        try:
+            nav_dates_desc = _get_ux_nav_dates_desc(repo, token)
+            if nav_dates_desc and iso_date not in nav_dates_desc:
+                nav_dates_desc = [iso_date] + nav_dates_desc
+            got_nav = _extract_navrow_block(html_new)
+            if got_nav and nav_dates_desc:
+                s0, e0, _blk = got_nav
+                html_new = html_new[:s0] + render_nav_row(iso_date, nav_dates_desc, site_path) + html_new[e0:]
+        except Exception as _e_nav:
+            log.warning("[WARN] navRow rebuild in ux_patch failed: %s", _e_nav)
+
         # -----------------------------
         # 0) Canonicalize label (older pages may have "최신/아카이브")
         # -----------------------------
@@ -8985,56 +9012,69 @@ def main():
     except Exception as e:
         log.warning("[WARN] backfill_neighbor_archive_nav failed: %s", e)
 
-# save manifest/state (manifest는 clean 유지)
-
-    # ✅ 백필 재생성 후: archive listing을 다시 읽어 manifest dates를 최신화(다음 실행에서도 날짜 목록 일관성 유지)
+    # ---- manifest & index hygiene ----
+    # Build a date list ONLY from existing docs/archive/*.html to avoid 404 navigation
     try:
-        items2 = github_list_dir(repo, DOCS_ARCHIVE_DIR, GH_TOKEN, ref="main")
-        dset2: set[str] = set()
-        for it in (items2 or []):
-            nm = it.get("name") if isinstance(it, dict) else None
-            if isinstance(nm, str) and nm.endswith(".html"):
-                dd = nm[:-5]
-                if is_iso_date_str(dd):
-                    dset2.add(dd)
-        dset2.add(report_date)
-        manifest["dates"] = sorted(set(sanitize_dates(list(dset2))))
+        avail = _list_archive_dates(repo, GH_TOKEN)
+        avail.add(report_date)
+        dates_sorted = sorted(set(sanitize_dates(list(avail))))
     except Exception as e:
-        log.warning("[WARN] manifest refresh after backfill failed: %s", e)
-    save_archive_manifest(repo, GH_TOKEN, manifest, msha)
+        log.warning("[WARN] list archives for manifest failed: %s", e)
+        dates_sorted = [report_date] if is_iso_date_str(report_date) else []
 
-# publish docs archive manifest (for client-side nav/dateSelect pruning)
-try:
-    save_docs_archive_manifest(repo, GH_TOKEN, manifest.get("dates", []))
-except Exception:
-    pass
+    # Ensure manifest object exists
+    try:
+        _m = manifest if isinstance(manifest, dict) else {"dates": []}
+    except Exception:
+        _m = {"dates": []}
+    try:
+        _m = _normalize_manifest(_m)
+    except Exception:
+        if not isinstance(_m, dict):
+            _m = {"dates": []}
+        _m.setdefault("dates", [])
+    _m["dates"] = dates_sorted
+    manifest = _m
 
-# ✅ Re-render index after manifest refresh (avoid listing dates without pages)
-try:
-    dates_desc_fixed = sorted(set(manifest.get("dates", []) or []), reverse=True)
-    index_html_fixed = render_index_page({"dates": dates_desc_fixed}, site_path)
-    _raw_i_fix, sha_i_fix = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
-    github_put_file(repo, DOCS_INDEX_PATH, index_html_fixed, GH_TOKEN, f"Update index (fixed) {report_date}", sha=sha_i_fix, branch="main")
-except Exception as e:
-    log.warning("[WARN] index re-render after manifest refresh failed: %s", e)
-    # 최근 N일 중복 방지용 히스토리 업데이트(72h 윈도우 확장 시 반복 노출 억제)
-    recent_items = None
+    # Save manifests (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        save_archive_manifest(repo, GH_TOKEN, manifest, msha)
+    except Exception as e:
+        log.warning("[WARN] save_archive_manifest failed: %s", e)
+    try:
+        save_docs_archive_manifest(repo, GH_TOKEN, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] save_docs_archive_manifest failed: %s", e)
+
+    # Re-render index using manifest dates (avoid listing dates without pages)
+    try:
+        dates_desc_fixed = sorted(set(dates_sorted or []), reverse=True)
+        index_html_fixed = render_index_page({"dates": dates_desc_fixed}, site_path)
+        _raw_i_fix, sha_i_fix = github_get_file(repo, DOCS_INDEX_PATH, GH_TOKEN, ref="main")
+        github_put_file(repo, DOCS_INDEX_PATH, index_html_fixed, GH_TOKEN, f"Update index (fixed) {report_date}", sha=sha_i_fix, branch="main")
+    except Exception as e:
+        log.warning("[WARN] index re-render after manifest refresh failed: %s", e)
+
+    # Update state (cross-day dedupe history) before Kakao send
+    recent_items2 = None
     try:
         st0 = load_state(repo, GH_TOKEN)
-        base_day = end_kst.date()
-        recent_items = normalize_recent_items(st0.get("recent_items", []), base_day)
-        # 현재 브리핑에 포함된 기사들을 히스토리에 추가
-        for _sec_items in (by_section.values() if isinstance(by_section, dict) else []):
-            for a in (_sec_items or []):
-                try:
-                    recent_items.append({"date": report_date, "canon": a.canon_url, "norm": a.norm_key})
-                except Exception:
-                    pass
-        recent_items = normalize_recent_items(recent_items, base_day)
+        base_day = end_kst.astimezone(KST).date()
+        recent_items2 = normalize_recent_items(st0.get("recent_items", []), base_day)
+        if isinstance(by_section, dict):
+            for _sec_items in by_section.values():
+                for a in (_sec_items or []):
+                    try:
+                        recent_items2.append({"date": report_date, "canon": getattr(a, "canon_url", None), "norm": getattr(a, "norm_key", None)})
+                    except Exception:
+                        pass
+        recent_items2 = normalize_recent_items(recent_items2, base_day)
     except Exception:
-        recent_items = None
-
-    save_state(repo, GH_TOKEN, end_kst, recent_items=recent_items)
+        recent_items2 = None
+    try:
+        save_state(repo, GH_TOKEN, end_kst, recent_items=recent_items2)
+    except Exception as e:
+        log.warning("[WARN] save_state failed: %s", e)
 
     # Kakao message (핵심2)
     kakao_text = build_kakao_message(report_date, by_section)
@@ -9056,6 +9096,7 @@ except Exception as e:
             log.error("[KAKAO] send failed but continue (fail-open): %s", e)
         else:
             raise
+
 
 
 if __name__ == "__main__":
