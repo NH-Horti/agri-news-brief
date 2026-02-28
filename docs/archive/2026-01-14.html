@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="agri-build" content="41d8c25" />
+  <title>[2026-01-14 농산물 뉴스 Brief]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
+    }
+    *{box-sizing:border-box}
+    html {
+      /* ✅ 앵커 이동 위치 보정 */
+      scroll-behavior:smooth;
+      scroll-padding-top: 150px;
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+    .navBtn.disabled{opacity:.45;cursor:pointer}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    /* sticky chip bar */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .chip{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}
+    .chip:hover{border-color:#cbd5e1}
+    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+
+    .sec{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
+          scroll-margin-top: 150px;
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top: 170px;}
+      .sec{scroll-margin-top: 170px;}
+    }
+    @media (max-width: 640px){
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      /* mobile chips: 2 columns so counts are always visible */
+      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
+      .chip{width:100%;justify-content:space-between}
+      .chip{padding:6px 10px;font-size:12.5px}
+      .chipN{min-width:24px;padding:0 8px;background:#111827;color:#fff}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-01-14 농산물 뉴스 Brief]</h1>
+        <div class="sub">기간: 2026-01-13 07:00 ~ 2026-01-14 07:00 · 기사 3건</div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-01-13.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-22.html">26-02-22 (일)</option>
+<option value="/agri-news-brief/archive/2026-02-21.html">26-02-21 (토)</option>
+<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-18.html">26-02-18 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-17.html">26-02-17 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-16.html">26-02-16 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-15.html">26-02-15 (일)</option>
+<option value="/agri-news-brief/archive/2026-02-14.html">26-02-14 (토)</option>
+<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-11.html">26-02-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-08.html">26-02-08 (일)</option>
+<option value="/agri-news-brief/archive/2026-02-07.html">26-02-07 (토)</option>
+<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-01.html">26-02-01 (일)</option>
+<option value="/agri-news-brief/archive/2026-01-31.html">26-01-31 (토)</option>
+<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-25.html">26-01-25 (일)</option>
+<option value="/agri-news-brief/archive/2026-01-24.html">26-01-24 (토)</option>
+<option value="/agri-news-brief/archive/2026-01-23.html">26-01-23 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-22.html">26-01-22 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-21.html">26-01-21 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-20.html">26-01-20 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-19.html">26-01-19 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-18.html">26-01-18 (일)</option>
+<option value="/agri-news-brief/archive/2026-01-17.html">26-01-17 (토)</option>
+<option value="/agri-news-brief/archive/2026-01-16.html">26-01-16 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-15.html">26-01-15 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-14.html" selected>26-01-14 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-13.html">26-01-13 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-12.html">26-01-12 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-11.html">26-01-11 (일)</option>
+<option value="/agri-news-brief/archive/2026-01-10.html">26-01-10 (토)</option>
+<option value="/agri-news-brief/archive/2026-01-09.html">26-01-09 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-08.html">26-01-08 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-07.html">26-01-07 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-04.html">26-01-04 (일)</option>
+<option value="/agri-news-brief/archive/2026-01-03.html">26-01-03 (토)</option>
+<option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
+          </select>
+        </div>
+        <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-01-15.html">다음 ▶</a>
+      </div>
+      <div id="swipeHint" class="swipeHint" aria-hidden="true">
+        <span class="arrow">◀</span>
+        <span class="txt pill">좌우 스와이프로 날짜 이동</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+    </div>
+
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">0</span></a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    
+            <section id="sec-supply" class="sec">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">1건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/14 05:01</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260112500740" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">화훼 초매식 열어…한해 무탈 기원</div>
+              <div class="sum">부경원예농협은 5일·8일 화훼공판장에서 절화·분화 경매를 알리는 초매식을 열고 한해 무탈을 기원했다. 출하량 감소로 가격 전망이 밝다는 관측 속에 화훼 유통 선진화와 농가 실익 증대를 추진키로 했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  정책 및 주요 이슈
+                </div>
+                <div class="secCount">1건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">kyongbuk</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/13 17:04</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4061665" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">설 앞두고 장바구니 물가 비상…대구·경북 체감 부담 가중</div>
+              <div class="sum">설을 앞두고 대구·경북 장바구니 물가 부담이 커지는 가운데 과일류 가격도 상승 우려가 제기됐다. aT 자료를 인용해 수입 과일 일부가 이달 셋째 주 도입돼 검역·통관 후 내달 초 시중 공급될 예정이며 농식품부도 명절 대책을 언급했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장 (도매시장/APC/수출)
+                </div>
+                <div class="secCount">1건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">fntoday</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/13 12:54</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+                <a class="btnOpen" href="https://www.fntoday.co.kr/news/articleView.html?idxno=374613" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">창녕농협,&#x27; 유통 혁신으로 농심(農心)&#x27;잡고&#x27;전국 1위&#x27;우뚝</div>
+              <div class="sum">창녕농협은 유통 혁신을 바탕으로 산지유통의 메카로 자리매김하며 ‘전국 1위’ 성과를 강조했다. 2009년 준공한 APC와 공판장이 규격화·상품화를 주도하고, 매년 농가와 계약재배를 통해 안정적 출하 기반을 마련한다고 소개했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  병해충 및 방제
+                </div>
+                <div class="secCount">0건</div>
+              </div>
+              <div class="secBody"><div class="empty">해당사항 없음</div></div>
+            </section>
+            
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+  </div>
+
+  <script>
+    (function() {
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            window.location.href = v;
+          }
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
+        }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        blocked = isBlockedTarget(e.target);
+        var t = e.touches[0];
+        sx = t.clientX;
+        sy = t.clientY;
+        st = Date.now();
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        if (blocked || isBlockedTarget(e.target)) return;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - sx;
+        var dy = t.clientY - sy;
+        var dt = Date.now() - st;
+
+        // accidental 방지: 더 강한 임계치
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+        // 스와이프 동작: 왼쪽(←, dx<0)=다음 / 오른쪽(→, dx>0)=이전
+        if (dx < 0) {
+          if (hasHref(nextNav)) { showNavLoading(); navigateBy(nextNav); }
+          else { showNoBrief(nextNav, "다음 브리핑이 없습니다."); }
+        } else {
+          if (hasHref(prevNav)) { showNavLoading(); navigateBy(prevNav); }
+          else { showNoBrief(prevNav, "이전 브리핑이 없습니다."); }
+        }
+      }, { passive: true });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
+  </script>
+  <!-- build: 41d8c25 -->
+
+</body>
+</html>
