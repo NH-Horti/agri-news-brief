@@ -7897,18 +7897,24 @@ def _extract_navrow_block(html_text: str) -> tuple[int, int, str] | None:
     return (s, e, html_text[s:e])
 
 def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], site_path: str) -> str:
-    prev_href = None
-    next_href = None
+    """Build the navRow HTML (archive button + prev/next + date select) for a given date.
+
+    IMPORTANT: archive_dates_desc must contain ONLY dates that have an existing archive page.
+    This prevents navigating to non-existent (holiday/missing) pages and avoids 404.
+    """
+    prev_href: str | None = None
+    next_href: str | None = None
+
     if cur_date in archive_dates_desc:
         idx = archive_dates_desc.index(cur_date)
-        # prev(더 과거) = idx+1
+        # prev (older) = idx+1
         if idx + 1 < len(archive_dates_desc):
             prev_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx+1]}.html")
-        # next(더 최신) = idx-1
+        # next (newer) = idx-1
         if idx - 1 >= 0:
             next_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
 
-    # 날짜 select (value도 절대경로)
+    # date select options (limit for performance)
     options = []
     for d in archive_dates_desc[:120]:
         sel = " selected" if d == cur_date else ""
@@ -7916,19 +7922,18 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
             f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
             f'{esc(short_date_label(d))} ({esc(weekday_label(d))})</option>'
         )
-    if not options:
-        options_html = f'<option value="{esc(build_site_url(site_path, f"archive/{cur_date}.html"))}" selected>{esc(short_date_label(cur_date))}</option>'
-    else:
-        options_html = "\n".join(options)
+    options_html = "\n".join(options) if options else (
+        f'<option value="{esc(build_site_url(site_path, f"archive/{cur_date}.html"))}" selected>'
+        f'{esc(short_date_label(cur_date))}</option>'
+    )
 
-    def nav_btn(href: str | None, label: str, msg: str) -> str:
+    def nav_btn(href: str | None, label: str, msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
-        return f'<button class="navBtn disabled" type="button" data-msg="{esc(msg)}">{esc(label)}</button>'
+        return f'<button class="navBtn disabled" type="button" data-nav="{esc(nav_key)}" data-msg="{esc(msg)}">{esc(label)}</button>'
 
     home_href = site_path
 
-    # Note: render_daily_page에서 생성하는 navRow 구조와 동일하게 유지(정규식 패치 안정성)
     return (
         '<div class="navRow">\n'
         f'  <a class="navBtn navArchive" data-nav="archive" href="{esc(home_href)}" title="날짜별 아카이브 목록">아카이브</a>\n'
@@ -7941,6 +7946,11 @@ def _build_navrow_html_for_date(cur_date: str, archive_dates_desc: list[str], si
         f'  {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}\n'
         '</div>'
     )
+
+
+def render_nav_row(cur_date: str, archive_dates_desc: list[str], site_path: str) -> str:
+    """Compat helper used by UX patcher."""
+    return _build_navrow_html_for_date(cur_date, archive_dates_desc, site_path)
 
 def patch_archive_page_nav(repo: str, token: str, target_date: str, archive_dates_desc: list[str], site_path: str) -> bool:
     """Patch docs/archive/{target_date}.html navRow (prev/next + dropdown) in-place. Returns True if updated."""
