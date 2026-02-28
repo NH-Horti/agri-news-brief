@@ -35,6 +35,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
 
       - name: Install deps
         run: |
@@ -82,14 +84,37 @@ jobs:
           GLOBAL_BACKFILL_LIMIT: "160"
           MAX_PAGES_PER_QUERY: "4"
           RUN_HOUR_KST: "7"
+          WINDOW_MIN_HOURS: "72"
+          CROSSDAY_DEDUPE_DAYS: "7"
+          CROSSDAY_DEDUPE_ENABLED: "true"
 
           # 수동 재생성
           FORCE_REPORT_DATE: "${{ github.event.inputs.force_report_date || '' }}"
           FORCE_RUN_ANYDAY: "${{ github.event.inputs.allow_weekend || 'false' }}"
           FORCE_END_NOW: "false"
 
-          # 유지보수 기능은 daily에서 OFF (필요 시 maintenance workflow 사용)
-          UX_PATCH_DAYS: "0"
+          # 최근 생성/패치 누락된 과거 페이지에 UI/UX가 확산되도록 daily에서도 소규모 UX 패치 수행
+          UX_PATCH_DAYS: "45"
           BACKFILL_REBUILD_DAYS: "0"
           BACKFILL_REBUILD_SKIP_OPENAI: "false"
         run: python main.py
+
+- name: Sync workspace to origin/main (after API writes)
+  if: ${{ always() }}
+  run: |
+    git fetch origin main
+    git reset --hard origin/main
+
+- name: Pack artifact (docs + state)
+  if: ${{ always() }}
+  run: |
+    tar --ignore-failed-read -czf agri-news-brief_artifact.tgz docs .agri_state.json .agri_archive.json .agri_summary_cache.json || true
+    ls -lh agri-news-brief_artifact.tgz || true
+
+- name: Upload artifact
+  if: ${{ always() }}
+  uses: actions/upload-artifact@v4
+  with:
+    name: agri-news-brief-${{ github.run_id }}
+    path: agri-news-brief_artifact.tgz
+    retention-days: 30
