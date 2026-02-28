@@ -1,51 +1,48 @@
-name: agri-news-brief (maintenance)
-
-concurrency:
-  group: agri-news-brief-${{ github.ref }}
-  cancel-in-progress: false
+name: agri-news-brief (maintenance - backfill)
 
 on:
   workflow_dispatch:
     inputs:
-      task:
-        description: "수행할 작업 선택"
-        required: true
-        type: choice
-        options:
-          - ux_patch
-          - rebuild_date
-          - backfill_rebuild
-      force_report_date:
-        description: "rebuild_date용 날짜(YYYY-MM-DD). 비우면 작업 실패"
+      start_date:
+        description: 'Backfill start date (YYYY-MM-DD). Optional.'
         required: false
-        default: ""
-      allow_weekend:
-        description: "주말/공휴일에도 실행 허용(true/false). 기본 false"
+        type: string
+      end_date:
+        description: 'Backfill end date (YYYY-MM-DD). Optional.'
         required: false
-        default: "false"
-      ux_patch_days:
-        description: "ux_patch: 최근 N일 아카이브에 UI/UX 패치 적용"
-        required: false
-        default: "30"
+        type: string
       backfill_days:
-        description: "backfill_rebuild: 최근 N일 아카이브 재생성"
+        description: 'If start/end are empty: rebuild last N days'
         required: false
-        default: "7"
-      backfill_skip_openai:
-        description: "backfill_rebuild: OpenAI 요약 생략(true/false). 기본 false"
+        default: '14'
+        type: string
+      create_missing:
+        description: 'Create missing pages (true/false)'
         required: false
-        default: "false"
-      backfill_sleep_sec:
-        description: "backfill_rebuild: 날짜 간 sleep(초)"
+        default: true
+        type: boolean
+      skip_openai:
+        description: 'Skip OpenAI summaries to run faster (true/false)'
         required: false
-        default: "0.2"
-      send_kakao:
-        description: "maintenance(rebuild/backfill) 완료 후 카톡 메시지 전송(true/false). 기본 true"
+        default: true
+        type: boolean
+      sleep_sec:
+        description: 'Backfill pacing (seconds)'
         required: false
-        default: "true"
+        default: '0.2'
+        type: string
+      include_nonbusiness_days:
+        description: 'Include weekends/holidays in backfill (true/false)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
+
+concurrency:
+  group: agri-news-brief-backfill
+  cancel-in-progress: false
 
 jobs:
   run:
@@ -53,74 +50,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Validate inputs
-        if: ${{ github.event.inputs.task == 'rebuild_date' && github.event.inputs.force_report_date == '' }}
-        run: |
-          echo "force_report_date is required for task=rebuild_date"
-          exit 1
-
-      - name: Run maintenance task
+      - name: Backfill rebuild
         env:
-          # GitHub
-          GITHUB_TOKEN: ${{ github.token }}
-
-          # Naver (rebuild/backfill에서 필요)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+          PUBLISH_MODE: github_pages
+          PAGES_BRANCH: main
+          PAGES_FILE_PATH: docs/index.html
+          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+
+          MAINTENANCE_TASK: backfill_rebuild
+          FORCE_REPORT_DATE: ${{ inputs.end_date }}
+
+          BACKFILL_START_DATE: ${{ inputs.start_date }}
+          BACKFILL_END_DATE: ${{ inputs.end_date }}
+          BACKFILL_REBUILD_DAYS: ${{ inputs.backfill_days }}
+          BACKFILL_REBUILD_CREATE_MISSING: ${{ inputs.create_missing }}
+          BACKFILL_REBUILD_SKIP_OPENAI: ${{ inputs.skip_openai }}
+          BACKFILL_REBUILD_SLEEP_SEC: ${{ inputs.sleep_sec }}
+          BACKFILL_INCLUDE_NONBUSINESS_DAYS: ${{ inputs.include_nonbusiness_days }}
+
+          WINDOW_MIN_HOURS: "72"
+          CROSSDAY_DEDUPE_ENABLED: "false"
+
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
 
-          # OpenAI (기본 ON)
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: "gpt-5.2"
-          OPENAI_REASONING_EFFORT: "low"
-          OPENAI_MAX_OUTPUT_TOKENS: "1200"
-          OPENAI_BATCH_SIZE: "25"
-          OPENAI_RETRY_MAX: "3"
-          OPENAI_SUMMARY_CACHE_MAX: "2000"
-
-          # Kakao (maintenance에서는 기본 FAIL-OPEN)
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
-          KAKAO_FAIL_OPEN: "true"
-
-          # maintenance send kakao
-          MAINTENANCE_SEND_KAKAO: "${{ github.event.inputs.send_kakao || 'true' }}"
-
-          # 운영 모드
-          KAKAO_SEND_MODE: "single_text"
-          PUBLISH_MODE: "github_pages"
-          PAGES_BRANCH: "main"
-          PAGES_FILE_PATH: "docs/index.html"
-          BRIEF_VIEW_URL: ${{ vars.BRIEF_VIEW_URL }}
-          STATE_FILE_PATH: ".agri_state.json"
-          GH_PUT_MAX_RETRIES: "4"
-
-          # task
-          MAINTENANCE_TASK: "${{ github.event.inputs.task }}"
-          FORCE_REPORT_DATE: "${{ github.event.inputs.force_report_date || '' }}"
-          FORCE_RUN_ANYDAY: "${{ github.event.inputs.allow_weekend || 'false' }}"
-          FORCE_END_NOW: "false"
-
-          # ux_patch
-          UX_PATCH_DAYS: "${{ github.event.inputs.ux_patch_days || '30' }}"
-
-          # backfill
-          BACKFILL_REBUILD_DAYS: "${{ github.event.inputs.backfill_days || '7' }}"
-          BACKFILL_REBUILD_SKIP_OPENAI: "${{ github.event.inputs.backfill_skip_openai || 'false' }}"
-          BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
-        run: python main.py
+        run: |
+          python main.py
