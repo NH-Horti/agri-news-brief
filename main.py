@@ -8616,18 +8616,18 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index {report_date}", sha=sha_i, branch="main")
 
 
-# refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
-try:
-    avail3 = _list_archive_dates(repo, token)
-    avail3.add(report_date)
-    dates_sorted = sorted(set(sanitize_dates(list(avail3))))
-    manifest3, msha3 = load_archive_manifest(repo, token)
-    manifest3 = _normalize_manifest(manifest3)
-    manifest3["dates"] = dates_sorted
-    save_archive_manifest(repo, token, manifest3, msha3)
-    save_docs_archive_manifest(repo, token, dates_sorted)
-except Exception as e:
-    log.warning("[WARN] manifest update after rebuild_date failed: %s", e)
+    # refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        avail3 = _list_archive_dates(repo, token)
+        avail3.add(report_date)
+        dates_sorted = sorted(set(sanitize_dates(list(avail3))))
+        manifest3, msha3 = load_archive_manifest(repo, token)
+        manifest3 = _normalize_manifest(manifest3)
+        manifest3["dates"] = dates_sorted
+        save_archive_manifest(repo, token, manifest3, msha3)
+        save_docs_archive_manifest(repo, token, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] manifest update after rebuild_date failed: %s", e)
 
     # neighbor nav repair (older pages may miss next/prev)
     try:
@@ -8643,7 +8643,6 @@ except Exception as e:
         save_summary_cache(repo, token, summary_cache)
     except Exception as e:
         log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
-
 
 def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str):
     """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
