@@ -8202,7 +8202,53 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
       var isNavigating = false;
 
       function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); try{{ setTimeout(function(){{ if(navLoading) navLoading.classList.remove('show'); }}, 1500); }}catch(e){{}} }}
-      function showNoBrief(_el, msg){{ try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}} }}
+      function showNoBrief(el, fallbackMsg){{
+        var msg = fallbackMsg || "이동할 브리핑이 없습니다.";
+        try {{
+          if (el && el.getAttribute) {{
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }}
+        }} catch (e) {{}}
+        try {{ if (navLoading) navLoading.classList.remove("show"); }} catch (e2) {{}}
+
+        // 모바일 Safari 등에서 alert()가 비동기(await) 이후 호출되면 막히는 경우가 있어,
+        // 항상 보이는 "토스트" 안내를 우선 사용한다.
+        try {{
+          var t = document.getElementById("noBriefToast");
+          if (!t) {{
+            t = document.createElement("div");
+            t.id = "noBriefToast";
+            t.setAttribute("data-swipe-ignore", "1");
+            t.style.position = "fixed";
+            t.style.left = "50%";
+            t.style.top = "12px";
+            t.style.transform = "translateX(-50%)";
+            t.style.zIndex = "9999";
+            t.style.maxWidth = "92vw";
+            t.style.padding = "10px 14px";
+            t.style.border = "1px solid rgba(0,0,0,0.15)";
+            t.style.borderRadius = "14px";
+            t.style.background = "rgba(17,24,39,0.92)";
+            t.style.color = "#fff";
+            t.style.fontSize = "14px";
+            t.style.fontWeight = "800";
+            t.style.boxShadow = "0 10px 24px rgba(0,0,0,0.22)";
+            t.style.display = "none";
+            document.body.appendChild(t);
+          }}
+          t.textContent = msg;
+          t.style.display = "block";
+          t.style.opacity = "1";
+          if (window.__agriNoBriefTimer) clearTimeout(window.__agriNoBriefTimer);
+          window.__agriNoBriefTimer = setTimeout(function() {{
+            try {{ t.style.display = "none"; }} catch (e3) {{}}
+          }}, 1600);
+          return;
+        }} catch (e4) {{}}
+
+        // fallback (rare)
+        try {{ alert(msg); }} catch (e5) {{}}
+      }}
 
       function _getRootPrefix() {{
         try {{
@@ -8337,10 +8383,24 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
           el.setAttribute && el.setAttribute("data-swipe-ignore","1");
           el.addEventListener("click", function(ev) {{
             try {{ ev.preventDefault(); }} catch(e) {{}}
+
+            // ✅ 마지막/최초 날짜에서 (href 없는 button.navBtn.disabled)일 때는
+            //    비동기 로직(gotoByOffset)을 타지 말고 즉시 안내를 띄운다.
+            try {{
+              var tag = (el.tagName || "").toLowerCase();
+              var href = "";
+              try {{ href = (el.getAttribute && el.getAttribute("href")) || ""; }} catch(eh) {{ href = ""; }}
+              if (tag === "button" || tag === "input" || !href || (el.classList && el.classList.contains("disabled"))) {{
+                showNoBrief(el, msg);
+                return;
+              }}
+            }} catch(e0) {{}}
+
             gotoByOffset(delta, msg);
           }});
         }} catch(e2) {{}}
       }}
+
 
       var prevNav = _pickNav("prev");
       var nextNav = _pickNav("next");
