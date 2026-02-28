@@ -8679,16 +8679,22 @@ def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site
     github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index after backfill {base_date_iso}", sha=sha_i, branch="main")
 
 
-# refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
-try:
-    dates_sorted = sorted(set(sanitize_dates(list(avail2))))
-    manifest3, msha3 = load_archive_manifest(repo, token)
-    manifest3 = _normalize_manifest(manifest3)
-    manifest3["dates"] = dates_sorted
-    save_archive_manifest(repo, token, manifest3, msha3)
-    save_docs_archive_manifest(repo, token, dates_sorted)
-except Exception as e:
-    log.warning("[WARN] manifest update after maintenance backfill failed: %s", e)
+    # refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
+    try:
+        dates_sorted = sorted(set(sanitize_dates(list(avail2))))
+        manifest3, msha3 = load_archive_manifest(repo, token)
+        manifest3 = _normalize_manifest(manifest3)
+        manifest3["dates"] = dates_sorted
+        save_archive_manifest(repo, token, manifest3, msha3)
+        save_docs_archive_manifest(repo, token, dates_sorted)
+    except Exception as e:
+        log.warning("[WARN] manifest update after maintenance backfill failed: %s", e)
+
+    # neighbor nav repair (older pages may miss next/prev)
+    try:
+        backfill_neighbor_archive_nav(repo, token, base_date_iso, archive_dates_desc2, site_path)
+    except Exception as e:
+        log.warning("[WARN] neighbor nav backfill failed: %s", e)
 
     # optional UX patch sweep
     _maybe_ux_patch(repo, token, base_date_iso, site_path)
@@ -8698,6 +8704,9 @@ except Exception as e:
         save_summary_cache(repo, token, summary_cache)
     except Exception as e:
         log.warning("[WARN] save_summary_cache after backfill failed: %s", e)
+
+
+
 
 
 
