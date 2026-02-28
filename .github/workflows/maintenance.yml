@@ -72,6 +72,11 @@ jobs:
 
       - name: Run maintenance task
         env:
+          # 지울것
+          BACKFILL_START_DATE: "2026-01-02"
+          BACKFILL_END_DATE: "2026-02-27"
+          BACKFILL_REBUILD_CREATE_MISSING: "true"
+          
           # GitHub
           GITHUB_TOKEN: ${{ github.token }}
 
