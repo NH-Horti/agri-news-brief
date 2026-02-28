@@ -125,22 +125,22 @@ jobs:
           BACKFILL_REBUILD_SLEEP_SEC: "${{ github.event.inputs.backfill_sleep_sec || '0.2' }}"
         run: python main.py
 
-- name: Sync workspace to origin/main (after API writes)
-  if: ${{ always() }}
-  run: |
-    git fetch origin main
-    git reset --hard origin/main
+      - name: Sync workspace to origin/main (after API writes)
+        if: ${{ always() }}
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
-- name: Pack artifact (docs + state)
-  if: ${{ always() }}
-  run: |
-    tar --ignore-failed-read -czf agri-news-brief_artifact.tgz docs .agri_state.json .agri_archive.json .agri_summary_cache.json || true
-    ls -lh agri-news-brief_artifact.tgz || true
+      - name: Pack artifact (docs + state)
+        if: ${{ always() }}
+        run: |
+          tar --ignore-failed-read -czf agri-news-brief_artifact.tgz docs .agri_state.json .agri_archive.json .agri_summary_cache.json || true
+          ls -lh agri-news-brief_artifact.tgz || true
 
-- name: Upload artifact
-  if: ${{ always() }}
-  uses: actions/upload-artifact@v4
-  with:
-    name: agri-news-brief-maint-${{ github.run_id }}
-    path: agri-news-brief_artifact.tgz
-    retention-days: 30
+      - name: Upload artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agri-news-brief-maintenance-${{ github.run_id }}
+          path: agri-news-brief_artifact.tgz
+          retention-days: 30
