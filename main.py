@@ -17,6 +17,19 @@ agri-news-brief main.py (production)
 
 import os
 import re
+
+def _strip_swipe_hint_blocks(html: str) -> str:
+    """Remove the swipe hint ('좌우 스와이프로 날짜 이동') from HTML."""
+    if not html:
+        return html
+    if ("스와이프로" not in html) and ("swipeHint" not in html):
+        return html
+    html2 = html
+    html2 = re.sub(r'(?is)\s*<div[^>]*(?:id|class)=["\']swipeHint[^"\']*["\'][^>]*>.*?</div>\s*', '\n', html2)
+    html2 = re.sub(r'(?is)\s*<div[^>]*>.*?좌우\s*스와이프로\s*날짜\s*이동.*?</div>\s*', '\n', html2)
+    html2 = re.sub(r'(?is)\s*<div[^>]*>.*?스와이프로\s*날짜\s*이동.*?</div>\s*', '\n', html2)
+    return html2
+
 import json
 import base64
 import html
@@ -2771,6 +2784,10 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
     return j if isinstance(j, list) else []
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
+    # Strip swipe-hint blocks from any HTML content before writing
+    if isinstance(content, str) and path.endswith('.html'):
+        content = _strip_swipe_hint_blocks(content)
+
     """GitHub Contents API로 파일 생성/업데이트.
 
     안정성 강화:
@@ -6480,6 +6497,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         </div>
         {nav_btn(next_href, "다음 ▶", "다음 브리핑이 없습니다.", "next")}
       </div>
+      <div id=\"swipeHint\" class=\"swipeHint\" aria-hidden=\"true\">
+        <span class=\"arrow\">◀</span>
+        <span class=\"txt pill\">좌우 스와이프로 날짜 이동</span>
+        <span class=\"arrow\">▶</span>
+      </div>
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
@@ -6540,7 +6562,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         }}
       }}
       var swipeHint = document.getElementById("swipeHint");
-      if (swipeHint) {{ try {{ swipeHint.style.display = "none"; swipeHint.setAttribute("aria-hidden","true"); }} catch (e) {{}} }}
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
 
@@ -6846,7 +6867,23 @@ try {{ _ensureDates(); }} catch (e) {{}}
         hideNavLoading();
         resetNavRowFeedback();
       }});
-      // swipe hint disabled (never show)
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {{
+        if (!swipeHint) return;
+        try {{
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {{
+            swipeHint.style.display = "none";
+            return;
+          }}
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {{
+            swipeHint.style.display = "none";
+          }}, 1200);
+        }} catch (e) {{}}
+      }})();
 }})();
   </script>
   <!-- build: {BUILD_TAG} -->
@@ -8008,12 +8045,10 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         if not raw or not sha:
             return False
 
-        html_new = raw
+        html_new = _strip_swipe_hint_blocks(raw)
 
         html_new = _rebuild_missing_chipbar_from_sections(html_new)
         html_new = _normalize_existing_chipbar_titles(html_new)
-        # Remove swipe hint element entirely (requested: never show)
-        html_new = re.sub(r'\s*<div id="swipeHint"[^>]*>.*?</div>\s*', '\n', html_new, flags=re.S)
         # -----------------------------
         # 0.5) Rebuild navRow from existing archive pages (avoid stale href -> 404)
         # -----------------------------
@@ -8063,22 +8098,25 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 count=1,
                 flags=re.I,
             )
-
         # -----------------------------
-        # 2) Ensure loading badge exists (insert safely after navRow block)
+        # 2) Ensure navLoading badge exists (we intentionally DO NOT show swipe-hint text)
         # -----------------------------
-        loading_block = (
-            '\n      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">'
-            '\n        <span class="badge">날짜 이동 중…</span>'
-            '\n      </div>\n'
-        )
+        # Remove any existing swipe-hint remnants first
+        html_new = _strip_swipe_hint_blocks(html_new)
         if 'id="navLoading"' not in html_new:
             got = _extract_navrow_block(html_new)
             if got:
-                s, e, nav_block = got
-                html_new = html_new[:e] + loading_block + html_new[e:]
+                _s, e, _nav_block = got
+                loading_block = '''
+      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+'''
+                html_new = html_new[:e] + loading_block + html_new[e]
 
-# 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
+
+        # -----------------------------
+        # 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
         # -----------------------------
         html_new = re.sub(r'(<div\s+class="chipbar")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
         html_new = re.sub(r'(<div\s+class="chips")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
@@ -8086,10 +8124,11 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
         # -----------------------------
-        UX_VER = "20260228"
+        UX_VER = "20260228-nohint"
         css_block = f"""
     /* UX_PATCH_BEGIN v{UX_VER} */
-    #swipeHint,.swipeHint{{display:none !important;visibility:hidden !important;opacity:0 !important;height:0 !important;margin:0 !important;padding:0 !important;}}
+    .swipeHint, #swipeHint{display:none !important;visibility:hidden !important;}
+
     .navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
     .navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
     /* fallback: first nav button (older pages without navArchive class) */
