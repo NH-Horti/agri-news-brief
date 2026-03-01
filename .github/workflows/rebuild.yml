@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       report_date:
+        description: 'Date to rebuild (YYYY-MM-DD)'
         required: true
         type: string
       ux_patch_days:
+        description: 'Also patch recent archives after rebuild (0 = off)'
         required: false
         default: '0'
         type: string
@@ -15,6 +17,12 @@ on:
         required: false
         default: 'true'
         type: string
+      max_per_section:
+        description: 'Max items per section on the page (core2 + general)'
+        required: false
+        default: '5'
+        type: string
+
 
 permissions:
   contents: write
@@ -58,6 +66,8 @@ jobs:
 
           MAINTENANCE_TASK: rebuild_date
           FORCE_REPORT_DATE: ${{ inputs.report_date }}
+          MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
+          MAX_PER_SECTION: ${{ inputs.max_per_section }}
           FORCE_RUN_ANYDAY: "false"
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
 
@@ -66,14 +76,6 @@ jobs:
 
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
-
-          MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
-
-          DEBUG_REPORT: "1"
-          DEBUG_REPORT_WRITE_JSON: "1"
-          DEBUG_REPORT_MAX_CANDIDATES: "400"
-          DEBUG_REPORT_MAX_REJECTS: "4000"
-          DEBUG_SELECTION: "1"
 
         run: |
           python main.py
