@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+def _safe_re_sub(pattern, repl, s, flags=0):
+    """Safe wrapper around re.sub that avoids 'bad escape' when repl contains backslashes (e.g., JS regex \d)."""
+    import re as _re
+    if isinstance(repl, str) and ('\\' in repl):
+        return _re.sub(pattern, lambda _m: repl, s, flags=flags)
+    return _re.sub(pattern, repl, s, flags=flags)
 """
 agri-news-brief main.py (production)
 
@@ -8181,7 +8187,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 """
         # replace existing UX_PATCH block in <style>, else insert before </style>
         if "UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", css_block, html_new, flags=re.S)
+            html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", (lambda _m: css_block), html_new, flags=re.S)
         else:
             html_new, n = re.subn(r"(</style>)", css_block + r"\1", html_new, count=1, flags=re.I)
             if n == 0:
@@ -8395,7 +8401,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 """
 
         if "UX_PATCH_BEGIN" in html_new and "<!-- UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", js_block, html_new, flags=re.S|re.I)
+            html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", (lambda _m: js_block), html_new, flags=re.S|re.I)
         else:
             # remove older inline swipe scripts we previously injected (best-effort), then insert
             # Remove legacy swipe scripts (some older versions listened on document and caused chip sliding → date navigation)
