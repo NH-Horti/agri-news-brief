@@ -13,7 +13,7 @@ on:
       send_kakao:
         description: 'Send Kakao message after rebuild (true/false)'
         required: false
-        default: true'
+        default: 'true'
         type: string
 
 permissions:
