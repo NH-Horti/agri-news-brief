@@ -22,7 +22,11 @@ on:
         required: false
         default: '5'
         type: string
-
+      debug:
+        description: 'Write debug report (HTML + JSON) (true/false)'
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -65,12 +69,17 @@ jobs:
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
-          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+
+          # ✅ 실제 운영 도메인(카톡 링크/페이지 링크)
+          BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: rebuild_date
           FORCE_REPORT_DATE: ${{ inputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
+
+          # ✅ 페이지 노출량 (카톡 core2는 코드에서 별도 유지)
           MAX_PER_SECTION: ${{ inputs.max_per_section }}
+
           FORCE_RUN_ANYDAY: "false"
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
 
@@ -80,10 +89,11 @@ jobs:
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
 
-          DEBUG_REPORT: "1"
-          DEBUG_REPORT_WRITE_JSON: "1"
+          # ✅ 디버그는 기본 OFF, 필요 시 inputs.debug=true로 ON
+          DEBUG_REPORT: ${{ inputs.debug == 'true' && '1' || '0' }}
+          DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug == 'true' && '1' || '0' }}
           DEBUG_REPORT_MAX_CANDIDATES: "200"
           DEBUG_REPORT_MAX_REJECTS: "2000"
 
-        run: 
+        run: |
           python main.py
