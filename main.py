@@ -1906,9 +1906,23 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
     price_move = (("가격" in t) or ("시세" in t)) and any(k in t for k in ("상승", "하락", "급등", "급락", "약세", "강세"))
 
     # 일반언론의 품목/시장 가격기사(예: 사과·배 가격 흐름)는 supply에 남긴다.
-    if (commodity_hit >= 1 and (market_hit >= 1 or price_move)) or best_horti_score("", t) >= 2.2:
-        if not official:
-            return False
+    # 단, '할당관세/보세구역/관세청/통관/추천서/추징' 등 강한 행정·제도 신호가 있으면
+    # 품목 단어가 일부 포함돼도 정책 기사로 분류한다(예: 수입품 할당관세 악용/관리 강화).
+    strong_admin_terms = (
+        "할당관세", "관세청", "보세", "보세구역", "수입신고", "통관", "추천서", "추천", "추천 취소",
+        "집중관리", "지정", "의무", "신속 유통", "추징", "가산세", "단속", "관리 강화"
+    )
+    strong_admin_hit = count_any(t, [w.lower() for w in strong_admin_terms])
+
+    if strong_admin_hit == 0:
+        # '품목+시장/가격'이 핵심인 일반 기사만 supply에 남김
+        if (commodity_hit >= 1 and (market_hit >= 1 or price_move)):
+            if not official:
+                return False
+        # 원예 점수만 높고 정책 실행/행정 신호가 약한 경우(단순 품목 언급)도 supply로 남김
+        if best_horti_score("", t) >= 2.2 and action_hit < 2 and agency_hit < 1:
+            if not official:
+                return False
 
     if official:
         return (agency_hit + action_hit) >= 1
@@ -1918,6 +1932,58 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
         return True
 
     return False
+
+def is_generic_import_item_context(text: str) -> bool:
+    """가공/수입 원재료·축산 등 '범품목(식품원료)' 위주의 정책 기사 맥락인지.
+    - '냉동딸기/설탕/커피생두/코코아'처럼 원예 품목 단어가 포함돼도,
+      기사 본질이 '제도·통관·할당관세 운영'이면 policy가 자연스러운 케이스를 포착한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+    generic_items = (
+        "설탕", "커피", "생두", "코코아", "코코아가루", "식품원료", "원재료",
+        "냉동딸기", "냉동육", "냉동소고기", "냉동돼지고기", "닭고기", "돼지고기", "소고기", "축산물",
+        "담합", "과징금", "공정거래위원회", "공정위"
+    )
+    admin_terms = ("할당관세", "보세", "보세구역", "통관", "수입신고", "추천서", "추징", "가산세", "관세청")
+    return (count_any(t, [w.lower() for w in generic_items]) >= 1) and (count_any(t, [w.lower() for w in admin_terms]) >= 1)
+
+
+def is_trade_policy_issue(text: str) -> bool:
+    """통상/관세/검역/통관 등 '정책·제도' 성격이 강한 이슈인지(섹션 재배치/가중치 보정용).
+    - 단, 특정 품목(감귤/만감류 등) 수급/가격/출하 맥락이 강하면 supply에 남길 수 있도록
+      최종 이동 판단은 별도(commodity 강도)로 한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    # 핵심 통상/제도 키워드
+    trade_terms = (
+        "관세", "무관세", "할당관세", "fta", "통상", "비관세", "무역", "무역법", "301조",
+        "수입", "수출", "검역", "검역요건", "통관", "원산지", "세이프가드", "반덤핑"
+    )
+    # 이슈를 '정책'으로 만드는 촉발 단어(대응/기준/의무/단속/교육 등)
+    action_terms = (
+        "대응", "촉각", "대책", "강화", "단속", "관리", "의무", "지정", "요건", "기준", "교육", "점검",
+        "취소", "의무화", "협의", "건의", "국회", "정부", "관계부처"
+    )
+
+    trade_hit = count_any(t, [w.lower() for w in trade_terms])
+    action_hit = count_any(t, [w.lower() for w in action_terms])
+
+    # 최소 2개 이상(관세+수출, 관세+fta, 통상+검역 등)의 조합이면서,
+    # 제도/대응 맥락(action)이 1개 이상이면 policy 성격으로 본다.
+    if trade_hit >= 2 and action_hit >= 1:
+        return True
+
+    # 약한 조합 보완: '관세' + ('수출' 또는 '수입') + ('업체/요건/대응') 류는 자주 정책 기사다.
+    if ("관세" in t) and ("수출" in t or "수입" in t) and ("업체" in t or "요건" in t or "대응" in t or "촉각" in t):
+        return True
+
+    return False
+
 
 def is_fruit_foodservice_event_context(text: str) -> bool:
     """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
@@ -4164,47 +4230,25 @@ _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세",
 
 def _pest_region_key(title: str) -> str:
     """pest 섹션 중복 억제를 위한 대표 지역 키.
-
-    ⚠️ 과거 패치에서 _REGION_RX 누락으로 NameError가 발생한 적이 있어,
-    여기서는 _CITY_COUNTY_RX / _PROVINCE_RX 등 '반드시 정의되는' 정규식을 사용한다.
-
-    우선순위
-    1) 제목에서 가장 먼저 등장하는 시/군/구(읍/면 포함은 오탐이 많아 배제)
-    2) 광역/도 단위(명시 리스트 매칭)
-    3) "OO 농업기술센터" 같은 베어 패턴 보완
+    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
+    - 없으면 첫 지역 토큰(도 등) 사용
     """
     t = title or ""
-
-    # 1) 시/군/구(읍/면 제외) 우선
-    try:
-        for mm in _CITY_COUNTY_RX.finditer(t):
-            stem = mm.group(1)
-            suf = mm.group(2)
-            if suf in ("읍", "면"):
-                continue
-            if stem in _REGION_STOP_PREFIX:
-                continue
-            return f"{stem}{suf}"
-    except Exception:
-        pass
-
-    # 2) 광역/도 단위
-    try:
-        m = _PROVINCE_RX.search(t)
-        if m:
-            return m.group(0)
-    except Exception:
-        pass
-
-    # 3) 베어 패턴("장수 농업기술센터" 등)
-    try:
+    ms = list(_REGION_RX.finditer(t))
+    if not ms:
+        # 군/시/구가 명시되지 않지만 "장수 농업기술센터"처럼 자주 등장하는 패턴 보완
         m2 = _BARE_REGION_RX.search(t)
         if m2:
             return m2.group(1)
-    except Exception:
-        pass
+        return ""
+    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
+    for m in ms:
+        r = m.group(0)
+        if r.endswith(("군", "시", "구")):
+            return r
+    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
+    return ms[0].group(0)
 
-    return ""
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
     - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
@@ -4627,7 +4671,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         tail_margin += extra
 
     tail_cut = max(thr, best_score - tail_margin)
-    PAGE_SOFT_DUPLICATE = (os.getenv("PAGE_SOFT_DUPLICATE", "1") == "1") and (max_n >= 5)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -4705,6 +4748,22 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if section_key == "supply" and (is_flower_consumer_trend_context((a.title + " " + a.description).lower()) or is_fruit_foodservice_event_context((a.title + " " + a.description).lower())):
             continue
+        if section_key == "supply":
+            mix = (a.title + " " + a.description).lower()
+            dom = normalize_host(a.domain or "")
+            pr = (a.press or "").strip()
+            try:
+                _h = best_horti_score(a.title or "", a.description or "")
+            except Exception:
+                _h = 0.0
+            # ✅ 정책/통상성 강하고 품목 영향이 약한 기사(제도/통관/할당관세 등)는
+            # supply '핵심2'를 잠식하지 않도록 제외한다. (policy 섹션에서 다룸)
+            if is_generic_import_item_context(mix):
+                continue
+            if is_policy_announcement_issue(mix, dom, pr):
+                continue
+            if is_trade_policy_issue(mix) and _h < 2.2:
+                continue
         if not _headline_gate(a, section_key):
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
@@ -4809,7 +4868,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+            if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
 
             final.append(a)
@@ -4846,7 +4905,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # 출처 캡은 MMR 선발에서도 유지(선정 시점에 다시 확인)
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+            if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             eligible.append(a)
 
@@ -4861,7 +4920,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                     continue
-                if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+                if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
 
                 tri_a = _mmr_tri(a)
@@ -4909,7 +4968,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+            if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             final.append(a)
             _mark_used(a)
@@ -4952,7 +5011,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+            if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             a.is_core = False
             final.append(a)
@@ -4980,7 +5039,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # 유통 프로모션/관광/연예/창업성 노이즈는 함수에서 제외됨
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
+            if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             if not _source_ok_local(a):
                 continue
@@ -5846,7 +5905,18 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
-                if (not is_policy_announcement_issue(txt, dom, press)) and (not is_macro_policy_issue(txt)):
+                # - 통상/관세/검역/통관 기사도 policy 후보로 포함(품목 맥락이 약할 때)
+                _policy_like = False
+                try:
+                    _h = best_horti_score(a.title or "", a.description or "")
+                except Exception:
+                    _h = 0.0
+                if is_policy_announcement_issue(txt, dom, press) or is_macro_policy_issue(txt):
+                    _policy_like = True
+                elif is_trade_policy_issue(txt) and _h < 2.2:
+                    _policy_like = True
+
+                if not _policy_like:
                     try:
                         if not _is_policy_official(a):
                             continue
@@ -5915,7 +5985,24 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                     d = (a.domain or "").lower()
                 p = (a.press or "").strip()
                 _mix_text = (a.title + " " + a.description).lower()
-                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text):
+                # policy-like(정책/통상/제도) 기사면 policy로 이동
+                trade_like = False
+                try:
+                    _h = best_horti_score(a.title or "", a.description or "")
+                except Exception:
+                    _h = 0.0
+                if is_trade_policy_issue(_mix_text) and _h < 2.2:
+                    # dist 앵커(도매시장/APC/경락/반입 등)가 강하면 dist로 남겨야 하므로 여기서 이동하지 않음
+                    _dist_hits = count_any(_mix_text, [t.lower() for t in (
+                        "가락시장","도매시장","공판장","공영도매시장","경락","경매","반입",
+                        "산지유통","산지유통센터","apc","도매법인","중도매","시장도매인",
+                        "물류","물류센터","출하","집하"
+                    )])
+                    if _dist_hits < 2 and (not has_apc_agri_context(_mix_text)):
+                        trade_like = True
+
+                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like:
+
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
@@ -6025,19 +6112,36 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         for a in items:
             tpc = (a.topic or "").strip()
             if tpc == "정책" and a.section != "policy":
-                # ✅ 정책 신호가 있어도 특정 품목(과수/채소/화훼 등) 영향이 강하면 supply에 남김
-                try:
-                    bt, bs = best_topic_and_score(a.title, a.description)
-                except Exception:
-                    bt, bs = ("", 0.0)
-                if bt and bs >= 2.2:
-                    # 품목 영향이 강하면 토픽을 해당 품목으로 교정(섹션 이동 방지)
-                    a.topic = bt
-                else:
+                # ✅ '정책' 토픽은 기본적으로 policy로 보내되,
+                #    특정 품목(과수/채소/화훼 등) 영향이 강한 기사(예: 감귤/만감류 통상 충격)는 supply에 남길 수 있다.
+                mix = (a.title + " " + a.description).lower()
+                d = normalize_host(a.domain or "")
+                p = (a.press or "").strip()
+
+                # 1) 수입 원재료/통관·할당관세 운영 등 '범품목 행정/제도' 기사면 policy로 강제
+                if is_generic_import_item_context(mix):
                     a.section = "policy"
                     raw_by_section.setdefault("policy", []).append(a)
                     moved_topic += 1
                     continue
+
+                # 2) 통상/관세/검역/통관 정책 이슈는 policy 후보
+                policy_like = is_policy_announcement_issue(mix, d, p) or is_macro_policy_issue(mix) or is_trade_policy_issue(mix)
+
+                try:
+                    bt, bs = best_topic_and_score(a.title, a.description)
+                except Exception:
+                    bt, bs = ("", 0.0)
+
+                if bt and bs >= 2.4:
+                    # 품목 영향이 강하면 토픽을 해당 품목으로 교정(섹션 이동 방지)
+                    a.topic = bt
+                else:
+                    if policy_like:
+                        a.section = "policy"
+                        raw_by_section.setdefault("policy", []).append(a)
+                        moved_topic += 1
+                        continue
             keep_items.append(a)
         raw_by_section[_sec_key] = keep_items
     if moved_topic:
