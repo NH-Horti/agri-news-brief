@@ -4122,6 +4122,11 @@ _PROVINCE_RX = re.compile("|".join(map(re.escape, _PROVINCE_NAMES)))
 # 시/군/구/읍/면 단위는 오탐이 많아 '도'는 제외하고, 단어 경계에 가깝게만 매칭
 _CITY_COUNTY_RX = re.compile(r"(?:(?<=\s)|^)([가-힣]{2,})(시|군|구|읍|면)(?=\s|$|[\]\[\)\(\.,·!\?\"'“”‘’:/-])")
 
+# _REGION_RX: ordered scan helper for pest de-dup (province + city/county tokens).
+# NOTE: keep conservative to avoid false positives; used only for grouping, not for relevance filtering.
+_REGION_RX = re.compile(r"(?:" + _PROVINCE_RX.pattern + r")|(?:" + _CITY_COUNTY_RX.pattern + r")")
+
+
 # 지역처럼 보이지만 실제로는 농업/기사 용어인 경우가 많아 제외(보수적)
 _REGION_STOP_PREFIX = {
     "방제","예찰","지원","대책","정책","수급","출하","가격","물량","품질","생산","소비","확대","감소",
@@ -4159,25 +4164,47 @@ _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세",
 
 def _pest_region_key(title: str) -> str:
     """pest 섹션 중복 억제를 위한 대표 지역 키.
-    - 읍/면 등 하위 단위가 있어도 같은 군/시/구로 묶이도록 우선 군/시/구를 선택
-    - 없으면 첫 지역 토큰(도 등) 사용
+
+    ⚠️ 과거 패치에서 _REGION_RX 누락으로 NameError가 발생한 적이 있어,
+    여기서는 _CITY_COUNTY_RX / _PROVINCE_RX 등 '반드시 정의되는' 정규식을 사용한다.
+
+    우선순위
+    1) 제목에서 가장 먼저 등장하는 시/군/구(읍/면 포함은 오탐이 많아 배제)
+    2) 광역/도 단위(명시 리스트 매칭)
+    3) "OO 농업기술센터" 같은 베어 패턴 보완
     """
     t = title or ""
-    ms = list(_REGION_RX.finditer(t))
-    if not ms:
-        # 군/시/구가 명시되지 않지만 "장수 농업기술센터"처럼 자주 등장하는 패턴 보완
+
+    # 1) 시/군/구(읍/면 제외) 우선
+    try:
+        for mm in _CITY_COUNTY_RX.finditer(t):
+            stem = mm.group(1)
+            suf = mm.group(2)
+            if suf in ("읍", "면"):
+                continue
+            if stem in _REGION_STOP_PREFIX:
+                continue
+            return f"{stem}{suf}"
+    except Exception:
+        pass
+
+    # 2) 광역/도 단위
+    try:
+        m = _PROVINCE_RX.search(t)
+        if m:
+            return m.group(0)
+    except Exception:
+        pass
+
+    # 3) 베어 패턴("장수 농업기술센터" 등)
+    try:
         m2 = _BARE_REGION_RX.search(t)
         if m2:
             return m2.group(1)
-        return ""
-    # 1) 가장 먼저 등장하는 군/시/구(읍/면 제외)를 대표로
-    for m in ms:
-        r = m.group(0)
-        if r.endswith(("군", "시", "구")):
-            return r
-    # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
-    return ms[0].group(0)
+    except Exception:
+        pass
 
+    return ""
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
     - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
@@ -4588,7 +4615,19 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         "pest": 3.6,
     }
     tail_margin = tail_margin_by_section.get(section_key, 3.6)
+
+    # 페이지 노출량을 늘릴 때(예: MAX_PER_SECTION=5) "핵심2" 외 일반 기사도 적절히 포함되도록
+    # tail-cut 폭을 넓힌다. (core 선정 로직/점수는 그대로 유지)
+    if MAX_PER_SECTION >= 5:
+        try:
+            extra = float(os.getenv("PAGE_TAIL_MARGIN_EXTRA", "4.0") or 0.0)
+        except Exception:
+            extra = 4.0
+        extra = max(0.0, min(extra, 12.0))
+        tail_margin += extra
+
     tail_cut = max(thr, best_score - tail_margin)
+    PAGE_SOFT_DUPLICATE = (os.getenv("PAGE_SOFT_DUPLICATE", "1") == "1") and (max_n >= 5)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -4770,7 +4809,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
+            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                 continue
 
             final.append(a)
@@ -4807,7 +4846,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # 출처 캡은 MMR 선발에서도 유지(선정 시점에 다시 확인)
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
+            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             eligible.append(a)
 
@@ -4822,7 +4861,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                     continue
-                if any(_is_similar_story(a, b, section_key) for b in final):
+                if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                     continue
 
                 tri_a = _mmr_tri(a)
@@ -4870,7 +4909,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
+            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             final.append(a)
             _mark_used(a)
@@ -4913,7 +4952,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
+            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             a.is_core = False
             final.append(a)
@@ -4941,7 +4980,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # 유통 프로모션/관광/연예/창업성 노이즈는 함수에서 제외됨
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
+            if (not PAGE_SOFT_DUPLICATE) and any(_is_similar_story(a, b, section_key) for b in final):
                 continue
             if not _source_ok_local(a):
                 continue
