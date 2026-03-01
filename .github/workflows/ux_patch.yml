@@ -47,6 +47,7 @@ jobs:
           UX_PATCH_DAYS: ${{ inputs.days }}
           FORCE_REPORT_DATE: ""
           FORCE_RUN_ANYDAY: "false"
+          UX_PATCH_STRICT: "true"
 
         run: |
           python main.py
