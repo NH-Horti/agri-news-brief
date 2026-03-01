@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -41,7 +44,7 @@ jobs:
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
-          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+          BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: ux_patch
           UX_PATCH_DAYS: ${{ inputs.days }}

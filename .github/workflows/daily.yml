@@ -4,12 +4,7 @@ on:
   schedule:
     # KST 07:00 on weekdays (Mon–Fri) == UTC 22:00 on Sun–Thu
     - cron: '0 22 * * 0-4'
-  workflow_dispatch:
-    inputs:
-      force_report_date:
-        description: 'Rebuild a specific date (YYYY-MM-DD). Leave empty for normal daily run.'
-        required: false
-        type: string
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -24,6 +19,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -49,11 +47,13 @@ jobs:
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
-          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+
+          # ✅ 운영 도메인(카톡 링크/페이지 링크)
+          BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           # daily behavior
           MAINTENANCE_TASK: ""
-          FORCE_REPORT_DATE: ${{ inputs.force_report_date }}
+          FORCE_REPORT_DATE: ""
           FORCE_RUN_ANYDAY: "false"
           UX_PATCH_DAYS: "45"
           WINDOW_MIN_HOURS: "72"

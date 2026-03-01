@@ -50,6 +50,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -72,7 +75,7 @@ jobs:
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
-          BRIEF_VIEW_URL: https://hongtaehwa.github.io/agri-news-brief/
+          BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: backfill_rebuild
           FORCE_REPORT_DATE: ${{ inputs.end_date }}
@@ -87,6 +90,10 @@ jobs:
 
           WINDOW_MIN_HOURS: "72"
           CROSSDAY_DEDUPE_ENABLED: "false"
+
+          # Align page rendering with daily/rebuild
+          MAX_PER_SECTION: "5"
+          PAGE_TAIL_MARGIN_EXTRA: "4.0"
 
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
