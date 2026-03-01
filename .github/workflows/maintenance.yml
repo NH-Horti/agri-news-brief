@@ -90,6 +90,8 @@ jobs:
 
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
+          MAX_PAGES_PER_QUERY: "2"
+          COND_PAGING_MAX_PAGES: "2"
 
         run: |
           python main.py

@@ -201,7 +201,7 @@ MIN_PER_SECTION = max(0, min(MIN_PER_SECTION, MAX_PER_SECTION))
 # 기존 ENV(MAX_PAGES_PER_QUERY)는 "상한(cap)"으로만 유지한다.
 # - 기본 수집은 1페이지 유지
 # - 필요할 때만 추가 페이지(2..N)를 조건부로 호출
-MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
+MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "2") or "2").strip() or 2)
 MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
 
 # --- Conditional pagination safety (BASE=1 page, only use extra pages when needed)
@@ -5134,7 +5134,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     try:
         if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
             # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
-            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP or len(items) < max_n * 2:
                 candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
                 thr = _dynamic_threshold(candidates_sorted, section_key)
                 pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
