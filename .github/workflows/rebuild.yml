@@ -4,13 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       report_date:
-        description: 'Date to rebuild (YYYY-MM-DD)'
         required: true
         type: string
       ux_patch_days:
-        description: 'Also patch recent archives after rebuild (0 = off)'
         required: false
         default: '0'
+        type: string
+      send_kakao:
+        description: 'Send Kakao message after rebuild (true/false)'
+        required: false
+        default: true'
         type: string
 
 permissions:
@@ -65,6 +68,8 @@ jobs:
           NAVER_MIN_INTERVAL_SEC: "0.6"
           MAX_PAGES_PER_QUERY: "2"
           COND_PAGING_MAX_PAGES: "2"
+
+          MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
 
         run: |
           python main.py
