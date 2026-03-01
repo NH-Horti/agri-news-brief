@@ -37,6 +37,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -76,12 +79,6 @@ jobs:
 
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
-
-          DEBUG_REPORT: "1"
-          DEBUG_REPORT_WRITE_JSON: "1"
-          DEBUG_REPORT_MAX_CANDIDATES: "200"
-          DEBUG_REPORT_MAX_REJECTS: "2000"
-          DEBUG_SELECTION: "1"
 
         run: |
           python main.py
