@@ -1906,9 +1906,23 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
     price_move = (("가격" in t) or ("시세" in t)) and any(k in t for k in ("상승", "하락", "급등", "급락", "약세", "강세"))
 
     # 일반언론의 품목/시장 가격기사(예: 사과·배 가격 흐름)는 supply에 남긴다.
-    if (commodity_hit >= 1 and (market_hit >= 1 or price_move)) or best_horti_score("", t) >= 2.2:
-        if not official:
-            return False
+    # 단, '할당관세/보세구역/관세청/통관/추천서/추징' 등 강한 행정·제도 신호가 있으면
+    # 품목 단어가 일부 포함돼도 정책 기사로 분류한다(예: 수입품 할당관세 악용/관리 강화).
+    strong_admin_terms = (
+        "할당관세", "관세청", "보세", "보세구역", "수입신고", "통관", "추천서", "추천", "추천 취소",
+        "집중관리", "지정", "의무", "신속 유통", "추징", "가산세", "단속", "관리 강화"
+    )
+    strong_admin_hit = count_any(t, [w.lower() for w in strong_admin_terms])
+
+    if strong_admin_hit == 0:
+        # '품목+시장/가격'이 핵심인 일반 기사만 supply에 남김
+        if (commodity_hit >= 1 and (market_hit >= 1 or price_move)):
+            if not official:
+                return False
+        # 원예 점수만 높고 정책 실행/행정 신호가 약한 경우(단순 품목 언급)도 supply로 남김
+        if best_horti_score("", t) >= 2.2 and action_hit < 2 and agency_hit < 1:
+            if not official:
+                return False
 
     if official:
         return (agency_hit + action_hit) >= 1
@@ -1916,6 +1930,96 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
     # 비공식 도메인이어도 정부/부처 발표성 재인용 기사면 policy 라우팅
     if agency_hit >= 1 and action_hit >= 2 and market_hit == 0 and not price_move:
         return True
+
+    return False
+
+def is_generic_import_item_context(text: str) -> bool:
+    """가공/수입 원재료·축산 등 '범품목(식품원료)' 위주의 정책 기사 맥락인지.
+    - '냉동딸기/설탕/커피생두/코코아'처럼 원예 품목 단어가 포함돼도,
+      기사 본질이 '제도·통관·할당관세 운영'이면 policy가 자연스러운 케이스를 포착한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+    generic_items = (
+        "설탕", "커피", "생두", "코코아", "코코아가루", "식품원료", "원재료",
+        "냉동딸기", "냉동육", "냉동소고기", "냉동돼지고기", "닭고기", "돼지고기", "소고기", "축산물",
+        "담합", "과징금", "공정거래위원회", "공정위"
+    )
+    admin_terms = ("할당관세", "보세", "보세구역", "통관", "수입신고", "추천서", "추징", "가산세", "관세청")
+    return (count_any(t, [w.lower() for w in generic_items]) >= 1) and (count_any(t, [w.lower() for w in admin_terms]) >= 1)
+
+
+def is_trade_policy_issue(text: str) -> bool:
+    """통상/관세/검역/통관 등 '정책·제도' 성격이 강한 이슈인지(섹션 재배치/가중치 보정용).
+    - 단, 특정 품목(감귤/만감류 등) 수급/가격/출하 맥락이 강하면 supply에 남길 수 있도록
+      최종 이동 판단은 별도(commodity 강도)로 한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    # 핵심 통상/제도 키워드
+    trade_terms = (
+        "관세", "무관세", "할당관세", "fta", "통상", "비관세", "무역", "무역법", "301조",
+        "수입", "수출", "검역", "검역요건", "통관", "원산지", "세이프가드", "반덤핑"
+    )
+    # 이슈를 '정책'으로 만드는 촉발 단어(대응/기준/의무/단속/교육 등)
+    action_terms = (
+        "대응", "촉각", "대책", "강화", "단속", "관리", "의무", "지정", "요건", "기준", "교육", "점검",
+        "취소", "의무화", "협의", "건의", "국회", "정부", "관계부처"
+    )
+
+    trade_hit = count_any(t, [w.lower() for w in trade_terms])
+    action_hit = count_any(t, [w.lower() for w in action_terms])
+
+    # 최소 2개 이상(관세+수출, 관세+fta, 통상+검역 등)의 조합이면서,
+    # 제도/대응 맥락(action)이 1개 이상이면 policy 성격으로 본다.
+    if trade_hit >= 2 and action_hit >= 1:
+        return True
+
+    # 약한 조합 보완: '관세' + ('수출' 또는 '수입') + ('업체/요건/대응') 류는 자주 정책 기사다.
+    if ("관세" in t) and ("수출" in t or "수입" in t) and ("업체" in t or "요건" in t or "대응" in t or "촉각" in t):
+        return True
+
+    return False
+
+
+
+def is_policy_enforcement_issue(text: str) -> bool:
+    """관세/통관/보세/할당관세 등 '집행/관리 강화' 성격의 정책 기사인지 판정.
+    - 정책브리핑/보도자료처럼 '발표'가 명확하지 않아도,
+      관세·통관 집행(관리 강화/추징/단속/지정 등) 신호가 강하면 policy로 보내기 위해 사용.
+    - 특정 기사 하드코딩이 아니라, '행정·제도 집행 신호' 조합으로 일반화한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    key_terms = (
+        "할당관세", "관세", "관세청", "통관", "수입신고",
+        "보세", "보세구역", "보세창고", "보관", "창고",
+        "추천서", "추천", "추천 취소", "집중관리", "집중관리품목", "지정",
+        "추징", "가산세", "환급", "부정", "위반",
+    )
+    action_terms = (
+        "관리", "강화", "집중관리", "지정", "점검", "단속", "조사", "제재",
+        "추징", "취소", "적발", "위반", "의무", "개선", "대책",
+    )
+    actors = ("정부", "관세청", "농식품부", "농림축산식품부", "기재부", "검역", "농관원", "aT")
+
+    key_hit = count_any(t, [w.lower() for w in key_terms])
+    act_hit = count_any(t, [w.lower() for w in action_terms])
+    actor_hit = count_any(t, [w.lower() for w in actors])
+
+    # 강한 키워드가 2개 이상 + (행정 조치 1개 이상) + (주체 1개 이상)
+    if key_hit >= 2 and act_hit >= 1 and actor_hit >= 1:
+        return True
+
+    # 보세/통관/추징처럼 집행 신호가 있는 경우는 더 보수적으로 완화
+    if ("보세" in t or "통관" in t or "추징" in t or "가산세" in t) and (("관리" in t) or ("강화" in t) or ("단속" in t) or ("지정" in t) or ("취소" in t)):
+        if actor_hit >= 1 or ("관세청" in t):
+            return True
 
     return False
 
@@ -4682,6 +4786,22 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if section_key == "supply" and (is_flower_consumer_trend_context((a.title + " " + a.description).lower()) or is_fruit_foodservice_event_context((a.title + " " + a.description).lower())):
             continue
+        if section_key == "supply":
+            mix = (a.title + " " + a.description).lower()
+            dom = normalize_host(a.domain or "")
+            pr = (a.press or "").strip()
+            try:
+                _h = best_horti_score(a.title or "", a.description or "")
+            except Exception:
+                _h = 0.0
+            # ✅ 정책/통상성 강하고 품목 영향이 약한 기사(제도/통관/할당관세 등)는
+            # supply '핵심2'를 잠식하지 않도록 제외한다. (policy 섹션에서 다룸)
+            if is_generic_import_item_context(mix) or is_policy_enforcement_issue(mix):
+                continue
+            if is_policy_announcement_issue(mix, dom, pr):
+                continue
+            if is_trade_policy_issue(mix) and _h < 2.2:
+                continue
         if not _headline_gate(a, section_key):
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
@@ -5823,7 +5943,18 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
-                if (not is_policy_announcement_issue(txt, dom, press)) and (not is_macro_policy_issue(txt)):
+                # - 통상/관세/검역/통관 기사도 policy 후보로 포함(품목 맥락이 약할 때)
+                _policy_like = False
+                try:
+                    _h = best_horti_score(a.title or "", a.description or "")
+                except Exception:
+                    _h = 0.0
+                if is_policy_announcement_issue(txt, dom, press) or is_macro_policy_issue(txt):
+                    _policy_like = True
+                elif is_trade_policy_issue(txt) and _h < 2.2:
+                    _policy_like = True
+
+                if not _policy_like:
                     try:
                         if not _is_policy_official(a):
                             continue
@@ -5892,7 +6023,44 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                     d = (a.domain or "").lower()
                 p = (a.press or "").strip()
                 _mix_text = (a.title + " " + a.description).lower()
-                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text):
+                # policy-like(정책/통상/제도) 기사면 policy로 이동
+                trade_like = False
+                try:
+                    _h = best_horti_score(a.title or "", a.description or "")
+                except Exception:
+                    _h = 0.0
+                # Hard policy enforcement/admin signals (관세·통관·보세·추징·단속 등)
+                enforce_like = False
+                try:
+                    enforce_like = is_policy_enforcement_issue(_mix_text) or is_generic_import_item_context(_mix_text)
+                except Exception:
+                    enforce_like = False
+
+                # trade_like: 통상/관세/검역 이슈는 기본적으로 policy 후보.
+                # 단, '진짜 도매시장/APC 현장 기사(dist 성격)'는 policy로 빼앗기지 않도록 (market anchors)만 예외 처리한다.
+                market_anchors = (
+                    "가락시장","도매시장","공판장","공영도매시장","경락","경매",
+                    "도매법인","중도매","시장도매인","산지유통","산지유통센터","apc"
+                )
+                _market_hits = count_any(_mix_text, [t.lower() for t in market_anchors])
+
+                if (enforce_like or is_trade_policy_issue(_mix_text)) and _h < 2.2 and _market_hits < 1 and (not has_apc_agri_context(_mix_text)):
+                    # dist 섹션은 별도 재조정 로직이 있어 과도 이동을 피하되,
+                    # supply/others에서는 '관세/통관 집행형'이 품목 섹션을 잠식하지 않도록 policy로 보낸다.
+                    if sk == "dist":
+                        # dist에서 정책/통상성만 있고 도매시장 맥락이 약할 때만 policy로 이동
+                        _dist_hits = count_any(_mix_text, [t.lower() for t in (
+                            "가락시장","도매시장","공판장","공영도매시장","경락","경매","반입",
+                            "산지유통","산지유통센터","apc","도매법인","중도매","시장도매인",
+                            "물류","물류센터","출하","집하"
+                        )])
+                        if _dist_hits < 2 and (not has_apc_agri_context(_mix_text)):
+                            trade_like = True
+                    else:
+                        trade_like = True
+
+                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like:
+
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
@@ -6001,20 +6169,40 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         keep_items = []
         for a in items:
             tpc = (a.topic or "").strip()
-            if tpc == "정책" and a.section != "policy":
-                # ✅ 정책 신호가 있어도 특정 품목(과수/채소/화훼 등) 영향이 강하면 supply에 남김
-                try:
-                    bt, bs = best_topic_and_score(a.title, a.description)
-                except Exception:
-                    bt, bs = ("", 0.0)
-                if bt and bs >= 2.2:
-                    # 품목 영향이 강하면 토픽을 해당 품목으로 교정(섹션 이동 방지)
-                    a.topic = bt
-                else:
+            # 정책/통상/제도 토픽이지만 policy 섹션이 아닌 경우를 교정
+            policyish_topics = {"정책","정부","제도","법","관세","할당관세","통관","검역","원산지","단속","예산","지원","규제"}
+            is_policyish = (tpc in policyish_topics) or ("정책" in tpc) or ("관세" in tpc) or ("통관" in tpc) or ("검역" in tpc) or ("원산지" in tpc)
+            if is_policyish and a.section != "policy":
+                # ✅ '정책' 토픽은 기본적으로 policy로 보내되,
+                #    특정 품목(과수/채소/화훼 등) 영향이 강한 기사(예: 감귤/만감류 통상 충격)는 supply에 남길 수 있다.
+                mix = (a.title + " " + a.description).lower()
+                d = normalize_host(a.domain or "")
+                p = (a.press or "").strip()
+
+                # 1) 수입 원재료/통관·할당관세 운영 등 '범품목 행정/제도' 기사면 policy로 강제
+                if is_generic_import_item_context(mix) or is_policy_enforcement_issue(mix):
                     a.section = "policy"
                     raw_by_section.setdefault("policy", []).append(a)
                     moved_topic += 1
                     continue
+
+                # 2) 통상/관세/검역/통관 정책 이슈는 policy 후보
+                policy_like = is_policy_announcement_issue(mix, d, p) or is_macro_policy_issue(mix) or is_trade_policy_issue(mix)
+
+                try:
+                    bt, bs = best_topic_and_score(a.title, a.description)
+                except Exception:
+                    bt, bs = ("", 0.0)
+
+                if bt and bs >= 2.6:
+                    # 품목 영향이 강하면 토픽을 해당 품목으로 교정(섹션 이동 방지)
+                    a.topic = bt
+                else:
+                    if policy_like:
+                        a.section = "policy"
+                        raw_by_section.setdefault("policy", []).append(a)
+                        moved_topic += 1
+                        continue
             keep_items.append(a)
         raw_by_section[_sec_key] = keep_items
     if moved_topic:
@@ -9029,6 +9217,19 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     raw_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
     github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
     log.info("[MAINT PUT] %s", daily_path)
+
+    # Optional: debug report JSON (maintenance rebuild_date)
+    if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+        try:
+            DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+            debug_path = f"docs/debug/{report_date}.json"
+            debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+            _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
+            github_put_file(repo, debug_path, debug_json, token, f"Debug report {report_date}", sha=sha_dbg_old, branch="main")
+            log.info("[MAINT PUT] %s", debug_path)
+        except Exception as e:
+            log.warning("[WARN] debug report upload failed: %s", e)
+
 
     # update search index
     search_idx, ssha = load_search_index(repo, token)

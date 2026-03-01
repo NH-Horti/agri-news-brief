@@ -70,7 +70,7 @@ jobs:
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
 
-          # ✅ 운영 도메인(카톡 링크/페이지 링크)
+          # ✅ 실제 운영 도메인(카톡 링크/페이지 링크)
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: rebuild_date
@@ -79,7 +79,6 @@ jobs:
 
           # ✅ 페이지 노출량 (카톡 core2는 코드에서 별도 유지)
           MAX_PER_SECTION: ${{ inputs.max_per_section }}
-          PAGE_TAIL_MARGIN_EXTRA: "4.0"
 
           FORCE_RUN_ANYDAY: "false"
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
