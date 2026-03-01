@@ -82,9 +82,8 @@ jobs:
 
           DEBUG_REPORT: "1"
           DEBUG_REPORT_WRITE_JSON: "1"
-          DEBUG_REPORT_MAX_CANDIDATES: "300"
-          DEBUG_REPORT_MAX_REJECTS: "4000"
-          DEBUG_SELECTION: "1"
+          DEBUG_REPORT_MAX_CANDIDATES: "200"
+          DEBUG_REPORT_MAX_REJECTS: "2000"
 
-        run: |
+        run: 
           python main.py
