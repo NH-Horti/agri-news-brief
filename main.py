@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-def _safe_re_sub(pattern, repl, s, flags=0):
-    """Safe wrapper around re.sub that avoids 'bad escape' when repl contains backslashes (e.g., JS regex \d)."""
-    import re as _re
-    if isinstance(repl, str) and ('\\' in repl):
-        return _re.sub(pattern, lambda _m: repl, s, flags=flags)
-    return _re.sub(pattern, repl, s, flags=flags)
 """
 agri-news-brief main.py (production)
 
@@ -8130,284 +8124,160 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
         # -----------------------------
-        UX_VER = "20260228-nohint"
-        css_block = f"""
-    /* UX_PATCH_BEGIN v{UX_VER} */
-    .swipeHint, #swipeHint{{display:none !important;visibility:hidden !important;}}
+        UX_VER = "20260301-uxnav-toast"
+        css_block = """
+    /* UX_PATCH_BEGIN v20260301-uxnav-toast */
+    .swipeHint, #swipeHint{display:none !important;visibility:hidden !important;}
 
-    .navRow .navBtn.navArchive{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
-    .navRow .navBtn.navArchive:hover{{filter:brightness(0.98)}}
+    .navRow .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
     /* fallback: first nav button (older pages without navArchive class) */
-    .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
     /* layout normalization (override legacy variations) */
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
-    .sec{{margin-top:14px !important;border-radius:14px !important;}}
+    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}
+    .sec{margin-top:14px !important;border-radius:14px !important;}
     /* chipbar/chips normalization */
-    .chipbar{{border-top:1px solid var(--line);}}
-    .chipwrap{{max-width:1100px;margin:0 auto;padding:8px 14px;}}
-    .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
-    .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;background:var(--chip);
-          font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
-    .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
-    @media (max-width: 640px){{
-      .chips{{display:grid !important;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between;padding:6px 10px;font-size:12.5px}}
-      .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
-    }}
-    .swipeHint{{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;color:var(--muted);font-size:12px;opacity:.95}}
-    .swipeHint .pill{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.9)}}
-    .swipeHint .arrow{{font-size:12px;opacity:.85}}
-    @media (prefers-reduced-motion: reduce){{ .swipeHint{{transition:none}} }}
-    .navLoading{{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}}
-    .navLoading.show{{display:flex}}
-    .navLoading .badge{{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,0.08))}}
-    /* make mobile nav stable (match latest spec) */
-    @media (max-width: 840px){{
-      .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      html{{scroll-padding-top:170px}}
-      .sec{{scroll-margin-top:170px}}
-    }}
-    @media (max-width: 640px){{
-      .topin{{gap:8px}}
-      .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}}
-      .navRow > .navBtn{{height:40px;border-radius:14px}}
-      .navRow > a.navBtn:first-child{{grid-column:1 / span 1;width:100%}}
-      .navRow > .navBtn:nth-child(2){{grid-column:2}}
-      .navRow > .dateSelWrap{{grid-column:1;width:100%}}
-      .navRow > .navBtn:last-child{{grid-column:2}}
-      .dateSelWrap{{width:100%}}
-      .dateSelWrap select{{width:100%;max-width:none}}
-      /* chips: show 2 columns so counts are visible at a glance */
-      .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between}}
-    }}
-    /* UX_PATCH_END v{UX_VER} */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    /* UX_PATCH_END */
 """
-        # replace existing UX_PATCH block in <style>, else insert before </style>
-        if "UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"/\*\s*UX_PATCH_BEGIN.*?\*/.*?/\*\s*UX_PATCH_END.*?\*/\s*", (lambda _m: css_block), html_new, flags=re.S)
-        else:
-            html_new, n = re.subn(r"(</style>)", css_block + r"\1", html_new, count=1, flags=re.I)
-            if n == 0:
-                # no style tag? do nothing (avoid breaking)
-                pass
-
-        # -----------------------------
-        # 5) Upsert canonical swipe JS (upgrade old patched pages too)
-        # - Scope: article area (.wrap), ignore topbar interactions (chip sliding)
-        # -----------------------------
-        js_block = f"""
-  <!-- UX_PATCH_BEGIN v{UX_VER} -->
+        js_block = """
+  <!-- UX_PATCH_BEGIN v20260301-uxnav-toast -->
   <script>
-  (function(){{
-    try {{
-      var navRow = document.querySelector('.navRow');
-      var navLoading = document.getElementById('navLoading');
-      var isNavigating = false;
+  (function(){
+    var navRow = document.querySelector('.navRow');
+    var navLoading = document.getElementById('navLoading');
 
-      function showNavLoading(){{ if(navLoading) navLoading.classList.add('show'); try{{ setTimeout(function(){{ if(navLoading) navLoading.classList.remove('show'); }}, 1500); }}catch(e){{}} }}
-      function showNoBrief(_el, msg){{ try{{ alert(msg || '이동할 브리핑이 없습니다.'); }}catch(e){{}} }}
+    function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
+    function _showLoading(){ 
+      try{ 
+        if(navLoading) navLoading.classList.add('show'); 
+        setTimeout(_hideLoading, 1200);
+      }catch(e){}
+    }
 
-      function _getRootPrefix() {{
-        try {{
-          var href = String(window.location.href || "");
-          var i = href.indexOf("/archive/");
-          if (i >= 0) return href.slice(0, i + 1);
-          var p = href.replace(/[#?].*$/, "");
-          return p.substring(0, p.lastIndexOf("/") + 1);
-        }} catch (e) {{
-          return "/";
-        }}
-      }}
-      function _dateToUrl(d){{ return _getRootPrefix() + "archive/" + d + ".html"; }}
-      function _extractDate(s) {{
-        if (!s) return "";
-        var str = String(s);
-        var m = str.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
-        if (m && m[1]) return m[1];
-        if (/^\d{{4}}-\d{{2}}-\d{{2}}$/.test(str)) return str;
-        return "";
-      }}
-      function _currentDateIso() {{
-        return _extractDate(window.location.pathname) || _extractDate(window.location.href);
-      }}
+    function _toast(msg){
+      try{
+        var t = document.getElementById('uxToast');
+        if(!t){
+          t = document.createElement('div');
+          t.id = 'uxToast';
+          t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
+          document.body.appendChild(t);
+        }
+        t.textContent = msg || '이동할 브리핑이 없습니다.';
+        t.style.display = 'block';
+        clearTimeout(t.__t);
+        t.__t = setTimeout(function(){ t.style.display='none'; }, 1600);
+      }catch(e){}
+    }
 
-      var __manifestDates = null;
-
-      function _setSelectDates(dates) {{
-        var sel = document.getElementById("dateSelect");
-        if (!sel) return;
-        var cur = _currentDateIso();
-        try {{ sel.innerHTML = ""; }} catch(e) {{}}
-        for (var i = 0; i < dates.length; i++) {{
-          var d = dates[i];
-          var opt = document.createElement("option");
-          opt.value = _dateToUrl(d);
-          opt.textContent = d;
-          if (d === cur) opt.selected = true;
-          sel.appendChild(opt);
-        }}
-      }}
-
-      async function _fetchManifestDates() {{
-        try {{
-          var url = _getRootPrefix() + "archive_manifest.json";
-          var r = await fetch(url, {{ cache: "no-store" }});
-          if (!r || !r.ok) return null;
-          var obj = await r.json();
-          var dates = (obj && obj.dates) ? obj.dates : null;
-          if (!dates || !Array.isArray(dates)) return null;
-          var clean = [];
-          for (var i = 0; i < dates.length; i++) {{
-            var d = dates[i];
-            if (typeof d === "string" && /^\d{{4}}-\d{{2}}-\d{{2}}$/.test(d)) clean.push(d);
-          }}
-          clean = Array.from(new Set(clean));
-          clean.sort(); clean.reverse();
-          return clean;
-        }} catch (e) {{
-          return null;
-        }}
-      }}
-
-      async function _ensureDates() {{
-        if (__manifestDates && __manifestDates.length) return __manifestDates;
-        var dates = await _fetchManifestDates();
-        if (dates && dates.length) {{
-          __manifestDates = dates;
-          _setSelectDates(dates);
-          return __manifestDates;
-        }}
-        // fallback: derive from select options
-        var sel = document.getElementById("dateSelect");
-        var ds = [];
-        if (sel) {{
-          for (var i = 0; i < sel.options.length; i++) {{
-            var opt = sel.options[i];
-            var d = _extractDate(opt.value) || _extractDate(opt.textContent || "");
-            if (d) ds.push(d);
-          }}
-        }}
-        ds = Array.from(new Set(ds));
-        ds.sort(); ds.reverse();
-        __manifestDates = ds;
-        return __manifestDates;
-      }}
-
-      async function gotoByOffset(delta, msg) {{
-        var dates = await _ensureDates();
-        if (!dates || !dates.length) {{ showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }}
-        var cur = _currentDateIso();
-        var idx = dates.indexOf(cur);
-        if (idx < 0) idx = 0;
-        var j = idx + delta;
-        if (j < 0 || j >= dates.length) {{ showNoBrief(null, msg || (delta>0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다.")); return; }}
-        if (isNavigating) return;
-        isNavigating = true;
-        showNavLoading();
-        window.location.href = _dateToUrl(dates[j]);
-      }}
-
-      async function gotoUrlChecked(url, msg) {{
-        if (!url || isNavigating) return;
-        var dates = await _ensureDates();
-        var d = _extractDate(url);
-        if (d && dates && dates.indexOf(d) >= 0) {{
-          isNavigating = true;
-          showNavLoading();
-          window.location.href = _dateToUrl(d);
-          return;
-        }}
-        showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
-      }}
-
-      // bind prev/next buttons (text based)
-      function _pickNav(kind) {{
-        if (!navRow) return null;
-        var el = navRow.querySelector('[data-nav="' + kind + '"]');
-        if (el) return el;
-        var links = navRow.querySelectorAll('a.navBtn,button.navBtn');
-        for (var i = 0; i < links.length; i++) {{
-          var t = (links[i].textContent || "") + " " + (links[i].getAttribute ? (links[i].getAttribute("title") || "") : "");
-          if (kind === "prev" && t.indexOf("이전") >= 0) return links[i];
-          if (kind === "next" && t.indexOf("다음") >= 0) return links[i];
-        }}
-        return null;
-      }}
-
-      function _bindNavClick(el, delta, msg) {{
-        if (!el || !el.addEventListener) return;
-        try {{
-          el.setAttribute && el.setAttribute("data-swipe-ignore","1");
-          el.addEventListener("click", function(ev) {{
-            try {{ ev.preventDefault(); }} catch(e) {{}}
-            gotoByOffset(delta, msg);
-          }});
-        }} catch(e2) {{}}
-      }}
-
-      var prevNav = _pickNav("prev");
-      var nextNav = _pickNav("next");
-      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
-      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
-
-      // date select
-      var sel = document.getElementById("dateSelect");
-      if (sel) {{
-        try {{ sel.setAttribute("data-swipe-ignore","1"); }} catch(e) {{}}
-        sel.addEventListener("change", function() {{
-          var v = sel.value;
-          if (v) gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
-        }});
-      }}
-
-      // swipe
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
-      function _isBlockedTarget(target) {{
-        if (!target || !target.closest) return false;
-        if (target.closest('[data-swipe-ignore="1"]')) return true;
-        if (target.closest(".topbar")) return true;
-        if (target.closest("select,input,textarea,button,[contenteditable=\\"true\\"]")) return true;
+    function _getHref(el){
+      if(!el) return '';
+      try{
+        var tag = (el.tagName||'').toLowerCase();
+        if(tag === 'a') return el.getAttribute('href') || el.href || '';
+        return el.getAttribute('data-href') || el.getAttribute('href') || '';
+      }catch(e){ return ''; }
+    }
+    function _isDisabled(el){
+      try{
+        if(!el) return true;
+        if(el.disabled) return true;
+        if(el.classList && el.classList.contains('disabled')) return true;
         return false;
-      }}
-      swipeArea.addEventListener("touchstart", function(e) {{
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = _isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx=t.clientX; sy=t.clientY; st=Date.now();
-      }}, {{ passive:true }});
-      swipeArea.addEventListener("touchend", function(e) {{
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || _isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx=t.clientX-sx;
-        var dy=t.clientY-sy;
-        var dt=Date.now()-st;
-        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-        if (dx < 0) gotoByOffset(-1, "다음 브리핑이 없습니다.");
-        else gotoByOffset(+1, "이전 브리핑이 없습니다.");
-      }}, {{ passive:true }});
+      }catch(e){ return true; }
+    }
 
-      // kick: load manifest (non-blocking)
-      try {{ _ensureDates(); }} catch(e) {{}}
+    function _pick(kind){
+      if(!navRow) return null;
+      var el = navRow.querySelector('[data-nav="' + kind + '"]');
+      if(el) return el;
+      var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
+      for(var i=0;i<btns.length;i++){
+        var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute? (btns[i].getAttribute('title')||'') : '');
+        if(kind==='prev' && t.indexOf('이전')>=0) return btns[i];
+        if(kind==='next' && t.indexOf('다음')>=0) return btns[i];
+      }
+      return null;
+    }
 
-    }} catch(e) {{}}
-  }})();
+    function _bindNav(el, msg){
+      if(!el || !el.addEventListener) return;
+      el.addEventListener('click', function(e){
+        var href = _getHref(el);
+        if(!href || _isDisabled(el)){
+          try{ e.preventDefault(); }catch(_e){}
+          _hideLoading();
+          _toast(msg);
+          return false;
+        }
+        _showLoading();
+      }, true);
+    }
+
+    var prev = _pick('prev');
+    var next = _pick('next');
+    _bindNav(prev, '이전 브리핑이 없습니다.');
+    _bindNav(next, '다음 브리핑이 없습니다.');
+
+    // Date select: navigate immediately to selected option value (already a URL in our pages)
+    var sel = document.getElementById('dateSelect');
+    if(sel){
+      try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
+      sel.addEventListener('change', function(){
+        var v = sel.value;
+        if(!v) return;
+        _showLoading();
+        window.location.href = v;
+      });
+    }
+
+    // Swipe navigation (no hint)
+    var sx=0, sy=0;
+    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
+    if(swipeArea && swipeArea.addEventListener){
+      swipeArea.addEventListener('touchstart', function(e){
+        try{
+          var t = e.changedTouches[0];
+          sx = t.clientX; sy = t.clientY;
+        }catch(_e){}
+      }, {passive:true});
+      swipeArea.addEventListener('touchend', function(e){
+        try{
+          var t = e.changedTouches[0];
+          var dx = t.clientX - sx;
+          var dy = t.clientY - sy;
+          if(Math.abs(dx) < 60) return;
+          if(Math.abs(dx) < Math.abs(dy)) return;
+          if(dx > 0) {
+            var p = prev || _pick('prev');
+            var href = _getHref(p);
+            if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
+            _showLoading(); window.location.href = href; return;
+          } else {
+            var n = next || _pick('next');
+            var href2 = _getHref(n);
+            if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
+            _showLoading(); window.location.href = href2; return;
+          }
+        }catch(_e){}
+      }, {passive:true});
+    }
+  })();
   </script>
   <!-- UX_PATCH_END -->
 """
-
         if "UX_PATCH_BEGIN" in html_new and "<!-- UX_PATCH_BEGIN" in html_new:
-            html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", (lambda _m: js_block), html_new, flags=re.S|re.I)
+            html_new = re.sub(r"<!--\s*UX_PATCH_BEGIN.*?-->\s*<script>.*?</script>\s*<!--\s*UX_PATCH_END.*?-->\s*", lambda _m: js_block, html_new, flags=re.S|re.I)
         else:
             # remove older inline swipe scripts we previously injected (best-effort), then insert
             # Remove legacy swipe scripts (some older versions listened on document and caused chip sliding → date navigation)
             html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend)[\s\S]*?</script>\s*", "", html_new, flags=re.S|re.I)
 
-            html_new = re.sub(r"(</body>)", js_block + r"\1", html_new, count=1, flags=re.I)
+            html_new = re.sub(r"(</body>)", lambda _m: js_block + _m.group(1), html_new, count=1, flags=re.I)
 
         # -----------------------------
         # 6) Safety: never commit if HTML looks broken
@@ -8673,7 +8543,13 @@ def _list_archive_dates(repo: str, token: str) -> set[str]:
 
 
 def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
-    """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso."""
+    """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso.
+
+    In strict mode, fail the run if any page patch throws an exception.
+    Strict mode is enabled when:
+      - UX_PATCH_STRICT=true, OR
+      - MAINTENANCE_TASK=ux_patch (the dedicated UX patch workflow)
+    """
     try:
         days = int(UX_PATCH_DAYS or 0)
     except Exception:
@@ -8684,8 +8560,11 @@ def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
         base = date.fromisoformat(base_iso)
     except Exception:
         return
+
     patched = 0
     skipped = 0
+    failed = 0
+
     for i in range(0, days):
         d2 = (base - timedelta(days=i)).isoformat()
         try:
@@ -8693,9 +8572,17 @@ def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
                 patched += 1
             else:
                 skipped += 1
-        except Exception:
+        except Exception as e:
+            failed += 1
+            log.warning("[WARN] ux patch failed for %s: %s", d2, e)
             skipped += 1
+
     log.info("[UX PATCH] patched=%d skipped=%d (days=%d)", patched, skipped, days)
+
+    strict_env = str(os.getenv("UX_PATCH_STRICT", "")).strip().lower()
+    strict = (strict_env in ("1", "true", "yes", "y")) or (str(os.getenv("MAINTENANCE_TASK", "")).strip().lower() == "ux_patch")
+    if strict and failed > 0:
+        raise SystemExit(1)
 
 
 def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True):
