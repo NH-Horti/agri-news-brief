@@ -246,9 +246,9 @@
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
+    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">1</span></a></div>
@@ -464,202 +464,129 @@
   
   
   
-  <!-- UX_PATCH_BEGIN v20260228-nohint -->
+  
+  <!-- UX_PATCH_BEGIN v20260301-uxnav-toast -->
   <script>
   (function(){
-    try {
-      var navRow = document.querySelector('.navRow');
-      var navLoading = document.getElementById('navLoading');
-      var isNavigating = false;
+    var navRow = document.querySelector('.navRow');
+    var navLoading = document.getElementById('navLoading');
 
-      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); try{ setTimeout(function(){ if(navLoading) navLoading.classList.remove('show'); }, 1500); }catch(e){} }
-      function showNoBrief(_el, msg){ try{ alert(msg || '이동할 브리핑이 없습니다.'); }catch(e){} }
+    function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
+    function _showLoading(){ 
+      try{ 
+        if(navLoading) navLoading.classList.add('show'); 
+        setTimeout(_hideLoading, 1200);
+      }catch(e){}
+    }
 
-      function _getRootPrefix() {
-        try {
-          var href = String(window.location.href || "");
-          var i = href.indexOf("/archive/");
-          if (i >= 0) return href.slice(0, i + 1);
-          var p = href.replace(/[#?].*$/, "");
-          return p.substring(0, p.lastIndexOf("/") + 1);
-        } catch (e) {
-          return "/";
+    function _toast(msg){
+      try{
+        var t = document.getElementById('uxToast');
+        if(!t){
+          t = document.createElement('div');
+          t.id = 'uxToast';
+          t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
+          document.body.appendChild(t);
         }
-      }
-      function _dateToUrl(d){ return _getRootPrefix() + "archive/" + d + ".html"; }
-      function _extractDate(s) {
-        if (!s) return "";
-        var str = String(s);
-        var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
-        if (m && m[1]) return m[1];
-        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-        return "";
-      }
-      function _currentDateIso() {
-        return _extractDate(window.location.pathname) || _extractDate(window.location.href);
-      }
+        t.textContent = msg || '이동할 브리핑이 없습니다.';
+        t.style.display = 'block';
+        clearTimeout(t.__t);
+        t.__t = setTimeout(function(){ t.style.display='none'; }, 1600);
+      }catch(e){}
+    }
 
-      var __manifestDates = null;
-
-      function _setSelectDates(dates) {
-        var sel = document.getElementById("dateSelect");
-        if (!sel) return;
-        var cur = _currentDateIso();
-        try { sel.innerHTML = ""; } catch(e) {}
-        for (var i = 0; i < dates.length; i++) {
-          var d = dates[i];
-          var opt = document.createElement("option");
-          opt.value = _dateToUrl(d);
-          opt.textContent = d;
-          if (d === cur) opt.selected = true;
-          sel.appendChild(opt);
-        }
-      }
-
-      async function _fetchManifestDates() {
-        try {
-          var url = _getRootPrefix() + "archive_manifest.json";
-          var r = await fetch(url, { cache: "no-store" });
-          if (!r || !r.ok) return null;
-          var obj = await r.json();
-          var dates = (obj && obj.dates) ? obj.dates : null;
-          if (!dates || !Array.isArray(dates)) return null;
-          var clean = [];
-          for (var i = 0; i < dates.length; i++) {
-            var d = dates[i];
-            if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
-          }
-          clean = Array.from(new Set(clean));
-          clean.sort(); clean.reverse();
-          return clean;
-        } catch (e) {
-          return null;
-        }
-      }
-
-      async function _ensureDates() {
-        if (__manifestDates && __manifestDates.length) return __manifestDates;
-        var dates = await _fetchManifestDates();
-        if (dates && dates.length) {
-          __manifestDates = dates;
-          _setSelectDates(dates);
-          return __manifestDates;
-        }
-        // fallback: derive from select options
-        var sel = document.getElementById("dateSelect");
-        var ds = [];
-        if (sel) {
-          for (var i = 0; i < sel.options.length; i++) {
-            var opt = sel.options[i];
-            var d = _extractDate(opt.value) || _extractDate(opt.textContent || "");
-            if (d) ds.push(d);
-          }
-        }
-        ds = Array.from(new Set(ds));
-        ds.sort(); ds.reverse();
-        __manifestDates = ds;
-        return __manifestDates;
-      }
-
-      async function gotoByOffset(delta, msg) {
-        var dates = await _ensureDates();
-        if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
-        var cur = _currentDateIso();
-        var idx = dates.indexOf(cur);
-        if (idx < 0) idx = 0;
-        var j = idx + delta;
-        if (j < 0 || j >= dates.length) { showNoBrief(null, msg || (delta>0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다.")); return; }
-        if (isNavigating) return;
-        isNavigating = true;
-        showNavLoading();
-        window.location.href = _dateToUrl(dates[j]);
-      }
-
-      async function gotoUrlChecked(url, msg) {
-        if (!url || isNavigating) return;
-        var dates = await _ensureDates();
-        var d = _extractDate(url);
-        if (d && dates && dates.indexOf(d) >= 0) {
-          isNavigating = true;
-          showNavLoading();
-          window.location.href = _dateToUrl(d);
-          return;
-        }
-        showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
-      }
-
-      // bind prev/next buttons (text based)
-      function _pickNav(kind) {
-        if (!navRow) return null;
-        var el = navRow.querySelector('[data-nav="' + kind + '"]');
-        if (el) return el;
-        var links = navRow.querySelectorAll('a.navBtn,button.navBtn');
-        for (var i = 0; i < links.length; i++) {
-          var t = (links[i].textContent || "") + " " + (links[i].getAttribute ? (links[i].getAttribute("title") || "") : "");
-          if (kind === "prev" && t.indexOf("이전") >= 0) return links[i];
-          if (kind === "next" && t.indexOf("다음") >= 0) return links[i];
-        }
-        return null;
-      }
-
-      function _bindNavClick(el, delta, msg) {
-        if (!el || !el.addEventListener) return;
-        try {
-          el.setAttribute && el.setAttribute("data-swipe-ignore","1");
-          el.addEventListener("click", function(ev) {
-            try { ev.preventDefault(); } catch(e) {}
-            gotoByOffset(delta, msg);
-          });
-        } catch(e2) {}
-      }
-
-      var prevNav = _pickNav("prev");
-      var nextNav = _pickNav("next");
-      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
-      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
-
-      // date select
-      var sel = document.getElementById("dateSelect");
-      if (sel) {
-        try { sel.setAttribute("data-swipe-ignore","1"); } catch(e) {}
-        sel.addEventListener("change", function() {
-          var v = sel.value;
-          if (v) gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
-        });
-      }
-
-      // swipe
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
-      function _isBlockedTarget(target) {
-        if (!target || !target.closest) return false;
-        if (target.closest('[data-swipe-ignore="1"]')) return true;
-        if (target.closest(".topbar")) return true;
-        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+    function _getHref(el){
+      if(!el) return '';
+      try{
+        var tag = (el.tagName||'').toLowerCase();
+        if(tag === 'a') return el.getAttribute('href') || el.href || '';
+        return el.getAttribute('data-href') || el.getAttribute('href') || '';
+      }catch(e){ return ''; }
+    }
+    function _isDisabled(el){
+      try{
+        if(!el) return true;
+        if(el.disabled) return true;
+        if(el.classList && el.classList.contains('disabled')) return true;
         return false;
+      }catch(e){ return true; }
+    }
+
+    function _pick(kind){
+      if(!navRow) return null;
+      var el = navRow.querySelector('[data-nav="' + kind + '"]');
+      if(el) return el;
+      var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
+      for(var i=0;i<btns.length;i++){
+        var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute? (btns[i].getAttribute('title')||'') : '');
+        if(kind==='prev' && t.indexOf('이전')>=0) return btns[i];
+        if(kind==='next' && t.indexOf('다음')>=0) return btns[i];
       }
-      swipeArea.addEventListener("touchstart", function(e) {
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = _isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx=t.clientX; sy=t.clientY; st=Date.now();
-      }, { passive:true });
-      swipeArea.addEventListener("touchend", function(e) {
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || _isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx=t.clientX-sx;
-        var dy=t.clientY-sy;
-        var dt=Date.now()-st;
-        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-        if (dx < 0) gotoByOffset(-1, "다음 브리핑이 없습니다.");
-        else gotoByOffset(+1, "이전 브리핑이 없습니다.");
-      }, { passive:true });
+      return null;
+    }
 
-      // kick: load manifest (non-blocking)
-      try { _ensureDates(); } catch(e) {}
+    function _bindNav(el, msg){
+      if(!el || !el.addEventListener) return;
+      el.addEventListener('click', function(e){
+        var href = _getHref(el);
+        if(!href || _isDisabled(el)){
+          try{ e.preventDefault(); }catch(_e){}
+          _hideLoading();
+          _toast(msg);
+          return false;
+        }
+        _showLoading();
+      }, true);
+    }
 
-    } catch(e) {}
+    var prev = _pick('prev');
+    var next = _pick('next');
+    _bindNav(prev, '이전 브리핑이 없습니다.');
+    _bindNav(next, '다음 브리핑이 없습니다.');
+
+    // Date select: navigate immediately to selected option value (already a URL in our pages)
+    var sel = document.getElementById('dateSelect');
+    if(sel){
+      try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
+      sel.addEventListener('change', function(){
+        var v = sel.value;
+        if(!v) return;
+        _showLoading();
+        window.location.href = v;
+      });
+    }
+
+    // Swipe navigation (no hint)
+    var sx=0, sy=0;
+    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
+    if(swipeArea && swipeArea.addEventListener){
+      swipeArea.addEventListener('touchstart', function(e){
+        try{
+          var t = e.changedTouches[0];
+          sx = t.clientX; sy = t.clientY;
+        }catch(_e){}
+      }, {passive:true});
+      swipeArea.addEventListener('touchend', function(e){
+        try{
+          var t = e.changedTouches[0];
+          var dx = t.clientX - sx;
+          var dy = t.clientY - sy;
+          if(Math.abs(dx) < 60) return;
+          if(Math.abs(dx) < Math.abs(dy)) return;
+          if(dx > 0) {
+            var p = prev || _pick('prev');
+            var href = _getHref(p);
+            if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
+            _showLoading(); window.location.href = href; return;
+          } else {
+            var n = next || _pick('next');
+            var href2 = _getHref(n);
+            if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
+            _showLoading(); window.location.href = href2; return;
+          }
+        }catch(_e){}
+      }, {passive:true});
+    }
   })();
   </script>
   <!-- UX_PATCH_END -->
