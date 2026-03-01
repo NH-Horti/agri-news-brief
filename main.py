@@ -9157,6 +9157,19 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
     log.info("[MAINT PUT] %s", daily_path)
 
+    # Optional: debug report JSON (maintenance rebuild_date)
+    if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+        try:
+            DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+            debug_path = f"docs/debug/{report_date}.json"
+            debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+            _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
+            github_put_file(repo, debug_path, debug_json, token, f"Debug report {report_date}", sha=sha_dbg_old, branch="main")
+            log.info("[MAINT PUT] %s", debug_path)
+        except Exception as e:
+            log.warning("[WARN] debug report upload failed: %s", e)
+
+
     # update search index
     search_idx, ssha = load_search_index(repo, token)
     search_idx = update_search_index(search_idx, report_date, by_section, site_path)
