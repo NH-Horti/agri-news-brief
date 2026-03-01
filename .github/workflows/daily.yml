@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -59,6 +62,10 @@ jobs:
           WINDOW_MIN_HOURS: "72"
           CROSSDAY_DEDUPE_ENABLED: "true"
           CROSSDAY_DEDUPE_DAYS: "7"
+
+          # page output size (Kakao still uses core2 only)
+          MAX_PER_SECTION: "5"
+          PAGE_TAIL_MARGIN_EXTRA: "4.0"
 
           # throttling
           NAVER_MAX_WORKERS: "1"
