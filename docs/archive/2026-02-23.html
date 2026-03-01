@@ -130,13 +130,16 @@
     }
   
     
-    /* UX_PATCH_BEGIN v20260226 */
+    
+    /* UX_PATCH_BEGIN v20260228-nohint */
+    .swipeHint, #swipeHint{display:none !important;visibility:hidden !important;}
+
     .navRow .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
     .navRow .navBtn.navArchive:hover{filter:brightness(0.98)}
     /* fallback: first nav button (older pages without navArchive class) */
     .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
     /* layout normalization (override legacy variations) */
-    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;}
+    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}
     .sec{margin-top:14px !important;border-radius:14px !important;}
     /* chipbar/chips normalization */
     .chipbar{border-top:1px solid var(--line);}
@@ -179,7 +182,7 @@
       .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
       .chip{width:100%;justify-content:space-between}
     }
-    /* UX_PATCH_END v20260226 */
+    /* UX_PATCH_END v20260228-nohint */
 </style>
 </head>
 <body>
@@ -190,7 +193,7 @@
         <div class="sub">기간: 2026-02-20 07:00 ~ 2026-02-23 07:00 · 기사 8건</div>
       </div>
       <div class="navRow">
-  <a class="navBtn navArchive navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+  <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
   <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-02-20.html">◀ 이전</a>
   <div class="dateSelWrap">
     <select id="dateSelect" aria-label="날짜 선택">
@@ -241,9 +244,9 @@
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1">
+    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
+        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">3</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
@@ -439,72 +442,205 @@
 
 
   
-  <!-- UX_PATCH_BEGIN v20260226 -->
+  
+  <!-- UX_PATCH_BEGIN v20260228-nohint -->
   <script>
   (function(){
     try {
       var navRow = document.querySelector('.navRow');
-      if(!navRow) return;
-      var navBtns = navRow.querySelectorAll('a.navBtn');
-      var prevNav = navBtns.length >= 2 ? navBtns[1] : null;
-      var nextNav = navBtns.length >= 3 ? navBtns[navBtns.length - 1] : null;
-
       var navLoading = document.getElementById('navLoading');
       var isNavigating = false;
 
-      function hasHref(el){ return !!(el && el.tagName && el.tagName.toLowerCase()==='a' && (el.getAttribute('href')||'')); }
-      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); }
-      function hideNavLoading(){ if(navLoading) navLoading.classList.remove('show'); }
+      function showNavLoading(){ if(navLoading) navLoading.classList.add('show'); try{ setTimeout(function(){ if(navLoading) navLoading.classList.remove('show'); }, 1500); }catch(e){} }
+      function showNoBrief(_el, msg){ try{ alert(msg || '이동할 브리핑이 없습니다.'); }catch(e){} }
 
-      function isBlockedTarget(target){
-        if(!target || !target.closest) return false;
-        if(target.closest('[data-swipe-ignore="1"]')) return true;
-        // block topbar gestures (nav buttons / date select / section chips)
-        if(target.closest('.topbar')) return true;
-        if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+      function _getRootPrefix() {
+        try {
+          var href = String(window.location.href || "");
+          var i = href.indexOf("/archive/");
+          if (i >= 0) return href.slice(0, i + 1);
+          var p = href.replace(/[#?].*$/, "");
+          return p.substring(0, p.lastIndexOf("/") + 1);
+        } catch (e) {
+          return "/";
+        }
+      }
+      function _dateToUrl(d){ return _getRootPrefix() + "archive/" + d + ".html"; }
+      function _extractDate(s) {
+        if (!s) return "";
+        var str = String(s);
+        var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+        if (m && m[1]) return m[1];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+        return "";
+      }
+      function _currentDateIso() {
+        return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+      }
+
+      var __manifestDates = null;
+
+      function _setSelectDates(dates) {
+        var sel = document.getElementById("dateSelect");
+        if (!sel) return;
+        var cur = _currentDateIso();
+        try { sel.innerHTML = ""; } catch(e) {}
+        for (var i = 0; i < dates.length; i++) {
+          var d = dates[i];
+          var opt = document.createElement("option");
+          opt.value = _dateToUrl(d);
+          opt.textContent = d;
+          if (d === cur) opt.selected = true;
+          sel.appendChild(opt);
+        }
+      }
+
+      async function _fetchManifestDates() {
+        try {
+          var url = _getRootPrefix() + "archive_manifest.json";
+          var r = await fetch(url, { cache: "no-store" });
+          if (!r || !r.ok) return null;
+          var obj = await r.json();
+          var dates = (obj && obj.dates) ? obj.dates : null;
+          if (!dates || !Array.isArray(dates)) return null;
+          var clean = [];
+          for (var i = 0; i < dates.length; i++) {
+            var d = dates[i];
+            if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+          }
+          clean = Array.from(new Set(clean));
+          clean.sort(); clean.reverse();
+          return clean;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      async function _ensureDates() {
+        if (__manifestDates && __manifestDates.length) return __manifestDates;
+        var dates = await _fetchManifestDates();
+        if (dates && dates.length) {
+          __manifestDates = dates;
+          _setSelectDates(dates);
+          return __manifestDates;
+        }
+        // fallback: derive from select options
+        var sel = document.getElementById("dateSelect");
+        var ds = [];
+        if (sel) {
+          for (var i = 0; i < sel.options.length; i++) {
+            var opt = sel.options[i];
+            var d = _extractDate(opt.value) || _extractDate(opt.textContent || "");
+            if (d) ds.push(d);
+          }
+        }
+        ds = Array.from(new Set(ds));
+        ds.sort(); ds.reverse();
+        __manifestDates = ds;
+        return __manifestDates;
+      }
+
+      async function gotoByOffset(delta, msg) {
+        var dates = await _ensureDates();
+        if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+        var cur = _currentDateIso();
+        var idx = dates.indexOf(cur);
+        if (idx < 0) idx = 0;
+        var j = idx + delta;
+        if (j < 0 || j >= dates.length) { showNoBrief(null, msg || (delta>0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다.")); return; }
+        if (isNavigating) return;
+        isNavigating = true;
+        showNavLoading();
+        window.location.href = _dateToUrl(dates[j]);
+      }
+
+      async function gotoUrlChecked(url, msg) {
+        if (!url || isNavigating) return;
+        var dates = await _ensureDates();
+        var d = _extractDate(url);
+        if (d && dates && dates.indexOf(d) >= 0) {
+          isNavigating = true;
+          showNavLoading();
+          window.location.href = _dateToUrl(d);
+          return;
+        }
+        showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+      }
+
+      // bind prev/next buttons (text based)
+      function _pickNav(kind) {
+        if (!navRow) return null;
+        var el = navRow.querySelector('[data-nav="' + kind + '"]');
+        if (el) return el;
+        var links = navRow.querySelectorAll('a.navBtn,button.navBtn');
+        for (var i = 0; i < links.length; i++) {
+          var t = (links[i].textContent || "") + " " + (links[i].getAttribute ? (links[i].getAttribute("title") || "") : "");
+          if (kind === "prev" && t.indexOf("이전") >= 0) return links[i];
+          if (kind === "next" && t.indexOf("다음") >= 0) return links[i];
+        }
+        return null;
+      }
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try {
+          el.setAttribute && el.setAttribute("data-swipe-ignore","1");
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch(e) {}
+            gotoByOffset(delta, msg);
+          });
+        } catch(e2) {}
+      }
+
+      var prevNav = _pickNav("prev");
+      var nextNav = _pickNav("next");
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      // date select
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        try { sel.setAttribute("data-swipe-ignore","1"); } catch(e) {}
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+        });
+      }
+
+      // swipe
+      var sx=0, sy=0, st=0, blocked=false;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+      function _isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
         return false;
       }
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        blocked = _isBlockedTarget(e.target);
+        var t = e.touches[0];
+        sx=t.clientX; sy=t.clientY; st=Date.now();
+      }, { passive:true });
+      swipeArea.addEventListener("touchend", function(e) {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        if (blocked || _isBlockedTarget(e.target)) return;
+        var t = e.changedTouches[0];
+        var dx=t.clientX-sx;
+        var dy=t.clientY-sy;
+        var dt=Date.now()-st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        else gotoByOffset(+1, "이전 브리핑이 없습니다.");
+      }, { passive:true });
 
-      function navigateBy(el){
-        if(!el || isNavigating) return;
-        if(el.tagName && el.tagName.toLowerCase()==='a'){
-          var href = el.getAttribute('href');
-          if(href){ isNavigating=true; showNavLoading(); window.location.href=href; return; }
-        }
-        try{ el.click(); }catch(e){}
-      }
+      // kick: load manifest (non-blocking)
+      try { _ensureDates(); } catch(e) {}
 
-      var sx=0, sy=0, st=0, blocked=false;
-      var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body || document;
-
-      swipeArea.addEventListener('touchstart', function(e){
-        if(!e.touches || e.touches.length!==1) return;
-        blocked = isBlockedTarget(e.target);
-        var t=e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
-      }, {passive:true});
-
-      swipeArea.addEventListener('touchend', function(e){
-        if(!e.changedTouches || e.changedTouches.length!==1) return;
-        if(blocked || isBlockedTarget(e.target)) return;
-        var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
-        // stronger threshold to avoid accidental navigations while scrolling
-        if(dt>900 || Math.abs(dx)<90 || Math.abs(dx) < Math.abs(dy)*1.4) return;
-        showNavLoading();
-        if(dx<0) navigateBy(nextNav); else navigateBy(prevNav);
-      }, {passive:true});
-
-      document.addEventListener('keydown', function(e){
-        if(!e) return;
-        if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
-        if(isBlockedTarget(e.target)) return;
-        if(e.key==='ArrowLeft'){ if(hasHref(prevNav)){ showNavLoading(); navigateBy(prevNav); } }
-        else if(e.key==='ArrowRight'){ if(hasHref(nextNav)){ showNavLoading(); navigateBy(nextNav); } }
-      });
-
-      window.addEventListener('pageshow', function(){ isNavigating=false; hideNavLoading(); });
-    } catch(e){}
+    } catch(e) {}
   })();
   </script>
-  <!-- UX_PATCH_END v20260226 -->
+  <!-- UX_PATCH_END -->
 </body>
 </html>
