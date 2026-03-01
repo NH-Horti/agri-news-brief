@@ -201,7 +201,7 @@ MIN_PER_SECTION = max(0, min(MIN_PER_SECTION, MAX_PER_SECTION))
 # 기존 ENV(MAX_PAGES_PER_QUERY)는 "상한(cap)"으로만 유지한다.
 # - 기본 수집은 1페이지 유지
 # - 필요할 때만 추가 페이지(2..N)를 조건부로 호출
-MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "2") or "2").strip() or 2)
+MAX_PAGES_PER_QUERY = int((os.getenv("MAX_PAGES_PER_QUERY", "1") or "1").strip() or 1)
 MAX_PAGES_PER_QUERY = max(1, min(MAX_PAGES_PER_QUERY, int(os.getenv("MAX_PAGES_PER_QUERY_CAP", "10"))))
 
 # --- Conditional pagination safety (BASE=1 page, only use extra pages when needed)
@@ -239,6 +239,32 @@ _default_trigger_cap = max(25, min(120, MAX_PER_SECTION * 8))
 COND_PAGING_TRIGGER_CANDIDATE_CAP = int(os.getenv("COND_PAGING_TRIGGER_CANDIDATE_CAP", str(_default_trigger_cap)) or _default_trigger_cap)
 COND_PAGING_TRIGGER_CANDIDATE_CAP = max(5, min(COND_PAGING_TRIGGER_CANDIDATE_CAP, 250))
 
+
+# --- Recall backfill (broad-query + diversity guardrails)
+# 목적: '쿼리 설계'에만 의존해 후보가 누락되는 문제를 줄이기 위해,
+#       후보 풀이 부족할 때(또는 특정 신호가 0일 때) 소량의 광역 쿼리를 추가로 수집한다.
+#       (스코어링/선정 로직은 그대로 두고, 후보(Recall)만 안정화)
+RECALL_BACKFILL_ENABLED = os.getenv("RECALL_BACKFILL_ENABLED", "1").strip().lower() in ("1","true","yes","y")
+RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("RECALL_QUERY_CAP_PER_SECTION", "6") or 6)
+RECALL_QUERY_CAP_PER_SECTION = max(0, min(RECALL_QUERY_CAP_PER_SECTION, 20))
+
+# 1페이지 결과가 꽉 찬(=50건) 쿼리는 2페이지에 유의미한 '윈도우 내' 기사가 남아 있을 가능성이 높다.
+# 후보 풀이 부족할 때만, 상위 N개 쿼리에 대해 page2를 우선적으로 시도한다.
+RECALL_HIGH_VOLUME_PAGE2_QUERIES = int(os.getenv("RECALL_HIGH_VOLUME_PAGE2_QUERIES", "2") or 2)
+RECALL_HIGH_VOLUME_PAGE2_QUERIES = max(0, min(RECALL_HIGH_VOLUME_PAGE2_QUERIES, 8))
+
+# 전역 섹션 재분류(섹션별로 재스코어링 후 best section으로 이동)
+GLOBAL_SECTION_REASSIGN_ENABLED = os.getenv("GLOBAL_SECTION_REASSIGN_ENABLED", "1").strip().lower() in ("1","true","yes","y")
+GLOBAL_SECTION_REASSIGN_MIN_GAIN = float(os.getenv("GLOBAL_SECTION_REASSIGN_MIN_GAIN", "0.8") or 0.8)
+GLOBAL_SECTION_REASSIGN_MIN_GAIN = max(0.0, min(GLOBAL_SECTION_REASSIGN_MIN_GAIN, 5.0))
+
+# 다양성(coverage) 보강: 중복은 아니지만 '비슷한 기사'가 연속으로 올라오는 것을 완화(MMR).
+MMR_DIVERSITY_ENABLED = os.getenv("MMR_DIVERSITY_ENABLED", "1").strip().lower() in ("1","true","yes","y")
+MMR_DIVERSITY_LAMBDA = float(os.getenv("MMR_DIVERSITY_LAMBDA", "1.15") or 1.15)
+MMR_DIVERSITY_LAMBDA = max(0.0, min(MMR_DIVERSITY_LAMBDA, 3.0))
+MMR_DIVERSITY_MIN_POOL = int(os.getenv("MMR_DIVERSITY_MIN_POOL", "12") or 12)
+MMR_DIVERSITY_MIN_POOL = max(0, min(MMR_DIVERSITY_MIN_POOL, 80))
+
 _COND_PAGING_LOCK = threading.Lock()
 _COND_PAGING_EXTRA_CALLS_USED = 0
 
@@ -268,6 +294,7 @@ DEBUG_DATA = {
     "build_tag": os.getenv("BUILD_TAG", ""),
     "filter_rejects": [],  # list[{section, reason, press, domain, title, url}]
     "sections": {},        # section_key -> {threshold, core_min, total_candidates, total_selected, top: [...]}
+    "collections": {},     # section_key -> {queries, hits, paging, recall, ...}
 }
 
 def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str):
@@ -295,6 +322,17 @@ def dbg_set_section(section: str, payload: dict):
     try:
         with _DEBUG_LOCK:
             DEBUG_DATA["sections"][section] = payload
+    except Exception:
+        pass
+
+
+def dbg_set_collection(section: str, payload: dict):
+    """수집 단계 메타(쿼리/페이지/히트/리콜)를 디버그 리포트에 저장."""
+    if not DEBUG_REPORT:
+        return
+    try:
+        with _DEBUG_LOCK:
+            DEBUG_DATA["collections"][section] = payload
     except Exception:
         pass
 
@@ -988,7 +1026,7 @@ def strip_tracking_params(url: str) -> str:
     try:
         u = urlparse(url)
         q = [(k, v) for (k, v) in parse_qsl(u.query, keep_blank_values=True)
-             if not k.lower().startswith("utm_") and k.lower() not in ("gclid", "fbclid", "igshid", "ref")]
+             if not k.lower().startswith("utm_") and k.lower() not in ("gclid", "fbclid", "igshid", "ref", "outurl", "nclick")]
         new_q = urlencode(q, doseq=True)
         return urlunparse((u.scheme, u.netloc, u.path, u.params, new_q, u.fragment))
     except Exception:
@@ -4740,36 +4778,104 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             anchors += 1
 
-    # 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
-    for a in pool:
-        if len(final) >= max_n:
-            break
-        if a in final:
-            continue
-        # dist: 이미 2건 이상 확보된 상태에서는 지역 단신/공지형 기사는 추가하지 않음(빈칸 메우기용으로만 허용)
-        if section_key == "dist" and len(final) >= 2 and is_local_brief_text(a.title or "", a.description or "", section_key):
-            continue
-        # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
-        if a.score < tail_cut:
-            continue
-        if _already_used(a):
-            continue
-        if not _headline_gate_relaxed(a, section_key):
-            continue
-        if not _source_ok_local(a):
-            continue
-        if any(_is_similar_title(a.title_key, b.title_key) for b in final):
-            continue
-        if any(_is_similar_story(a, b, section_key) for b in final):
-            continue
-        final.append(a)
-        _mark_used(a)
-        _source_take(a)
+    
+# 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
+    if MMR_DIVERSITY_ENABLED and len(pool) >= MMR_DIVERSITY_MIN_POOL and (max_n - len(final)) >= 2:
+        # ✅ MMR(soft diversity): 중복은 아니지만 '비슷한 기사' 연속 노출을 완화
+        def _mmr_tri(a: Article) -> set[str]:
+            tri = getattr(a, "_story_tri", None)
+            if tri is None:
+                at, ad = _story_text(a)
+                tri = _trigrams(_norm_story_text(at, ad))
+                setattr(a, "_story_tri", tri)
+            return tri
 
+        eligible: list[Article] = []
+        for a in pool:
+            if a in final:
+                continue
+            # dist: 이미 2건 이상 확보된 상태에서는 지역 단신/공지형 기사는 추가하지 않음(빈칸 메우기용으로만 허용)
+            if section_key == "dist" and len(final) >= 2 and is_local_brief_text(a.title or "", a.description or "", section_key):
+                continue
+            # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
+            if a.score < tail_cut:
+                continue
+            if _already_used(a):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            # 출처 캡은 MMR 선발에서도 유지(선정 시점에 다시 확인)
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            eligible.append(a)
 
+        while len(final) < max_n and eligible:
+            sel_tris = [_mmr_tri(x) for x in final] if final else []
+            best: Article | None = None
+            best_tuple = None
 
+            for a in eligible:
+                # 출처 캡/중복/유사 스토리/헤드라인 게이트는 "선정 시점"에도 유지
+                if not _source_ok_local(a):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                    continue
+                if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
 
-    # 4.2) dist(유통/현장) 섹션 소프트 백필:
+                tri_a = _mmr_tri(a)
+                max_sim = 0.0
+                if sel_tris and tri_a:
+                    for tri_b in sel_tris:
+                        max_sim = max(max_sim, _jaccard(tri_a, tri_b))
+
+                # penalty scale(3.0)은 점수 스케일(약 6~16)에 맞춘 보수적 기본값
+                mmr_val = float(getattr(a, "score", 0.0) or 0.0) - (MMR_DIVERSITY_LAMBDA * 3.0 * max_sim)
+
+                # tie-breaker: 본 점수/매체/최신 순
+                tie = (press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST))
+                cand = (mmr_val, float(getattr(a, "score", 0.0) or 0.0), tie)
+
+                if best is None or cand > best_tuple:
+                    best = a
+                    best_tuple = cand
+
+            if best is None:
+                break
+
+            final.append(best)
+            _mark_used(best)
+            _source_take(best)
+            eligible = [x for x in eligible if x is not best]
+
+    else:
+        for a in pool:
+            if len(final) >= max_n:
+                break
+            if a in final:
+                continue
+            # dist: 이미 2건 이상 확보된 상태에서는 지역 단신/공지형 기사는 추가하지 않음(빈칸 메우기용으로만 허용)
+            if section_key == "dist" and len(final) >= 2 and is_local_brief_text(a.title or "", a.description or "", section_key):
+                continue
+            # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
+            if a.score < tail_cut:
+                continue
+            if _already_used(a):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            if not _source_ok_local(a):
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            final.append(a)
+            _mark_used(a)
+            _source_take(a)
+# 4.2) dist(유통/현장) 섹션 소프트 백필:
     # - 어떤 날은 동적 임계치/꼬리 컷으로 1~2건만 남는 경우가 있음.
     # - 이때 '지방지라도 내용이 유의미한 기사'를 하단에 1~2건 정도 추가 노출(억지 채움은 금지).
     if section_key == "dist" and len(final) < min(3, max_n):
@@ -5017,6 +5123,196 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             ))
     return out
 
+
+# -----------------------------
+# Recall backfill helpers (broad-query safety net)
+# -----------------------------
+_RECALL_SIGNALS_BY_SECTION = {
+    "supply": ["무관세", "수입", "관세", "FTA", "할당관세"],
+    "policy": ["대책", "지원", "할당관세", "검역", "관세", "무관세", "수입"],
+    "dist": ["도매시장", "원산지", "단속", "검역", "통관", "수출", "물류"],
+    "pest": ["병해충", "방제", "예찰", "검역"],
+}
+
+def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
+    """쿼리 리스트에서 '대표 품목/키워드(첫 토큰)'를 추출.
+    - 예: '배 과일 수급' -> '배', '샤인머스캣 가격' -> '샤인머스캣'
+    """
+    out: list[str] = []
+    if not queries:
+        return out
+    for q in queries[:max(0, int(limit or 0))]:
+        q = (q or "").strip()
+        if not q:
+            continue
+        # 첫 토큰(공백 기준)
+        tok = q.split()[0].strip()
+        if not tok:
+            continue
+        # 너무 일반적인 토큰 제외
+        if tok in ("과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"):
+            continue
+        if tok not in out:
+            out.append(tok)
+    return out
+
+def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap: int = 4) -> list[str]:
+    """pool 내 토픽 분포에서 seed term을 만든다.
+    - 상위 토픽 2개 + (가능하면) 커버가 0인 토픽 1~2개를 섞어 '누락형'을 포착
+    """
+    cap = max(1, int(cap or 1))
+    topic_cnt: dict[str, int] = {}
+    for a in (candidates_sorted or []):
+        if float(getattr(a, "score", 0.0) or 0.0) < float(thr or 0.0):
+            continue
+        tn = (getattr(a, "topic", "") or "").strip()
+        if not tn:
+            continue
+        topic_cnt[tn] = topic_cnt.get(tn, 0) + 1
+
+    # TOPICS는 (topic_name, synonyms) 형태
+    # topic_name이 '감귤/만감'이면 synonyms[0]이 '감귤' 식으로 매핑되어 있음.
+    out: list[str] = []
+
+    # 1) 상위 토픽 2개
+    top_topics = sorted(topic_cnt.items(), key=lambda x: x[1], reverse=True)[:2]
+    for tn, _ in top_topics:
+        for name, syns in TOPICS:
+            if name == tn:
+                term = (syns[0] if syns else (tn.split("/")[0] if tn else "")).strip()
+                if term and term not in out:
+                    out.append(term)
+                break
+
+    # 2) 커버가 0인 토픽(가능하면 1~2개)
+    missing_terms: list[str] = []
+    skip_topics = {"도매시장", "APC/산지유통", "수출/검역"}  # 섹션/시그널 쿼리로 이미 잘 잡히는 편
+    for name, syns in TOPICS:
+        if name in skip_topics:
+            continue
+        if topic_cnt.get(name, 0) >= 1:
+            continue
+        term = (syns[0] if syns else (name.split("/")[0] if name else "")).strip()
+        if term and term not in out and term not in missing_terms:
+            missing_terms.append(term)
+        if len(missing_terms) >= 2:
+            break
+    out.extend(missing_terms)
+
+    # cap
+    out2: list[str] = []
+    for t in out:
+        if t and t not in out2:
+            out2.append(t)
+        if len(out2) >= cap:
+            break
+    return out2
+
+def _build_recall_fallback_queries(section_key: str, section_conf: dict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], dict]:
+    """후보 풀 누락을 줄이기 위한 '광역 보강 쿼리'를 생성.
+    반환: (queries, meta)
+    - meta는 DEBUG_REPORT에서 확인 가능하도록 남긴다.
+    """
+    meta = {"seed_terms": [], "reason": [], "queries": []}
+    if not RECALL_BACKFILL_ENABLED:
+        return [], meta
+
+    section_key = str(section_key or "")
+    base_queries = list(section_conf.get("queries") or [])
+    signals = _RECALL_SIGNALS_BY_SECTION.get(section_key, [])
+
+    # seed terms: (1) pool 토픽 기반 (2) 쿼리 기반 토큰
+    seed_terms = []
+    try:
+        seed_terms.extend(_seed_terms_from_topics(candidates_sorted, thr, cap=4))
+    except Exception:
+        pass
+    try:
+        seed_terms.extend(_extract_seed_terms_from_queries(base_queries, limit=6))
+    except Exception:
+        pass
+
+    # dedupe + cap
+    st2: list[str] = []
+    for t in seed_terms:
+        t = (t or "").strip()
+        if not t:
+            continue
+        if t not in st2:
+            st2.append(t)
+        if len(st2) >= 5:
+            break
+    seed_terms = st2
+    meta["seed_terms"] = list(seed_terms)
+
+    # trade-signal coverage check (supply/policy only)
+    has_trade = False
+    if section_key in ("supply", "policy"):
+        try:
+            for a in (candidates_sorted or [])[:40]:
+                if float(getattr(a, "score", 0.0) or 0.0) < float(thr or 0.0):
+                    continue
+                if _has_trade_signal(f"{a.title} {a.description}"):
+                    has_trade = True
+                    break
+        except Exception:
+            has_trade = False
+        if not has_trade:
+            meta["reason"].append("no_trade_signal_in_pool")
+
+    out: list[str] = []
+
+    # 1) seed term 단독(광역)
+    for t in seed_terms:
+        if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+            break
+        if t and (t not in base_queries) and (t not in out):
+            out.append(t)
+
+    # 2) seed term + signals (섹션별)
+    # - 너무 많은 조합을 만들지 않고, seed당 1~2개로 제한
+    for t in seed_terms:
+        if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+            break
+        # supply/policy: trade 관련 신호 우선
+        sigs = list(signals)
+        if section_key in ("supply", "policy") and not has_trade:
+            sigs = ["무관세", "수입", "관세", "FTA", "할당관세"] + sigs
+        # seed당 최대 2개만
+        added_for_term = 0
+        for sig in sigs:
+            if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                break
+            if not sig:
+                continue
+            q = f"{t} {sig}".strip()
+            if q in base_queries or q in out:
+                continue
+            out.append(q)
+            added_for_term += 1
+            if added_for_term >= 2:
+                break
+
+    # 3) 섹션별 공통(용어가 달라도 잡히는) 보강 쿼리 1~2개 (cap 내에서)
+    if len(out) < RECALL_QUERY_CAP_PER_SECTION:
+        common = []
+        if section_key in ("supply", "policy"):
+            common = ["만다린 무관세", "미국 만다린 무관세", "만감류 무관세", "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"]
+        elif section_key == "dist":
+            common = ["원산지 단속 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
+        elif section_key == "pest":
+            common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
+
+        for q in common:
+            if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                break
+            if q in base_queries or q in out:
+                continue
+            out.append(q)
+
+    meta["queries"] = list(out)
+    return out, meta
+
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
     """Collect candidates for a section.
 
@@ -5034,6 +5330,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     max_n = MAX_PER_SECTION
 
     hits_by_query: dict[str, int] = {}
+
+    api_items_by_query: dict[str, int] = {}    # raw items returned by API per query (before time/relevance filters)
+    page1_full_queries: set[str] = set()       # API returned full display(=50) on page1 -> high volume hint
+    recall_meta: dict = {}                     # recall backfill metadata (for debug)
 
     def _ingest_naver_items(q: str, data: dict):
         nonlocal items, _local_dedupe
@@ -5116,6 +5416,13 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 except Exception as e:
                     log.warning("[WARN] query failed: %s", e)
                     continue
+                try:
+                    _n_items = len((data.get('items', []) or [])) if isinstance(data, dict) else 0
+                    api_items_by_query[_q] = api_items_by_query.get(_q, 0) + _n_items
+                    if COND_PAGING_BASE_PAGES == 1 and _n_items >= 50:
+                        page1_full_queries.add(_q)
+                except Exception:
+                    pass
                 _ingest_naver_items(_q, data)
 
     # Optional RSS candidates (신뢰 소스 보강)
@@ -5134,7 +5441,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     try:
         if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
             # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
-            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP or len(items) < max_n * 2:
+            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
                 candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
                 thr = _dynamic_threshold(candidates_sorted, section_key)
                 pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
@@ -5149,60 +5456,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
                     # (보강) pool 부족일 때만, '무역/관세/무관세/FTA/수입' 조합 쿼리를 소량 추가로 1페이지 수집
                     # - 특정 기사 맞춤이 아니라, 전반적으로 "수입/관세 이슈가 품목 수급에 미치는 영향" 기사들을 더 안정적으로 포착하기 위함
-                    fallback_qs: list[str] = []
-                    try:
-                        if section_key in ("supply", "policy"):
-                            # pool 내 토픽 커버리지(0/저커버 토픽) 추정
-                            topic_cnt: dict[str, int] = {}
-                            for a in candidates_sorted:
-                                if getattr(a, "score", 0.0) < thr:
-                                    continue
-                                tn = (getattr(a, "topic", "") or "").strip()
-                                if not tn:
-                                    continue
-                                topic_cnt[tn] = topic_cnt.get(tn, 0) + 1
-
-                            skip_topics = {"도매시장", "APC/산지유통", "수출/검역", "정책", "병해충"}
-                            wanted_terms: list[str] = []
-                            # ✅ 감귤/만감(만다린 무관세/FTA) 유형은 이미 토픽 커버가 있어도
-                            #    '만다린/만감류' 키워드를 보강해서 기획성 기사 누락을 줄인다.
-                            if topic_cnt.get("감귤/만감", 0) >= 1:
-                                for _t in ("만다린", "만감류"):
-                                    if _t not in wanted_terms:
-                                        wanted_terms.append(_t)
-                            for tn, syns in TOPICS:
-                                if tn in skip_topics:
-                                    continue
-                                if topic_cnt.get(tn, 0) >= 1:
-                                    continue
-                                # 대표 검색어(첫 동의어) 사용
-                                term = (syns[0] if syns else tn.split("/")[0]).strip()
-                                if term and (term not in wanted_terms):
-                                    wanted_terms.append(term)
-                                if len(wanted_terms) >= 3:
-                                    break
-
-                            trade_sigs = ["무관세", "FTA", "할당관세", "관세", "수입"]
-                            for term in wanted_terms:
-                                for sig in trade_sigs:
-                                    fallback_qs.append(f"{term} {sig}")
-
-                            # 범용 보강 쿼리(수입/관세 관련 품목 기사 포착)
-                            fallback_qs.extend([
-                                # 만다린/만감류(무관세/FTA) 포착 강화
-                                "만다린 무관세", "미국 만다린 무관세", "만감류 무관세",
-                                # 범용 보강
-                                "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA",
-                            ])
-
-                            # cap
-                            cap = COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION
-                            if cap > 0:
-                                fallback_qs = fallback_qs[:cap]
-                            else:
-                                fallback_qs = []
-                    except Exception:
-                        fallback_qs = []
+                    fallback_qs, recall_meta = _build_recall_fallback_queries(section_key, section_conf, candidates_sorted, thr)
 
                     if fallback_qs:
                         for fq in fallback_qs:
@@ -5224,7 +5478,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
                     # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
                     _qpos = {q: i for i, q in enumerate(queries)}
-                    ranked = sorted(list(queries), key=lambda q: (hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
+                    ranked = sorted(list(queries), key=lambda q: ((1 if (q in page1_full_queries) else 0), hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
 
                     picked: list[str] = []
                     for q in ranked:
@@ -5292,6 +5546,32 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     except Exception:
         # extra pass should never break the pipeline
         pass
+
+    
+    # Debug: collection meta (queries/hits/recall) -> docs/debug/YYYY-MM-DD.json
+    if DEBUG_REPORT:
+        try:
+            hits_top = sorted(list(hits_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
+            api_top = sorted(list(api_items_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
+            meta = {
+                "base_queries_n": int(len(queries)),
+                "base_queries": list(queries[:30]),
+                "api_items_top": api_top,
+                "window_hits_top": hits_top,
+                "page1_full_queries": sorted(list(page1_full_queries))[:20],
+                "recall_meta": recall_meta if isinstance(recall_meta, dict) else {},
+                "items_total": int(len(items)),
+                "cond_paging": {
+                    "enabled": bool(COND_PAGING_ENABLED),
+                    "base_pages": int(COND_PAGING_BASE_PAGES),
+                    "max_pages": int(COND_PAGING_MAX_PAGES),
+                    "budget_used": int(_COND_PAGING_EXTRA_CALLS_USED),
+                    "budget_total": int(COND_PAGING_EXTRA_CALL_BUDGET_TOTAL),
+                },
+            }
+            dbg_set_collection(section_key, meta)
+        except Exception:
+            pass
 
     return items
 
@@ -5459,6 +5739,114 @@ def is_macro_policy_issue(text: str) -> bool:
 
     return False
 
+
+def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime) -> int:
+    """후보를 섹션별로 수집한 뒤, 모든 섹션 기준으로 재평가하여 best section으로 이동.
+    - 목적: '어떤 쿼리로 잡혔는지'에 좌우되는 오분류를 줄이고, 누락(특히 policy/dist)도 완화
+    - 원칙: (1) 강한 이동 근거(점수 이득 + 최소 맥락)일 때만 이동 (2) pest는 기본 유지
+    """
+    if not GLOBAL_SECTION_REASSIGN_ENABLED:
+        return 0
+
+    conf_by_key = {str(x.get("key")): x for x in (SECTIONS or []) if isinstance(x, dict)}
+    keys = [k for k in ("supply", "dist", "policy", "pest") if k in conf_by_key]
+
+    moved = 0
+    # flatten
+    all_items: list[Article] = []
+    for k, lst in (raw_by_section or {}).items():
+        for a in (lst or []):
+            if not isinstance(a, Article):
+                continue
+            # ensure section attr
+            if not getattr(a, "section", None):
+                a.section = str(k)
+            all_items.append(a)
+
+    # rebuild containers
+    new_by: dict[str, list[Article]] = {k: [] for k in conf_by_key.keys()}
+    # local dedupe per section after move
+    local_dedupe_by: dict[str, DedupeIndex] = {k: DedupeIndex() for k in conf_by_key.keys()}
+
+    for a in all_items:
+        cur = str(getattr(a, "section", "") or "")
+        if cur not in conf_by_key:
+            cur = "supply" if "supply" in conf_by_key else (keys[0] if keys else cur)
+
+        # pest는 기본 유지(섹션 스코어링보다 컨텍스트 판정이 중요)
+        if cur == "pest":
+            target = "pest"
+            di = local_dedupe_by.get(target)
+            if di and di.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                new_by.setdefault(target, []).append(a)
+            continue
+
+        txt = ((a.title or "") + " " + (a.description or "")).lower()
+        dom = normalize_host(getattr(a, "domain", "") or "")
+        press = (getattr(a, "press", "") or "").strip()
+        url = getattr(a, "canon_url", None) or getattr(a, "originallink", None) or getattr(a, "link", None) or ""
+
+        cur_score = float(getattr(a, "score", 0.0) or 0.0)
+        best_key = cur
+        best_score = cur_score
+
+        # candidate set: current + (supply/dist/policy)
+        cand_keys = []
+        for k in (cur, "policy", "dist", "supply"):
+            if k in conf_by_key and k not in cand_keys:
+                cand_keys.append(k)
+
+        for k in cand_keys:
+            if k == cur:
+                continue
+
+            # quick prefilter (reduce false moves)
+            if k == "dist":
+                dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","유통","도매")])
+                if dist_like < 2 and (not has_apc_agri_context(txt)):
+                    continue
+            if k == "policy":
+                # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
+                if (not is_policy_announcement_issue(txt, dom, press)) and (not is_macro_policy_issue(txt)):
+                    try:
+                        if not _is_policy_official(a):
+                            continue
+                    except Exception:
+                        continue
+
+            try:
+                conf = conf_by_key[k]
+                if not is_relevant(a.title, a.description, dom, url, conf, press):
+                    continue
+                sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
+            except Exception:
+                continue
+
+            if sc > best_score:
+                best_score = float(sc)
+                best_key = k
+
+        # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
+        if best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
+            a.section = best_key
+            a.score = best_score
+            moved += 1
+
+        target = a.section
+        di = local_dedupe_by.get(target)
+        if di and di.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+            new_by.setdefault(target, []).append(a)
+
+    # write back
+    for k in list(raw_by_section.keys()):
+        raw_by_section[k] = new_by.get(k, [])
+
+    # ensure keys exist
+    for k in new_by.keys():
+        raw_by_section.setdefault(k, new_by.get(k, []))
+
+    return moved
+
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     raw_by_section: dict[str, list[Article]] = {}
 
@@ -5615,6 +6003,15 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
         raw_by_section[_sec_key] = keep_items
     if moved_topic:
         log.info("[REBALANCE] moved %d item(s) by topic override: -> policy", moved_topic)
+
+    # ✅ Global section reassignment (best section by rescoring; reduces query-driven misplacement)
+    try:
+        if GLOBAL_SECTION_REASSIGN_ENABLED:
+            moved_global = _global_section_reassign(raw_by_section, start_kst, end_kst)
+            if moved_global:
+                log.info("[REASSIGN] moved %d item(s) by global rescoring", moved_global)
+    except Exception as e:
+        log.warning("[WARN] global section reassignment failed: %s", e)
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
