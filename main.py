@@ -4122,6 +4122,11 @@ _PROVINCE_RX = re.compile("|".join(map(re.escape, _PROVINCE_NAMES)))
 # 시/군/구/읍/면 단위는 오탐이 많아 '도'는 제외하고, 단어 경계에 가깝게만 매칭
 _CITY_COUNTY_RX = re.compile(r"(?:(?<=\s)|^)([가-힣]{2,})(시|군|구|읍|면)(?=\s|$|[\]\[\)\(\.,·!\?\"'“”‘’:/-])")
 
+# _REGION_RX: ordered scan helper for pest de-dup (province + city/county tokens).
+# NOTE: keep conservative to avoid false positives; used only for grouping, not for relevance filtering.
+_REGION_RX = re.compile(r"(?:" + _PROVINCE_RX.pattern + r")|(?:" + _CITY_COUNTY_RX.pattern + r")")
+
+
 # 지역처럼 보이지만 실제로는 농업/기사 용어인 경우가 많아 제외(보수적)
 _REGION_STOP_PREFIX = {
     "방제","예찰","지원","대책","정책","수급","출하","가격","물량","품질","생산","소비","확대","감소",
@@ -4588,6 +4593,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         "pest": 3.6,
     }
     tail_margin = tail_margin_by_section.get(section_key, 3.6)
+
+    # 페이지 노출량을 늘릴 때(예: MAX_PER_SECTION=5) "핵심2" 외 일반 기사도 적절히 포함되도록
+    # tail-cut 폭을 넓힌다. (core 선정 로직/점수는 그대로 유지)
+    if MAX_PER_SECTION >= 5:
+        try:
+            extra = float(os.getenv("PAGE_TAIL_MARGIN_EXTRA", "4.0") or 0.0)
+        except Exception:
+            extra = 4.0
+        extra = max(0.0, min(extra, 12.0))
+        tail_margin += extra
+
     tail_cut = max(thr, best_score - tail_margin)
 
     # 출처 캡(지방/인터넷 과다 방지)

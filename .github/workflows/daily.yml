@@ -60,6 +60,10 @@ jobs:
           CROSSDAY_DEDUPE_ENABLED: "true"
           CROSSDAY_DEDUPE_DAYS: "7"
 
+          # page output size (Kakao still uses core2 only)
+          MAX_PER_SECTION: "5"
+          PAGE_TAIL_MARGIN_EXTRA: "4.0"
+
           # throttling
           NAVER_MAX_WORKERS: "1"
           NAVER_MIN_INTERVAL_SEC: "0.6"
