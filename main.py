@@ -8192,7 +8192,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # 5) Upsert canonical swipe JS (upgrade old patched pages too)
         # - Scope: article area (.wrap), ignore topbar interactions (chip sliding)
         # -----------------------------
-                js_block = f"""
+        js_block = f"""
   <!-- UX_PATCH_BEGIN v{UX_VER} -->
   <script>
   (function(){{
