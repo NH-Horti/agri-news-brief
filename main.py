@@ -2023,7 +2023,7 @@ def is_remote_foreign_horti(text: str) -> bool:
         return False
 
     # 한국과 직접 연결(수출/검역/통관/수입) 신호가 있으면 원격 해외로 보지 않음
-    if any(w in t for w in ("수출","수입","통관","검역","수입검역","수출길","수출길", "관세")) and any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
+    if any(w in t for w in ("수출","수입","통관","검역","수입검역","수출길", "관세")) and any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
         return False
 
     # 강한 국내 맥락이 없으면 제외
@@ -2049,6 +2049,19 @@ def agri_strength_score(text: str) -> int:
     return count_any(text, AGRI_STRONG_TERMS)
 
 
+def _section_must_terms_lower(section_conf: dict) -> list[str]:
+    """Return cached lower-cased must_terms for a section config."""
+    if not isinstance(section_conf, dict):
+        return []
+    cached = section_conf.get("_must_terms_lower")
+    if isinstance(cached, list):
+        return cached
+    out = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()]
+    # lightweight cache on in-memory config dict
+    section_conf["_must_terms_lower"] = out
+    return out
+
+
 def keyword_strength(text: str, section_conf: dict) -> int:
     """섹션 관련 키워드 강도(정수).
     - 섹션 must_terms 포함 여부(1차) + 농산물 강키워드(AGRI_STRONG_TERMS) 기반 점수
@@ -2056,7 +2069,7 @@ def keyword_strength(text: str, section_conf: dict) -> int:
     """
     if not section_conf:
         return agri_strength_score(text)
-    must = [t.lower() for t in section_conf.get("must_terms", [])]
+    must = _section_must_terms_lower(section_conf)
     return count_any(text, must) + agri_strength_score(text)
 
 def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
@@ -2066,7 +2079,7 @@ def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
     """
     txt = f"{title or ''} {desc or ''}".lower()
     ttl = (title or "").lower()
-    must = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()] if section_conf else []
+    must = _section_must_terms_lower(section_conf) if section_conf else []
     must_t = count_any(txt, must) if must else 0
     must_h = count_any(ttl, must) if must else 0
     base = (0.18 * must_t) + (0.40 * must_h)
@@ -4035,7 +4048,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     key = section_conf["key"]
 
     # 섹션 must_terms를 점수에 소폭 반영(제목 히트 우선)해 섹션 적합도를 안정화
-    must_terms_l = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()]
+    must_terms_l = _section_must_terms_lower(section_conf)
     if must_terms_l:
         must_title_hits = count_any(title_l, must_terms_l)
         must_text_hits = count_any(text, must_terms_l)
@@ -5292,6 +5305,7 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
     """쿼리 리스트에서 '대표 품목/키워드(첫 토큰)'를 추출.
     - 예: '배 과일 수급' -> '배', '샤인머스캣 가격' -> '샤인머스캣'
     - 개선: 앞쪽 쿼리에 편향되지 않도록 전체 쿼리를 순회하며 고르게 seed를 수집.
+    - 개선: 따옴표/기호가 포함된 쿼리에서도 첫 의미 토큰을 안정적으로 추출.
     """
     out: list[str] = []
     if not queries:
@@ -5299,16 +5313,19 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
     cap = max(0, int(limit or 0))
     if cap == 0:
         return out
+    skip = {"과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"}
     for q in queries:
-        q = (q or "").strip()
+        q = (q or "").strip().lower()
         if not q:
             continue
-        # 첫 토큰(공백 기준)
-        tok = q.split()[0].strip()
+        toks = re.findall(r"[0-9a-z가-힣]{2,}", q)
+        tok = ""
+        for t in toks:
+            if t in skip:
+                continue
+            tok = t
+            break
         if not tok:
-            continue
-        # 너무 일반적인 토큰 제외
-        if tok in ("과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"):
             continue
         if tok not in out:
             out.append(tok)
