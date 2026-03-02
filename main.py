@@ -4012,6 +4012,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
 # 섹션별 키워드 가중치
     key = section_conf["key"]
+
+    # 섹션 must_terms를 점수에 소폭 반영(제목 히트 우선)해 섹션 적합도를 안정화
+    must_terms_l = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()]
+    if must_terms_l:
+        must_title_hits = count_any(title_l, must_terms_l)
+        must_text_hits = count_any(text, must_terms_l)
+        score += min(1.8, (0.35 * must_title_hits) + (0.12 * must_text_hits))
+
     if key == "supply":
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
@@ -5252,11 +5260,15 @@ _RECALL_SIGNALS_BY_SECTION = {
 def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
     """쿼리 리스트에서 '대표 품목/키워드(첫 토큰)'를 추출.
     - 예: '배 과일 수급' -> '배', '샤인머스캣 가격' -> '샤인머스캣'
+    - 개선: 앞쪽 쿼리에 편향되지 않도록 전체 쿼리를 순회하며 고르게 seed를 수집.
     """
     out: list[str] = []
     if not queries:
         return out
-    for q in queries[:max(0, int(limit or 0))]:
+    cap = max(0, int(limit or 0))
+    if cap == 0:
+        return out
+    for q in queries:
         q = (q or "").strip()
         if not q:
             continue
@@ -5269,6 +5281,8 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
             continue
         if tok not in out:
             out.append(tok)
+        if len(out) >= cap:
+            break
     return out
 
 
@@ -5462,6 +5476,21 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
     meta["queries"] = list(out)
     return out, meta
 
+def _dedupe_queries(queries: list[str]) -> list[str]:
+    """Normalize and deduplicate query list while preserving order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for q in (queries or []):
+        qn = re.sub(r"\s+", " ", str(q or "")).strip()
+        if not qn:
+            continue
+        k = qn.lower()
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(qn)
+    return out
+
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
     """Collect candidates for a section.
 
@@ -5471,7 +5500,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     - 후보 개수 자체가 너무 적음(=품질 문제가 아니라 풀 부족 가능성) AND
     - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
     """
-    queries = section_conf.get("queries") or []
+    queries = _dedupe_queries(section_conf.get("queries") or [])
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
