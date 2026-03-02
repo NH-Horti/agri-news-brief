@@ -258,6 +258,12 @@ GLOBAL_SECTION_REASSIGN_ENABLED = os.getenv("GLOBAL_SECTION_REASSIGN_ENABLED", "
 GLOBAL_SECTION_REASSIGN_MIN_GAIN = float(os.getenv("GLOBAL_SECTION_REASSIGN_MIN_GAIN", "0.8") or 0.8)
 GLOBAL_SECTION_REASSIGN_MIN_GAIN = max(0.0, min(GLOBAL_SECTION_REASSIGN_MIN_GAIN, 5.0))
 
+# 최근 실험적 보정(쿼리-기사 정합성 게이트 / 키워드 강도 추가 보정)은
+# 기본값을 OFF로 두고, 운영에서 필요 시 ENV로 켜서 점진 적용한다.
+QUERY_ARTICLE_MATCH_GATE_ENABLED = os.getenv("QUERY_ARTICLE_MATCH_GATE_ENABLED", "0").strip().lower() in ("1", "true", "yes", "y")
+SCORING_KEYWORD_STRENGTH_BOOST_ENABLED = os.getenv("SCORING_KEYWORD_STRENGTH_BOOST_ENABLED", "0").strip().lower() in ("1", "true", "yes", "y")
+SCORING_TITLE_SIGNAL_BONUS_ENABLED = os.getenv("SCORING_TITLE_SIGNAL_BONUS_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+
 # 다양성(coverage) 보강: 중복은 아니지만 '비슷한 기사'가 연속으로 올라오는 것을 완화(MMR).
 MMR_DIVERSITY_ENABLED = os.getenv("MMR_DIVERSITY_ENABLED", "1").strip().lower() in ("1","true","yes","y")
 MMR_DIVERSITY_LAMBDA = float(os.getenv("MMR_DIVERSITY_LAMBDA", "1.15") or 1.15)
@@ -3958,7 +3964,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # (핵심) 원예수급/품목 신호 점수(품목 라벨 + 오탐 억제)
     horti_sc = best_horti_score(title, desc)
-    key_strength = keyword_strength(text, section_conf)
+    key_strength = keyword_strength(text, section_conf) if SCORING_KEYWORD_STRENGTH_BOOST_ENABLED else 0
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
     if has_apc_agri_context(text):
@@ -3973,7 +3979,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score += 0.55 * strength
     score += 0.25 * korea
     score -= 0.70 * offp
-    score += title_signal_bonus(title)
+    if SCORING_TITLE_SIGNAL_BONUS_ENABLED:
+        score += title_signal_bonus(title)
 
 
 
@@ -5509,8 +5516,8 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
                 continue
 
-            # 쿼리-기사 정합성 체크: broad/recall 쿼리에서 제목만 비슷한 오탐 유입 억제
-            if not _query_article_match_ok(q, title, desc, section_key):
+            # 쿼리-기사 정합성 체크(옵트인): broad/recall 쿼리에서 제목만 비슷한 오탐 유입 억제
+            if QUERY_ARTICLE_MATCH_GATE_ENABLED and (not _query_article_match_ok(q, title, desc, section_key)):
                 continue
 
             canon = canonicalize_url(origin or link)
