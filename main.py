@@ -3958,6 +3958,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # (핵심) 원예수급/품목 신호 점수(품목 라벨 + 오탐 억제)
     horti_sc = best_horti_score(title, desc)
+    key_strength = keyword_strength(text, section_conf)
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
     if has_apc_agri_context(text):
@@ -3972,6 +3973,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score += 0.55 * strength
     score += 0.25 * korea
     score -= 0.70 * offp
+    score += title_signal_bonus(title)
 
 
 
@@ -4005,9 +4007,11 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     key = section_conf["key"]
     if key == "supply":
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
+        score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
+        score += min(2.0, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
         # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
         # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
@@ -4021,12 +4025,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
+        score += min(1.8, 0.20 * key_strength)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
+        score += min(1.8, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
 
         # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
@@ -5258,6 +5264,40 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
             out.append(tok)
     return out
 
+
+_QUERY_TOKEN_STOPWORDS = {
+    "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
+    "동향", "이슈", "대책", "지원", "검역", "유통", "현장", "방제", "병해충",
+}
+
+def _query_tokens(q: str) -> list[str]:
+    """쿼리에서 의미 있는 토큰만 추출(스팸성 광역 쿼리 정밀도 보정용)."""
+    toks = re.findall(r"[0-9a-z가-힣]{2,}", (q or "").lower())
+    out: list[str] = []
+    for t in toks:
+        if t in _QUERY_TOKEN_STOPWORDS:
+            continue
+        if t not in out:
+            out.append(t)
+    return out
+
+def _query_article_match_ok(q: str, title: str, desc: str, section_key: str) -> bool:
+    """쿼리-기사 정합성 체크.
+
+    - 광역/보강 쿼리에서 발생하는 오탐을 줄이기 위해, 의미 토큰이 기사 텍스트에 최소 1개 이상 포함되는지 확인.
+    - 다만 policy 섹션은 공공기관 브리핑이 제목/본문 표현이 변형되는 경우가 있어 완화 기준 적용.
+    """
+    toks = _query_tokens(q)
+    if not toks:
+        return True
+    txt = f"{title or ''} {desc or ''}".lower()
+    hit = sum(1 for t in toks if t in txt)
+    if section_key == "policy":
+        return hit >= 1
+    # 의미 토큰이 3개 이상인 긴 쿼리는 최소 2개 매칭 요구
+    need = 2 if len(toks) >= 3 else 1
+    return hit >= need
+
 def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap: int = 4) -> list[str]:
     """pool 내 토픽 분포에서 seed term을 만든다.
     - 상위 토픽 2개 + (가능하면) 커버가 0인 토픽 1~2개를 섞어 '누락형'을 포착
@@ -5467,6 +5507,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
             press = press_name_from_url(origin or link)
             if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+
+            # 쿼리-기사 정합성 체크: broad/recall 쿼리에서 제목만 비슷한 오탐 유입 억제
+            if not _query_article_match_ok(q, title, desc, section_key):
                 continue
 
             canon = canonicalize_url(origin or link)
