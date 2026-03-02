@@ -264,6 +264,12 @@ QUERY_ARTICLE_MATCH_GATE_ENABLED = os.getenv("QUERY_ARTICLE_MATCH_GATE_ENABLED",
 SCORING_KEYWORD_STRENGTH_BOOST_ENABLED = os.getenv("SCORING_KEYWORD_STRENGTH_BOOST_ENABLED", "0").strip().lower() in ("1", "true", "yes", "y")
 SCORING_TITLE_SIGNAL_BONUS_ENABLED = os.getenv("SCORING_TITLE_SIGNAL_BONUS_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 
+# 섹션 배치 안정화: 최종 선발/전역 재분류 시 section-fit 신호를 함께 본다.
+SECTION_FIT_MIN_FOR_TOP = float(os.getenv("SECTION_FIT_MIN_FOR_TOP", "0.8") or 0.8)
+SECTION_FIT_MIN_FOR_TOP = max(0.0, min(SECTION_FIT_MIN_FOR_TOP, 5.0))
+SECTION_REASSIGN_FIT_GUARD = float(os.getenv("SECTION_REASSIGN_FIT_GUARD", "0.8") or 0.8)
+SECTION_REASSIGN_FIT_GUARD = max(0.0, min(SECTION_REASSIGN_FIT_GUARD, 5.0))
+
 # 다양성(coverage) 보강: 중복은 아니지만 '비슷한 기사'가 연속으로 올라오는 것을 완화(MMR).
 MMR_DIVERSITY_ENABLED = os.getenv("MMR_DIVERSITY_ENABLED", "1").strip().lower() in ("1","true","yes","y")
 MMR_DIVERSITY_LAMBDA = float(os.getenv("MMR_DIVERSITY_LAMBDA", "1.15") or 1.15)
@@ -2052,6 +2058,21 @@ def keyword_strength(text: str, section_conf: dict) -> int:
         return agri_strength_score(text)
     must = [t.lower() for t in section_conf.get("must_terms", [])]
     return count_any(text, must) + agri_strength_score(text)
+
+def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
+    """해당 기사가 섹션 의도와 얼마나 맞는지(0+).
+    - must_terms 텍스트 히트 + 제목 히트(가중)
+    - 원예 핵심 신호를 약하게 추가해 완전 비관련 기사 상단 배치를 줄임
+    """
+    txt = f"{title or ''} {desc or ''}".lower()
+    ttl = (title or "").lower()
+    must = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()] if section_conf else []
+    must_t = count_any(txt, must) if must else 0
+    must_h = count_any(ttl, must) if must else 0
+    base = (0.18 * must_t) + (0.40 * must_h)
+    # 완전 무관 기사 방어용 약한 보정
+    base += 0.10 * min(6, agri_strength_score(txt))
+    return round(base, 3)
 
 def off_topic_penalty(text: str) -> int:
     return count_any(text, OFFTOPIC_HINTS)
@@ -4674,6 +4695,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if not pool:
         return []
 
+    # 섹션 적합도(section-fit)가 매우 낮은 후보는 상단 선발에서 제외(단, 점수가 충분히 높으면 유지)
+    sec_conf = next((x for x in SECTIONS if x.get("key") == section_key), {})
+    fit_filtered: list[Article] = []
+    for a in pool:
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
+            fit_filtered.append(a)
+    if fit_filtered:
+        pool = fit_filtered
+
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
@@ -6012,7 +6043,13 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if not is_relevant(a.title, a.description, dom, url, conf, press):
                     continue
                 sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
+                fit_cur = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
+                fit_new = section_fit_score(a.title, a.description, conf)
             except Exception:
+                continue
+
+            # 재분류는 score뿐 아니라 section-fit 개선이 있어야 우선 허용
+            if fit_new + SECTION_REASSIGN_FIT_GUARD < fit_cur:
                 continue
 
             if sc > best_score:
