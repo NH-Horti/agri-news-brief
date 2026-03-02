@@ -2589,6 +2589,34 @@ def press_name_from_url(url: str) -> str:
     return brand.upper() if len(brand) <= 6 else brand
 
 
+def normalize_press_label(press: str, url: str = "") -> str:
+    """Normalize publisher labels to canonical Korean press names.
+
+    Some feeds may provide raw/english publisher labels (e.g., "newdaily").
+    Apply a small alias normalization so rendering and dedupe stay consistent.
+    """
+    p = (press or "").strip()
+    if not p:
+        return press_name_from_url(url)
+
+    p_compact = re.sub(r"\s+", "", p.lower())
+    alias = {
+        "newdaily": "뉴데일리경제",
+        "뉴데일리": "뉴데일리경제",
+        "뉴데일리경제": "뉴데일리경제",
+    }
+    if p_compact in alias:
+        return alias[p_compact]
+
+    # If a hostname is passed as press label, map it via host-based normalizer.
+    if "." in p and "/" not in p and " " not in p:
+        try:
+            return press_name_from_url("https://" + p)
+        except Exception:
+            return p
+    return p
+
+
 # -----------------------------
 # Press priority (중요도)
 # -----------------------------
@@ -3504,7 +3532,7 @@ PEST_STRICT_TERMS = [
 PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해"]
 PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
-    "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀",
+    "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀", "벼",
 ]
 PEST_HORTI_TERMS = [
     # 원예/과수/시설채소 중심(벼 방제 제외 판단용)
@@ -3515,7 +3543,7 @@ PEST_HORTI_TERMS = [
 ]
 PEST_RICE_TERMS = [
     # 양곡(벼) 병해충/방제(양곡부 별도 운영 시 불필요한 경우가 많아 pest 섹션에서 제외)
-    "논", "이앙", "벼멸구", "멸구", "먹노린재", "멸강나방",
+    "논", "벼", "이앙", "벼멸구", "멸구", "먹노린재", "멸강나방",
     "도열병", "흰잎마름병", "키다리병", "잎집무늬마름병", "줄무늬잎마름병",
 ]
 PEST_OFFTOPIC_TERMS = [
@@ -3581,6 +3609,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         ttl_l2 = ttl.lower()
         if ("오늘, 서울시" in ttl_l2) or ("서울청년문화패스" in ttl_l2) or ("서울청년" in ttl_l2 and "패스" in ttl_l2):
             return _reject("dist_city_notice_event")
+
+        # 농산물시장 이전/현대화/재배치는 유통·현장 핵심 이슈로 우선 허용
+        if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
+            return True
 
 
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
@@ -3908,7 +3940,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if apc_ctx:
             soft_hits += 1
 
-        if (soft_hits + hard_hits) < 1:
+        # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
+        relocation_hint = any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소"))
+        agri_market_relocation = ("농산물" in text and "시장" in text and relocation_hint)
+
+        if (soft_hits + hard_hits) < 1 and (not agri_market_relocation):
             return _reject("dist_context_gate")
 
         # ✅ 가장 중요한 원칙: '농산물/원예' 앵커가 없고(agri_anchor_hits==0),
@@ -4102,12 +4138,18 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             if any(w in title_l for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "수출", "검역", "통관")):
                 score += 1.0
 
-        # 도매시장 인프라/이전/현대화 이슈는 유통·현장 섹션 우선
+        # 도매시장/농산물시장 인프라·이전·현대화 이슈는 유통·현장 섹션 우선
+        relocation_terms = ("이전", "옮긴", "이전지", "현대화", "재배치", "확장", "신설", "개장", "개소")
         if any(w in text for w in ("도매시장", "공영도매시장", "공판장")):
-            if any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "확장", "신설", "개장", "개소")):
+            if any(w in text for w in relocation_terms):
                 score += 2.4
-            if any(w in title_l for w in ("이전", "옮긴", "현대화", "재배치", "신설", "개장", "개소")):
+            if any(w in title_l for w in relocation_terms):
                 score += 1.2
+        # '농산물 시장 이전'처럼 도매시장 단어가 없더라도 유통 인프라 재편 맥락을 반영
+        if ("농산물" in text and "시장" in text) and any(w in text for w in relocation_terms):
+            score += 3.4
+            if any(w in title_l for w in relocation_terms):
+                score += 1.4
 
     # ✅ 중앙지/방송사(티어3) 추가 가점: 공신력/파급력 높은 이슈를 상단에 더 잘 반영
     _pt = press_tier(press, dom)
@@ -5224,7 +5266,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
                 continue
-            press = press_name_from_url(link)
+            press = normalize_press_label(press_name_from_url(link), link)
             if not is_relevant(title, desc, dom, link, section_conf, press):
                 continue
             canon = canonicalize_url(link)
@@ -5496,7 +5538,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             if not dom or is_blocked_domain(dom):
                 continue
 
-            press = press_name_from_url(origin or link)
+            press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
             if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
                 continue
 
