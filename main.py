@@ -604,6 +604,16 @@ HORTI_CORE_MARKERS = [
     "자조금", "원예자조금", "과수자조금", "화훼", "국화", "장미",
 ]
 
+# 수산물(생선/양식) 단독 이슈는 원예 브리핑에서 제외
+# - 단, '농수산물' 같은 중립 표현 때문에 과도 차단되지 않도록 전용 중립 표현을 제거 후 판단한다.
+FISHERY_STRICT_TERMS = [
+    "수산", "수산물", "어업", "양식", "어획", "수협", "활어", "선어", "어류", "수산시장",
+    "생선", "어선", "원양", "연근해", "수산업", "해산물", "수산가공",
+    "옥돔", "갈치", "고등어", "오징어", "명태", "대게", "참치", "광어", "우럭", "전복", "해삼",
+]
+FISHERY_NEUTRAL_PHRASES = [
+    "농수산물", "농축수산물", "농수산식품",
+]
 
 # 금융/산업 일반 기사(농협은행/NH투자/주가/실적 등) 오탐 차단용
 FINANCE_STRICT_TERMS = [
@@ -2481,6 +2491,8 @@ PRESS_HOST_MAP = {
     "mediajeju.com": "미디어제주",
     "pointdaily.co.kr": "포인트데일리",
     "metroseoul.co.kr": "메트로신문",
+    "newdaily.co.kr": "뉴데일리경제",
+    "biz.newdaily.co.kr": "뉴데일리경제",
 
     # 정책기관/연구기관
     "korea.kr": "정책브리핑",
@@ -2540,6 +2552,7 @@ ABBR_MAP = {
     "thebell": "더벨",
     "sisajournal": "시사저널",
     "mediatoday": "미디어오늘",
+    "newdaily": "뉴데일리경제",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -3620,6 +3633,15 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2):
         return _reject("livestock_only")
 
+    # ✅ 수산물 단독 이슈(옥돔/갈치/어업/양식 등)는 원예 브리핑 목적과 달라 배제
+    _t3 = text
+    for _ph in FISHERY_NEUTRAL_PHRASES:
+        _t3 = _t3.replace(_ph.lower(), "")
+    fishery_hits = count_any(_t3, [t.lower() for t in FISHERY_STRICT_TERMS])
+    horti_hits_pre_f = count_any(_t3, [t.lower() for t in _horti_non_livestock])
+    if fishery_hits >= 2 and horti_hits_pre_f == 0 and horti_sc_pre < 1.3:
+        return _reject("fishery_only")
+
     # ✅ 해외 원예/화훼 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
     if key in ("supply", "dist") and is_remote_foreign_horti(text):
         return _reject("remote_foreign_horti")
@@ -4052,7 +4074,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
         if rice_hits >= 1 and horti_hits == 0:
-            score -= 7.0
+            title_pest_hits = count_any(title_l, [t.lower() for t in ("병해충", "방제", "예찰", "약제", "과수화상병", "탄저병")])
+            # 벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점
+            score -= 2.6 if title_pest_hits >= 1 else 7.0
 
     # 언론/기관 가중치
     score += press_weight(press, dom)
@@ -4077,6 +4101,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += 2.2
             if any(w in title_l for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "수출", "검역", "통관")):
                 score += 1.0
+
+        # 도매시장 인프라/이전/현대화 이슈는 유통·현장 섹션 우선
+        if any(w in text for w in ("도매시장", "공영도매시장", "공판장")):
+            if any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "확장", "신설", "개장", "개소")):
+                score += 2.4
+            if any(w in title_l for w in ("이전", "옮긴", "현대화", "재배치", "신설", "개장", "개소")):
+                score += 1.2
 
     # ✅ 중앙지/방송사(티어3) 추가 가점: 공신력/파급력 높은 이슈를 상단에 더 잘 반영
     _pt = press_tier(press, dom)

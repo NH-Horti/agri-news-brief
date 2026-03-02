@@ -34,5 +34,16 @@ class TestRegressions(unittest.TestCase):
         idx_kakao = main_head.find("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN")
         self.assertTrue(idx_force != -1 and idx_kakao != -1 and idx_force < idx_kakao)
 
+    def test_newdaily_economy_mapping_exists(self):
+        self.assertIn('"biz.newdaily.co.kr": "뉴데일리경제"', self.text)
+
+    def test_dist_and_pest_generalized_rules_exist(self):
+        self.assertIn('도매시장 인프라/이전/현대화 이슈는 유통·현장 섹션 우선', self.text)
+        self.assertIn('벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점', self.text)
+
+    def test_fishery_only_filter_exists(self):
+        self.assertIn('FISHERY_STRICT_TERMS', self.text)
+        self.assertIn('return _reject("fishery_only")', self.text)
+
 if __name__ == "__main__":
     unittest.main()
