@@ -232,6 +232,11 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
     "과수화상병", "과수화상병 방제", "과수화상병 약제",
     "토마토뿔나방", "토마토뿔나방 방제", "병해충 예찰",
 ]
+# pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
+# always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
+PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "3") or 3)
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -3240,6 +3245,42 @@ def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
     # 파일 크기 제한
     return list(sorted(uniq.values(), key=lambda x: x.get("date", ""), reverse=True))[:2000]
 
+
+def rebuild_recent_items_for_report_date(existing_recent_items, by_section: dict | None, report_date: str, base_day: date) -> list[dict]:
+    """Build cross-day dedupe history deterministically for the current report_date.
+
+    Why:
+    - 같은 날짜(report_date)를 재실행할 때 기존 state.recent_items에 남아 있던
+      "이전 실행의 선택 결과"가 섞이면, 이번 실행 최종 산출물과 state가 불일치할 수 있다.
+    - 불일치가 누적되면 다음 실행에서 CROSSDAY_DEDUPE가 실제 노출되지 않은 URL까지
+      이미 노출된 것으로 간주해 후보를 과차단할 수 있다.
+
+    Rule:
+    1) 기존 recent_items를 정규화
+    2) report_date 항목은 전부 제거(해당 일자의 히스토리는 재생성)
+    3) 이번 실행의 최종 by_section 산출물만 report_date로 추가
+    4) 다시 정규화/중복제거
+    """
+    base = normalize_recent_items(existing_recent_items if isinstance(existing_recent_items, list) else [], base_day)
+
+    # 재실행 안정화: 동일 report_date의 기존 잔존 기록 제거
+    kept = [it for it in base if str(it.get("date") or "") != str(report_date)]
+
+    merged = list(kept)
+    if isinstance(by_section, dict):
+        for _sec_items in by_section.values():
+            for a in (_sec_items or []):
+                try:
+                    merged.append({
+                        "date": report_date,
+                        "canon": getattr(a, "canon_url", None),
+                        "norm": getattr(a, "norm_key", None),
+                    })
+                except Exception:
+                    pass
+
+    return normalize_recent_items(merged, base_day)
+
 def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dict] | None = None):
     # 기존 state를 읽어 스키마 확장에 대응(호환성 유지)
     old = load_state(repo, token)
@@ -5852,6 +5893,30 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 except Exception:
                     pass
                 _ingest_naver_items(_q, data)
+
+    # pest 섹션 리콜 보강: always-on 쿼리는 page2(start=51)를 선제적으로 1회 수집
+    # - 조건부 페이징(need_more)과 별도로 동작시켜, page1 상위 기사에 가려진 실행형 기사를 보강한다.
+    try:
+        if (
+            section_key == "pest"
+            and PEST_ALWAYS_ON_PAGE2_ENABLED
+            and COND_PAGING_ENABLED
+            and COND_PAGING_MAX_PAGES >= 2
+            and queries
+            and PEST_ALWAYS_ON_PAGE2_QUERY_CAP > 0
+        ):
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            for q in always_qs[:PEST_ALWAYS_ON_PAGE2_QUERY_CAP]:
+                if not _cond_paging_take_budget(1):
+                    break
+                try:
+                    data_p2 = naver_news_search(q, display=50, start=51, sort="date")
+                except Exception as e:
+                    log.warning("[WARN] pest always-on page2 query failed: %s", e)
+                    continue
+                _ingest_naver_items(q, data_p2)
+    except Exception:
+        pass
 
     # Optional RSS candidates (신뢰 소스 보강)
     try:
@@ -10086,19 +10151,18 @@ def main():
         log.warning("[WARN] index re-render after manifest refresh failed: %s", e)
 
     # Update state (cross-day dedupe history) before Kakao send
+    # - 동일 report_date 재실행 시 state/report mismatch가 누적되지 않도록,
+    #   해당 날짜 기록을 "최종 by_section 결과"로 매번 재생성한다.
     recent_items2 = None
     try:
         st0 = load_state(repo, GH_TOKEN)
         base_day = end_kst.astimezone(KST).date()
-        recent_items2 = normalize_recent_items(st0.get("recent_items", []), base_day)
-        if isinstance(by_section, dict):
-            for _sec_items in by_section.values():
-                for a in (_sec_items or []):
-                    try:
-                        recent_items2.append({"date": report_date, "canon": getattr(a, "canon_url", None), "norm": getattr(a, "norm_key", None)})
-                    except Exception:
-                        pass
-        recent_items2 = normalize_recent_items(recent_items2, base_day)
+        recent_items2 = rebuild_recent_items_for_report_date(
+            st0.get("recent_items", []),
+            by_section,
+            report_date,
+            base_day,
+        )
     except Exception:
         recent_items2 = None
     try:

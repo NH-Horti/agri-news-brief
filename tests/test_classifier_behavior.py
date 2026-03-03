@@ -293,6 +293,58 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(any("토마토뿔나방" in q for q in seen_queries), msg=str(seen_queries))
         self.assertTrue(any("idxno=57763" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+    def test_pest_always_on_queries_also_try_page2_for_recall(self):
+        section_conf = {
+            "key": "pest",
+            "queries": ["병해충 예찰 방제"],
+            "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병", "토마토뿔나방"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
+
+        seen_page2 = []
+        old_paged = main.naver_news_search_paged
+        old_news = main.naver_news_search
+        old_cond = main.COND_PAGING_ENABLED
+        old_max_pages = main.COND_PAGING_MAX_PAGES
+        old_cap = main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP
+        try:
+            main.COND_PAGING_ENABLED = True
+            main.COND_PAGING_MAX_PAGES = 2
+            main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = 2
+
+            def _fake_paged(q, display=50, pages=1, sort="date"):
+                return {"items": []}
+
+            def _fake_news(q, display=50, start=1, sort="date"):
+                if start == 51 and ("과수화상병" in q):
+                    seen_page2.append((q, start))
+                    return {
+                        "items": [
+                            {
+                                "title": "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급",
+                                "description": "진주시는 과수화상병 방제를 위해 약제를 무상 공급한다고 밝혔다.",
+                                "link": "https://www.newsis.com/view/NISX20260228_0003530198",
+                                "originallink": "https://www.newsis.com/view/NISX20260228_0003530198",
+                                "pubDate": "Sat, 28 Feb 2026 15:00:00 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_paged
+            main.naver_news_search = _fake_news
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_paged
+            main.naver_news_search = old_news
+            main.COND_PAGING_ENABLED = old_cond
+            main.COND_PAGING_MAX_PAGES = old_max_pages
+            main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = old_cap
+
+        self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
+        self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
     def test_collect_candidates_respects_window_min_hours_for_rebuild_like_window(self):
         section_conf = {
             "key": "pest",
@@ -368,3 +420,49 @@ class TestClassifierBehavior(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRecentItemsRebuild(unittest.TestCase):
+    def test_rebuild_recent_items_replaces_same_day_entries(self):
+        base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
+        report_date = "2026-03-03"
+        existing = [
+            {"date": "2026-03-03", "canon": "https://old.example.com/a", "norm": "url:old-a"},
+            {"date": "2026-03-02", "canon": "https://keep.example.com/b", "norm": "url:keep-b"},
+        ]
+
+        a = main.Article(
+            section="pest",
+            title="진주시, 과수화상병 방제 총력",
+            description="과원 예찰과 약제 방제를 실시한다.",
+            link="https://www.newsis.com/view/NISX20260228_0003530198",
+            originallink="https://www.newsis.com/view/NISX20260228_0003530198",
+            pub_dt_kst=datetime(2026, 3, 2, tzinfo=main.KST),
+            domain=main.domain_of("https://www.newsis.com/view/NISX20260228_0003530198"),
+            press="뉴시스",
+            title_key=main.norm_title_key("진주시, 과수화상병 방제 총력"),
+            canon_url=main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198"),
+            norm_key=main.make_norm_key(main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198"), "뉴시스", main.norm_title_key("진주시, 과수화상병 방제 총력")),
+            topic="병해충",
+            score=10.0,
+        )
+        by_section = {"supply": [], "policy": [], "dist": [], "pest": [a]}
+
+        rebuilt = main.rebuild_recent_items_for_report_date(existing, by_section, report_date, base_day)
+
+        self.assertFalse(any((it.get("date") == report_date and it.get("canon") == "https://old.example.com/a") for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == "https://keep.example.com/b" for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198") for it in rebuilt))
+
+    def test_rebuild_recent_items_handles_missing_by_section(self):
+        base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
+        report_date = "2026-03-03"
+        existing = [
+            {"date": "2026-03-03", "canon": "https://old.example.com/a", "norm": "url:old-a"},
+            {"date": "2026-03-01", "canon": "https://keep.example.com/c", "norm": "url:keep-c"},
+        ]
+
+        rebuilt = main.rebuild_recent_items_for_report_date(existing, None, report_date, base_day)
+
+        self.assertFalse(any(it.get("date") == report_date for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == "https://keep.example.com/c" for it in rebuilt))
