@@ -5270,6 +5270,19 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             added += 1
 
+    # 강제 섹션 이동 기사(예: policy->pest)는 최종 노출에서 사라지지 않도록 우선 포함 보장
+    forced_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
+    for fa in forced_items:
+        if fa in final:
+            continue
+        if len(final) < max_n:
+            final.append(fa)
+            continue
+        # 공간이 없으면 최하위 점수 1건을 대체
+        if final:
+            repl_idx = min(range(len(final)), key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+            final[repl_idx] = fa
+
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
     deduped: list[Article] = []
@@ -6307,6 +6320,7 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
             continue
 
         a.section = "pest"
+        a.forced_section = "pest"
         if pest_conf is not None:
             try:
                 a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, pest_conf, p)

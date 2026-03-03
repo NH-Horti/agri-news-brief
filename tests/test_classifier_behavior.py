@@ -156,6 +156,40 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(by["pest"]), 1)
         self.assertGreater(by["pest"][0].score, base_policy_score)
 
+    def test_forced_pest_item_is_kept_in_final_selection(self):
+        c = self.conf["pest"]
+        # 일반 pest 고득점 기사
+        u1 = "https://example.com/pest-high"
+        t1 = "과수화상병 방제 총력"
+        d1 = "과수화상병 예찰과 방제 약제 살포를 강화한다."
+        p1 = "연합뉴스"
+        a1 = main.Article(
+            section="pest", title=t1, description=d1, link=u1, originallink=u1,
+            domain=main.domain_of(u1), press=p1, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t1), canon_url=main.canonicalize_url(u1),
+            norm_key=main.make_norm_key(main.canonicalize_url(u1), p1, main.norm_title_key(t1)),
+            topic=main.extract_topic(t1, d1),
+            score=main.compute_rank_score(t1, d1, main.domain_of(u1), self.now, c, p1),
+        )
+
+        # policy->pest 강제 이동분(점수는 상대적으로 낮아도 forced_section으로 최종 유지)
+        u2 = "https://example.com/pest-forced"
+        t2 = "경기도, 토마토뿔나방 방제 지원"
+        d2 = "토마토뿔나방 예찰·방제 지원을 실시한다."
+        p2 = "뉴스1"
+        a2 = main.Article(
+            section="pest", title=t2, description=d2, link=u2, originallink=u2,
+            domain=main.domain_of(u2), press=p2, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t2), canon_url=main.canonicalize_url(u2),
+            norm_key=main.make_norm_key(main.canonicalize_url(u2), p2, main.norm_title_key(t2)),
+            topic=main.extract_topic(t2, d2),
+            score=max(0.0, main.compute_rank_score(t2, d2, main.domain_of(u2), self.now, c, p2) - 5.0),
+        )
+        a2.forced_section = "pest"
+
+        picked = main.select_top_articles([a1, a2], "pest", 1)
+        self.assertTrue(any(x.link == u2 for x in picked), msg=str([(x.link, x.score) for x in picked]))
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."
