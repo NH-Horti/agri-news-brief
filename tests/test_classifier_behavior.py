@@ -47,6 +47,18 @@ class TestClassifierBehavior(unittest.TestCase):
         best2, scores2 = self._best_section(t2, d2, "https://mobile.newsis.com/view/NISX20260228_0003530198")
         self.assertEqual(best2, "pest", msg=f"scores={scores2}")
 
+    def test_youngnong_tomato_moth_control_article_prefers_pest(self):
+        title = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        desc = "경기도는 토마토뿔나방 확산 대응을 위해 재배 농가 전수조사를 실시하고 예찰·방제 자료를 제공한다."
+        best, scores = self._best_section(title, desc, "http://www.youngnong.co.kr/news/articleView.html?idxno=57763")
+        self.assertEqual(best, "pest", msg=f"scores={scores}")
+
+    def test_seoul_city_agri_shipping_support_article_prefers_policy(self):
+        title = "서울시가 전국 최초로 농산물 출하비용 보전하는 이유"
+        desc = "서울시는 도매시장 출하 농산물의 경락가격 하락 시 출하비용을 보전하는 정책을 시행한다고 밝혔다."
+        best, scores = self._best_section(title, desc, "https://biz.heraldcorp.com/article/10683302")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."

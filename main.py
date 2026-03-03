@@ -2007,6 +2007,39 @@ def is_trade_policy_issue(text: str) -> bool:
     return False
 
 
+def is_pest_control_policy_context(text: str) -> bool:
+    """병해충 기사 중 '정책 일반'보다 '방제 실무' 성격이 강한지 판정.
+    - 지자체/기관 발표가 포함돼도, 본문 중심이 예찰·약제·방제 실행이면 pest를 우선한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
+    horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS])
+    action_hits = count_any(t, [w.lower() for w in ("전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제")])
+    policy_hits = count_any(t, [w.lower() for w in ("정책", "대책", "조례", "예산", "브리핑", "보도자료", "법", "개정", "관세", "검역")])
+
+    return (strict_hits >= 2) and (horti_hits >= 1) and (action_hits >= 1) and (policy_hits <= 2)
+
+
+def is_local_agri_policy_program_context(text: str) -> bool:
+    """지자체의 농산물 정책 프로그램(지원/보전/시범사업) 맥락인지 판정."""
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    local_gov_terms = ["서울시", "경기도", "도청", "시청", "군청", "구청", "지자체", "특별자치도"]
+    policy_program_terms = ["정책", "시행", "추진", "지원", "보전", "사업", "시범", "전국 최초", "예산", "보조", "확대"]
+    agri_market_terms = ["농산물", "도매시장", "출하", "경락", "원예", "과수", "농가"]
+
+    return (
+        count_any(t, [w.lower() for w in local_gov_terms]) >= 1
+        and count_any(t, [w.lower() for w in policy_program_terms]) >= 2
+        and count_any(t, [w.lower() for w in agri_market_terms]) >= 1
+    )
+
+
 def is_fruit_foodservice_event_context(text: str) -> bool:
     """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
     - 공급/작황/도매시장 수급 신호보다 소비 이벤트 성격이 강해 '품목 및 수급'의 핵심(core)에서 제외/감점.
@@ -4122,10 +4155,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+        # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
+        if is_local_agri_policy_program_context(text):
+            score -= 4.0
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += min(2.0, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+        # 지자체 정책 프로그램성 기사(보전/지원/시범사업)는 dist보다 policy 우선
+        if is_local_agri_policy_program_context(text):
+            score -= 2.0
         # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
         # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
         if press in AGRI_TRADE_PRESS or normalize_host(dom) in AGRI_TRADE_HOSTS:
@@ -4143,6 +4182,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
         if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
             score -= 2.8
+        # 지자체의 농산물 정책 프로그램(지원/보전/시범사업)은 policy 우선
+        if is_local_agri_policy_program_context(text):
+            score += 6.4
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -4150,6 +4192,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
+        # 지자체 발표 기사라도 방제 실행(예찰/약제/살포/전수조사) 맥락이 강하면 pest 우선
+        if is_pest_control_policy_context(text):
+            score += 2.8
 
         # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
         if "과수화상병" in text:
@@ -6107,9 +6152,9 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         best_key = cur
         best_score = cur_score
 
-        # candidate set: current + (supply/dist/policy)
+        # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
-        for k in (cur, "policy", "dist", "supply"):
+        for k in (cur, "policy", "dist", "supply", "pest"):
             if k in conf_by_key and k not in cand_keys:
                 cand_keys.append(k)
 
@@ -6125,6 +6170,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
                 # - 통상/관세/검역/통관 기사도 policy 후보로 포함(품목 맥락이 약할 때)
+                # - 지자체 농산물 정책 프로그램(지원/보전/시범사업)은 policy 이동 후보로 허용
                 _policy_like = False
                 try:
                     _h = best_horti_score(a.title or "", a.description or "")
@@ -6134,6 +6180,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     _policy_like = True
                 elif is_trade_policy_issue(txt) and _h < 2.2:
                     _policy_like = True
+                elif is_local_agri_policy_program_context(txt):
+                    _policy_like = True
 
                 if not _policy_like:
                     try:
@@ -6141,6 +6189,10 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                             continue
                     except Exception:
                         continue
+            if k == "pest":
+                # 병해충/방제 강신호 + 원예 맥락이 있을 때만 pest 이동 후보로 허용
+                if not is_pest_control_policy_context(txt):
+                    continue
 
             try:
                 conf = conf_by_key[k]
