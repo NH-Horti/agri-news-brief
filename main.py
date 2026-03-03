@@ -227,6 +227,12 @@ _default_fbqcap = max(0, min(10, MAX_PER_SECTION + 1))
 COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION", str(min(6, _default_fbqcap))) or 6)
 COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION, 20))
 
+# pest 섹션은 실행형 병해충 기사를 놓치지 않기 위해 보강 쿼리를 항상 병합한다(하드코딩 URL 아님)
+PEST_ALWAYS_ON_RECALL_QUERIES = [
+    "과수화상병", "과수화상병 방제", "과수화상병 약제",
+    "토마토뿔나방", "토마토뿔나방 방제", "병해충 예찰",
+]
+
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
 _default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
@@ -5736,6 +5742,9 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
     """
     queries = _dedupe_queries(section_conf.get("queries") or [])
+    # pest는 pool 충분 여부와 무관하게 실행형 방제 보강 쿼리를 병합해 누락을 줄인다.
+    if str(section_conf.get("key") or "") == "pest":
+        queries = _dedupe_queries(list(queries) + list(PEST_ALWAYS_ON_RECALL_QUERIES))
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 

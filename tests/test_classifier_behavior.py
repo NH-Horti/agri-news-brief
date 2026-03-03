@@ -257,6 +257,42 @@ class TestClassifierBehavior(unittest.TestCase):
         for key, conf in self.conf.items():
             self.assertFalse(main.is_relevant(title, desc, dom, url, conf, press), msg=f"section={key}")
 
+    def test_pest_always_on_recall_queries_are_applied(self):
+        section_conf = {
+            "key": "pest",
+            "queries": ["병해충 예찰 방제"],
+            "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병", "토마토뿔나방"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
+
+        seen_queries = []
+        old_func = main.naver_news_search_paged
+        try:
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                seen_queries.append(q)
+                if "토마토뿔나방" in q:
+                    return {
+                        "items": [
+                            {
+                                "title": "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원",
+                                "description": "토마토뿔나방 확산 대응을 위해 예찰·방제를 지원한다.",
+                                "link": "http://www.youngnong.co.kr/news/articleView.html?idxno=57763",
+                                "originallink": "http://www.youngnong.co.kr/news/articleView.html?idxno=57763",
+                                "pubDate": "Mon, 02 Mar 2026 00:30:00 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+
+        self.assertTrue(any("토마토뿔나방" in q for q in seen_queries), msg=str(seen_queries))
+        self.assertTrue(any("idxno=57763" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
     def test_collect_candidates_respects_window_min_hours_for_rebuild_like_window(self):
         section_conf = {
             "key": "pest",
