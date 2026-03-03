@@ -7132,6 +7132,16 @@ def build_site_url(site_path: str, rel: str) -> str:
     return site_path + rel
 
 
+def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False) -> str:
+    """Build daily archive URL; optional cache-busting query for messenger/browser caches."""
+    url = f"{str(base_url or '').rstrip('/')}/archive/{report_date}.html"
+    if not cache_bust:
+        return url
+    v = re.sub(r"[^0-9A-Za-z_-]", "", str(BUILD_TAG or ""))[:24] or now_kst().strftime("%Y%m%d%H%M")
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}v={v}"
+
+
 # -----------------------------
 # Rendering (HTML)
 # -----------------------------
@@ -7556,6 +7566,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />
+  <meta http-equiv=\"Pragma\" content=\"no-cache\" />
+  <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
   <title>{esc(page_title)}</title>
   <style>
@@ -8149,6 +8162,9 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="{BUILD_TAG}" />
   <title>농산물 뉴스 브리핑</title>
   <style>
@@ -9880,7 +9896,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     if MAINTENANCE_SEND_KAKAO:
         try:
             base_url = get_pages_base_url(repo).rstrip("/")
-            daily_url = f"{base_url}/archive/{report_date}.html"
+            daily_url = build_daily_url(base_url, report_date, cache_bust=True)
             kakao_text = build_kakao_message(report_date, by_section)
             if KAKAO_INCLUDE_LINK_IN_TEXT:
                 kakao_text = kakao_text + "\n" + daily_url
@@ -10096,7 +10112,7 @@ def main():
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
-    daily_url = f"{base_url}/archive/{report_date}.html"
+    daily_url = build_daily_url(base_url, report_date, cache_bust=True)
     log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE or force_iso), daily_url)
 
     ensure_not_gist(base_url, "base_url")
