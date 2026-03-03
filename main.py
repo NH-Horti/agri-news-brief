@@ -2016,11 +2016,23 @@ def is_pest_control_policy_context(text: str) -> bool:
         return False
 
     strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
+    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
     horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS])
-    action_hits = count_any(t, [w.lower() for w in ("전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제")])
-    policy_hits = count_any(t, [w.lower() for w in ("정책", "대책", "조례", "예산", "브리핑", "보도자료", "법", "개정", "관세", "검역")])
+    action_hits = count_any(t, [w.lower() for w in ("전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제", "긴급방제", "확산 차단")])
+    policy_hits = count_any(t, [w.lower() for w in ("정책", "대책", "조례", "예산", "브리핑", "보도자료", "법", "개정", "관세", "통관")])
+    local_gov_hits = count_any(t, [w.lower() for w in ("시", "도", "시청", "도청", "군", "군청", "구", "구청", "지자체")])
 
-    return (strict_hits >= 2) and (horti_hits >= 1) and (action_hits >= 1) and (policy_hits <= 2)
+    # 명시 해충명(예: 토마토뿔나방) 패턴 보강
+    named_pest = re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
+
+    pest_signal = (strict_hits >= 1) or (weather_hits >= 1) or named_pest
+    # 정책 일반(관세/통상) 신호가 과한 경우는 제외
+    if policy_hits >= 4 and ("관세" in t or "통관" in t or "수입" in t):
+        return False
+
+    # 지자체/기관 보도자료 형식이라도 병해충 이슈가 명확하면 pest 우선 유지.
+    # (예: "과수화상병 확산", "토마토뿔나방 발생")
+    return (horti_hits >= 1) and pest_signal and ((action_hits >= 1) or (local_gov_hits >= 1 and strict_hits >= 1))
 
 
 def is_local_agri_policy_program_context(text: str) -> bool:
@@ -3953,6 +3965,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
+        # 지자체/도청 보도자료라도 병해충 '실행형 방제' 이슈는 policy가 아니라 pest로 유도
+        if is_pest_control_policy_context(text):
+            return _reject("policy_pest_execution_context")
+
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
         if not is_official:
@@ -6151,6 +6167,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         cur_score = float(getattr(a, "score", 0.0) or 0.0)
         best_key = cur
         best_score = cur_score
+        strong_pest_context = is_pest_control_policy_context(txt)
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -6191,7 +6208,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                         continue
             if k == "pest":
                 # 병해충/방제 강신호 + 원예 맥락이 있을 때만 pest 이동 후보로 허용
-                if not is_pest_control_policy_context(txt):
+                if not strong_pest_context:
                     continue
 
             try:
@@ -6212,8 +6229,21 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 best_score = float(sc)
                 best_key = k
 
+        # 병해충 실행형 문맥은 policy/기타 섹션 점수와 무관하게 pest를 우선 고정한다.
+        force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
+
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
-        if best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
+        if force_move_to_pest:
+            try:
+                pest_conf = conf_by_key["pest"]
+                if is_relevant(a.title, a.description, dom, url, pest_conf, press):
+                    pest_score = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, pest_conf, press)
+                    a.section = "pest"
+                    a.score = float(pest_score)
+                    moved += 1
+            except Exception:
+                pass
+        elif best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
             a.section = best_key
             a.score = best_score
             moved += 1
