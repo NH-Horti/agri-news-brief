@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-03-03T12:58:55.509895+09:00",
+  "updated_at": "2026-03-03T15:04:11.100942+09:00",
   "items": [
     {
       "id": "51292be280ca",
@@ -10,10 +10,10 @@
       "rank": 1,
       "title": "복숭아 병해충 예찰단 본격 활동 돌입",
       "press": "농민신문",
-      "summary": "복숭아 병해충 예찰단이 최근 본격적으로 활동을 시작하였으며, 지난해에는 다양한 예찰 활동을 통해 농가 피해를 최소화하고자 노력했다.",
+      "summary": "복숭아 병해충 예찰단이 긴밀한 활동을 시작했으며, 이들은 도내 병해충 방제 정보 제공의 핵심 역할을 수행하고 있다. 지난해 23회의 예찰 활동을 통해 농가 피해를 최소화하고 있다.",
       "url": "https://n.news.naver.com/mnews/article/662/0000089497?sid=102",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-pest",
-      "score": 32.93,
+      "score": 35.73,
       "press_tier": 3
     },
     {
@@ -24,24 +24,10 @@
       "rank": 1,
       "title": "청도농협, 통합 경제사업 체계 구축…농가소득 증대",
       "press": "농민신문",
-      "summary": "청도농협은 통합 경제사업 체계를 구축하여 농가소득 증대에 기여하고 있다. 농산물산지유통센터(APC)와 영농자재센터를 통해 농민들에게 편리하고 저렴한 서비스를 제공하고 있다.",
+      "summary": "청도농협이 통합 경제사업 체계를 구축하여 농가소득 증대에 기여하고 있다. 농민들은 저렴한 가격으로 영농자재를 구입할 수 있어 만족스러움을 표하고 있다.",
       "url": "https://n.news.naver.com/mnews/article/662/0000089503?sid=102",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-dist",
       "score": 31.73,
-      "press_tier": 3
-    },
-    {
-      "id": "ca7755198227",
-      "date": "2026-03-03",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 2,
-      "title": "서울시가 전국 최초로 농산물 ‘출하비용’ 보전하는 이유",
-      "press": "헤럴드경제",
-      "summary": "서울시는 도매시장 출하 농산물의 경락 가격 하락 시 출하비용을 보전하는 프로그램을 시행한다. 이번 사업은 농가의 경제적 부담을 줄이기 위해 마련되었다.",
-      "url": "https://n.news.naver.com/mnews/article/016/0002606721?sid=102",
-      "archive": "/agri-news-brief/archive/2026-03-03.html#sec-dist",
-      "score": 25.78,
       "press_tier": 3
     },
     {
@@ -49,13 +35,27 @@
       "date": "2026-03-03",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
+      "rank": 2,
       "title": "광주 각화농산물 시장 , 효령동 일원으로 옮긴다",
       "press": "서울신문",
-      "summary": "광주시가 각화농산물 시장을 효령동으로 이전하여 물량 조절 기능을 강화하고 농산물 유통을 선도할 전망이다. 특별법에 따라 도매시장 운영을 위한 기금이 설치될 예정이다.",
+      "summary": "광주 각화농산물 시장이 효령동으로 이전되어 물량 조절 기능을 강화하고 농산물 유통의 중심지로 도약할 계획이다. 특별기금 설치가 포함된 이번 특별법도 제정될 예정이다.",
       "url": "https://n.news.naver.com/mnews/article/081/0003622092?sid=102",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-dist",
       "score": 25.52,
+      "press_tier": 3
+    },
+    {
+      "id": "09272beed853",
+      "date": "2026-03-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "서울시가 전국 최초로 농산물 ‘출하비용’ 보전하는 이유",
+      "press": "헤럴드경제",
+      "summary": "서울시는 농산물 출하비용 보전사업을 시행하여 도매시장에서의 농산물 경락 가격 하락 시 농가의 부담을 덜어줄 예정이다. 이번 사업에는 가락시장 청과 도매 시장 법인들이 참여한다.",
+      "url": "https://n.news.naver.com/mnews/article/016/0002606721?sid=102",
+      "archive": "/agri-news-brief/archive/2026-03-03.html#sec-policy",
+      "score": 24.74,
       "press_tier": 3
     },
     {
@@ -63,13 +63,13 @@
       "date": "2026-03-03",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 1,
+      "rank": 2,
       "title": "대통령 물가 단속에 유통가 초저가 전쟁",
       "press": "서울신문",
-      "summary": "CU는 사과 1㎏을 최대 39% 인하한 가격에 선보이며 초저가 경쟁에 나섰다. 소비자들은 가격 인하를 반기지만, 지속적인 고물가에 대한 우려도 여전하다.",
+      "summary": "CU는 '이달의 과일' 기획전을 통해 사과 가격을 최대 39% 인하하며 소비자들에게 가격 인하 혜택을 제공하고 있다. 가격 경쟁력이 있지만, 고물가 지속에 대한 우려도 커지고 있다.",
       "url": "https://n.news.naver.com/mnews/article/081/0003622196?sid=101",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-policy",
-      "score": 23.24,
+      "score": 22.84,
       "press_tier": 3
     },
     {
@@ -77,10 +77,10 @@
       "date": "2026-03-03",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 2,
+      "rank": 3,
       "title": "농관원, 원산지 위반 93곳 적발…‘배추김치 최다’",
       "press": "KBS",
-      "summary": "농관원은 명절 선물 관련 업체에 대한 단속에서 위반 업체 93곳을 적발했으며, 배추김치가 가장 많이 위반된 것으로 나타났다. 조사 대상은 3천5백여 곳이다.",
+      "summary": "농관원이 명절 선물 및 제사용품 관련 업체 3천5백여 곳을 단속하여 93곳의 위반업체를 적발했다. 특히 배추김치가 40건으로 가장 많은 위반 사례로 발생했다.",
       "url": "https://n.news.naver.com/mnews/article/056/0012132600?sid=102",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-policy",
       "score": 21.04,
@@ -94,10 +94,10 @@
       "rank": 2,
       "title": "과수화상병 , 정밀예찰·적기 방제 만이 정답",
       "press": "농수축산신문",
-      "summary": "양구군은 과수화상병 방지를 위해 총 6회 방제를 계획하고 있으며, 정밀예찰과 적기 방제가 중요하다고 강조하고 있다. 방제가 지연될 경우 매몰 조치가 불가피하다.",
+      "summary": "양구군은 과수화상병 방제를 위해 기본 4회 방제를 실시하고 2회를 추가해 총 6회 방제를 계획하고 있다. 방제 시기를 놓치면 매몰 처리가 불가피해 주의가 필요하다.",
       "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=315381",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-pest",
-      "score": 28.01,
+      "score": 30.81,
       "press_tier": 2
     },
     {
@@ -108,10 +108,10 @@
       "rank": 3,
       "title": "영농부산물 ‘단순 파쇄’ 넘어 ‘선별 파쇄·격리 수거’...",
       "press": "팜&마켓",
-      "summary": "영농부산물의 소각 방식에서 벗어나 선별 파쇄 및 격리 수거의 필요성이 제기되고 있다. 이를 통해 병해충 방제를 효과적으로 수행할 수 있을 것으로 보인다.",
+      "summary": "영농부산물 관리에 있어 단순 파쇄를 넘어 선별 파쇄 및 격리 수거의 필요성이 대두되고 있다. 이는 병해충 방제를 효과적으로 수행하기 위한 조치로 화재 예방에도 기여할 것으로 기대된다.",
       "url": "https://www.farmnmarket.com/news/article.html?no=25761",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-pest",
-      "score": 27.93,
+      "score": 30.73,
       "press_tier": 2
     },
     {
@@ -122,7 +122,7 @@
       "rank": 1,
       "title": "명절 특수 끝난 과일, 가격 하락세",
       "press": "농수축산신문",
-      "summary": "명절 특수가 종료되며 사과와 배 가격이 하락하고, 대체 품목인 천혜향과 레드향도 가격이 떨어졌다. 딸기와 참외 등의 과채류 가격은 지난해보다 낮게 형성될 것으로 전망된다.",
+      "summary": "명절 특수가 끝나면서 사과와 배 가격이 하락세를 보이고 있으며, 천혜향과 레드향도 가격이 떨어졌다. 2화방 물량과 좋은 작황의 참외 등 이달 과채류 가격도 지난해보다 낮게 형성될 전망이다.",
       "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=315415",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-supply",
       "score": 27.64,
@@ -136,24 +136,10 @@
       "rank": 3,
       "title": "봄동값, '비빔밥 특수'로 반짝 상승…출하 막바지 내림세",
       "press": "한국농어민신문",
-      "summary": "봄동배추 가격은 비빔밥 특수로 상승 후 현재 하락세를 보이며, 가락동 시장에서는 2월 23일 고추 반입량이 증가하면서 가격이 하락했다. 봄동배추는 설 명절 직후 3만원대를 기록했다.",
+      "summary": "봄동배추는 비빔밥 특수로 가격이 상승했으나, 현재 출하 막바지에서 하락세에 접어들었다. 가락시장에서 고추 반입량이 증가하며 시세는 9만원대로 떨어졌다.",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402094",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-supply",
       "score": 23.17,
-      "press_tier": 2
-    },
-    {
-      "id": "64c1eb5c547d",
-      "date": "2026-03-03",
-      "section": "policy",
-      "section_title": "정책 및 주요 이슈",
-      "rank": 3,
-      "title": "진주시, ' 과수화상병 ' 예방 교육·약제… 3회분 무상공급",
-      "press": "뉴시스",
-      "summary": "진주시는 과수화상병 예방을 위해 382개 농가에 방제 약제를 무상 공급할 계획이다. 약제 3회분을 제공하여 사전 예방에 집중할 방침이다.",
-      "url": "https://n.news.naver.com/mnews/article/003/0013793502?sid=102",
-      "archive": "/agri-news-brief/archive/2026-03-03.html#sec-policy",
-      "score": 19.91,
       "press_tier": 2
     },
     {
@@ -164,24 +150,10 @@
       "rank": 2,
       "title": "\" 사과 ·딸기 비싸고 감귤·수박 저렴\" … 1분기 과일·과채 가격 '희비'",
       "press": "뉴데일리경제",
-      "summary": "한국농촌경제연구원은 1분기 과일 및 과채 가격의 희비를 분석하며, 후지 사과가 23.1% 상승하고 감귤과 수박은 저렴하다고 보고했다. 반입량은 전년 대비 33.6% 감소하여 가격에 영향을 미치고 있다.",
+      "summary": "1월 후지 사과 도매가격이 전년 대비 23.1% 상승하며 10kg당 7만8300원으로 나타났다. 반입량은 33.6% 증가했으나, 감귤과 수박 등은 저렴하게 거래되고 있다.",
       "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/27/2026022700154.html",
       "archive": "/agri-news-brief/archive/2026-03-03.html#sec-supply",
       "score": 24.85,
-      "press_tier": 1
-    },
-    {
-      "id": "2227938b6b14",
-      "date": "2026-03-03",
-      "section": "policy",
-      "section_title": "정책 및 주요 이슈",
-      "rank": 4,
-      "title": "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원",
-      "press": "youngnong",
-      "summary": "경기도는 토마토뿔나방 방제를 위해 농가 전수조사를 실시하고 있으며, 예찰 및 방제 관련 자료를 제공하고 있다. 병해충 피해를 최소화하는 데 집중하고 있다.",
-      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57763",
-      "archive": "/agri-news-brief/archive/2026-03-03.html#sec-policy",
-      "score": 16.61,
       "press_tier": 1
     },
     {
