@@ -5440,17 +5440,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             if not pub:
                 # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
                 continue
-            soft_start = start_kst
-            try:
-                min_hours = WINDOW_MIN_HOURS
-                if min_hours and min_hours > 0:
-                    min_start = end_kst - timedelta(hours=min_hours)
-                    if min_start < soft_start:
-                        soft_start = min_start
-            except Exception:
-                soft_start = start_kst
-
-            if pub < soft_start or pub >= end_kst:
+            if pub < effective_start_kst or pub >= end_kst:
                 continue
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
@@ -5752,6 +5742,16 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     section_key = str(section_conf.get("key") or "")
     max_n = MAX_PER_SECTION
 
+    effective_start_kst = start_kst
+    try:
+        min_hours = WINDOW_MIN_HOURS
+        if min_hours and min_hours > 0:
+            min_start = end_kst - timedelta(hours=min_hours)
+            if min_start < effective_start_kst:
+                effective_start_kst = min_start
+    except Exception:
+        effective_start_kst = start_kst
+
     hits_by_query: dict[str, int] = {}
 
     api_items_by_query: dict[str, int] = {}    # raw items returned by API per query (before time/relevance filters)
@@ -5769,17 +5769,9 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             origin = strip_tracking_params(it.get("originallink", "") or link)
             pub = parse_pubdate_to_kst(it.get("pubDate", ""))
 
-            soft_start = start_kst
-            try:
-                min_hours = WINDOW_MIN_HOURS
-                if min_hours and min_hours > 0:
-                    min_start = end_kst - timedelta(hours=min_hours)
-                    if min_start < soft_start:
-                        soft_start = min_start
-            except Exception:
-                soft_start = start_kst
-
-            if pub < soft_start or pub >= end_kst:
+            # 수집 단계와 후반 정리 단계의 윈도우 기준을 반드시 동일하게 유지
+            # (불일치 시 "수집됐다가 후반에 삭제"되는 회귀가 발생할 수 있음)
+            if pub < effective_start_kst or pub >= end_kst:
                 continue
 
             dom = domain_of(origin) or domain_of(link)
@@ -5859,7 +5851,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
         pass
 
     # 최종 안전장치: 수집 경로(RSS/추가소스)와 무관하게 윈도우 밖 기사는 제외
-    items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+    items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
     items.sort(key=_sort_key_major_first, reverse=True)
 
     # -----------------------------
@@ -5899,7 +5891,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                             _ingest_naver_items(fq, dataF)
 
                         # 재정렬
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                         items.sort(key=_sort_key_major_first, reverse=True)
                     # 어떤 쿼리에 추가 페이지를 붙일지 선택
                     # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
@@ -5968,7 +5960,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                             "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
                             section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
                         )
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                         items.sort(key=_sort_key_major_first, reverse=True)
     except Exception:
         # extra pass should never break the pipeline
@@ -5981,6 +5973,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             hits_top = sorted(list(hits_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             api_top = sorted(list(api_items_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             meta = {
+                "effective_window": {
+                    "start_kst": effective_start_kst.isoformat() if isinstance(effective_start_kst, datetime) else str(effective_start_kst),
+                    "end_kst": end_kst.isoformat() if isinstance(end_kst, datetime) else str(end_kst),
+                },
                 "base_queries_n": int(len(queries)),
                 "base_queries": list(queries[:30]),
                 "api_items_top": api_top,
