@@ -232,6 +232,11 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
     "과수화상병", "과수화상병 방제", "과수화상병 약제",
     "토마토뿔나방", "토마토뿔나방 방제", "병해충 예찰",
 ]
+# pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
+# always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
+PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "3") or 3)
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -5888,6 +5893,30 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 except Exception:
                     pass
                 _ingest_naver_items(_q, data)
+
+    # pest 섹션 리콜 보강: always-on 쿼리는 page2(start=51)를 선제적으로 1회 수집
+    # - 조건부 페이징(need_more)과 별도로 동작시켜, page1 상위 기사에 가려진 실행형 기사를 보강한다.
+    try:
+        if (
+            section_key == "pest"
+            and PEST_ALWAYS_ON_PAGE2_ENABLED
+            and COND_PAGING_ENABLED
+            and COND_PAGING_MAX_PAGES >= 2
+            and queries
+            and PEST_ALWAYS_ON_PAGE2_QUERY_CAP > 0
+        ):
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            for q in always_qs[:PEST_ALWAYS_ON_PAGE2_QUERY_CAP]:
+                if not _cond_paging_take_budget(1):
+                    break
+                try:
+                    data_p2 = naver_news_search(q, display=50, start=51, sort="date")
+                except Exception as e:
+                    log.warning("[WARN] pest always-on page2 query failed: %s", e)
+                    continue
+                _ingest_naver_items(q, data_p2)
+    except Exception:
+        pass
 
     # Optional RSS candidates (신뢰 소스 보강)
     try:
