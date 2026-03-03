@@ -92,6 +92,34 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(by["pest"]), 1)
         self.assertEqual(by["pest"][0].section, "pest")
 
+    def test_policy_cleanup_moves_pest_context_to_pest_before_final_pick(self):
+        title = "진주시, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "진주시는 과수화상병 확산 차단을 위해 과원 정밀예찰과 약제 방제를 시행한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press),
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._enforce_pest_priority_over_policy(by)
+        self.assertEqual(moved, 1)
+        self.assertEqual(len(by["policy"]), 0)
+        self.assertEqual(len(by["pest"]), 1)
+        self.assertEqual(by["pest"][0].section, "pest")
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."

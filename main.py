@@ -6263,6 +6263,62 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
 
     return moved
 
+
+def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]]) -> int:
+    """강한 병해충 실행 문맥 기사는 policy 잔류를 허용하지 않고 pest로 우선 이동한다."""
+    if not isinstance(raw_by_section, dict):
+        return 0
+    policy_items = list(raw_by_section.get("policy", []) or [])
+    if not policy_items:
+        return 0
+
+    moved = 0
+    keep_policy: list[Article] = []
+    pest_items = list(raw_by_section.get("pest", []) or [])
+    pest_idx = DedupeIndex()
+    for _a in pest_items:
+        try:
+            pest_idx.add_and_check(_a.canon_url, _a.press, _a.title_key, _a.norm_key)
+        except Exception:
+            pass
+
+    pest_conf = next((x for x in (SECTIONS or []) if isinstance(x, dict) and x.get("key") == "pest"), None)
+
+    for a in policy_items:
+        txt = ((a.title or "") + " " + (a.description or "")).lower()
+        if not is_pest_control_policy_context(txt):
+            keep_policy.append(a)
+            continue
+
+        d = normalize_host(getattr(a, "domain", "") or "")
+        p = (getattr(a, "press", "") or "").strip()
+        url = getattr(a, "canon_url", None) or getattr(a, "originallink", None) or getattr(a, "link", None) or ""
+        ok = True
+        if pest_conf is not None:
+            try:
+                ok = is_relevant(a.title, a.description, d, url, pest_conf, p)
+            except Exception:
+                ok = True
+        if not ok:
+            keep_policy.append(a)
+            continue
+
+        a.section = "pest"
+        if pest_conf is not None:
+            try:
+                a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, pest_conf, p)
+            except Exception:
+                pass
+        if pest_idx.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+            pest_items.append(a)
+        moved += 1
+
+    if moved:
+        raw_by_section["policy"] = keep_policy
+        raw_by_section["pest"] = pest_items
+    return moved
+
+
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     raw_by_section: dict[str, list[Article]] = {}
 
@@ -6484,6 +6540,14 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 log.info("[REASSIGN] moved %d item(s) by global rescoring", moved_global)
     except Exception as e:
         log.warning("[WARN] global section reassignment failed: %s", e)
+
+    # 안전장치: policy에 남아있는 병해충 실행형 문맥을 최종 선택 전 pest로 강제 정리
+    try:
+        moved_pf = _enforce_pest_priority_over_policy(raw_by_section)
+        if moved_pf:
+            log.info("[REBALANCE] moved %d pest-context item(s): policy -> pest", moved_pf)
+    except Exception as e:
+        log.warning("[WARN] pest-priority rebalance failed: %s", e)
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
