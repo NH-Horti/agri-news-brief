@@ -6312,8 +6312,27 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
                 a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, pest_conf, p)
             except Exception:
                 pass
+        # 최종 노출에서 밀려 사라지지 않도록, policy->pest 강제 이동분에는 소폭 우선순위 보정
+        try:
+            a.score = float(getattr(a, "score", 0.0) or 0.0) + 4.0
+        except Exception:
+            pass
+
         if pest_idx.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
             pest_items.append(a)
+        else:
+            # 중복키가 이미 있으면 더 높은 점수 기사로 교체(강제 이동분 소실 방지)
+            for i, ex in enumerate(pest_items):
+                same = False
+                try:
+                    same = bool((a.canon_url and ex.canon_url and a.canon_url == ex.canon_url) or (a.norm_key and ex.norm_key and a.norm_key == ex.norm_key))
+                except Exception:
+                    same = False
+                if same:
+                    ex_sc = float(getattr(ex, "score", 0.0) or 0.0)
+                    if float(getattr(a, "score", 0.0) or 0.0) > ex_sc:
+                        pest_items[i] = a
+                    break
         moved += 1
 
     if moved:
