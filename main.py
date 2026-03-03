@@ -4037,9 +4037,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
         weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
 
-        # 벼 방제 단독은 제외(원예/과수와의 연관이 희박)
-        if rice_hits >= 1 and strict_hits < 1 and weather_hits < 1:
+        # 벼 병해충은 원예수급부와 거리가 멀어 기본 제외(원예 신호 동반 시만 허용)
+        if rice_hits >= 1 and horti_hits == 0:
             return _reject("pest_rice_only")
 
         # 방제/병해충 신호가 너무 약하면 제외
@@ -4914,6 +4915,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if is_trade_policy_issue(mix) and _h < 2.2:
                 continue
+            # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
+            if (a.topic or "").strip() == "정책":
+                continue
         if not _headline_gate(a, section_key):
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
@@ -4955,6 +4959,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
+                continue
+            if section_key == "supply" and (a.topic or "").strip() == "정책":
                 continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
