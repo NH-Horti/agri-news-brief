@@ -258,6 +258,18 @@ GLOBAL_SECTION_REASSIGN_ENABLED = os.getenv("GLOBAL_SECTION_REASSIGN_ENABLED", "
 GLOBAL_SECTION_REASSIGN_MIN_GAIN = float(os.getenv("GLOBAL_SECTION_REASSIGN_MIN_GAIN", "0.8") or 0.8)
 GLOBAL_SECTION_REASSIGN_MIN_GAIN = max(0.0, min(GLOBAL_SECTION_REASSIGN_MIN_GAIN, 5.0))
 
+# 최근 실험적 보정(쿼리-기사 정합성 게이트 / 키워드 강도 추가 보정)은
+# 기본값을 OFF로 두고, 운영에서 필요 시 ENV로 켜서 점진 적용한다.
+QUERY_ARTICLE_MATCH_GATE_ENABLED = os.getenv("QUERY_ARTICLE_MATCH_GATE_ENABLED", "0").strip().lower() in ("1", "true", "yes", "y")
+SCORING_KEYWORD_STRENGTH_BOOST_ENABLED = os.getenv("SCORING_KEYWORD_STRENGTH_BOOST_ENABLED", "0").strip().lower() in ("1", "true", "yes", "y")
+SCORING_TITLE_SIGNAL_BONUS_ENABLED = os.getenv("SCORING_TITLE_SIGNAL_BONUS_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+
+# 섹션 배치 안정화: 최종 선발/전역 재분류 시 section-fit 신호를 함께 본다.
+SECTION_FIT_MIN_FOR_TOP = float(os.getenv("SECTION_FIT_MIN_FOR_TOP", "0.8") or 0.8)
+SECTION_FIT_MIN_FOR_TOP = max(0.0, min(SECTION_FIT_MIN_FOR_TOP, 5.0))
+SECTION_REASSIGN_FIT_GUARD = float(os.getenv("SECTION_REASSIGN_FIT_GUARD", "0.8") or 0.8)
+SECTION_REASSIGN_FIT_GUARD = max(0.0, min(SECTION_REASSIGN_FIT_GUARD, 5.0))
+
 # 다양성(coverage) 보강: 중복은 아니지만 '비슷한 기사'가 연속으로 올라오는 것을 완화(MMR).
 MMR_DIVERSITY_ENABLED = os.getenv("MMR_DIVERSITY_ENABLED", "1").strip().lower() in ("1","true","yes","y")
 MMR_DIVERSITY_LAMBDA = float(os.getenv("MMR_DIVERSITY_LAMBDA", "1.15") or 1.15)
@@ -2011,7 +2023,7 @@ def is_remote_foreign_horti(text: str) -> bool:
         return False
 
     # 한국과 직접 연결(수출/검역/통관/수입) 신호가 있으면 원격 해외로 보지 않음
-    if any(w in t for w in ("수출","수입","통관","검역","수입검역","수출길","수출길", "관세")) and any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
+    if any(w in t for w in ("수출","수입","통관","검역","수입검역","수출길", "관세")) and any(k.lower() in t for k in _KOREA_STRONG_CONTEXT):
         return False
 
     # 강한 국내 맥락이 없으면 제외
@@ -2037,6 +2049,19 @@ def agri_strength_score(text: str) -> int:
     return count_any(text, AGRI_STRONG_TERMS)
 
 
+def _section_must_terms_lower(section_conf: dict) -> list[str]:
+    """Return cached lower-cased must_terms for a section config."""
+    if not isinstance(section_conf, dict):
+        return []
+    cached = section_conf.get("_must_terms_lower")
+    if isinstance(cached, list):
+        return cached
+    out = [str(t).lower() for t in (section_conf.get("must_terms") or []) if str(t).strip()]
+    # lightweight cache on in-memory config dict
+    section_conf["_must_terms_lower"] = out
+    return out
+
+
 def keyword_strength(text: str, section_conf: dict) -> int:
     """섹션 관련 키워드 강도(정수).
     - 섹션 must_terms 포함 여부(1차) + 농산물 강키워드(AGRI_STRONG_TERMS) 기반 점수
@@ -2044,8 +2069,23 @@ def keyword_strength(text: str, section_conf: dict) -> int:
     """
     if not section_conf:
         return agri_strength_score(text)
-    must = [t.lower() for t in section_conf.get("must_terms", [])]
+    must = _section_must_terms_lower(section_conf)
     return count_any(text, must) + agri_strength_score(text)
+
+def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
+    """해당 기사가 섹션 의도와 얼마나 맞는지(0+).
+    - must_terms 텍스트 히트 + 제목 히트(가중)
+    - 원예 핵심 신호를 약하게 추가해 완전 비관련 기사 상단 배치를 줄임
+    """
+    txt = f"{title or ''} {desc or ''}".lower()
+    ttl = (title or "").lower()
+    must = _section_must_terms_lower(section_conf) if section_conf else []
+    must_t = count_any(txt, must) if must else 0
+    must_h = count_any(ttl, must) if must else 0
+    base = (0.18 * must_t) + (0.40 * must_h)
+    # 완전 무관 기사 방어용 약한 보정
+    base += 0.10 * min(6, agri_strength_score(txt))
+    return round(base, 3)
 
 def off_topic_penalty(text: str) -> int:
     return count_any(text, OFFTOPIC_HINTS)
@@ -3958,6 +3998,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # (핵심) 원예수급/품목 신호 점수(품목 라벨 + 오탐 억제)
     horti_sc = best_horti_score(title, desc)
+    key_strength = keyword_strength(text, section_conf) if SCORING_KEYWORD_STRENGTH_BOOST_ENABLED else 0
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
     if has_apc_agri_context(text):
@@ -3972,6 +4013,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score += 0.55 * strength
     score += 0.25 * korea
     score -= 0.70 * offp
+    if SCORING_TITLE_SIGNAL_BONUS_ENABLED:
+        score += title_signal_bonus(title)
 
 
 
@@ -4003,11 +4046,21 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
 # 섹션별 키워드 가중치
     key = section_conf["key"]
+
+    # 섹션 must_terms를 점수에 소폭 반영(제목 히트 우선)해 섹션 적합도를 안정화
+    must_terms_l = _section_must_terms_lower(section_conf)
+    if must_terms_l:
+        must_title_hits = count_any(title_l, must_terms_l)
+        must_text_hits = count_any(text, must_terms_l)
+        score += min(1.8, (0.35 * must_title_hits) + (0.12 * must_text_hits))
+
     if key == "supply":
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
+        score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
+        score += min(2.0, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
         # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
         # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
@@ -4021,12 +4074,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
+        score += min(1.8, 0.20 * key_strength)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
+        score += min(1.8, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
 
         # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
@@ -4653,6 +4708,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if not pool:
         return []
 
+    # 섹션 적합도(section-fit)가 매우 낮은 후보는 상단 선발에서 제외(단, 점수가 충분히 높으면 유지)
+    sec_conf = next((x for x in SECTIONS if x.get("key") == section_key), {})
+    fit_filtered: list[Article] = []
+    for a in pool:
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
+            fit_filtered.append(a)
+    if fit_filtered:
+        pool = fit_filtered
+
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
@@ -5239,24 +5304,68 @@ _RECALL_SIGNALS_BY_SECTION = {
 def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
     """쿼리 리스트에서 '대표 품목/키워드(첫 토큰)'를 추출.
     - 예: '배 과일 수급' -> '배', '샤인머스캣 가격' -> '샤인머스캣'
+    - 개선: 앞쪽 쿼리에 편향되지 않도록 전체 쿼리를 순회하며 고르게 seed를 수집.
+    - 개선: 따옴표/기호가 포함된 쿼리에서도 첫 의미 토큰을 안정적으로 추출.
     """
     out: list[str] = []
     if not queries:
         return out
-    for q in queries[:max(0, int(limit or 0))]:
-        q = (q or "").strip()
+    cap = max(0, int(limit or 0))
+    if cap == 0:
+        return out
+    skip = {"과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"}
+    for q in queries:
+        q = (q or "").strip().lower()
         if not q:
             continue
-        # 첫 토큰(공백 기준)
-        tok = q.split()[0].strip()
+        toks = re.findall(r"[0-9a-z가-힣]{2,}", q)
+        tok = ""
+        for t in toks:
+            if t in skip:
+                continue
+            tok = t
+            break
         if not tok:
-            continue
-        # 너무 일반적인 토큰 제외
-        if tok in ("과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"):
             continue
         if tok not in out:
             out.append(tok)
+        if len(out) >= cap:
+            break
     return out
+
+
+_QUERY_TOKEN_STOPWORDS = {
+    "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
+    "동향", "이슈", "대책", "지원", "검역", "유통", "현장", "방제", "병해충",
+}
+
+def _query_tokens(q: str) -> list[str]:
+    """쿼리에서 의미 있는 토큰만 추출(스팸성 광역 쿼리 정밀도 보정용)."""
+    toks = re.findall(r"[0-9a-z가-힣]{2,}", (q or "").lower())
+    out: list[str] = []
+    for t in toks:
+        if t in _QUERY_TOKEN_STOPWORDS:
+            continue
+        if t not in out:
+            out.append(t)
+    return out
+
+def _query_article_match_ok(q: str, title: str, desc: str, section_key: str) -> bool:
+    """쿼리-기사 정합성 체크.
+
+    - 광역/보강 쿼리에서 발생하는 오탐을 줄이기 위해, 의미 토큰이 기사 텍스트에 최소 1개 이상 포함되는지 확인.
+    - 다만 policy 섹션은 공공기관 브리핑이 제목/본문 표현이 변형되는 경우가 있어 완화 기준 적용.
+    """
+    toks = _query_tokens(q)
+    if not toks:
+        return True
+    txt = f"{title or ''} {desc or ''}".lower()
+    hit = sum(1 for t in toks if t in txt)
+    if section_key == "policy":
+        return hit >= 1
+    # 의미 토큰이 3개 이상인 긴 쿼리는 최소 2개 매칭 요구
+    need = 2 if len(toks) >= 3 else 1
+    return hit >= need
 
 def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap: int = 4) -> list[str]:
     """pool 내 토픽 분포에서 seed term을 만든다.
@@ -5415,6 +5524,21 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
     meta["queries"] = list(out)
     return out, meta
 
+def _dedupe_queries(queries: list[str]) -> list[str]:
+    """Normalize and deduplicate query list while preserving order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for q in (queries or []):
+        qn = re.sub(r"\s+", " ", str(q or "")).strip()
+        if not qn:
+            continue
+        k = qn.lower()
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(qn)
+    return out
+
 def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
     """Collect candidates for a section.
 
@@ -5424,7 +5548,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     - 후보 개수 자체가 너무 적음(=품질 문제가 아니라 풀 부족 가능성) AND
     - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
     """
-    queries = section_conf.get("queries") or []
+    queries = _dedupe_queries(section_conf.get("queries") or [])
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
@@ -5467,6 +5591,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
             press = press_name_from_url(origin or link)
             if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+
+            # 쿼리-기사 정합성 체크(옵트인): broad/recall 쿼리에서 제목만 비슷한 오탐 유입 억제
+            if QUERY_ARTICLE_MATCH_GATE_ENABLED and (not _query_article_match_ok(q, title, desc, section_key)):
                 continue
 
             canon = canonicalize_url(origin or link)
@@ -5932,7 +6060,13 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if not is_relevant(a.title, a.description, dom, url, conf, press):
                     continue
                 sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
+                fit_cur = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
+                fit_new = section_fit_score(a.title, a.description, conf)
             except Exception:
+                continue
+
+            # 재분류는 score뿐 아니라 section-fit 개선이 있어야 우선 허용
+            if fit_new + SECTION_REASSIGN_FIT_GUARD < fit_cur:
                 continue
 
             if sc > best_score:
