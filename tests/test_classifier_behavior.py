@@ -400,6 +400,59 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+    def test_pest_web_recall_collects_when_news_search_misses(self):
+        section_conf = {
+            "key": "pest",
+            "queries": ["병해충 예찰 방제"],
+            "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병", "토마토뿔나방"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
+
+        old_paged = main.naver_news_search_paged
+        old_web = main.naver_web_search
+        old_pub = main._best_effort_article_pubdate_kst
+        old_enabled = main.PEST_WEB_RECALL_ENABLED
+        old_cap = main.PEST_WEB_RECALL_QUERY_CAP
+        try:
+            main.PEST_WEB_RECALL_ENABLED = True
+            main.PEST_WEB_RECALL_QUERY_CAP = 2
+
+            def _fake_paged(q, display=50, pages=1, sort="date"):
+                return {"items": []}
+
+            def _fake_web(q, display=10, start=1, sort="date"):
+                if "과수화상병" in q:
+                    return {
+                        "items": [
+                            {
+                                "title": "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급",
+                                "description": "진주시는 과수화상병 방제를 위해 약제를 무상 공급한다고 밝혔다.",
+                                "link": "https://www.newsis.com/view/NISX20260228_0003530198",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            def _fake_pub(url):
+                if "NISX20260228_0003530198" in (url or ""):
+                    return datetime(2026, 3, 1, 0, 0, tzinfo=main.KST)
+                return None
+
+            main.naver_news_search_paged = _fake_paged
+            main.naver_web_search = _fake_web
+            main._best_effort_article_pubdate_kst = _fake_pub
+
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_paged
+            main.naver_web_search = old_web
+            main._best_effort_article_pubdate_kst = old_pub
+            main.PEST_WEB_RECALL_ENABLED = old_enabled
+            main.PEST_WEB_RECALL_QUERY_CAP = old_cap
+
+        self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
     def test_collect_candidates_respects_window_min_hours_for_rebuild_like_window(self):
         section_conf = {
             "key": "pest",

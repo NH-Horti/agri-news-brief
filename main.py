@@ -237,6 +237,10 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
 PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "3") or 3)
 PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
+# news API 미색인/지연에 대비해 pest는 web 검색(webkr)도 소량 보강한다.
+PEST_WEB_RECALL_ENABLED = os.getenv("PEST_WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "2") or 2)
+PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -1031,6 +1035,65 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
         return dt.astimezone(KST)
     except Exception:
         return datetime.min.replace(tzinfo=KST)
+
+
+def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
+    """Best-effort article publish datetime extraction (KST).
+
+    - 1차: URL 패턴(예: newsis NISXYYYYMMDD)에서 날짜 추정
+    - 2차: 본문 HTML 메타태그에서 datetime 추출(가벼운 regex)
+    """
+    try:
+        u = str(url or "").strip()
+        if not u:
+            return None
+
+        m = re.search(r"NISX(\d{8})", u)
+        if m:
+            ds = m.group(1)
+            d = datetime.strptime(ds, "%Y%m%d").date()
+            return datetime(d.year, d.month, d.day, 12, 0, 0, tzinfo=KST)
+
+        r = http_session().get(u, timeout=12)
+        if not r.ok:
+            return None
+        txt = r.text or ""
+
+        pats = [
+            r'article:published_time"\s*content="([^"]+)"',
+            r'property="og:published_time"\s*content="([^"]+)"',
+            r'name="pubdate"\s*content="([^"]+)"',
+            r'itemprop="datePublished"\s*content="([^"]+)"',
+            r'"datePublished"\s*:\s*"([^"]+)"',
+        ]
+        cand = None
+        for ptn in pats:
+            mm = re.search(ptn, txt, flags=re.I)
+            if mm:
+                cand = (mm.group(1) or "").strip()
+                break
+        if not cand:
+            return None
+
+        cand2 = cand.replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(cand2)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=KST)
+            return dt.astimezone(KST)
+        except Exception:
+            pass
+
+        m2 = re.search(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})(?:\s+[T]?(\d{1,2}):(\d{2}))?", cand)
+        if m2:
+            yy, mo, dd = int(m2.group(1)), int(m2.group(2)), int(m2.group(3))
+            hh = int(m2.group(4)) if m2.group(4) else 12
+            mi = int(m2.group(5)) if m2.group(5) else 0
+            return datetime(yy, mo, dd, hh, mi, 0, tzinfo=KST)
+    except Exception:
+        return None
+    return None
+
 
 def clean_text(s: str) -> str:
     if not s:
@@ -5916,6 +5979,73 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     log.warning("[WARN] pest always-on page2 query failed: %s", e)
                     continue
                 _ingest_naver_items(q, data_p2)
+    except Exception:
+        pass
+
+    # pest 섹션 리콜 보강(2): naver web 검색(webkr) 소량 수집
+    # - 뉴스 인덱스 지연/누락 시에도 기사 URL을 확보하기 위한 안전망
+    try:
+        if section_key == "pest" and PEST_WEB_RECALL_ENABLED and queries and PEST_WEB_RECALL_QUERY_CAP > 0:
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            for q in always_qs[:PEST_WEB_RECALL_QUERY_CAP]:
+                try:
+                    data_w = naver_web_search(q, display=10, start=1, sort="date")
+                except Exception as e:
+                    log.warning("[WARN] pest web recall query failed: %s", e)
+                    continue
+                for it in (data_w.get("items", []) if isinstance(data_w, dict) else []):
+                    title = clean_text(it.get("title", ""))
+                    desc = clean_text(it.get("description", ""))
+                    link = strip_tracking_params(it.get("link", "") or "")
+                    origin = link
+                    if not link:
+                        continue
+
+                    pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+                    if pub <= datetime.min.replace(tzinfo=KST):
+                        pub2 = _best_effort_article_pubdate_kst(origin or link)
+                        pub = pub2 if isinstance(pub2, datetime) else pub
+                    if pub <= datetime.min.replace(tzinfo=KST):
+                        continue
+                    if pub < effective_start_kst or pub >= end_kst:
+                        continue
+
+                    dom = domain_of(origin) or domain_of(link)
+                    if not dom or is_blocked_domain(dom):
+                        continue
+
+                    press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
+                    if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                        continue
+
+                    canon = canonicalize_url(origin or link)
+                    title_key = norm_title_key(title)
+                    topic = extract_topic(title, desc)
+                    norm_key = make_norm_key(canon, press, title_key)
+
+                    if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                        continue
+
+                    if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                        continue
+
+                    art = Article(
+                        section=section_key,
+                        title=title,
+                        description=desc,
+                        link=link,
+                        originallink=origin,
+                        pub_dt_kst=pub,
+                        domain=dom,
+                        press=press,
+                        norm_key=norm_key,
+                        title_key=title_key,
+                        canon_url=canon,
+                        topic=topic,
+                    )
+                    art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+                    items.append(art)
+                    hits_by_query[q] = hits_by_query.get(q, 0) + 1
     except Exception:
         pass
 
