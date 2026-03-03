@@ -616,6 +616,16 @@ HORTI_CORE_MARKERS = [
     "자조금", "원예자조금", "과수자조금", "화훼", "국화", "장미",
 ]
 
+# 수산물(생선/양식) 단독 이슈는 원예 브리핑에서 제외
+# - 단, '농수산물' 같은 중립 표현 때문에 과도 차단되지 않도록 전용 중립 표현을 제거 후 판단한다.
+FISHERY_STRICT_TERMS = [
+    "수산", "수산물", "어업", "양식", "어획", "수협", "활어", "선어", "어류", "수산시장",
+    "생선", "어선", "원양", "연근해", "수산업", "해산물", "수산가공",
+    "옥돔", "갈치", "고등어", "오징어", "명태", "대게", "참치", "광어", "우럭", "전복", "해삼",
+]
+FISHERY_NEUTRAL_PHRASES = [
+    "농수산물", "농축수산물", "농수산식품",
+]
 
 # 금융/산업 일반 기사(농협은행/NH투자/주가/실적 등) 오탐 차단용
 FINANCE_STRICT_TERMS = [
@@ -2521,6 +2531,8 @@ PRESS_HOST_MAP = {
     "mediajeju.com": "미디어제주",
     "pointdaily.co.kr": "포인트데일리",
     "metroseoul.co.kr": "메트로신문",
+    "newdaily.co.kr": "뉴데일리경제",
+    "biz.newdaily.co.kr": "뉴데일리경제",
 
     # 정책기관/연구기관
     "korea.kr": "정책브리핑",
@@ -2580,6 +2592,7 @@ ABBR_MAP = {
     "thebell": "더벨",
     "sisajournal": "시사저널",
     "mediatoday": "미디어오늘",
+    "newdaily": "뉴데일리경제",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -2614,6 +2627,34 @@ def press_name_from_url(url: str) -> str:
     if brand in ("co", "go", "or", "ne", "ac", "re", "pe", "kr", "com", "net"):
         return "미상"
     return brand.upper() if len(brand) <= 6 else brand
+
+
+def normalize_press_label(press: str, url: str = "") -> str:
+    """Normalize publisher labels to canonical Korean press names.
+
+    Some feeds may provide raw/english publisher labels (e.g., "newdaily").
+    Apply a small alias normalization so rendering and dedupe stay consistent.
+    """
+    p = (press or "").strip()
+    if not p:
+        return press_name_from_url(url)
+
+    p_compact = re.sub(r"\s+", "", p.lower())
+    alias = {
+        "newdaily": "뉴데일리경제",
+        "뉴데일리": "뉴데일리경제",
+        "뉴데일리경제": "뉴데일리경제",
+    }
+    if p_compact in alias:
+        return alias[p_compact]
+
+    # If a hostname is passed as press label, map it via host-based normalizer.
+    if "." in p and "/" not in p and " " not in p:
+        try:
+            return press_name_from_url("https://" + p)
+        except Exception:
+            return p
+    return p
 
 
 # -----------------------------
@@ -3531,7 +3572,7 @@ PEST_STRICT_TERMS = [
 PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해"]
 PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
-    "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀",
+    "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀", "벼",
 ]
 PEST_HORTI_TERMS = [
     # 원예/과수/시설채소 중심(벼 방제 제외 판단용)
@@ -3542,7 +3583,7 @@ PEST_HORTI_TERMS = [
 ]
 PEST_RICE_TERMS = [
     # 양곡(벼) 병해충/방제(양곡부 별도 운영 시 불필요한 경우가 많아 pest 섹션에서 제외)
-    "논", "이앙", "벼멸구", "멸구", "먹노린재", "멸강나방",
+    "논", "벼", "이앙", "벼멸구", "멸구", "먹노린재", "멸강나방",
     "도열병", "흰잎마름병", "키다리병", "잎집무늬마름병", "줄무늬잎마름병",
 ]
 PEST_OFFTOPIC_TERMS = [
@@ -3609,6 +3650,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if ("오늘, 서울시" in ttl_l2) or ("서울청년문화패스" in ttl_l2) or ("서울청년" in ttl_l2 and "패스" in ttl_l2):
             return _reject("dist_city_notice_event")
 
+        # 농산물시장 이전/현대화/재배치는 유통·현장 핵심 이슈로 우선 허용
+        if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
+            return True
+
 
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
     ttl_l = ttl.lower()
@@ -3659,6 +3704,20 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
     if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2):
         return _reject("livestock_only")
+
+    # ✅ 수산물 단독 이슈(옥돔/갈치/어업/양식 등)는 원예 브리핑 목적과 달라 배제
+    _t3 = text
+    for _ph in FISHERY_NEUTRAL_PHRASES:
+        _t3 = _t3.replace(_ph.lower(), "")
+    fishery_hits = count_any(_t3, [t.lower() for t in FISHERY_STRICT_TERMS])
+    horti_hits_pre_f = count_any(_t3, [t.lower() for t in _horti_non_livestock])
+    if fishery_hits >= 2 and horti_hits_pre_f == 0 and horti_sc_pre < 1.3:
+        return _reject("fishery_only")
+
+    # 수산 고유 어종/어업 키워드가 제목에 직접 등장하고 원예 신호가 약하면 우선 배제
+    fishery_title_hits = count_any(ttl.lower(), [t.lower() for t in FISHERY_STRICT_TERMS])
+    if fishery_title_hits >= 1 and best_horti_score(ttl, "") < 1.2:
+        return _reject("fishery_title_only")
 
     # ✅ 해외 원예/화훼 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
     if key in ("supply", "dist") and is_remote_foreign_horti(text):
@@ -3926,7 +3985,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if apc_ctx:
             soft_hits += 1
 
-        if (soft_hits + hard_hits) < 1:
+        # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
+        relocation_hint = any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소"))
+        agri_market_relocation = ("농산물" in text and "시장" in text and relocation_hint)
+
+        if (soft_hits + hard_hits) < 1 and (not agri_market_relocation):
             return _reject("dist_context_gate")
 
         # ✅ 가장 중요한 원칙: '농산물/원예' 앵커가 없고(agri_anchor_hits==0),
@@ -4076,6 +4139,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += min(1.8, 0.20 * key_strength)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
+        # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
+        if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
+            score -= 2.8
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -4107,7 +4173,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
         if rice_hits >= 1 and horti_hits == 0:
-            score -= 7.0
+            title_pest_hits = count_any(title_l, [t.lower() for t in ("병해충", "방제", "예찰", "약제", "과수화상병", "탄저병")])
+            # 벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점
+            score -= 2.6 if title_pest_hits >= 1 else 7.0
 
     # 언론/기관 가중치
     score += press_weight(press, dom)
@@ -4132,6 +4200,19 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += 2.2
             if any(w in title_l for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "수출", "검역", "통관")):
                 score += 1.0
+
+        # 도매시장/농산물시장 인프라·이전·현대화 이슈는 유통·현장 섹션 우선
+        relocation_terms = ("이전", "옮긴", "이전지", "현대화", "재배치", "확장", "신설", "개장", "개소")
+        if any(w in text for w in ("도매시장", "공영도매시장", "공판장")):
+            if any(w in text for w in relocation_terms):
+                score += 2.4
+            if any(w in title_l for w in relocation_terms):
+                score += 1.2
+        # '농산물 시장 이전'처럼 도매시장 단어가 없더라도 유통 인프라 재편 맥락을 반영
+        if ("농산물" in text and "시장" in text) and any(w in text for w in relocation_terms):
+            score += 3.4
+            if any(w in title_l for w in relocation_terms):
+                score += 1.4
 
     # ✅ 중앙지/방송사(티어3) 추가 가점: 공신력/파급력 높은 이슈를 상단에 더 잘 반영
     _pt = press_tier(press, dom)
@@ -5258,7 +5339,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
                 continue
-            press = press_name_from_url(link)
+            press = normalize_press_label(press_name_from_url(link), link)
             if not is_relevant(title, desc, dom, link, section_conf, press):
                 continue
             canon = canonicalize_url(link)
@@ -5589,7 +5670,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             if not dom or is_blocked_domain(dom):
                 continue
 
-            press = press_name_from_url(origin or link)
+            press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
             if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
                 continue
 
