@@ -59,6 +59,14 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.gyeongnam.go.kr/board/view.gn?boardId=BBS_0000000")
         self.assertEqual(best, "pest", msg=f"scores={scores}")
 
+    def test_policy_gate_does_not_drop_pest_execution_story(self):
+        title = "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급"
+        desc = "진주시는 과수화상병 방제를 위해 382개 농가에 총 3회분의 약제를 무상으로 공급한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
     def test_seoul_city_agri_shipping_support_article_prefers_policy(self):
         title = "서울시가 전국 최초로 농산물 출하비용 보전하는 이유"
         desc = "서울시는 도매시장 출하 농산물의 경락가격 하락 시 출하비용을 보전하는 정책을 시행한다고 밝혔다."

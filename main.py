@@ -3934,8 +3934,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # 섹션 must-term 통과 여부(단, supply/dist는 '강한 원예/도매 맥락'이면 예외 허용)
     if not section_must_terms_ok(text, section_conf["must_terms"]):
         if key == "policy":
+            # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
+            if is_pest_control_policy_context(text):
+                pass
             # policy는 도메인 override가 있음
-            if not policy_domain_override(dom, text):
+            elif not policy_domain_override(dom, text):
                 return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
@@ -3965,9 +3968,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
-        # 지자체/도청 보도자료라도 병해충 '실행형 방제' 이슈는 policy가 아니라 pest로 유도
+        # 병해충 실행형 기사는 수집 단계에서 누락시키지 않고 후단 재분류/정리에서 pest로 보낸다.
         if is_pest_control_policy_context(text):
-            return _reject("policy_pest_execution_context")
+            return True
 
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
