@@ -47,6 +47,51 @@ class TestClassifierBehavior(unittest.TestCase):
         best2, scores2 = self._best_section(t2, d2, "https://mobile.newsis.com/view/NISX20260228_0003530198")
         self.assertEqual(best2, "pest", msg=f"scores={scores2}")
 
+    def test_youngnong_tomato_moth_control_article_prefers_pest(self):
+        title = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        desc = "경기도는 토마토뿔나방 확산 대응을 위해 재배 농가 전수조사를 실시하고 예찰·방제 자료를 제공한다."
+        best, scores = self._best_section(title, desc, "http://www.youngnong.co.kr/news/articleView.html?idxno=57763")
+        self.assertEqual(best, "pest", msg=f"scores={scores}")
+
+    def test_city_press_release_style_pest_issue_still_prefers_pest(self):
+        title = "경남도, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "경남도는 시군과 합동으로 과원 전수조사와 정밀예찰을 실시하고 과수화상병 약제를 무상 공급한다고 보도자료를 통해 밝혔다."
+        best, scores = self._best_section(title, desc, "https://www.gyeongnam.go.kr/board/view.gn?boardId=BBS_0000000")
+        self.assertEqual(best, "pest", msg=f"scores={scores}")
+
+    def test_seoul_city_agri_shipping_support_article_prefers_policy(self):
+        title = "서울시가 전국 최초로 농산물 출하비용 보전하는 이유"
+        desc = "서울시는 도매시장 출하 농산물의 경락가격 하락 시 출하비용을 보전하는 정책을 시행한다고 밝혔다."
+        best, scores = self._best_section(title, desc, "https://biz.heraldcorp.com/article/10683302")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_global_reassign_forces_policy_pest_context_to_pest(self):
+        title = "진주시, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "진주시는 과수화상병 확산 차단을 위해 과원 정밀예찰과 약제 방제를 시행한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press),
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["pest"]), 1)
+        self.assertEqual(by["pest"][0].section, "pest")
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."
