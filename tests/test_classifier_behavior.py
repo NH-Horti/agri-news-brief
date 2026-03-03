@@ -368,3 +368,49 @@ class TestClassifierBehavior(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRecentItemsRebuild(unittest.TestCase):
+    def test_rebuild_recent_items_replaces_same_day_entries(self):
+        base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
+        report_date = "2026-03-03"
+        existing = [
+            {"date": "2026-03-03", "canon": "https://old.example.com/a", "norm": "url:old-a"},
+            {"date": "2026-03-02", "canon": "https://keep.example.com/b", "norm": "url:keep-b"},
+        ]
+
+        a = main.Article(
+            section="pest",
+            title="진주시, 과수화상병 방제 총력",
+            description="과원 예찰과 약제 방제를 실시한다.",
+            link="https://www.newsis.com/view/NISX20260228_0003530198",
+            originallink="https://www.newsis.com/view/NISX20260228_0003530198",
+            pub_dt_kst=datetime(2026, 3, 2, tzinfo=main.KST),
+            domain=main.domain_of("https://www.newsis.com/view/NISX20260228_0003530198"),
+            press="뉴시스",
+            title_key=main.norm_title_key("진주시, 과수화상병 방제 총력"),
+            canon_url=main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198"),
+            norm_key=main.make_norm_key(main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198"), "뉴시스", main.norm_title_key("진주시, 과수화상병 방제 총력")),
+            topic="병해충",
+            score=10.0,
+        )
+        by_section = {"supply": [], "policy": [], "dist": [], "pest": [a]}
+
+        rebuilt = main.rebuild_recent_items_for_report_date(existing, by_section, report_date, base_day)
+
+        self.assertFalse(any((it.get("date") == report_date and it.get("canon") == "https://old.example.com/a") for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == "https://keep.example.com/b" for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == main.canonicalize_url("https://www.newsis.com/view/NISX20260228_0003530198") for it in rebuilt))
+
+    def test_rebuild_recent_items_handles_missing_by_section(self):
+        base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
+        report_date = "2026-03-03"
+        existing = [
+            {"date": "2026-03-03", "canon": "https://old.example.com/a", "norm": "url:old-a"},
+            {"date": "2026-03-01", "canon": "https://keep.example.com/c", "norm": "url:keep-c"},
+        ]
+
+        rebuilt = main.rebuild_recent_items_for_report_date(existing, None, report_date, base_day)
+
+        self.assertFalse(any(it.get("date") == report_date for it in rebuilt))
+        self.assertTrue(any(it.get("canon") == "https://keep.example.com/c" for it in rebuilt))
