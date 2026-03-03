@@ -47,6 +47,197 @@ class TestClassifierBehavior(unittest.TestCase):
         best2, scores2 = self._best_section(t2, d2, "https://mobile.newsis.com/view/NISX20260228_0003530198")
         self.assertEqual(best2, "pest", msg=f"scores={scores2}")
 
+    def test_youngnong_tomato_moth_control_article_prefers_pest(self):
+        title = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        desc = "경기도는 토마토뿔나방 확산 대응을 위해 재배 농가 전수조사를 실시하고 예찰·방제 자료를 제공한다."
+        best, scores = self._best_section(title, desc, "http://www.youngnong.co.kr/news/articleView.html?idxno=57763")
+        self.assertEqual(best, "pest", msg=f"scores={scores}")
+
+    def test_city_press_release_style_pest_issue_still_prefers_pest(self):
+        title = "경남도, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "경남도는 시군과 합동으로 과원 전수조사와 정밀예찰을 실시하고 과수화상병 약제를 무상 공급한다고 보도자료를 통해 밝혔다."
+        best, scores = self._best_section(title, desc, "https://www.gyeongnam.go.kr/board/view.gn?boardId=BBS_0000000")
+        self.assertEqual(best, "pest", msg=f"scores={scores}")
+
+    def test_policy_gate_does_not_drop_pest_execution_story(self):
+        title = "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급"
+        desc = "진주시는 과수화상병 방제를 위해 382개 농가에 총 3회분의 약제를 무상으로 공급한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
+    def test_seoul_city_agri_shipping_support_article_prefers_policy(self):
+        title = "서울시가 전국 최초로 농산물 출하비용 보전하는 이유"
+        desc = "서울시는 도매시장 출하 농산물의 경락가격 하락 시 출하비용을 보전하는 정책을 시행한다고 밝혔다."
+        best, scores = self._best_section(title, desc, "https://biz.heraldcorp.com/article/10683302")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_global_reassign_forces_policy_pest_context_to_pest(self):
+        title = "진주시, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "진주시는 과수화상병 확산 차단을 위해 과원 정밀예찰과 약제 방제를 시행한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press),
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["pest"]), 1)
+        self.assertEqual(by["pest"][0].section, "pest")
+
+    def test_policy_cleanup_moves_pest_context_to_pest_before_final_pick(self):
+        title = "진주시, 과수화상병 확산 차단 위해 과원 예찰·약제 방제 총력"
+        desc = "진주시는 과수화상병 확산 차단을 위해 과원 정밀예찰과 약제 방제를 시행한다고 밝혔다."
+        url = "https://www.newsis.com/view/NISX20260228_0003530198"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press),
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._enforce_pest_priority_over_policy(by)
+        self.assertEqual(moved, 1)
+        self.assertEqual(len(by["policy"]), 0)
+        self.assertEqual(len(by["pest"]), 1)
+        self.assertEqual(by["pest"][0].section, "pest")
+
+    def test_policy_cleanup_boosts_and_keeps_pest_item(self):
+        title = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        desc = "경기도는 토마토뿔나방 확산 대응을 위해 재배 농가 전수조사를 실시하고 예찰·방제 자료를 제공한다."
+        url = "http://www.youngnong.co.kr/news/articleView.html?idxno=57763"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        base_policy_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=base_policy_score,
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._enforce_pest_priority_over_policy(by)
+        self.assertEqual(moved, 1)
+        self.assertEqual(len(by["pest"]), 1)
+        self.assertGreater(by["pest"][0].score, base_policy_score)
+
+    def test_forced_pest_item_is_kept_in_final_selection(self):
+        c = self.conf["pest"]
+        # 일반 pest 고득점 기사
+        u1 = "https://example.com/pest-high"
+        t1 = "과수화상병 방제 총력"
+        d1 = "과수화상병 예찰과 방제 약제 살포를 강화한다."
+        p1 = "연합뉴스"
+        a1 = main.Article(
+            section="pest", title=t1, description=d1, link=u1, originallink=u1,
+            domain=main.domain_of(u1), press=p1, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t1), canon_url=main.canonicalize_url(u1),
+            norm_key=main.make_norm_key(main.canonicalize_url(u1), p1, main.norm_title_key(t1)),
+            topic=main.extract_topic(t1, d1),
+            score=main.compute_rank_score(t1, d1, main.domain_of(u1), self.now, c, p1),
+        )
+
+        # policy->pest 강제 이동분(점수는 상대적으로 낮아도 forced_section으로 최종 유지)
+        u2 = "https://example.com/pest-forced"
+        t2 = "경기도, 토마토뿔나방 방제 지원"
+        d2 = "토마토뿔나방 예찰·방제 지원을 실시한다."
+        p2 = "뉴스1"
+        a2 = main.Article(
+            section="pest", title=t2, description=d2, link=u2, originallink=u2,
+            domain=main.domain_of(u2), press=p2, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t2), canon_url=main.canonicalize_url(u2),
+            norm_key=main.make_norm_key(main.canonicalize_url(u2), p2, main.norm_title_key(t2)),
+            topic=main.extract_topic(t2, d2),
+            score=max(0.0, main.compute_rank_score(t2, d2, main.domain_of(u2), self.now, c, p2) - 5.0),
+        )
+        a2.forced_section = "pest"
+
+        picked = main.select_top_articles([a1, a2], "pest", 1)
+        self.assertTrue(any(x.link == u2 for x in picked), msg=str([(x.link, x.score) for x in picked]))
+
+    def test_pest_execution_items_are_kept_even_without_forced_flag(self):
+        c = self.conf["pest"]
+        # 비실행형(상대 고점) 1건
+        u1 = "https://example.com/pest-generic"
+        t1 = "지역 병해충 대응 점검 회의"
+        d1 = "병해충 관련 간담회와 회의가 열렸다."
+        p1 = "연합뉴스"
+        a1 = main.Article(
+            section="pest", title=t1, description=d1, link=u1, originallink=u1,
+            domain=main.domain_of(u1), press=p1, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t1), canon_url=main.canonicalize_url(u1),
+            norm_key=main.make_norm_key(main.canonicalize_url(u1), p1, main.norm_title_key(t1)),
+            topic=main.extract_topic(t1, d1),
+            score=20.0,
+        )
+
+        # 실행형 2건(요청 사례 패턴)
+        u2 = "https://example.com/pest-fireblight"
+        t2 = "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급"
+        d2 = "과수화상병 방제를 위해 농가에 약제를 무상 공급한다."
+        p2 = "뉴시스"
+        a2 = main.Article(
+            section="pest", title=t2, description=d2, link=u2, originallink=u2,
+            domain=main.domain_of(u2), press=p2, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t2), canon_url=main.canonicalize_url(u2),
+            norm_key=main.make_norm_key(main.canonicalize_url(u2), p2, main.norm_title_key(t2)),
+            topic=main.extract_topic(t2, d2),
+            score=8.0,
+        )
+
+        u3 = "https://example.com/pest-moth"
+        t3 = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        d3 = "토마토뿔나방 확산 대응을 위해 전수조사와 예찰·방제를 진행한다."
+        p3 = "영농신문"
+        a3 = main.Article(
+            section="pest", title=t3, description=d3, link=u3, originallink=u3,
+            domain=main.domain_of(u3), press=p3, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t3), canon_url=main.canonicalize_url(u3),
+            norm_key=main.make_norm_key(main.canonicalize_url(u3), p3, main.norm_title_key(t3)),
+            topic=main.extract_topic(t3, d3),
+            score=7.5,
+        )
+
+        picked = main.select_top_articles([a1, a2, a3], "pest", 2)
+        picked_links = {x.link for x in picked}
+        self.assertIn(u2, picked_links, msg=str([(x.link, x.score) for x in picked]))
+        self.assertIn(u3, picked_links, msg=str([(x.link, x.score) for x in picked]))
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."
