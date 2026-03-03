@@ -227,6 +227,12 @@ _default_fbqcap = max(0, min(10, MAX_PER_SECTION + 1))
 COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = int(os.getenv("COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION", str(min(6, _default_fbqcap))) or 6)
 COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION, 20))
 
+# pest 섹션은 실행형 병해충 기사를 놓치지 않기 위해 보강 쿼리를 항상 병합한다(하드코딩 URL 아님)
+PEST_ALWAYS_ON_RECALL_QUERIES = [
+    "과수화상병", "과수화상병 방제", "과수화상병 약제",
+    "토마토뿔나방", "토마토뿔나방 방제", "병해충 예찰",
+]
+
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
 _default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
@@ -2005,6 +2011,51 @@ def is_trade_policy_issue(text: str) -> bool:
         return True
 
     return False
+
+
+def is_pest_control_policy_context(text: str) -> bool:
+    """병해충 기사 중 '정책 일반'보다 '방제 실무' 성격이 강한지 판정.
+    - 지자체/기관 발표가 포함돼도, 본문 중심이 예찰·약제·방제 실행이면 pest를 우선한다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
+    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS])
+    action_hits = count_any(t, [w.lower() for w in ("전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제", "긴급방제", "확산 차단")])
+    policy_hits = count_any(t, [w.lower() for w in ("정책", "대책", "조례", "예산", "브리핑", "보도자료", "법", "개정", "관세", "통관")])
+    local_gov_hits = count_any(t, [w.lower() for w in ("시", "도", "시청", "도청", "군", "군청", "구", "구청", "지자체")])
+
+    # 명시 해충명(예: 토마토뿔나방) 패턴 보강
+    named_pest = re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
+
+    pest_signal = (strict_hits >= 1) or (weather_hits >= 1) or named_pest
+    # 정책 일반(관세/통상) 신호가 과한 경우는 제외
+    if policy_hits >= 4 and ("관세" in t or "통관" in t or "수입" in t):
+        return False
+
+    # 지자체/기관 보도자료 형식이라도 병해충 이슈가 명확하면 pest 우선 유지.
+    # (예: "과수화상병 확산", "토마토뿔나방 발생")
+    return (horti_hits >= 1) and pest_signal and ((action_hits >= 1) or (local_gov_hits >= 1 and strict_hits >= 1))
+
+
+def is_local_agri_policy_program_context(text: str) -> bool:
+    """지자체의 농산물 정책 프로그램(지원/보전/시범사업) 맥락인지 판정."""
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    local_gov_terms = ["서울시", "경기도", "도청", "시청", "군청", "구청", "지자체", "특별자치도"]
+    policy_program_terms = ["정책", "시행", "추진", "지원", "보전", "사업", "시범", "전국 최초", "예산", "보조", "확대"]
+    agri_market_terms = ["농산물", "도매시장", "출하", "경락", "원예", "과수", "농가"]
+
+    return (
+        count_any(t, [w.lower() for w in local_gov_terms]) >= 1
+        and count_any(t, [w.lower() for w in policy_program_terms]) >= 2
+        and count_any(t, [w.lower() for w in agri_market_terms]) >= 1
+    )
 
 
 def is_fruit_foodservice_event_context(text: str) -> bool:
@@ -3889,8 +3940,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # 섹션 must-term 통과 여부(단, supply/dist는 '강한 원예/도매 맥락'이면 예외 허용)
     if not section_must_terms_ok(text, section_conf["must_terms"]):
         if key == "policy":
+            # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
+            if is_pest_control_policy_context(text):
+                pass
             # policy는 도메인 override가 있음
-            if not policy_domain_override(dom, text):
+            elif not policy_domain_override(dom, text):
                 return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
@@ -3920,6 +3974,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
+        # 병해충 실행형 기사는 수집 단계에서 누락시키지 않고 후단 재분류/정리에서 pest로 보낸다.
+        if is_pest_control_policy_context(text):
+            return True
+
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
         if not is_official:
@@ -4122,10 +4180,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+        # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
+        if is_local_agri_policy_program_context(text):
+            score -= 4.0
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += min(2.0, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in DIST_TITLE_CORE_TERMS]) * 1.2
+        # 지자체 정책 프로그램성 기사(보전/지원/시범사업)는 dist보다 policy 우선
+        if is_local_agri_policy_program_context(text):
+            score -= 2.0
         # ✅ 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 유통(현장) 실무 체크 가치가 높다.
         # - 도매시장/APC 키워드가 없어도 '현장/대목장/판매' 맥락이면 점수를 보강해 하단 고착을 방지한다.
         if press in AGRI_TRADE_PRESS or normalize_host(dom) in AGRI_TRADE_HOSTS:
@@ -4143,6 +4207,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
         if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
             score -= 2.8
+        # 지자체의 농산물 정책 프로그램(지원/보전/시범사업)은 policy 우선
+        if is_local_agri_policy_program_context(text):
+            score += 6.4
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -4150,6 +4217,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
         score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
+        # 지자체 발표 기사라도 방제 실행(예찰/약제/살포/전수조사) 맥락이 강하면 pest 우선
+        if is_pest_control_policy_context(text):
+            score += 2.8
 
         # 과수화상병/탄저병/냉해/동해 등 과수 리스크는 최우선(과수화훼팀 관점)
         if "과수화상병" in text:
@@ -5206,6 +5276,52 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             added += 1
 
+    # 강제 섹션 이동 기사(예: policy->pest)는 최종 노출에서 사라지지 않도록 우선 포함 보장
+    forced_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
+    for fa in forced_items:
+        if fa in final:
+            continue
+        if len(final) < max_n:
+            final.append(fa)
+            continue
+        # 공간이 없으면 최하위 점수 1건을 대체
+        if final:
+            repl_idx = min(range(len(final)), key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+            final[repl_idx] = fa
+
+    # pest 섹션 안전장치: 방제 실행형 문맥 기사(예찰/약제/전수조사 등)가 최종 선발에서 밀려 사라지지 않도록 보장
+    if section_key == "pest":
+        exec_like = [a for a in candidates_sorted if is_pest_control_policy_context(((a.title or "") + " " + (a.description or "")).lower())]
+        keep_exec = []
+        for a in final:
+            try:
+                if is_pest_control_policy_context(((a.title or "") + " " + (a.description or "")).lower()):
+                    keep_exec.append(a)
+            except Exception:
+                pass
+
+        # 실행형 기사 최대 2건까지 보장
+        need_exec = max(0, min(2, max_n) - len(keep_exec))
+        if need_exec > 0:
+            for ea in exec_like:
+                if need_exec <= 0:
+                    break
+                if ea in final:
+                    continue
+                if len(final) < max_n:
+                    final.append(ea)
+                    need_exec -= 1
+                    continue
+                if final:
+                    # 이미 들어간 실행형 후보를 다시 밀어내지 않도록 non-exec 최하위부터 교체
+                    non_exec_idx = [i for i, x in enumerate(final) if not is_pest_control_policy_context(((x.title or "") + " " + (x.description or "")).lower())]
+                    if non_exec_idx:
+                        repl_idx = min(non_exec_idx, key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+                    else:
+                        repl_idx = min(range(len(final)), key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+                    final[repl_idx] = ea
+                    need_exec -= 1
+
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
     deduped: list[Article] = []
@@ -5330,17 +5446,7 @@ def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: dat
             if not pub:
                 # 날짜가 없으면 윈도우 밖일 수 있으므로 제외
                 continue
-            soft_start = start_kst
-            try:
-                min_hours = WINDOW_MIN_HOURS
-                if min_hours and min_hours > 0:
-                    min_start = end_kst - timedelta(hours=min_hours)
-                    if min_start < soft_start:
-                        soft_start = min_start
-            except Exception:
-                soft_start = start_kst
-
-            if pub < soft_start or pub >= end_kst:
+            if pub < effective_start_kst or pub >= end_kst:
                 continue
             dom = domain_of(link)
             if not dom or is_blocked_domain(dom):
@@ -5636,11 +5742,24 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
     """
     queries = _dedupe_queries(section_conf.get("queries") or [])
+    # pest는 pool 충분 여부와 무관하게 실행형 방제 보강 쿼리를 병합해 누락을 줄인다.
+    if str(section_conf.get("key") or "") == "pest":
+        queries = _dedupe_queries(list(queries) + list(PEST_ALWAYS_ON_RECALL_QUERIES))
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 
     section_key = str(section_conf.get("key") or "")
     max_n = MAX_PER_SECTION
+
+    effective_start_kst = start_kst
+    try:
+        min_hours = WINDOW_MIN_HOURS
+        if min_hours and min_hours > 0:
+            min_start = end_kst - timedelta(hours=min_hours)
+            if min_start < effective_start_kst:
+                effective_start_kst = min_start
+    except Exception:
+        effective_start_kst = start_kst
 
     hits_by_query: dict[str, int] = {}
 
@@ -5659,17 +5778,9 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             origin = strip_tracking_params(it.get("originallink", "") or link)
             pub = parse_pubdate_to_kst(it.get("pubDate", ""))
 
-            soft_start = start_kst
-            try:
-                min_hours = WINDOW_MIN_HOURS
-                if min_hours and min_hours > 0:
-                    min_start = end_kst - timedelta(hours=min_hours)
-                    if min_start < soft_start:
-                        soft_start = min_start
-            except Exception:
-                soft_start = start_kst
-
-            if pub < soft_start or pub >= end_kst:
+            # 수집 단계와 후반 정리 단계의 윈도우 기준을 반드시 동일하게 유지
+            # (불일치 시 "수집됐다가 후반에 삭제"되는 회귀가 발생할 수 있음)
+            if pub < effective_start_kst or pub >= end_kst:
                 continue
 
             dom = domain_of(origin) or domain_of(link)
@@ -5749,7 +5860,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
         pass
 
     # 최종 안전장치: 수집 경로(RSS/추가소스)와 무관하게 윈도우 밖 기사는 제외
-    items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+    items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
     items.sort(key=_sort_key_major_first, reverse=True)
 
     # -----------------------------
@@ -5789,7 +5900,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                             _ingest_naver_items(fq, dataF)
 
                         # 재정렬
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                         items.sort(key=_sort_key_major_first, reverse=True)
                     # 어떤 쿼리에 추가 페이지를 붙일지 선택
                     # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
@@ -5858,7 +5969,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                             "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
                             section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
                         )
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (start_kst <= a.pub_dt_kst < end_kst)]
+                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                         items.sort(key=_sort_key_major_first, reverse=True)
     except Exception:
         # extra pass should never break the pipeline
@@ -5871,6 +5982,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             hits_top = sorted(list(hits_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             api_top = sorted(list(api_items_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             meta = {
+                "effective_window": {
+                    "start_kst": effective_start_kst.isoformat() if isinstance(effective_start_kst, datetime) else str(effective_start_kst),
+                    "end_kst": end_kst.isoformat() if isinstance(end_kst, datetime) else str(end_kst),
+                },
                 "base_queries_n": int(len(queries)),
                 "base_queries": list(queries[:30]),
                 "api_items_top": api_top,
@@ -6106,10 +6221,11 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         cur_score = float(getattr(a, "score", 0.0) or 0.0)
         best_key = cur
         best_score = cur_score
+        strong_pest_context = is_pest_control_policy_context(txt)
 
-        # candidate set: current + (supply/dist/policy)
+        # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
-        for k in (cur, "policy", "dist", "supply"):
+        for k in (cur, "policy", "dist", "supply", "pest"):
             if k in conf_by_key and k not in cand_keys:
                 cand_keys.append(k)
 
@@ -6125,6 +6241,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
                 # - 통상/관세/검역/통관 기사도 policy 후보로 포함(품목 맥락이 약할 때)
+                # - 지자체 농산물 정책 프로그램(지원/보전/시범사업)은 policy 이동 후보로 허용
                 _policy_like = False
                 try:
                     _h = best_horti_score(a.title or "", a.description or "")
@@ -6134,6 +6251,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     _policy_like = True
                 elif is_trade_policy_issue(txt) and _h < 2.2:
                     _policy_like = True
+                elif is_local_agri_policy_program_context(txt):
+                    _policy_like = True
 
                 if not _policy_like:
                     try:
@@ -6141,6 +6260,10 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                             continue
                     except Exception:
                         continue
+            if k == "pest":
+                # 병해충/방제 강신호 + 원예 맥락이 있을 때만 pest 이동 후보로 허용
+                if not strong_pest_context:
+                    continue
 
             try:
                 conf = conf_by_key[k]
@@ -6160,8 +6283,21 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 best_score = float(sc)
                 best_key = k
 
+        # 병해충 실행형 문맥은 policy/기타 섹션 점수와 무관하게 pest를 우선 고정한다.
+        force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
+
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
-        if best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
+        if force_move_to_pest:
+            try:
+                pest_conf = conf_by_key["pest"]
+                if is_relevant(a.title, a.description, dom, url, pest_conf, press):
+                    pest_score = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, pest_conf, press)
+                    a.section = "pest"
+                    a.score = float(pest_score)
+                    moved += 1
+            except Exception:
+                pass
+        elif best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
             a.section = best_key
             a.score = best_score
             moved += 1
@@ -6180,6 +6316,82 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         raw_by_section.setdefault(k, new_by.get(k, []))
 
     return moved
+
+
+def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]]) -> int:
+    """강한 병해충 실행 문맥 기사는 policy 잔류를 허용하지 않고 pest로 우선 이동한다."""
+    if not isinstance(raw_by_section, dict):
+        return 0
+    policy_items = list(raw_by_section.get("policy", []) or [])
+    if not policy_items:
+        return 0
+
+    moved = 0
+    keep_policy: list[Article] = []
+    pest_items = list(raw_by_section.get("pest", []) or [])
+    pest_idx = DedupeIndex()
+    for _a in pest_items:
+        try:
+            pest_idx.add_and_check(_a.canon_url, _a.press, _a.title_key, _a.norm_key)
+        except Exception:
+            pass
+
+    pest_conf = next((x for x in (SECTIONS or []) if isinstance(x, dict) and x.get("key") == "pest"), None)
+
+    for a in policy_items:
+        txt = ((a.title or "") + " " + (a.description or "")).lower()
+        if not is_pest_control_policy_context(txt):
+            keep_policy.append(a)
+            continue
+
+        d = normalize_host(getattr(a, "domain", "") or "")
+        p = (getattr(a, "press", "") or "").strip()
+        url = getattr(a, "canon_url", None) or getattr(a, "originallink", None) or getattr(a, "link", None) or ""
+        ok = True
+        if pest_conf is not None:
+            try:
+                ok = is_relevant(a.title, a.description, d, url, pest_conf, p)
+            except Exception:
+                ok = True
+        if not ok:
+            keep_policy.append(a)
+            continue
+
+        a.section = "pest"
+        a.forced_section = "pest"
+        if pest_conf is not None:
+            try:
+                a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, pest_conf, p)
+            except Exception:
+                pass
+        # 최종 노출에서 밀려 사라지지 않도록, policy->pest 강제 이동분에는 소폭 우선순위 보정
+        try:
+            a.score = float(getattr(a, "score", 0.0) or 0.0) + 4.0
+        except Exception:
+            pass
+
+        if pest_idx.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+            pest_items.append(a)
+        else:
+            # 중복키가 이미 있으면 더 높은 점수 기사로 교체(강제 이동분 소실 방지)
+            for i, ex in enumerate(pest_items):
+                same = False
+                try:
+                    same = bool((a.canon_url and ex.canon_url and a.canon_url == ex.canon_url) or (a.norm_key and ex.norm_key and a.norm_key == ex.norm_key))
+                except Exception:
+                    same = False
+                if same:
+                    ex_sc = float(getattr(ex, "score", 0.0) or 0.0)
+                    if float(getattr(a, "score", 0.0) or 0.0) > ex_sc:
+                        pest_items[i] = a
+                    break
+        moved += 1
+
+    if moved:
+        raw_by_section["policy"] = keep_policy
+        raw_by_section["pest"] = pest_items
+    return moved
+
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime):
     raw_by_section: dict[str, list[Article]] = {}
@@ -6402,6 +6614,14 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
                 log.info("[REASSIGN] moved %d item(s) by global rescoring", moved_global)
     except Exception as e:
         log.warning("[WARN] global section reassignment failed: %s", e)
+
+    # 안전장치: policy에 남아있는 병해충 실행형 문맥을 최종 선택 전 pest로 강제 정리
+    try:
+        moved_pf = _enforce_pest_priority_over_policy(raw_by_section)
+        if moved_pf:
+            log.info("[REBALANCE] moved %d pest-context item(s): policy -> pest", moved_pf)
+    except Exception as e:
+        log.warning("[WARN] pest-priority rebalance failed: %s", e)
 
     final_by_section: dict[str, list[Article]] = {}
     global_dedupe = DedupeIndex()
