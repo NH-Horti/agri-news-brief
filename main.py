@@ -5906,9 +5906,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
             and PEST_ALWAYS_ON_PAGE2_QUERY_CAP > 0
         ):
             always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            # NOTE: 전역 extra-call budget은 supply/policy에서 먼저 소진될 수 있어,
+            # pest always-on page2 보강은 별도 소량 cap으로 독립 수행한다.
+            # (실행형 병해충 기사 리콜 안정화 목적)
             for q in always_qs[:PEST_ALWAYS_ON_PAGE2_QUERY_CAP]:
-                if not _cond_paging_take_budget(1):
-                    break
                 try:
                     data_p2 = naver_news_search(q, display=50, start=51, sort="date")
                 except Exception as e:

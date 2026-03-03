@@ -345,6 +345,61 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+    def test_pest_page2_recall_runs_even_if_global_extra_budget_is_exhausted(self):
+        section_conf = {
+            "key": "pest",
+            "queries": ["병해충 예찰 방제"],
+            "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병", "토마토뿔나방"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
+
+        seen_page2 = []
+        old_paged = main.naver_news_search_paged
+        old_news = main.naver_news_search
+        old_budget_fn = main._cond_paging_take_budget
+        old_cond = main.COND_PAGING_ENABLED
+        old_max_pages = main.COND_PAGING_MAX_PAGES
+        old_cap = main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP
+        try:
+            main.COND_PAGING_ENABLED = True
+            main.COND_PAGING_MAX_PAGES = 2
+            main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = 1
+            main._cond_paging_take_budget = lambda n=1: False
+
+            def _fake_paged(q, display=50, pages=1, sort="date"):
+                return {"items": []}
+
+            def _fake_news(q, display=50, start=1, sort="date"):
+                if start == 51:
+                    seen_page2.append((q, start))
+                    return {
+                        "items": [
+                            {
+                                "title": "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급",
+                                "description": "진주시는 과수화상병 방제를 위해 약제를 무상 공급한다고 밝혔다.",
+                                "link": "https://www.newsis.com/view/NISX20260228_0003530198",
+                                "originallink": "https://www.newsis.com/view/NISX20260228_0003530198",
+                                "pubDate": "Sat, 28 Feb 2026 15:00:00 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_paged
+            main.naver_news_search = _fake_news
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_paged
+            main.naver_news_search = old_news
+            main._cond_paging_take_budget = old_budget_fn
+            main.COND_PAGING_ENABLED = old_cond
+            main.COND_PAGING_MAX_PAGES = old_max_pages
+            main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = old_cap
+
+        self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
+        self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
     def test_collect_candidates_respects_window_min_hours_for_rebuild_like_window(self):
         section_conf = {
             "key": "pest",
