@@ -3674,6 +3674,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     if fishery_hits >= 2 and horti_hits_pre_f == 0 and horti_sc_pre < 1.3:
         return _reject("fishery_only")
 
+    # 수산 고유 어종/어업 키워드가 제목에 직접 등장하고 원예 신호가 약하면 우선 배제
+    fishery_title_hits = count_any(ttl.lower(), [t.lower() for t in FISHERY_STRICT_TERMS])
+    if fishery_title_hits >= 1 and best_horti_score(ttl, "") < 1.2:
+        return _reject("fishery_title_only")
+
     # ✅ 해외 원예/화훼 업계 '원격 해외' 기사(국내 맥락 없음)는 실무와 거리가 멀어 제외
     if key in ("supply", "dist") and is_remote_foreign_horti(text):
         return _reject("remote_foreign_horti")
@@ -4080,6 +4085,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
+        # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
+        if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
+            score -= 2.8
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0

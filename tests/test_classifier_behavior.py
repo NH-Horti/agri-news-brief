@@ -55,6 +55,16 @@ class TestClassifierBehavior(unittest.TestCase):
         for key, conf in self.conf.items():
             self.assertFalse(main.is_relevant(title, desc, dom, url, conf, press), msg=f"section={key}")
 
+    def test_fishery_title_only_is_filtered_with_short_desc(self):
+        title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
+        # 설명이 짧아 fishery term이 제목 중심으로만 잡히는 경우도 차단되어야 함
+        desc = "원산지 표시 위반 업체가 적발됐다."
+        url = "https://www.hani.co.kr/arti/area/jeju/1246935.html"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        for key, conf in self.conf.items():
+            self.assertFalse(main.is_relevant(title, desc, dom, url, conf, press), msg=f"section={key}")
+
 
 if __name__ == "__main__":
     unittest.main()
