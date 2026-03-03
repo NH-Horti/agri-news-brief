@@ -232,6 +232,15 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
     "과수화상병", "과수화상병 방제", "과수화상병 약제",
     "토마토뿔나방", "토마토뿔나방 방제", "병해충 예찰",
 ]
+# pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
+# always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
+PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "3") or 3)
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
+# news API 미색인/지연에 대비해 pest는 web 검색(webkr)도 소량 보강한다.
+PEST_WEB_RECALL_ENABLED = os.getenv("PEST_WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "2") or 2)
+PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -1026,6 +1035,65 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
         return dt.astimezone(KST)
     except Exception:
         return datetime.min.replace(tzinfo=KST)
+
+
+def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
+    """Best-effort article publish datetime extraction (KST).
+
+    - 1차: URL 패턴(예: newsis NISXYYYYMMDD)에서 날짜 추정
+    - 2차: 본문 HTML 메타태그에서 datetime 추출(가벼운 regex)
+    """
+    try:
+        u = str(url or "").strip()
+        if not u:
+            return None
+
+        m = re.search(r"NISX(\d{8})", u)
+        if m:
+            ds = m.group(1)
+            d = datetime.strptime(ds, "%Y%m%d").date()
+            return datetime(d.year, d.month, d.day, 12, 0, 0, tzinfo=KST)
+
+        r = http_session().get(u, timeout=12)
+        if not r.ok:
+            return None
+        txt = r.text or ""
+
+        pats = [
+            r'article:published_time"\s*content="([^"]+)"',
+            r'property="og:published_time"\s*content="([^"]+)"',
+            r'name="pubdate"\s*content="([^"]+)"',
+            r'itemprop="datePublished"\s*content="([^"]+)"',
+            r'"datePublished"\s*:\s*"([^"]+)"',
+        ]
+        cand = None
+        for ptn in pats:
+            mm = re.search(ptn, txt, flags=re.I)
+            if mm:
+                cand = (mm.group(1) or "").strip()
+                break
+        if not cand:
+            return None
+
+        cand2 = cand.replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(cand2)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=KST)
+            return dt.astimezone(KST)
+        except Exception:
+            pass
+
+        m2 = re.search(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})(?:\s+[T]?(\d{1,2}):(\d{2}))?", cand)
+        if m2:
+            yy, mo, dd = int(m2.group(1)), int(m2.group(2)), int(m2.group(3))
+            hh = int(m2.group(4)) if m2.group(4) else 12
+            mi = int(m2.group(5)) if m2.group(5) else 0
+            return datetime(yy, mo, dd, hh, mi, 0, tzinfo=KST)
+    except Exception:
+        return None
+    return None
+
 
 def clean_text(s: str) -> str:
     if not s:
@@ -3239,6 +3307,42 @@ def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
             uniq[k] = it
     # 파일 크기 제한
     return list(sorted(uniq.values(), key=lambda x: x.get("date", ""), reverse=True))[:2000]
+
+
+def rebuild_recent_items_for_report_date(existing_recent_items, by_section: dict | None, report_date: str, base_day: date) -> list[dict]:
+    """Build cross-day dedupe history deterministically for the current report_date.
+
+    Why:
+    - 같은 날짜(report_date)를 재실행할 때 기존 state.recent_items에 남아 있던
+      "이전 실행의 선택 결과"가 섞이면, 이번 실행 최종 산출물과 state가 불일치할 수 있다.
+    - 불일치가 누적되면 다음 실행에서 CROSSDAY_DEDUPE가 실제 노출되지 않은 URL까지
+      이미 노출된 것으로 간주해 후보를 과차단할 수 있다.
+
+    Rule:
+    1) 기존 recent_items를 정규화
+    2) report_date 항목은 전부 제거(해당 일자의 히스토리는 재생성)
+    3) 이번 실행의 최종 by_section 산출물만 report_date로 추가
+    4) 다시 정규화/중복제거
+    """
+    base = normalize_recent_items(existing_recent_items if isinstance(existing_recent_items, list) else [], base_day)
+
+    # 재실행 안정화: 동일 report_date의 기존 잔존 기록 제거
+    kept = [it for it in base if str(it.get("date") or "") != str(report_date)]
+
+    merged = list(kept)
+    if isinstance(by_section, dict):
+        for _sec_items in by_section.values():
+            for a in (_sec_items or []):
+                try:
+                    merged.append({
+                        "date": report_date,
+                        "canon": getattr(a, "canon_url", None),
+                        "norm": getattr(a, "norm_key", None),
+                    })
+                except Exception:
+                    pass
+
+    return normalize_recent_items(merged, base_day)
 
 def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dict] | None = None):
     # 기존 state를 읽어 스키마 확장에 대응(호환성 유지)
@@ -5853,6 +5957,98 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                     pass
                 _ingest_naver_items(_q, data)
 
+    # pest 섹션 리콜 보강: always-on 쿼리는 page2(start=51)를 선제적으로 1회 수집
+    # - 조건부 페이징(need_more)과 별도로 동작시켜, page1 상위 기사에 가려진 실행형 기사를 보강한다.
+    try:
+        if (
+            section_key == "pest"
+            and PEST_ALWAYS_ON_PAGE2_ENABLED
+            and COND_PAGING_ENABLED
+            and COND_PAGING_MAX_PAGES >= 2
+            and queries
+            and PEST_ALWAYS_ON_PAGE2_QUERY_CAP > 0
+        ):
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            # NOTE: 전역 extra-call budget은 supply/policy에서 먼저 소진될 수 있어,
+            # pest always-on page2 보강은 별도 소량 cap으로 독립 수행한다.
+            # (실행형 병해충 기사 리콜 안정화 목적)
+            for q in always_qs[:PEST_ALWAYS_ON_PAGE2_QUERY_CAP]:
+                try:
+                    data_p2 = naver_news_search(q, display=50, start=51, sort="date")
+                except Exception as e:
+                    log.warning("[WARN] pest always-on page2 query failed: %s", e)
+                    continue
+                _ingest_naver_items(q, data_p2)
+    except Exception:
+        pass
+
+    # pest 섹션 리콜 보강(2): naver web 검색(webkr) 소량 수집
+    # - 뉴스 인덱스 지연/누락 시에도 기사 URL을 확보하기 위한 안전망
+    try:
+        if section_key == "pest" and PEST_WEB_RECALL_ENABLED and queries and PEST_WEB_RECALL_QUERY_CAP > 0:
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            for q in always_qs[:PEST_WEB_RECALL_QUERY_CAP]:
+                try:
+                    data_w = naver_web_search(q, display=10, start=1, sort="date")
+                except Exception as e:
+                    log.warning("[WARN] pest web recall query failed: %s", e)
+                    continue
+                for it in (data_w.get("items", []) if isinstance(data_w, dict) else []):
+                    title = clean_text(it.get("title", ""))
+                    desc = clean_text(it.get("description", ""))
+                    link = strip_tracking_params(it.get("link", "") or "")
+                    origin = link
+                    if not link:
+                        continue
+
+                    pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+                    if pub <= datetime.min.replace(tzinfo=KST):
+                        pub2 = _best_effort_article_pubdate_kst(origin or link)
+                        pub = pub2 if isinstance(pub2, datetime) else pub
+                    if pub <= datetime.min.replace(tzinfo=KST):
+                        continue
+                    if pub < effective_start_kst or pub >= end_kst:
+                        continue
+
+                    dom = domain_of(origin) or domain_of(link)
+                    if not dom or is_blocked_domain(dom):
+                        continue
+
+                    press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
+                    if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                        continue
+
+                    canon = canonicalize_url(origin or link)
+                    title_key = norm_title_key(title)
+                    topic = extract_topic(title, desc)
+                    norm_key = make_norm_key(canon, press, title_key)
+
+                    if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                        continue
+
+                    if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                        continue
+
+                    art = Article(
+                        section=section_key,
+                        title=title,
+                        description=desc,
+                        link=link,
+                        originallink=origin,
+                        pub_dt_kst=pub,
+                        domain=dom,
+                        press=press,
+                        norm_key=norm_key,
+                        title_key=title_key,
+                        canon_url=canon,
+                        topic=topic,
+                    )
+                    art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+                    items.append(art)
+                    hits_by_query[q] = hits_by_query.get(q, 0) + 1
+    except Exception:
+        pass
+
     # Optional RSS candidates (신뢰 소스 보강)
     try:
         items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
@@ -6936,6 +7132,16 @@ def build_site_url(site_path: str, rel: str) -> str:
     return site_path + rel
 
 
+def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False) -> str:
+    """Build daily archive URL; optional cache-busting query for messenger/browser caches."""
+    url = f"{str(base_url or '').rstrip('/')}/archive/{report_date}.html"
+    if not cache_bust:
+        return url
+    v = re.sub(r"[^0-9A-Za-z_-]", "", str(BUILD_TAG or ""))[:24] or now_kst().strftime("%Y%m%d%H%M")
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}v={v}"
+
+
 # -----------------------------
 # Rendering (HTML)
 # -----------------------------
@@ -7360,6 +7566,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />
+  <meta http-equiv=\"Pragma\" content=\"no-cache\" />
+  <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
   <title>{esc(page_title)}</title>
   <style>
@@ -7953,6 +8162,9 @@ def render_index_page(manifest: dict, site_path: str) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="{BUILD_TAG}" />
   <title>농산물 뉴스 브리핑</title>
   <style>
@@ -9684,7 +9896,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     if MAINTENANCE_SEND_KAKAO:
         try:
             base_url = get_pages_base_url(repo).rstrip("/")
-            daily_url = f"{base_url}/archive/{report_date}.html"
+            daily_url = build_daily_url(base_url, report_date, cache_bust=True)
             kakao_text = build_kakao_message(report_date, by_section)
             if KAKAO_INCLUDE_LINK_IN_TEXT:
                 kakao_text = kakao_text + "\n" + daily_url
@@ -9900,7 +10112,7 @@ def main():
 
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
-    daily_url = f"{base_url}/archive/{report_date}.html"
+    daily_url = build_daily_url(base_url, report_date, cache_bust=True)
     log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE or force_iso), daily_url)
 
     ensure_not_gist(base_url, "base_url")
@@ -10086,19 +10298,18 @@ def main():
         log.warning("[WARN] index re-render after manifest refresh failed: %s", e)
 
     # Update state (cross-day dedupe history) before Kakao send
+    # - 동일 report_date 재실행 시 state/report mismatch가 누적되지 않도록,
+    #   해당 날짜 기록을 "최종 by_section 결과"로 매번 재생성한다.
     recent_items2 = None
     try:
         st0 = load_state(repo, GH_TOKEN)
         base_day = end_kst.astimezone(KST).date()
-        recent_items2 = normalize_recent_items(st0.get("recent_items", []), base_day)
-        if isinstance(by_section, dict):
-            for _sec_items in by_section.values():
-                for a in (_sec_items or []):
-                    try:
-                        recent_items2.append({"date": report_date, "canon": getattr(a, "canon_url", None), "norm": getattr(a, "norm_key", None)})
-                    except Exception:
-                        pass
-        recent_items2 = normalize_recent_items(recent_items2, base_day)
+        recent_items2 = rebuild_recent_items_for_report_date(
+            st0.get("recent_items", []),
+            by_section,
+            report_date,
+            base_day,
+        )
     except Exception:
         recent_items2 = None
     try:

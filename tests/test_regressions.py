@@ -41,6 +41,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('도매시장/농산물시장 인프라·이전·현대화 이슈는 유통·현장 섹션 우선', self.text)
         self.assertIn('벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점', self.text)
 
+
+    def test_cache_busting_and_no_cache_meta_exist(self):
+        self.assertIn('def build_daily_url', self.text)
+        self.assertIn('cache_bust=True', self.text)
+        self.assertIn('http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"', self.text)
     def test_fishery_only_filter_exists(self):
         self.assertIn('FISHERY_STRICT_TERMS', self.text)
         self.assertIn('return _reject("fishery_only")', self.text)
