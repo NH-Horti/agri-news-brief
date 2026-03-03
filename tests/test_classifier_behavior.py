@@ -190,6 +190,54 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([a1, a2], "pest", 1)
         self.assertTrue(any(x.link == u2 for x in picked), msg=str([(x.link, x.score) for x in picked]))
 
+    def test_pest_execution_items_are_kept_even_without_forced_flag(self):
+        c = self.conf["pest"]
+        # 비실행형(상대 고점) 1건
+        u1 = "https://example.com/pest-generic"
+        t1 = "지역 병해충 대응 점검 회의"
+        d1 = "병해충 관련 간담회와 회의가 열렸다."
+        p1 = "연합뉴스"
+        a1 = main.Article(
+            section="pest", title=t1, description=d1, link=u1, originallink=u1,
+            domain=main.domain_of(u1), press=p1, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t1), canon_url=main.canonicalize_url(u1),
+            norm_key=main.make_norm_key(main.canonicalize_url(u1), p1, main.norm_title_key(t1)),
+            topic=main.extract_topic(t1, d1),
+            score=20.0,
+        )
+
+        # 실행형 2건(요청 사례 패턴)
+        u2 = "https://example.com/pest-fireblight"
+        t2 = "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급"
+        d2 = "과수화상병 방제를 위해 농가에 약제를 무상 공급한다."
+        p2 = "뉴시스"
+        a2 = main.Article(
+            section="pest", title=t2, description=d2, link=u2, originallink=u2,
+            domain=main.domain_of(u2), press=p2, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t2), canon_url=main.canonicalize_url(u2),
+            norm_key=main.make_norm_key(main.canonicalize_url(u2), p2, main.norm_title_key(t2)),
+            topic=main.extract_topic(t2, d2),
+            score=8.0,
+        )
+
+        u3 = "https://example.com/pest-moth"
+        t3 = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
+        d3 = "토마토뿔나방 확산 대응을 위해 전수조사와 예찰·방제를 진행한다."
+        p3 = "영농신문"
+        a3 = main.Article(
+            section="pest", title=t3, description=d3, link=u3, originallink=u3,
+            domain=main.domain_of(u3), press=p3, pub_dt_kst=self.now,
+            title_key=main.norm_title_key(t3), canon_url=main.canonicalize_url(u3),
+            norm_key=main.make_norm_key(main.canonicalize_url(u3), p3, main.norm_title_key(t3)),
+            topic=main.extract_topic(t3, d3),
+            score=7.5,
+        )
+
+        picked = main.select_top_articles([a1, a2, a3], "pest", 2)
+        picked_links = {x.link for x in picked}
+        self.assertIn(u2, picked_links, msg=str([(x.link, x.score) for x in picked]))
+        self.assertIn(u3, picked_links, msg=str([(x.link, x.score) for x in picked]))
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."

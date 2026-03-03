@@ -5283,6 +5283,39 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             repl_idx = min(range(len(final)), key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
             final[repl_idx] = fa
 
+    # pest 섹션 안전장치: 방제 실행형 문맥 기사(예찰/약제/전수조사 등)가 최종 선발에서 밀려 사라지지 않도록 보장
+    if section_key == "pest":
+        exec_like = [a for a in candidates_sorted if is_pest_control_policy_context(((a.title or "") + " " + (a.description or "")).lower())]
+        keep_exec = []
+        for a in final:
+            try:
+                if is_pest_control_policy_context(((a.title or "") + " " + (a.description or "")).lower()):
+                    keep_exec.append(a)
+            except Exception:
+                pass
+
+        # 실행형 기사 최대 2건까지 보장
+        need_exec = max(0, min(2, max_n) - len(keep_exec))
+        if need_exec > 0:
+            for ea in exec_like:
+                if need_exec <= 0:
+                    break
+                if ea in final:
+                    continue
+                if len(final) < max_n:
+                    final.append(ea)
+                    need_exec -= 1
+                    continue
+                if final:
+                    # 이미 들어간 실행형 후보를 다시 밀어내지 않도록 non-exec 최하위부터 교체
+                    non_exec_idx = [i for i, x in enumerate(final) if not is_pest_control_policy_context(((x.title or "") + " " + (x.description or "")).lower())]
+                    if non_exec_idx:
+                        repl_idx = min(non_exec_idx, key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+                    else:
+                        repl_idx = min(range(len(final)), key=lambda i: float(getattr(final[i], "score", 0.0) or 0.0))
+                    final[repl_idx] = ea
+                    need_exec -= 1
+
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
     deduped: list[Article] = []
