@@ -488,6 +488,45 @@ class TestClassifierBehavior(unittest.TestCase):
 
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.pub_dt_kst) for a in items]))
 
+
+    def test_distribution_issue_prefers_dist_over_policy(self):
+        title = "가락시장 하역 중단 장기화…출하 농민 피해 확산"
+        desc = "가락시장 도매시장 하역대란이 장기화되며 반입 차질과 경락 지연이 이어져 산지 농가 피해가 커지고 있다."
+        best, scores = self._best_section(title, desc, "https://www.nongmin.com/article/20260304500375")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_local_agri_program_issue_prefers_policy(self):
+        title = "지자체, 농산물 수급안정 지원 조례 개정…직불금·농민수당 연계"
+        desc = "지자체가 농산물 수급안정을 위해 직불금과 농민수당을 연계하는 정책을 발표하고 예산 확대를 추진한다."
+        best, scores = self._best_section(title, desc, "https://www.amnews.co.kr/news/articleView.html?idxno=71319")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_global_reassign_moves_dist_fit_dominant_item_to_dist(self):
+        title = "가락시장 하역 중단 장기화…출하 농민 피해 확산"
+        desc = "가락시장 도매시장 하역대란이 장기화되며 반입 차질과 경락 지연이 이어져 산지 농가 피해가 커지고 있다."
+        url = "https://www.nongmin.com/article/20260304500375"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            title_key=main.norm_title_key(title),
+            canon_url=main.canonicalize_url(url),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press),
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["dist"]), 1)
+        self.assertEqual(by["dist"][0].section, "dist")
     def test_supply_core_prefers_commodity_topic_over_policy_topic(self):
         now = self.now
         c = self.conf["supply"]

@@ -284,6 +284,11 @@ SECTION_FIT_MIN_FOR_TOP = float(os.getenv("SECTION_FIT_MIN_FOR_TOP", "0.8") or 0
 SECTION_FIT_MIN_FOR_TOP = max(0.0, min(SECTION_FIT_MIN_FOR_TOP, 5.0))
 SECTION_REASSIGN_FIT_GUARD = float(os.getenv("SECTION_REASSIGN_FIT_GUARD", "0.8") or 0.8)
 SECTION_REASSIGN_FIT_GUARD = max(0.0, min(SECTION_REASSIGN_FIT_GUARD, 5.0))
+# 섹션 재배치 보강: section-fit 우위가 충분히 크면 score 미세열세여도 dist/policy로 이동 허용
+SECTION_REASSIGN_STRONG_FIT_DELTA = float(os.getenv("SECTION_REASSIGN_STRONG_FIT_DELTA", "1.2") or 1.2)
+SECTION_REASSIGN_STRONG_FIT_DELTA = max(0.0, min(SECTION_REASSIGN_STRONG_FIT_DELTA, 5.0))
+SECTION_REASSIGN_STRONG_FIT_SCORE_TOL = float(os.getenv("SECTION_REASSIGN_STRONG_FIT_SCORE_TOL", "0.8") or 0.8)
+SECTION_REASSIGN_STRONG_FIT_SCORE_TOL = max(0.0, min(SECTION_REASSIGN_STRONG_FIT_SCORE_TOL, 4.0))
 
 # 다양성(coverage) 보강: 중복은 아니지만 '비슷한 기사'가 연속으로 올라오는 것을 완화(MMR).
 MMR_DIVERSITY_ENABLED = os.getenv("MMR_DIVERSITY_ENABLED", "1").strip().lower() in ("1","true","yes","y")
@@ -5033,6 +5038,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         "pest": 7.0,
     }
     core_min = max(thr, core_min_by_section.get(section_key, thr))
+    core_fit_min_by_section = {
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2,
+    }
+    core_fit_min = core_fit_min_by_section.get(section_key, 1.2)
     core: list[Article] = []
     used_title_keys: set[str] = set()
     used_url_keys: set[str] = set()
@@ -5092,6 +5104,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
             if (a.topic or "").strip() == "정책":
                 continue
+        fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+        if fit_sc_core < core_fit_min and a.score < (core_min + 1.8):
+            continue
         if not _headline_gate(a, section_key):
             continue
         if any(_is_similar_title(a.title_key, b.title_key) for b in core):
@@ -5142,6 +5157,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             apc_ctx_local = has_apc_agri_context(text)
             agri_anchor_hits_local = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
             if ops_hits >= 1 and market_anchor_hits == 0 and (not apc_ctx_local) and agri_anchor_hits_local == 0 and best_horti_score(a.title or "", a.description or "") < 1.9:
+                continue
+            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+            if fit_sc_core < (core_fit_min - 0.1) and a.score < (core_min + 1.2):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -6417,6 +6435,9 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         cur_score = float(getattr(a, "score", 0.0) or 0.0)
         best_key = cur
         best_score = cur_score
+        cur_fit = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
+        best_fit_key = cur
+        best_fit_score = float(cur_fit)
         strong_pest_context = is_pest_control_policy_context(txt)
 
         # candidate set: current + (supply/dist/policy/pest)
@@ -6466,14 +6487,17 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if not is_relevant(a.title, a.description, dom, url, conf, press):
                     continue
                 sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
-                fit_cur = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
                 fit_new = section_fit_score(a.title, a.description, conf)
             except Exception:
                 continue
 
             # 재분류는 score뿐 아니라 section-fit 개선이 있어야 우선 허용
-            if fit_new + SECTION_REASSIGN_FIT_GUARD < fit_cur:
+            if fit_new + SECTION_REASSIGN_FIT_GUARD < cur_fit:
                 continue
+
+            if fit_new > best_fit_score:
+                best_fit_score = float(fit_new)
+                best_fit_key = k
 
             if sc > best_score:
                 best_score = float(sc)
@@ -6497,6 +6521,20 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             a.section = best_key
             a.score = best_score
             moved += 1
+        elif (
+            best_fit_key != cur
+            and best_fit_key in ("dist", "policy")
+            and (best_fit_score - cur_fit) >= SECTION_REASSIGN_STRONG_FIT_DELTA
+            and (best_score + SECTION_REASSIGN_STRONG_FIT_SCORE_TOL) >= cur_score
+        ):
+            try:
+                conf_fit = conf_by_key.get(best_fit_key)
+                if conf_fit and is_relevant(a.title, a.description, dom, url, conf_fit, press):
+                    a.section = best_fit_key
+                    a.score = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf_fit, press)
+                    moved += 1
+            except Exception:
+                pass
 
         target = a.section
         di = local_dedupe_by.get(target)
