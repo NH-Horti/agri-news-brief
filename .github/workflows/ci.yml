@@ -102,23 +102,28 @@ jobs:
         run: |
           echo "CI checks failed."
           echo "syntax=${{ steps.syntax.outcome }} mypy=${{ steps.mypy.outcome }} tests=${{ steps.tests.outcome }}"
+          echo "reports directory:"
+          ls -la reports || true
 
           if [ "${{ steps.syntax.outcome }}" = "failure" ]; then
-            echo "::group::Syntax check tail"
+            echo "----- Syntax log (head 40) -----"
+            head -n 40 reports/py_compile.log || true
+            echo "----- Syntax log (tail 120) -----"
             tail -n 120 reports/py_compile.log || true
-            echo "::endgroup::"
           fi
 
           if [ "${{ steps.mypy.outcome }}" = "failure" ]; then
-            echo "::group::Mypy tail"
+            echo "----- Mypy log (head 60) -----"
+            head -n 60 reports/mypy.log || true
+            echo "----- Mypy log (tail 160) -----"
             tail -n 160 reports/mypy.log || true
-            echo "::endgroup::"
           fi
 
           if [ "${{ steps.tests.outcome }}" = "failure" ]; then
-            echo "::group::Tests tail"
+            echo "----- Tests log (head 60) -----"
+            head -n 60 reports/unittest.log || true
+            echo "----- Tests log (tail 160) -----"
             tail -n 160 reports/unittest.log || true
-            echo "::endgroup::"
           fi
 
           exit 1
