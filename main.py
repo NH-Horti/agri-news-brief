@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 agri-news-brief main.py (production)
 
@@ -7829,9 +7829,9 @@ function _dateToUrl(d) {{
 function _extractDate(s) {{
   if (!s) return "";
   var str = String(s);
-  var m = str.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
+  var m = str.match(/(\\d{{4}}-\\d{{2}}-\\d{{2}})\\.html/);
   if (m && m[1]) return m[1];
-  if (/^\d{{4}}-\d{{2}}-\d{{2}}$/.test(str)) return str;
+  if (/^\\d{{4}}-\\d{{2}}-\\d{{2}}$/.test(str)) return str;
   return "";
 }}
 
@@ -7880,7 +7880,7 @@ async function _fetchManifestDates() {{
     var clean = [];
     for (var i = 0; i < dates.length; i++) {{
       var d = dates[i];
-      if (typeof d === "string" && /^\d{{4}}-\d{{2}}-\d{{2}}$/.test(d)) clean.push(d);
+      if (typeof d === "string" && /^\\d{{4}}-\\d{{2}}-\\d{{2}}$/.test(d)) clean.push(d);
     }}
     clean = Array.from(new Set(clean));
     clean.sort(); clean.reverse();
@@ -9067,7 +9067,7 @@ def compute_window(repo: str, token: str, end_kst: datetime):
 _NAVROW_OPEN_RE = re.compile(r'<div[^>]*\bclass\s*=\s*["\']navRow["\'][^>]*>', re.I)
 
 def _find_div_block(html_text: str, open_match_start: int) -> tuple[int, int] | None:
-    """Given start index of a <div ...> opening tag, find the matching </div> end index (balanced by <div>/<\div>).
+    """Given start index of a <div ...> opening tag, find the matching </div> end index (balanced by <div>/</div>).
     Returns (start, end) where end is exclusive.
     """
     if open_match_start < 0 or open_match_start >= len(html_text):
