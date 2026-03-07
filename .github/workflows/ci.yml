@@ -100,5 +100,25 @@ jobs:
       - name: Fail if any check failed
         if: steps.syntax.outcome == 'failure' || steps.mypy.outcome == 'failure' || steps.tests.outcome == 'failure'
         run: |
-          echo "One or more checks failed. See CI Summary and uploaded artifact."
+          echo "CI checks failed."
+          echo "syntax=${{ steps.syntax.outcome }} mypy=${{ steps.mypy.outcome }} tests=${{ steps.tests.outcome }}"
+
+          if [ "${{ steps.syntax.outcome }}" = "failure" ]; then
+            echo "::group::Syntax check tail"
+            tail -n 120 reports/py_compile.log || true
+            echo "::endgroup::"
+          fi
+
+          if [ "${{ steps.mypy.outcome }}" = "failure" ]; then
+            echo "::group::Mypy tail"
+            tail -n 160 reports/mypy.log || true
+            echo "::endgroup::"
+          fi
+
+          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
+            echo "::group::Tests tail"
+            tail -n 160 reports/unittest.log || true
+            echo "::endgroup::"
+          fi
+
           exit 1
