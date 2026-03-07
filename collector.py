@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import time
 from typing import Any, Callable
 
+from observability import metric_inc
 from retry_utils import exponential_backoff, retry_after_or_backoff
 from schemas import NaverSearchParams, ensure_naver_response
 
@@ -22,6 +23,7 @@ class NaverClientConfig:
 
 def _require_creds(cfg: NaverClientConfig) -> None:
     if not cfg.client_id or not cfg.client_secret:
+        metric_inc("collector.credentials_missing")
         raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
 
 
@@ -60,9 +62,11 @@ def _naver_search(
 
             is_rate = (r.status_code == 429) or (str(data.get("errorCode", "")) == "012")
             if r.ok and not is_rate:
+                metric_inc("collector.success", endpoint=endpoint)
                 return data
 
             if is_rate:
+                metric_inc("collector.retry", endpoint=endpoint, reason="rate_limit")
                 backoff = retry_after_or_backoff(
                     r.headers,
                     attempt,
@@ -83,6 +87,7 @@ def _naver_search(
                 continue
 
             if not r.ok:
+                metric_inc("collector.http_error", endpoint=endpoint, status=str(r.status_code))
                 log_http_error(f"{log_prefix} ERROR", r)
                 r.raise_for_status()
 
@@ -90,6 +95,7 @@ def _naver_search(
 
         except Exception as e:
             last_err = e
+            metric_inc("collector.retry", endpoint=endpoint, reason="exception")
             backoff = exponential_backoff(attempt, base=1.0, cap=float(cfg.backoff_max_sec), jitter=0.4)
             logger.warning(
                 "%s transient error (attempt %d/%d): %s -> sleep %.1fs",
@@ -101,6 +107,7 @@ def _naver_search(
             )
             time.sleep(backoff)
 
+    metric_inc("collector.giveup", endpoint=endpoint)
     logger.error("%s giving up after retries: query=%s (last=%s)", log_prefix, query, last_err)
     return {"items": []}
 
@@ -197,6 +204,9 @@ def naver_news_search_paged(
         items.extend(chunk)
         if len(chunk) < display:
             break
+
+    metric_inc("collector.paged_calls", endpoint="news", pages=str(pages))
+    metric_inc("collector.paged_items", endpoint="news", value=len(items))
 
     out = dict(last_meta) if isinstance(last_meta, dict) else {}
     out["items"] = items

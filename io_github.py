@@ -5,6 +5,7 @@ import os
 import time
 from typing import Any, Callable
 
+from observability import metric_inc
 from retry_utils import exponential_backoff, retry_after_or_backoff
 from schemas import GithubPutRequest, ensure_dict, ensure_github_dir_items
 
@@ -35,8 +36,10 @@ def github_get_file(
     url = f"https://api.github.com/repos/{repo}/contents/{path}"
     r = session_factory().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
     if r.status_code == 404:
+        metric_inc("github.get.miss")
         return None, None
     if not r.ok:
+        metric_inc("github.get.error", status=str(r.status_code))
         log_http_error("[GitHub GET ERROR]", r)
         r.raise_for_status()
     j = ensure_dict(r.json())
@@ -44,6 +47,7 @@ def github_get_file(
     sha_raw = j.get("sha")
     sha = str(sha_raw) if isinstance(sha_raw, (str, int)) else None
     raw = base64.b64decode(content_b64).decode("utf-8", errors="replace") if content_b64 else ""
+    metric_inc("github.get.success")
     return raw, sha
 
 
@@ -59,10 +63,13 @@ def github_list_dir(
     url = f"https://api.github.com/repos/{repo}/contents/{dir_path}"
     r = session_factory().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
     if r.status_code == 404:
+        metric_inc("github.list.miss")
         return []
     if not r.ok:
+        metric_inc("github.list.error", status=str(r.status_code))
         log_http_error("[GitHub LIST ERROR]", r)
         r.raise_for_status()
+    metric_inc("github.list.success")
     return ensure_github_dir_items(r.json())
 
 
@@ -102,6 +109,7 @@ def github_put_file(
         try:
             r = session_factory().put(url, headers=github_api_headers(token), json=payload, timeout=40)
         except Exception as exc:
+            metric_inc("github.put.retry", reason="network")
             backoff = exponential_backoff(attempt, base=0.8, cap=20.0, jitter=0.4)
             logger.warning(
                 "[GitHub PUT] transient network error (attempt %d/%d): %s -> sleep %.1fs",
@@ -114,11 +122,13 @@ def github_put_file(
             continue
 
         if r.ok:
+            metric_inc("github.put.success")
             return ensure_dict(r.json())
 
         last_resp = r
 
         if r.status_code == 409 and not refreshed_sha:
+            metric_inc("github.put.conflict")
             try:
                 _raw, latest_sha = github_get_file(
                     repo,
@@ -133,9 +143,11 @@ def github_put_file(
             if latest_sha:
                 payload["sha"] = latest_sha
                 refreshed_sha = True
+                metric_inc("github.put.conflict_refreshed")
                 continue
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
+            metric_inc("github.put.retry", reason="http", status=str(r.status_code))
             backoff = retry_after_or_backoff(r.headers, attempt, base=0.8, cap=20.0, jitter=0.4)
             logger.warning(
                 "[GitHub PUT] transient HTTP %s (attempt %d/%d) -> sleep %.1fs",
@@ -150,6 +162,9 @@ def github_put_file(
         break
 
     if last_resp is not None:
+        metric_inc("github.put.error", status=str(getattr(last_resp, "status_code", "?")))
         log_http_error("[GitHub PUT ERROR]", last_resp)
         last_resp.raise_for_status()
+
+    metric_inc("github.put.error", status="no_response")
     raise RuntimeError("GitHub PUT failed without response")

@@ -1,6 +1,6 @@
 import unittest
 
-from ux_patch import ensure_swipe_ignore_attributes, insert_nav_loading_badge
+from ux_patch import build_archive_ux_html, ensure_swipe_ignore_attributes, insert_nav_loading_badge
 
 
 class TestUxPatchModule(unittest.TestCase):
@@ -25,6 +25,45 @@ class TestUxPatchModule(unittest.TestCase):
         html = '<div class="chipbar" data-swipe-ignore="1"><div class="chips" data-swipe-ignore="1"></div></div>'
         out = ensure_swipe_ignore_attributes(html)
         self.assertEqual(out.count('data-swipe-ignore="1"'), 2)
+
+    def test_build_archive_ux_html_contract(self):
+        html = """
+<html><body>
+<div class=\"navRow\"><a class=\"navBtn\">아카이브</a></div>
+<div class=\"chipbar\"><div class=\"chips\"></div></div>
+<div class=\"wrap\">body</div>
+</body></html>
+"""
+
+        def _extract(text: str):
+            marker = '<div class=\"navRow\">'
+            s = text.find(marker)
+            if s < 0:
+                return None
+            e = text.find('</div>', s)
+            if e < 0:
+                return None
+            e += len('</div>')
+            return (s, e, text[s:e])
+
+        out = build_archive_ux_html(
+            html,
+            iso_date="2026-03-07",
+            site_path="/",
+            strip_swipe_hint_blocks=lambda x: x,
+            rebuild_missing_chipbar_from_sections=lambda x: x,
+            normalize_existing_chipbar_titles=lambda x: x,
+            get_ux_nav_dates_desc=lambda: ["2026-03-07", "2026-03-06"],
+            extract_navrow_block=_extract,
+            render_nav_row=lambda iso, dates, site: '<div class="navRow">nav</div>',
+            get_manifest_dates_desc_cached=lambda: ["2026-03-07", "2026-03-06"],
+            build_navrow_html_for_date=lambda iso, dates, site: '<div class="navRow">patched</div>',
+            warn=lambda _msg: None,
+        )
+
+        self.assertIsInstance(out, str)
+        self.assertIn('id="navLoading"', out)
+        self.assertIn('data-swipe-ignore="1"', out)
 
 
 if __name__ == "__main__":

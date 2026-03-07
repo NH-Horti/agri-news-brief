@@ -22,16 +22,22 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
-          cache-dependency-path: "requirements.txt"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Syntax check
         run: |
-          python -m py_compile main.py
+          python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py
+
+      - name: Type check (mypy strict modules)
+        run: |
+          python -m mypy --config-file mypy.ini
 
       - name: Run regression tests
         run: |
