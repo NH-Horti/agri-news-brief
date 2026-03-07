@@ -184,7 +184,7 @@ def naver_news_search_paged(
     display = max(1, int(display or 1))
 
     items: list[dict[str, Any]] = []
-    last_meta: dict[str, Any] = {}
+    last_meta: NaverSearchResponse = {"items": []}
 
     for i in range(pages):
         st = 1 + (i * display)
@@ -199,18 +199,18 @@ def naver_news_search_paged(
             logger=logger,
             log_http_error=log_http_error,
         )
-        last_meta = data if isinstance(data, dict) else {}
-        chunk = (last_meta.get("items", []) or []) if isinstance(last_meta, dict) else []
-        if not isinstance(chunk, list) or not chunk:
+        last_meta = data
+        chunk = last_meta.get("items", []) or []
+        if not chunk:
             break
-        items.extend([x for x in chunk if isinstance(x, dict)])
+        items.extend([dict(x) for x in chunk])
         if len(chunk) < display:
             break
 
     metric_inc("collector.paged_calls", endpoint="news", pages=str(pages))
     metric_inc("collector.paged_items", endpoint="news", value=len(items))
 
-    out = dict(last_meta) if isinstance(last_meta, dict) else {}
+    out = dict(last_meta)
     out["items"] = items
     return ensure_naver_response(out)
 
