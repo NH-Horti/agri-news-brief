@@ -34,6 +34,10 @@ class TestRegressions(unittest.TestCase):
         idx_kakao = main_head.find("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN")
         self.assertTrue(idx_force != -1 and idx_kakao != -1 and idx_force < idx_kakao)
 
+    def test_main_dispatches_with_orchestrator(self):
+        self.assertIn("from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration", self.text)
+        self.assertIn("execute_orchestration(ctx, handlers)", self.text)
+
     def test_newdaily_economy_mapping_exists(self):
         self.assertIn('"biz.newdaily.co.kr": "뉴데일리경제"', self.text)
 

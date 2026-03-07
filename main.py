@@ -61,6 +61,7 @@ from io_github import (
     github_list_dir as _io_github_list_dir,
     github_put_file as _io_github_put_file,
 )
+from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
 from ux_patch import ensure_swipe_ignore_attributes, insert_nav_loading_badge
@@ -9923,6 +9924,34 @@ def main():
 
     repo = DEFAULT_REPO
     end_kst = compute_end_kst()
+
+    # Route top-level flow via orchestrator policy (side-effect free dispatch only).
+    dispatch = {"action": ""}
+
+    def _mark_dispatch(action: str) -> None:
+        dispatch["action"] = action
+
+    ctx = OrchestratorContext(
+        repo=repo,
+        end_kst=end_kst,
+        maintenance_task=maintenance_task,
+        force_report_date=FORCE_REPORT_DATE,
+        force_run_anyday=FORCE_RUN_ANYDAY,
+        naver_ready=bool(NAVER_CLIENT_ID and NAVER_CLIENT_SECRET),
+        kakao_ready=bool(KAKAO_REST_API_KEY and KAKAO_REFRESH_TOKEN),
+    )
+    handlers = OrchestratorHandlers(
+        run_ux_patch=lambda _repo, _end: _mark_dispatch("ux_patch"),
+        run_maintenance_rebuild=lambda _repo, _end, task: _mark_dispatch(task),
+        run_force_rebuild=lambda _repo, _end: _mark_dispatch("force_rebuild"),
+        run_daily=lambda _repo, _end, _task: _mark_dispatch("daily"),
+        is_business_day=lambda dt: is_business_day_kr(dt.date()),
+        on_skip_non_business=lambda _end: _mark_dispatch("skip_non_business"),
+    )
+    execute_orchestration(ctx, handlers)
+    if dispatch.get("action") == "skip_non_business":
+        log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
+        return
 
     # -----------------------------
     # Maintenance-only tasks

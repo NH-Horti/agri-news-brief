@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 from observability import metric_inc
 from retry_utils import exponential_backoff, retry_after_or_backoff
-from schemas import NaverSearchParams, NaverSearchResponse, ensure_naver_response
+from schemas import NaverNewsItem, NaverSearchParams, NaverSearchResponse, ensure_naver_response
 
 
 SessionFactory = Callable[[], Any]
@@ -183,12 +183,12 @@ def naver_news_search_paged(
     pages = max(1, int(pages or 1))
     display = max(1, int(display or 1))
 
-    items: list[dict[str, Any]] = []
+    items: list[NaverNewsItem] = []
     last_meta: NaverSearchResponse = {"items": []}
 
     for i in range(pages):
         st = 1 + (i * display)
-        data = naver_news_search(
+        data: NaverSearchResponse = naver_news_search(
             cfg=cfg,
             query=query,
             display=display,
@@ -199,18 +199,18 @@ def naver_news_search_paged(
             logger=logger,
             log_http_error=log_http_error,
         )
-        last_meta = data
-        chunk = last_meta.get("items", []) or []
+        last_meta = ensure_naver_response(data)
+        chunk: list[NaverNewsItem] = list(last_meta.get("items", []) or [])
         if not chunk:
             break
-        items.extend([dict(x) for x in chunk])
+        items.extend(chunk)
         if len(chunk) < display:
             break
 
     metric_inc("collector.paged_calls", endpoint="news", pages=str(pages))
     metric_inc("collector.paged_items", endpoint="news", value=len(items))
 
-    out = dict(last_meta)
-    out["items"] = items
-    return ensure_naver_response(out)
+    out = ensure_naver_response(last_meta)
+    out["items"] = list(items)
+    return out
 
