@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+set -eu
+
+if command -v python >/dev/null 2>&1; then
+  PYTHON_CMD="python"
+elif command -v py >/dev/null 2>&1; then
+  PYTHON_CMD="py -3"
+else
+  echo "[pre-push] Python runtime not found."
+  exit 1
+fi
+
+echo "[pre-push] running py_compile"
+# shellcheck disable=SC2086
+$PYTHON_CMD -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py
+
+echo "[pre-push] running mypy"
+# shellcheck disable=SC2086
+$PYTHON_CMD -m mypy --config-file mypy.ini
+
+echo "[pre-push] running tests"
+# shellcheck disable=SC2086
+$PYTHON_CMD -m unittest discover -s tests -p "test_*.py"
+
+echo "[pre-push] all checks passed"

@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from observability import metric_inc
 from retry_utils import exponential_backoff, retry_after_or_backoff
-from schemas import GithubPutRequest, ensure_dict, ensure_github_dir_items
+from schemas import GithubDirItem, GithubPutRequest, ensure_dict, ensure_github_dir_items
 
 
 JsonDict = dict[str, Any]
@@ -59,7 +59,7 @@ def github_list_dir(
     ref: str = "main",
     session_factory: SessionFactory,
     log_http_error: HttpErrorLogger,
-) -> list[dict[str, Any]]:
+) -> list[GithubDirItem]:
     url = f"https://api.github.com/repos/{repo}/contents/{dir_path}"
     r = session_factory().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
     if r.status_code == 404:

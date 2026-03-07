@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 from observability import metric_inc
 from retry_utils import exponential_backoff, retry_after_or_backoff
-from schemas import NaverSearchParams, ensure_naver_response
+from schemas import NaverSearchParams, NaverSearchResponse, ensure_naver_response
 
 
 SessionFactory = Callable[[], Any]
@@ -40,7 +40,7 @@ def _naver_search(
     logger: Any,
     log_http_error: Callable[[str, Any], None],
     log_prefix: str,
-) -> dict[str, Any]:
+) -> NaverSearchResponse:
     _require_creds(cfg)
 
     url = f"https://openapi.naver.com/v1/search/{endpoint}.json"
@@ -55,6 +55,7 @@ def _naver_search(
             throttle_fn()
             r = session_factory().get(url, headers=headers, params=params, timeout=25)
 
+            data: NaverSearchResponse
             try:
                 data = ensure_naver_response(r.json())
             except Exception:
@@ -123,7 +124,7 @@ def naver_news_search(
     throttle_fn: ThrottleFn,
     logger: Any,
     log_http_error: Callable[[str, Any], None],
-) -> dict[str, Any]:
+) -> NaverSearchResponse:
     return _naver_search(
         "news",
         cfg=cfg,
@@ -150,7 +151,7 @@ def naver_web_search(
     throttle_fn: ThrottleFn,
     logger: Any,
     log_http_error: Callable[[str, Any], None],
-) -> dict[str, Any]:
+) -> NaverSearchResponse:
     # Keep behavior aligned with news search for consistency.
     return _naver_search(
         "webkr",
@@ -178,9 +179,10 @@ def naver_news_search_paged(
     throttle_fn: ThrottleFn,
     logger: Any,
     log_http_error: Callable[[str, Any], None],
-) -> dict[str, Any]:
+) -> NaverSearchResponse:
     pages = max(1, int(pages or 1))
     display = max(1, int(display or 1))
+
     items: list[dict[str, Any]] = []
     last_meta: dict[str, Any] = {}
 
@@ -199,9 +201,9 @@ def naver_news_search_paged(
         )
         last_meta = data if isinstance(data, dict) else {}
         chunk = (last_meta.get("items", []) or []) if isinstance(last_meta, dict) else []
-        if not chunk:
+        if not isinstance(chunk, list) or not chunk:
             break
-        items.extend(chunk)
+        items.extend([x for x in chunk if isinstance(x, dict)])
         if len(chunk) < display:
             break
 
@@ -210,4 +212,5 @@ def naver_news_search_paged(
 
     out = dict(last_meta) if isinstance(last_meta, dict) else {}
     out["items"] = items
-    return out
+    return ensure_naver_response(out)
+

@@ -12,7 +12,8 @@ def exponential_backoff(attempt: int, *, base: float = 0.8, cap: float = 20.0, j
     b = max(0.0, float(base))
     c = max(0.1, float(cap))
     j = max(0.0, float(jitter))
-    return min(c, (b * (2 ** a)) + random.uniform(0.0, j))
+    delay = (b * (2**a)) + random.uniform(0.0, j)
+    return float(min(c, delay))
 
 
 def parse_retry_after(headers: Mapping[str, str] | None) -> float:

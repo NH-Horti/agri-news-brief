@@ -77,19 +77,82 @@ def ensure_dict(value: Any) -> dict[str, Any]:
 
 def ensure_naver_response(value: Any) -> NaverSearchResponse:
     data = ensure_dict(value)
-    items = data.get("items", [])
-    if not isinstance(items, list):
-        items = []
-    out: NaverSearchResponse = dict(data)
-    out["items"] = items
+
+    out: NaverSearchResponse = {"items": []}
+
+    raw_items = data.get("items", [])
+    if isinstance(raw_items, list):
+        for raw in raw_items:
+            if not isinstance(raw, dict):
+                continue
+
+            item: NaverNewsItem = {}
+            title = raw.get("title")
+            description = raw.get("description")
+            link = raw.get("link")
+            originallink = raw.get("originallink")
+            pub_date = raw.get("pubDate")
+
+            if isinstance(title, str):
+                item["title"] = title
+            if isinstance(description, str):
+                item["description"] = description
+            if isinstance(link, str):
+                item["link"] = link
+            if isinstance(originallink, str):
+                item["originallink"] = originallink
+            if isinstance(pub_date, str):
+                item["pubDate"] = pub_date
+
+            out["items"].append(item)
+
+    total = data.get("total")
+    start = data.get("start")
+    display = data.get("display")
+    error_code = data.get("errorCode")
+    error_message = data.get("errorMessage")
+    message = data.get("message")
+
+    if isinstance(total, int):
+        out["total"] = total
+    if isinstance(start, int):
+        out["start"] = start
+    if isinstance(display, int):
+        out["display"] = display
+    if isinstance(error_code, str):
+        out["errorCode"] = error_code
+    if isinstance(error_message, str):
+        out["errorMessage"] = error_message
+    if isinstance(message, str):
+        out["message"] = message
+
     return out
 
 
 def ensure_github_dir_items(value: Any) -> list[GithubDirItem]:
     if not isinstance(value, list):
         return []
+
     out: list[GithubDirItem] = []
-    for item in value:
-        if isinstance(item, dict):
-            out.append(item)
+    for raw in value:
+        if not isinstance(raw, dict):
+            continue
+
+        item: GithubDirItem = {}
+        name = raw.get("name")
+        path = raw.get("path")
+        sha = raw.get("sha")
+        item_type = raw.get("type")
+
+        if isinstance(name, str):
+            item["name"] = name
+        if isinstance(path, str):
+            item["path"] = path
+        if isinstance(sha, str):
+            item["sha"] = sha
+        if isinstance(item_type, str):
+            item["type"] = item_type
+
+        out.append(item)
+
     return out
