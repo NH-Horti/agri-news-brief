@@ -3165,6 +3165,40 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
     raise RuntimeError("GitHub PUT failed without response")
 
 
+def github_put_file_if_changed(
+    repo: str,
+    path: str,
+    content: str,
+    token: str,
+    message: str,
+    sha: str | None = None,
+    branch: str = "main",
+    old_raw: str | None = None,
+) -> bool:
+    """Write a file only when content changed.
+
+    Returns:
+      True  -> wrote via GitHub PUT
+      False -> skipped (no semantic content change)
+    """
+    cmp_new = content
+    if isinstance(cmp_new, str) and path.endswith(".html"):
+        cmp_new = _strip_swipe_hint_blocks(cmp_new)
+
+    if old_raw is None:
+        try:
+            old_raw, fetched_sha = github_get_file(repo, path, token, ref=branch)
+        except Exception:
+            old_raw, fetched_sha = None, None
+        if not sha:
+            sha = fetched_sha
+
+    if (old_raw or "").strip() == (cmp_new or "").strip():
+        return False
+
+    github_put_file(repo, path, content, token, message, sha=sha, branch=branch)
+    return True
+
 def archive_page_exists(repo: str, token: str, d: str) -> bool:
     path = f"{DOCS_ARCHIVE_DIR}/{d}.html"
     _raw, sha = github_get_file(repo, path, token, ref="main")
@@ -3364,10 +3398,10 @@ def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dic
         "recent_keep_days": CROSSDAY_DEDUPE_DAYS,
         "recent_items": recent_items,
     }
-
+    raw_new = json.dumps(payload, ensure_ascii=False, indent=2)
     _raw_old, sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
-    github_put_file(repo, STATE_FILE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), token,
-                    "Update state", sha=sha, branch="main")
+    github_put_file_if_changed(repo, STATE_FILE_PATH, raw_new, token,
+                               "Update state", sha=sha, branch="main", old_raw=_raw_old)
 
 # --- per-run cache: manifest dates (DESC) ---
 _MANIFEST_DATES_DESC_CACHE: dict[str, list[str]] = {}
@@ -3402,32 +3436,54 @@ def load_archive_manifest(repo: str, token: str):
 
 def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
     manifest = _normalize_manifest(manifest)
-    github_put_file(repo, ARCHIVE_MANIFEST_PATH, json.dumps(manifest, ensure_ascii=False, indent=2), token,
-                    "Update archive manifest", sha=sha, branch="main")
+    body = json.dumps(manifest, ensure_ascii=False, indent=2)
+    github_put_file_if_changed(repo, ARCHIVE_MANIFEST_PATH, body, token,
+                               "Update archive manifest", sha=sha, branch="main")
+    # Keep per-run cache aligned with what we just saved.
+    _MANIFEST_DATES_DESC_CACHE[f"{repo}"] = sorted(set(sanitize_dates(list(manifest.get("dates", []) or []))), reverse=True)
 
 
 
 
 
-def save_docs_archive_manifest(repo: str, token: str, dates: list[str]):
+def save_docs_archive_manifest(repo: str, token: str, dates: list[str]) -> bool:
     """Publish archive date manifest to docs/ so client JS can avoid 404 navigation.
 
     Output path: docs/archive_manifest.json
     Format: {"version":1,"updated_at_kst":"...","dates":["YYYY-MM-DD", ...]} (dates are DESC sorted)
+
+    Returns:
+      True  -> updated docs/archive_manifest.json
+      False -> skipped (dates unchanged) or failed
     """
     try:
         clean = [d for d in (dates or []) if isinstance(d, str) and is_iso_date_str(d)]
         clean = sorted(set(clean), reverse=True)
+
+        _raw_old, sha_old = github_get_file(repo, DOCS_ARCHIVE_MANIFEST_JSON_PATH, token, ref="main")
+        old_dates: list[str] = []
+        if _raw_old:
+            try:
+                old_obj = json.loads(_raw_old)
+                if isinstance(old_obj, dict):
+                    old_dates = sorted(set(sanitize_dates(list(old_obj.get("dates", []) or []))), reverse=True)
+            except Exception:
+                old_dates = []
+
+        if old_dates == clean:
+            return False
+
         payload = {
             "version": 1,
             "updated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
             "dates": clean,
         }
         body = json.dumps(payload, ensure_ascii=False, indent=2)
-        _raw_old, sha_old = github_get_file(repo, DOCS_ARCHIVE_MANIFEST_JSON_PATH, token, ref="main")
         github_put_file(repo, DOCS_ARCHIVE_MANIFEST_JSON_PATH, body, token, "Update archive manifest", sha=sha_old, branch="main")
+        return True
     except Exception as e:
         log.warning("[WARN] save_docs_archive_manifest failed: %s", e)
+        return False
 
 
 def load_search_index(repo: str, token: str):
@@ -9376,8 +9432,20 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         # -----------------------------
         # 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
         # -----------------------------
-        html_new = re.sub(r'(<div\s+class="chipbar")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
-        html_new = re.sub(r'(<div\s+class="chips")', r'\1 data-swipe-ignore="1"', html_new, count=1, flags=re.I)
+        html_new = re.sub(
+            r'(<div\s+class="chipbar"(?![^>]*\bdata-swipe-ignore=))',
+            r'\1 data-swipe-ignore="1"',
+            html_new,
+            count=1,
+            flags=re.I,
+        )
+        html_new = re.sub(
+            r'(<div\s+class="chips"(?![^>]*\bdata-swipe-ignore=))',
+            r'\1 data-swipe-ignore="1"',
+            html_new,
+            count=1,
+            flags=re.I,
+        )
 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
