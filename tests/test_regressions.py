@@ -38,6 +38,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration", self.text)
         self.assertIn("execute_orchestration(ctx, handlers)", self.text)
 
+    def test_main_uses_ux_patch_module_builder(self):
+        self.assertIn("from ux_patch import build_archive_ux_html", self.text)
+        self.assertIn("html_new = build_archive_ux_html(", self.text)
+
     def test_newdaily_economy_mapping_exists(self):
         self.assertIn('"biz.newdaily.co.kr": "뉴데일리경제"', self.text)
 

@@ -258,9 +258,6 @@ def build_archive_ux_html(
     if "<style" in html_new.lower() and "</style>" not in html_new.lower():
         return None
 
-    if html_new == raw_html:
-        return None
-
     # nav patch from manifest-based dates
     try:
         dates_desc = get_manifest_dates_desc_cached()
@@ -272,5 +269,8 @@ def build_archive_ux_html(
                 html_new = html_new[:s] + new_nav + html_new[e:]
     except Exception:
         pass
+
+    if html_new == raw_html:
+        return None
 
     return html_new

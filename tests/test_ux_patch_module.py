@@ -65,6 +65,60 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIn('id="navLoading"', out)
         self.assertIn('data-swipe-ignore="1"', out)
 
+    def test_build_archive_ux_html_updates_nav_even_if_only_manifest_nav_changed(self):
+        def _extract(text: str):
+            marker = '<div class="navRow">'
+            s = text.find(marker)
+            if s < 0:
+                return None
+            e = text.find('</div>', s)
+            if e < 0:
+                return None
+            e += len('</div>')
+            return (s, e, text[s:e])
+
+        seed = """
+<html><body>
+<div class="navRow"><a class="navBtn">아카이브</a></div>
+<div class="chipbar" data-swipe-ignore="1"><div class="chips" data-swipe-ignore="1"></div></div>
+<div class="wrap">body</div>
+</body></html>
+"""
+
+        first = build_archive_ux_html(
+            seed,
+            iso_date="2026-03-07",
+            site_path="/",
+            strip_swipe_hint_blocks=lambda x: x,
+            rebuild_missing_chipbar_from_sections=lambda x: x,
+            normalize_existing_chipbar_titles=lambda x: x,
+            get_ux_nav_dates_desc=lambda: [],
+            extract_navrow_block=_extract,
+            render_nav_row=lambda iso, dates, site: '<div class="navRow">nav-a</div>',
+            get_manifest_dates_desc_cached=lambda: ["2026-03-07"],
+            build_navrow_html_for_date=lambda iso, dates, site: '<div class="navRow">nav-a</div>',
+            warn=lambda _msg: None,
+        )
+        self.assertIsInstance(first, str)
+
+        second = build_archive_ux_html(
+            first,
+            iso_date="2026-03-07",
+            site_path="/",
+            strip_swipe_hint_blocks=lambda x: x,
+            rebuild_missing_chipbar_from_sections=lambda x: x,
+            normalize_existing_chipbar_titles=lambda x: x,
+            get_ux_nav_dates_desc=lambda: [],
+            extract_navrow_block=_extract,
+            render_nav_row=lambda iso, dates, site: '<div class="navRow">nav-a</div>',
+            get_manifest_dates_desc_cached=lambda: ["2026-03-07", "2026-03-06"],
+            build_navrow_html_for_date=lambda iso, dates, site: '<div class="navRow">nav-b</div>',
+            warn=lambda _msg: None,
+        )
+
+        self.assertIsInstance(second, str)
+        self.assertIn('nav-b', second)
+
 
 if __name__ == "__main__":
     unittest.main()

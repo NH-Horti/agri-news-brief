@@ -22,6 +22,10 @@ class TestRetryUtils(unittest.TestCase):
         delay = retry_after_or_backoff({"Retry-After": "2.5"}, 3, base=1.0, cap=10.0, jitter=0.0)
         self.assertEqual(delay, 2.5)
 
+    def test_retry_after_or_backoff_caps_retry_after(self):
+        delay = retry_after_or_backoff({"Retry-After": "120"}, 0, base=1.0, cap=10.0, jitter=0.0)
+        self.assertEqual(delay, 10.0)
+
 
 if __name__ == "__main__":
     unittest.main()

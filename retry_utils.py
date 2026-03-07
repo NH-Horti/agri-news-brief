@@ -47,7 +47,8 @@ def retry_after_or_backoff(
     cap: float = 20.0,
     jitter: float = 0.4,
 ) -> float:
+    max_cap = max(0.1, float(cap))
     ra = parse_retry_after(headers)
     if ra > 0:
-        return ra
-    return exponential_backoff(attempt, base=base, cap=cap, jitter=jitter)
+        return float(min(max_cap, ra))
+    return exponential_backoff(attempt, base=base, cap=max_cap, jitter=jitter)
