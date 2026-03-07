@@ -101,14 +101,13 @@ class TestWriteOptimizations(unittest.TestCase):
             main.github_put_file = _fake_put
 
             main.save_archive_manifest(repo, "token", manifest, "sha-old")
+            self.assertEqual(put_calls, [])
+            self.assertEqual(main._MANIFEST_DATES_DESC_CACHE.get(repo), ["2026-03-06", "2026-03-05"])
         finally:
             main.github_get_file = old_get
             main.github_put_file = old_put
             main._MANIFEST_DATES_DESC_CACHE.clear()
             main._MANIFEST_DATES_DESC_CACHE.update(old_cache)
-
-        self.assertEqual(put_calls, [])
-        self.assertEqual(main._MANIFEST_DATES_DESC_CACHE.get(repo), ["2026-03-06", "2026-03-05"])
 
 
 if __name__ == "__main__":
