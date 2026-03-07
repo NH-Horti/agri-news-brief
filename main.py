@@ -49,12 +49,29 @@ import time
 import random
 import threading
 
+from collector import (
+    NaverClientConfig,
+    naver_news_search as _collector_naver_news_search,
+    naver_news_search_paged as _collector_naver_news_search_paged,
+    naver_web_search as _collector_naver_web_search,
+)
+from io_github import (
+    github_api_headers as _io_github_api_headers,
+    github_get_file as _io_github_get_file,
+    github_list_dir as _io_github_list_dir,
+    github_put_file as _io_github_put_file,
+)
+from ranking import sort_key_major_first as _ranking_sort_key_major_first
+from retry_utils import exponential_backoff, retry_after_or_backoff
+from ux_patch import ensure_swipe_ignore_attributes, insert_nav_loading_badge
+
 
 # -----------------------------
 # Logging
 # -----------------------------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("agri-brief")
+
 # -----------------------------
 # Log sanitization (secrets / huge bodies)
 # -----------------------------
@@ -517,7 +534,6 @@ UX_PATCH_DAYS = max(0, min(UX_PATCH_DAYS, 365))
 
 EXTRA_HOLIDAYS = set([s.strip() for s in os.getenv("EXTRA_HOLIDAYS", "").split(",") if s.strip()])
 EXCLUDE_HOLIDAYS = set([s.strip() for s in os.getenv("EXCLUDE_HOLIDAYS", "").split(",") if s.strip()])
-
 
 # -----------------------------
 # Domain blocks / terms
@@ -3023,8 +3039,7 @@ def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> 
 
 def _sort_key_major_first(a: Article):
     # 점수(관련성/품질)를 1순위로, 매체 티어는 2순위로 반영
-    return (a.score, press_priority(a.press, a.domain), a.pub_dt_kst)
-
+    return _ranking_sort_key_major_first(a, press_priority)
 
 # -----------------------------
 # Business day / holidays
@@ -3063,106 +3078,46 @@ def previous_business_day(d: date) -> date:
 # GitHub Contents API helpers
 # -----------------------------
 def github_api_headers(token: str):
-    return {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "agri-news-brief-bot",
-    }
+    return _io_github_api_headers(token)
+
 
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
-    url = f"https://api.github.com/repos/{repo}/contents/{path}"
-    r = http_session().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
-    if r.status_code == 404:
-        return None, None
-    if not r.ok:
-        _log_http_error("[GitHub GET ERROR]", r)
-        r.raise_for_status()
-    j = r.json()
-    content_b64 = j.get("content", "")
-    sha = j.get("sha")
-    raw = base64.b64decode(content_b64).decode("utf-8", errors="replace") if content_b64 else ""
-    return raw, sha
+    return _io_github_get_file(
+        repo,
+        path,
+        token,
+        ref=ref,
+        session_factory=http_session,
+        log_http_error=_log_http_error,
+    )
 
 
 def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> list[dict]:
     """List a directory via GitHub Contents API. Returns [] on 404."""
-    url = f"https://api.github.com/repos/{repo}/contents/{dir_path}"
-    r = http_session().get(url, headers=github_api_headers(token), params={"ref": ref}, timeout=30)
-    if r.status_code == 404:
-        return []
-    if not r.ok:
-        _log_http_error("[GitHub LIST ERROR]", r)
-        r.raise_for_status()
-    j = r.json()
-    return j if isinstance(j, list) else []
+    return _io_github_list_dir(
+        repo,
+        dir_path,
+        token,
+        ref=ref,
+        session_factory=http_session,
+        log_http_error=_log_http_error,
+    )
+
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
-    # Strip swipe-hint blocks from any HTML content before writing
-    if isinstance(content, str) and path.endswith('.html'):
-        content = _strip_swipe_hint_blocks(content)
-
-    """GitHub Contents API로 파일 생성/업데이트.
-
-    안정성 강화:
-    - 409(sha mismatch): 최신 sha를 다시 가져와 재시도
-    - 429/5xx/일시 네트워크 오류: Retry-After/지수백오프 재시도
-    """
-    url = f"https://api.github.com/repos/{repo}/contents/{path}"
-    payload = {
-        "message": message,
-        "content": base64.b64encode(content.encode("utf-8")).decode("utf-8"),
-        "branch": branch,
-    }
-    if sha:
-        payload["sha"] = sha
-
-    max_try = max(2, int(os.getenv("GH_PUT_MAX_RETRIES", "4")))
-    max_try = max(2, min(max_try, 10))
-
-    last_resp = None
-    refreshed_sha = False
-
-    for attempt in range(max_try):
-        try:
-            r = http_session().put(url, headers=github_api_headers(token), json=payload, timeout=40)
-        except Exception as exc:
-            backoff = min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
-            log.warning("[GitHub PUT] transient network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, max_try, exc, backoff)
-            time.sleep(backoff)
-            continue
-
-        if r.ok:
-            return r.json()
-
-        last_resp = r
-
-        if r.status_code == 409 and not refreshed_sha:
-            try:
-                _raw, latest_sha = github_get_file(repo, path, token, ref=branch)
-            except Exception:
-                latest_sha = None
-            if latest_sha:
-                payload["sha"] = latest_sha
-                refreshed_sha = True
-                continue
-
-        if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
-            ra = 0.0
-            try:
-                ra = float(r.headers.get("Retry-After", "0") or 0)
-            except Exception:
-                ra = 0.0
-            backoff = ra if ra > 0 else min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
-            log.warning("[GitHub PUT] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, max_try, backoff)
-            time.sleep(backoff)
-            continue
-
-        break
-
-    if last_resp is not None:
-        _log_http_error("[GitHub PUT ERROR]", last_resp)
-        last_resp.raise_for_status()
-    raise RuntimeError("GitHub PUT failed without response")
+    return _io_github_put_file(
+        repo,
+        path,
+        content,
+        token,
+        message,
+        sha=sha,
+        branch=branch,
+        session_factory=http_session,
+        logger=log,
+        log_http_error=_log_http_error,
+        strip_html_fn=_strip_swipe_hint_blocks,
+    )
 
 
 def github_put_file_if_changed(
@@ -3623,145 +3578,57 @@ def update_search_index(existing: dict, report_date: str, by_section: dict, site
 # -----------------------------
 # Naver News search
 # -----------------------------
+def _naver_client_cfg() -> NaverClientConfig:
+    return NaverClientConfig(
+        client_id=NAVER_CLIENT_ID,
+        client_secret=NAVER_CLIENT_SECRET,
+        max_retries=NAVER_MAX_RETRIES,
+        backoff_max_sec=NAVER_BACKOFF_MAX_SEC,
+    )
+
+
 def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str = "date"):
-    """Naver News 검색 (429 속도제한 대응: throttle + retry + backoff).
-    - 429/에러코드 012는 일정 시간 대기 후 재시도
-    - 계속 실패하면 빈 결과(items=[])로 반환해 전체 파이프라인이 죽지 않게 함
-    """
-    if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
-        raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
-    url = "https://openapi.naver.com/v1/search/news.json"
-    headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
-    params = {"query": query, "display": display, "start": start, "sort": sort}
-
-    last_err = None
-    for attempt in range(max(1, NAVER_MAX_RETRIES)):
-        try:
-            _naver_throttle()
-            r = http_session().get(url, headers=headers, params=params, timeout=25)
-
-            # JSON 파싱 시도 (에러 본문에 errorCode가 오는 경우 대응)
-            data = None
-            try:
-                data = r.json()
-            except Exception:
-                data = None
-
-            # 속도 제한(429) 또는 Naver 에러코드 012
-            is_rate = (r.status_code == 429) or (isinstance(data, dict) and str(data.get("errorCode", "")) == "012")
-
-            if r.ok and not is_rate:
-                return data if isinstance(data, dict) else {"items": []}
-
-            if is_rate:
-                # Retry-After 헤더가 있으면 우선 사용
-                ra = 0.0
-                try:
-                    ra = float(r.headers.get("Retry-After", "0") or 0)
-                except Exception:
-                    ra = 0.0
-                backoff = ra if ra > 0 else min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
-                msg = None
-                if isinstance(data, dict):
-                    msg = data.get("errorMessage") or data.get("message")
-                log.warning("[NAVER] rate-limited (attempt %d/%d). sleep %.1fs. %s", attempt+1, NAVER_MAX_RETRIES, backoff, (msg or ""))
-                time.sleep(backoff)
-                continue
-
-            # 그 외 오류는 즉시 raise (호출부에서 처리)
-            if not r.ok:
-                _log_http_error("[NAVER ERROR]", r)
-                r.raise_for_status()
-
-            # r.ok인데도 error 구조가 이상한 경우
-            return {"items": []}
-
-        except Exception as e:
-            last_err = e
-            # 네트워크/일시오류는 backoff 후 재시도
-            backoff = min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
-            log.warning("[NAVER] transient error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, NAVER_MAX_RETRIES, e, backoff)
-            time.sleep(backoff)
-
-    # 모두 실패: 빈 결과로 반환 (파이프라인 유지)
-    log.error("[NAVER] giving up after retries: query=%s (last=%s)", query, last_err)
-    return {"items": []}
-
+    return _collector_naver_news_search(
+        cfg=_naver_client_cfg(),
+        query=query,
+        display=display,
+        start=start,
+        sort=sort,
+        session_factory=http_session,
+        throttle_fn=_naver_throttle,
+        logger=log,
+        log_http_error=_log_http_error,
+    )
 
 
 def naver_news_search_paged(query: str, display: int = 50, pages: int = 1, sort: str = "date") -> dict:
-    """Naver News 검색을 페이지네이션해서 수집.
-    - pages=1이면 기존 동작과 동일(1페이지)
-    - 각 페이지는 start=1 + (page_idx*display)
-    - 중간에 items가 비면 조기 종료
-    """
-    pages = max(1, int(pages or 1))
-    items: list[dict] = []
-    last_meta: dict = {}
-    for i in range(pages):
-        st = 1 + (i * display)
-        data = naver_news_search(query, display=display, start=st, sort=sort)
-        if isinstance(data, dict):
-            last_meta = data
-            chunk = data.get("items", []) or []
-        else:
-            chunk = []
-        if not chunk:
-            break
-        items.extend(chunk)
-        if len(chunk) < display:
-            break
-    out = dict(last_meta) if isinstance(last_meta, dict) else {}
-    out["items"] = items
-    return out
+    return _collector_naver_news_search_paged(
+        cfg=_naver_client_cfg(),
+        query=query,
+        display=display,
+        pages=pages,
+        sort=sort,
+        session_factory=http_session,
+        throttle_fn=_naver_throttle,
+        logger=log,
+        log_http_error=_log_http_error,
+    )
 
 # -----------------------------
 # Relevance / scoring
 # -----------------------------
 def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = "date"):
-    """Naver Web(웹문서) 검색: 기사에 언급된 보고서/자료(예: KREI 이슈+)를 보완 수집."""
-    if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
-        raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set")
-    url = "https://openapi.naver.com/v1/search/webkr.json"
-    headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
-    params = {"query": query, "display": display, "start": start, "sort": sort}
-
-    last_err = None
-    for attempt in range(max(1, NAVER_MAX_RETRIES)):
-        try:
-            _naver_throttle()
-            r = http_session().get(url, headers=headers, params=params, timeout=25)
-
-            data = None
-            try:
-                data = r.json()
-            except Exception:
-                data = None
-
-            is_rate = (r.status_code == 429) or (isinstance(data, dict) and str(data.get("errorCode", "")) == "012")
-            if r.ok and not is_rate:
-                return data if isinstance(data, dict) else {"items": []}
-
-            if is_rate:
-                ra = 0.0
-                try:
-                    ra = float(r.headers.get("Retry-After", "0") or 0)
-                except Exception:
-                    ra = 0.0
-                backoff = ra if ra > 0 else min(NAVER_BACKOFF_MAX_SEC, (1.0 * (2 ** attempt)) + random.uniform(0.0, 0.4))
-                time.sleep(backoff)
-                continue
-
-            last_err = RuntimeError(f"Naver web API error: status={r.status_code} body={_safe_body(getattr(r, 'text', ''), limit=300)}")
-            backoff = min(NAVER_BACKOFF_MAX_SEC, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.3))
-            time.sleep(backoff)
-        except Exception as e:
-            last_err = e
-            backoff = min(NAVER_BACKOFF_MAX_SEC, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.3))
-            time.sleep(backoff)
-
-    log.warning("[WARN] naver_web_search failed: %s", last_err)
-    return {"items": []}
+    return _collector_naver_web_search(
+        cfg=_naver_client_cfg(),
+        query=query,
+        display=display,
+        start=start,
+        sort=sort,
+        session_factory=http_session,
+        throttle_fn=_naver_throttle,
+        logger=log,
+        log_http_error=_log_http_error,
+    )
 
 
 def section_must_terms_ok(text: str, must_terms) -> bool:
@@ -6826,7 +6693,6 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
             if moved_sd:
                 log.info("[REBALANCE] moved %d dist-like item(s): supply -> dist", moved_sd)
 
-
     # -----------------------------
     # Topic↔Section 일관성 강제 (정책/통상/관세·통관 집행 이슈는 policy 섹션으로)
     #
@@ -7090,7 +6956,7 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
                 timeout=70,
             )
         except Exception as exc:
-            backoff = min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            backoff = exponential_backoff(attempt, base=0.8, cap=20.0, jitter=0.4)
             log.warning("[OpenAI] network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, OPENAI_RETRY_MAX, exc, backoff)
             time.sleep(backoff)
             continue
@@ -7110,12 +6976,7 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
             return out
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
-            ra = 0.0
-            try:
-                ra = float(r.headers.get("Retry-After", "0") or 0)
-            except Exception:
-                ra = 0.0
-            backoff = ra if ra > 0 else min(20.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            backoff = retry_after_or_backoff(r.headers, attempt, base=0.8, cap=20.0, jitter=0.4)
             log.warning("[OpenAI] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, OPENAI_RETRY_MAX, backoff)
             time.sleep(backoff)
             continue
@@ -8914,7 +8775,6 @@ def log_kakao_link(url: str):
     except Exception:
         log.info("[KAKAO LINK] %s", url)
 
-
 # -----------------------------
 # Kakao message (✅ 1번: 브리핑의 '핵심2'와 동일)
 # -----------------------------
@@ -9050,7 +8910,7 @@ def kakao_send_to_me(text: str, web_url: str):
             )
         except Exception as exc:
             last_exc = exc
-            backoff = min(15.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            backoff = exponential_backoff(attempt, base=0.8, cap=15.0, jitter=0.4)
             log.warning("[KAKAO SEND] network error (attempt %d/%d): %s -> sleep %.1fs", attempt+1, max_try, exc, backoff)
             time.sleep(backoff)
             continue
@@ -9066,12 +8926,7 @@ def kakao_send_to_me(text: str, web_url: str):
             continue
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
-            ra = 0.0
-            try:
-                ra = float(r.headers.get("Retry-After", "0") or 0)
-            except Exception:
-                ra = 0.0
-            backoff = ra if ra > 0 else min(15.0, (0.8 * (2 ** attempt)) + random.uniform(0.0, 0.4))
+            backoff = retry_after_or_backoff(r.headers, attempt, base=0.8, cap=15.0, jitter=0.4)
             log.warning("[KAKAO SEND] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt+1, max_try, backoff)
             time.sleep(backoff)
             continue
@@ -9085,7 +8940,6 @@ def kakao_send_to_me(text: str, web_url: str):
     if last_exc is not None:
         raise last_exc
     raise RuntimeError("Kakao send failed without response")
-
 
 # -----------------------------
 # Window calculation
@@ -9362,6 +9216,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
 
         html_new = _rebuild_missing_chipbar_from_sections(html_new)
         html_new = _normalize_existing_chipbar_titles(html_new)
+
         # -----------------------------
         # 0.5) Rebuild navRow from existing archive pages (avoid stale href -> 404)
         # -----------------------------
@@ -9411,41 +9266,18 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
                 count=1,
                 flags=re.I,
             )
+
         # -----------------------------
         # 2) Ensure navLoading badge exists (we intentionally DO NOT show swipe-hint text)
         # -----------------------------
         # Remove any existing swipe-hint remnants first
         html_new = _strip_swipe_hint_blocks(html_new)
-        if 'id="navLoading"' not in html_new:
-            got = _extract_navrow_block(html_new)
-            if got:
-                _s, e, _nav_block = got
-                loading_block = '''
-      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
-        <span class="badge">날짜 이동 중…</span>
-      </div>
-'''
-                # Keep the full tail after navRow; using html_new[e] would drop almost entire document.
-                html_new = html_new[:e] + loading_block + html_new[e:]
-
+        html_new = insert_nav_loading_badge(html_new, _extract_navrow_block)
 
         # -----------------------------
         # 3) Mark chipbar/chips as swipe-ignore (prevents "chip sliding triggers page swipe")
         # -----------------------------
-        html_new = re.sub(
-            r'(<div\s+class="chipbar"(?![^>]*\bdata-swipe-ignore=))',
-            r'\1 data-swipe-ignore="1"',
-            html_new,
-            count=1,
-            flags=re.I,
-        )
-        html_new = re.sub(
-            r'(<div\s+class="chips"(?![^>]*\bdata-swipe-ignore=))',
-            r'\1 data-swipe-ignore="1"',
-            html_new,
-            count=1,
-            flags=re.I,
-        )
+        html_new = ensure_swipe_ignore_attributes(html_new)
 
         # -----------------------------
         # 4) Upsert canonical UX CSS (upgrade old patched pages too)
@@ -9669,10 +9501,6 @@ def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archi
                 log.info("[NAV BACKFILL] patched %s (neighbor of %s)", d, report_date)
         except Exception as e:
             log.warning("[WARN] nav backfill failed for %s: %s", d, e)
-
-
-
-
 
 # -----------------------------
 # Backfill rebuild recent archives (최근 N일 아카이브 재생성)
