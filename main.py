@@ -9369,7 +9369,8 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         <span class="badge">날짜 이동 중…</span>
       </div>
 '''
-                html_new = html_new[:e] + loading_block + html_new[e]
+                # Keep the full tail after navRow; using html_new[e] would drop almost entire document.
+                html_new = html_new[:e] + loading_block + html_new[e:]
 
 
         # -----------------------------
