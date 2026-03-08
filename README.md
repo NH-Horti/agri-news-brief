@@ -54,6 +54,7 @@ These workflows are now guarded with `if: github.ref_name == 'main'` and fixed c
 - `.github/workflows/dev-verify.yml`
 
 Run this workflow and set `target_branch` (e.g. `develop`) to verify changed code and optional Kakao delivery.
+If `target_branch` does not exist, the workflow creates it from `main` automatically before checkout.
 `dev-verify.yml` prefers `KAKAO_*_DEV` secrets, and falls back to production Kakao secrets if those are not set.
 It writes generated artifacts to the current dev branch via:
 
