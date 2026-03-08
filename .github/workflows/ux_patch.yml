@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,6 +41,8 @@ jobs:
       - name: UX patch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_CONTENT_REF: 'main'
+          GH_CONTENT_BRANCH: 'main'
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
@@ -48,9 +51,9 @@ jobs:
 
           MAINTENANCE_TASK: ux_patch
           UX_PATCH_DAYS: ${{ inputs.days }}
-          FORCE_REPORT_DATE: ""
-          FORCE_RUN_ANYDAY: "false"
-          UX_PATCH_STRICT: "true"
+          FORCE_REPORT_DATE: ''
+          FORCE_RUN_ANYDAY: 'false'
+          UX_PATCH_STRICT: 'true'
 
         run: |
           python main.py

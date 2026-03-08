@@ -37,6 +37,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +60,9 @@ jobs:
       - name: Rebuild
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_CONTENT_REF: 'main'
+          GH_CONTENT_BRANCH: 'main'
+
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -80,20 +84,20 @@ jobs:
           # ✅ 페이지 노출량 (카톡 core2는 코드에서 별도 유지)
           MAX_PER_SECTION: ${{ inputs.max_per_section }}
 
-          FORCE_RUN_ANYDAY: "false"
+          FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
 
-          WINDOW_MIN_HOURS: "72"
-          CROSSDAY_DEDUPE_ENABLED: "false"
+          WINDOW_MIN_HOURS: '72'
+          CROSSDAY_DEDUPE_ENABLED: 'false'
 
-          NAVER_MAX_WORKERS: "1"
-          NAVER_MIN_INTERVAL_SEC: "0.6"
+          NAVER_MAX_WORKERS: '1'
+          NAVER_MIN_INTERVAL_SEC: '0.6'
 
           # ✅ 디버그는 기본 OFF, 필요 시 inputs.debug=true로 ON
           DEBUG_REPORT: ${{ inputs.debug == 'true' && '1' || '0' }}
           DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug == 'true' && '1' || '0' }}
-          DEBUG_REPORT_MAX_CANDIDATES: "200"
-          DEBUG_REPORT_MAX_REJECTS: "2000"
+          DEBUG_REPORT_MAX_CANDIDATES: '200'
+          DEBUG_REPORT_MAX_REJECTS: '2000'
 
         run: |
           python main.py

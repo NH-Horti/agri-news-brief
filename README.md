@@ -29,3 +29,40 @@ Strict mode example (PowerShell):
 $env:AGRI_PREPUSH_STRICT="1"
 git push
 ```
+
+## Dev / Prod Separation
+
+Use two branches and separate workflows:
+
+- `main`: production operation only
+- non-`main` (recommended: `develop`): development verification
+
+### Production workflows (main only)
+
+- `.github/workflows/daily.yml`
+- `.github/workflows/rebuild.yml`
+- `.github/workflows/maintenance.yml`
+- `.github/workflows/ux_patch.yml`
+
+These workflows are now guarded with `if: github.ref_name == 'main'` and fixed content target:
+
+- `GH_CONTENT_REF=main`
+- `GH_CONTENT_BRANCH=main`
+
+### Development verification workflow
+
+- `.github/workflows/dev-verify.yml`
+
+Run this on your development branch (not `main`) to verify changed code and optional Kakao delivery.
+`dev-verify.yml` prefers `KAKAO_*_DEV` secrets, and falls back to production Kakao secrets if those are not set.
+It writes generated artifacts to the current dev branch via:
+
+- `GH_CONTENT_REF=${{ github.ref_name }}`
+- `GH_CONTENT_BRANCH=${{ github.ref_name }}`
+
+### Promotion flow
+
+1. Develop and verify on `develop` branch (`dev-verify.yml`)
+2. Confirm generated page + Kakao message
+3. Merge `develop` -> `main`
+4. Continue daily production operation on `main`

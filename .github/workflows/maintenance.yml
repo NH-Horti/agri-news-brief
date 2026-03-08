@@ -46,6 +46,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,6 +69,9 @@ jobs:
       - name: Backfill rebuild
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_CONTENT_REF: 'main'
+          GH_CONTENT_BRANCH: 'main'
+
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -88,15 +92,15 @@ jobs:
           BACKFILL_REBUILD_SLEEP_SEC: ${{ inputs.sleep_sec }}
           BACKFILL_INCLUDE_NONBUSINESS_DAYS: ${{ inputs.include_nonbusiness_days }}
 
-          WINDOW_MIN_HOURS: "72"
-          CROSSDAY_DEDUPE_ENABLED: "false"
+          WINDOW_MIN_HOURS: '72'
+          CROSSDAY_DEDUPE_ENABLED: 'false'
 
           # Align page rendering with daily/rebuild
-          MAX_PER_SECTION: "5"
-          PAGE_TAIL_MARGIN_EXTRA: "4.0"
+          MAX_PER_SECTION: '5'
+          PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          NAVER_MAX_WORKERS: "1"
-          NAVER_MIN_INTERVAL_SEC: "0.6"
+          NAVER_MAX_WORKERS: '1'
+          NAVER_MIN_INTERVAL_SEC: '0.6'
 
         run: |
           python main.py

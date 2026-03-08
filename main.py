@@ -459,6 +459,10 @@ WHITELIST_RSS_URLS = [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").spl
 DEFAULT_REPO = (os.getenv("GITHUB_REPO") or os.getenv("GITHUB_REPOSITORY") or "").strip()
 GH_TOKEN = (os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()
 
+# GitHub content read/write target (separate prod vs dev branches).
+GH_CONTENT_REF = (os.getenv("GH_CONTENT_REF") or "main").strip() or "main"
+GH_CONTENT_BRANCH = (os.getenv("GH_CONTENT_BRANCH") or GH_CONTENT_REF).strip() or GH_CONTENT_REF
+
 NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID", "").strip()
 NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET", "").strip()
 
@@ -3082,12 +3086,26 @@ def github_api_headers(token: str):
     return _io_github_api_headers(token)
 
 
+def _resolve_github_ref(ref: str | None) -> str:
+    v = str(ref or "").strip()
+    if not v or v == "main":
+        return GH_CONTENT_REF
+    return v
+
+
+def _resolve_github_branch(branch: str | None) -> str:
+    v = str(branch or "").strip()
+    if not v or v == "main":
+        return GH_CONTENT_BRANCH
+    return v
+
+
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     return _io_github_get_file(
         repo,
         path,
         token,
-        ref=ref,
+        ref=_resolve_github_ref(ref),
         session_factory=http_session,
         log_http_error=_log_http_error,
     )
@@ -3099,7 +3117,7 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
         repo,
         dir_path,
         token,
-        ref=ref,
+        ref=_resolve_github_ref(ref),
         session_factory=http_session,
         log_http_error=_log_http_error,
     )
@@ -3113,7 +3131,7 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
         token,
         message,
         sha=sha,
-        branch=branch,
+        branch=_resolve_github_branch(branch),
         session_factory=http_session,
         logger=log,
         log_http_error=_log_http_error,

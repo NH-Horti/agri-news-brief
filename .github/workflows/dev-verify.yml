@@ -1,0 +1,91 @@
+name: agri-news-brief (dev verify rebuild)
+
+on:
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: 'Date to rebuild on dev branch (YYYY-MM-DD)'
+        required: true
+        type: string
+      send_kakao:
+        description: 'Send Kakao message in dev verification run'
+        required: false
+        default: true
+        type: boolean
+      brief_view_url:
+        description: 'Preview base URL used in Kakao link'
+        required: false
+        default: 'https://nh-horti.github.io/agri-news-brief/'
+        type: string
+      ux_patch_days:
+        description: 'Patch recent archives after rebuild (0 = off)'
+        required: false
+        default: '0'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agri-news-brief-dev-verify-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    if: github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Dev verify rebuild
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_CONTENT_REF: ${{ github.ref_name }}
+          GH_CONTENT_BRANCH: ${{ github.ref_name }}
+
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+          # Prefer dev-specific Kakao secrets when present.
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY_DEV || secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET_DEV || secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV || secrets.KAKAO_REFRESH_TOKEN }}
+
+          PUBLISH_MODE: github_pages
+          PAGES_BRANCH: ${{ github.ref_name }}
+          PAGES_FILE_PATH: docs/index.html
+          BRIEF_VIEW_URL: ${{ inputs.brief_view_url }}
+
+          MAINTENANCE_TASK: rebuild_date
+          FORCE_REPORT_DATE: ${{ inputs.report_date }}
+          MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao && 'true' || 'false' }}
+
+          FORCE_RUN_ANYDAY: 'true'
+          UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+          WINDOW_MIN_HOURS: '72'
+          CROSSDAY_DEDUPE_ENABLED: 'false'
+
+          MAX_PER_SECTION: '5'
+          PAGE_TAIL_MARGIN_EXTRA: '4.0'
+
+          NAVER_MAX_WORKERS: '1'
+          NAVER_MIN_INTERVAL_SEC: '0.6'
+
+        run: |
+          python main.py

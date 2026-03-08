@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,6 +38,9 @@ jobs:
       - name: Run main.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_CONTENT_REF: 'main'
+          GH_CONTENT_BRANCH: 'main'
+
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -52,21 +56,21 @@ jobs:
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           # daily behavior
-          MAINTENANCE_TASK: ""
-          FORCE_REPORT_DATE: ""
-          FORCE_RUN_ANYDAY: "false"
-          UX_PATCH_DAYS: "45"
-          WINDOW_MIN_HOURS: "72"
-          CROSSDAY_DEDUPE_ENABLED: "true"
-          CROSSDAY_DEDUPE_DAYS: "7"
+          MAINTENANCE_TASK: ''
+          FORCE_REPORT_DATE: ''
+          FORCE_RUN_ANYDAY: 'false'
+          UX_PATCH_DAYS: '45'
+          WINDOW_MIN_HOURS: '72'
+          CROSSDAY_DEDUPE_ENABLED: 'true'
+          CROSSDAY_DEDUPE_DAYS: '7'
 
           # page output size (Kakao still uses core2 only)
-          MAX_PER_SECTION: "5"
-          PAGE_TAIL_MARGIN_EXTRA: "4.0"
+          MAX_PER_SECTION: '5'
+          PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
           # throttling
-          NAVER_MAX_WORKERS: "1"
-          NAVER_MIN_INTERVAL_SEC: "0.6"
+          NAVER_MAX_WORKERS: '1'
+          NAVER_MIN_INTERVAL_SEC: '0.6'
 
         run: |
           python main.py
