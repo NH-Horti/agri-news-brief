@@ -3,6 +3,11 @@ name: agri-news-brief (dev verify rebuild)
 on:
   workflow_dispatch:
     inputs:
+      target_branch:
+        description: 'Development branch to verify (must not be main)'
+        required: false
+        default: 'develop'
+        type: string
       report_date:
         description: 'Date to rebuild on dev branch (YYYY-MM-DD)'
         required: true
@@ -27,18 +32,24 @@ permissions:
   contents: write
 
 concurrency:
-  group: agri-news-brief-dev-verify-${{ github.ref_name }}
+  group: agri-news-brief-dev-verify-${{ inputs.target_branch }}
   cancel-in-progress: true
 
 jobs:
   run:
-    if: github.ref_name != 'main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Guard target branch
+        run: |
+          if [ "${{ inputs.target_branch }}" = "main" ]; then
+            echo "[ERROR] target_branch=main is not allowed in dev verify workflow. Use develop or another dev branch."
+            exit 1
+          fi
+
+      - name: Checkout target branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ inputs.target_branch }}
           fetch-depth: 0
 
       - name: Setup Python
@@ -55,8 +66,8 @@ jobs:
       - name: Dev verify rebuild
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_CONTENT_REF: ${{ github.ref_name }}
-          GH_CONTENT_BRANCH: ${{ github.ref_name }}
+          GH_CONTENT_REF: ${{ inputs.target_branch }}
+          GH_CONTENT_BRANCH: ${{ inputs.target_branch }}
 
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
@@ -68,7 +79,7 @@ jobs:
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV || secrets.KAKAO_REFRESH_TOKEN }}
 
           PUBLISH_MODE: github_pages
-          PAGES_BRANCH: ${{ github.ref_name }}
+          PAGES_BRANCH: ${{ inputs.target_branch }}
           PAGES_FILE_PATH: docs/index.html
           BRIEF_VIEW_URL: ${{ inputs.brief_view_url }}
 

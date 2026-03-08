@@ -53,12 +53,12 @@ These workflows are now guarded with `if: github.ref_name == 'main'` and fixed c
 
 - `.github/workflows/dev-verify.yml`
 
-Run this on your development branch (not `main`) to verify changed code and optional Kakao delivery.
+Run this workflow and set `target_branch` (e.g. `develop`) to verify changed code and optional Kakao delivery.
 `dev-verify.yml` prefers `KAKAO_*_DEV` secrets, and falls back to production Kakao secrets if those are not set.
 It writes generated artifacts to the current dev branch via:
 
-- `GH_CONTENT_REF=${{ github.ref_name }}`
-- `GH_CONTENT_BRANCH=${{ github.ref_name }}`
+- `GH_CONTENT_REF=${{ inputs.target_branch }}`
+- `GH_CONTENT_BRANCH=${{ inputs.target_branch }}`
 
 ### Promotion flow
 
