@@ -2,7 +2,7 @@ name: agri-news-brief (daily)
 
 on:
   schedule:
-    # KST 07:00 on weekdays (Mon–Fri) == UTC 22:00 on Sun–Thu
+    # KST 07:00 on weekdays (Mon-Fri) == UTC 22:00 on Sun-Thu
     - cron: '0 22 * * 0-4'
   workflow_dispatch: {}
 
@@ -17,6 +17,7 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,10 +53,8 @@ jobs:
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
 
-          # ✅ 운영 도메인(카톡 링크/페이지 링크)
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
-          # daily behavior
           MAINTENANCE_TASK: ''
           FORCE_REPORT_DATE: ''
           FORCE_RUN_ANYDAY: 'false'
@@ -64,13 +63,25 @@ jobs:
           CROSSDAY_DEDUPE_ENABLED: 'true'
           CROSSDAY_DEDUPE_DAYS: '7'
 
-          # page output size (Kakao still uses core2 only)
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          # throttling
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
+          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief/archive
+
         run: |
           python main.py
+
+      - name: Post-run healthcheck
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTHCHECK_CONTENT_REF: main
+          HEALTHCHECK_EXPECTED_FILES: docs/index.html,.agri_archive.json,docs/archive_manifest.json
+          HEALTHCHECK_BASE_URL: https://nh-horti.github.io/agri-news-brief/
+          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief
+        run: |
+          python scripts/post_run_healthcheck.py

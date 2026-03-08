@@ -520,6 +520,10 @@ DEV_SINGLE_PAGE_MODE = os.getenv("DEV_SINGLE_PAGE_MODE", "false").strip().lower(
 DEV_SINGLE_PAGE_PATH = (os.getenv("DEV_SINGLE_PAGE_PATH", "").strip() or "docs/dev/index.html")
 DEV_SINGLE_PAGE_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_URL_PATH", "").strip() or "index.html")
 
+# Runtime deployment URL healthcheck guard (optional; enabled when expected values are provided).
+HEALTHCHECK_EXPECTED_HOST = os.getenv("HEALTHCHECK_EXPECTED_HOST", "").strip().lower()
+HEALTHCHECK_EXPECTED_PATH_PREFIX = os.getenv("HEALTHCHECK_EXPECTED_PATH_PREFIX", "").strip()
+
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -3108,6 +3112,46 @@ def _resolve_github_branch(branch: str | None) -> str:
     return v
 
 
+def _normalize_repo_path(path: str) -> str:
+    p = str(path or "").replace("\\", "/")
+    parts = [x for x in p.split("/") if x and x != "."]
+    return "/".join(parts)
+
+
+def _assert_dev_single_page_write_path(path: str):
+    """Fail fast when dev single-page mode attempts to write non-preview paths."""
+    if not DEV_SINGLE_PAGE_MODE:
+        return
+    allowed = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    target = _normalize_repo_path(path)
+    if target != allowed:
+        raise RuntimeError(
+            f"[DEV GUARD] blocked write path '{target}'. allowed path: '{allowed}' (DEV_SINGLE_PAGE_MODE=true)"
+        )
+
+
+def _validate_output_url_healthcheck(url: str):
+    """Validate final output URL host/path against workflow-provided guardrails."""
+    if not HEALTHCHECK_EXPECTED_HOST and not HEALTHCHECK_EXPECTED_PATH_PREFIX:
+        return
+
+    p = urlparse(str(url or "").strip())
+    host = (p.hostname or "").lower()
+    if HEALTHCHECK_EXPECTED_HOST and host != HEALTHCHECK_EXPECTED_HOST:
+        raise RuntimeError(
+            f"[HEALTHCHECK] host mismatch: expected={HEALTHCHECK_EXPECTED_HOST}, got={host or '<empty>'}, url={url}"
+        )
+
+    if HEALTHCHECK_EXPECTED_PATH_PREFIX:
+        prefix = HEALTHCHECK_EXPECTED_PATH_PREFIX
+        if not prefix.startswith("/"):
+            prefix = "/" + prefix
+        if not p.path.startswith(prefix):
+            raise RuntimeError(
+                f"[HEALTHCHECK] path mismatch: expected_prefix={prefix}, got={p.path or '<empty>'}, url={url}"
+            )
+
+
 def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     return _io_github_get_file(
         repo,
@@ -3132,6 +3176,7 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
 
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
+    _assert_dev_single_page_write_path(path)
     return _io_github_put_file(
         repo,
         path,
@@ -3163,6 +3208,7 @@ def github_put_file_if_changed(
       True  -> wrote via GitHub PUT
       False -> skipped (no semantic content change)
     """
+    _assert_dev_single_page_write_path(path)
     cmp_new = content
     if isinstance(cmp_new, str) and path.endswith(".html"):
         cmp_new = _strip_swipe_hint_blocks(cmp_new)
@@ -9563,25 +9609,15 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch="main")
         log.info("[MAINT PUT] %s", preview_path)
 
-        if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
-            try:
-                DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
-                debug_path = f"docs/debug/{report_date}.json"
-                debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
-                _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
-                github_put_file(repo, debug_path, debug_json, token, f"Debug report {report_date}", sha=sha_dbg_old, branch="main")
-                log.info("[MAINT PUT] %s", debug_path)
-            except Exception as e:
-                log.warning("[WARN] debug report upload failed: %s", e)
-
         if MAINTENANCE_SEND_KAKAO:
             try:
                 base_url = get_pages_base_url(repo).rstrip("/")
                 daily_url = build_daily_url(base_url, report_date, cache_bust=True, rel_path=DEV_SINGLE_PAGE_URL_PATH)
+                daily_url = ensure_absolute_http_url(daily_url)
+                _validate_output_url_healthcheck(daily_url)
                 kakao_text = build_kakao_message(report_date, by_section)
                 if KAKAO_INCLUDE_LINK_IN_TEXT:
                     kakao_text = kakao_text + "\n" + daily_url
-                daily_url = ensure_absolute_http_url(daily_url)
                 log_kakao_link(daily_url)
                 kakao_send_to_me(kakao_text, daily_url)
                 log.info("[OK] Kakao message sent (maintenance rebuild_date, single-page). URL=%s", daily_url)
@@ -9657,10 +9693,11 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         try:
             base_url = get_pages_base_url(repo).rstrip("/")
             daily_url = build_daily_url(base_url, report_date, cache_bust=True)
+            daily_url = ensure_absolute_http_url(daily_url)
+            _validate_output_url_healthcheck(daily_url)
             kakao_text = build_kakao_message(report_date, by_section)
             if KAKAO_INCLUDE_LINK_IN_TEXT:
                 kakao_text = kakao_text + "\n" + daily_url
-            daily_url = ensure_absolute_http_url(daily_url)
             log_kakao_link(daily_url)
             kakao_send_to_me(kakao_text, daily_url)
             log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
@@ -9901,6 +9938,8 @@ def main():
     # Kakao absolute URL
     base_url = get_pages_base_url(repo).rstrip("/")
     daily_url = build_daily_url(base_url, report_date, cache_bust=True)
+    daily_url = ensure_absolute_http_url(daily_url)
+    _validate_output_url_healthcheck(daily_url)
     log.info("[INFO] Report date: %s (override=%s) -> %s", report_date, bool(REPORT_DATE_OVERRIDE or force_iso), daily_url)
 
     ensure_not_gist(base_url, "base_url")
@@ -10116,6 +10155,7 @@ def main():
             raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
 
     daily_url = ensure_absolute_http_url(daily_url)
+    _validate_output_url_healthcheck(daily_url)
     log_kakao_link(daily_url)
     try:
         kakao_send_to_me(kakao_text, daily_url)

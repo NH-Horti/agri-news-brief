@@ -43,6 +43,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: Guard target branch
         run: |
@@ -99,6 +100,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Guard dev Kakao secrets
+        if: ${{ inputs.send_kakao }}
+        env:
+          KAKAO_REST_API_KEY_DEV: ${{ secrets.KAKAO_REST_API_KEY_DEV }}
+          KAKAO_CLIENT_SECRET_DEV: ${{ secrets.KAKAO_CLIENT_SECRET_DEV }}
+          KAKAO_REFRESH_TOKEN_DEV: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV }}
+        run: |
+          for key in KAKAO_REST_API_KEY_DEV KAKAO_CLIENT_SECRET_DEV KAKAO_REFRESH_TOKEN_DEV; do
+            if [ -z "${!key}" ]; then
+              echo "[ERROR] Missing required dev secret: ${key}"
+              exit 1
+            fi
+          done
+
+      - name: Derive healthcheck constraints
+        env:
+          BRIEF_VIEW_URL_INPUT: ${{ inputs.brief_view_url }}
+        run: |
+          python - <<'PY'
+          import os
+          from urllib.parse import urlparse
+
+          u = (os.environ.get("BRIEF_VIEW_URL_INPUT") or "").strip().rstrip("/")
+          p = urlparse(u)
+          if p.scheme not in ("http", "https") or not p.netloc:
+              raise SystemExit(f"[ERROR] Invalid brief_view_url: {u}")
+
+          path = (p.path or "/").rstrip("/") or "/"
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
+              f.write(f"HC_EXPECTED_HOST={(p.hostname or '').lower()}\n")
+              f.write(f"HC_EXPECTED_PATH_PREFIX={path}\n")
+          print(f"[INFO] healthcheck host={(p.hostname or '').lower()} path_prefix={path}")
+          PY
+
       - name: Dev verify rebuild (single preview page overwrite)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -109,10 +144,10 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-          # Prefer dev-specific Kakao secrets when present.
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY_DEV || secrets.KAKAO_REST_API_KEY }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET_DEV || secrets.KAKAO_CLIENT_SECRET }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV || secrets.KAKAO_REFRESH_TOKEN }}
+          # Dev verification must use dev-only Kakao secrets.
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY_DEV }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET_DEV }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV }}
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: ${{ inputs.content_branch }}
@@ -139,5 +174,20 @@ jobs:
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
+          HEALTHCHECK_EXPECTED_HOST: ${{ env.HC_EXPECTED_HOST }}
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: ${{ env.HC_EXPECTED_PATH_PREFIX }}
+
         run: |
           python main.py
+
+      - name: Post-run healthcheck
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTHCHECK_CONTENT_REF: ${{ inputs.content_branch }}
+          HEALTHCHECK_EXPECTED_FILES: docs/dev/index.html
+          HEALTHCHECK_BASE_URL: ${{ inputs.brief_view_url }}
+          HEALTHCHECK_URL_REL_PATH: index.html
+          HEALTHCHECK_EXPECTED_HOST: ${{ env.HC_EXPECTED_HOST }}
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: ${{ env.HC_EXPECTED_PATH_PREFIX }}
+        run: |
+          python scripts/post_run_healthcheck.py

@@ -39,6 +39,7 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,14 +75,12 @@ jobs:
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
 
-          # ✅ 실제 운영 도메인(카톡 링크/페이지 링크)
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: rebuild_date
           FORCE_REPORT_DATE: ${{ inputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
 
-          # ✅ 페이지 노출량 (카톡 core2는 코드에서 별도 유지)
           MAX_PER_SECTION: ${{ inputs.max_per_section }}
 
           FORCE_RUN_ANYDAY: 'false'
@@ -93,11 +92,25 @@ jobs:
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
-          # ✅ 디버그는 기본 OFF, 필요 시 inputs.debug=true로 ON
           DEBUG_REPORT: ${{ inputs.debug == 'true' && '1' || '0' }}
           DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug == 'true' && '1' || '0' }}
           DEBUG_REPORT_MAX_CANDIDATES: '200'
           DEBUG_REPORT_MAX_REJECTS: '2000'
 
+          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief/archive
+
         run: |
           python main.py
+
+      - name: Post-run healthcheck
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTHCHECK_CONTENT_REF: main
+          HEALTHCHECK_EXPECTED_FILES: docs/index.html,docs/archive/${{ inputs.report_date }}.html,.agri_archive.json
+          HEALTHCHECK_BASE_URL: https://nh-horti.github.io/agri-news-brief/
+          HEALTHCHECK_URL_REL_PATH: archive/${{ inputs.report_date }}.html
+          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
+          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief/archive
+        run: |
+          python scripts/post_run_healthcheck.py
