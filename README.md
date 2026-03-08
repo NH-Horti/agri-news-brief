@@ -53,13 +53,18 @@ These workflows are now guarded with `if: github.ref_name == 'main'` and fixed c
 
 - `.github/workflows/dev-verify.yml`
 
-Run this workflow and set `target_branch` (e.g. `develop`) to verify changed code and optional Kakao delivery.
-If `target_branch` does not exist, the workflow creates it from `main` automatically before checkout.
-`dev-verify.yml` prefers `KAKAO_*_DEV` secrets, and falls back to production Kakao secrets if those are not set.
-It writes generated artifacts to the current dev branch via:
+Run this workflow with:
 
-- `GH_CONTENT_REF=${{ inputs.target_branch }}`
-- `GH_CONTENT_BRANCH=${{ inputs.target_branch }}`
+- `target_branch` = code branch to verify (e.g. `develop`)
+- `content_branch` = branch to publish dev preview page (recommended: `main`)
+- `brief_view_url` = Kakao preview base URL (default: `https://nh-horti.github.io/agri-news-brief/dev`)
+
+If `target_branch` or `content_branch` does not exist, the workflow creates it from `main` automatically.
+`dev-verify.yml` prefers `KAKAO_*_DEV` secrets, and falls back to production Kakao secrets if those are not set.
+Dev verification now overwrites a single page instead of creating dated archives:
+
+- output file: `docs/dev/index.html`
+- Kakao link: `${{ inputs.brief_view_url }}/index.html?v=<build>`
 
 ### Promotion flow
 
@@ -67,3 +72,4 @@ It writes generated artifacts to the current dev branch via:
 2. Confirm generated page + Kakao message
 3. Merge `develop` -> `main`
 4. Continue daily production operation on `main`
+

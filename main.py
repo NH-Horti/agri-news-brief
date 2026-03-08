@@ -512,6 +512,14 @@ KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").st
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
 MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
 
+PAGES_BASE_URL_OVERRIDE = os.getenv("PAGES_BASE_URL", "").strip()
+BRIEF_VIEW_URL = os.getenv("BRIEF_VIEW_URL", "").strip()
+
+# Dev verification mode: overwrite a fixed preview page instead of creating dated archives.
+DEV_SINGLE_PAGE_MODE = os.getenv("DEV_SINGLE_PAGE_MODE", "false").strip().lower() in ("1", "true", "yes", "y")
+DEV_SINGLE_PAGE_PATH = (os.getenv("DEV_SINGLE_PAGE_PATH", "").strip() or "docs/dev/index.html")
+DEV_SINGLE_PAGE_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_URL_PATH", "").strip() or "index.html")
+
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -7106,9 +7114,13 @@ def build_site_url(site_path: str, rel: str) -> str:
     return site_path + rel
 
 
-def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False) -> str:
-    """Build daily archive URL; optional cache-busting query for messenger/browser caches."""
-    url = f"{str(base_url or '').rstrip('/')}/archive/{report_date}.html"
+def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False, rel_path: str = "") -> str:
+    """Build daily URL; defaults to archive path, or uses rel_path for single-page preview mode."""
+    base = str(base_url or "").rstrip("/")
+    if rel_path:
+        url = f"{base}/{str(rel_path).lstrip('/')}"
+    else:
+        url = f"{base}/archive/{report_date}.html"
     if not cache_bust:
         return url
     v = re.sub(r"[^0-9A-Za-z_-]", "", str(BUILD_TAG or ""))[:24] or now_kst().strftime("%Y%m%d%H%M")
@@ -8756,17 +8768,17 @@ def get_pages_base_url(repo: str) -> str:
     else:
         default_url = f"https://{owner.lower()}.github.io/{name}".rstrip("/")
 
-    env_url = os.getenv("PAGES_BASE_URL", "").strip().rstrip("/")
+    env_url = (PAGES_BASE_URL_OVERRIDE or BRIEF_VIEW_URL).strip().rstrip("/")
     if not env_url:
         return default_url
 
     bad = ("gist.github.com", "raw.githubusercontent.com")
     if any(b in env_url for b in bad):
-        log.warning("[WARN] PAGES_BASE_URL points to gist/raw. Ignoring and using default: %s", default_url)
+        log.warning("[WARN] PAGES_BASE_URL/BRIEF_VIEW_URL points to gist/raw. Ignoring and using default: %s", default_url)
         return default_url
 
     if not env_url.startswith("http://") and not env_url.startswith("https://"):
-        log.warning("[WARN] PAGES_BASE_URL invalid (no http/https). Ignoring and using default: %s", default_url)
+        log.warning("[WARN] PAGES_BASE_URL/BRIEF_VIEW_URL invalid (no http/https). Ignoring and using default: %s", default_url)
         return default_url
 
     return env_url
@@ -9544,8 +9556,44 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
 
     # render
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+
+    if DEV_SINGLE_PAGE_MODE:
+        preview_path = DEV_SINGLE_PAGE_PATH or "docs/dev/index.html"
+        _raw_preview_old, sha_preview = github_get_file(repo, preview_path, token, ref="main")
+        github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch="main")
+        log.info("[MAINT PUT] %s", preview_path)
+
+        if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+            try:
+                DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+                debug_path = f"docs/debug/{report_date}.json"
+                debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+                _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
+                github_put_file(repo, debug_path, debug_json, token, f"Debug report {report_date}", sha=sha_dbg_old, branch="main")
+                log.info("[MAINT PUT] %s", debug_path)
+            except Exception as e:
+                log.warning("[WARN] debug report upload failed: %s", e)
+
+        if MAINTENANCE_SEND_KAKAO:
+            try:
+                base_url = get_pages_base_url(repo).rstrip("/")
+                daily_url = build_daily_url(base_url, report_date, cache_bust=True, rel_path=DEV_SINGLE_PAGE_URL_PATH)
+                kakao_text = build_kakao_message(report_date, by_section)
+                if KAKAO_INCLUDE_LINK_IN_TEXT:
+                    kakao_text = kakao_text + "\n" + daily_url
+                daily_url = ensure_absolute_http_url(daily_url)
+                log_kakao_link(daily_url)
+                kakao_send_to_me(kakao_text, daily_url)
+                log.info("[OK] Kakao message sent (maintenance rebuild_date, single-page). URL=%s", daily_url)
+            except Exception as e:
+                if KAKAO_FAIL_OPEN:
+                    log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+                else:
+                    raise
+        return
+
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
-    raw_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
+    _raw_daily_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
     github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
     log.info("[MAINT PUT] %s", daily_path)
 
@@ -9560,7 +9608,6 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
             log.info("[MAINT PUT] %s", debug_path)
         except Exception as e:
             log.warning("[WARN] debug report upload failed: %s", e)
-
 
     # update search index
     search_idx, ssha = load_search_index(repo, token)
