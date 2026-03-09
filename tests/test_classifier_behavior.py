@@ -473,15 +473,15 @@ class TestClassifierBehavior(unittest.TestCase):
 
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
-    def test_collect_candidates_respects_window_min_hours_for_rebuild_like_window(self):
+    def test_collect_candidates_does_not_extend_window_by_default(self):
         section_conf = {
             "key": "pest",
             "queries": ["과수화상병 방제"],
             "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병"],
         }
 
-        # 리빌드 윈도우(직전 영업일 07:00 ~ 당일 07:00)보다 12시간 이른 기사지만,
-        # WINDOW_MIN_HOURS(기본 72h) 내라면 후보 수집에서 살아야 한다.
+        # 기본 정책은 윈도우 확장 없음(24h/영업일 윈도우 준수)
+        # -> 시작 시각보다 이른 기사는 제외되어야 한다.
         end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
         start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
 
@@ -505,6 +505,42 @@ class TestClassifierBehavior(unittest.TestCase):
             items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
         finally:
             main.naver_news_search_paged = old_func
+
+        self.assertFalse(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.pub_dt_kst) for a in items]))
+
+    def test_collect_candidates_window_min_hours_can_be_opted_in(self):
+        section_conf = {
+            "key": "pest",
+            "queries": ["과수화상병 방제"],
+            "must_terms": ["방제", "병해충", "약제", "예찰", "과수화상병"],
+        }
+
+        end_kst = main.dt_kst(main.date(2026, 3, 3), main.REPORT_HOUR_KST)
+        start_kst = main.dt_kst(main.date(2026, 3, 2), main.REPORT_HOUR_KST)
+
+        old_func = main.naver_news_search_paged
+        old_min_hours = main.WINDOW_MIN_HOURS
+        try:
+            main.WINDOW_MIN_HOURS = 72
+
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                return {
+                    "items": [
+                        {
+                            "title": "진주시, 과수화상병 예방 교육·약제… 3회분 무상공급",
+                            "description": "진주시는 과수화상병 방제를 위해 약제를 무상 공급한다고 밝혔다.",
+                            "link": "https://www.newsis.com/view/NISX20260228_0003530198",
+                            "originallink": "https://www.newsis.com/view/NISX20260228_0003530198",
+                            "pubDate": "Sat, 28 Feb 2026 15:00:00 +0000",
+                        }
+                    ]
+                }
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+            main.WINDOW_MIN_HOURS = old_min_hours
 
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.pub_dt_kst) for a in items]))
 
