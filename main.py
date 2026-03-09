@@ -5417,6 +5417,34 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _mark_used(a)
             _source_take(a)
 
+    # policy는 저티어 core를 막은 뒤에도 메이저 소스 핵심이 0건으로 비지 않게 1건은 백필한다.
+    if section_key == "policy" and len(core) == 0:
+        for a in pool:
+            if _already_used(a):
+                continue
+            if _is_low_core_source(a) or press_priority(a.press, a.domain) < 2:
+                continue
+            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+            if fit_sc_core < (core_fit_min - 0.2) and a.score < max(thr, core_min - 0.8):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in core):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in core):
+                continue
+            if _is_trade_press(a) and trade_core_count >= trade_core_cap:
+                continue
+            if not _source_ok_local(a):
+                continue
+            a.is_core = True
+            core.append(a)
+            _mark_used(a)
+            _source_take(a)
+            if _is_trade_press(a):
+                trade_core_count += 1
+            break
+
     # 3) 유통(dist) 섹션: 강한 현장 앵커(도매시장/공영도매/APC 준공/선별/저온/물류/원산지 단속/수출 검역 등) 0~2건 추가
     final: list[Article] = []
     for a in core:
