@@ -2364,7 +2364,7 @@ def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
     elif key == "supply":
         if is_local_agri_org_feature_context(title, desc):
             base -= 0.7
-        if is_macro_policy_issue(txt) and best_horti_score(title or "", "") < 1.6 and (not has_direct_supply_chain_signal(txt)):
+        if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and (not has_direct_supply_chain_signal(txt)):
             base -= 0.6
     return round(base, 3)
 
@@ -3865,6 +3865,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     dom = normalize_host(dom or "")
     key = section_conf["key"]
+    macro_policy_like = is_macro_policy_issue(text)
+    local_org_feature = is_local_agri_org_feature_context(title, desc)
 
     def _reject(reason: str) -> bool:
         # debug: collect why an item was filtered out
@@ -3880,7 +3882,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
-        if best_horti_score(ttl, desc) < 1.8:
+        if best_horti_score(ttl, desc) < 1.8 and (not macro_policy_like):
             return _reject("hardblock_consumer_price_noise")
 
     # URL/경로 기반 보정(지역/로컬 섹션 등)
@@ -4001,6 +4003,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # (강제 컷) 산업/금융/바이오 오탐: 농업/원예 맥락이 약하면 제외
     off_hits = count_any(text, [t.lower() for t in HARD_OFFTOPIC_TERMS])
     agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
+    if local_org_feature:
+        agri_ctx_hits = max(agri_ctx_hits, 1)
 
     # (강제 컷) 전력/에너지/유틸리티 '도매시장/수급' 동음이의어 오탐 차단
     energy_hits = count_any(text, [t.lower() for t in ENERGY_CONTEXT_TERMS])
@@ -4149,12 +4153,14 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
             if is_pest_control_policy_context(text):
                 pass
+            elif macro_policy_like:
+                pass
             # policy는 도메인 override가 있음
             elif not policy_domain_override(dom, text):
                 return _reject("must_terms_fail_policy")
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
-            dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text)
+            dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text) or local_org_feature
             if key == "dist":
                 if (("유통" in text) or ("도매" in text) or ("출하" in text) or ("하역" in text) or ("물류" in text)) and (horti_sc >= 1.8 or agri_ctx_hits >= 1):
                     dist_soft_ok = True
@@ -4193,7 +4199,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
-            if not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
+            if (not macro_policy_like) and not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
                 return _reject("policy_context_gate")
 
         # 금융/산업 일반 정책 오탐 차단
@@ -4258,7 +4264,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
         # ✅ 가장 중요한 원칙: '농산물/원예' 앵커가 없고(agri_anchor_hits==0),
         # 도매시장/산지유통/품목 점수도 약하면 일반 물류/경제 기사로 보고 컷
-        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6:
+        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6 and (not local_org_feature):
             return _reject("dist_no_agri_anchor")
 
         # 수출/검역/원산지 단속 등 '운영/집행' 키워드만으로 걸린 일반 기사 차단
@@ -4396,7 +4402,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 4.0
         if local_org_feature:
             score -= 4.2
-        if macro_policy_like and horti_title_sc < 1.6 and (not direct_supply_story):
+        if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and (not direct_supply_story):
             score -= 4.2
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
@@ -5213,7 +5219,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if is_trade_policy_issue(mix) and _h < 2.2:
                 continue
-            if is_macro_policy_issue(mix) and best_horti_score(a.title or "", "") < 1.6 and (not has_direct_supply_chain_signal(mix)):
+            if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and (not has_direct_supply_chain_signal(mix)):
                 continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                 continue
