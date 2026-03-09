@@ -5134,10 +5134,21 @@ BASE_MIN_SCORE = {
 def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> float:
     """상위 기사 분포에 맞춰 동적으로 임계치를 잡아 '약한 기사'를 컷한다.
     - 최상위(best)에서 일정 마진을 빼고, 섹션별 최소선(BASE_MIN_SCORE)보다 낮아지지 않게.
+    - policy는 저티어 소스 1건이 임계치를 과도하게 끌어올리지 않도록 비저티어 최고점을 우선 본다.
     """
     if not candidates_sorted:
         return BASE_MIN_SCORE.get(section_key, 6.0)
-    best = float(getattr(candidates_sorted[0], "score", 0.0) or 0.0)
+
+    best_article = candidates_sorted[0]
+    if section_key == "policy":
+        for cand in candidates_sorted:
+            d = normalize_host(getattr(cand, "domain", "") or "")
+            p = (getattr(cand, "press", "") or "").strip()
+            if (p not in LOW_QUALITY_PRESS) and (d not in LOW_QUALITY_DOMAINS):
+                best_article = cand
+                break
+
+    best = float(getattr(best_article, "score", 0.0) or 0.0)
     margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
     return max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
