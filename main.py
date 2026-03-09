@@ -3879,6 +3879,14 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     key = section_conf["key"]
     macro_policy_like = is_macro_policy_issue(text)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
+    policy_macro_keep = (
+        key == "policy"
+        and macro_policy_like
+        and count_any(
+            text,
+            [w.lower() for w in ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")],
+        ) >= 2
+    )
 
     def _reject(reason: str) -> bool:
         # debug: collect why an item was filtered out
@@ -3952,7 +3960,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     if "피망" in text and not is_edible_pimang_context(text):
         return _reject("pimang_non_edible_context")
     # ✅ '사과' 동음이의어(사과대/사과문 등) 오탐 차단: 과일/시장 맥락일 때만 통과
-    if "사과" in text and not is_edible_apple_context(text):
+    if "사과" in text and not is_edible_apple_context(text) and (not policy_macro_keep):
         return _reject("apple_non_edible_context")
 
 
@@ -3973,7 +3981,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     horti_sc_pre = best_horti_score(ttl, desc)
     # 축산 강신호(축산물/한우/돼지고기/계란 등) + 원예 신호 거의 없음 → 완전 배제
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
-    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2):
+    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep):
         return _reject("livestock_only")
 
     # ✅ 수산물 단독 이슈(옥돔/갈치/어업/양식 등)는 원예 브리핑 목적과 달라 배제
