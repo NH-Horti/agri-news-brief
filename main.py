@@ -2238,8 +2238,13 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     )
     promo_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_PROMO_TERMS])
     field_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_FIELD_TERMS])
-    horti_hit = best_horti_score(ttl, desc or "") >= 1.4
-    agri_hit = count_any(txt, [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼")]) >= 1
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    horti_hit = (best_horti_score(ttl, desc or "") >= 1.1) or (topic in _HORTI_TOPICS_SET and topic_sc >= 1.0)
+    agri_terms = ("농산물", "원예", "과수", "과일", "채소", "화훼", "농가", "샤인머스캣", "포도", "사과", "배", "GAP")
+    agri_hit = count_any(txt, [w.lower() for w in agri_terms]) >= 1
     return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
 
 
@@ -4276,7 +4281,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         title_ops_hits = count_any(ttl.lower(), [t.lower() for t in dist_ops_terms])
 
         if (ops_hits >= 1 and hard_hits >= 1 and market_hits == 0 and (not apc_ctx)
-                and agri_anchor_hits == 0 and horti_sc < 1.9 and title_market_hits == 0):
+                and agri_anchor_hits == 0 and horti_sc < 1.9 and title_market_hits == 0 and (not local_org_feature)):
             return _reject("dist_ops_only_generic")
 
         # 방송/종합지 지역단신이 dist로 유입되는 경우 추가 차단(실제 도매/APC/수출 현장 신호가 약할 때)
@@ -6475,7 +6480,8 @@ def is_macro_policy_issue(text: str) -> bool:
 
     if is_macro_trade_noise_context(t):
         return False
-    if is_general_consumer_price_noise(t) and best_horti_score("", t) < 1.6:
+    agri_macro_keep = ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")
+    if is_general_consumer_price_noise(t) and best_horti_score("", t) < 1.6 and count_any(t, [w.lower() for w in agri_macro_keep]) == 0:
         return False
 
     # 1) 물가/통계/성수품 신호(명시적)
@@ -6502,7 +6508,7 @@ def is_macro_policy_issue(text: str) -> bool:
     # 너무 약한 경우(일반 소비 기사) 방지: 원예 점수 또는 품목/농산물 키워드 필요
     if horti >= 1.4:
         return True
-    if any(w in t for w in ("농산물", "농식품", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도")):
+    if any(w in t for w in ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")):
         return True
 
     return False
