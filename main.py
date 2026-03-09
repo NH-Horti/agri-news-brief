@@ -1272,7 +1272,13 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
     except Exception:
         topic, topic_sc = ("", 0.0)
 
-    if topic not in _HORTI_TOPICS_SET or topic_sc < 1.6:
+    topic_bucket = ""
+    floral_terms = ("화훼", "꽃", "절화", "국화", "장미", "백합", "카네이션")
+    if any(term in text for term in floral_terms):
+        topic_bucket = "화훼"
+    elif topic in _HORTI_TOPICS_SET and topic_sc >= 1.2:
+        topic_bucket = topic
+    else:
         return None
 
     labels = [
@@ -1282,7 +1288,7 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
     ]
     if len(labels) < 2:
         return None
-    return f"EV:SUPPLY:{topic}:{':'.join(labels[:2])}"
+    return f"EV:SUPPLY:{topic_bucket}:{':'.join(labels[:2])}"
 
 
 def _event_key(a: "Article", section_key: str) -> str | None:
@@ -3055,6 +3061,7 @@ MID_PRESS_HINTS = (
 
 LOW_QUALITY_PRESS = {
     # 지나치게 가십/클릭 유도 성향이 강한 경우(필요 시 추가)
+    "팜&마켓",
     # '포인트데일리',
 }
 
@@ -5186,6 +5193,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _dup_key(a: Article) -> str:
         return a.norm_key or a.canon_url or a.title_key
 
+    def _is_low_core_source(a: Article) -> bool:
+        d = normalize_host(a.domain or "")
+        p = (a.press or "").strip()
+        return (p in LOW_QUALITY_PRESS) or (d in LOW_QUALITY_DOMAINS)
+
     def _already_used(a: Article) -> bool:
         k = _dup_key(a)
         return (k in used_title_keys) or (a.canon_url and a.canon_url in used_url_keys)
@@ -5202,6 +5214,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if a.score < core_min:
             continue
         if _already_used(a):
+            continue
+        if _is_low_core_source(a) and a.score < (core_min + 2.2):
             continue
         # dist: 지역 단신/공지형은 core 후보에서 제외(진짜 이슈가 밀리는 것을 방지)
         if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
@@ -5270,6 +5284,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < dist_eff_thr:
                 continue
             if _already_used(a):
+                continue
+            if _is_low_core_source(a) and a.score < (core_min + 2.2):
                 continue
             # dist: 지역 단신/공지형은 core 후보에서 제외
             if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
@@ -7712,7 +7728,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     sections_html = "\n".join(sections_html)
 
-    page_title = f"[{report_date} 농산물 뉴스 Brief]"
+    dev_badge_text = " [DEV]" if DEV_SINGLE_PAGE_MODE else ""
+    dev_sub_text = " · 개발 버전 미리보기" if DEV_SINGLE_PAGE_MODE else ""
+    dev_badge_html = '<span class="envBadge">DEV</span>' if DEV_SINGLE_PAGE_MODE else ""
+    page_title = f"[{report_date} 농산물 뉴스 Brief]{dev_badge_text}"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
     home_href = site_path
 
@@ -7762,6 +7781,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
     h1{{margin:0;font-size:18px;letter-spacing:-0.2px}}
     .sub{{color:var(--muted);font-size:12.5px;margin-top:4px}}
+    .envBadge{{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}}
     .navRow{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}}
     .navRow > *{{min-width:0}}
     .navBtn{{white-space:nowrap}}
@@ -7864,8 +7884,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <div class=\"topbar\">
     <div class=\"topin\">
       <div>
-        <h1>{esc(page_title)}</h1>
-        <div class=\"sub\">기간: {esc(period)} · 기사 {total}건</div>
+        <h1>{esc(page_title)}{dev_badge_html}</h1>
+        <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
       </div>
       <div class=\"navRow\">
         <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
@@ -9038,7 +9058,10 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
 
     order = list(KAKAO_MESSAGE_SECTION_ORDER) if isinstance(KAKAO_MESSAGE_SECTION_ORDER, list) else ["supply", "policy", "dist", "pest"]
     parts: list[str] = []
-    parts.append(f"농산물 뉴스 브리핑 ({report_date})")
+    header = f"농산물 뉴스 브리핑 ({report_date})"
+    if DEV_SINGLE_PAGE_MODE:
+        header = "[DEV] " + header + " - 개발 버전"
+    parts.append(header)
 
     for key in order:
         conf = _get_section_conf(key)
