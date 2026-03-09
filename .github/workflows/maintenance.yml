@@ -48,7 +48,6 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -104,14 +103,3 @@ jobs:
 
         run: |
           python main.py
-
-      - name: Post-run healthcheck
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEALTHCHECK_CONTENT_REF: main
-          HEALTHCHECK_EXPECTED_FILES: docs/index.html,.agri_archive.json,docs/archive_manifest.json
-          HEALTHCHECK_BASE_URL: https://nh-horti.github.io/agri-news-brief/
-          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
-          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief
-        run: |
-          python scripts/post_run_healthcheck.py

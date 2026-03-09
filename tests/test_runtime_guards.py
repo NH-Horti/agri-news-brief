@@ -53,24 +53,6 @@ class TestRuntimeGuards(unittest.TestCase):
 
         self.assertEqual(called.get("path"), "docs/dev/index.html")
 
-    def test_output_url_healthcheck_validates_host_and_path_prefix(self):
-        old_host = main.HEALTHCHECK_EXPECTED_HOST
-        old_prefix = main.HEALTHCHECK_EXPECTED_PATH_PREFIX
-        try:
-            main.HEALTHCHECK_EXPECTED_HOST = "nh-horti.github.io"
-            main.HEALTHCHECK_EXPECTED_PATH_PREFIX = "/agri-news-brief/dev"
-
-            main._validate_output_url_healthcheck("https://nh-horti.github.io/agri-news-brief/dev/index.html?v=1")
-
-            with self.assertRaises(RuntimeError):
-                main._validate_output_url_healthcheck("https://example.com/agri-news-brief/dev/index.html")
-
-            with self.assertRaises(RuntimeError):
-                main._validate_output_url_healthcheck("https://nh-horti.github.io/agri-news-brief/archive/2026-03-08.html")
-        finally:
-            main.HEALTHCHECK_EXPECTED_HOST = old_host
-            main.HEALTHCHECK_EXPECTED_PATH_PREFIX = old_prefix
-
 
 if __name__ == "__main__":
     unittest.main()

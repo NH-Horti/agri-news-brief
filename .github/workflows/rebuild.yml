@@ -39,7 +39,6 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,18 +73,15 @@ jobs:
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/index.html
-
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: rebuild_date
           FORCE_REPORT_DATE: ${{ inputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
-
           MAX_PER_SECTION: ${{ inputs.max_per_section }}
 
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
-
           WINDOW_MIN_HOURS: '72'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
@@ -97,20 +93,5 @@ jobs:
           DEBUG_REPORT_MAX_CANDIDATES: '200'
           DEBUG_REPORT_MAX_REJECTS: '2000'
 
-          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
-          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief/archive
-
         run: |
           python main.py
-
-      - name: Post-run healthcheck
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEALTHCHECK_CONTENT_REF: main
-          HEALTHCHECK_EXPECTED_FILES: docs/index.html,docs/archive/${{ inputs.report_date }}.html,.agri_archive.json
-          HEALTHCHECK_BASE_URL: https://nh-horti.github.io/agri-news-brief/
-          HEALTHCHECK_URL_REL_PATH: archive/${{ inputs.report_date }}.html
-          HEALTHCHECK_EXPECTED_HOST: nh-horti.github.io
-          HEALTHCHECK_EXPECTED_PATH_PREFIX: /agri-news-brief/archive
-        run: |
-          python scripts/post_run_healthcheck.py

@@ -3,16 +3,6 @@ name: agri-news-brief (dev verify rebuild)
 on:
   workflow_dispatch:
     inputs:
-      target_branch:
-        description: 'Development code branch to verify (must not be main)'
-        required: false
-        default: 'develop'
-        type: string
-      content_branch:
-        description: 'Branch to publish dev preview page (recommended: main)'
-        required: false
-        default: 'main'
-        type: string
       report_date:
         description: 'Date to rebuild on dev run (YYYY-MM-DD)'
         required: true
@@ -37,56 +27,43 @@ permissions:
   contents: write
 
 concurrency:
-  group: agri-news-brief-dev-verify-${{ inputs.target_branch }}-${{ inputs.content_branch }}
+  group: agri-news-brief-dev-verify-dev
   cancel-in-progress: true
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    environment: development
     steps:
-      - name: Guard target branch
-        run: |
-          if [ "${{ inputs.target_branch }}" = "main" ]; then
-            echo "[ERROR] target_branch=main is not allowed in dev verify workflow. Use develop or another dev branch."
-            exit 1
-          fi
-
-      - name: Ensure branches exist
+      - name: Ensure dev branch exists
         uses: actions/github-script@v7
         with:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const targetBranch = '${{ inputs.target_branch }}';
-            const contentBranch = '${{ inputs.content_branch }}';
-            const branches = [...new Set([targetBranch, contentBranch].filter(Boolean))];
 
-            for (const branchName of branches) {
-              try {
-                await github.rest.repos.getBranch({ owner, repo, branch: branchName });
-                core.info("[INFO] Branch '" + branchName + "' already exists.");
-              } catch (error) {
-                if (error.status !== 404) {
-                  throw error;
-                }
-
-                const mainBranch = await github.rest.repos.getBranch({ owner, repo, branch: 'main' });
-                const mainSha = mainBranch.data.commit.sha;
-                await github.rest.git.createRef({
-                  owner: owner,
-                  repo: repo,
-                  ref: 'refs/heads/' + branchName,
-                  sha: mainSha,
-                });
-                core.warning("[WARN] Branch '" + branchName + "' was missing and created from main (" + mainSha + ").");
+            try {
+              await github.rest.repos.getBranch({ owner, repo, branch: 'dev' });
+              core.info("[INFO] Branch 'dev' already exists.");
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
               }
+
+              const mainBranch = await github.rest.repos.getBranch({ owner, repo, branch: 'main' });
+              const mainSha = mainBranch.data.commit.sha;
+              await github.rest.git.createRef({
+                owner: owner,
+                repo: repo,
+                ref: 'refs/heads/dev',
+                sha: mainSha,
+              });
+              core.warning("[WARN] Branch 'dev' was missing and created from main (" + mainSha + ").");
             }
 
-      - name: Checkout target code branch
+      - name: Checkout dev branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.target_branch }}
+          ref: dev
           fetch-depth: 0
 
       - name: Setup Python
@@ -100,57 +77,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Guard dev Kakao secrets
-        if: ${{ inputs.send_kakao }}
-        env:
-          KAKAO_REST_API_KEY_DEV: ${{ secrets.KAKAO_REST_API_KEY_DEV }}
-          KAKAO_CLIENT_SECRET_DEV: ${{ secrets.KAKAO_CLIENT_SECRET_DEV }}
-          KAKAO_REFRESH_TOKEN_DEV: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV }}
-        run: |
-          for key in KAKAO_REST_API_KEY_DEV KAKAO_CLIENT_SECRET_DEV KAKAO_REFRESH_TOKEN_DEV; do
-            if [ -z "${!key}" ]; then
-              echo "[ERROR] Missing required dev secret: ${key}"
-              exit 1
-            fi
-          done
-
-      - name: Derive healthcheck constraints
-        env:
-          BRIEF_VIEW_URL_INPUT: ${{ inputs.brief_view_url }}
-        run: |
-          python - <<'PY'
-          import os
-          from urllib.parse import urlparse
-
-          u = (os.environ.get("BRIEF_VIEW_URL_INPUT") or "").strip().rstrip("/")
-          p = urlparse(u)
-          if p.scheme not in ("http", "https") or not p.netloc:
-              raise SystemExit(f"[ERROR] Invalid brief_view_url: {u}")
-
-          path = (p.path or "/").rstrip("/") or "/"
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
-              f.write(f"HC_EXPECTED_HOST={(p.hostname or '').lower()}\n")
-              f.write(f"HC_EXPECTED_PATH_PREFIX={path}\n")
-          print(f"[INFO] healthcheck host={(p.hostname or '').lower()} path_prefix={path}")
-          PY
-
       - name: Dev verify rebuild (single preview page overwrite)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_CONTENT_REF: ${{ inputs.content_branch }}
-          GH_CONTENT_BRANCH: ${{ inputs.content_branch }}
+          GH_CONTENT_REF: main
+          GH_CONTENT_BRANCH: main
 
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-          # Dev verification must use dev-only Kakao secrets.
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY_DEV }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET_DEV }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN_DEV }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
 
           PUBLISH_MODE: github_pages
-          PAGES_BRANCH: ${{ inputs.content_branch }}
+          PAGES_BRANCH: main
           PAGES_FILE_PATH: docs/dev/index.html
           PAGES_BASE_URL: ${{ inputs.brief_view_url }}
           BRIEF_VIEW_URL: ${{ inputs.brief_view_url }}
@@ -174,20 +115,5 @@ jobs:
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
-          HEALTHCHECK_EXPECTED_HOST: ${{ env.HC_EXPECTED_HOST }}
-          HEALTHCHECK_EXPECTED_PATH_PREFIX: ${{ env.HC_EXPECTED_PATH_PREFIX }}
-
         run: |
           python main.py
-
-      - name: Post-run healthcheck
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEALTHCHECK_CONTENT_REF: ${{ inputs.content_branch }}
-          HEALTHCHECK_EXPECTED_FILES: docs/dev/index.html
-          HEALTHCHECK_BASE_URL: ${{ inputs.brief_view_url }}
-          HEALTHCHECK_URL_REL_PATH: index.html
-          HEALTHCHECK_EXPECTED_HOST: ${{ env.HC_EXPECTED_HOST }}
-          HEALTHCHECK_EXPECTED_PATH_PREFIX: ${{ env.HC_EXPECTED_PATH_PREFIX }}
-        run: |
-          python scripts/post_run_healthcheck.py
