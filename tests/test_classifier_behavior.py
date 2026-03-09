@@ -24,6 +24,26 @@ class TestClassifierBehavior(unittest.TestCase):
             if main.is_relevant(title, desc, dom, url, conf, press):
                 scores[key] = main.compute_rank_score(title, desc, dom, self.now, conf, press)
         return (max(scores, key=scores.get) if scores else None), scores
+    def _make_article(self, section: str, title: str, desc: str, url: str):
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        canon = main.canonicalize_url(url)
+        title_key = main.norm_title_key(title)
+        return main.Article(
+            section=section,
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(canon, press, title_key),
+            title_key=title_key,
+            canon_url=canon,
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf[section], press),
+        )
 
     def test_market_relocation_prefers_dist(self):
         title = "광주 각화농산물 시장, 효령동 일원으로 옮긴다"
@@ -565,8 +585,56 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertFalse(any(a.link == u1 for a in core), msg=str([(x.link, x.topic, x.is_core) for x in picked]))
 
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_supply_event_dedupe_collapses_similar_flower_cost_story(self):
+        url1 = "https://www.ytn.co.kr/_ln/0103_202603071412402937"
+        url2 = "https://www.ytn.co.kr/_ln/0103_202603072211289925"
+        a1 = self._make_article(
+            "supply",
+            "유가 급등에 난방비도 치솟아... 화훼 농가 '울상'",
+            "유가 급등으로 화훼 농가들이 심각한 경제적 타격을 받고 있다. 해외에서 수입되는 원예용 상토의 운송비 증가가 추가적인 부담을 주고 있다.",
+            url1,
+        )
+        a2 = self._make_article(
+            "supply",
+            "유가 급등에 꽃샘추위까지...한숨 깊어가는 화훼 농가",
+            "유가 상승과 꽃샘추위로 화훼 농가의 상황이 더욱 악화되고 있다. 원예용 상토 가격 인상이 농가에 큰 영향을 미치고 있어 우려가 커지고 있다.",
+            url2,
+        )
+
+        self.assertEqual(main._event_key(a1, "supply"), main._event_key(a2, "supply"))
+        picked = main.select_top_articles([a1, a2], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertEqual(len(picked_urls & {url1, url2}), 1, msg=str([(x.link, x.score) for x in picked]))
+
+    def test_local_coop_export_feature_prefers_dist_over_supply(self):
+        title = "경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진"
+        desc = "경주 현곡농협이 샤인머스캣 농가의 수출을 통해 경제적 실익을 증진하고 있다. 대만으로의 수출이 예정되어 있으며, GAP 인증을 받은 농가들이 참여하고 있다."
+        best, scores = self._best_section(title, desc, "https://www.nongmin.com/article/20260306500345")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_macro_price_article_prefers_policy_over_supply(self):
+        title = "2월 물가 2.0% 올랐지만 축산물 6.0% 오르며 '들썩'… 이란 사태 반영..."
+        desc = "2월 물가가 2.0% 상승했지만, 축산물은 6.0% 급등하며 시장이 불안정해지고 있다. 농식품부는 쌀과 사과의 공급을 조절해 안정화를 도모할 계획이다."
+        best, scores = self._best_section(title, desc, "https://www.segye.com/newsView/20260306506243")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_local_smart_agri_zone_selection_is_not_dist_core(self):
+        herald = self._make_article(
+            "dist",
+            "의성군, 2026년 노지 스마트농업 육성지구 최종 선정",
+            "의성군이 2026년 노지 스마트농업 육성지구로 선정되어 기반 시설 확충을 목표로 하고 있다. 스마트 농산물산지유통센터도 연계하여 발전할 계획이다.",
+            "https://biz.heraldcorp.com/article/10688433",
+        )
+        strong = self._make_article(
+            "dist",
+            "가락시장 하역 중단 위기 물류 차질 비상",
+            "가락시장 청과 반입이 흔들리며 경매 일정과 유통 물량 조정에 비상이 걸렸다.",
+            "https://www.nongmin.com/article/20260304500375",
+        )
+
+        picked = main.select_top_articles([strong, herald], "dist", 5)
+        herald_picked = next((x for x in picked if x.link == herald.link), None)
+        self.assertTrue(herald_picked is None or (not getattr(herald_picked, "is_core", False)), msg=str([(x.link, x.score, x.is_core) for x in picked]))
 
 
 class TestRecentItemsRebuild(unittest.TestCase):
@@ -613,3 +681,6 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertFalse(any(it.get("date") == report_date for it in rebuilt))
         self.assertTrue(any(it.get("canon") == "https://keep.example.com/c" for it in rebuilt))
+
+if __name__ == "__main__":
+    unittest.main()

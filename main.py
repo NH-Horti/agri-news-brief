@@ -1197,7 +1197,17 @@ _STORY_ANCHORS = (
     "서울시", "농수산물", "농산물", "부적합", "가락시장", "도매시장", "공판장", "공영도매시장",
     "경락", "경매", "반입", "수거", "수거검사", "불시", "검사", "휴일", "심야",
     "원산지", "부정유통", "단속", "검역", "통관", "수출",
+    "유가", "상토", "난방비", "운송비", "꽃샘추위", "한파", "냉해", "동해",
     "잔류농약", "방사능", "식품안전", "위해", "유통", "차단", "사전", "폐기",
+)
+
+_SUPPLY_EVENT_ANCHOR_GROUPS = (
+    ("유가", ("유가", "국제유가", "유류비", "기름값")),
+    ("상토", ("상토", "원예용 상토")),
+    ("난방", ("난방비", "난방", "연료비")),
+    ("운송", ("운송비", "물류비", "해상운임")),
+    ("저온", ("꽃샘추위", "한파", "저온", "냉해", "동해", "서리")),
+    ("자재", ("농자재", "자재비", "비료", "포장재")),
 )
 
 def _norm_story_text(title: str, desc: str) -> str:
@@ -1255,6 +1265,25 @@ def _dist_story_signature(text: str) -> str | None:
     return None
 
 
+def _supply_story_signature(title: str, desc: str) -> str | None:
+    text = f"{title or ''} {desc or ''}".lower()
+    try:
+        topic, topic_sc = best_topic_and_score(title or "", desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+
+    if topic not in _HORTI_TOPICS_SET or topic_sc < 1.6:
+        return None
+
+    labels = [
+        label
+        for label, terms in _SUPPLY_EVENT_ANCHOR_GROUPS
+        if any(term in text for term in terms)
+    ]
+    if len(labels) < 2:
+        return None
+    return f"EV:SUPPLY:{topic}:{':'.join(labels[:2])}"
+
 
 def _event_key(a: "Article", section_key: str) -> str | None:
     """섹션별 '사실상 같은 이슈'를 더 강하게 묶기 위한 이벤트 키.
@@ -1262,6 +1291,11 @@ def _event_key(a: "Article", section_key: str) -> str | None:
     """
     try:
         text = ((a.title or "") + " " + (a.description or "")).lower()
+
+        if section_key == "supply":
+            sig = _supply_story_signature(a.title or "", a.description or "")
+            if sig:
+                return sig
 
         # 1) APC 준공/개장/가동/개소 등 이벤트(농협/지역 단위 묶음)
         if ("apc" in text or "산지유통센터" in text or "산지유통" in text) and any(k in text for k in ("준공", "준공식", "개장", "개소", "문 열", "가동", "준비", "스마트")):
@@ -2160,6 +2194,80 @@ def is_local_agri_policy_program_context(text: str) -> bool:
     )
 
 
+_LOCAL_AGRI_ORG_IN_TITLE_RX = re.compile(
+    r"(?:^|[\s·,，])(?:[가-힣]{2,4}\s+)?[가-힣]{2,12}(?:농협|원예농협|영농조합법인|농업회사법인|조합|작목반|공선회)(?=$|[\s·,，])"
+)
+_LOCAL_AGRI_ORG_TERMS = (
+    "농협", "원예농협", "작목반", "공선회", "연합사업단", "영농조합법인", "농업회사법인", "조합",
+)
+_LOCAL_AGRI_ORG_PROMO_TERMS = (
+    "경제사업", "농가실익", "실익", "증진", "활발", "활성화", "성과", "판로", "브랜드",
+    "우수", "참여", "인증", "전략품목", "매출", "실적",
+)
+_LOCAL_AGRI_ORG_FIELD_TERMS = (
+    "수출", "검역", "통관", "공동선별", "공선출하", "판로", "판매", "유통",
+    "산지유통", "산지유통센터", "apc", "선별", "브랜드",
+)
+_DIRECT_SUPPLY_SIGNAL_TERMS = (
+    "수급", "작황", "출하", "반입", "경락", "경매", "저장", "재고", "생산", "생산량", "물량",
+)
+_LOCAL_AGRI_INFRA_SELECTION_TERMS = (
+    "육성지구", "선정", "지정", "공모", "계획", "기반 시설", "기반시설", "확충", "연계",
+)
+_LOCAL_AGRI_INFRA_TERMS = (
+    "스마트농업", "스마트 농업", "농산물산지유통센터", "산지유통센터", "apc", "인프라",
+)
+_LOCAL_AGRI_INFRA_OPERATION_TERMS = (
+    "준공", "완공", "개장", "개소", "가동", "선별", "선과", "저온", "저온저장",
+    "저장고", "경락", "반입", "수출", "검역",
+)
+
+
+def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
+    """지역 농협/조합의 성과·판로 소개형 기사인지 판정.
+    - 공급(supply)보다 유통/현장(dist)에 더 가깝지만,
+      로컬 홍보성 맥락이 강하면 핵심(core)에서는 후순위로 밀어낸다.
+    """
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+
+    org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl) is not None) or (
+        count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS]) >= 1
+    )
+    promo_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_PROMO_TERMS])
+    field_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_FIELD_TERMS])
+    horti_hit = best_horti_score(ttl, desc or "") >= 1.4
+    agri_hit = count_any(txt, [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼")]) >= 1
+    return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
+
+
+def has_direct_supply_chain_signal(text: str) -> bool:
+    t = (text or "").lower()
+    if not t:
+        return False
+    market_terms = ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")
+    if count_any(t, [w.lower() for w in market_terms]) >= 1:
+        return True
+    return count_any(t, [w.lower() for w in _DIRECT_SUPPLY_SIGNAL_TERMS]) >= 2
+
+
+def is_local_agri_infra_designation_context(title: str, desc: str) -> bool:
+    """지역 단위 농업 인프라 '선정/지정/계획' 기사인지 판정.
+    - 실제 가동/준공이 아닌 기획·선정 단계의 지역 이슈는 dist 일반 기사로는 남겨도 core로는 올리지 않는다.
+    """
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt or _LOCAL_REGION_IN_TITLE_RX.search(ttl) is None:
+        return False
+
+    infra_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_INFRA_TERMS])
+    selection_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_INFRA_SELECTION_TERMS])
+    operation_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_INFRA_OPERATION_TERMS])
+    return infra_hit >= 1 and selection_hit >= 2 and operation_hit == 0
+
+
 def is_fruit_foodservice_event_context(text: str) -> bool:
     """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
     - 공급/작황/도매시장 수급 신호보다 소비 이벤트 성격이 강해 '품목 및 수급'의 핵심(core)에서 제외/감점.
@@ -2248,6 +2356,16 @@ def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
     base = (0.18 * must_t) + (0.40 * must_h)
     # 완전 무관 기사 방어용 약한 보정
     base += 0.10 * min(6, agri_strength_score(txt))
+    key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
+    if key == "policy" and is_macro_policy_issue(txt):
+        base += 0.9
+    elif key == "dist" and is_local_agri_org_feature_context(title, desc):
+        base += 0.7
+    elif key == "supply":
+        if is_local_agri_org_feature_context(title, desc):
+            base -= 0.7
+        if is_macro_policy_issue(txt) and best_horti_score(title or "", "") < 1.6 and (not has_direct_supply_chain_signal(txt)):
+            base -= 0.6
     return round(base, 3)
 
 def off_topic_penalty(text: str) -> int:
@@ -2305,6 +2423,7 @@ DIST_WEIGHT_MAP = {
     '가락시장': 3.5, '도매시장': 3.0, '공판장': 2.8, '경락': 2.8, '경매': 2.5, '청과': 1.5,
     '반입': 2.2, '중도매인': 2.0, '시장도매인': 2.0, '물류': 2.0, '유통센터': 1.5,
     'apc': 2.0, '선별': 1.8, '저온': 1.2, '저장': 1.2, '원산지': 2.0, '부정유통': 2.0,
+    '수출': 2.1, '검역': 1.8, '통관': 1.6, '판로': 1.2, '공동선별': 1.4, '공선출하': 1.4,
 
     '산지유통센터': 2.4,
     '산지유통': 2.0,
@@ -2446,7 +2565,7 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
     return 2.8 + 0.6 * max(0, hits - 1) + 0.4 * tech
 
 SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출하','재고','저장','물량')
-DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지')
+DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지','산지유통','산지유통센터','수출','검역','통관')
 POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료','물가','가격','성수품','차례상','소비자물가','물가지수','통계','kosis')
 PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
 
@@ -2534,7 +2653,8 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
     # 제목에 지역 단위(시/군/구/읍/면) 표기가 없으면 로컬 단신으로 보지 않음
     # 단, '안산 시장'처럼 (지자체장) 표기는 있는데 '안산시'가 없는 케이스가 있어 보완한다.
     if (_LOCAL_REGION_IN_TITLE_RX.search(ttl) is None) and (_LOCAL_OFFICIAL_IN_TITLE_RX.search(ttl) is None):
-        return False
+        if not is_local_agri_org_feature_context(title, desc):
+            return False
 
     # 제목이 '○○시, ...' / '○○군·...' 같은 단신형 구두점 패턴이면 강한 신호
     punct = _LOCAL_BRIEF_PUNCT_RX.search(ttl) is not None
@@ -2569,6 +2689,12 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
     # 공직자 동정 + 회의/점검/방문이면 로컬 단신으로 처리
     if official_meeting:
         return True
+
+    # 지역 농협/조합 성과 소개형 수출·판로 기사는 dist에서 핵심 현장 이슈보다 후순위로 본다.
+    if is_local_agri_org_feature_context(title, desc):
+        strong_market = count_any(txt, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장")])
+        if strong_market == 0 and not has_apc_agri_context(txt):
+            return True
 
     # 제목의 원예/도매 신호가 약하면(=본문 일부 언급) 단신으로 간주
     if best_horti_score(title or "", "") < 1.6 and count_any(ttl_l, [t.lower() for t in _DIST_STRONG_ANCHORS]) == 0:
@@ -4200,11 +4326,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
     # (핵심) 원예수급/품목 신호 점수(품목 라벨 + 오탐 억제)
     horti_sc = best_horti_score(title, desc)
+    horti_title_sc = best_horti_score(title, "")
     key_strength = keyword_strength(text, section_conf) if SCORING_KEYWORD_STRENGTH_BOOST_ENABLED else 0
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "온라인 도매시장", "산지유통", "산지유통센터"]
     market_hits = count_any(text, [t.lower() for t in market_ctx_terms])
     if has_apc_agri_context(text):
         market_hits += 1
+    macro_policy_like = is_macro_policy_issue(text)
+    local_org_feature = is_local_agri_org_feature_context(title, desc)
+    infra_designation = is_local_agri_infra_designation_context(title, desc)
+    direct_supply_story = has_direct_supply_chain_signal(text)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -4263,6 +4394,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
         if is_local_agri_policy_program_context(text):
             score -= 4.0
+        if local_org_feature:
+            score -= 4.2
+        if macro_policy_like and horti_title_sc < 1.6 and (not direct_supply_story):
+            score -= 4.2
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += min(2.0, 0.22 * key_strength)
@@ -4279,6 +4414,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
         if is_local_brief_text(title, desc, "dist"):
             score -= 3.5
+        if infra_designation:
+            score -= 2.4
 
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
@@ -4293,6 +4430,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
+        if macro_policy_like:
+            score += 4.2
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
@@ -4734,6 +4873,8 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # ✅ 지역 단신/지자체 공지형 기사(dist)는 핵심2로 올리지 않는다.
         if is_local_brief_text(a.title or "", a.description or "", section_key):
             return False
+        if is_local_agri_infra_designation_context(a.title or "", a.description or ""):
+            return False
 
         # '수출/검역/통관/원산지 단속'만으로 걸린 일반 기사 누수 방지(시장/APC/원예 맥락 없는 경우)
         ops_terms = ("원산지", "부정유통", "단속", "검역", "통관", "수출")
@@ -4932,9 +5073,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     pool = [a for a in candidates_sorted if a.score >= thr]
 
 
-    # dist: 동일 이슈(APC 준공/개장, 서울시 부적합 유통 차단 등)가 여러 매체로 반복되는 경우가 많아
+    # dist/supply: 동일 이슈(APC 준공, 공급비용 압박 후속 리포트 등)가 여러 건 반복될 때
     # '이벤트 키'로 먼저 1차 클러스터링하여 중복으로 핵심이 밀리는 문제를 완화한다.
-    if section_key == "dist":
+    if section_key in ("dist", "supply"):
         pool = _dedupe_by_event_key(pool, section_key)
 
     if not pool:
@@ -5071,6 +5212,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if is_policy_announcement_issue(mix, dom, pr):
                 continue
             if is_trade_policy_issue(mix) and _h < 2.2:
+                continue
+            if is_macro_policy_issue(mix) and best_horti_score(a.title or "", "") < 1.6 and (not has_direct_supply_chain_signal(mix)):
+                continue
+            if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                 continue
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
             if (a.topic or "").strip() == "정책":
@@ -6424,7 +6569,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             # quick prefilter (reduce false moves)
             if k == "dist":
                 dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","유통","도매")])
-                if dist_like < 2 and (not has_apc_agri_context(txt)):
+                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not is_local_agri_org_feature_context(a.title or "", a.description or "")):
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
