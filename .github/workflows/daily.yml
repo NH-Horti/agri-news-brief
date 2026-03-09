@@ -57,7 +57,7 @@ jobs:
           FORCE_REPORT_DATE: ''
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: '45'
-          WINDOW_MIN_HOURS: '72'
+          WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
           CROSSDAY_DEDUPE_DAYS: '7'
 

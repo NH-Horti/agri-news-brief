@@ -92,7 +92,7 @@ jobs:
           BACKFILL_REBUILD_SLEEP_SEC: ${{ inputs.sleep_sec }}
           BACKFILL_INCLUDE_NONBUSINESS_DAYS: ${{ inputs.include_nonbusiness_days }}
 
-          WINDOW_MIN_HOURS: '72'
+          WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
           MAX_PER_SECTION: '5'

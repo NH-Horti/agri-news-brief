@@ -82,7 +82,7 @@ jobs:
 
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
-          WINDOW_MIN_HOURS: '72'
+          WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
           NAVER_MAX_WORKERS: '1'
