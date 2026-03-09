@@ -480,6 +480,7 @@
   
   
   
+  
   <!-- UX_PATCH_BEGIN v20260301-uxnav-toast -->
   <script>
   (function(){
@@ -487,9 +488,9 @@
     var navLoading = document.getElementById('navLoading');
 
     function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
-    function _showLoading(){ 
-      try{ 
-        if(navLoading) navLoading.classList.add('show'); 
+    function _showLoading(){
+      try{
+        if(navLoading) navLoading.classList.add('show');
         setTimeout(_hideLoading, 1200);
       }catch(e){}
     }
@@ -559,7 +560,6 @@
     _bindNav(prev, '이전 브리핑이 없습니다.');
     _bindNav(next, '다음 브리핑이 없습니다.');
 
-    // Date select: navigate immediately to selected option value (already a URL in our pages)
     var sel = document.getElementById('dateSelect');
     if(sel){
       try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
@@ -571,7 +571,6 @@
       });
     }
 
-    // Swipe navigation (no hint)
     var sx=0, sy=0;
     var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
     if(swipeArea && swipeArea.addEventListener){
