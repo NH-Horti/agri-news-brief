@@ -200,7 +200,7 @@ def http_session():
 # -----------------------------
 KST = timezone(timedelta(hours=9))
 REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
-WINDOW_MIN_HOURS = int(os.getenv("WINDOW_MIN_HOURS", "72"))  # 최소 후보 수집 윈도우(시간)
+WINDOW_MIN_HOURS = int(os.getenv("WINDOW_MIN_HOURS", "0"))  # 최소 후보 수집 윈도우(시간, 기본 0=윈도우 확장 없음)
 CROSSDAY_DEDUPE_DAYS = int(os.getenv("CROSSDAY_DEDUPE_DAYS", "7"))  # 최근 N일 URL/사건키 중복 방지
 CROSSDAY_DEDUPE_ENABLED_ENV = (os.getenv("CROSSDAY_DEDUPE_ENABLED", "true").strip().lower() == "true")
 
@@ -9463,18 +9463,7 @@ def compute_window(repo: str, token: str, end_kst: datetime):
             start = end_kst - timedelta(hours=24)
         return start, end_kst
 
-    state = load_state(repo, token)
-    last_end_iso = state.get("last_end_iso")
-
     start = prev_cutoff
-    if last_end_iso:
-        try:
-            st = datetime.fromisoformat(last_end_iso)
-            if st.tzinfo is None:
-                st = st.replace(tzinfo=KST)
-            start = min(st.astimezone(KST), prev_cutoff)
-        except Exception:
-            start = prev_cutoff
 
     if start >= end_kst:
         start = end_kst - timedelta(hours=24)
