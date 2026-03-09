@@ -4067,6 +4067,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     agri_ctx_hits = count_any(text, [t.lower() for t in ("농업", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화")])
     if local_org_feature:
         agri_ctx_hits = max(agri_ctx_hits, 1)
+    if key == "policy" and broad_macro_price:
+        # Broad macro price watches still count as agri/policy context even with FX terms.
+        agri_ctx_hits = max(agri_ctx_hits, 1)
 
     # (강제 컷) 전력/에너지/유틸리티 '도매시장/수급' 동음이의어 오탐 차단
     energy_hits = count_any(text, [t.lower() for t in ENERGY_CONTEXT_TERMS])
@@ -5277,11 +5280,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _low_core_allowed(a: Article) -> bool:
         if not _is_low_core_source(a):
             return True
+        if section_key == "policy":
+            return False
         sc = float(getattr(a, "score", 0.0) or 0.0)
         if best_non_low_core_score is None:
             return sc >= (core_min + 2.6)
-        if section_key == "policy":
-            return sc >= (best_non_low_core_score + 4.0)
         if strong_non_low_core_count >= 2:
             return sc >= (best_non_low_core_score + 1.0)
         return sc >= (best_non_low_core_score + 0.6)
