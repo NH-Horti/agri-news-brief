@@ -328,10 +328,12 @@ class TestClassifierBehavior(unittest.TestCase):
         old_cond = main.COND_PAGING_ENABLED
         old_max_pages = main.COND_PAGING_MAX_PAGES
         old_cap = main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP
+        old_min_hours = main.WINDOW_MIN_HOURS
         try:
             main.COND_PAGING_ENABLED = True
             main.COND_PAGING_MAX_PAGES = 2
             main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = 2
+            main.WINDOW_MIN_HOURS = 72
 
             def _fake_paged(q, display=50, pages=1, sort="date"):
                 return {"items": []}
@@ -361,6 +363,7 @@ class TestClassifierBehavior(unittest.TestCase):
             main.COND_PAGING_ENABLED = old_cond
             main.COND_PAGING_MAX_PAGES = old_max_pages
             main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = old_cap
+            main.WINDOW_MIN_HOURS = old_min_hours
 
         self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
@@ -381,11 +384,13 @@ class TestClassifierBehavior(unittest.TestCase):
         old_cond = main.COND_PAGING_ENABLED
         old_max_pages = main.COND_PAGING_MAX_PAGES
         old_cap = main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP
+        old_min_hours = main.WINDOW_MIN_HOURS
         try:
             main.COND_PAGING_ENABLED = True
             main.COND_PAGING_MAX_PAGES = 2
             main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = 1
             main._cond_paging_take_budget = lambda n=1: False
+            main.WINDOW_MIN_HOURS = 72
 
             def _fake_paged(q, display=50, pages=1, sort="date"):
                 return {"items": []}
@@ -416,6 +421,7 @@ class TestClassifierBehavior(unittest.TestCase):
             main.COND_PAGING_ENABLED = old_cond
             main.COND_PAGING_MAX_PAGES = old_max_pages
             main.PEST_ALWAYS_ON_PAGE2_QUERY_CAP = old_cap
+            main.WINDOW_MIN_HOURS = old_min_hours
 
         self.assertTrue(any(start == 51 for (_q, start) in seen_page2), msg=str(seen_page2))
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
@@ -434,9 +440,11 @@ class TestClassifierBehavior(unittest.TestCase):
         old_pub = main._best_effort_article_pubdate_kst
         old_enabled = main.PEST_WEB_RECALL_ENABLED
         old_cap = main.PEST_WEB_RECALL_QUERY_CAP
+        old_min_hours = main.WINDOW_MIN_HOURS
         try:
             main.PEST_WEB_RECALL_ENABLED = True
             main.PEST_WEB_RECALL_QUERY_CAP = 2
+            main.WINDOW_MIN_HOURS = 72
 
             def _fake_paged(q, display=50, pages=1, sort="date"):
                 return {"items": []}
@@ -470,6 +478,7 @@ class TestClassifierBehavior(unittest.TestCase):
             main._best_effort_article_pubdate_kst = old_pub
             main.PEST_WEB_RECALL_ENABLED = old_enabled
             main.PEST_WEB_RECALL_QUERY_CAP = old_cap
+            main.WINDOW_MIN_HOURS = old_min_hours
 
         self.assertTrue(any("NISX20260228_0003530198" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
