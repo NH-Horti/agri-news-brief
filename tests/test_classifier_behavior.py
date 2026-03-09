@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import sys
 
@@ -635,6 +635,84 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([strong, herald], "dist", 5)
         herald_picked = next((x for x in picked if x.link == herald.link), None)
         self.assertTrue(herald_picked is None or (not getattr(herald_picked, "is_core", False)), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+
+    def test_sedaily_price_watch_prefers_policy_over_supply(self):
+        title = "“주말에 고기 좀 구워볼까?” 했다가 ‘깜짝’…소·돼지고기 가격 두..."
+        desc = "ASF 발생으로 인해 돼지고기 출하가 지연되며 가격이 급등하고 있다. 또한, 사과 가격도 환율 상승으로 인해 상승세를 보이고 있다."
+        best, scores = self._best_section(title, desc, "https://www.sedaily.com/article/20016226")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
+        low = self._make_article(
+            "policy",
+            "농축산물 물가 1%대 안착, 수급 안정·할인지원에 예산 집중 투입",
+            "농식품부는 농축산물 가격 안정을 위해 정부양곡을 방출하고 사과 수급 안정 대책을 이어간다.",
+            "https://www.farmnmarket.com/news/article.html?no=25786",
+        )
+        major1 = self._make_article(
+            "policy",
+            "농산물 최대 50% 할인 지속…정부 '석유류·먹거리 가격 안정 총력'",
+            "농림축산식품부는 농산물 가격 안정을 위해 할인 지원과 공급 안정 조치를 이어간다.",
+            "https://www.nongmin.com/article/20260306500258",
+        )
+        major2 = self._make_article(
+            "policy",
+            "한은 '물가, 중동 사태 따른 국제 유가가 변수'",
+            "농축수산물 물가는 안정세를 보이고 있으나 유가와 물가 불확실성이 다시 커질 수 있다.",
+            "https://it.chosun.com/news/articleView.html?idxno=2023092158205",
+        )
+
+        picked = main.select_top_articles([low, major1, major2], "policy", 5)
+        low_picked = next((x for x in picked if x.link == low.link), None)
+        self.assertTrue(low_picked is None or (not getattr(low_picked, "is_core", False)), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        self.assertTrue(any(getattr(x, "is_core", False) for x in picked if x.link in {major1.link, major2.link}), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_local_coop_feature_can_fill_dist_when_room_but_not_core(self):
+        local = self._make_article(
+            "dist",
+            "경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진",
+            "경주 현곡농협이 샤인머스캣 농가의 수출을 통해 경제적 실익을 증진하고 있다. 대만 수출과 GAP 인증 농가 참여가 이어지고 있다.",
+            "https://www.nongmin.com/article/20260306500345",
+        )
+        strong1 = self._make_article(
+            "dist",
+            "농산물 유통의 진화…새벽 경매에서 온라인 거래로",
+            "농산물 유통이 온라인 거래로 변화하며 경매와 물류 효율화가 빨라지고 있다.",
+            "https://www.newspim.com/news/view/20260305001313",
+        )
+        strong2 = self._make_article(
+            "dist",
+            "흥양농협, 원예농산물 산지유통센터 준공 식 개최",
+            "원예농산물 산지유통센터 준공으로 선별과 유통 효율성이 높아질 전망이다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=315801",
+        )
+
+        picked = main.select_top_articles([strong1, strong2, local], "dist", 5)
+        local_picked = next((x for x in picked if x.link == local.link), None)
+        self.assertIsNotNone(local_picked, msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        self.assertFalse(getattr(local_picked, "is_core", False), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_dev_render_and_kakao_message_are_labeled(self):
+        orig = main.DEV_SINGLE_PAGE_MODE
+        main.DEV_SINGLE_PAGE_MODE = True
+        try:
+            empty = {"supply": [], "policy": [], "dist": [], "pest": []}
+            html = main.render_daily_page(
+                "2026-03-09",
+                self.now,
+                self.now + timedelta(hours=72),
+                empty,
+                ["2026-03-09"],
+                "/agri-news-brief/dev/",
+            )
+            msg = main.build_kakao_message("2026-03-09", empty)
+        finally:
+            main.DEV_SINGLE_PAGE_MODE = orig
+
+        self.assertIn("DEV", html)
+        self.assertIn("개발 버전 미리보기", html)
+        self.assertTrue(msg.splitlines()[0].startswith("[DEV] "), msg=msg)
 
 
 class TestRecentItemsRebuild(unittest.TestCase):

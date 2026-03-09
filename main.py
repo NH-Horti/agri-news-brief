@@ -600,7 +600,7 @@ BAN_KWS = [
 # 오피니언/사설/칼럼 등은 브리핑 대상에서 제외(원예수급 실무 신호가 약하고 노이즈가 큼)
 OPINION_BAN_TERMS = [
     "[사설]", "사설", "칼럼", "오피니언", "기고", "독자기고", "기자수첩",
-    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
+    "일기", "농막일기", "수필", "에세이", "연재", "기행",
     "만평", "데스크칼럼", "횡설수설", "기자의 시선", "논단",
 ]
 
@@ -1286,9 +1286,13 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
         for label, terms in _SUPPLY_EVENT_ANCHOR_GROUPS
         if any(term in text for term in terms)
     ]
+    if topic_bucket == "화훼":
+        cost_like = sum(1 for label in ("유가", "상토", "난방", "운송", "자재") if label in labels)
+        if cost_like >= 2 or (cost_like >= 1 and "저온" in labels):
+            return "EV:SUPPLY:화훼:COST_PRESSURE"
     if len(labels) < 2:
         return None
-    return f"EV:SUPPLY:{topic_bucket}:{':'.join(labels[:2])}"
+    return f"EV:SUPPLY:{topic_bucket}:{':'.join(sorted(labels)[:2])}"
 
 
 def _event_key(a: "Article", section_key: str) -> str | None:
@@ -2279,6 +2283,33 @@ def is_local_agri_infra_designation_context(title: str, desc: str) -> bool:
     return infra_hit >= 1 and selection_hit >= 2 and operation_hit == 0
 
 
+def is_broad_macro_price_context(title: str, desc: str) -> bool:
+    """거시 물가/장바구니형 기사인지 판단.
+    - 개별 품목 수급 기사와 달리, 여러 먹거리 품목을 한 번에 다루며
+      물가/환율/유가/정부 안정화 같은 거시 문맥이 함께 붙는 경우를 잡는다.
+    """
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+
+    macro_hits = count_any(txt, [w.lower() for w in ("물가", "소비자물가", "물가지수", "cpi", "장바구니", "밥상", "먹거리", "체감물가", "고물가")])
+    price_hits = count_any(txt, [w.lower() for w in ("가격", "급등", "상승", "하락", "들썩", "불안")])
+    item_hits = count_any(txt, [w.lower() for w in ("사과", "배", "감귤", "딸기", "채소", "과일", "농산물", "축산물", "돼지고기", "소고기", "계란", "달걀", "쌀")])
+    driver_hits = count_any(txt, [w.lower() for w in ("농식품부", "정부", "할인지원", "안정화", "공급", "수급", "유가", "환율", "통계", "kosis")])
+
+    if macro_hits == 0 and ("가격" in txt) and item_hits >= 2 and driver_hits >= 1:
+        macro_hits = 1
+
+    if macro_hits == 0 or price_hits == 0:
+        return False
+    if item_hits >= 2:
+        return True
+    if item_hits >= 1 and driver_hits >= 1:
+        return True
+    return False
+
+
 def is_fruit_foodservice_event_context(text: str) -> bool:
     """과일(특히 딸기 등) '외식/뷔페/프랜차이즈 시즌행사'형 기사 판정.
     - 공급/작황/도매시장 수급 신호보다 소비 이벤트 성격이 강해 '품목 및 수급'의 핵심(core)에서 제외/감점.
@@ -2368,13 +2399,18 @@ def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
     # 완전 무관 기사 방어용 약한 보정
     base += 0.10 * min(6, agri_strength_score(txt))
     key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
+    broad_macro_price = is_broad_macro_price_context(title, desc)
     if key == "policy" and is_macro_policy_issue(txt):
         base += 0.9
+        if broad_macro_price:
+            base += 0.6
     elif key == "dist" and is_local_agri_org_feature_context(title, desc):
-        base += 0.7
+        base += 1.0
     elif key == "supply":
         if is_local_agri_org_feature_context(title, desc):
-            base -= 0.7
+            base -= 1.0
+        if broad_macro_price and (not has_direct_supply_chain_signal(txt)):
+            base -= 1.0
         if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and (not has_direct_supply_chain_signal(txt)):
             base -= 0.6
     return round(base, 3)
@@ -2816,7 +2852,7 @@ PRESS_HOST_MAP = {
     "joongdo.co.kr": "중도일보",
     "gukjenews.com": "국제뉴스",
 
-    
+
     # 요청 매체(영문→한글)
     "mediajeju.com": "미디어제주",
     "pointdaily.co.kr": "포인트데일리",
@@ -3878,6 +3914,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     dom = normalize_host(dom or "")
     key = section_conf["key"]
     macro_policy_like = is_macro_policy_issue(text)
+    broad_macro_price = is_broad_macro_price_context(title, desc)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
     policy_macro_keep = (
         key == "policy"
@@ -3902,7 +3939,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
-        if best_horti_score(ttl, desc) < 1.8 and (not macro_policy_like):
+        if best_horti_score(ttl, desc) < 1.8 and (not macro_policy_like) and (not broad_macro_price):
             return _reject("hardblock_consumer_price_noise")
 
     # URL/경로 기반 보정(지역/로컬 섹션 등)
@@ -4199,6 +4236,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         if not supply_ok:
             return _reject("supply_context_gate")
 
+        if broad_macro_price and (not has_direct_supply_chain_signal(text)):
+            title_focus_hits = count_any(ttl.lower(), [t.lower() for t in ("사과", "배", "감귤", "딸기", "참외", "포도", "고추", "오이", "토마토", "파프리카", "화훼", "절화", "과일", "채소", "농산물", "청과", "수급", "작황", "출하", "반입", "경락")])
+            if title_focus_hits < 2 and best_horti_score(ttl, "") < 2.0:
+                return _reject("supply_macro_price_watch")
+
         # URL이 IT/테크 섹션인데 농업/시장 맥락이 약하면 컷(범용 단어 오탐 방지)
         if any(p in _path for p in ("/it/", "/tech/", "/future/", "/science/", "/game/", "/culture/")):
             if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 2.2:
@@ -4219,7 +4261,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
-            if (not macro_policy_like) and not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
+            if (not macro_policy_like) and (not broad_macro_price) and not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
                 return _reject("policy_context_gate")
 
         # 금융/산업 일반 정책 오탐 차단
@@ -4274,6 +4316,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         apc_ctx = has_apc_agri_context(text)
         if apc_ctx:
             soft_hits += 1
+        if local_org_feature:
+            soft_hits += 2
+            hard_hits = max(hard_hits, 1)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
 
         # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
         relocation_hint = any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소"))
@@ -4316,7 +4362,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             has_infra = any(w in text for w in infra_terms)
 
             # soft-only는 (인프라 + (농업앵커 or 품목점수)) 또는 (품목점수 매우 강함 + soft 2개 이상)에서만 허용
-            if not ((has_infra and (agri_anchor_hits >= 1 or horti_sc >= 1.9 or apc_ctx)) or (horti_sc >= 2.8 and soft_hits >= 2)):
+            if not (local_org_feature or (has_infra and (agri_anchor_hits >= 1 or horti_sc >= 1.9 or apc_ctx)) or (horti_sc >= 2.8 and soft_hits >= 2)):
                 return _reject("dist_soft_without_infra")
 # 병해충/방제(pest) 섹션 정교화: 농업 맥락 없는 방역/생활해충/벼 방제 오탐 제거 + 신호 강도 조건
     if key == "pest":
@@ -4359,6 +4405,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     if has_apc_agri_context(text):
         market_hits += 1
     macro_policy_like = is_macro_policy_issue(text)
+    broad_macro_price = is_broad_macro_price_context(title, desc)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
     infra_designation = is_local_agri_infra_designation_context(title, desc)
     direct_supply_story = has_direct_supply_chain_signal(text)
@@ -4389,7 +4436,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # "오늘, 서울시"류 알림성 기사 감점
     if ("오늘, 서울시" in title_l) or ("서울청년문화패스" in title_l):
         score -= 1.8
-    
+
     # -----------------------------
     # Generalized boost: '원예 품목 신호' + '무역/정책(관세/무관세/FTA/수입/통관/검역 등)' + '시장 영향' 조합
     # 특정 기사 하나를 위해 키워드를 추가하는 방식이 아니라,
@@ -4421,7 +4468,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if is_local_agri_policy_program_context(text):
             score -= 4.0
         if local_org_feature:
-            score -= 4.2
+            score -= 4.8
+        if broad_macro_price and (not direct_supply_story):
+            score -= 5.0
         if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and (not direct_supply_story):
             score -= 4.2
     elif key == "dist":
@@ -4440,8 +4489,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
         if is_local_brief_text(title, desc, "dist"):
             score -= 3.5
+        if local_org_feature:
+            score += 3.2
         if infra_designation:
-            score -= 2.4
+            score -= 3.0
 
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
@@ -4458,6 +4509,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 3.0
         if macro_policy_like:
             score += 4.2
+        if broad_macro_price:
+            score += 2.4
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
@@ -4791,7 +4844,7 @@ def _is_policy_official(a: "Article") -> bool:
 # 코어(핵심 2)로 올리기엔 부적절한 헤드라인 패턴(칼럼/기고/행사/인물/홍보성)
 _HEADLINE_STOPWORDS = [
     "칼럼", "기고", "사설", "오피니언", "독자기고", "기자수첩",
-    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
+    "일기", "농막일기", "수필", "에세이", "연재", "기행",
     "인터뷰", "대담", "신간", "책", "추천", "여행", "맛집",
     "포토", "화보", "영상", "스케치", "행사", "축제", "기념", "시상",
     "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou",
@@ -4951,7 +5004,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
 
     # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
-    "일기", "농막일기", "수필", "에세이", "연재", "기행", 
+    "일기", "농막일기", "수필", "에세이", "연재", "기행",
                  "인터뷰", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
     if any(w.lower() in title for w in hard_stop):
         return False
@@ -5206,6 +5259,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         p = (a.press or "").strip()
         return (p in LOW_QUALITY_PRESS) or (d in LOW_QUALITY_DOMAINS)
 
+    non_low_core_scores = [float(getattr(a, "score", 0.0) or 0.0) for a in pool if not _is_low_core_source(a)]
+    best_non_low_core_score = max(non_low_core_scores) if non_low_core_scores else None
+    strong_non_low_core_count = sum(1 for a in pool if (not _is_low_core_source(a)) and float(getattr(a, "score", 0.0) or 0.0) >= core_min)
+
+    def _low_core_allowed(a: Article) -> bool:
+        if not _is_low_core_source(a):
+            return True
+        sc = float(getattr(a, "score", 0.0) or 0.0)
+        if best_non_low_core_score is None:
+            return sc >= (core_min + 2.6)
+        if strong_non_low_core_count >= 2:
+            return sc >= (best_non_low_core_score + 1.0)
+        return sc >= (best_non_low_core_score + 0.6)
+
     def _already_used(a: Article) -> bool:
         k = _dup_key(a)
         return (k in used_title_keys) or (a.canon_url and a.canon_url in used_url_keys)
@@ -5223,10 +5290,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if _already_used(a):
             continue
-        if _is_low_core_source(a) and a.score < (core_min + 2.2):
+        if not _low_core_allowed(a):
             continue
         # dist: 지역 단신/공지형은 core 후보에서 제외(진짜 이슈가 밀리는 것을 방지)
         if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
+            continue
+        if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
             continue
         if section_key == "supply" and (is_flower_consumer_trend_context((a.title + " " + a.description).lower()) or is_fruit_foodservice_event_context((a.title + " " + a.description).lower())):
             continue
@@ -5293,10 +5362,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _already_used(a):
                 continue
-            if _is_low_core_source(a) and a.score < (core_min + 2.2):
+            if not _low_core_allowed(a):
                 continue
             # dist: 지역 단신/공지형은 core 후보에서 제외
             if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
+                continue
+            if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
                 continue
@@ -5351,7 +5422,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if is_local_brief_text(a.title or "", a.description or "", section_key):
                 continue
             text = (a.title + " " + a.description).lower()
-            has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text)
+            local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
+            has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or local_org_feature
             if not has_anchor:
                 continue
             # 추가 안전장치: 농산물/원예 앵커가 약하면 '일반 물류/경제'로 보고 제외
@@ -5375,7 +5447,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             anchors += 1
 
-    
+
 # 4) 나머지(최대 max_n): 임계치 이상 + 출처 캡 + 중복 제거
     if MMR_DIVERSITY_ENABLED and len(pool) >= MMR_DIVERSITY_MIN_POOL and (max_n - len(final)) >= 2:
         # ✅ MMR(soft diversity): 중복은 아니지만 '비슷한 기사' 연속 노출을 완화
@@ -5517,6 +5589,36 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _mark_used(a)
             _source_take(a)
             need -= 1
+    # 4.3) dist(유통/현장) 섹션 로컬 조직 기사 백필:
+    # - 지역농협/조합의 경제사업 성과형 기사는 core로 올리진 않되,
+    #   섹션 여유가 있으면 현장 단신으로 1건 정도 포함한다.
+    if section_key == "dist" and len(final) < max_n:
+        local_relax_cut = max(BASE_MIN_SCORE.get("dist", 7.2) - 0.8, thr - 2.4)
+        for a in candidates_sorted:
+            if len(final) >= max_n:
+                break
+            if a in final:
+                continue
+            if not is_local_agri_org_feature_context(a.title or "", a.description or ""):
+                continue
+            if a.score < local_relax_cut:
+                continue
+            if _already_used(a):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            if not _source_ok_local(a):
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            a.is_core = False
+            final.append(a)
+            _mark_used(a)
+            _source_take(a)
+            break
+
     # 4.5) supply 보강: 화훼 소비/선물 트렌드(예: 레고 꽃다발/꽃다발 선물 트렌드)는
     # - 품목 및 수급 동향에서만 "비핵심"으로 0~1건 하단 편입
     # - core(핵심2)에는 절대 포함하지 않음
@@ -6340,7 +6442,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
         # extra pass should never break the pipeline
         pass
 
-    
+
     # Debug: collection meta (queries/hits/recall) -> docs/debug/YYYY-MM-DD.json
     if DEBUG_REPORT:
         try:
@@ -6590,7 +6692,13 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         cur_fit = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
         best_fit_key = cur
         best_fit_score = float(cur_fit)
+        cand_scores: dict[str, float] = {cur: cur_score}
+        cand_fits: dict[str, float] = {cur: float(cur_fit)}
         strong_pest_context = is_pest_control_policy_context(txt)
+        local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
+        macro_policy_like = is_macro_policy_issue(txt)
+        broad_macro_price = is_broad_macro_price_context(a.title or "", a.description or "")
+        direct_supply_story = has_direct_supply_chain_signal(txt)
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -6605,7 +6713,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             # quick prefilter (reduce false moves)
             if k == "dist":
                 dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","유통","도매")])
-                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not is_local_agri_org_feature_context(a.title or "", a.description or "")):
+                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not local_org_feature):
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
@@ -6616,7 +6724,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     _h = best_horti_score(a.title or "", a.description or "")
                 except Exception:
                     _h = 0.0
-                if is_policy_announcement_issue(txt, dom, press) or is_macro_policy_issue(txt):
+                if is_policy_announcement_issue(txt, dom, press) or macro_policy_like or broad_macro_price:
                     _policy_like = True
                 elif is_trade_policy_issue(txt) and _h < 2.2:
                     _policy_like = True
@@ -6643,6 +6751,9 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             except Exception:
                 continue
 
+            cand_scores[k] = float(sc)
+            cand_fits[k] = float(fit_new)
+
             # 재분류는 score뿐 아니라 section-fit 개선이 있어야 우선 허용
             if fit_new + SECTION_REASSIGN_FIT_GUARD < cur_fit:
                 continue
@@ -6657,6 +6768,21 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
 
         # 병해충 실행형 문맥은 policy/기타 섹션 점수와 무관하게 pest를 우선 고정한다.
         force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
+        prefer_move_to_dist = (
+            cur != "dist"
+            and local_org_feature
+            and ("dist" in cand_scores)
+            and (cand_fits.get("dist", float("-inf")) + 0.2 >= cur_fit)
+            and (cand_scores.get("dist", float("-inf")) + 1.0 >= cur_score)
+        )
+        prefer_move_to_policy = (
+            cur != "policy"
+            and (macro_policy_like or broad_macro_price)
+            and (not direct_supply_story)
+            and ("policy" in cand_scores)
+            and (cand_fits.get("policy", float("-inf")) + 0.2 >= cur_fit)
+            and (cand_scores.get("policy", float("-inf")) + 0.6 >= cur_score)
+        )
 
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
         if force_move_to_pest:
@@ -6669,6 +6795,14 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     moved += 1
             except Exception:
                 pass
+        elif prefer_move_to_dist:
+            a.section = "dist"
+            a.score = float(cand_scores["dist"])
+            moved += 1
+        elif prefer_move_to_policy:
+            a.section = "policy"
+            a.score = float(cand_scores["policy"])
+            moved += 1
         elif best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
             a.section = best_key
             a.score = best_score
@@ -7749,7 +7883,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         # ✅ (3) 없는 페이지로 링크하지 않고 알림으로 처리
         return f'<button class="navBtn disabled" data-nav="{esc(nav_key)}" type="button" data-msg="{esc(empty_msg)}">{esc(label)}</button>'
 
-    
+
     debug_html = render_debug_report_html(report_date, site_path) if DEBUG_REPORT else ""
 
     return f"""<!doctype html>
@@ -10234,7 +10368,7 @@ def main():
 
     github_put_file(repo, DOCS_INDEX_PATH, index_html, GH_TOKEN, f"Update index {report_date}", sha=sha_old2, branch="main")
 
-    
+
     # backfill neighbor archive nav (fix: older pages missing "다음 ▶" after new day is generated)
     try:
         backfill_neighbor_archive_nav(repo, GH_TOKEN, report_date, archive_dates_desc, site_path)
