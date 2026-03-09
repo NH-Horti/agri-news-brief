@@ -3918,11 +3918,16 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     local_org_feature = is_local_agri_org_feature_context(title, desc)
     policy_macro_keep = (
         key == "policy"
-        and macro_policy_like
-        and count_any(
-            text,
-            [w.lower() for w in ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")],
-        ) >= 2
+        and (
+            broad_macro_price
+            or (
+                macro_policy_like
+                and count_any(
+                    text,
+                    [w.lower() for w in ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")],
+                ) >= 2
+            )
+        )
     )
 
     def _reject(reason: str) -> bool:
@@ -4103,7 +4108,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # - 경제/정책 섹션 검색 시 '농협/가격' 등의 단어로 비관련 기사가 섞이는 경우가 있어,
     #   원예/도매/정책 강신호가 없는 경우는 컷한다.
     if normalize_host(dom).endswith("sedaily.com"):
-        if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8:
+        if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8 and (not broad_macro_price):
             return _reject("sedaily_no_agri_context")
 
     # news1 로컬(/local/) 기사 과다 유입 방지:
@@ -4210,7 +4215,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
             if is_pest_control_policy_context(text):
                 pass
-            elif macro_policy_like:
+            elif macro_policy_like or broad_macro_price:
                 pass
             # policy는 도메인 override가 있음
             elif not policy_domain_override(dom, text):
@@ -4267,7 +4272,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         # 금융/산업 일반 정책 오탐 차단
         policy_off = ["금리", "주택", "부동산", "코스피", "코스닥", "주식", "채권", "가상자산", "원화", "환율", "반도체", "배터리"]
         if any(w in text for w in policy_off):
-            if not ((horti_sc >= 1.8) or (market_hits >= 1) or ("농산물" in text and "가격" in text)):
+            if not (broad_macro_price or (horti_sc >= 1.8) or (market_hits >= 1) or ("농산물" in text and "가격" in text)):
                 return _reject("policy_offtopic_gate")
 
         # 식품안전/위생 단독 이슈는 원예수급과 거리가 있어 제외
@@ -5035,6 +5040,8 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
                 return True
         except Exception:
             pass
+        if is_broad_macro_price_context(a.title or "", a.description or ""):
+            return True
         # 정책 섹션은 최소한 '정책 액션' + '농식품 맥락'이 있어야 함(완화 버전)
         action_terms = ("대책", "지원", "할인", "할당관세", "검역", "고시", "개정", "단속", "브리핑", "보도자료", "예산")
         ctx_terms = ("농산물", "농식품", "농업", "과일", "채소", "수급", "가격", "유통", "원산지", "도매시장", "온라인 도매시장")
@@ -5078,8 +5085,12 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
                      "산지유통", "산지유통센터")
         hard_hits = count_any(text, [t.lower() for t in dist_hard])
         apc_ctx = has_apc_agri_context(text)
+        local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
         if apc_ctx:
             hard_hits += 1
+        if local_org_feature:
+            hard_hits = max(hard_hits, 1)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
 
         # 농업 앵커도 없고 시장/품목도 약하면 제외
         if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6:
@@ -5269,6 +5280,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         sc = float(getattr(a, "score", 0.0) or 0.0)
         if best_non_low_core_score is None:
             return sc >= (core_min + 2.6)
+        if section_key == "policy":
+            return sc >= (best_non_low_core_score + 4.0)
         if strong_non_low_core_count >= 2:
             return sc >= (best_non_low_core_score + 1.0)
         return sc >= (best_non_low_core_score + 0.6)
@@ -5593,7 +5606,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # - 지역농협/조합의 경제사업 성과형 기사는 core로 올리진 않되,
     #   섹션 여유가 있으면 현장 단신으로 1건 정도 포함한다.
     if section_key == "dist" and len(final) < max_n:
-        local_relax_cut = max(BASE_MIN_SCORE.get("dist", 7.2) - 0.8, thr - 2.4)
+        local_relax_cut = max(5.8, BASE_MIN_SCORE.get("dist", 7.2) - 1.2)
         for a in candidates_sorted:
             if len(final) >= max_n:
                 break
