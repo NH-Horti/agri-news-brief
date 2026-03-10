@@ -745,10 +745,13 @@ SECTIONS = [
             "감귤 수급",
             "감귤 가격",
             "감귤 작황",
+            "감귤 품질",
+            "감귤 수입산 비교",
             "만감류 출하",
             "한라봉 출하",
             "레드향 출하",
             "천혜향 출하",
+            "천혜향 선호도",
             "포도 수급",
             "포도 가격",
             "포도 작황",
@@ -775,6 +778,8 @@ SECTIONS = [
             "딸기 수급",
             "딸기 가격",
             "딸기 작황",
+            "딸기 생육",
+            "딸기 난방비",
             "파프리카 수급",
             "파프리카 가격",
             "파프리카 수출",
@@ -808,6 +813,7 @@ SECTIONS = [
             "머스크멜론 도매가격",
             "고추 작황",
             "화훼 가격",
+            "화훼 농가",
             "절화 가격",
             "꽃 소비",
             "화훼 수급",
@@ -6119,9 +6125,9 @@ def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap:
     return out2
 
 def _build_recall_fallback_queries(section_key: str, section_conf: dict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], dict]:
-    """후보 풀 누락을 줄이기 위한 '광역 보강 쿼리'를 생성.
+    """후보 수 부족을 줄이기 위한 '광역 보강 쿼리'를 생성.
     반환: (queries, meta)
-    - meta는 DEBUG_REPORT에서 확인 가능하도록 남긴다.
+    - meta는 DEBUG_REPORT에서 확인 가능하도록 요약만 남긴다.
     """
     meta = {"seed_terms": [], "reason": [], "queries": []}
     if not RECALL_BACKFILL_ENABLED:
@@ -6131,31 +6137,37 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
     base_queries = list(section_conf.get("queries") or [])
     signals = _RECALL_SIGNALS_BY_SECTION.get(section_key, [])
 
-    # seed terms: (1) pool 토픽 기반 (2) 쿼리 기반 토큰
-    seed_terms = []
+    topic_seed_terms: list[str] = []
+    query_seed_terms: list[str] = []
     try:
-        seed_terms.extend(_seed_terms_from_topics(candidates_sorted, thr, cap=4))
+        topic_seed_terms.extend(_seed_terms_from_topics(candidates_sorted, thr, cap=4))
     except Exception:
         pass
     try:
-        seed_terms.extend(_extract_seed_terms_from_queries(base_queries, limit=6))
+        query_seed_terms.extend(_extract_seed_terms_from_queries(base_queries, limit=6))
     except Exception:
         pass
 
-    # dedupe + cap
-    st2: list[str] = []
-    for t in seed_terms:
+    seed_source = list(topic_seed_terms) + list(query_seed_terms)
+    if section_key == "supply":
+        query_only = [t for t in query_seed_terms if t and t not in topic_seed_terms]
+        shared = [t for t in query_seed_terms if t and t in topic_seed_terms]
+        topic_only = [t for t in topic_seed_terms if t and t not in query_seed_terms]
+        seed_source = query_only + shared + topic_only
+
+    seed_terms: list[str] = []
+    for t in seed_source:
         t = (t or "").strip()
         if not t:
             continue
-        if t not in st2:
-            st2.append(t)
-        if len(st2) >= 5:
+        if t not in seed_terms:
+            seed_terms.append(t)
+        if len(seed_terms) >= 5:
             break
-    seed_terms = st2
     meta["seed_terms"] = list(seed_terms)
+    meta["topic_seed_terms"] = list(topic_seed_terms)
+    meta["query_seed_terms"] = list(query_seed_terms)
 
-    # trade-signal coverage check (supply/policy only)
     has_trade = False
     if section_key in ("supply", "policy"):
         try:
@@ -6172,44 +6184,96 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
 
     out: list[str] = []
 
-    # 1) seed term 단독(광역)
-    for t in seed_terms:
+    def _add_query(q: str) -> None:
+        q = (q or "").strip()
+        if not q:
+            return
         if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
-            break
-        if t and (t not in base_queries) and (t not in out):
-            out.append(t)
+            return
+        if q in base_queries or q in out:
+            return
+        out.append(q)
 
-    # 2) seed term + signals (섹션별)
-    # - 너무 많은 조합을 만들지 않고, seed당 1~2개로 제한
-    for t in seed_terms:
-        if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
-            break
-        # supply/policy: trade 관련 신호 우선
-        sigs = list(signals)
-        if section_key in ("supply", "policy") and not has_trade:
-            sigs = ["무관세", "수입", "관세", "FTA", "할당관세"] + sigs
-        # seed당 최대 2개만
-        added_for_term = 0
-        for sig in sigs:
+    def _supply_signal_priority(seed: str) -> list[str]:
+        s = (seed or "").strip().lower()
+        citrus = {"감귤", "만감", "한라봉", "레드향", "천혜향"}
+        greenhouse = {"딸기", "토마토", "오이", "고추", "파프리카", "참외", "멜론"}
+        flower = {"화훼"}
+        if s in citrus:
+            return ["품질", "수입산 비교", "선호도", "만다린 비교", "작황"]
+        if s in greenhouse:
+            return ["생육", "난방", "농가", "작황", "품질"]
+        if s in flower:
+            return ["농가", "난방", "작황", "품질"]
+        return ["작황", "생육", "품질", "농가"]
+
+    if section_key == "supply":
+        prioritized_seeds: list[str] = []
+        query_only = [t for t in query_seed_terms if t and t not in topic_seed_terms]
+        shared = [t for t in query_seed_terms if t and t in topic_seed_terms]
+        topic_only = [t for t in topic_seed_terms if t and t not in query_seed_terms]
+        for t in query_only + shared + topic_only + seed_terms:
+            t = (t or "").strip()
+            if t and t in seed_terms and t not in prioritized_seeds:
+                prioritized_seeds.append(t)
+        meta["prioritized_seeds"] = list(prioritized_seeds)
+
+        seed_only_cap = min(len(prioritized_seeds), max(1, min(2, RECALL_QUERY_CAP_PER_SECTION)))
+        for t in prioritized_seeds[:seed_only_cap]:
+            _add_query(t)
+
+        sig_plan: dict[str, list[str]] = {}
+        for t in prioritized_seeds:
+            sigs = list(_supply_signal_priority(t))
+            if not has_trade:
+                sigs.extend(["무관세", "수입"])
+            sig_plan[t] = sigs
+
+        max_rounds = max((len(v) for v in sig_plan.values()), default=0)
+        for round_idx in range(max_rounds):
             if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
                 break
-            if not sig:
-                continue
-            q = f"{t} {sig}".strip()
-            if q in base_queries or q in out:
-                continue
-            out.append(q)
-            added_for_term += 1
-            if added_for_term >= 2:
+            for t in prioritized_seeds:
+                if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                    break
+                sigs = sig_plan.get(t) or []
+                if round_idx >= len(sigs):
+                    continue
+                _add_query(f"{t} {sigs[round_idx]}")
+    else:
+        for t in seed_terms:
+            if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
                 break
+            _add_query(t)
 
-    # 3) 섹션별 공통(용어가 달라도 잡히는) 보강 쿼리 1~2개 (cap 내에서)
+        for t in seed_terms:
+            if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                break
+            sigs = list(signals)
+            if section_key == "policy" and not has_trade:
+                sigs = ["무관세", "수입", "관세", "FTA", "할당관세"] + sigs
+            added_for_term = 0
+            for sig in sigs:
+                if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                    break
+                if not sig:
+                    continue
+                q = f"{t} {sig}".strip()
+                if q in base_queries or q in out:
+                    continue
+                out.append(q)
+                added_for_term += 1
+                if added_for_term >= 2:
+                    break
+
     if len(out) < RECALL_QUERY_CAP_PER_SECTION:
         common = []
-        if section_key in ("supply", "policy"):
+        if section_key == "supply":
+            common = ["딸기 생육", "딸기 난방비", "감귤 품질", "천혜향 선호도", "감귤 수입산 비교", "화훼 농가"]
+        elif section_key == "policy":
             common = ["만다린 무관세", "미국 만다린 무관세", "만감류 무관세", "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"]
         elif section_key == "dist":
-            common = ["원산지 단속 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
+            common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
         elif section_key == "pest":
             common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
 
@@ -6222,7 +6286,6 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
 
     meta["queries"] = list(out)
     return out, meta
-
 def _dedupe_queries(queries: list[str]) -> list[str]:
     """Normalize and deduplicate query list while preserving order."""
     out: list[str] = []
