@@ -737,6 +737,39 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("감귤 품질", queries, msg=str(meta))
         self.assertIn("딸기 생육", queries, msg=str(meta))
 
+    def test_supply_recall_fallback_queries_prefer_feature_queries_over_raw_or_trade_queries(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["사과 가격", "배 가격", "감귤 가격", "딸기 작황", "상추 가격", "화훼 가격"],
+            "must_terms": ["사과", "배", "감귤", "딸기", "상추", "화훼"],
+        }
+        queries, meta = main._build_recall_fallback_queries("supply", section_conf, [], 99.0)
+        self.assertIn("감귤 품질", queries, msg=str(meta))
+        self.assertIn("딸기 생육", queries, msg=str(meta))
+        self.assertNotIn("사과", queries, msg=str(meta))
+        self.assertNotIn("감귤 무관세", queries, msg=str(meta))
+        self.assertNotIn("감귤 수입", queries, msg=str(meta))
+
+    def test_supply_recall_prioritizes_missing_query_seeds_ahead_of_covered_pool_topics(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["사과 가격", "배 가격", "감귤 가격", "딸기 작황", "상추 가격", "화훼 가격"],
+            "must_terms": ["사과", "배", "감귤", "딸기", "상추", "화훼"],
+        }
+        covered = self._make_article(
+            "supply",
+            "제주 감귤 출하 동향",
+            "제주 감귤 작황과 출하 흐름을 점검했다.",
+            "https://example.com/citrus-covered",
+        )
+        covered.topic = "감귤/만감"
+        covered.score = 12.0
+
+        queries, meta = main._build_recall_fallback_queries("supply", section_conf, [covered], 7.0)
+        self.assertIn("딸기 생육", queries, msg=str(meta))
+        self.assertIn("감귤 품질", queries, msg=str(meta))
+        self.assertLess(queries.index("딸기 생육"), queries.index("감귤 품질"), msg=str(meta))
+
     def test_collect_candidates_uses_supply_feature_recall_query_when_pool_is_thin(self):
         section_conf = {
             "key": "supply",
@@ -772,6 +805,52 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
         self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+
+
+    def test_supply_fallback_recall_runs_even_when_cond_paging_is_disabled(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["사과 가격", "배 가격", "감귤 가격", "딸기 작황"],
+            "must_terms": ["사과", "배", "감귤", "딸기", "화훼"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 9), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 10), main.REPORT_HOUR_KST)
+        seen_queries = []
+        old_func = main.naver_news_search_paged
+        old_cond = main.COND_PAGING_ENABLED
+        old_fb_cap = main.COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION
+        old_budget_used = main._COND_PAGING_EXTRA_CALLS_USED
+        try:
+            main.COND_PAGING_ENABLED = False
+            main.COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = 2
+            main._COND_PAGING_EXTRA_CALLS_USED = 0
+
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                seen_queries.append(q)
+                if q == "딸기 생육":
+                    return {
+                        "items": [
+                            {
+                                "title": "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨",
+                                "description": "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.",
+                                "link": "https://www.sedaily.com/article/20017059",
+                                "originallink": "https://www.sedaily.com/article/20017059",
+                                "pubDate": "Mon, 09 Mar 2026 08:45:35 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+            main.COND_PAGING_ENABLED = old_cond
+            main.COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = old_fb_cap
+            main._COND_PAGING_EXTRA_CALLS_USED = old_budget_used
+
+        self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
+        self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
     def test_trade_terms_do_not_map_to_item_topics(self):
         self.assertNotIn("무관세", main.HORTI_ITEM_TERMS_L)

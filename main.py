@@ -6151,6 +6151,72 @@ def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap:
             break
     return out2
 
+def _topic_terms_for_seed(seed: str) -> list[str]:
+    """Expand a representative seed into its known topic terms."""
+    seed_l = (seed or "").strip().lower()
+    if not seed_l:
+        return []
+    rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+    out: list[str] = []
+    for name, syns in TOPICS:
+        name_l = (name or "").strip().lower()
+        rep_l = ((syns[0] if syns else (name.split("/")[0] if name else "")) or "").strip().lower()
+        if rep_l not in {rep, seed_l} and name_l not in {rep, seed_l}:
+            continue
+        for term in [name] + list(syns or []):
+            term_l = (term or "").strip().lower()
+            if term_l and term_l not in out:
+                out.append(term_l)
+    if rep and rep not in out:
+        out.insert(0, rep)
+    return out or [rep]
+
+
+def _article_matches_seed_term(article: "Article", seed: str) -> bool:
+    if not isinstance(article, Article):
+        return False
+    txt = f"{getattr(article, 'title', '')} {getattr(article, 'description', '')}".lower()
+    topic_l = (getattr(article, "topic", "") or "").strip().lower()
+    for term in _topic_terms_for_seed(seed):
+        if term and (term in txt or term == topic_l):
+            return True
+    return False
+
+
+def _prioritize_supply_recall_seeds(
+    query_seed_terms: list[str],
+    topic_seed_terms: list[str],
+    candidates_sorted: list["Article"],
+    thr: float,
+) -> tuple[list[str], dict[str, int]]:
+    """Prefer item seeds that are missing from the current supply pool."""
+    seed_order: list[str] = []
+    for seed in list(query_seed_terms or []) + list(topic_seed_terms or []):
+        seed = (seed or "").strip()
+        if seed and seed not in seed_order:
+            seed_order.append(seed)
+
+    pool_seed_hits: dict[str, int] = {seed: 0 for seed in seed_order}
+    for art in (candidates_sorted or []):
+        if float(getattr(art, "score", 0.0) or 0.0) < float(thr or 0.0):
+            continue
+        for seed in seed_order:
+            if _article_matches_seed_term(art, seed):
+                pool_seed_hits[seed] = pool_seed_hits.get(seed, 0) + 1
+
+    missing_query = [seed for seed in (query_seed_terms or []) if pool_seed_hits.get(seed, 0) == 0]
+    covered_query = [seed for seed in (query_seed_terms or []) if pool_seed_hits.get(seed, 0) > 0]
+    missing_topic = [seed for seed in (topic_seed_terms or []) if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) == 0]
+    covered_topic = [seed for seed in (topic_seed_terms or []) if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) > 0]
+
+    prioritized: list[str] = []
+    for seed in missing_query + covered_query + missing_topic + covered_topic:
+        seed = (seed or "").strip()
+        if seed and seed not in prioritized:
+            prioritized.append(seed)
+    return prioritized, pool_seed_hits
+
+
 def _build_recall_fallback_queries(section_key: str, section_conf: dict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], dict]:
     """후보 수 부족을 줄이기 위한 '광역 보강 쿼리'를 생성.
     반환: (queries, meta)
@@ -6166,21 +6232,28 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
 
     topic_seed_terms: list[str] = []
     query_seed_terms: list[str] = []
+    prioritized_seeds: list[str] = []
     try:
         topic_seed_terms.extend(_seed_terms_from_topics(candidates_sorted, thr, cap=4))
     except Exception:
         pass
     try:
-        query_seed_terms.extend(_extract_seed_terms_from_queries(base_queries, limit=6))
+        query_seed_limit = max(8, min(18, RECALL_QUERY_CAP_PER_SECTION * 3))
+        query_seed_terms.extend(_extract_seed_terms_from_queries(base_queries, limit=query_seed_limit))
     except Exception:
         pass
 
     seed_source = list(topic_seed_terms) + list(query_seed_terms)
     if section_key == "supply":
-        query_only = [t for t in query_seed_terms if t and t not in topic_seed_terms]
-        shared = [t for t in query_seed_terms if t and t in topic_seed_terms]
-        topic_only = [t for t in topic_seed_terms if t and t not in query_seed_terms]
-        seed_source = query_only + shared + topic_only
+        prioritized_seeds, pool_seed_hits = _prioritize_supply_recall_seeds(
+            query_seed_terms,
+            topic_seed_terms,
+            candidates_sorted,
+            thr,
+        )
+        if prioritized_seeds:
+            seed_source = list(prioritized_seeds)
+        meta["pool_seed_hits"] = dict(pool_seed_hits)
 
     seed_terms: list[str] = []
     for t in seed_source:
@@ -6189,7 +6262,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
             continue
         if t not in seed_terms:
             seed_terms.append(t)
-        if len(seed_terms) >= 5:
+        if len(seed_terms) >= max(8, RECALL_QUERY_CAP_PER_SECTION * 2):
             break
     meta["seed_terms"] = list(seed_terms)
     meta["topic_seed_terms"] = list(topic_seed_terms)
@@ -6235,26 +6308,12 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
         return ["작황", "생육", "품질", "농가"]
 
     if section_key == "supply":
-        prioritized_seeds: list[str] = []
-        query_only = [t for t in query_seed_terms if t and t not in topic_seed_terms]
-        shared = [t for t in query_seed_terms if t and t in topic_seed_terms]
-        topic_only = [t for t in topic_seed_terms if t and t not in query_seed_terms]
-        for t in query_only + shared + topic_only + seed_terms:
-            t = (t or "").strip()
-            if t and t in seed_terms and t not in prioritized_seeds:
-                prioritized_seeds.append(t)
+        prioritized_seeds = [t for t in (prioritized_seeds or seed_terms) if t]
         meta["prioritized_seeds"] = list(prioritized_seeds)
-
-        seed_only_cap = min(len(prioritized_seeds), max(1, min(2, RECALL_QUERY_CAP_PER_SECTION)))
-        for t in prioritized_seeds[:seed_only_cap]:
-            _add_query(t)
 
         sig_plan: dict[str, list[str]] = {}
         for t in prioritized_seeds:
-            sigs = list(_supply_signal_priority(t))
-            if not has_trade:
-                sigs.extend(["무관세", "수입"])
-            sig_plan[t] = sigs
+            sig_plan[t] = list(_supply_signal_priority(t))
 
         max_rounds = max((len(v) for v in sig_plan.values()), default=0)
         for round_idx in range(max_rounds):
@@ -6295,8 +6354,9 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
 
     if len(out) < RECALL_QUERY_CAP_PER_SECTION:
         if section_key == "supply":
+            expanded_seed_limit = max(12, min(18, RECALL_QUERY_CAP_PER_SECTION * 4))
             expanded_feature_seeds = [
-                t for t in _extract_seed_terms_from_queries(base_queries, limit=12)
+                t for t in _extract_seed_terms_from_queries(base_queries, limit=expanded_seed_limit)
                 if t and t not in prioritized_seeds
             ]
             meta["fallback_feature_seeds"] = list(expanded_feature_seeds)
