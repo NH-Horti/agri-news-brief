@@ -16,6 +16,9 @@ class TestClassifierBehavior(unittest.TestCase):
         cls.conf = {s["key"]: s for s in main.SECTIONS}
         cls.now = datetime.now(main.KST)
 
+    def setUp(self):
+        main.reset_extra_call_budget()
+
     def _best_section(self, title: str, desc: str, url: str):
         dom = main.domain_of(url)
         press = main.normalize_press_label(main.press_name_from_url(url), url)
@@ -1132,6 +1135,54 @@ class TestClassifierBehavior(unittest.TestCase):
             main.COND_PAGING_ENABLED = old_cond
             main.COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = old_fb_cap
             main._COND_PAGING_EXTRA_CALLS_USED = old_budget_used
+
+        self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
+        self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
+    def test_supply_fallback_recall_keeps_reserved_budget_after_other_section_consumption(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["사과 가격", "배 가격", "감귤 가격", "딸기 작황"],
+            "must_terms": ["사과", "배", "감귤", "딸기", "화훼"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 3, 9), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 10), main.REPORT_HOUR_KST)
+        seen_queries = []
+        old_func = main.naver_news_search_paged
+        old_budget_total = main.COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
+        old_reserved = main.COND_PAGING_RESERVED_CALLS_PER_SECTION
+        old_budget_used = main._COND_PAGING_EXTRA_CALLS_USED
+        old_budget_by_section = dict(main._COND_PAGING_EXTRA_CALLS_BY_SECTION)
+        try:
+            main.COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = 12
+            main.COND_PAGING_RESERVED_CALLS_PER_SECTION = 2
+            main._COND_PAGING_EXTRA_CALLS_USED = 10
+            main._COND_PAGING_EXTRA_CALLS_BY_SECTION = {"policy": 10}
+
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                seen_queries.append(q)
+                if q == "딸기 생육":
+                    return {
+                        "items": [
+                            {
+                                "title": "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨",
+                                "description": "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.",
+                                "link": "https://www.sedaily.com/article/20017059",
+                                "originallink": "https://www.sedaily.com/article/20017059",
+                                "pubDate": "Mon, 09 Mar 2026 08:45:35 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+            main.COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = old_budget_total
+            main.COND_PAGING_RESERVED_CALLS_PER_SECTION = old_reserved
+            main._COND_PAGING_EXTRA_CALLS_USED = old_budget_used
+            main._COND_PAGING_EXTRA_CALLS_BY_SECTION = old_budget_by_section
 
         self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
         self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))

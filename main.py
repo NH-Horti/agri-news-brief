@@ -275,7 +275,11 @@ PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
 _default_budget = max(6, min(30, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION * 2))
 COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = int(os.getenv("COND_PAGING_EXTRA_CALL_BUDGET_TOTAL", str(_default_budget)) or _default_budget)
 COND_PAGING_EXTRA_CALL_BUDGET_TOTAL = max(0, min(COND_PAGING_EXTRA_CALL_BUDGET_TOTAL, 80))
-
+_default_reserved_calls = min(2, COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION)
+COND_PAGING_RESERVED_CALLS_PER_SECTION = int(
+    os.getenv("COND_PAGING_RESERVED_CALLS_PER_SECTION", str(_default_reserved_calls)) or _default_reserved_calls
+)
+COND_PAGING_RESERVED_CALLS_PER_SECTION = max(0, min(COND_PAGING_RESERVED_CALLS_PER_SECTION, 8))
 # 후보가 충분히 많은데(예: 50개+) 선택이 적은 날은 '품질이 낮은 날'일 가능성이 크므로
 # 추가 페이지를 무의미하게 호출하지 않도록 상한을 둔다.
 _default_trigger_cap = max(25, min(120, MAX_PER_SECTION * 8))
@@ -327,6 +331,58 @@ MMR_DIVERSITY_MIN_POOL = max(0, min(MMR_DIVERSITY_MIN_POOL, 80))
 
 _COND_PAGING_LOCK = threading.Lock()
 _COND_PAGING_EXTRA_CALLS_USED = 0
+_COND_PAGING_EXTRA_CALLS_BY_SECTION: dict[str, int] = {}
+
+def reset_extra_call_budget() -> None:
+    """Reset extra recall/page2 call budget for a fresh collection run."""
+    global _COND_PAGING_EXTRA_CALLS_USED, _COND_PAGING_EXTRA_CALLS_BY_SECTION
+    with _COND_PAGING_LOCK:
+        _COND_PAGING_EXTRA_CALLS_USED = 0
+        _COND_PAGING_EXTRA_CALLS_BY_SECTION = {}
+
+def _extra_call_budget_sections() -> list[str]:
+    try:
+        keys = [str(sec.get("key") or "").strip() for sec in (SECTIONS or []) if str(sec.get("key") or "").strip()]
+    except Exception:
+        keys = []
+    return keys or ["policy", "supply", "dist", "pest"]
+
+def _reserved_extra_calls_per_section() -> int:
+    section_count = max(1, len(_extra_call_budget_sections()))
+    return min(COND_PAGING_RESERVED_CALLS_PER_SECTION, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL // section_count)
+
+def _reserved_extra_calls_needed_by_others(section_key: str) -> int:
+    reserve = _reserved_extra_calls_per_section()
+    if reserve <= 0:
+        return 0
+    need = 0
+    for key in _extra_call_budget_sections():
+        if key == section_key:
+            continue
+        used = int(_COND_PAGING_EXTRA_CALLS_BY_SECTION.get(key, 0) or 0)
+        need += max(0, reserve - used)
+    return need
+
+def _take_extra_call_budget_for_section(section_key: str, n: int = 1, *, require_cond_paging: bool = True) -> bool:
+    """Spend extra-call budget while preserving a small reserve for each section."""
+    global _COND_PAGING_EXTRA_CALLS_USED
+    if require_cond_paging and not COND_PAGING_ENABLED:
+        return False
+    section_key = (section_key or "").strip() or "_default"
+    n = max(1, int(n or 1))
+    with _COND_PAGING_LOCK:
+        if _COND_PAGING_EXTRA_CALLS_USED + n > COND_PAGING_EXTRA_CALL_BUDGET_TOTAL:
+            return False
+        used_by_section = int(_COND_PAGING_EXTRA_CALLS_BY_SECTION.get(section_key, 0) or 0)
+        reserve = _reserved_extra_calls_per_section()
+        if used_by_section + n > reserve:
+            reserved_for_others = _reserved_extra_calls_needed_by_others(section_key)
+            shared_limit = COND_PAGING_EXTRA_CALL_BUDGET_TOTAL - reserved_for_others
+            if _COND_PAGING_EXTRA_CALLS_USED + n > shared_limit:
+                return False
+        _COND_PAGING_EXTRA_CALLS_USED += n
+        _COND_PAGING_EXTRA_CALLS_BY_SECTION[section_key] = used_by_section + n
+        return True
 
 def _take_extra_call_budget(n: int = 1, *, require_cond_paging: bool = True) -> bool:
     """Return True if we can spend extra call budget (thread-safe)."""
@@ -343,6 +399,10 @@ def _take_extra_call_budget(n: int = 1, *, require_cond_paging: bool = True) -> 
 def _cond_paging_take_budget(n: int = 1) -> bool:
     """Return True if we can spend extra-page call budget (thread-safe)."""
     return _take_extra_call_budget(n, require_cond_paging=True)
+
+def _cond_paging_take_budget_for_section(section_key: str, n: int = 1) -> bool:
+    """Return True if a section can spend extra-page call budget."""
+    return _take_extra_call_budget_for_section(section_key, n, require_cond_paging=True)
 
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
@@ -7399,7 +7459,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                                     continue
                                 if fallback_added >= COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION:
                                     break
-                                if not _take_extra_call_budget(1, require_cond_paging=False):
+                                if not _take_extra_call_budget_for_section(section_key, 1, require_cond_paging=False):
                                     break
                                 try:
                                     dataF = naver_news_search_paged(fq, display=50, pages=1, sort="date")
@@ -7450,7 +7510,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                                 break
 
                             for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
-                                if not _cond_paging_take_budget(1):
+                                if not _cond_paging_take_budget_for_section(section_key, 1):
                                     break
                                 st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
                                 pages_tried += 1
@@ -7962,6 +8022,7 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
 
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
+    reset_extra_call_budget()
     raw_by_section: dict[str, list[Article]] = {}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
