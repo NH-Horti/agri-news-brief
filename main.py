@@ -1185,9 +1185,14 @@ SUPPLY_TITLE_FOCUS_TERMS_L = [
     )
 ]
 MACRO_POLICY_KEEP_TERMS = _ordered_unique_terms(
-    ["농산물", "농식품", "농식품부", "과일", "채소", "공급", "수급", "안정화"]
+    ["농산물", "농식품", "농식품부", "과일", "채소", "공급", "수급", "안정", "안정화"]
     + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
 )
+POLICY_MARKET_BRIEF_QUERIES = [
+    "농축수산물 가격 동향", "농산물 가격 동향", "과일 채소 가격 동향", "농산물 수급 동향",
+    "농산물 가격 전반 하락", "과일류 가격 전년 대비", "농산물 수급 영향 제한적",
+]
+POLICY_MARKET_BRIEF_RECALL_SIGNALS = ["가격 동향", "수급 동향", "전년 대비", "영향 제한적"]
 
 # -----------------------------
 # Sections
@@ -1209,7 +1214,7 @@ SECTIONS: list[SectionConfig] = [
             "성수품 가격 안정 대책", "할당관세 과일 검역", "원산지 단속 농산물", "온라인 도매시장 농식품부",
             "설 이후 과일 가격 하락", "사과 배 가격 하락", "성수품 물가 과일", "차례상 물가 과일",
             "소비자물가 과일 사과 배", "KOSIS 소비자물가 사과 배", "물가정보 설 과일",
-        ],
+        ] + list(POLICY_MARKET_BRIEF_QUERIES),
         "must_terms": [
             "정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장",
             "원산지", "물가", "가격", "상승", "하락", "급등", "성수품", "차례상", "소비자물가", "물가지수",
@@ -1649,16 +1654,15 @@ def _policy_story_signature(title: str, desc: str, dom: str = "", press: str = "
     if not action_labels:
         return None
 
-    officialish = (
+    explicit_official = (
         policy_domain_override(d, text)
         or (d in OFFICIAL_HOSTS)
         or any(d.endswith("." + h) for h in OFFICIAL_HOSTS)
         or (p in ("정책브리핑", "농식품부"))
         or is_policy_announcement_issue(text, d, p)
         or is_supply_stabilization_policy_context(text, d, p)
-        or is_macro_policy_issue(text)
     )
-    if not officialish:
+    if not explicit_official:
         return None
 
     agency_labels = _matched_labels(text, _POLICY_EVENT_AGENCY_GROUPS)
@@ -2760,11 +2764,62 @@ _LOCAL_AGRI_INFRA_OPERATION_TERMS = (
 )
 
 
+_SUPPLY_WEAK_TAIL_PROMO_TERMS = (
+    "홍보", "선보여", "소개", "공략", "판촉", "행사", "축제", "시식", "접점", "민속촌",
+    "제철 홍보", "출하 시기 홍보",
+)
+_SUPPLY_WEAK_TAIL_VISIT_TERMS = (
+    "격려", "방문", "시찰", "찾아", "현장", "점검", "청취",
+)
+_SUPPLY_WEAK_TAIL_OFFICIAL_TERMS = (
+    "원장", "시장", "군수", "구청장", "도지사", "지사", "청장", "본부장", "센터장",
+)
+_SUPPLY_PROMO_FEATURE_SEASON_TERMS = (
+    "제철", "출하 시기", "출하시기", "출하 집중", "집중되는", "수확", "봄으로 넘어가는 시기", "주요 출하 시기",
+)
+
+def is_supply_org_promo_feature_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+
+    org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl) is not None) or (
+        count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS]) >= 1
+    )
+    if not org_hit:
+        return False
+
+    title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    horti_sc = best_horti_score(ttl, desc or "")
+    horti_hit = title_item_hits >= 1 or horti_sc >= 1.8 or (topic in _HORTI_TOPICS_SET and topic_sc >= 1.2)
+    if not horti_hit:
+        return False
+
+    promo_hits = count_any(txt, [w.lower() for w in _SUPPLY_ORG_PROMO_TERMS])
+    season_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROMO_FEATURE_SEASON_TERMS])
+    official_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_WEAK_TAIL_OFFICIAL_TERMS])
+    visit_hits = count_any(txt, [w.lower() for w in _SUPPLY_WEAK_TAIL_VISIT_TERMS])
+    if official_hits >= 1 and visit_hits >= 2:
+        return False
+
+    return promo_hits >= 2 and (season_hits >= 1 or has_direct_supply_chain_signal(txt) or title_item_hits >= 1)
+
+
 def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     """지역 농협/조합의 성과·판로 소개형 기사인지 판정.
-    - 공급(supply)보다 유통/현장(dist)에 더 가깝지만,
-      로컬 홍보성 맥락이 강하면 핵심(core)에서는 후순위로 밀어낸다.
+    - 공급(supply)의 품목 feature성 홍보는 제외하고,
+      유통/현장(dist) 쪽 지역 성과·판로 소개형만 잡는다.
     """
+    if is_supply_org_promo_feature_context(title, desc):
+        return False
+
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt:
@@ -2785,24 +2840,12 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
 
 
-_SUPPLY_WEAK_TAIL_PROMO_TERMS = (
-    "홍보", "선보여", "소개", "공략", "판촉", "행사", "축제", "시식", "접점", "민속촌",
-    "제철 홍보", "출하 시기 홍보",
-)
-_SUPPLY_WEAK_TAIL_VISIT_TERMS = (
-    "격려", "방문", "시찰", "찾아", "현장", "점검", "청취",
-)
-_SUPPLY_WEAK_TAIL_OFFICIAL_TERMS = (
-    "원장", "시장", "군수", "구청장", "도지사", "지사", "청장", "본부장", "센터장",
-)
-
 def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     """Return True for weak supply-tail stories that should not block stronger item features.
 
     Generalized patterns:
-    - local agri-org promo/event stories
     - official visit/encouragement field stories with weak title-level supply signal
-    - venue/promo pieces that mention items but lack strong market data framing
+    - local agri-org performance/promo stories that are not commodity feature stories
     """
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
@@ -2811,8 +2854,8 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
         return False
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return False
-    if is_local_agri_org_feature_context(title, desc):
-        return True
+    if is_supply_org_promo_feature_context(title, desc):
+        return False
 
     title_core_hits = count_any(ttl_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS])
     promo_hits = count_any(txt, [w.lower() for w in _SUPPLY_WEAK_TAIL_PROMO_TERMS])
@@ -2822,9 +2865,11 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     if official_hits >= 1 and visit_hits >= 2 and title_core_hits == 0:
         return True
 
-    if promo_hits >= 2 and title_core_hits == 0:
-        if (not has_direct_supply_chain_signal(txt)) or visit_hits >= 1 or ("민속촌" in txt):
-            return True
+    if is_local_agri_org_feature_context(title, desc):
+        return True
+
+    if promo_hits >= 2 and visit_hits >= 1 and title_core_hits == 0:
+        return True
 
     if is_supply_feature_article(title, desc):
         return False
@@ -2852,7 +2897,7 @@ _SUPPLY_FEATURE_QUALITY_TERMS = (
 
 
 def supply_feature_context_kind(title: str, desc: str) -> str | None:
-    """품목 중심 현장/품질 기사 판정."""
+    """품목 중심 현장/품질/제철 feature 기사 판정."""
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt or is_fruit_foodservice_event_context(txt):
@@ -2862,21 +2907,28 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     horti_title_sc = best_horti_score(ttl, "")
     item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
+    title_core_hits = count_any(ttl.lower(), [w.lower() for w in SUPPLY_TITLE_CORE_TERMS])
     if item_hits == 0 and horti_sc < 1.8:
         return None
 
+    if is_supply_org_promo_feature_context(title, desc):
+        return "promo"
+
     field_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_FIELD_TERMS])
     quality_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_QUALITY_TERMS])
-    compare_hits = count_any(txt, [w.lower() for w in ("수입산", "수입", "만다린", "비교", "블라인드", "경쟁력")])
-    agri_hits = count_any(txt, [w.lower() for w in ("농가", "농장", "생산자", "산지", "재배", "하우스", "시설", "과원")])
+    compare_hits = count_any(txt, [w.lower() for w in ("수입산", "수입", "만다린", "비교", "블라인드", "선호도")])
+    agri_hits = count_any(txt, [w.lower() for w in ("농가", "농장", "생산지", "재배", "시설", "과원")])
+    visit_hits = count_any(txt, [w.lower() for w in _SUPPLY_WEAK_TAIL_VISIT_TERMS])
+    official_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_WEAK_TAIL_OFFICIAL_TERMS])
 
     if (title_item_hits >= 1) or (horti_title_sc >= 1.2) or (horti_sc >= 2.0):
+        if official_hits >= 1 and visit_hits >= 2 and title_core_hits == 0:
+            return None
         if field_hits >= 2 and (agri_hits >= 1 or horti_sc >= 2.2):
             return "field"
         if quality_hits >= 2 and compare_hits >= 1:
             return "quality"
     return None
-
 
 def is_supply_feature_article(title: str, desc: str) -> bool:
     txt = f"{title or ''} {desc or ''}".lower()
@@ -3033,6 +3085,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.55
         elif feature_kind == "quality":
             base += 0.45
+        elif feature_kind == "promo":
+            base += 0.38
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
         if is_supply_weak_tail_context(title, desc):
@@ -5154,6 +5208,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 2.1
             if horti_title_sc >= 1.8:
                 score += 0.6
+        elif supply_feature_kind == "promo":
+            score += 1.8
+            if horti_title_sc >= 1.4:
+                score += 0.5
         # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
         if is_local_agri_policy_program_context(text):
             score -= 4.0
@@ -6113,7 +6171,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
         if section_key == "policy" and press_priority(a.press, a.domain) == 1:
-            continue
+            mix_local = ((a.title or "") + " " + (a.description or "")).lower()
+            if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
+                continue
         if _is_trade_press(a) and trade_core_count >= trade_core_cap:
             continue
 
@@ -6180,7 +6240,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
             if section_key == "policy" and press_priority(a.press, a.domain) == 1:
-                continue
+                mix_local = ((a.title or "") + " " + (a.description or "")).lower()
+                if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
+                    continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
                 continue
 
@@ -6821,7 +6883,7 @@ def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end
 # -----------------------------
 _RECALL_SIGNALS_BY_SECTION = {
     "supply": ["무관세", "수입", "관세", "FTA", "할당관세"],
-    "policy": ["대책", "지원", "할당관세", "검역", "관세", "무관세", "수입"],
+    "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["대책", "지원", "할당관세", "검역", "관세", "무관세", "수입"],
     "dist": ["도매시장", "원산지", "단속", "검역", "통관", "수출", "물류"],
     "pest": ["병해충", "방제", "예찰", "검역"],
 }
@@ -7208,7 +7270,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
                 break
             sigs = list(signals)
             if section_key == "policy" and not has_trade:
-                sigs = ["무관세", "수입", "관세", "FTA", "할당관세"] + sigs
+                sigs = list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + sigs
             added_for_term = 0
             for sig in sigs:
                 if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
@@ -7241,7 +7303,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
         else:
             common = []
             if section_key == "policy":
-                common = ["만다린 무관세", "미국 만다린 무관세", "만감류 무관세", "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"]
+                common = list(POLICY_MARKET_BRIEF_QUERIES) + ["할당관세 과일", "수입 농산물 관세"]
             elif section_key == "dist":
                 common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
             elif section_key == "pest":

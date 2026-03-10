@@ -31,8 +31,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("def maintenance_rebuild_date", self.text)
         self.assertIn("def maintenance_backfill_rebuild", self.text)
 
-    def test_mandarin_tariff_queries_exist(self):
-        self.assertIn("만다린 무관세", self.text)
+    def test_policy_market_brief_query_registry_exists(self):
+        self.assertIn("POLICY_MARKET_BRIEF_QUERIES", self.text)
+        self.assertIn('"농산물 가격 동향"', self.text)
+        self.assertIn("POLICY_MARKET_BRIEF_RECALL_SIGNALS", self.text)
 
     def test_manual_force_report_date_short_circuits_in_main(self):
         idx_main = self.text.find("def main(")

@@ -692,9 +692,15 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
     def test_sedaily_strawberry_growth_story_prefers_supply(self):
-        title = "“온종일 불때야 하는데 막막” 초록색 딸기 바라보며 한숨"
-        desc = "딸기 체험 농장을 운영하는 농가가 생육적온을 맞추기 어려워 난방 부담이 커졌고 초록빛 딸기가 그대로 남아 있다고 설명했다."
+        title = "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨"
+        desc = "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다."
         best, scores = self._best_section(title, desc, "https://www.sedaily.com/article/20017059")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_seoul_citrus_org_promo_story_prefers_supply(self):
+        title = "(사)제주감귤연합회, 한국민속촌서 ‘제주 만감류’ 진수 선보여…수도권 나들이객 집중 홍보"
+        desc = "제철 제주 만감류 강점 홍보. 향·당도·식감이 뛰어난 천혜향과 레드향 등 주요 출하 시기 만감류를 소개하며 소비자 접점을 넓혔다."
+        best, scores = self._best_section(title, desc, "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500177?wlog_tag3=naver")
         self.assertEqual(best, "supply", msg=f"scores={scores}")
 
     def test_fnnews_citrus_blind_test_story_prefers_supply(self):
@@ -793,16 +799,15 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(picked_urls & {flower1.link, flower2.link}), 1, msg=str([(x.link, x.score, x.topic) for x in picked]))
 
 
-    def test_supply_weak_tail_context_flags_promo_and_official_visit_stories(self):
-        citrus_title = "제주감귤연합회, 한국민속촌서 제주 만감류 진수 선보여"
-        citrus_desc = "제주감귤연합회가 한라봉과 천혜향을 소개하고 제철 홍보 행사로 수도권 접점을 넓혔다."
-        watermelon_title = "최준열 전북농업기술원장, 지역 명품 촉성재배 수박 현장 찾아 격려"
-        watermelon_desc = "본격 출하를 앞둔 수박 재배 현장을 찾아 생육 상황을 점검하고 농가 의견을 청취했다."
-        self.assertTrue(main.is_supply_weak_tail_context(citrus_title, citrus_desc))
+    def test_supply_weak_tail_context_keeps_promo_but_flags_official_visit_stories(self):
+        citrus_title = "(사)제주감귤연합회, 한국민속촌서 ‘제주 만감류’ 진수 선보여…수도권 나들이객 집중 홍보"
+        citrus_desc = "제철 제주 만감류 강점 홍보. 향·당도·식감이 뛰어난 천혜향과 레드향 등 주요 출하 시기 만감류를 소개하며 소비자 접점을 넓혔다."
+        watermelon_title = "최경주 전북농업기술원장, 지역 명품 초당옥수수·수박 현장 찾아 격려"
+        watermelon_desc = "본격 출하를 앞둔 수박 농가 현장을 찾아 생육 상황을 살피고 농가 애로를 청취했다."
+        self.assertFalse(main.is_supply_weak_tail_context(citrus_title, citrus_desc))
         self.assertTrue(main.is_supply_weak_tail_context(watermelon_title, watermelon_desc))
 
-
-    def test_supply_selection_excludes_weak_tail_stories_when_stronger_feature_articles_exist(self):
+    def test_supply_selection_keeps_target_feature_stories_and_excludes_visit_tail(self):
         cabbage = self._make_article(
             "supply",
             "서울가락시장 배추 반입량 감소로 시세 강세",
@@ -811,57 +816,58 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         flower = self._make_article(
             "supply",
-            "유가가 그대로인데 난방비만 1000만원…화훼 농가 비상",
+            "유가가 그대로인데도 난방비만 1000만원…화훼 농가 비상",
             "화훼 농가가 난방비 부담으로 생육 관리에 어려움을 겪고 있다.",
             "https://www.sedaily.com/article/20016961",
         )
         market = self._make_article(
             "supply",
-            "배추 7만1천톤 평년보다 9.4% 감소",
-            "가락시장 배추 공급량 감소가 배추 수급과 가격 흐름에 영향을 주고 있다.",
+            "배추 7만천톤 평년보다 9.4% 감소",
+            "가락시장 배추 공급 감소가 배추 수급과 가격 흐름에 영향을 주고 있다.",
             "http://www.newsfarm.co.kr/news/articleView.html?idxno=100475",
         )
         strawberry = self._make_article(
             "supply",
-            "춘분도 불안한데…맑은 초록빛 딸기 바라보는 시선",
-            "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 설명했다.",
+            "출하철 불안한데 짙은 초록빛 딸기 바라보는 시선",
+            "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.",
             "https://www.sedaily.com/article/20017059",
-        )
-        citrus_feature = self._make_article(
-            "supply",
-            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 선호",
-            "제주 감귤이 수입산과 비교에서 품질과 선호도 우위를 보였다는 조사 결과다.",
-            "https://www.fnnews.com/news/202603091837432209",
         )
         citrus_promo = self._make_article(
             "supply",
-            "제주감귤연합회, 한국민속촌서 제주 만감류 진수 선보여",
-            "연합회가 한라봉과 천혜향을 소개하고 제철 홍보 행사로 소비자 접점을 넓혔다.",
+            "(사)제주감귤연합회, 한국민속촌서 ‘제주 만감류’ 진수 선보여…수도권 나들이객 집중 홍보",
+            "제철 제주 만감류 강점 홍보. 향·당도·식감이 뛰어난 천혜향과 레드향 등 주요 출하 시기 만감류를 소개하며 소비자 접점을 넓혔다.",
             "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500177?wlog_tag3=naver",
         )
         watermelon_visit = self._make_article(
             "supply",
-            "최준열 전북농업기술원장, 지역 명품 촉성재배 수박 현장 찾아 격려",
-            "수박 재배 현장을 찾아 생육 상황을 점검하고 농가 의견을 청취했다.",
+            "최경주 전북농업기술원장, 지역 명품 초당옥수수·수박 현장 찾아 격려",
+            "수박 농가 현장을 찾아 생육 상황을 살피고 농가 애로를 청취했다.",
             "http://www.nongup.net/news/articleView.html?idxno=32597",
+        )
+        nocut_policy = self._make_article(
+            "supply",
+            "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'",
+            "중동 전쟁 여파에도 농산물 수급 영향은 제한적이라는 농식품부 점검 결과가 나왔다.",
+            "https://www.nocutnews.co.kr/news/6481885",
         )
         cabbage.score = 29.4
         flower.score = 28.5
         market.score = 27.6
         strawberry.score = 27.9
-        citrus_feature.score = 27.7
         citrus_promo.score = 28.9
         watermelon_visit.score = 28.3
+        nocut_policy.score = 29.2
         picked = main.select_top_articles(
-            [cabbage, flower, market, strawberry, citrus_feature, citrus_promo, watermelon_visit],
+            [cabbage, flower, market, strawberry, citrus_promo, watermelon_visit, nocut_policy],
             "supply",
             5,
         )
         picked_urls = {a.link for a in picked}
         self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
-        self.assertIn(citrus_feature.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
-        self.assertNotIn(citrus_promo.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertIn(citrus_promo.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
         self.assertNotIn(watermelon_visit.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertNotIn(nocut_policy.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
     def test_supply_event_key_dedupes_same_citrus_quality_compare_story(self):
         citrus1 = self._make_article(
             "supply",
@@ -1161,6 +1167,37 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
         self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+    def test_collect_candidates_can_recall_policy_market_brief_story(self):
+        section_conf = next(sec for sec in main.SECTIONS if sec["key"] == "policy")
+        start_kst = main.dt_kst(main.date(2026, 3, 9), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 10), main.REPORT_HOUR_KST)
+        seen_queries = []
+        old_func = main.naver_news_search_paged
+        try:
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                seen_queries.append(q)
+                if q == "농산물 가격 동향":
+                    return {
+                        "items": [
+                            {
+                                "title": "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'",
+                                "description": "최근 중동 전쟁 여파에도 농산물 수급 영향은 제한적이라는 점검 결과와 함께 과일류 가격 흐름을 설명했다.",
+                                "link": "https://www.nocutnews.co.kr/news/6481885",
+                                "originallink": "https://www.nocutnews.co.kr/news/6481885",
+                                "pubDate": "Mon, 09 Mar 2026 09:35:00 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+
+        self.assertIn("농산물 가격 동향", seen_queries, msg=str(seen_queries))
+        self.assertTrue(any("6481885" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
+
 
 
     def test_supply_fallback_recall_runs_even_when_cond_paging_is_disabled(self):
@@ -1296,20 +1333,20 @@ class TestClassifierBehavior(unittest.TestCase):
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(
             "policy",
-            "농축산물 물가 1%대 안착, 수급 안정·할인지원에 예산 집중 투입",
-            "농식품부는 농축산물 가격 안정을 위해 정부양곡을 방출하고 사과 수급 안정 대책을 이어간다.",
+            "농축산물 물가 1%대 안정, 수급 안정책·할인지원에 예산 집중 투입",
+            "농식품부는 농축산물 가격 안정을 위해 정부 예산을 집중 투입하고 사과 수급 안정 대책을 이어간다.",
             "https://www.farmnmarket.com/news/article.html?no=25786",
         )
         major1 = self._make_article(
             "policy",
-            "농산물 최대 50% 할인 지속…정부 '석유류·먹거리 가격 안정 총력'",
-            "농림축산식품부는 농산물 가격 안정을 위해 할인 지원과 공급 안정 조치를 이어간다.",
+            "농산물 최대 50% 할인 지원…정부 '생산유통거리 가격 안정 총력'",
+            "농림축산식품부가 농산물 가격 안정을 위해 할인 지원과 공급 안정 조치를 이어간다.",
             "https://www.nongmin.com/article/20260306500258",
         )
         major2 = self._make_article(
             "policy",
-            "한은 '물가, 중동 사태 따른 국제 유가가 변수'",
-            "농축수산물 물가는 안정세를 보이고 있으나 유가와 물가 불확실성이 다시 커질 수 있다.",
+            "정부 '물가, 중동 사태 따른 국제 유가 변수'",
+            "농축수산물 물가 안정세를 보이고 있으나 유가와 물가 불확실성이 다시 커지고 있다.",
             "https://it.chosun.com/news/articleView.html?idxno=2023092158205",
         )
 
@@ -1317,6 +1354,26 @@ class TestClassifierBehavior(unittest.TestCase):
         low_picked = next((x for x in picked if x.link == low.link), None)
         self.assertTrue(low_picked is None or (not getattr(low_picked, "is_core", False)), msg=str([(x.link, x.score, x.is_core) for x in picked]))
         self.assertTrue(any(getattr(x, "is_core", False) for x in picked if x.link in {major1.link, major2.link}), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_policy_selection_keeps_market_brief_alongside_official_policy_story(self):
+        market_brief = self._make_article(
+            "policy",
+            "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'",
+            "최근 중동 전쟁 여파에도 농산물 수급 영향은 제한적이라는 점검 결과와 함께 과일류 가격 흐름을 설명했다.",
+            "https://www.nocutnews.co.kr/news/6481885",
+        )
+        official = self._make_article(
+            "policy",
+            "농식품부 '축산물 가격 전년보다 비슷…달걀·과일 일부 수급 불안 관리'",
+            "농식품부가 주요 농축산물 수급과 가격 점검 결과를 설명하고 추가 대응 방안을 발표했다.",
+            "https://www.yna.co.kr/view/AKR20260309156300030?input=1195m",
+        )
+        market_brief.score = 29.2
+        official.score = 30.4
+        picked = main.select_top_articles([market_brief, official], "policy", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertIn(market_brief.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        self.assertIn(official.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
 
     def test_local_coop_feature_can_fill_dist_when_room_but_not_core(self):
         local = self._make_article(
