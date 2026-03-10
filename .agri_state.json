@@ -1,7 +1,67 @@
 {
-  "last_end_iso": "2026-03-10T07:00:00+09:00",
+  "last_end_iso": "2026-03-11T07:00:00+09:00",
   "recent_keep_days": 7,
   "recent_items": [
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500604",
+      "norm": "url:781523352566622a"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008472007&plink=ORI&cooper=NAVER",
+      "norm": "url:e50e5de7292d8eb2"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500699",
+      "norm": "url:1fcbac62985a1fd2"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500740",
+      "norm": "url:a1f738f5da419fb1"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://mt.co.kr/politics/2026/03/10/2026031009405991292",
+      "norm": "url:cf7c28bedc6b2298"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500761",
+      "norm": "url:3bd7516431c92dab"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://biz.heraldcorp.com/article/10691114",
+      "norm": "url:6c55ea3dd6102e67"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260310500177",
+      "norm": "url:b37501171c107c76"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500392",
+      "norm": "url:e3f05c6b187152ee"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500644",
+      "norm": "url:fb78bc504dc3e0a5"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://nongmin.com/article/20260309500720",
+      "norm": "url:b9a321f8edf51e71"
+    },
+    {
+      "date": "2026-03-11",
+      "canon": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8504583",
+      "norm": "url:b31df973afc2f056"
+    },
     {
       "date": "2026-03-10",
       "canon": "https://seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
@@ -296,76 +356,6 @@
       "date": "2026-03-04",
       "canon": "https://farmnmarket.com/news/article.html?no=25771",
       "norm": "url:2da06d9432e7b0ca"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://seoul.co.kr/news/society/2026/03/02/20260302500115?wlog_tag3=naver",
-      "norm": "url:060b51bd3cbca547"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://agrinet.co.kr/news/articleView.html?idxno=402094",
-      "norm": "url:a4055427a16f15fa"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://aflnews.co.kr/news/articleView.html?idxno=315415",
-      "norm": "url:ac9a7aea3502d605"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://biz.newdaily.co.kr/site/data/html/2026/02/27/2026022700154.html",
-      "norm": "url:57e12ccac76ad424"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://seoul.co.kr/news/economy/distribution/2026/03/03/20260303031002?wlog_tag3=naver",
-      "norm": "url:6ab875def833b811"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8495514",
-      "norm": "url:cd4434ed0fc0bc3c"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://newsgn.com/news/articleView.html?idxno=537277",
-      "norm": "url:23593ea1704e637e"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://newsis.com/view/NISX20260228_0003530198",
-      "norm": "url:cc01c8b73fd89e95"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://hani.co.kr/arti/area/jeju/1246935.html",
-      "norm": "url:0b2c448b6dd8716f"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://nongmin.com/article/20260226500010",
-      "norm": "url:15c80c55017a24de"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://biz.heraldcorp.com/article/10683302",
-      "norm": "url:08420b38789114e5"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://nongmin.com/article/20260226500524",
-      "norm": "url:f4c1a92cde64c9b1"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://aflnews.co.kr/news/articleView.html?idxno=315381",
-      "norm": "url:7393cbb8cbd16772"
-    },
-    {
-      "date": "2026-03-03",
-      "canon": "https://farmnmarket.com/news/article.html?no=25761",
-      "norm": "url:e0e8f93d93ede171"
     }
   ]
 }
