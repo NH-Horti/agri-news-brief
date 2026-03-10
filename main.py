@@ -39,10 +39,11 @@ import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
+from typing import Any, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
-import requests
-from requests.adapters import HTTPAdapter
+import requests  # type: ignore[import-untyped]
+from requests.adapters import HTTPAdapter  # type: ignore[import-untyped]
 from urllib3.util.retry import Retry
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
@@ -64,7 +65,16 @@ from io_github import (
 from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
+from schemas import GithubDirItem, NaverSearchResponse
 from ux_patch import build_archive_ux_html
+
+JsonDict = dict[str, Any]
+
+
+SectionConfig = dict[str, Any]
+
+
+SummaryCacheEntry = dict[str, str]
 
 
 # -----------------------------
@@ -76,7 +86,7 @@ log = logging.getLogger("agri-brief")
 # -----------------------------
 # Log sanitization (secrets / huge bodies)
 # -----------------------------
-_SECRET_PATTERNS = [
+_SECRET_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r'("access_token"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
     (re.compile(r'("refresh_token"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
     (re.compile(r'("client_secret"\s*:\s*")[^"]+(")', re.I), r'\1***\2'),
@@ -94,7 +104,7 @@ def _safe_body(text: str, limit: int = 500) -> str:
         s = s[:limit] + "…(truncated)"
     return s
 
-def _log_http_error(prefix: str, r: requests.Response):
+def _log_http_error(prefix: str, r: requests.Response) -> None:
     try:
         body = _safe_body(getattr(r, "text", ""), limit=500)
     except Exception:
@@ -110,7 +120,7 @@ def _log_http_error(prefix: str, r: requests.Response):
 # -----------------------------
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-def _normalize_manifest(manifest):
+def _normalize_manifest(manifest: object | None) -> JsonDict:
     """Normalize an archive manifest dict.
 
     Historically, various parts of this project expect a dict with a 'dates' list.
@@ -136,7 +146,7 @@ def _normalize_manifest(manifest):
             continue
         seen.add(d)
         clean.append(d)
-    out = dict(manifest)
+    out: JsonDict = dict(manifest)
     out["dates"] = clean
     out["count"] = len(clean)
     # optional metadata
@@ -178,7 +188,7 @@ def _configure_session(s: requests.Session) -> requests.Session:
 
 _configure_session(SESSION)
 
-def http_session():
+def http_session() -> requests.Session:
     """Thread-safe session accessor.
     - When NAVER_MAX_WORKERS>1, use per-thread Session to avoid cross-thread issues.
     """
@@ -343,7 +353,7 @@ REPORT_DATE_OVERRIDE = os.getenv("REPORT_DATE_OVERRIDE", "").strip()
 
 # Debug report data (embedded into HTML when DEBUG_REPORT=1)
 _DEBUG_LOCK = threading.Lock()
-DEBUG_DATA = {
+DEBUG_DATA: JsonDict = {
     "generated_at_kst": None,
     "build_tag": os.getenv("BUILD_TAG", ""),
     "filter_rejects": [],  # list[{section, reason, press, domain, title, url}]
@@ -351,7 +361,7 @@ DEBUG_DATA = {
     "collections": {},     # section_key -> {queries, hits, paging, recall, ...}
 }
 
-def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str):
+def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str) -> None:
     if not DEBUG_REPORT:
         return
     try:
@@ -370,7 +380,7 @@ def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domai
         pass
 
 
-def dbg_set_section(section: str, payload: dict):
+def dbg_set_section(section: str, payload: JsonDict) -> None:
     if not DEBUG_REPORT:
         return
     try:
@@ -380,7 +390,7 @@ def dbg_set_section(section: str, payload: dict):
         pass
 
 
-def dbg_set_collection(section: str, payload: dict):
+def dbg_set_collection(section: str, payload: JsonDict) -> None:
     """수집 단계 메타(쿼리/페이지/히트/리콜)를 디버그 리포트에 저장."""
     if not DEBUG_REPORT:
         return
@@ -412,7 +422,7 @@ def _compute_build_tag() -> str:
     try:
         import subprocess
 
-        def _run(cmd):
+        def _run(cmd: list[str]) -> str:
             return subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True).strip()
 
         # Shallow checkouts often miss tags; try fetching tags (safe no-op if not a git repo)
@@ -481,7 +491,7 @@ NAVER_MAX_WORKERS = int(os.getenv("NAVER_MAX_WORKERS", "2"))  # 동시 요청 �
 _NAVER_LOCK = threading.Lock()
 _NAVER_LAST_CALL = 0.0
 
-def _naver_throttle():
+def _naver_throttle() -> None:
     """전역 최소 간격을 보장(멀티스레드 안전).
     ⚠️ 병목 방지: sleep은 락 밖에서 수행.
     """
@@ -729,7 +739,7 @@ SUPPLY_GENERAL_MUST_TERMS = [
 ]
 
 
-def _ordered_unique_terms(values) -> list[str]:
+def _ordered_unique_terms(values: Any) -> list[str]:
     out: list[str] = []
     for value in (values or []):
         term = str(value or "").strip()
@@ -988,24 +998,24 @@ COMMODITY_REGISTRY = [
 ]
 
 
-def _commodity_alias_terms(entry: dict) -> list[str]:
+def _commodity_alias_terms(entry: JsonDict) -> list[str]:
     return _ordered_unique_terms(entry.get("aliases") or [])
 
 
-def _commodity_must_terms(entry: dict) -> list[str]:
+def _commodity_must_terms(entry: JsonDict) -> list[str]:
     values = list(_commodity_alias_terms(entry))
     values.extend(entry.get("must_terms") or [])
     return _ordered_unique_terms(values)
 
 
-def _commodity_focus_terms(entry: dict) -> list[str]:
+def _commodity_focus_terms(entry: JsonDict) -> list[str]:
     values = list(entry.get("focus_terms") or [])
     if not values:
         values.extend(_commodity_alias_terms(entry))
     return _ordered_unique_terms(values)
 
 
-def _commodity_tag_terms(entry: dict) -> list[str]:
+def _commodity_tag_terms(entry: JsonDict) -> list[str]:
     values = list(entry.get("tag_terms") or [])
     if not values:
         values.extend(_commodity_alias_terms(entry))
@@ -1013,7 +1023,7 @@ def _commodity_tag_terms(entry: dict) -> list[str]:
     return _ordered_unique_terms(values)
 
 
-def _commodity_rep_term(entry: dict) -> str:
+def _commodity_rep_term(entry: JsonDict) -> str:
     rep = str(entry.get("rep_term") or "").strip()
     if rep:
         return rep
@@ -1118,7 +1128,7 @@ MACRO_POLICY_KEEP_TERMS = _ordered_unique_terms(
 # -----------------------------
 # Sections
 # -----------------------------
-SECTIONS = [
+SECTIONS: list[SectionConfig] = [
     {
         "key": "supply",
         "title": "품목 및 수급 동향",
@@ -1294,6 +1304,11 @@ class Article:
     is_core: bool = False
     score: float = 0.0
     summary: str = ""
+    forced_section: str = ""
+
+    @property
+    def url(self) -> str:
+        return self.originallink or self.link or self.canon_url
 
 
 # -----------------------------
@@ -1481,7 +1496,7 @@ def _anchor_hits(title: str, desc: str) -> set[str]:
 def _story_text(a: "Article") -> tuple[str, str]:
     # description이 비어있는 매체가 있어 summary를 보조로 사용
     desc = (a.description or "") if isinstance(a.description, str) else ""
-    if (not desc.strip()) and getattr(a, "summary", ""):
+    if (not desc.strip()) and bool(a.summary):
         desc = str(getattr(a, "summary", "") or "")
     return (a.title or ""), desc
 
@@ -1776,7 +1791,7 @@ def _is_similar_title(k1: str, k2: str) -> bool:
 # - 1글자 키워드(배/밤/꽃/귤/쌀 등)는 오탐이 잦아 "맥락 패턴"으로만 매칭
 # - topic은 카드에 노출되므로, 품목 분류 정확도가 매우 중요
 # -----------------------------
-_SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern]] = {
+_SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     # 과일 '배' (배터리/배당/배달/배기/배포 등 오탐 방지)
     "배": [
         re.compile(r"(?:^|[\s\W])배(?:값|가격|시세|수급|출하|저장|작황|재배|농가)"),
@@ -1909,10 +1924,10 @@ def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
     h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:16]
     return f"pt:{h}"
 
-def has_any(text: str, words) -> bool:
+def has_any(text: str, words: list[str] | tuple[str, ...] | set[str]) -> bool:
     return any(w in text for w in words)
 
-def count_any(text: str, words) -> int:
+def count_any(text: str, words: list[str] | tuple[str, ...] | set[str]) -> int:
     return sum(1 for w in words if w in text)
 
 
@@ -2135,7 +2150,7 @@ _RETAIL_SALES_TREND_MARKERS = [
     "무인", "무인과일", "과일가게", "판매점", "매장", "소매", "편의점", "마트", "백화점",
     "프랜차이즈", "체인", "온라인몰", "구매", "소비",
 ]
-_RETAIL_SALES_TREND_EXCLUDE = [
+_RETAIL_SALES_TREND_EXCLUDE: list[str] = [
     # 거시 물가/통계는 policy에서 다루므로 제외하지 않음(아래 로직에서 따로 판단)
 ]
 def is_retail_sales_trend_context(text: str) -> bool:
@@ -2635,7 +2650,7 @@ def agri_strength_score(text: str) -> int:
     return count_any(text, AGRI_STRONG_TERMS)
 
 
-def _section_must_terms_lower(section_conf: dict) -> list[str]:
+def _section_must_terms_lower(section_conf: JsonDict) -> list[str]:
     """Return cached lower-cased must_terms for a section config."""
     if not isinstance(section_conf, dict):
         return []
@@ -2648,7 +2663,7 @@ def _section_must_terms_lower(section_conf: dict) -> list[str]:
     return out
 
 
-def keyword_strength(text: str, section_conf: dict) -> int:
+def keyword_strength(text: str, section_conf: JsonDict) -> int:
     """섹션 관련 키워드 강도(정수).
     - 섹션 must_terms 포함 여부(1차) + 농산물 강키워드(AGRI_STRONG_TERMS) 기반 점수
     - dist/pest에서 낚시성 기사 제거에 사용
@@ -2658,7 +2673,7 @@ def keyword_strength(text: str, section_conf: dict) -> int:
     must = _section_must_terms_lower(section_conf)
     return count_any(text, must) + agri_strength_score(text)
 
-def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
+def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     """해당 기사가 섹션 의도와 얼마나 맞는지(0+).
     - must_terms 텍스트 히트 + 제목 히트(가중)
     - 원예 핵심 신호를 약하게 추가해 완전 비관련 기사 상단 배치를 줄임
@@ -3043,10 +3058,10 @@ def title_signal_bonus(title: str) -> float:
 # Dedupe index
 # -----------------------------
 class DedupeIndex:
-    def __init__(self):
-        self.seen_norm = set()
-        self.seen_canon = set()
-        self.seen_press_title = set()
+    def __init__(self) -> None:
+        self.seen_norm: set[str] = set()
+        self.seen_canon: set[str] = set()
+        self.seen_press_title: set[str] = set()
 
     def add_and_check(self, canon_url: str, press: str, title_key: str, norm_key: str) -> bool:
         if norm_key in self.seen_norm:
@@ -3502,7 +3517,7 @@ def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> 
     return 2.0 if section_key in ("supply", "dist", "policy") else 1.2
 
 
-def _sort_key_major_first(a: Article):
+def _sort_key_major_first(a: Article) -> Any:
     # 점수(관련성/품질)를 1순위로, 매체 티어는 2순위로 반영
     return _ranking_sort_key_major_first(a, press_priority)
 
@@ -3519,8 +3534,11 @@ def is_korean_holiday(d: date) -> bool:
     if s in EXTRA_HOLIDAYS:
         return True
     try:
-        import holidays  # type: ignore
-        kr = holidays.KR(years=[d.year], observed=True)
+        import holidays
+        kr_factory = getattr(holidays, "KR", None)
+        if kr_factory is None:
+            return False
+        kr = kr_factory(years=[d.year], observed=True)
         return d in kr
     except Exception:
         return False
@@ -3542,7 +3560,7 @@ def previous_business_day(d: date) -> date:
 # -----------------------------
 # GitHub Contents API helpers
 # -----------------------------
-def github_api_headers(token: str):
+def github_api_headers(token: str) -> dict[str, str]:
     return _io_github_api_headers(token)
 
 
@@ -3566,7 +3584,7 @@ def _normalize_repo_path(path: str) -> str:
     return "/".join(parts)
 
 
-def _assert_dev_single_page_write_path(path: str):
+def _assert_dev_single_page_write_path(path: str) -> None:
     """Fail fast when dev single-page mode attempts to write non-preview paths."""
     if not DEV_SINGLE_PAGE_MODE:
         return
@@ -3579,7 +3597,7 @@ def _assert_dev_single_page_write_path(path: str):
 
 
 
-def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
+def github_get_file(repo: str, path: str, token: str, ref: str = "main") -> tuple[str | None, str | None]:
     return _io_github_get_file(
         repo,
         path,
@@ -3590,7 +3608,7 @@ def github_get_file(repo: str, path: str, token: str, ref: str = "main"):
     )
 
 
-def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> list[dict]:
+def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> list[GithubDirItem]:
     """List a directory via GitHub Contents API. Returns [] on 404."""
     return _io_github_list_dir(
         repo,
@@ -3602,7 +3620,7 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
     )
 
 
-def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str = None, branch: str = "main"):
+def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str | None = None, branch: str = "main") -> JsonDict:
     _assert_dev_single_page_write_path(path)
     return _io_github_put_file(
         repo,
@@ -3754,7 +3772,7 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
 # State / archive manifest
 # -----------------------------
 
-def load_state(repo: str, token: str):
+def load_state(repo: str, token: str) -> JsonDict:
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     if not raw:
         return {"last_end_iso": None}
@@ -3772,12 +3790,12 @@ def _parse_ymd(s: str) -> date | None:
     except Exception:
         return None
 
-def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
+def normalize_recent_items(recent_items: Any, base_day: date) -> list[JsonDict]:
     """state.recent_items를 표준화하고, base_day 기준 최근 N일만 남긴다."""
     if not isinstance(recent_items, list):
         return []
     cutoff = base_day - timedelta(days=max(CROSSDAY_DEDUPE_DAYS, 0))
-    out: list[dict] = []
+    out: list[JsonDict] = []
     for it in recent_items:
         if not isinstance(it, dict):
             continue
@@ -3803,7 +3821,7 @@ def normalize_recent_items(recent_items, base_day: date) -> list[dict]:
     return list(sorted(uniq.values(), key=lambda x: x.get("date", ""), reverse=True))[:2000]
 
 
-def rebuild_recent_items_for_report_date(existing_recent_items, by_section: dict | None, report_date: str, base_day: date) -> list[dict]:
+def rebuild_recent_items_for_report_date(existing_recent_items: Any, by_section: dict[str, list[Article]] | None, report_date: str, base_day: date) -> list[JsonDict]:
     """Build cross-day dedupe history deterministically for the current report_date.
 
     Why:
@@ -3838,7 +3856,7 @@ def rebuild_recent_items_for_report_date(existing_recent_items, by_section: dict
 
     return normalize_recent_items(merged, base_day)
 
-def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dict] | None = None):
+def save_state(repo: str, token: str, last_end: datetime, recent_items: list[JsonDict] | None = None) -> None:
     # 기존 state를 읽어 스키마 확장에 대응(호환성 유지)
     old = load_state(repo, token)
     base_day = last_end.astimezone(KST).date()
@@ -3848,7 +3866,7 @@ def save_state(repo: str, token: str, last_end: datetime, recent_items: list[dic
     else:
         recent_items = normalize_recent_items(recent_items, base_day)
 
-    payload = {
+    payload: JsonDict = {
         "last_end_iso": last_end.isoformat(),
         "recent_keep_days": CROSSDAY_DEDUPE_DAYS,
         "recent_items": recent_items,
@@ -3880,7 +3898,7 @@ def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
     return dates_desc
 
-def load_archive_manifest(repo: str, token: str):
+def load_archive_manifest(repo: str, token: str) -> tuple[JsonDict, str | None]:
     raw, sha = github_get_file(repo, ARCHIVE_MANIFEST_PATH, token, ref="main")
     if not raw:
         return {"dates": []}, sha
@@ -3889,7 +3907,7 @@ def load_archive_manifest(repo: str, token: str):
     except Exception:
         return {"dates": []}, sha
 
-def save_archive_manifest(repo: str, token: str, manifest: dict, sha: str):
+def save_archive_manifest(repo: str, token: str, manifest: JsonDict, sha: str | None) -> None:
     manifest = _normalize_manifest(manifest)
     body = json.dumps(manifest, ensure_ascii=False, indent=2)
     github_put_file_if_changed(repo, ARCHIVE_MANIFEST_PATH, body, token,
@@ -3928,7 +3946,7 @@ def save_docs_archive_manifest(repo: str, token: str, dates: list[str]) -> bool:
         if old_dates == clean:
             return False
 
-        payload = {
+        payload: JsonDict = {
             "version": 1,
             "updated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
             "dates": clean,
@@ -3941,7 +3959,7 @@ def save_docs_archive_manifest(repo: str, token: str, dates: list[str]) -> bool:
         return False
 
 
-def load_search_index(repo: str, token: str):
+def load_search_index(repo: str, token: str) -> tuple[JsonDict, str | None]:
     raw, sha = github_get_file(repo, DOCS_SEARCH_INDEX_PATH, token, ref="main")
     if not raw:
         return {"version": 1, "updated_at": "", "items": []}, sha
@@ -3962,7 +3980,7 @@ def load_search_index(repo: str, token: str):
         return {"version": 1, "updated_at": "", "items": []}, sha
 
 
-def save_search_index(repo: str, token: str, idx: dict, sha: str):
+def save_search_index(repo: str, token: str, idx: JsonDict, sha: str | None) -> None:
     if not isinstance(idx, dict):
         idx = {"version": 1, "updated_at": "", "items": []}
     idx["version"] = 1
@@ -3979,19 +3997,19 @@ def save_search_index(repo: str, token: str, idx: dict, sha: str):
                     "Update search index", sha=sha, branch="main")
 
 
-def _make_search_items_for_day(report_date: str, by_section: dict, site_path: str) -> list[dict]:
+def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]], site_path: str) -> list[JsonDict]:
     """Build search-index items for a single report day.
 
     `by_section` normally contains lists of Article objects (our internal dataclass),
     but some legacy paths may pass dict-like items. Support both.
     NOTE: Keep output schema stable for index.html JS (press_tier, summary truncation, etc.).
     """
-    def _get(a, key, default=""):
+    def _get(a: object, key: str, default: Any = "") -> Any:
         if isinstance(a, dict):
             return a.get(key, default)
         return getattr(a, key, default)
 
-    items: list[dict] = []
+    items: list[JsonDict] = []
     for sec in SECTIONS:
         key = sec["key"]
         stitle = sec["title"]
@@ -4029,7 +4047,7 @@ def _make_search_items_for_day(report_date: str, by_section: dict, site_path: st
             })
     return items
 
-def update_search_index(existing: dict, report_date: str, by_section: dict, site_path: str) -> dict:
+def update_search_index(existing: JsonDict, report_date: str, by_section: dict[str, list[Any]], site_path: str) -> JsonDict:
     if not isinstance(existing, dict):
         existing = {"version": 1, "updated_at": "", "items": []}
     items = existing.get("items", [])
@@ -4043,19 +4061,20 @@ def update_search_index(existing: dict, report_date: str, by_section: dict, site
     items = _make_search_items_for_day(report_date, by_section, site_path) + items
 
     # keep last MAX_SEARCH_DATES distinct dates
-    def _date_key(d: str):
+    def _date_key(d: str) -> date:
         try:
             return datetime.strptime(d, "%Y-%m-%d").date()
         except Exception:
             return date.min
 
-    dates_desc = sorted({x.get("date") for x in items if isinstance(x, dict) and isinstance(x.get("date"), str)}, key=_date_key, reverse=True)
+    date_values = [str(x.get("date")) for x in items if isinstance(x, dict) and isinstance(x.get("date"), str)]
+    dates_desc = sorted(set(date_values), key=_date_key, reverse=True)
     keep_dates = set(dates_desc[:MAX_SEARCH_DATES])
 
     items = [x for x in items if isinstance(x, dict) and x.get("date") in keep_dates]
 
     # sort: newer date, higher press_tier, higher score
-    def _sort(x):
+    def _sort(x: JsonDict) -> tuple[int, int, float, int]:
         d = x.get("date") or ""
         try:
             di = int(d.replace("-", ""))
@@ -4087,7 +4106,7 @@ def _naver_client_cfg() -> NaverClientConfig:
     )
 
 
-def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str = "date"):
+def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str = "date") -> NaverSearchResponse:
     return _collector_naver_news_search(
         cfg=_naver_client_cfg(),
         query=query,
@@ -4101,7 +4120,7 @@ def naver_news_search(query: str, display: int = 40, start: int = 1, sort: str =
     )
 
 
-def naver_news_search_paged(query: str, display: int = 50, pages: int = 1, sort: str = "date") -> dict:
+def naver_news_search_paged(query: str, display: int = 50, pages: int = 1, sort: str = "date") -> NaverSearchResponse:
     return _collector_naver_news_search_paged(
         cfg=_naver_client_cfg(),
         query=query,
@@ -4117,7 +4136,7 @@ def naver_news_search_paged(query: str, display: int = 50, pages: int = 1, sort:
 # -----------------------------
 # Relevance / scoring
 # -----------------------------
-def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = "date"):
+def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = "date") -> NaverSearchResponse:
     return _collector_naver_web_search(
         cfg=_naver_client_cfg(),
         query=query,
@@ -4131,7 +4150,7 @@ def naver_web_search(query: str, display: int = 10, start: int = 1, sort: str = 
     )
 
 
-def section_must_terms_ok(text: str, must_terms) -> bool:
+def section_must_terms_ok(text: str, must_terms: list[str] | tuple[str, ...] | set[str]) -> bool:
     return has_any(text, must_terms)
 
 def policy_domain_override(dom: str, text: str) -> bool:
@@ -4177,7 +4196,7 @@ PEST_OFFTOPIC_TERMS = [
     "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
     "학교", "어린이집", "환자", "감염",
 ]
-def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, press: str) -> bool:
+def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷).
 
     핵심 목표:
@@ -4647,7 +4666,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         # '산지유통/APC/농협/화훼' 같은 소프트 신호만 있을 땐,
         # 인프라/유통 강신호(준공/가동/선별/저온/저장/물류/원산지/검역/수출 등) + 농업 앵커/품목 신호가 함께 있어야 통과
         if hard_hits == 0:
-            infra_terms = ("준공", "완공", "가동", "확충", "확대", "선별", "저온", "저온저장", "저장고", "ca저장", "물류", "원산지", "검역", "수출")
+            infra_terms = ["준공", "완공", "가동", "확충", "확대", "선별", "저온", "저온저장", "저장고", "ca저장", "물류", "원산지", "검역", "수출"]
             has_infra = any(w in text for w in infra_terms)
 
             # soft-only는 (인프라 + (농업앵커 or 품목점수)) 또는 (품목점수 매우 강함 + soft 2개 이상)에서만 허용
@@ -4674,7 +4693,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     return True
 
-def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: dict, press: str) -> float:
+def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, section_conf: JsonDict, press: str) -> float:
     """중요도 스코어.
     목표:
     - 원예수급(과수/화훼/시설채소) 실무에 직접 영향을 주는 의사결정 신호(가격/물량/대책/검역/방제)를 최우선
@@ -5589,7 +5608,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     def _already_used(a: Article) -> bool:
         k = _dup_key(a)
-        return (k in used_title_keys) or (a.canon_url and a.canon_url in used_url_keys)
+        return (k in used_title_keys) or (bool(a.canon_url) and a.canon_url in used_url_keys)
 
     def _mark_used(a: Article) -> None:
         used_title_keys.add(_dup_key(a))
@@ -5825,7 +5844,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         while len(final) < max_n and eligible:
             sel_tris = [_mmr_tri(x) for x in final] if final else []
             best: Article | None = None
-            best_tuple = None
+            best_tuple: tuple[float, float, tuple[int, Any | datetime]] | None = None
 
             for a in eligible:
                 # 출처 캡/중복/유사 스토리/헤드라인 게이트는 "선정 시점"에도 유지
@@ -5849,7 +5868,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 tie = (press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST))
                 cand = (mmr_val, float(getattr(a, "score", 0.0) or 0.0), tie)
 
-                if best is None or cand > best_tuple:
+                if best is None or best_tuple is None or cand > best_tuple:
                     best = a
                     best_tuple = cand
 
@@ -6069,7 +6088,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             top_n = max(5, min(DEBUG_REPORT_MAX_CANDIDATES, 60))
             top_candidates = candidates_sorted[:top_n]
 
-            def _signals(a: Article) -> dict:
+            def _signals(a: Article) -> JsonDict:
                 txt = (a.title + " " + a.description).lower()
                 return {
                     "horti_sc": round(best_horti_score(a.title, a.description), 2),
@@ -6105,7 +6124,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     "signals": _signals(a),
                 })
 
-            payload = {
+            payload: JsonDict = {
                 "threshold": round(thr, 2),
                 "core_min": round(core_min, 2),
                 "total_candidates": len(candidates),
@@ -6126,7 +6145,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 # - WHITELIST_RSS_URLS 환경변수에 RSS URL을 넣으면 해당 소스에서 기사 후보를 추가한다.
 # - 기본은 OFF(빈 값)이며, 기존 Naver OpenAPI 기반 파이프라인은 그대로 유지한다.
 # -----------------------------
-def fetch_rss_items(rss_url: str) -> list[dict]:
+def fetch_rss_items(rss_url: str) -> list[JsonDict]:
     try:
         r = http_session().get(rss_url, timeout=20)
         if not r.ok:
@@ -6159,11 +6178,20 @@ def _rss_pub_to_kst(pub: str) -> datetime | None:
             continue
     return None
 
-def collect_rss_candidates(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list["Article"]:
+def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end_kst: datetime) -> list[Article]:
     if not WHITELIST_RSS_URLS:
         return []
     out: list[Article] = []
     _local_dedupe = DedupeIndex()
+    effective_start_kst = start_kst
+    try:
+        min_hours = WINDOW_MIN_HOURS
+        if min_hours and min_hours > 0:
+            min_start = end_kst - timedelta(hours=min_hours)
+            if min_start < effective_start_kst:
+                effective_start_kst = min_start
+    except Exception:
+        effective_start_kst = start_kst
     for rss in WHITELIST_RSS_URLS:
         for it in fetch_rss_items(rss):
             title = clean_text(it.get("title", ""))
@@ -6451,12 +6479,12 @@ def _prioritize_supply_recall_seeds(
     return prioritized, pool_seed_hits
 
 
-def _build_recall_fallback_queries(section_key: str, section_conf: dict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], dict]:
+def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], JsonDict]:
     """후보 수 부족을 줄이기 위한 '광역 보강 쿼리'를 생성.
     반환: (queries, meta)
     - meta는 DEBUG_REPORT에서 확인 가능하도록 요약만 남긴다.
     """
-    meta = {"seed_terms": [], "reason": [], "queries": []}
+    meta: JsonDict = {"seed_terms": [], "reason": [], "queries": []}
     if not RECALL_BACKFILL_ENABLED:
         return [], meta
 
@@ -6634,7 +6662,7 @@ def _dedupe_queries(queries: list[str]) -> list[str]:
         out.append(qn)
     return out
 
-def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_kst: datetime) -> list[Article]:
+def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datetime, end_kst: datetime) -> list[Article]:
     """Collect candidates for a section.
 
     기본 동작은 1페이지(=기존과 동일)이며, 아래 조건을 만족할 때에만 일부 쿼리에 대해 2페이지(start=51)를 추가 호출한다.
@@ -6667,9 +6695,9 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
 
     api_items_by_query: dict[str, int] = {}    # raw items returned by API per query (before time/relevance filters)
     page1_full_queries: set[str] = set()       # API returned full display(=50) on page1 -> high volume hint
-    recall_meta: dict = {}                     # recall backfill metadata (for debug)
+    recall_meta: JsonDict = {}                  # recall backfill metadata (for debug)
 
-    def _ingest_naver_items(q: str, data: dict):
+    def _ingest_naver_items(q: str, data: NaverSearchResponse) -> None:
         nonlocal items, _local_dedupe
         if not isinstance(data, dict):
             return
@@ -6730,7 +6758,7 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     # -----------------------------
     # 1) Base pass: always 1 page
     # -----------------------------
-    def fetch_page1(q: str):
+    def fetch_page1(q: str) -> tuple[str, NaverSearchResponse]:
         return q, naver_news_search_paged(q, display=50, pages=COND_PAGING_BASE_PAGES, sort="date")
 
     if queries:
@@ -7031,7 +7059,7 @@ def _extract_krei_issue_refs(by_section: dict[str, list["Article"]]) -> dict[int
                     out[n] = pub
     return out
 
-def _pick_best_web_item(items: list[dict], issue_no: int) -> dict | None:
+def _pick_best_web_item(items: list[Any], issue_no: int) -> dict[str, Any] | None:
     """KREI 이슈+ 링크 후보 중 최적 1개를 선택."""
     if not items:
         return None
@@ -7059,12 +7087,13 @@ def _pick_best_web_item(items: list[dict], issue_no: int) -> dict | None:
             best = (score, it)
     return best[1] if best else None
 
-def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime):
+def _maybe_add_krei_issues_to_policy(raw_by_section: dict[str, list["Article"]], start_kst: datetime, end_kst: datetime) -> None:
     """기사에서 언급된 KREI 이슈+ 보고서를 찾아 policy 섹션에 추가."""
     refs = _extract_krei_issue_refs(raw_by_section)
     if not refs:
         return
 
+    _local_dedupe = DedupeIndex()
     policy_conf = None
     for s in SECTIONS:
         if s.get("key") == "policy":
@@ -7446,7 +7475,7 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
     return moved
 
 
-def collect_all_sections(start_kst: datetime, end_kst: datetime):
+def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
     raw_by_section: dict[str, list[Article]] = {}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
@@ -7750,7 +7779,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime):
 # -----------------------------
 # OpenAI summaries (optional)
 # -----------------------------
-def openai_extract_text(resp_json: dict) -> str:
+def openai_extract_text(resp_json: JsonDict) -> str:
     try:
         out = resp_json.get("output", [])
         if not out:
@@ -7758,12 +7787,12 @@ def openai_extract_text(resp_json: dict) -> str:
         for block in out:
             for c in block.get("content", []):
                 if c.get("type") in ("output_text", "text") and "text" in c:
-                    return c["text"]
+                    return str(c["text"])
         return ""
     except Exception:
         return ""
 
-def load_summary_cache(repo: str, token: str) -> dict:
+def load_summary_cache(repo: str, token: str) -> dict[str, SummaryCacheEntry | str]:
     """요약 캐시를 repo 파일에서 로드.
     구조:
       { norm_key: {"s": "요약", "t": "2026-02-22T..."} }
@@ -7778,7 +7807,7 @@ def load_summary_cache(repo: str, token: str) -> dict:
     except Exception:
         return {}
 
-def _prune_summary_cache(cache: dict) -> dict:
+def _prune_summary_cache(cache: dict[str, SummaryCacheEntry | str]) -> dict[str, SummaryCacheEntry]:
     if not isinstance(cache, dict) or not cache:
         return {}
     items = []
@@ -7802,7 +7831,7 @@ def _prune_summary_cache(cache: dict) -> dict:
         kept[k] = v
     return kept
 
-def save_summary_cache(repo: str, token: str, cache: dict):
+def save_summary_cache(repo: str, token: str, cache: dict[str, SummaryCacheEntry | str]) -> None:
     path = OPENAI_SUMMARY_CACHE_PATH
     cache2 = _prune_summary_cache(cache or {})
     raw_new = json.dumps(cache2, ensure_ascii=False, indent=2)
@@ -7811,7 +7840,7 @@ def save_summary_cache(repo: str, token: str, cache: dict):
         return
     github_put_file(repo, path, raw_new, token, f"Update summary cache ({len(cache2)})", sha=sha, branch="main")
 
-def _openai_summarize_rows(rows: list[dict]) -> dict:
+def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
     """OpenAI Responses API를 호출해 rows를 요약.
     출력 형식: 각 줄 'id\t요약'
     """
@@ -7826,7 +7855,7 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
     )
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
 
-    payload = {
+    payload: JsonDict = {
         "model": OPENAI_MODEL,
         "input": [
             {"role": "system", "content": system},
@@ -7894,7 +7923,7 @@ def _openai_summarize_rows(rows: list[dict]) -> dict:
         log.warning("[OpenAI] summarize failed after retries: %s", _safe_body(getattr(last_resp, "text", ""), limit=500))
     return {}
 
-def openai_summarize_batch(articles: list[Article], cache: dict | None = None) -> dict:
+def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCacheEntry | str] | None = None) -> dict[str, str]:
     """기사들을 배치로 요약. cache가 있으면 캐시된 키는 호출에서 제외."""
     if not OPENAI_API_KEY or not articles:
         return {}
@@ -7938,7 +7967,7 @@ def openai_summarize_batch(articles: list[Article], cache: dict | None = None) -
 
     return mapping
 
-def fill_summaries(by_section: dict, cache: dict | None = None, allow_openai: bool = True):
+def fill_summaries(by_section: dict[str, list[Article]], cache: dict[str, SummaryCacheEntry | str] | None = None, allow_openai: bool = True) -> dict[str, list[Article]]:
     all_articles: list[Article] = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
@@ -8040,7 +8069,7 @@ def _normalize_existing_chipbar_titles(html_text: str) -> str:
     if not html_text or 'class="chipTitle"' not in html_text:
         return html_text
 
-    def _repl(m: re.Match) -> str:
+    def _repl(m: re.Match[str]) -> str:
         prefix, inner, suffix = m.group(1), m.group(2), m.group(3)
         raw = html.unescape(inner or "")
         norm = display_section_title(raw)
@@ -8125,7 +8154,7 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         return ""
 
     with _DEBUG_LOCK:
-        data = {
+        data: JsonDict = {
             "generated_at_kst": DEBUG_DATA.get("generated_at_kst"),
             "build_tag": DEBUG_DATA.get("build_tag"),
             "filter_rejects": list(DEBUG_DATA.get("filter_rejects", [])),
@@ -8133,8 +8162,9 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         }
 
     # 요약(사유 카운트)
-    reason_count = {}
-    for r in data["filter_rejects"]:
+    reason_count: dict[str, int] = {}
+    filter_rejects = data["filter_rejects"] if isinstance(data.get("filter_rejects"), list) else []
+    for r in filter_rejects:
         reason = r.get("reason", "unknown")
         reason_count[reason] = reason_count.get(reason, 0) + 1
     reason_items = sorted(reason_count.items(), key=lambda x: x[1], reverse=True)[:12]
@@ -8149,7 +8179,8 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
 
     # 섹션 테이블
     sec_blocks = []
-    for sec_key, payload in data["sections"].items():
+    section_payloads = data["sections"] if isinstance(data.get("sections"), dict) else {}
+    for sec_key, payload in section_payloads.items():
         top = payload.get("top", [])
         rows = []
         for it in top:
@@ -8269,7 +8300,7 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
     tags: list[str] = []
     line = ""
 
-    def add_tag(t: str):
+    def add_tag(t: str) -> None:
         if t and t not in tags and len(tags) < 6:
             tags.append(t)
 
@@ -8316,7 +8347,7 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
         line = ""
     return (line, tags)
 
-def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict,
+def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict[str, list[Article]],
                       archive_dates_desc: list[str], site_path: str) -> str:
     # 상단 칩 카운트 + 섹션별 중요도 정렬
     chips = []
@@ -8362,7 +8393,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         else:
             options_html = "\n".join(options)
 
-    def chip_html(k, title, n, color):
+    def chip_html(k: str, title: str, n: int, color: str) -> str:
         return (
             f'<a class="chip" style="border-color:{color};" href="#sec-{k}">'
             f'<span class="chipTitle">{esc(display_section_title(title))}</span><span class="chipN">{n}</span></a>'
@@ -8372,7 +8403,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     # ✅ (2) 섹션 렌더: 더 이상 숨김(<details>) 사용하지 않고 '전부' 노출
     # ✅ (2) 섹션 내 기사는 중요도 순(이미 정렬됨)
-    sections_html = []
+    section_blocks: list[str] = []
     for sec in SECTIONS:
         key = sec["key"]
         title = sec["title"]
@@ -8380,7 +8411,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         lst = by_section.get(key, [])
         insight_line, insight_tags = make_section_insight(key, lst)
 
-        def render_card(a: Article, is_core: bool):
+        def render_card(a: Article, is_core: bool) -> str:
             url = a.originallink or a.link
             summary_html = "<br>".join(esc(a.summary).splitlines())
             core_badge = '<span class="badgeCore">핵심</span>' if is_core else ""
@@ -8407,7 +8438,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         else:
             body_html = "\n".join([render_card(a, getattr(a, "is_core", False)) for a in lst])
 
-        sections_html.append(
+        section_blocks.append(
             f"""
             <section id=\"sec-{key}\" class=\"sec\">
               <div class=\"secHead\" style=\"border-left:8px solid {color};\">
@@ -8422,7 +8453,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             """
         )
 
-    sections_html = "\n".join(sections_html)
+    sections_html = "\n".join(section_blocks)
 
     dev_badge_text = " [DEV]" if DEV_SINGLE_PAGE_MODE else ""
     dev_sub_text = " · 개발 버전 미리보기" if DEV_SINGLE_PAGE_MODE else ""
@@ -8432,7 +8463,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     home_href = preview_href if is_dev_preview else site_path
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
 
-    def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str):
+    def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
         # ✅ (3) 없는 페이지로 링크하지 않고 알림으로 처리
@@ -8990,7 +9021,7 @@ try {{ _ensureDates(); }} catch (e) {{}}
 """
 
 
-def render_index_page(manifest: dict, site_path: str) -> str:
+def render_index_page(manifest: JsonDict, site_path: str) -> str:
     manifest = _normalize_manifest(manifest)
 
     def is_valid_iso_date(s: str) -> bool:
@@ -9678,7 +9709,7 @@ def get_pages_base_url(repo: str) -> str:
 
     return env_url
 
-def ensure_not_gist(url: str, label: str):
+def ensure_not_gist(url: str, label: str) -> None:
     if "gist.github.com" in url or "raw.githubusercontent.com" in url:
         raise RuntimeError(f"[FATAL] {label} points to gist/raw: {url}")
 
@@ -9694,7 +9725,7 @@ def ensure_absolute_http_url(u: str) -> str:
         raise RuntimeError(f"Kakao web_url is pointing to gist. Fix PAGES_BASE_URL / Kakao domain settings. Got: {u}")
     return u
 
-def log_kakao_link(url: str):
+def log_kakao_link(url: str) -> None:
     try:
         p = urlparse(url)
         log.info("[KAKAO LINK] %s (host=%s)", url, p.netloc)
@@ -9706,7 +9737,7 @@ def log_kakao_link(url: str):
 # -----------------------------
 KAKAO_MESSAGE_SECTION_ORDER = ["supply", "policy", "dist", "pest"]
 
-def _get_section_conf(key: str):
+def _get_section_conf(key: str) -> SectionConfig | None:
     for s in SECTIONS:
         if s["key"] == key:
             return s
@@ -9804,9 +9835,9 @@ def kakao_refresh_access_token() -> str:
         _log_http_error("[KAKAO TOKEN ERROR]", r)
         r.raise_for_status()
     j = r.json()
-    return j["access_token"]
+    return str(j["access_token"])
 
-def kakao_send_to_me(text: str, web_url: str):
+def kakao_send_to_me(text: str, web_url: str) -> None:
     web_url = ensure_absolute_http_url(web_url)
     log_kakao_link(web_url)
     ensure_not_gist(web_url, "Kakao web_url")
@@ -9847,7 +9878,7 @@ def kakao_send_to_me(text: str, web_url: str):
         last_resp = r
 
         if r.ok:
-            return r.json()
+            return
 
         if r.status_code in (401, 403):
             _log_http_error("[KAKAO SEND AUTH ERROR]", r)
@@ -9873,7 +9904,7 @@ def kakao_send_to_me(text: str, web_url: str):
 # -----------------------------
 # Window calculation
 # -----------------------------
-def _parse_force_report_date(s: str):
+def _parse_force_report_date(s: str) -> date | None:
     """Parse FORCE_REPORT_DATE in multiple common formats.
 
     Accepted:
@@ -9898,7 +9929,7 @@ def _parse_force_report_date(s: str):
 
 
 
-def compute_end_kst():
+def compute_end_kst() -> datetime:
     """End timestamp (KST) for collection window.
     운영 기본은 항상 KST 07:00 컷오프에 스냅한다.
     FORCE_END_NOW는 디버그/수동재생성(= FORCE_REPORT_DATE 존재)일 때만 허용한다.
@@ -9918,6 +9949,8 @@ def compute_end_kst():
     if FORCE_REPORT_DATE and (not FORCE_END_NOW):
         try:
             d = _parse_force_report_date(FORCE_REPORT_DATE)
+            if d is None:
+                raise ValueError("invalid FORCE_REPORT_DATE")
             return dt_kst(d, REPORT_HOUR_KST)
         except Exception as e:
             try:
@@ -9940,7 +9973,7 @@ def compute_end_kst():
         return cutoff_today - timedelta(days=1)
     return cutoff_today
 
-def compute_window(repo: str, token: str, end_kst: datetime):
+def compute_window(repo: str, token: str, end_kst: datetime) -> tuple[datetime, datetime]:
 
     # 안전장치: 운영 기본은 end_kst를 항상 07:00 cutoff 경계로 유지
     # (예: 외부 호출/패치 로직 중 now()가 들어와도 윈도우 오염 방지)
@@ -10148,7 +10181,7 @@ def patch_archive_page_ux(repo: str, token: str, iso_date: str, site_path: str) 
         return False
 
 
-def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archive_dates_desc: list[str], site_path: str, max_neighbors: int = 2):
+def backfill_neighbor_archive_nav(repo: str, token: str, report_date: str, archive_dates_desc: list[str], site_path: str, max_neighbors: int = 2) -> None:
     """Backfill navRow for report_date's neighbors so older pages can navigate forward to newly generated pages."""
     if not repo or not token or not report_date:
         return
@@ -10206,9 +10239,9 @@ def backfill_rebuild_recent_archives(
     report_date: str,
     archive_dates_desc: list[str],
     site_path: str,
-    summary_cache: dict,
-    search_idx: dict,
-) -> dict:
+    summary_cache: JsonDict,
+    search_idx: JsonDict,
+) -> JsonDict:
     """최근 BACKFILL_REBUILD_DAYS 만큼의 과거 아카이브를 재생성하여 커밋한다.
     - daily html (docs/archive/YYYY-MM-DD.html) 업데이트
     - docs/search_index.json 엔트리도 해당 날짜로 재생성
@@ -10373,7 +10406,7 @@ def _list_archive_dates(repo: str, token: str) -> set[str]:
     return dset
 
 
-def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
+def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str) -> None:
     """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso.
 
     In strict mode, fail the run if any page patch throws an exception.
@@ -10416,7 +10449,7 @@ def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str):
         raise SystemExit(1)
 
 
-def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True):
+def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:
     """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
     if not report_date or not is_iso_date_str(report_date):
         raise ValueError("report_date must be YYYY-MM-DD")
@@ -10546,7 +10579,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
             else:
                 raise
 
-def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str):
+def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str) -> None:
     """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
     if not base_date_iso or not is_iso_date_str(base_date_iso):
         raise ValueError("base_date_iso must be YYYY-MM-DD")
@@ -10613,7 +10646,7 @@ def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site
 
 
 
-def main():
+def main() -> None:
     log.info("[BUILD] %s", BUILD_TAG)
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
@@ -10676,7 +10709,7 @@ def main():
         ux_patched = 0
         ux_skipped = 0
         for i in range(0, days):
-            d2 = (base_d - timedelta(days=i)).isoformat()
+            d2 = ((base_d or end_kst.date()) - timedelta(days=i)).isoformat()
             try:
                 if patch_archive_page_ux(repo, GH_TOKEN, d2, site_path):
                     ux_patched += 1
@@ -10701,14 +10734,14 @@ def main():
         if maintenance_task == "rebuild_date":
             if not FORCE_REPORT_DATE:
                 raise RuntimeError("FORCE_REPORT_DATE(force_report_date) is required for task=rebuild_date")
-            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+            d_iso = str(FORCE_REPORT_DATE).strip()
             maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)
             return
 
         # maintenance_task == "backfill_rebuild"
         base_iso = ""
         try:
-            base_iso = (_parse_force_report_date(FORCE_REPORT_DATE).isoformat() if FORCE_REPORT_DATE else end_kst.date().isoformat())
+            base_iso = str(FORCE_REPORT_DATE).strip() if FORCE_REPORT_DATE else end_kst.date().isoformat()
         except Exception:
             base_iso = end_kst.date().isoformat()
         maintenance_backfill_rebuild(repo, GH_TOKEN, base_iso, site_path)
@@ -10727,7 +10760,7 @@ def main():
             site_path = "/"
         d_iso = ""
         try:
-            d_iso = _parse_force_report_date(FORCE_REPORT_DATE).isoformat()
+            d_iso = str(FORCE_REPORT_DATE).strip()
         except Exception:
             d_iso = str(FORCE_REPORT_DATE).strip()
         maintenance_rebuild_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=True)

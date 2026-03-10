@@ -35,7 +35,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("만다린 무관세", self.text)
 
     def test_manual_force_report_date_short_circuits_in_main(self):
-        idx_main = self.text.find("def main():")
+        idx_main = self.text.find("def main(")
         self.assertNotEqual(idx_main, -1)
         main_head = self.text[idx_main: idx_main + 9000]
         idx_force = main_head.find("if FORCE_REPORT_DATE:")
