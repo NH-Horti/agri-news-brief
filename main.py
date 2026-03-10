@@ -9257,7 +9257,7 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
     parts: list[str] = []
     header = f"농산물 뉴스 브리핑 ({report_date})"
     if DEV_SINGLE_PAGE_MODE:
-        header = "[DEV] " + header + " - 개발 버전"
+        header = "[DEV] " + header + " - 개발 테스트 버전(운영 아님)"
     parts.append(header)
 
     for key in order:

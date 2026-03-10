@@ -758,6 +758,7 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("DEV", html)
         self.assertIn("개발 버전 미리보기", html)
         self.assertTrue(msg.splitlines()[0].startswith("[DEV] "), msg=msg)
+        self.assertIn("개발 테스트 버전(운영 아님)", msg)
 
 
 class TestRecentItemsRebuild(unittest.TestCase):
