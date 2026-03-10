@@ -3,11 +3,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "main.py"
+DEV_VERIFY_WORKFLOW = ROOT / ".github" / "workflows" / "dev-verify.yml"
 
 class TestRegressions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.text = MAIN.read_text(encoding="utf-8")
+        cls.dev_verify_text = DEV_VERIFY_WORKFLOW.read_text(encoding="utf-8")
 
     def test_has_data_nav_buttons(self):
         self.assertIn('data-nav="prev"', self.text)
@@ -58,5 +60,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('FISHERY_STRICT_TERMS', self.text)
         self.assertIn('return _reject("fishery_only")', self.text)
 
+
+    def test_dev_verify_does_not_extend_window(self):
+        self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
 if __name__ == "__main__":
     unittest.main()

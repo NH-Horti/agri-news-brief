@@ -80,7 +80,7 @@ jobs:
 
           FORCE_RUN_ANYDAY: 'true'
           UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
-          WINDOW_MIN_HOURS: '72'
+          WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
           MAX_PER_SECTION: '5'
