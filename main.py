@@ -633,42 +633,6 @@ HARD_OFFTOPIC_TERMS = [
     "완성차",
 ]
 
-
-# 전력/에너지/유틸리티(전력 도매시장 등) 동음이의어 오탐 방지용 컨텍스트
-ENERGY_CONTEXT_TERMS = [
-    "전력", "전력망", "전력계통", "전력계통", "발전", "발전소", "발전량", "송전", "배전",
-    "전기요금", "요금", "정산", "유틸리티", "에너지", "가스", "수소", "전력시장", "전력 도매시장",
-    "도매시장 거래", "전력 소매시장", "계통", "계통운영", "수요반응", "전력거래소", "kpx",
-    "옥토퍼스", "octopus", "크라켄", "kraken", "유틸리티 os", "운영체제(os)",
-]
-
-# '도매시장'이 비농산물(전력/에너지/금융 등) 기사에서 쓰이는 경우를 걸러내기 위한 디스앰비규에이터
-# - text는 lower()로 처리되므로, 여기도 소문자/한글 그대로 사용
-AGRI_WHOLESALE_DISAMBIGUATORS = [
-    "농산물", "농수산물", "청과", "가락시장", "공판장", "도매시장법인", "경락", "경락가",
-    "중도매인", "시장도매인", "반입", "경매", "산지", "apc", "산지유통", "산지유통센터",
-    "농협", "원예농협", "과수농협", "청과물",
-]
-
-# 축산물(한우/돼지고기/계란 등) 단독 이슈는 원예 브리핑에서 제외(완전 배제)
-# - '농축산물/농림축산식품부' 같은 중립 표현만으로는 제외하지 않도록, 보수적으로 판단한다.
-LIVESTOCK_STRICT_TERMS = [
-    "축산물", "축산", "가축", "도축", "도계", "사료", "축산업", "낙농", "양돈", "양계",
-    "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "닭고기", "계란", "달걀", "우유", "치즈",
-    "젖소", "소", "돼지", "닭", "오리",
-]
-# 농축산 정책/행정 일반 표현(오탐 방지 목적) — 제거 후 판단에 사용
-LIVESTOCK_NEUTRAL_PHRASES = [
-    "농축산물", "농축수산물", "농림축산식품부", "농림축산", "농축산", "농축수산",
-]
-# 원예/농산물(비축산) 강신호(축산 단독인지 판단용)
-HORTI_CORE_MARKERS = [
-    "원예", "과수", "화훼", "절화", "과일", "채소", "청과", "시설채소", "하우스", "비가림",
-    "사과", "배", "감귤", "포도", "딸기", "고추", "오이", "토마토", "파프리카", "상추",
-    "단감", "곶감", "참다래", "키위", "샤인머스캣", "만감", "한라봉", "레드향", "천혜향",
-    "자조금", "원예자조금", "과수자조금", "화훼", "국화", "장미",
-]
-
 # 수산물(생선/양식) 단독 이슈는 원예 브리핑에서 제외
 # - 단, '농수산물' 같은 중립 표현 때문에 과도 차단되지 않도록 전용 중립 표현을 제거 후 판단한다.
 FISHERY_STRICT_TERMS = [
@@ -686,6 +650,7 @@ FINANCE_STRICT_TERMS = [
     "주가", "배당", "배당금", "실적", "매출", "영업이익", "순이익", "주주", "상장",
     "ipo", "공모", "채권", "금리", "환율", "부동산", "코스피", "코스닥",
 ]
+
 # 현재 관심도가 낮은 품목(정 없을 때만 하단에 남도록 강감점)
 EXCLUDED_ITEMS = ["마늘", "양파"]
 GLOBAL_RETAIL_PROTEST_HINTS = [
@@ -727,6 +692,429 @@ AGRI_POLICY_KEYWORDS = [
 ]
 
 
+# 전력/에너지/유틸리티(전력 도매시장 등) 동음이의어 오탐 방지용 컨텍스트
+ENERGY_CONTEXT_TERMS = [
+    "전력", "전력망", "전력계통", "전력계통", "발전", "발전소", "발전량", "송전", "배전",
+    "전기요금", "요금", "정산", "유틸리티", "에너지", "가스", "수소", "전력시장", "전력 도매시장",
+    "도매시장 거래", "전력 소매시장", "계통", "계통운영", "수요반응", "전력거래소", "kpx",
+    "옥토퍼스", "octopus", "크라켄", "kraken", "유틸리티 os", "운영체제(os)",
+]
+
+# '도매시장'이 비농산물(전력/에너지/금융 등) 기사에서 쓰이는 경우를 걸러내기 위한 디스앰비규에이터
+# - text는 lower()로 처리되므로, 여기도 소문자/한글 그대로 사용
+AGRI_WHOLESALE_DISAMBIGUATORS = [
+    "농산물", "농수산물", "청과", "가락시장", "공판장", "도매시장법인", "경락", "경락가",
+    "중도매인", "시장도매인", "반입", "경매", "산지", "apc", "산지유통", "산지유통센터",
+    "농협", "원예농협", "과수농협", "청과물",
+]
+
+# 축산물(한우/돼지고기/계란 등) 단독 이슈는 원예 브리핑에서 제외(완전 배제)
+# - '농축산물/농림축산식품부' 같은 중립 표현만으로는 제외하지 않도록, 보수적으로 판단한다.
+LIVESTOCK_STRICT_TERMS = [
+    "축산물", "축산", "가축", "도축", "도계", "사료", "축산업", "낙농", "양돈", "양계",
+    "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "닭고기", "계란", "달걀", "우유", "치즈",
+    "젖소", "소", "돼지", "닭", "오리",
+]
+# 농축산 정책/행정 일반 표현(오탐 방지 목적) — 제거 후 판단에 사용
+LIVESTOCK_NEUTRAL_PHRASES = [
+    "농축산물", "농축수산물", "농림축산식품부", "농림축산", "농축산", "농축수산",
+]
+# 원예/농산물(비축산) 강신호(축산 단독인지 판단용)
+HORTI_CORE_GENERAL_TERMS = [
+    "원예", "과수", "화훼", "절화", "과일", "채소", "청과", "시설채소", "하우스", "비가림",
+    "자조금", "원예자조금", "과수자조금", "국화", "장미",
+]
+SUPPLY_GENERAL_MUST_TERMS = [
+    "원예", "과수", "과일", "화훼", "절화", "꽃다발", "생화", "부케", "플라워", "레고", "시설채소", "과채",
+]
+
+
+def _ordered_unique_terms(values) -> list[str]:
+    out: list[str] = []
+    for value in (values or []):
+        term = str(value or "").strip()
+        if term and term not in out:
+            out.append(term)
+    return out
+
+
+COMMODITY_REGISTRY = [
+    {
+        "topic": "사과",
+        "rep_term": "사과",
+        "display_name": "사과",
+        "aliases": ["사과"],
+        "focus_terms": ["사과"],
+        "brief_tags": ["사과"],
+        "supply_queries": ["사과 수급", "사과 가격", "사과 작황", "사과 저장", "사과 출하"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "배",
+        "rep_term": "배",
+        "display_name": "배",
+        "aliases": ["신고배", "나주배", "배 과일", "배(과일)"],
+        "focus_terms": ["배 과일", "신고배", "나주배"],
+        "tag_terms": ["배", "배 과일", "신고배", "나주배"],
+        "brief_tags": ["배"],
+        "supply_queries": ["배 과일 수급", "배 과일 가격", "배 과일 작황", "배 과일 저장", "배 과일 출하"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "단감",
+        "rep_term": "단감",
+        "display_name": "단감",
+        "aliases": ["단감"],
+        "focus_terms": ["단감"],
+        "brief_tags": ["단감"],
+        "supply_queries": ["단감 수급", "단감 가격", "단감 작황"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "감/곶감",
+        "rep_term": "곶감",
+        "display_name": "곶감",
+        "aliases": ["떫은감", "곶감"],
+        "focus_terms": ["곶감", "떫은감"],
+        "brief_tags": ["곶감"],
+        "supply_queries": ["곶감 수급", "떫은감 작황"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "감귤/만감",
+        "rep_term": "감귤",
+        "display_name": "감귤",
+        "aliases": ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴"],
+        "focus_terms": ["감귤", "만감", "한라봉", "레드향", "천혜향"],
+        "brief_tags": ["감귤"],
+        "supply_queries": ["감귤 수급", "감귤 가격", "감귤 작황", "만감류 출하", "한라봉 출하", "레드향 출하", "천혜향 출하"],
+        "feature_profile": "citrus",
+    },
+    {
+        "topic": "포도",
+        "rep_term": "포도",
+        "display_name": "포도",
+        "aliases": ["포도", "샤인머스캣"],
+        "focus_terms": ["포도", "샤인머스캣"],
+        "brief_tags": ["포도"],
+        "supply_queries": ["포도 수급", "포도 가격", "포도 작황", "샤인머스캣 수급", "샤인머스캣 가격", "샤인머스캣 작황"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "키위",
+        "rep_term": "키위",
+        "display_name": "키위",
+        "aliases": ["키위", "참다래"],
+        "focus_terms": ["키위", "참다래"],
+        "brief_tags": ["키위"],
+        "supply_queries": ["키위 수급", "키위 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "유자",
+        "rep_term": "유자",
+        "display_name": "유자",
+        "aliases": ["유자"],
+        "focus_terms": ["유자"],
+        "brief_tags": ["유자"],
+        "supply_queries": ["유자 수급", "유자 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "밤",
+        "rep_term": "알밤",
+        "display_name": "밤",
+        "aliases": ["알밤"],
+        "focus_terms": ["알밤"],
+        "brief_tags": ["밤"],
+        "supply_queries": ["알밤 수급", "알밤 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "자두",
+        "rep_term": "자두",
+        "display_name": "자두",
+        "aliases": ["자두"],
+        "focus_terms": ["자두"],
+        "brief_tags": ["자두"],
+        "supply_queries": ["자두 수급", "자두 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "복숭아",
+        "rep_term": "복숭아",
+        "display_name": "복숭아",
+        "aliases": ["복숭아"],
+        "focus_terms": ["복숭아"],
+        "brief_tags": ["복숭아"],
+        "supply_queries": ["복숭아 수급", "복숭아 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "매실",
+        "rep_term": "매실",
+        "display_name": "매실",
+        "aliases": ["매실"],
+        "focus_terms": ["매실"],
+        "brief_tags": ["매실"],
+        "supply_queries": ["매실 수급", "매실 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "딸기",
+        "rep_term": "딸기",
+        "display_name": "딸기",
+        "aliases": ["딸기"],
+        "focus_terms": ["딸기"],
+        "brief_tags": ["딸기"],
+        "supply_queries": ["딸기 수급", "딸기 가격", "딸기 작황"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "토마토",
+        "rep_term": "토마토",
+        "display_name": "토마토",
+        "aliases": ["토마토", "방울토마토", "대추방울토마토"],
+        "focus_terms": ["토마토", "방울토마토", "대추방울토마토"],
+        "brief_tags": ["토마토"],
+        "supply_queries": ["토마토 수급", "토마토 가격", "토마토 작황", "방울토마토 가격", "대추방울토마토 가격"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "수박",
+        "rep_term": "수박",
+        "display_name": "수박",
+        "aliases": ["수박"],
+        "focus_terms": ["수박"],
+        "brief_tags": ["수박"],
+        "supply_queries": ["수박 수급", "수박 도매가격", "수박 작황"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "호박",
+        "rep_term": "호박",
+        "display_name": "호박",
+        "aliases": ["호박", "애호박", "단호박", "쥬키니", "주키니"],
+        "focus_terms": ["호박", "애호박", "단호박", "쥬키니"],
+        "brief_tags": ["호박"],
+        "supply_queries": ["호박 가격", "애호박 수급", "애호박 가격", "단호박 가격", "쥬키니 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "피망",
+        "rep_term": "피망",
+        "display_name": "피망",
+        "aliases": ["피망"],
+        "focus_terms": ["피망"],
+        "brief_tags": ["피망"],
+        "supply_queries": ["피망 수급", "피망 가격"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "멜론",
+        "rep_term": "멜론",
+        "display_name": "멜론",
+        "aliases": ["머스크멜론", "네트멜론", "얼스멜론", "하미과", "칸탈루프", "허니듀", "멜론"],
+        "focus_terms": ["멜론", "머스크멜론", "네트멜론", "얼스멜론"],
+        "brief_tags": ["멜론"],
+        "supply_queries": ["멜론 출하", "멜론 도매가격", "멜론 작황", "멜론 재배", "머스크멜론 출하", "머스크멜론 도매가격"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "파프리카",
+        "rep_term": "파프리카",
+        "display_name": "파프리카",
+        "aliases": ["파프리카"],
+        "focus_terms": ["파프리카"],
+        "brief_tags": ["파프리카"],
+        "supply_queries": ["파프리카 수급", "파프리카 가격", "파프리카 수출"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "참외",
+        "rep_term": "참외",
+        "display_name": "참외",
+        "aliases": ["참외"],
+        "focus_terms": ["참외"],
+        "brief_tags": ["참외"],
+        "supply_queries": ["참외 수급", "참외 가격"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "오이",
+        "rep_term": "오이",
+        "display_name": "오이",
+        "aliases": ["오이"],
+        "focus_terms": ["오이"],
+        "brief_tags": ["오이"],
+        "supply_queries": ["오이 수급", "오이 가격", "오이 작황"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "상추",
+        "rep_term": "상추",
+        "display_name": "상추",
+        "aliases": ["상추"],
+        "focus_terms": ["상추"],
+        "brief_tags": ["상추"],
+        "supply_queries": ["상추 수급", "상추 가격", "상추 작황"],
+        "feature_profile": "orchard",
+    },
+    {
+        "topic": "고추",
+        "rep_term": "고추",
+        "display_name": "고추",
+        "aliases": ["고추", "풋고추", "청양고추"],
+        "focus_terms": ["고추", "풋고추", "청양고추"],
+        "brief_tags": ["고추"],
+        "supply_queries": ["풋고추 수급", "풋고추 가격", "고추 작황"],
+        "feature_profile": "greenhouse",
+    },
+    {
+        "topic": "화훼",
+        "rep_term": "화훼",
+        "display_name": "화훼",
+        "aliases": ["화훼", "절화", "국화", "장미", "백합", "꽃다발", "생화", "부케", "플라워"],
+        "focus_terms": ["화훼", "절화", "꽃다발", "생화", "플라워"],
+        "brief_tags": ["화훼"],
+        "supply_queries": [
+            "화훼 가격", "절화 가격", "꽃 소비", "화훼 수급", "화훼자조금",
+            "꽃다발 선물", "꽃다발 선물 트렌드", "꽃다발 소비", "레고 꽃", "레고 꽃다발",
+            "레고 보태니컬", "보태니컬 시리즈 꽃", "장난감 꽃다발 화훼", "화훼 소비 트렌드",
+            "생화 꽃다발 소비", "꽃다발 선물 사라진 시대", "틈새 파고든 레고 꽃",
+        ],
+        "feature_profile": "flower",
+    },
+]
+
+
+def _commodity_alias_terms(entry: dict) -> list[str]:
+    return _ordered_unique_terms(entry.get("aliases") or [])
+
+
+def _commodity_must_terms(entry: dict) -> list[str]:
+    values = list(_commodity_alias_terms(entry))
+    values.extend(entry.get("must_terms") or [])
+    return _ordered_unique_terms(values)
+
+
+def _commodity_focus_terms(entry: dict) -> list[str]:
+    values = list(entry.get("focus_terms") or [])
+    if not values:
+        values.extend(_commodity_alias_terms(entry))
+    return _ordered_unique_terms(values)
+
+
+def _commodity_tag_terms(entry: dict) -> list[str]:
+    values = list(entry.get("tag_terms") or [])
+    if not values:
+        values.extend(_commodity_alias_terms(entry))
+        values.append(entry.get("topic") or "")
+    return _ordered_unique_terms(values)
+
+
+def _commodity_rep_term(entry: dict) -> str:
+    rep = str(entry.get("rep_term") or "").strip()
+    if rep:
+        return rep
+    aliases = _commodity_alias_terms(entry)
+    if aliases:
+        return aliases[0]
+    return str(entry.get("topic") or "").split("/")[0].strip()
+
+
+ITEM_COMMODITY_TOPICS = [
+    (str(entry.get("topic") or "").strip(), _commodity_alias_terms(entry))
+    for entry in COMMODITY_REGISTRY
+    if str(entry.get("topic") or "").strip()
+]
+ITEM_TOPIC_REP_BY_NAME = {
+    str(entry.get("topic") or "").strip(): _commodity_rep_term(entry)
+    for entry in COMMODITY_REGISTRY
+    if str(entry.get("topic") or "").strip()
+}
+COMMODITY_FEATURE_PROFILE_BY_TERM_L = {
+    (term or "").strip().lower(): str(entry.get("feature_profile") or "default").strip().lower() or "default"
+    for entry in COMMODITY_REGISTRY
+    for term in _ordered_unique_terms(
+        [entry.get("topic") or "", _commodity_rep_term(entry)]
+        + _commodity_alias_terms(entry)
+        + _commodity_focus_terms(entry)
+        + _commodity_tag_terms(entry)
+        + list(entry.get("brief_tags") or [])
+    )
+    if (term or "").strip()
+}
+HORTI_CORE_MARKERS = _ordered_unique_terms(
+    list(HORTI_CORE_GENERAL_TERMS)
+    + [term for entry in COMMODITY_REGISTRY for term in _commodity_alias_terms(entry)]
+    + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
+)
+
+
+def _commodity_tags_in_text(text: str, limit: int = 9) -> list[str]:
+    txt = (text or "").lower()
+    if not txt:
+        return []
+    cap = max(0, int(limit or 0))
+    if cap == 0:
+        return []
+
+    out: list[str] = []
+    for entry in COMMODITY_REGISTRY:
+        topic = str(entry.get("topic") or "").strip()
+        matched = False
+
+        for term in _commodity_tag_terms(entry):
+            term_l = (term or "").strip().lower()
+            if len(term_l) >= 2 and term_l in txt:
+                matched = True
+                break
+
+        if not matched:
+            if topic == "배":
+                matched = any(p.search(txt) for p in _SINGLE_TERM_CONTEXT_PATTERNS["배"])
+            elif topic == "밤":
+                matched = any(p.search(txt) for p in _SINGLE_TERM_CONTEXT_PATTERNS["밤"])
+            elif topic == "화훼":
+                matched = any(p.search(txt) for p in _SINGLE_TERM_CONTEXT_PATTERNS["꽃"])
+            elif topic == "감귤/만감":
+                matched = any(p.search(txt) for p in _SINGLE_TERM_CONTEXT_PATTERNS["귤"])
+
+        if not matched:
+            continue
+
+        for tag in _ordered_unique_terms(list(entry.get("brief_tags") or []) + [str(entry.get("display_name") or "").strip()]):
+            tag = (tag or "").strip()
+            if tag and tag not in out:
+                out.append(tag)
+            if len(out) >= cap:
+                return out
+    return out
+
+
+SUPPLY_ITEM_QUERIES = _ordered_unique_terms(
+    q
+    for entry in COMMODITY_REGISTRY
+    for q in (entry.get("supply_queries") or [])
+)
+SUPPLY_ITEM_MUST_TERMS = _ordered_unique_terms(
+    term
+    for entry in COMMODITY_REGISTRY
+    for term in _commodity_must_terms(entry)
+)
+SUPPLY_TITLE_FOCUS_TERMS_L = [
+    term.lower()
+    for term in _ordered_unique_terms(
+        ["과일", "채소", "농산물", "청과", "수급", "작황", "출하", "반입", "경락"]
+        + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
+    )
+]
+MACRO_POLICY_KEEP_TERMS = _ordered_unique_terms(
+    ["농산물", "농식품", "농식품부", "과일", "채소", "공급", "수급", "안정화"]
+    + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
+)
+
 # -----------------------------
 # Sections
 # -----------------------------
@@ -735,161 +1123,8 @@ SECTIONS = [
         "key": "supply",
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
-        "queries": [
-            "사과 수급",
-            "사과 가격",
-            "사과 작황",
-            "사과 저장",
-            "사과 출하",
-            "배 과일 수급",
-            "배 과일 가격",
-            "배 과일 작황",
-            "배 과일 저장",
-            "배 과일 출하",
-            "감귤 수급",
-            "감귤 가격",
-            "감귤 작황",
-            "만감류 출하",
-            "한라봉 출하",
-            "레드향 출하",
-            "천혜향 출하",
-            "포도 수급",
-            "포도 가격",
-            "포도 작황",
-            "샤인머스캣 수급",
-            "샤인머스캣 가격",
-            "샤인머스캣 작황",
-            "단감 수급",
-            "단감 가격",
-            "단감 작황",
-            "곶감 수급",
-            "떫은감 작황",
-            "키위 수급",
-            "키위 가격",
-            "유자 수급",
-            "유자 가격",
-            "알밤 수급",
-            "알밤 가격",
-            "자두 수급",
-            "자두 가격",
-            "복숭아 수급",
-            "복숭아 가격",
-            "매실 수급",
-            "매실 가격",
-            "딸기 수급",
-            "딸기 가격",
-            "딸기 작황",
-            "파프리카 수급",
-            "파프리카 가격",
-            "파프리카 수출",
-            "참외 수급",
-            "참외 가격",
-            "오이 수급",
-            "오이 가격",
-            "오이 작황",
-            "상추 수급",
-            "상추 가격",
-            "상추 작황",
-            "풋고추 수급",
-            "풋고추 가격",
-            "토마토 수급",
-            "토마토 가격",
-            "토마토 작황",
-            "방울토마토 가격",
-            "대추방울토마토 가격",
-            "수박 수급",
-            "수박 도매가격",
-            "수박 작황",
-            "호박 가격",
-            "애호박 수급",
-            "애호박 가격",
-            "단호박 가격",
-            "쥬키니 가격",
-            "피망 수급",
-            "피망 가격",
-            "멜론 출하",
-            "멜론 도매가격",
-            "멜론 작황",
-            "멜론 재배",
-            "머스크멜론 출하",
-            "머스크멜론 도매가격",
-            "고추 작황",
-            "화훼 가격",
-            "절화 가격",
-            "꽃 소비",
-            "화훼 수급",
-            "화훼자조금",
-            "꽃다발 선물",
-            "꽃다발 선물 트렌드",
-            "꽃다발 소비",
-            "레고 꽃",
-            "레고 꽃다발",
-            "레고 보태니컬",
-            "보태니컬 시리즈 꽃",
-            "장난감 꽃다발 화훼",
-            "화훼 소비 트렌드",
-            "생화 꽃다발 소비",
-            "꽃다발 선물 사라진 시대",
-            "틈새 파고든 레고 꽃",
-        ],
-        "must_terms": [
-            "원예",
-            "과수",
-            "과일",
-            "화훼",
-            "절화",
-            "꽃다발",
-            "생화",
-            "부케",
-            "플라워",
-            "레고",
-            "시설채소",
-            "과채",
-            "사과",
-            "감귤",
-            "만감",
-            "한라봉",
-            "레드향",
-            "천혜향",
-            "포도",
-            "샤인머스캣",
-            "단감",
-            "떫은감",
-            "곶감",
-            "키위",
-            "참다래",
-            "유자",
-            "알밤",
-            "자두",
-            "복숭아",
-            "매실",
-            "딸기",
-            "파프리카",
-            "참외",
-            "오이",
-            "상추",
-            "풋고추",
-            "고추",
-            "토마토",
-            "방울토마토",
-            "대추방울토마토",
-            "수박",
-            "호박",
-            "애호박",
-            "단호박",
-            "쥬키니",
-            "피망",
-            "멜론",
-            "머스크멜론",
-            "네트멜론",
-            "얼스멜론",
-            "하미과",
-            "칸탈루프",
-            "허니듀",
-            "신고배",
-            "나주배",
-            "배 과일",
-        ],
+        "queries": list(SUPPLY_ITEM_QUERIES),
+        "must_terms": list(SUPPLY_GENERAL_MUST_TERMS) + list(SUPPLY_ITEM_MUST_TERMS),
     },
     {
         "key": "policy",
@@ -901,7 +1136,11 @@ SECTIONS = [
             "설 이후 과일 가격 하락", "사과 배 가격 하락", "성수품 물가 과일", "차례상 물가 과일",
             "소비자물가 과일 사과 배", "KOSIS 소비자물가 사과 배", "물가정보 설 과일",
         ],
-        "must_terms": ["정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장", "원산지", "물가", "가격", "상승", "하락", "급등", "성수품", "차례상", "소비자물가", "물가지수", "통계", "KOSIS"],
+        "must_terms": [
+            "정책", "대책", "지원", "할인", "할당관세", "검역", "보도자료", "브리핑", "온라인 도매시장",
+            "원산지", "물가", "가격", "상승", "하락", "급등", "성수품", "차례상", "소비자물가", "물가지수",
+            "통계", "KOSIS",
+        ],
     },
     {
         "key": "dist",
@@ -980,42 +1219,24 @@ SECTIONS = [
 # -----------------------------
 # Topic diversity
 # -----------------------------
-COMMODITY_TOPICS = [
-    ("사과", ["사과"]),
-    ("배", ["신고배", "나주배", "배 과일", "배(과일)"]),
-    ("단감", ["단감"]),
-    ("감/곶감", ["떫은감", "곶감"]),
-    ("감귤/만감", ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴"]),
-    ("포도", ["포도", "샤인머스캣"]),
-    ("키위", ["키위", "참다래"]),
-    ("유자", ["유자"]),
-    ("밤", ["알밤"]),
-    ("자두", ["자두"]),
-    ("복숭아", ["복숭아"]),
-    ("매실", ["매실"]),
-    ("딸기", ["딸기"]),
-    ("토마토", ["토마토", "방울토마토", "대추방울토마토"]),
-    ("수박", ["수박"]),
-    ("호박", ["호박", "애호박", "단호박", "쥬키니", "주키니"]),
-    ("피망", ["피망"]),
-    ("멜론", ["머스크멜론", "네트멜론", "얼스멜론", "하미과", "칸탈루프", "허니듀", "멜론"]),
-    ("파프리카", ["파프리카"]),
-    ("참외", ["참외"]),
-    ("오이", ["오이"]),
-    ("상추", ["상추"]),
-    ("고추", ["고추", "풋고추", "청양고추"]),
-    ("화훼", ["화훼", "절화", "국화", "장미", "백합", "꽃다발", "생화", "부케", "플라워"]),
+NON_ITEM_COMMODITY_TOPICS = [
     ("도매시장", ["가락시장", "도매시장", "공영도매시장", "공판장", "청과", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장"]),
     ("APC/산지유통", ["apc", "산지유통", "산지유통센터", "선별", "저온", "저장", "ca저장", "물류"]),
     ("수출/검역", ["수출", "검역", "통관", "수입검역", "잔류농약"]),
     ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정"]),
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해"]),
 ]
+COMMODITY_TOPICS = list(ITEM_COMMODITY_TOPICS) + list(NON_ITEM_COMMODITY_TOPICS)
 
 # Alias for generalized topic signals & fallback query generation
 TOPICS = COMMODITY_TOPICS
+TOPIC_REP_BY_NAME_L = dict(ITEM_TOPIC_REP_BY_NAME)
+TOPIC_REP_BY_NAME_L.update({
+    name: ((terms[0] if terms else (name.split("/")[0] if name else "")).strip())
+    for name, terms in NON_ITEM_COMMODITY_TOPICS
+})
 TOPIC_REP_BY_TERM_L = {
-    (term or "").strip().lower(): ((terms[0] if terms else (name.split("/")[0] if name else "")).strip().lower())
+    (term or "").strip().lower(): (TOPIC_REP_BY_NAME_L.get(name) or (name.split("/")[0] if name else "")).strip().lower()
     for name, terms in TOPICS
     for term in ([name] + list(terms or []))
     if (term or "").strip()
@@ -1588,15 +1809,7 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern]] = {
     ],
 }
 
-_HORTI_TOPICS_SET = {
-    "화훼", "사과", "배", "감귤/만감", "단감", "감/곶감", "키위", "유자", "포도",
-    "밤", "자두", "복숭아", "매실", "딸기", "파프리카", "참외", "오이", "고추",
-    "토마토",
-    "수박",
-    "호박",
-    "피망",
-    "멜론",
-}
+_HORTI_TOPICS_SET = {entry["topic"] for entry in COMMODITY_REGISTRY}
 
 def _topic_scores(title: str, desc: str) -> dict[str, float]:
     t = (title + " " + desc).lower()
@@ -4313,7 +4526,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
             return _reject("supply_context_gate")
 
         if broad_macro_price and (not has_direct_supply_chain_signal(text)):
-            title_focus_hits = count_any(ttl.lower(), [t.lower() for t in ("사과", "배", "감귤", "딸기", "참외", "포도", "고추", "오이", "토마토", "파프리카", "화훼", "절화", "과일", "채소", "농산물", "청과", "수급", "작황", "출하", "반입", "경락")])
+            title_focus_hits = count_any(ttl.lower(), SUPPLY_TITLE_FOCUS_TERMS_L)
             if title_focus_hits < 2 and best_horti_score(ttl, "") < 2.0:
                 return _reject("supply_macro_price_watch")
 
@@ -6025,44 +6238,44 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
         q = (q or "").strip().lower()
         if not q:
             continue
-        toks = re.findall(r"[0-9a-z가-힣]{2,}", q)
         tok = ""
-        for t in toks:
-            if t in skip:
+
+        for t in re.findall(r"[0-9a-z가-힣]+", q):
+            if not t or t in skip:
                 continue
-            tok = t
-            break
+            rep = TOPIC_REP_BY_TERM_L.get(t)
+            if rep:
+                tok = rep
+                break
+
+        if not tok:
+            for t in re.findall(r"[0-9a-z가-힣]{2,}", q):
+                if t in skip:
+                    continue
+                tok = TOPIC_REP_BY_TERM_L.get(t, t)
+                break
+
         if not tok:
             continue
-        tok = TOPIC_REP_BY_TERM_L.get(tok, tok)
         if tok not in raw_terms:
             raw_terms.append(tok)
     if len(raw_terms) <= cap:
         return raw_terms
 
-    keep_head = min(3, cap)
-    out = list(raw_terms[:keep_head])
-    remain = cap - len(out)
-    tail = raw_terms[keep_head:]
-    if remain <= 0 or not tail:
-        return out[:cap]
-    if remain >= len(tail):
-        out.extend(tail)
-        return out[:cap]
-
     picked_idx: list[int] = []
-    span = len(tail) - 1
-    for i in range(remain):
-        idx = int(round(i * span / max(1, remain - 1)))
-        while idx in picked_idx and idx + 1 < len(tail):
+    span = len(raw_terms) - 1
+    out: list[str] = []
+    for i in range(cap):
+        idx = int(round(i * span / max(1, cap - 1)))
+        while idx in picked_idx and idx + 1 < len(raw_terms):
             idx += 1
         if idx in picked_idx:
-            for alt in range(len(tail)):
+            for alt in range(len(raw_terms)):
                 if alt not in picked_idx:
                     idx = alt
                     break
         picked_idx.append(idx)
-        out.append(tail[idx])
+        out.append(raw_terms[idx])
     return out[:cap]
 
 _QUERY_TOKEN_STOPWORDS = {
@@ -6122,7 +6335,7 @@ def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap:
     for tn, _ in top_topics:
         for name, syns in TOPICS:
             if name == tn:
-                term = (syns[0] if syns else (tn.split("/")[0] if tn else "")).strip()
+                term = (TOPIC_REP_BY_NAME_L.get(tn) or (syns[0] if syns else (tn.split("/")[0] if tn else ""))).strip()
                 if term and term not in out:
                     out.append(term)
                 break
@@ -6135,7 +6348,7 @@ def _seed_terms_from_topics(candidates_sorted: list["Article"], thr: float, cap:
             continue
         if topic_cnt.get(name, 0) >= 1:
             continue
-        term = (syns[0] if syns else (name.split("/")[0] if name else "")).strip()
+        term = (TOPIC_REP_BY_NAME_L.get(name) or (syns[0] if syns else (name.split("/")[0] if name else ""))).strip()
         if term and term not in out and term not in missing_terms:
             missing_terms.append(term)
         if len(missing_terms) >= 2:
@@ -6160,7 +6373,7 @@ def _topic_terms_for_seed(seed: str) -> list[str]:
     out: list[str] = []
     for name, syns in TOPICS:
         name_l = (name or "").strip().lower()
-        rep_l = ((syns[0] if syns else (name.split("/")[0] if name else "")) or "").strip().lower()
+        rep_l = ((TOPIC_REP_BY_NAME_L.get(name) or (syns[0] if syns else (name.split("/")[0] if name else ""))) or "").strip().lower()
         if rep_l not in {rep, seed_l} and name_l not in {rep, seed_l}:
             continue
         for term in [name] + list(syns or []):
@@ -6196,6 +6409,21 @@ def _prioritize_supply_recall_seeds(
         if seed and seed not in seed_order:
             seed_order.append(seed)
 
+    order_index = {seed: idx for idx, seed in enumerate(seed_order)}
+
+    def _profile_rank(seed: str) -> tuple[int, int]:
+        seed_l = (seed or "").strip().lower()
+        rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+        profile = COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(seed_l) or COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(rep) or "default"
+        rank = {
+            "greenhouse": 0,
+            "citrus": 1,
+            "flower": 2,
+            "orchard": 3,
+            "default": 4,
+        }.get(profile, 4)
+        return rank, order_index.get(seed, 999)
+
     pool_seed_hits: dict[str, int] = {seed: 0 for seed in seed_order}
     for art in (candidates_sorted or []):
         if float(getattr(art, "score", 0.0) or 0.0) < float(thr or 0.0):
@@ -6204,10 +6432,16 @@ def _prioritize_supply_recall_seeds(
             if _article_matches_seed_term(art, seed):
                 pool_seed_hits[seed] = pool_seed_hits.get(seed, 0) + 1
 
-    missing_query = [seed for seed in (query_seed_terms or []) if pool_seed_hits.get(seed, 0) == 0]
+    missing_query = sorted([seed for seed in (query_seed_terms or []) if pool_seed_hits.get(seed, 0) == 0], key=_profile_rank)
     covered_query = [seed for seed in (query_seed_terms or []) if pool_seed_hits.get(seed, 0) > 0]
-    missing_topic = [seed for seed in (topic_seed_terms or []) if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) == 0]
-    covered_topic = [seed for seed in (topic_seed_terms or []) if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) > 0]
+    missing_topic = sorted([
+        seed for seed in (topic_seed_terms or [])
+        if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) == 0
+    ], key=_profile_rank)
+    covered_topic = [
+        seed for seed in (topic_seed_terms or [])
+        if seed not in (query_seed_terms or []) and pool_seed_hits.get(seed, 0) > 0
+    ]
 
     prioritized: list[str] = []
     for seed in missing_query + covered_query + missing_topic + covered_topic:
@@ -6296,14 +6530,13 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
 
     def _supply_signal_priority(seed: str) -> list[str]:
         s = (seed or "").strip().lower()
-        citrus = {"감귤", "만감", "한라봉", "레드향", "천혜향"}
-        greenhouse = {"딸기", "토마토", "오이", "고추", "파프리카", "참외", "멜론"}
-        flower = {"화훼"}
-        if s in citrus:
+        rep = TOPIC_REP_BY_TERM_L.get(s, s)
+        profile = COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(s) or COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(rep) or "default"
+        if profile == "citrus":
             return ["품질", "수입산 비교", "선호도", "만다린 비교", "작황"]
-        if s in greenhouse:
+        if profile == "greenhouse":
             return ["생육", "난방", "농가", "작황", "품질"]
-        if s in flower:
+        if profile == "flower":
             return ["농가", "난방", "작황", "품질"]
         return ["작황", "생육", "품질", "농가"]
 
@@ -6906,7 +7139,7 @@ def is_macro_policy_issue(text: str) -> bool:
 
     if is_macro_trade_noise_context(t):
         return False
-    agri_macro_keep = ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")
+    agri_macro_keep = tuple(MACRO_POLICY_KEEP_TERMS)
     if is_general_consumer_price_noise(t) and best_horti_score("", t) < 1.6 and count_any(t, [w.lower() for w in agri_macro_keep]) == 0:
         return False
 
@@ -6934,7 +7167,7 @@ def is_macro_policy_issue(text: str) -> bool:
     # 너무 약한 경우(일반 소비 기사) 방지: 원예 점수 또는 품목/농산물 키워드 필요
     if horti >= 1.4:
         return True
-    if any(w in t for w in ("농산물", "농식품", "농식품부", "과일", "채소", "사과", "배", "감귤", "딸기", "만감", "포도", "공급", "수급", "안정화")):
+    if any(w in t for w in MACRO_POLICY_KEEP_TERMS):
         return True
 
     return False
@@ -8054,9 +8287,8 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
             line = "병해충 예찰/방제 동향을 점검하세요."
             add_tag("병해충")
         # 주요 품목 태그
-        for c in ("사과","배","감귤","포도","딸기","고추","오이","토마토","파프리카"):
-            if c in txt:
-                add_tag(c)
+        for c in _commodity_tags_in_text(txt, limit=9):
+            add_tag(c)
     elif section_key == "supply":
         # 가격/수급 방향성
         if any(w in txt for w in ("상승","강세","오름","급등")):
@@ -8068,9 +8300,8 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
         else:
             line = "수급/작황/출하 변수를 중심으로 확인하세요."
             add_tag("수급")
-        for c in ("사과","배","감귤","포도","딸기","고추","오이","단감","곶감","샤인머스캣","만감"):
-            if c in txt:
-                add_tag(c)
+        for c in _commodity_tags_in_text(txt, limit=9):
+            add_tag(c)
     elif section_key == "dist":
         line = "도매시장·공판장·유통현장 이슈를 점검하세요."
         for t in ("가락시장","도매시장","공판장","경락","반입","온라인도매시장","원산지","검역","통관"):

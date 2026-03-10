@@ -727,6 +727,25 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("화훼", seeds)
         self.assertLessEqual(len(seeds), 6)
 
+    def test_supply_registry_is_single_source_for_item_queries_topics_and_must_terms(self):
+        supply_conf = next(sec for sec in main.SECTIONS if sec["key"] == "supply")
+        self.assertEqual(supply_conf["queries"], list(main.SUPPLY_ITEM_QUERIES))
+        self.assertEqual(supply_conf["must_terms"], list(main.SUPPLY_GENERAL_MUST_TERMS) + list(main.SUPPLY_ITEM_MUST_TERMS))
+        self.assertEqual(main._HORTI_TOPICS_SET, {entry["topic"] for entry in main.COMMODITY_REGISTRY})
+        self.assertEqual(main.TOPIC_REP_BY_TERM_L["배"], "배")
+        self.assertEqual(main.TOPIC_REP_BY_TERM_L["천혜향"], "감귤")
+
+    def test_registry_rep_terms_drive_seed_extraction_and_brief_tags(self):
+        seeds = main._extract_seed_terms_from_queries(["배 과일 가격", "천혜향 출하", "멜론 도매가격"], limit=6)
+        self.assertIn("배", seeds)
+        self.assertIn("감귤", seeds)
+        self.assertIn("멜론", seeds)
+
+        tags = main._commodity_tags_in_text("천혜향 출하와 신고배 가격, 멜론 작황 점검", limit=5)
+        self.assertIn("감귤", tags)
+        self.assertIn("배", tags)
+        self.assertIn("멜론", tags)
+
     def test_supply_recall_fallback_queries_include_feature_signals(self):
         section_conf = {
             "key": "supply",
