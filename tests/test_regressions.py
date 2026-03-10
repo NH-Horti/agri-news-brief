@@ -4,12 +4,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "main.py"
 DEV_VERIFY_WORKFLOW = ROOT / ".github" / "workflows" / "dev-verify.yml"
+DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
+MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
+REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 
 class TestRegressions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.text = MAIN.read_text(encoding="utf-8")
         cls.dev_verify_text = DEV_VERIFY_WORKFLOW.read_text(encoding="utf-8")
+        cls.daily_text = DAILY_WORKFLOW.read_text(encoding="utf-8")
+        cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
+        cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
 
     def test_has_data_nav_buttons(self):
         self.assertIn('data-nav="prev"', self.text)
@@ -63,5 +69,10 @@ class TestRegressions(unittest.TestCase):
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
+
+    def test_prod_workflows_do_not_extend_window(self):
+        self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
+        self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
+        self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
 if __name__ == "__main__":
     unittest.main()
