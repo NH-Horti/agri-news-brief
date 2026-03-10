@@ -2533,6 +2533,8 @@ def is_policy_market_brief_context(text: str, dom: str = "", press: str = "") ->
     """기관발 농축산물 가격·수급 점검/브리핑 기사인지 판정.
     - 개별 품목 수급 기사와 달리 여러 품목을 한 번에 점검하고,
       농식품부/정부 발표와 가격 추이·변수 설명이 함께 붙는 유형을 policy로 본다.
+    - 실제 파이프라인은 네이버 title+description snippet을 쓰므로,
+      본문형 표현 대신 "농축산물/대체로/전년 대비/영향 제한적" 같은 요약 패턴도 함께 본다.
     """
     t = (text or "").lower()
     if not t:
@@ -2548,26 +2550,30 @@ def is_policy_market_brief_context(text: str, dom: str = "", press: str = "") ->
         "농식품부", "농림축산식품부", "정부", "기재부", "관세청", "aT", "한국농수산식품유통공사",
     )
     broad_item_terms = (
-        "농축산물", "농산물", "축산물", "과일", "채소", "먹거리", "장바구니",
+        "농축산물", "농산물", "축산물", "과일", "과일류", "채소", "채소류", "먹거리", "장바구니",
         "사과", "배", "감귤", "딸기", "포도", "상추", "오이", "애호박", "청양고추",
         "돼지고기", "소고기", "계란", "달걀",
     )
+    aggregate_terms = ("농축산물", "농산물", "과일류", "채소류", "과일", "채소", "먹거리")
     price_terms = ("가격", "물가", "하락세", "상승세", "강세", "약세", "안정세", "오름세", "내림세")
     brief_terms = (
         "점검 결과", "점검결과", "상황 점검", "수급 점검", "브리핑", "발표", "동향", "추이", "흐름",
         "전주 대비", "전주에 비해", "전년 대비", "전월 대비", "평년 대비", "대체로",
     )
+    comparison_terms = ("대체로", "전주 대비", "전주에 비해", "전년 대비", "전월 대비", "평년 대비", "낮은 수준", "높은 수준", "제한적")
     driver_terms = ("중동", "전쟁", "유가", "환율", "변수", "영향", "수급", "공급", "분산 출하", "정부 가용물량")
     wholesale_terms = ("가락시장", "도매시장", "공판장", "경락", "경매", "반입")
 
     agency_hit = count_any(t, [w.lower() for w in agency_terms])
     item_hit = count_any(t, [w.lower() for w in broad_item_terms])
+    aggregate_hit = count_any(t, [w.lower() for w in aggregate_terms])
     price_hit = count_any(t, [w.lower() for w in price_terms])
     brief_hit = count_any(t, [w.lower() for w in brief_terms])
+    comparison_hit = count_any(t, [w.lower() for w in comparison_terms])
     driver_hit = count_any(t, [w.lower() for w in driver_terms])
     wholesale_hit = count_any(t, [w.lower() for w in wholesale_terms])
 
-    if wholesale_hit >= 1 and brief_hit == 0 and agency_hit == 0 and not officialish:
+    if wholesale_hit >= 1 and brief_hit == 0 and agency_hit == 0 and not officialish and aggregate_hit == 0:
         return False
 
     if (officialish or agency_hit >= 1) and price_hit >= 1 and brief_hit >= 1 and item_hit >= 2:
@@ -2576,7 +2582,11 @@ def is_policy_market_brief_context(text: str, dom: str = "", press: str = "") ->
     if is_broad_macro_price_context("", t) and (officialish or agency_hit >= 1) and (brief_hit >= 1 or driver_hit >= 2):
         return True
 
+    if is_broad_macro_price_context("", t) and aggregate_hit >= 1 and item_hit >= 3 and comparison_hit >= 2 and driver_hit >= 1:
+        return True
+
     return False
+
 def is_trade_policy_issue(text: str) -> bool:
     """통상/관세/검역/통관 등 '정책·제도' 성격이 강한 이슈인지(섹션 재배치/가중치 보정용).
     - 단, 특정 품목(감귤/만감류 등) 수급/가격/출하 맥락이 강하면 supply에 남길 수 있도록

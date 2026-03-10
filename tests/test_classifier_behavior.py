@@ -708,7 +708,7 @@ class TestClassifierBehavior(unittest.TestCase):
 
     def test_nocut_policy_market_brief_prefers_policy(self):
         title = "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'"
-        desc = "농식품부가 9일 농산물 수급 상황 점검 결과를 발표했다. 상추·청양고추·오이·애호박 소매가격은 전주에 비해 하락했고, 사과는 정부 가용물량 3000톤을 도매시장에 분산 출하할 계획이라고 밝혔다."
+        desc = "최근 중동 전쟁으로 인해 기름값이 상승하고 있는 가운데 단기적인 농산물 수급 영향은 제한적일 것으로 분석됐다. 과일류도 대체로 전년 대비 낮은 수준이지만 사과는 2025년산 생산량 감소로 가격이 다소 높은 수준이며 3월 정부 가용물량을 도매시장에 분산 출하할 계획이다."
         best, scores = self._best_section(title, desc, "https://www.nocutnews.co.kr/news/6481885")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
@@ -734,7 +734,7 @@ class TestClassifierBehavior(unittest.TestCase):
         policy_brief = self._make_article(
             "supply",
             "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'",
-            "농식품부가 농산물 수급 상황 점검 결과를 발표했다. 상추·청양고추·오이·애호박 가격은 전주 대비 하락했고 사과는 정부 가용물량을 분산 출하할 계획이라고 밝혔다.",
+            "최근 중동 전쟁으로 인해 기름값이 상승하고 있는 가운데 단기적인 농산물 수급 영향은 제한적일 것으로 분석됐다. 과일류도 대체로 전년 대비 낮은 수준이지만 사과는 2025년산 생산량 감소로 가격이 다소 높은 수준이며 3월 정부 가용물량을 도매시장에 분산 출하할 계획이다.",
             "https://www.nocutnews.co.kr/news/6481885",
         )
         cabbage.score = 29.4
