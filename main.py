@@ -1683,6 +1683,24 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         if _has_trade_signal(a_txt) != _has_trade_signal(b_txt):
             return False
 
+    if section_key == "supply":
+        a_feature = supply_feature_context_kind(at, ad)
+        b_feature = supply_feature_context_kind(bt, bd)
+        if a_feature and b_feature:
+            a_rep_terms = {TOPIC_REP_BY_TERM_L.get(term, term) for term in HORTI_ITEM_TERMS_L if term in a_txt}
+            b_rep_terms = {TOPIC_REP_BY_TERM_L.get(term, term) for term in HORTI_ITEM_TERMS_L if term in b_txt}
+            if not a_rep_terms:
+                a_topic = (getattr(a, "topic", "") or "").strip()
+                if a_topic:
+                    a_rep_terms = {a_topic}
+            if not b_rep_terms:
+                b_topic = (getattr(b, "topic", "") or "").strip()
+                if b_topic:
+                    b_rep_terms = {b_topic}
+            if a_rep_terms and b_rep_terms and not (a_rep_terms & b_rep_terms):
+                if (not has_direct_supply_chain_signal(a_txt)) and (not has_direct_supply_chain_signal(b_txt)):
+                    return False
+
     # 0) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
     try:
         if _near_duplicate_title(a, b, section_key):
@@ -2375,6 +2393,48 @@ def is_generic_import_item_context(text: str) -> bool:
     return (count_any(t, [w.lower() for w in generic_items]) >= 1) and (count_any(t, [w.lower() for w in admin_terms]) >= 1)
 
 
+
+def is_supply_stabilization_policy_context(text: str, dom: str = "", press: str = "") -> bool:
+    """Return True for policy-style supply stabilization stories.
+
+    These are typically import/discount/release actions routed through
+    ministries or retail channels, so they fit policy better than supply.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    d = normalize_host(dom or "")
+    p = (press or "").strip()
+    livestock_terms = (
+        "축산물", "계란", "달걀", "신선란", "닭고기", "한우", "한돈", "돼지고기", "소고기",
+        "우유", "낙농", "양계", "양돈",
+    )
+    agency_terms = (
+        "정부", "농식품부", "농림축산식품부", "기재부", "관세청",
+        "aT", "한국농수산식품유통공사", "농협",
+    )
+    stabilization_terms = (
+        "수급", "수급 관리", "가격 안정", "가격안정", "공급", "물량", "비축", "방출",
+        "수입", "할당관세", "할인지원", "할인 행사", "할인행사", "납품", "판매",
+        "대책", "안정", "특판",
+    )
+    retail_terms = (
+        "홈플러스", "메가마트", "이마트", "롯데마트", "하나로마트",
+        "대형마트", "편의점", "온라인", "한판",
+    )
+
+    livestock_hit = count_any(t, [w.lower() for w in livestock_terms])
+    agency_hit = count_any(t, [w.lower() for w in agency_terms])
+    stabilization_hit = count_any(t, [w.lower() for w in stabilization_terms])
+    retail_hit = count_any(t, [w.lower() for w in retail_terms])
+    official = policy_domain_override(d, t) or (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부"))
+
+    if livestock_hit >= 1 and stabilization_hit >= 2 and (agency_hit >= 1 or retail_hit >= 1 or official):
+        return True
+    if official and stabilization_hit >= 2 and retail_hit >= 1:
+        return True
+    return False
 def is_trade_policy_issue(text: str) -> bool:
     """통상/관세/검역/통관 등 '정책·제도' 성격이 강한 이슈인지(섹션 재배치/가중치 보정용).
     - 단, 특정 품목(감귤/만감류 등) 수급/가격/출하 맥락이 강하면 supply에 남길 수 있도록
@@ -2688,10 +2748,13 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     base += 0.10 * min(6, agri_strength_score(txt))
     key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
     broad_macro_price = is_broad_macro_price_context(title, desc)
+    policy_stabilization = is_supply_stabilization_policy_context(txt)
     if key == "policy" and is_macro_policy_issue(txt):
         base += 0.9
         if broad_macro_price:
             base += 0.6
+        if policy_stabilization:
+            base += 0.85
     elif key == "dist" and is_local_agri_org_feature_context(title, desc):
         base += 1.0
     elif key == "supply":
@@ -2702,6 +2765,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.45
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
+        if policy_stabilization:
+            base -= 1.1
         if broad_macro_price and (not has_direct_supply_chain_signal(txt)):
             base -= 1.0
         if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and (not has_direct_supply_chain_signal(txt)):
@@ -4320,7 +4385,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     horti_sc_pre = best_horti_score(ttl, desc)
     # 축산 강신호(축산물/한우/돼지고기/계란 등) + 원예 신호 거의 없음 → 완전 배제
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
-    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep):
+    policy_stabilization_keep = (key == "policy") and is_supply_stabilization_policy_context(text, dom, press)
+    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep) and (not policy_stabilization_keep):
         return _reject("livestock_only")
 
     # ✅ 수산물 단독 이슈(옥돔/갈치/어업/양식 등)는 원예 브리핑 목적과 달라 배제
@@ -4516,7 +4582,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
             if is_pest_control_policy_context(text):
                 pass
-            elif macro_policy_like or broad_macro_price:
+            elif macro_policy_like or broad_macro_price or is_supply_stabilization_policy_context(text, dom, press):
                 pass
             # policy는 도메인 override가 있음
             elif not policy_domain_override(dom, text):
@@ -4558,6 +4624,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     if key == "policy":
         # 병해충 실행형 기사는 수집 단계에서 누락시키지 않고 후단 재분류/정리에서 pest로 보낸다.
         if is_pest_control_policy_context(text):
+            return True
+        if is_supply_stabilization_policy_context(text, dom, press):
             return True
 
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
@@ -4718,6 +4786,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     infra_designation = is_local_agri_infra_designation_context(title, desc)
     direct_supply_story = has_direct_supply_chain_signal(text)
     supply_feature_kind = supply_feature_context_kind(title, desc)
+    policy_stabilization = is_supply_stabilization_policy_context(text, dom, press)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -4775,11 +4844,17 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
         if supply_feature_kind == "field":
             score += 2.4
+            if horti_title_sc >= 1.8:
+                score += 0.9
         elif supply_feature_kind == "quality":
             score += 2.1
+            if horti_title_sc >= 1.8:
+                score += 0.6
         # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
         if is_local_agri_policy_program_context(text):
             score -= 4.0
+        if policy_stabilization:
+            score -= 5.4
         if local_org_feature:
             score -= 4.8
         if broad_macro_price and (not direct_supply_story):
@@ -4817,6 +4892,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 지자체의 농산물 정책 프로그램(지원/보전/시범사업)은 policy 우선
         if is_local_agri_policy_program_context(text):
             score += 6.4
+        if policy_stabilization:
+            score += 5.4
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -5615,6 +5692,37 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if a.canon_url:
             used_url_keys.add(a.canon_url)
 
+    def _is_supply_feature_tail_story(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        if has_direct_supply_chain_signal(txt_local):
+            return False
+        return bool(supply_feature_context_kind(a.title or "", a.description or "") or is_flower_consumer_trend_context(txt_local))
+
+    def _supply_feature_topic_repeat(a: Article, selected: list[Article]) -> bool:
+        if not _is_supply_feature_tail_story(a):
+            return False
+        topic_name = (a.topic or "").strip()
+        if not topic_name:
+            return False
+        for b in selected:
+            if (b.topic or "").strip() != topic_name:
+                continue
+            if _is_supply_feature_tail_story(b):
+                return True
+        return False
+
+    def _is_supply_policy_like_tail_story(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        if is_supply_stabilization_policy_context(txt_local, dom_local, pr_local):
+            return True
+        return (a.topic or "").strip() == "정책"
+
     # 1) 엄격 코어 2개
     for a in pool:
         if len(core) >= 2:
@@ -5643,6 +5751,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # ✅ 정책/통상성 강하고 품목 영향이 약한 기사(제도/통관/할당관세 등)는
             # supply '핵심2'를 잠식하지 않도록 제외한다. (policy 섹션에서 다룸)
             if is_generic_import_item_context(mix):
+                continue
+            if is_supply_stabilization_policy_context(mix, dom, pr):
                 continue
             if is_policy_announcement_issue(mix, dom, pr):
                 continue
@@ -5704,8 +5814,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
                 continue
-            if section_key == "supply" and (a.topic or "").strip() == "정책":
-                continue
+            if section_key == "supply":
+                dom = normalize_host(a.domain or "")
+                pr = (a.press or "").strip()
+                if is_supply_stabilization_policy_context(text, dom, pr):
+                    continue
+                if (a.topic or "").strip() == "정책":
+                    continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
             market_anchor_hits = count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")])
@@ -5803,6 +5918,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
 
+            if _supply_feature_topic_repeat(a, final):
+                continue
             final.append(a)
             _mark_used(a)
             _source_take(a)
@@ -5839,6 +5956,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
+            if _supply_feature_topic_repeat(a, final):
+                continue
+            if _is_supply_policy_like_tail_story(a):
+                continue
             eligible.append(a)
 
         while len(final) < max_n and eligible:
@@ -5855,6 +5976,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
 
+                if _supply_feature_topic_repeat(a, final):
+                    continue
+                if _is_supply_policy_like_tail_story(a):
+                    continue
                 tri_a = _mmr_tri(a)
                 max_sim = 0.0
                 if sel_tris and tri_a:
@@ -5901,6 +6026,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            if _supply_feature_topic_repeat(a, final):
+                continue
+            if _is_supply_policy_like_tail_story(a):
                 continue
             final.append(a)
             _mark_used(a)
@@ -5985,13 +6114,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # - 이미 뽑힌 품목과 다른 topic을 우선해 품목 다양성을 유지
     if section_key == "supply" and len(final) < max_n:
         added = 0
+        max_feature_backfill = min(2, max_n - len(final))
         selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
-        relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.4, thr - 1.0, 0.0)
+        relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.0, 0.0)
         for prefer_unseen_topic in (True, False):
-            if added >= 1 or len(final) >= max_n:
+            if added >= max_feature_backfill or len(final) >= max_n:
                 break
-            for a in pool:
-                if added >= 1 or len(final) >= max_n:
+            for a in candidates_sorted:
+                if added >= max_feature_backfill or len(final) >= max_n:
                     break
                 if a in final:
                     continue
@@ -6010,6 +6140,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                     continue
                 if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
+                if _supply_feature_topic_repeat(a, final):
+                    continue
+                if _is_supply_policy_like_tail_story(a):
                     continue
                 if not _source_ok_local(a):
                     continue
@@ -6416,6 +6550,7 @@ def _topic_terms_for_seed(seed: str) -> list[str]:
 def _article_matches_seed_term(article: "Article", seed: str) -> bool:
     if not isinstance(article, Article):
         return False
+
     txt = f"{getattr(article, 'title', '')} {getattr(article, 'description', '')}".lower()
     topic_l = (getattr(article, "topic", "") or "").strip().lower()
     for term in _topic_terms_for_seed(seed):
@@ -7261,6 +7396,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         macro_policy_like = is_macro_policy_issue(txt)
         broad_macro_price = is_broad_macro_price_context(a.title or "", a.description or "")
         direct_supply_story = has_direct_supply_chain_signal(txt)
+        policy_stabilization_like = is_supply_stabilization_policy_context(txt, dom, press)
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -7286,7 +7422,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     _h = best_horti_score(a.title or "", a.description or "")
                 except Exception:
                     _h = 0.0
-                if is_policy_announcement_issue(txt, dom, press) or macro_policy_like or broad_macro_price:
+                if is_policy_announcement_issue(txt, dom, press) or macro_policy_like or broad_macro_price or policy_stabilization_like:
                     _policy_like = True
                 elif is_trade_policy_issue(txt) and _h < 2.2:
                     _policy_like = True
@@ -7339,7 +7475,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         )
         prefer_move_to_policy = (
             cur != "policy"
-            and (macro_policy_like or broad_macro_price)
+            and (macro_policy_like or broad_macro_price or policy_stabilization_like)
             and (not direct_supply_story)
             and ("policy" in cand_scores)
             and (cand_fits.get("policy", float("-inf")) + 0.2 >= cur_fit)
@@ -7520,7 +7656,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                     if _dist_hits < 2 and (not has_apc_agri_context(_mix_text)):
                         trade_like = True
 
-                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like:
+                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like or is_supply_stabilization_policy_context(_mix_text, d, p):
 
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
@@ -7651,6 +7787,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
             policy_like = (
                 (tpc == "정책")
                 or is_generic_import_item_context(mix)
+                or is_supply_stabilization_policy_context(mix, d, p)
                 or is_trade_policy_issue(mix)
                 or is_policy_announcement_issue(mix, d, p)
                 or is_macro_policy_issue(mix)

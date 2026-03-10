@@ -700,6 +700,57 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.fnnews.com/news/202603091837432209")
         self.assertEqual(best, "supply", msg=f"scores={scores}")
 
+    def test_mt_imported_egg_supply_stabilization_story_prefers_policy(self):
+        title = "다음주 美 신선란 112만개 공급…홈플러스·메가마트서 한판 5790원"
+        desc = "정부가 수입 신선란 물량을 공급해 홈플러스와 메가마트에서 한 판 5790원에 판매하는 수급 안정 조치를 추진한다."
+        best, scores = self._best_section(title, desc, "https://www.mt.co.kr/economy/2026/03/09/2026030917232924524")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_supply_selection_prefers_distinct_feature_topics_over_policy_stabilization_or_repeat_feature(self):
+        cabbage = self._make_article(
+            "supply",
+            "대아청과 “2026년산 저장 배추 5.2% 줄었지만, 상품성 우수…시세 상승 기대”",
+            "대아청과는 2026년산 저장 배추가 지난해보다 5.2% 감소했으나, 우수한 상품성으로 시세 상승이 기대된다고 발표했다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        flower1 = self._make_article(
+            "supply",
+            "“꽃값 그대로인데 한 달 난방비만 1000만 원” 치솟은 유가에 화훼 업계 울상",
+            "화훼 업계는 유가 상승으로 난방비가 급증해 어려움을 겪고 있으며, 한 달에 1000만 원에 달하는 난방비를 부담하고 있다.",
+            "https://www.sedaily.com/article/20016961",
+        )
+        flower2 = self._make_article(
+            "supply",
+            "“울며 겨자먹기로 버티죠” 중동발 기름값 급등에 농민들 울상",
+            "중동발 기름값 급등은 농민과 화훼 업계에 큰 타격을 주고 있다. 도매상에서 나무를 사는 비용 상승으로 꽃 소비도 줄어드는 상황이다.",
+            "https://www.sedaily.com/article/20017109",
+        )
+        strawberry = self._make_article(
+            "supply",
+            "“온종일 불때야 하는데 막막” 초록색 딸기 바라보며 한숨",
+            "딸기 체험 농장을 운영하는 농가가 생육적온을 맞추기 어려워 난방 부담이 커졌고 초록빛 딸기가 그대로 남아 있다고 설명했다.",
+            "https://www.sedaily.com/article/20017059",
+        )
+        citrus = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도",
+            "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록하며 제주 감귤의 품질 경쟁력을 입증했다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        egg = self._make_article(
+            "supply",
+            "다음주 美 신선란 112만개 공급…홈플러스·메가마트서 한판 5790원",
+            "정부가 수입 신선란 물량을 공급해 홈플러스와 메가마트에서 한 판 5790원에 판매하는 수급 안정 조치를 추진한다.",
+            "https://www.mt.co.kr/economy/2026/03/09/2026030917232924524",
+        )
+        picked = main.select_top_articles([cabbage, flower1, flower2, strawberry, citrus, egg], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertIn(citrus.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertNotIn(egg.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertEqual(len(picked_urls & {flower1.link, flower2.link}), 1, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
+
     def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
         article = self._make_article(
             "supply",
