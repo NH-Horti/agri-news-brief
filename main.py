@@ -2705,6 +2705,11 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     return None
 
 
+def is_supply_feature_article(title: str, desc: str) -> bool:
+    txt = f"{title or ''} {desc or ''}".lower()
+    return bool(supply_feature_context_kind(title, desc) or is_flower_consumer_trend_context(txt))
+
+
 def is_local_agri_infra_designation_context(title: str, desc: str) -> bool:
     """지역 단위 농업 인프라 '선정/지정/계획' 기사인지 판정.
     - 실제 가동/준공이 아닌 기획·선정 단계의 지역 이슈는 dist 일반 기사로는 남겨도 core로는 올리지 않는다.
@@ -5215,9 +5220,25 @@ _PEST_CORE_TOKENS = {
     "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역"
 }
 _SUPPLY_CORE_TOKENS = {"수급","가격","시세","경락","경락가","작황","출하","재고","저장","물량","반입"}
-_SUPPLY_COMMODITY_TOKENS = {
-    "사과","배","감귤","만감","한라봉","레드향","천혜향","포도","샤인머스캣","오이","고추","풋고추","쌀","비축미","단감","곶감"
-}
+def _collect_supply_commodity_tokens() -> set[str]:
+    out: set[str] = set()
+    for entry in COMMODITY_REGISTRY:
+        if not isinstance(entry, dict):
+            continue
+        for key in ("topic", "rep_term", "display_name"):
+            term = str(entry.get(key) or "").strip()
+            if len(term) >= 2:
+                out.add(term)
+        for key in ("aliases", "focus_terms", "brief_tags"):
+            for term in entry.get(key) or []:
+                term_s = str(term or "").strip()
+                if len(term_s) >= 2:
+                    out.add(term_s)
+    out.update({"쌀", "비축미"})
+    return out
+
+_SUPPLY_COMMODITY_TOKENS = _collect_supply_commodity_tokens()
+
 _DIST_CORE_TOKENS = {"가락시장","도매시장","공판장","경락","경매","반입","중도매인","시장도매인","apc","물류","유통","온라인도매시장"}
 _POLICY_CORE_TOKENS = {"대책","지원","할인","할인지원","할당관세","검역","통관","단속","고시","개정","보도자료","브리핑","예산","확대","연장"}
 
@@ -5329,7 +5350,7 @@ def _is_policy_official(a: "Article") -> bool:
 _HEADLINE_STOPWORDS = [
     "칼럼", "기고", "사설", "오피니언", "독자기고", "기자수첩",
     "일기", "농막일기", "수필", "에세이", "연재", "기행",
-    "인터뷰", "대담", "신간", "책", "추천", "여행", "맛집",
+    "인터뷰", "interview", "대담", "신간", "책", "추천", "여행", "맛집",
     "포토", "화보", "영상", "스케치", "행사", "축제", "기념", "시상",
     "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou",
     "인물", "동정", "취임", "인사", "부고", "결혼", "개업",
@@ -5489,7 +5510,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
     # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
     "일기", "농막일기", "수필", "에세이", "연재", "기행",
-                 "인터뷰", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
+                 "인터뷰", "interview", "대담", "인물", "동정", "부고", "결혼", "취임", "인사", "개업")
     if any(w.lower() in title for w in hard_stop):
         return False
 
@@ -6250,6 +6271,62 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     selected_topics.add(topic_name)
                 added += 1
 
+    if section_key == "supply" and len(final) >= max_n:
+        feature_target = min(2, max_n)
+        current_feature_count = sum(1 for x in final if is_supply_feature_article(x.title or "", x.description or ""))
+        if current_feature_count < feature_target:
+            selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
+            relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.0, 0.0)
+            swaps_needed = feature_target - current_feature_count
+            for prefer_unseen_topic in (True, False):
+                if swaps_needed <= 0:
+                    break
+                for a in candidates_sorted:
+                    if swaps_needed <= 0:
+                        break
+                    if a in final:
+                        continue
+                    if _already_used(a):
+                        continue
+                    if a.score < relax_cut:
+                        continue
+                    if not is_supply_feature_article(a.title or "", a.description or ""):
+                        continue
+                    topic_name = (a.topic or "").strip()
+                    if prefer_unseen_topic and topic_name and topic_name in selected_topics:
+                        continue
+                    if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                        continue
+                    if any(_is_similar_story(a, b, section_key) for b in final):
+                        continue
+                    if _supply_feature_topic_repeat(a, final):
+                        continue
+                    if _is_supply_policy_like_tail_story(a):
+                        continue
+                    victim_idxs = [
+                        i for i, x in enumerate(final)
+                        if (not getattr(x, "is_core", False)) and (not is_supply_feature_article(x.title or "", x.description or ""))
+                    ]
+                    if not victim_idxs:
+                        continue
+                    repl_idx = min(
+                        victim_idxs,
+                        key=lambda i: (
+                            float(getattr(final[i], "score", 0.0) or 0.0),
+                            1 if has_direct_supply_chain_signal(((final[i].title or "") + " " + (final[i].description or "")).lower()) else 0,
+                            section_fit_score(final[i].title or "", final[i].description or "", sec_conf),
+                        ),
+                    )
+                    victim = final[repl_idx]
+                    if float(getattr(a, "score", 0.0) or 0.0) + 1.2 < float(getattr(victim, "score", 0.0) or 0.0):
+                        continue
+                    final[repl_idx] = a
+                    _mark_used(a)
+                    _source_take(a)
+                    if topic_name:
+                        selected_topics.add(topic_name)
+                    swaps_needed -= 1
+
     # 강제 섹션 이동 기사(예: policy->pest)는 최종 노출에서 사라지지 않도록 우선 포함 보장
     forced_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
     for fa in forced_items:
@@ -6366,6 +6443,29 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     return deduped[:max_n]
 
+
+
+def _needs_supply_feature_refresh(candidates_sorted: list["Article"], thr: float, max_n: int) -> bool:
+    if max_n <= 0 or not candidates_sorted:
+        return False
+    pool = [a for a in candidates_sorted if float(getattr(a, "score", 0.0) or 0.0) >= float(thr or 0.0)]
+    if len(pool) < max_n:
+        return False
+    feature_target = min(2, max_n)
+    feature_count = sum(1 for a in pool if is_supply_feature_article(a.title or "", a.description or ""))
+    if feature_count >= feature_target:
+        return False
+    pool_reps = {
+        (TOPIC_REP_BY_NAME_L.get((a.topic or "").strip()) or (a.topic or "").strip()).lower()
+        for a in pool if (a.topic or "").strip()
+    }
+    query_reps = {
+        TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower())
+        for seed in _extract_seed_terms_from_queries(SUPPLY_ITEM_QUERIES, limit=max(8, max_n * 3))
+        if (seed or "").strip()
+    }
+    missing_reps = {rep for rep in query_reps if rep and rep not in pool_reps}
+    return bool(missing_reps)
 
 
 # -----------------------------
@@ -7121,10 +7221,17 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
         recall_candidate = bool(RECALL_BACKFILL_ENABLED and COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION > 0 and queries)
         paging_candidate = bool(COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries)
         if recall_candidate or paging_candidate:
-            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 보강이 도움되지 않으므로 스킵
-            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
-                candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
-                thr = _dynamic_threshold(candidates_sorted, section_key)
+            candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+            thr = _dynamic_threshold(candidates_sorted, section_key)
+            supply_feature_refresh = False
+            if section_key == "supply":
+                try:
+                    supply_feature_refresh = _needs_supply_feature_refresh(candidates_sorted, thr, max_n)
+                except Exception:
+                    supply_feature_refresh = False
+
+            # 후보가 많더라도 supply가 feature-light 상태면 targeted recall은 허용한다.
+            if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP or supply_feature_refresh:
                 pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
 
                 # 최소 목표(환경설정 반영): MIN_PER_SECTION이 0이면 3을 기본으로
@@ -7132,7 +7239,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 min_n = max(1, min(min_n, max_n))
 
                 # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
-                need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
+                need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3)) or supply_feature_refresh
                 if need_more:
                     if recall_candidate:
                         # fallback recall은 1페이지 보강이므로, page2 활성화 여부와 무관하게 수행한다.

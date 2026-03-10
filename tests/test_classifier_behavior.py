@@ -839,6 +839,58 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(official.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
 
 
+    def test_supply_commodity_tokens_include_registry_items(self):
+        self.assertIn("딸기", main._SUPPLY_COMMODITY_TOKENS)
+        self.assertIn("수박", main._SUPPLY_COMMODITY_TOKENS)
+
+
+    def test_headline_gate_relaxed_rejects_english_interview_for_supply(self):
+        interview = self._make_article(
+            "supply",
+            "[afl Interview] 안진우 한국 포도 협회 회장",
+            "포도 수급 조절위원회 가동과 과잉 물량 대응 계획을 설명했다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=315910",
+        )
+        self.assertFalse(main._headline_gate_relaxed(interview, "supply"))
+
+
+    def test_supply_feature_refresh_needed_when_full_but_feature_light(self):
+        candidates = [
+            self._make_article("supply", "저장 배추 물량 감소…시세 상승 기대", "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.", "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver"),
+            self._make_article("supply", "수박 출하 본격화에도 도매가격 약보합", "수박 출하 물량이 늘었지만 도매시장 가격은 약보합세를 보였다.", "https://www.yna.co.kr/view/AKR20260309000000001"),
+            self._make_article("supply", "사과 출하 줄며 가격 상승", "사과 출하량 감소로 도매시장 가격이 오름세를 보였다.", "https://www.fnnews.com/news/202603091111111111"),
+            self._make_article("supply", "포도 저장 물량 조정…수급 관리 강화", "포도 저장 물량 조정과 수급 관리가 이뤄지고 있다.", "https://www.nongmin.com/article/20260310500151"),
+            self._make_article("supply", "감귤 출하량 감소에 가격 강세", "감귤 출하량 감소로 가격 강세가 이어지고 있다.", "https://www.segye.com/newsView/20260310500001"),
+        ]
+        candidates[0].score = 25.0
+        candidates[1].score = 24.4
+        candidates[2].score = 23.9
+        candidates[3].score = 23.1
+        candidates[4].score = 22.8
+        candidates_sorted = sorted(candidates, key=main._sort_key_major_first, reverse=True)
+        thr = main._dynamic_threshold(candidates_sorted, "supply")
+        self.assertTrue(main._needs_supply_feature_refresh(candidates_sorted, thr, 5))
+
+
+    def test_supply_selection_prefers_field_feature_over_generic_tail_item_when_full(self):
+        cabbage = self._make_article("supply", "저장 배추 물량 감소…시세 상승 기대", "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.", "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver")
+        apple = self._make_article("supply", "사과 출하 줄며 가격 상승", "사과 출하량 감소로 도매시장 가격이 오름세를 보였다.", "https://www.fnnews.com/news/202603091111111111")
+        grape = self._make_article("supply", "포도 저장 물량 조정…수급 관리 강화", "포도 저장 물량 조정과 수급 관리가 이뤄지고 있다.", "https://www.nongmin.com/article/20260310500151")
+        citrus = self._make_article("supply", "감귤 출하량 감소에 가격 강세", "감귤 출하량 감소로 가격 강세가 이어지고 있다.", "https://www.segye.com/newsView/20260310500001")
+        watermelon = self._make_article("supply", "수박 출하 본격화에도 도매가격 약보합", "수박 출하 물량이 늘었지만 도매시장 가격은 약보합세를 보였다.", "https://www.yna.co.kr/view/AKR20260309000000001")
+        strawberry = self._make_article("supply", "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨", "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.", "https://www.sedaily.com/article/20017059")
+        cabbage.score = 30.0
+        apple.score = 29.1
+        grape.score = 28.2
+        citrus.score = 27.4
+        watermelon.score = 23.4
+        strawberry.score = 22.7
+        picked = main.select_top_articles([cabbage, apple, grape, citrus, watermelon, strawberry], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertNotIn(watermelon.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
+
     def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
         article = self._make_article(
             "supply",
