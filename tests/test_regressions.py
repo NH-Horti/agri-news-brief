@@ -58,6 +58,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점', self.text)
 
 
+    def test_section_event_key_generalization_helpers_exist(self):
+        self.assertIn("_EVENT_KEY_SECTIONS = frozenset({\"supply\", \"dist\", \"policy\"})", self.text)
+        self.assertIn("def _section_story_signature", self.text)
+        self.assertIn("if section_key in _EVENT_KEY_SECTIONS:", self.text)
+
+
     def test_cache_busting_and_no_cache_meta_exist(self):
         self.assertIn('def build_daily_url', self.text)
         self.assertIn('cache_bust=True', self.text)

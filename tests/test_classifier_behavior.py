@@ -785,6 +785,60 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "supply")) for x in deduped]))
 
 
+    def test_dist_event_key_dedupes_same_local_org_feature_story(self):
+        coop1 = self._make_article(
+            "dist",
+            "경주 현곡농협, 샤인머스캣 수출 확대… 경제사업 성과",
+            "현곡농협은 샤인머스캣 공동선별과 수출 판로 확대를 통해 농가실익 증진과 브랜드 성과를 냈다고 밝혔다.",
+            "https://www.nongmin.com/article/20260310500111",
+        )
+        coop2 = self._make_article(
+            "dist",
+            "현곡농협, 샤인머스캣 수출 판로 넓혀 농가실익 증진",
+            "현곡농협은 샤인머스캣 수출, 공동선별, 브랜드 전략으로 농가실익과 경제사업 성과를 높였다고 밝혔다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=400001",
+        )
+        deduped = main._dedupe_by_event_key([coop1, coop2], "dist")
+        self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "dist")) for x in deduped]))
+
+
+    def test_policy_event_key_prefers_official_source_for_same_announcement(self):
+        official = self._make_article(
+            "policy",
+            "농식품부, 사과·배 할인 지원 확대… 성수품 수급안정 추진",
+            "농식품부는 사과와 배의 할인 지원을 확대하고 성수품 공급과 비축 방출을 통해 수급안정을 추진한다고 밝혔다.",
+            "https://www.korea.kr/briefing/policyBriefingView.do?newsId=148945678",
+        )
+        syndicated = self._make_article(
+            "policy",
+            "사과·배 할인 지원 확대… 농식품부 성수품 공급 안정",
+            "농식품부는 사과와 배의 할인 지원을 확대하고 성수품 공급과 비축 방출을 통해 수급안정을 추진한다고 밝혔다.",
+            "https://www.newsis.com/view/NISX20260310_0004000011",
+        )
+        deduped = main._dedupe_by_event_key([official, syndicated], "policy")
+        self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "policy")) for x in deduped]))
+        self.assertEqual(deduped[0].link, official.link)
+
+
+    def test_policy_selection_dedupes_same_official_announcement_story(self):
+        official = self._make_article(
+            "policy",
+            "농식품부, 사과·배 할인 지원 확대… 성수품 수급안정 추진",
+            "농식품부는 사과와 배의 할인 지원을 확대하고 성수품 공급과 비축 방출을 통해 수급안정을 추진한다고 밝혔다.",
+            "https://www.korea.kr/briefing/policyBriefingView.do?newsId=148945678",
+        )
+        syndicated = self._make_article(
+            "policy",
+            "사과·배 할인 지원 확대… 농식품부 성수품 공급 안정",
+            "농식품부는 사과와 배의 할인 지원을 확대하고 성수품 공급과 비축 방출을 통해 수급안정을 추진한다고 밝혔다.",
+            "https://www.newsis.com/view/NISX20260310_0004000011",
+        )
+        picked = main.select_top_articles([official, syndicated], "policy", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertEqual(len(picked_urls & {official.link, syndicated.link}), 1, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertIn(official.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
+
     def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
         article = self._make_article(
             "supply",
