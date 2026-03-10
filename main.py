@@ -2785,6 +2785,52 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
 
 
+_SUPPLY_WEAK_TAIL_PROMO_TERMS = (
+    "홍보", "선보여", "소개", "공략", "판촉", "행사", "축제", "시식", "접점", "민속촌",
+    "제철 홍보", "출하 시기 홍보",
+)
+_SUPPLY_WEAK_TAIL_VISIT_TERMS = (
+    "격려", "방문", "시찰", "찾아", "현장", "점검", "청취",
+)
+_SUPPLY_WEAK_TAIL_OFFICIAL_TERMS = (
+    "원장", "시장", "군수", "구청장", "도지사", "지사", "청장", "본부장", "센터장",
+)
+
+def is_supply_weak_tail_context(title: str, desc: str) -> bool:
+    """Return True for weak supply-tail stories that should not block stronger item features.
+
+    Generalized patterns:
+    - local agri-org promo/event stories
+    - official visit/encouragement field stories with weak title-level supply signal
+    - venue/promo pieces that mention items but lack strong market data framing
+    """
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    ttl_l = ttl.lower()
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    if is_local_agri_org_feature_context(title, desc):
+        return True
+
+    title_core_hits = count_any(ttl_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS])
+    promo_hits = count_any(txt, [w.lower() for w in _SUPPLY_WEAK_TAIL_PROMO_TERMS])
+    visit_hits = count_any(txt, [w.lower() for w in _SUPPLY_WEAK_TAIL_VISIT_TERMS])
+    official_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_WEAK_TAIL_OFFICIAL_TERMS])
+
+    if official_hits >= 1 and visit_hits >= 2 and title_core_hits == 0:
+        return True
+
+    if promo_hits >= 2 and title_core_hits == 0:
+        if (not has_direct_supply_chain_signal(txt)) or visit_hits >= 1 or ("민속촌" in txt):
+            return True
+
+    if is_supply_feature_article(title, desc):
+        return False
+
+    return False
+
 def has_direct_supply_chain_signal(text: str) -> bool:
     t = (text or "").lower()
     if not t:
@@ -2989,6 +3035,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.45
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
+        if is_supply_weak_tail_context(title, desc):
+            base -= 1.1
         if policy_stabilization:
             base -= 1.1
         if policy_market_brief:
@@ -5115,6 +5163,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 6.2
         if local_org_feature:
             score -= 4.8
+        if is_supply_weak_tail_context(title, desc):
+            score -= 5.6
         if broad_macro_price and ((not direct_supply_story) or policy_market_brief):
             score -= 5.0
         if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and ((not direct_supply_story) or policy_market_brief):
@@ -5976,6 +6026,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         return bool(supply_feature_context_kind(a.title or "", a.description or "") or is_flower_consumer_trend_context(txt_local))
 
+    def _is_supply_weak_tail_story(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        return is_supply_weak_tail_context(a.title or "", a.description or "")
+
     def _supply_feature_topic_repeat(a: Article, selected: list[Article]) -> bool:
         if not _is_supply_feature_tail_story(a):
             return False
@@ -6042,6 +6097,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                 continue
+            if _is_supply_weak_tail_story(a):
+                continue
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
             if (a.topic or "").strip() == "정책":
                 continue
@@ -6101,8 +6158,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if is_policy_market_brief_context(text, dom, pr):
                     continue
-                if (a.topic or "").strip() == "정책":
+                if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                     continue
+                if _is_supply_weak_tail_story(a):
+                    continue
+                if (a.topic or "").strip() == "정책":
                     continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
@@ -6243,6 +6303,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_supply_policy_like_tail_story(a):
                 continue
+            if _is_supply_weak_tail_story(a):
+                continue
             eligible.append(a)
 
         while len(final) < max_n and eligible:
@@ -6262,6 +6324,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if _supply_feature_topic_repeat(a, final):
                     continue
                 if _is_supply_policy_like_tail_story(a):
+                    continue
+                if _is_supply_weak_tail_story(a):
                     continue
                 tri_a = _mmr_tri(a)
                 max_sim = 0.0
@@ -6313,6 +6377,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _supply_feature_topic_repeat(a, final):
                 continue
             if _is_supply_policy_like_tail_story(a):
+                continue
+            if _is_supply_weak_tail_story(a):
                 continue
             final.append(a)
             _mark_used(a)
@@ -6428,6 +6494,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if _is_supply_policy_like_tail_story(a):
                     continue
+                if _is_supply_weak_tail_story(a):
+                    continue
                 if not _source_ok_local(a):
                     continue
 
@@ -6471,14 +6539,18 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     if _is_supply_policy_like_tail_story(a):
                         continue
+                    if _is_supply_weak_tail_story(a):
+                        continue
                     victim_idxs = [
                         i for i, x in enumerate(final)
                         if (not getattr(x, "is_core", False)) and (not is_supply_feature_article(x.title or "", x.description or ""))
                     ]
                     if not victim_idxs:
                         continue
+                    weak_victim_idxs = [i for i in victim_idxs if _is_supply_weak_tail_story(final[i])]
+                    ranked_victim_idxs = weak_victim_idxs if weak_victim_idxs else victim_idxs
                     repl_idx = min(
-                        victim_idxs,
+                        ranked_victim_idxs,
                         key=lambda i: (
                             float(getattr(final[i], "score", 0.0) or 0.0),
                             1 if has_direct_supply_chain_signal(((final[i].title or "") + " " + (final[i].description or "")).lower()) else 0,
@@ -6486,7 +6558,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         ),
                     )
                     victim = final[repl_idx]
-                    if float(getattr(a, "score", 0.0) or 0.0) + 1.2 < float(getattr(victim, "score", 0.0) or 0.0):
+                    required_margin = 0.2 if _is_supply_weak_tail_story(victim) else 1.2
+                    if float(getattr(a, "score", 0.0) or 0.0) + required_margin < float(getattr(victim, "score", 0.0) or 0.0):
                         continue
                     final[repl_idx] = a
                     _mark_used(a)

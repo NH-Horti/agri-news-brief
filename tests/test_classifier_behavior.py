@@ -793,6 +793,75 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(picked_urls & {flower1.link, flower2.link}), 1, msg=str([(x.link, x.score, x.topic) for x in picked]))
 
 
+    def test_supply_weak_tail_context_flags_promo_and_official_visit_stories(self):
+        citrus_title = "제주감귤연합회, 한국민속촌서 제주 만감류 진수 선보여"
+        citrus_desc = "제주감귤연합회가 한라봉과 천혜향을 소개하고 제철 홍보 행사로 수도권 접점을 넓혔다."
+        watermelon_title = "최준열 전북농업기술원장, 지역 명품 촉성재배 수박 현장 찾아 격려"
+        watermelon_desc = "본격 출하를 앞둔 수박 재배 현장을 찾아 생육 상황을 점검하고 농가 의견을 청취했다."
+        self.assertTrue(main.is_supply_weak_tail_context(citrus_title, citrus_desc))
+        self.assertTrue(main.is_supply_weak_tail_context(watermelon_title, watermelon_desc))
+
+
+    def test_supply_selection_excludes_weak_tail_stories_when_stronger_feature_articles_exist(self):
+        cabbage = self._make_article(
+            "supply",
+            "서울가락시장 배추 반입량 감소로 시세 강세",
+            "배추 반입량이 줄고 도매시장 시세가 오름세를 보였다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        flower = self._make_article(
+            "supply",
+            "유가가 그대로인데 난방비만 1000만원…화훼 농가 비상",
+            "화훼 농가가 난방비 부담으로 생육 관리에 어려움을 겪고 있다.",
+            "https://www.sedaily.com/article/20016961",
+        )
+        market = self._make_article(
+            "supply",
+            "배추 7만1천톤 평년보다 9.4% 감소",
+            "가락시장 배추 공급량 감소가 배추 수급과 가격 흐름에 영향을 주고 있다.",
+            "http://www.newsfarm.co.kr/news/articleView.html?idxno=100475",
+        )
+        strawberry = self._make_article(
+            "supply",
+            "춘분도 불안한데…맑은 초록빛 딸기 바라보는 시선",
+            "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 설명했다.",
+            "https://www.sedaily.com/article/20017059",
+        )
+        citrus_feature = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 선호",
+            "제주 감귤이 수입산과 비교에서 품질과 선호도 우위를 보였다는 조사 결과다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        citrus_promo = self._make_article(
+            "supply",
+            "제주감귤연합회, 한국민속촌서 제주 만감류 진수 선보여",
+            "연합회가 한라봉과 천혜향을 소개하고 제철 홍보 행사로 소비자 접점을 넓혔다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500177?wlog_tag3=naver",
+        )
+        watermelon_visit = self._make_article(
+            "supply",
+            "최준열 전북농업기술원장, 지역 명품 촉성재배 수박 현장 찾아 격려",
+            "수박 재배 현장을 찾아 생육 상황을 점검하고 농가 의견을 청취했다.",
+            "http://www.nongup.net/news/articleView.html?idxno=32597",
+        )
+        cabbage.score = 29.4
+        flower.score = 28.5
+        market.score = 27.6
+        strawberry.score = 27.9
+        citrus_feature.score = 27.7
+        citrus_promo.score = 28.9
+        watermelon_visit.score = 28.3
+        picked = main.select_top_articles(
+            [cabbage, flower, market, strawberry, citrus_feature, citrus_promo, watermelon_visit],
+            "supply",
+            5,
+        )
+        picked_urls = {a.link for a in picked}
+        self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertIn(citrus_feature.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertNotIn(citrus_promo.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertNotIn(watermelon_visit.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
     def test_supply_event_key_dedupes_same_citrus_quality_compare_story(self):
         citrus1 = self._make_article(
             "supply",
