@@ -73,6 +73,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('return _reject("fishery_only")', self.text)
 
 
+    def test_dev_preview_has_version_probe_markers(self):
+        self.assertIn("agri-rendered-at-kst", self.text)
+        self.assertIn("agri-dev-version-url", self.text)
+        self.assertIn("syncLatestDevBuild", self.text)
+        self.assertIn("build_dev_preview_version_json", self.text)
+
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
 

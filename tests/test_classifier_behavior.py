@@ -1244,6 +1244,11 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("개발 버전 미리보기", html)
         self.assertIn('/agri-news-brief/dev/index.html', html)
         self.assertNotIn('/agri-news-brief/dev/archive/2026-03-09.html', html)
+        self.assertIn("agri-rendered-at-kst", html)
+        self.assertIn("agri-dev-version-url", html)
+        self.assertIn("version.json", html)
+        self.assertIn("syncLatestDevBuild", html)
+        self.assertIn("DEV build", html)
         self.assertTrue(msg.splitlines()[0].startswith("[DEV] "), msg=msg)
         self.assertIn("개발 테스트 버전(운영 아님)", msg)
 

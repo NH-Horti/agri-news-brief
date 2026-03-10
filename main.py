@@ -457,10 +457,12 @@ def _compute_build_tag() -> str:
 
 
 BUILD_TAG = _compute_build_tag()
+RENDERED_AT_KST = datetime.now(KST).isoformat(timespec="seconds")
 
 # Keep debug report in sync
 try:
     DEBUG_DATA["build_tag"] = BUILD_TAG
+    DEBUG_DATA["generated_at_kst"] = RENDERED_AT_KST
 except Exception:
     pass
 # Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
@@ -533,6 +535,8 @@ BRIEF_VIEW_URL = os.getenv("BRIEF_VIEW_URL", "").strip()
 DEV_SINGLE_PAGE_MODE = os.getenv("DEV_SINGLE_PAGE_MODE", "false").strip().lower() in ("1", "true", "yes", "y")
 DEV_SINGLE_PAGE_PATH = (os.getenv("DEV_SINGLE_PAGE_PATH", "").strip() or "docs/dev/index.html")
 DEV_SINGLE_PAGE_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_URL_PATH", "").strip() or "index.html")
+DEV_SINGLE_PAGE_VERSION_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_PATH", "").strip() or "")
+DEV_SINGLE_PAGE_VERSION_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_URL_PATH", "").strip() or "")
 
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
@@ -3816,15 +3820,31 @@ def _normalize_repo_path(path: str) -> str:
     return "/".join(parts)
 
 
+def _dev_single_page_version_repo_path() -> str:
+    configured = _normalize_repo_path(DEV_SINGLE_PAGE_VERSION_PATH)
+    if configured:
+        return configured
+    preview_path = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    head, _, _tail = preview_path.rpartition("/")
+    return f"{head}/version.json" if head else "version.json"
+
+
+def _dev_single_page_version_url(site_path: str) -> str:
+    rel = (DEV_SINGLE_PAGE_VERSION_URL_PATH or "version.json").strip() or "version.json"
+    return build_site_url(site_path, rel)
+
+
 def _assert_dev_single_page_write_path(path: str) -> None:
     """Fail fast when dev single-page mode attempts to write non-preview paths."""
     if not DEV_SINGLE_PAGE_MODE:
         return
     allowed = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    allowed_paths = {allowed, _dev_single_page_version_repo_path()}
     target = _normalize_repo_path(path)
-    if target != allowed:
+    if target not in allowed_paths:
+        allowed_text = ", ".join(sorted(p for p in allowed_paths if p))
         raise RuntimeError(
-            f"[DEV GUARD] blocked write path '{target}'. allowed path: '{allowed}' (DEV_SINGLE_PAGE_MODE=true)"
+            f"[DEV GUARD] blocked write path '{target}'. allowed paths: '{allowed_text}' (DEV_SINGLE_PAGE_MODE=true)"
         )
 
 
@@ -8923,14 +8943,37 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     sections_html = "\n".join(section_blocks)
 
+    dev_version_url = _dev_single_page_version_url(site_path) if is_dev_preview else ""
     dev_badge_text = " [DEV]" if DEV_SINGLE_PAGE_MODE else ""
     dev_sub_text = " · 개발 버전 미리보기" if DEV_SINGLE_PAGE_MODE else ""
+    if is_dev_preview:
+        dev_sub_text += f" · build {BUILD_TAG}"
     dev_badge_html = '<span class="envBadge">DEV</span>' if DEV_SINGLE_PAGE_MODE else ""
+    dev_meta_html = ""
+    dev_refresh_js = ""
+    dev_footer_html = ""
+    if is_dev_preview:
+        dev_meta_html = (
+            f'  <meta name="agri-rendered-at-kst" content="{esc(RENDERED_AT_KST)}" />\n'
+            f'  <meta name="agri-dev-version-url" content="{esc(dev_version_url)}" />'
+        )
+        dev_footer_html = (
+            f'<div class="footer footerMeta">* DEV build {esc(BUILD_TAG)} · 생성 {esc(RENDERED_AT_KST)}</div>'
+        )
+        dev_refresh_js = f"""
+      var currentBuild = {json.dumps(BUILD_TAG)};
+      var devVersionUrl = {json.dumps(dev_version_url)};
+      function syncLatestDevBuild() {{
+        if (!devVersionUrl || !window.fetch) return;
+        var bustUrl = devVersionUrl + (devVersionUrl.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
+        fetch(bustUrl, {{ cache: "no-store" }}).then(function(r) {{ return (r && r.ok) ? r.json() : null; }}).then(function(data) {{ if (!data || typeof data.build_tag !== "string") return; var latest = data.build_tag; if (!latest || latest === currentBuild) return; var u = new URL(window.location.href); if (u.searchParams.get("v") === latest) return; u.searchParams.set("v", latest); window.location.replace(u.toString()); }}).catch(function() {{}});
+      }}
+      syncLatestDevBuild();
+"""
     page_title = f"[{report_date} 농산물 뉴스 Brief]{dev_badge_text}"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
     home_href = preview_href if is_dev_preview else site_path
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
-
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
@@ -8949,6 +8992,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <meta http-equiv=\"Pragma\" content=\"no-cache\" />
   <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
+{dev_meta_html}
   <title>{esc(page_title)}</title>
   <style>
     :root {{
@@ -9040,6 +9084,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
     .footer{{margin-top:18px;color:var(--muted);font-size:12px}}
+    .footerMeta{{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}}
     .swipeHint{{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}}
     .swipeHint.show{{display:flex}}
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
@@ -9113,10 +9158,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <div class=\"wrap\">
     {sections_html}
     <div class=\"footer\">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    {dev_footer_html}
   </div>
 
   <script>
     (function() {{
+{dev_refresh_js}
       var sel = document.getElementById("dateSelect");
       if (sel) {{
         sel.setAttribute("data-swipe-ignore", "1");
@@ -10917,6 +10964,16 @@ def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str) -> Non
         raise SystemExit(1)
 
 
+def build_dev_preview_version_json(report_date: str) -> str:
+    payload: JsonDict = {
+        "build_tag": BUILD_TAG,
+        "generated_at_kst": RENDERED_AT_KST,
+        "report_date": report_date,
+        "preview_path": _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html"),
+    }
+    return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+
+
 def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:
     """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
     if not report_date or not is_iso_date_str(report_date):
@@ -10946,6 +11003,12 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
 
     if DEV_SINGLE_PAGE_MODE:
+        version_path = _dev_single_page_version_repo_path()
+        version_json = build_dev_preview_version_json(report_date)
+        _raw_version_old, sha_version = github_get_file(repo, version_path, token, ref="main")
+        github_put_file(repo, version_path, version_json, token, f"Update dev preview version {report_date}", sha=sha_version, branch="main")
+        log.info("[MAINT PUT] %s", version_path)
+
         preview_path = DEV_SINGLE_PAGE_PATH or "docs/dev/index.html"
         _raw_preview_old, sha_preview = github_get_file(repo, preview_path, token, ref="main")
         github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch="main")
