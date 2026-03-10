@@ -706,6 +706,45 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.mt.co.kr/economy/2026/03/09/2026030917232924524")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
+    def test_nocut_policy_market_brief_prefers_policy(self):
+        title = "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'"
+        desc = "농식품부가 9일 농산물 수급 상황 점검 결과를 발표했다. 상추·청양고추·오이·애호박 소매가격은 전주에 비해 하락했고, 사과는 정부 가용물량 3000톤을 도매시장에 분산 출하할 계획이라고 밝혔다."
+        best, scores = self._best_section(title, desc, "https://www.nocutnews.co.kr/news/6481885")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+    def test_supply_selection_excludes_policy_market_brief_story(self):
+        cabbage = self._make_article(
+            "supply",
+            "저장 배추 물량 감소…시세 상승 기대",
+            "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        strawberry = self._make_article(
+            "supply",
+            "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨",
+            "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.",
+            "https://www.sedaily.com/article/20017059",
+        )
+        citrus = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도",
+            "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록했다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        policy_brief = self._make_article(
+            "supply",
+            "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'",
+            "농식품부가 농산물 수급 상황 점검 결과를 발표했다. 상추·청양고추·오이·애호박 가격은 전주 대비 하락했고 사과는 정부 가용물량을 분산 출하할 계획이라고 밝혔다.",
+            "https://www.nocutnews.co.kr/news/6481885",
+        )
+        cabbage.score = 29.4
+        strawberry.score = 28.7
+        citrus.score = 27.9
+        policy_brief.score = 31.5
+        picked = main.select_top_articles([cabbage, strawberry, citrus, policy_brief], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertNotIn(policy_brief.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
     def test_supply_selection_prefers_distinct_feature_topics_over_policy_stabilization_or_repeat_feature(self):
         cabbage = self._make_article(
             "supply",

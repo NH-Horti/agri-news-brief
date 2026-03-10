@@ -2422,6 +2422,9 @@ def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> b
     if not t:
         return False
 
+    if is_policy_market_brief_context(t, d, p):
+        return True
+
     official = (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부"))
     agency_terms = ("농식품부", "농림축산식품부", "정부", "기재부", "관세청", "검역본부", "aT", "농관원")
     policy_action_terms = (
@@ -2523,6 +2526,56 @@ def is_supply_stabilization_policy_context(text: str, dom: str = "", press: str 
         return True
     if official and stabilization_hit >= 2 and retail_hit >= 1:
         return True
+    return False
+
+
+def is_policy_market_brief_context(text: str, dom: str = "", press: str = "") -> bool:
+    """기관발 농축산물 가격·수급 점검/브리핑 기사인지 판정.
+    - 개별 품목 수급 기사와 달리 여러 품목을 한 번에 점검하고,
+      농식품부/정부 발표와 가격 추이·변수 설명이 함께 붙는 유형을 policy로 본다.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+
+    if is_macro_trade_noise_context(t):
+        return False
+
+    d = normalize_host(dom or "")
+    p = (press or "").strip()
+    officialish = policy_domain_override(d, t) or (d in POLICY_DOMAINS) or (p in ("정책브리핑", "농식품부"))
+    agency_terms = (
+        "농식품부", "농림축산식품부", "정부", "기재부", "관세청", "aT", "한국농수산식품유통공사",
+    )
+    broad_item_terms = (
+        "농축산물", "농산물", "축산물", "과일", "채소", "먹거리", "장바구니",
+        "사과", "배", "감귤", "딸기", "포도", "상추", "오이", "애호박", "청양고추",
+        "돼지고기", "소고기", "계란", "달걀",
+    )
+    price_terms = ("가격", "물가", "하락세", "상승세", "강세", "약세", "안정세", "오름세", "내림세")
+    brief_terms = (
+        "점검 결과", "점검결과", "상황 점검", "수급 점검", "브리핑", "발표", "동향", "추이", "흐름",
+        "전주 대비", "전주에 비해", "전년 대비", "전월 대비", "평년 대비", "대체로",
+    )
+    driver_terms = ("중동", "전쟁", "유가", "환율", "변수", "영향", "수급", "공급", "분산 출하", "정부 가용물량")
+    wholesale_terms = ("가락시장", "도매시장", "공판장", "경락", "경매", "반입")
+
+    agency_hit = count_any(t, [w.lower() for w in agency_terms])
+    item_hit = count_any(t, [w.lower() for w in broad_item_terms])
+    price_hit = count_any(t, [w.lower() for w in price_terms])
+    brief_hit = count_any(t, [w.lower() for w in brief_terms])
+    driver_hit = count_any(t, [w.lower() for w in driver_terms])
+    wholesale_hit = count_any(t, [w.lower() for w in wholesale_terms])
+
+    if wholesale_hit >= 1 and brief_hit == 0 and agency_hit == 0 and not officialish:
+        return False
+
+    if (officialish or agency_hit >= 1) and price_hit >= 1 and brief_hit >= 1 and item_hit >= 2:
+        return True
+
+    if is_broad_macro_price_context("", t) and (officialish or agency_hit >= 1) and (brief_hit >= 1 or driver_hit >= 2):
+        return True
+
     return False
 def is_trade_policy_issue(text: str) -> bool:
     """통상/관세/검역/통관 등 '정책·제도' 성격이 강한 이슈인지(섹션 재배치/가중치 보정용).
@@ -2843,12 +2896,15 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
     broad_macro_price = is_broad_macro_price_context(title, desc)
     policy_stabilization = is_supply_stabilization_policy_context(txt)
+    policy_market_brief = is_policy_market_brief_context(txt)
     if key == "policy" and is_macro_policy_issue(txt):
         base += 0.9
         if broad_macro_price:
             base += 0.6
         if policy_stabilization:
             base += 0.85
+        if policy_market_brief:
+            base += 0.95
     elif key == "dist" and is_local_agri_org_feature_context(title, desc):
         base += 1.0
     elif key == "supply":
@@ -2861,9 +2917,11 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base -= 1.0
         if policy_stabilization:
             base -= 1.1
-        if broad_macro_price and (not has_direct_supply_chain_signal(txt)):
+        if policy_market_brief:
+            base -= 1.35
+        if broad_macro_price and ((not has_direct_supply_chain_signal(txt)) or policy_market_brief):
             base -= 1.0
-        if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and (not has_direct_supply_chain_signal(txt)):
+        if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and ((not has_direct_supply_chain_signal(txt)) or policy_market_brief):
             base -= 0.6
     return round(base, 3)
 
@@ -4376,11 +4434,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     key = section_conf["key"]
     macro_policy_like = is_macro_policy_issue(text)
     broad_macro_price = is_broad_macro_price_context(title, desc)
+    policy_market_brief = is_policy_market_brief_context(text, dom, press)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
     policy_macro_keep = (
         key == "policy"
         and (
-            broad_macro_price
+            policy_market_brief
+            or broad_macro_price
             or (
                 macro_policy_like
                 and count_any(
@@ -4485,7 +4545,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # 축산 강신호(축산물/한우/돼지고기/계란 등) + 원예 신호 거의 없음 → 완전 배제
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
     policy_stabilization_keep = (key == "policy") and is_supply_stabilization_policy_context(text, dom, press)
-    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep) and (not policy_stabilization_keep):
+    policy_market_brief_keep = (key == "policy") and policy_market_brief
+    if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep) and (not policy_stabilization_keep) and (not policy_market_brief_keep):
         return _reject("livestock_only")
 
     # ✅ 수산물 단독 이슈(옥돔/갈치/어업/양식 등)는 원예 브리핑 목적과 달라 배제
@@ -4681,7 +4742,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             # 병해충 실행형 문맥은 policy 수집 단계에서 누락시키지 않는다(후단에서 pest로 이동).
             if is_pest_control_policy_context(text):
                 pass
-            elif macro_policy_like or broad_macro_price or is_supply_stabilization_policy_context(text, dom, press):
+            elif policy_market_brief or macro_policy_like or broad_macro_price or is_supply_stabilization_policy_context(text, dom, press):
                 pass
             # policy는 도메인 override가 있음
             elif not policy_domain_override(dom, text):
@@ -4709,6 +4770,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         if not supply_ok:
             return _reject("supply_context_gate")
 
+        if policy_market_brief:
+            return _reject("supply_policy_market_brief")
+
         if broad_macro_price and (not has_direct_supply_chain_signal(text)):
             title_focus_hits = count_any(ttl.lower(), SUPPLY_TITLE_FOCUS_TERMS_L)
             if title_focus_hits < 2 and best_horti_score(ttl, "") < 2.0:
@@ -4726,6 +4790,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return True
         if is_supply_stabilization_policy_context(text, dom, press):
             return True
+        if policy_market_brief:
+            return True
 
         is_official = policy_domain_override(dom, text) or (normalize_host(dom) in OFFICIAL_HOSTS) or any(normalize_host(dom).endswith("." + h) for h in OFFICIAL_HOSTS)
 
@@ -4736,7 +4802,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
             sig = count_any(text, [t.lower() for t in policy_signal_terms])
-            if (not macro_policy_like) and (not broad_macro_price) and not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
+            if (not policy_market_brief) and (not macro_policy_like) and (not broad_macro_price) and not ((horti_sc >= 1.4) or (market_hits >= 1) or (agri_base >= 1 and sig >= 1)):
                 return _reject("policy_context_gate")
 
         # 금융/산업 일반 정책 오탐 차단
@@ -4886,6 +4952,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     direct_supply_story = has_direct_supply_chain_signal(text)
     supply_feature_kind = supply_feature_context_kind(title, desc)
     policy_stabilization = is_supply_stabilization_policy_context(text, dom, press)
+    policy_market_brief = is_policy_market_brief_context(text, dom, press)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -4954,11 +5021,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 4.0
         if policy_stabilization:
             score -= 5.4
+        if policy_market_brief:
+            score -= 6.2
         if local_org_feature:
             score -= 4.8
-        if broad_macro_price and (not direct_supply_story):
+        if broad_macro_price and ((not direct_supply_story) or policy_market_brief):
             score -= 5.0
-        if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and (not direct_supply_story):
+        if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and ((not direct_supply_story) or policy_market_brief):
             score -= 4.2
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
@@ -4993,6 +5062,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 6.4
         if policy_stabilization:
             score += 5.4
+        if policy_market_brief:
+            score += 4.8
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -5836,6 +5907,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         pr_local = (a.press or "").strip()
         if is_supply_stabilization_policy_context(txt_local, dom_local, pr_local):
             return True
+        if is_policy_market_brief_context(txt_local, dom_local, pr_local):
+            return True
         return (a.topic or "").strip() == "정책"
 
     # 1) 엄격 코어 2개
@@ -5869,11 +5942,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if is_supply_stabilization_policy_context(mix, dom, pr):
                 continue
+            if is_policy_market_brief_context(mix, dom, pr):
+                continue
             if is_policy_announcement_issue(mix, dom, pr):
                 continue
             if is_trade_policy_issue(mix) and _h < 2.2:
                 continue
-            if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and (not has_direct_supply_chain_signal(mix)):
+            if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and ((not has_direct_supply_chain_signal(mix)) or is_policy_market_brief_context(mix, dom, pr)):
                 continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                 continue
@@ -5934,7 +6009,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 pr = (a.press or "").strip()
                 if is_supply_stabilization_policy_context(text, dom, pr):
                     continue
+                if is_policy_market_brief_context(text, dom, pr):
+                    continue
                 if (a.topic or "").strip() == "정책":
+                    continue
                     continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
@@ -7638,6 +7716,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         broad_macro_price = is_broad_macro_price_context(a.title or "", a.description or "")
         direct_supply_story = has_direct_supply_chain_signal(txt)
         policy_stabilization_like = is_supply_stabilization_policy_context(txt, dom, press)
+        policy_market_brief_like = is_policy_market_brief_context(txt, dom, press)
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -7663,7 +7742,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     _h = best_horti_score(a.title or "", a.description or "")
                 except Exception:
                     _h = 0.0
-                if is_policy_announcement_issue(txt, dom, press) or macro_policy_like or broad_macro_price or policy_stabilization_like:
+                if is_policy_announcement_issue(txt, dom, press) or policy_market_brief_like or macro_policy_like or broad_macro_price or policy_stabilization_like:
                     _policy_like = True
                 elif is_trade_policy_issue(txt) and _h < 2.2:
                     _policy_like = True
@@ -7716,8 +7795,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         )
         prefer_move_to_policy = (
             cur != "policy"
-            and (macro_policy_like or broad_macro_price or policy_stabilization_like)
-            and (not direct_supply_story)
+            and (policy_market_brief_like or macro_policy_like or broad_macro_price or policy_stabilization_like)
+            and ((not direct_supply_story) or policy_market_brief_like)
             and ("policy" in cand_scores)
             and (cand_fits.get("policy", float("-inf")) + 0.2 >= cur_fit)
             and (cand_scores.get("policy", float("-inf")) + 0.6 >= cur_score)
@@ -7897,7 +7976,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                     if _dist_hits < 2 and (not has_apc_agri_context(_mix_text)):
                         trade_like = True
 
-                if is_policy_announcement_issue(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like or is_supply_stabilization_policy_context(_mix_text, d, p):
+                if is_policy_announcement_issue(_mix_text, d, p) or is_policy_market_brief_context(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like or is_supply_stabilization_policy_context(_mix_text, d, p):
 
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
@@ -8031,6 +8110,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 or is_supply_stabilization_policy_context(mix, d, p)
                 or is_trade_policy_issue(mix)
                 or is_policy_announcement_issue(mix, d, p)
+                or is_policy_market_brief_context(mix, d, p)
                 or is_macro_policy_issue(mix)
             )
 
