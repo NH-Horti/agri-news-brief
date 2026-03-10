@@ -318,10 +318,10 @@ MMR_DIVERSITY_MIN_POOL = max(0, min(MMR_DIVERSITY_MIN_POOL, 80))
 _COND_PAGING_LOCK = threading.Lock()
 _COND_PAGING_EXTRA_CALLS_USED = 0
 
-def _cond_paging_take_budget(n: int = 1) -> bool:
-    """Return True if we can spend extra-page call budget (thread-safe)."""
+def _take_extra_call_budget(n: int = 1, *, require_cond_paging: bool = True) -> bool:
+    """Return True if we can spend extra call budget (thread-safe)."""
     global _COND_PAGING_EXTRA_CALLS_USED
-    if not COND_PAGING_ENABLED:
+    if require_cond_paging and not COND_PAGING_ENABLED:
         return False
     n = max(1, int(n or 1))
     with _COND_PAGING_LOCK:
@@ -329,6 +329,10 @@ def _cond_paging_take_budget(n: int = 1) -> bool:
             return False
         _COND_PAGING_EXTRA_CALLS_USED += n
         return True
+
+def _cond_paging_take_budget(n: int = 1) -> bool:
+    """Return True if we can spend extra-page call budget (thread-safe)."""
+    return _take_extra_call_budget(n, require_cond_paging=True)
 
 DEBUG_SELECTION = os.getenv("DEBUG_SELECTION", "0") == "1"
 DEBUG_REPORT = os.getenv("DEBUG_REPORT", "0") == "1"
@@ -6564,8 +6568,10 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
     # 2) Conditional extra pass: only when pool is lacking
     # -----------------------------
     try:
-        if COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries:
-            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 페이지가 도움되지 않으므로 스킵
+        recall_candidate = bool(RECALL_BACKFILL_ENABLED and COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION > 0 and queries)
+        paging_candidate = bool(COND_PAGING_ENABLED and COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION > 0 and queries)
+        if recall_candidate or paging_candidate:
+            # 후보가 '너무 많은데 선택이 적은 날'(품질 문제)은 추가 보강이 도움되지 않으므로 스킵
             if len(items) <= COND_PAGING_TRIGGER_CANDIDATE_CAP:
                 candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
                 thr = _dynamic_threshold(candidates_sorted, section_key)
@@ -6578,96 +6584,100 @@ def collect_candidates_for_section(section_conf: dict, start_kst: datetime, end_
                 # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
                 need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3))
                 if need_more:
+                    if recall_candidate:
+                        # fallback recall은 1페이지 보강이므로, page2 활성화 여부와 무관하게 수행한다.
+                        fallback_qs, recall_meta = _build_recall_fallback_queries(section_key, section_conf, candidates_sorted, thr)
+                        if fallback_qs:
+                            fallback_added = 0
+                            for fq in fallback_qs:
+                                if fq in queries:
+                                    continue
+                                if fallback_added >= COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION:
+                                    break
+                                if not _take_extra_call_budget(1, require_cond_paging=False):
+                                    break
+                                try:
+                                    dataF = naver_news_search_paged(fq, display=50, pages=1, sort="date")
+                                except Exception as e:
+                                    log.warning("[WARN] fallback query failed: %s", e)
+                                    continue
+                                _ingest_naver_items(fq, dataF)
+                                fallback_added += 1
 
-                    # (보강) pool 부족일 때만, '무역/관세/무관세/FTA/수입' 조합 쿼리를 소량 추가로 1페이지 수집
-                    # - 특정 기사 맞춤이 아니라, 전반적으로 "수입/관세 이슈가 품목 수급에 미치는 영향" 기사들을 더 안정적으로 포착하기 위함
-                    fallback_qs, recall_meta = _build_recall_fallback_queries(section_key, section_conf, candidates_sorted, thr)
+                            if fallback_added > 0:
+                                items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
+                                items.sort(key=_sort_key_major_first, reverse=True)
 
-                    if fallback_qs:
-                        for fq in fallback_qs:
-                            if fq in queries:
-                                continue
-                            if not _cond_paging_take_budget(1):
-                                break
-                            try:
-                                dataF = naver_news_search_paged(fq, display=50, pages=1, sort="date")
-                            except Exception as e:
-                                log.warning("[WARN] fallback query failed: %s", e)
-                                continue
-                            _ingest_naver_items(fq, dataF)
+                    if paging_candidate:
+                        # 어떤 쿼리에 추가 페이지를 붙일지 선택
+                        # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
+                        # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
+                        _qpos = {q: i for i, q in enumerate(queries)}
+                        ranked = sorted(list(queries), key=lambda q: ((1 if (q in page1_full_queries) else 0), hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
 
-                        # 재정렬
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
-                        items.sort(key=_sort_key_major_first, reverse=True)
-                    # 어떤 쿼리에 추가 페이지를 붙일지 선택
-                    # - 1페이지에서 hit가 있었던 쿼리 우선 (추가 페이지도 성과 가능성이 큼)
-                    # - 그래도 부족하면 섹션 쿼리 리스트 앞쪽(일반/범용)에서 최소 seed를 채움
-                    _qpos = {q: i for i, q in enumerate(queries)}
-                    ranked = sorted(list(queries), key=lambda q: ((1 if (q in page1_full_queries) else 0), hits_by_query.get(q, 0), -_qpos.get(q, 0)), reverse=True)
-
-                    picked: list[str] = []
-                    for q in ranked:
-                        if hits_by_query.get(q, 0) <= 0:
-                            continue
-                        picked.append(q)
-                        if len(picked) >= COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION:
-                            break
-
-                    min_seed = min(3, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION)
-                    if len(picked) < min_seed:
-                        for q in queries:
-                            if q in picked:
+                        picked: list[str] = []
+                        for q in ranked:
+                            if hits_by_query.get(q, 0) <= 0:
                                 continue
                             picked.append(q)
-                            if len(picked) >= min_seed:
+                            if len(picked) >= COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION:
                                 break
 
-                    # 추가 페이지 수집 (2..COND_PAGING_MAX_PAGES) — 예산/조기종료 포함
-                    extra_added = 0
-                    pages_tried = 0
+                        min_seed = min(3, COND_PAGING_EXTRA_QUERY_CAP_PER_SECTION)
+                        if len(picked) < min_seed:
+                            for q in queries:
+                                if q in picked:
+                                    continue
+                                picked.append(q)
+                                if len(picked) >= min_seed:
+                                    break
 
-                    for q in picked:
-                        # 이미 충분해지면 그만
-                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
-                        thr = _dynamic_threshold(candidates_sorted, section_key)
-                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
-                        if pool_cnt >= max_n:
-                            break
+                        # 추가 페이지 수집 (2..COND_PAGING_MAX_PAGES) — 예산/조기종료 포함
+                        extra_added = 0
+                        pages_tried = 0
 
-                        for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
-                            if not _cond_paging_take_budget(1):
-                                break
-                            st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
-                            pages_tried += 1
-                            try:
-                                dataN = naver_news_search(q, display=50, start=st, sort="date")
-                            except Exception as e:
-                                log.warning("[WARN] query page%d failed: %s", p, e)
-                                continue
-
-                            before = len(items)
-                            _ingest_naver_items(q, dataN)
-                            extra_added += max(0, len(items) - before)
-
-                            # 조기 종료: pool이 충분해지면 그만
+                        for q in picked:
+                            # 이미 충분해지면 그만
                             candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
                             thr = _dynamic_threshold(candidates_sorted, section_key)
                             pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
-
-                            # 후보가 충분히 커졌거나 pool 목표 도달 시 중단
-                            if pool_cnt >= max_n or len(items) >= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                            if pool_cnt >= max_n:
                                 break
 
-                        if not COND_PAGING_ENABLED:
-                            break
+                            for p in range(COND_PAGING_BASE_PAGES + 1, COND_PAGING_MAX_PAGES + 1):
+                                if not _cond_paging_take_budget(1):
+                                    break
+                                st = 1 + ((p - 1) * 50)  # 2페이지=51, 3페이지=101 ...
+                                pages_tried += 1
+                                try:
+                                    dataN = naver_news_search(q, display=50, start=st, sort="date")
+                                except Exception as e:
+                                    log.warning("[WARN] query page%d failed: %s", p, e)
+                                    continue
 
-                    if extra_added > 0:
-                        log.info(
-                            "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
-                            section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
-                        )
-                        items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
-                        items.sort(key=_sort_key_major_first, reverse=True)
+                                before = len(items)
+                                _ingest_naver_items(q, dataN)
+                                extra_added += max(0, len(items) - before)
+
+                                # 조기 종료: pool이 충분해지면 그만
+                                candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                                thr = _dynamic_threshold(candidates_sorted, section_key)
+                                pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+
+                                # 후보가 충분히 커졌거나 pool 목표 도달 시 중단
+                                if pool_cnt >= max_n or len(items) >= COND_PAGING_TRIGGER_CANDIDATE_CAP:
+                                    break
+
+                            if not COND_PAGING_ENABLED:
+                                break
+
+                        if extra_added > 0:
+                            log.info(
+                                "[COND_PAGING] section=%s added=%d pages_tried=%d budget=%d/%d",
+                                section_key, extra_added, pages_tried, _COND_PAGING_EXTRA_CALLS_USED, COND_PAGING_EXTRA_CALL_BUDGET_TOTAL
+                            )
+                            items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
+                            items.sort(key=_sort_key_major_first, reverse=True)
     except Exception:
         # extra pass should never break the pipeline
         pass
