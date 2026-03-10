@@ -772,6 +772,44 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("딸기 생육", seen_queries, msg=str(seen_queries))
         self.assertTrue(any("20017059" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+
+    def test_trade_terms_do_not_map_to_item_topics(self):
+        self.assertNotIn("무관세", main.HORTI_ITEM_TERMS_L)
+        self.assertNotIn("fta", main.HORTI_ITEM_TERMS_L)
+        self.assertNotIn("무관세", main.TOPIC_REP_BY_TERM_L)
+
+    def test_supply_feature_context_generalizes_to_yuja_and_kiwi(self):
+        field_kind = main.supply_feature_context_kind(
+            "유자 작황 부진에 산지 농가 긴장",
+            "꽃샘추위로 유자 착과가 늦어지고 농가가 생육 관리 부담을 호소했다.",
+        )
+        quality_kind = main.supply_feature_context_kind(
+            "국산 키위, 수입산보다 당도·선호도 앞서",
+            "참다래 블라인드 비교에서 국내산 키위가 품질 경쟁력과 소비자 선호도를 보였다.",
+        )
+        self.assertEqual(field_kind, "field")
+        self.assertEqual(quality_kind, "quality")
+
+    def test_supply_recall_fallback_queries_stay_balanced_for_non_target_items(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["유자 가격", "키위 가격", "상추 가격", "자두 가격", "매실 가격"],
+            "must_terms": ["유자", "키위", "상추", "자두", "매실"],
+        }
+        queries, meta = main._build_recall_fallback_queries("supply", section_conf, [], 99.0)
+        self.assertIn("유자 작황", queries, msg=str(meta))
+        self.assertIn("키위 작황", queries, msg=str(meta))
+        self.assertIn("상추 작황", queries, msg=str(meta))
+        self.assertNotIn("딸기 생육", queries, msg=str(meta))
+        self.assertNotIn("감귤 품질", queries, msg=str(meta))
+
+    def test_extract_topic_recognizes_lettuce(self):
+        topic = main.extract_topic(
+            "상추 작황 부진에 산지 출하량 감소",
+            "상추 농가가 한파 뒤 생육 회복 속도가 늦어져 출하량 감소를 우려했다.",
+        )
+        self.assertEqual(topic, "상추")
+
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(
             "policy",

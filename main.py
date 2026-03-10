@@ -745,13 +745,10 @@ SECTIONS = [
             "감귤 수급",
             "감귤 가격",
             "감귤 작황",
-            "감귤 품질",
-            "감귤 수입산 비교",
             "만감류 출하",
             "한라봉 출하",
             "레드향 출하",
             "천혜향 출하",
-            "천혜향 선호도",
             "포도 수급",
             "포도 가격",
             "포도 작황",
@@ -778,8 +775,6 @@ SECTIONS = [
             "딸기 수급",
             "딸기 가격",
             "딸기 작황",
-            "딸기 생육",
-            "딸기 난방비",
             "파프리카 수급",
             "파프리카 가격",
             "파프리카 수출",
@@ -788,6 +783,9 @@ SECTIONS = [
             "오이 수급",
             "오이 가격",
             "오이 작황",
+            "상추 수급",
+            "상추 가격",
+            "상추 작황",
             "풋고추 수급",
             "풋고추 가격",
             "토마토 수급",
@@ -813,7 +811,6 @@ SECTIONS = [
             "머스크멜론 도매가격",
             "고추 작황",
             "화훼 가격",
-            "화훼 농가",
             "절화 가격",
             "꽃 소비",
             "화훼 수급",
@@ -866,6 +863,7 @@ SECTIONS = [
             "파프리카",
             "참외",
             "오이",
+            "상추",
             "풋고추",
             "고추",
             "토마토",
@@ -983,7 +981,7 @@ COMMODITY_TOPICS = [
     ("배", ["신고배", "나주배", "배 과일", "배(과일)"]),
     ("단감", ["단감"]),
     ("감/곶감", ["떫은감", "곶감"]),
-    ("감귤/만감", ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴", "무관세", "FTA"]),
+    ("감귤/만감", ["감귤", "만감", "만감류", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴"]),
     ("포도", ["포도", "샤인머스캣"]),
     ("키위", ["키위", "참다래"]),
     ("유자", ["유자"]),
@@ -1000,6 +998,7 @@ COMMODITY_TOPICS = [
     ("파프리카", ["파프리카"]),
     ("참외", ["참외"]),
     ("오이", ["오이"]),
+    ("상추", ["상추"]),
     ("고추", ["고추", "풋고추", "청양고추"]),
     ("화훼", ["화훼", "절화", "국화", "장미", "백합", "꽃다발", "생화", "부케", "플라워"]),
     ("도매시장", ["가락시장", "도매시장", "공영도매시장", "공판장", "청과", "경락", "경매", "반입", "중도매인", "시장도매인", "온라인 도매시장"]),
@@ -1025,6 +1024,14 @@ TOPIC_REP_BY_TERM_L = {
 ALL_TOPIC_TERMS_L = sorted({
     (t or "").strip().lower()
     for _tn, _terms in TOPICS
+    for t in (_terms or [])
+    if (t or "").strip()
+})
+NON_ITEM_TOPIC_NAMES = {"도매시장", "APC/산지유통", "수출/검역", "정책", "병해충"}
+HORTI_ITEM_TERMS_L = sorted({
+    (t or "").strip().lower()
+    for _tn, _terms in TOPICS
+    if _tn not in NON_ITEM_TOPIC_NAMES
     for t in (_terms or [])
     if (t or "").strip()
 })
@@ -2299,8 +2306,8 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
 
     horti_sc = best_horti_score(ttl, desc or "")
     horti_title_sc = best_horti_score(ttl, "")
-    item_hits = count_any(txt, ALL_TOPIC_TERMS_L)
-    title_item_hits = count_any(ttl.lower(), ALL_TOPIC_TERMS_L)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
     if item_hits == 0 and horti_sc < 1.8:
         return None
 
@@ -2456,6 +2463,11 @@ def section_fit_score(title: str, desc: str, section_conf: dict) -> float:
     elif key == "dist" and is_local_agri_org_feature_context(title, desc):
         base += 1.0
     elif key == "supply":
+        feature_kind = supply_feature_context_kind(title, desc)
+        if feature_kind == "field":
+            base += 0.55
+        elif feature_kind == "quality":
+            base += 0.45
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
         if broad_macro_price and (not has_direct_supply_chain_signal(txt)):
@@ -4502,7 +4514,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # Generalized boost: '원예 품목 신호' + '무역/정책(관세/무관세/FTA/수입/통관/검역 등)' + '시장 영향' 조합
     # 특정 기사 하나를 위해 키워드를 추가하는 방식이 아니라,
     # 전반적으로 "수입/관세 이슈가 품목 수급에 미치는 영향" 기사들을 더 잘 끌어올리기 위한 규칙이다.
-    horti_hits = count_any(text, ALL_TOPIC_TERMS_L)
+    horti_hits = count_any(text, HORTI_ITEM_TERMS_L)
     trade_hits = count_any(text, TRADE_POLICY_TERMS_L)
     impact_hits = count_any(text, TRADE_IMPACT_TERMS_L)
 
@@ -5732,37 +5744,47 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _source_take(a)
             break
 
-    # 4.5) supply 보강: 화훼 소비/선물 트렌드(예: 레고 꽃다발/꽃다발 선물 트렌드)는
-    # - 품목 및 수급 동향에서만 "비핵심"으로 0~1건 하단 편입
-    # - core(핵심2)에는 절대 포함하지 않음
+    # 4.5) supply 보강: section이 비는 날에는 품목 feature 기사 0~1건을 하단에 보강한다.
+    # - 특정 품목만 우대하지 않고, 공급/현장/품질형 기사 전반에 공통 적용
+    # - 이미 뽑힌 품목과 다른 topic을 우선해 품목 다양성을 유지
     if section_key == "supply" and len(final) < max_n:
         added = 0
-        for a in pool:
+        selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
+        relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.4, thr - 1.0, 0.0)
+        for prefer_unseen_topic in (True, False):
             if added >= 1 or len(final) >= max_n:
                 break
-            if a in final:
-                continue
-            if _already_used(a):
-                continue
-            # 너무 낮은 점수(임계치 크게 하회)는 제외하되, 트렌드형은 약간 완화
-            if a.score < max(thr - 0.6, 0.0):
-                continue
-            txt2 = (a.title + " " + a.description).lower()
-            if not is_flower_consumer_trend_context(txt2):
-                continue
-            # 유통 프로모션/관광/연예/창업성 노이즈는 함수에서 제외됨
-            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
-                continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
-                continue
-            if not _source_ok_local(a):
-                continue
+            for a in pool:
+                if added >= 1 or len(final) >= max_n:
+                    break
+                if a in final:
+                    continue
+                if _already_used(a):
+                    continue
+                if a.score < relax_cut:
+                    continue
+                txt2 = (a.title + " " + a.description).lower()
+                feature_kind = supply_feature_context_kind(a.title or "", a.description or "")
+                flower_trend = is_flower_consumer_trend_context(txt2)
+                if feature_kind is None and not flower_trend:
+                    continue
+                topic_name = (a.topic or "").strip()
+                if prefer_unseen_topic and topic_name and topic_name in selected_topics:
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                    continue
+                if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
+                if not _source_ok_local(a):
+                    continue
 
-            a.is_core = False
-            final.append(a)
-            _mark_used(a)
-            _source_take(a)
-            added += 1
+                a.is_core = False
+                final.append(a)
+                _mark_used(a)
+                _source_take(a)
+                if topic_name:
+                    selected_topics.add(topic_name)
+                added += 1
 
     # 강제 섹션 이동 기사(예: policy->pest)는 최종 노출에서 사라지지 않도록 우선 포함 보장
     forced_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
@@ -5994,7 +6016,7 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
     cap = max(0, int(limit or 0))
     if cap == 0:
         return raw_terms
-    skip = {"과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"}
+    skip = {"과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역", "수입", "수입산", "무관세", "관세", "fta", "통관", "할당관세"}
     for q in queries:
         q = (q or "").strip().lower()
         if not q:
@@ -6042,6 +6064,7 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
 _QUERY_TOKEN_STOPWORDS = {
     "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
     "동향", "이슈", "대책", "지원", "검역", "유통", "현장", "방제", "병해충",
+    "수입", "수입산", "무관세", "관세", "fta", "통관", "할당관세",
 }
 
 def _query_tokens(q: str) -> list[str]:
@@ -6267,25 +6290,38 @@ def _build_recall_fallback_queries(section_key: str, section_conf: dict, candida
                     break
 
     if len(out) < RECALL_QUERY_CAP_PER_SECTION:
-        common = []
         if section_key == "supply":
-            common = ["딸기 생육", "딸기 난방비", "감귤 품질", "천혜향 선호도", "감귤 수입산 비교", "화훼 농가"]
-        elif section_key == "policy":
-            common = ["만다린 무관세", "미국 만다린 무관세", "만감류 무관세", "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"]
-        elif section_key == "dist":
-            common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
-        elif section_key == "pest":
-            common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
+            expanded_feature_seeds = [
+                t for t in _extract_seed_terms_from_queries(base_queries, limit=12)
+                if t and t not in prioritized_seeds
+            ]
+            meta["fallback_feature_seeds"] = list(expanded_feature_seeds)
+            for t in expanded_feature_seeds:
+                if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                    break
+                for sig in _supply_signal_priority(t)[:2]:
+                    if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                        break
+                    _add_query(f"{t} {sig}")
+        else:
+            common = []
+            if section_key == "policy":
+                common = ["만다린 무관세", "미국 만다린 무관세", "만감류 무관세", "수입 과일 무관세", "할당관세 과일", "수입 농산물 관세", "수입 과일 FTA"]
+            elif section_key == "dist":
+                common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
+            elif section_key == "pest":
+                common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
 
-        for q in common:
-            if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
-                break
-            if q in base_queries or q in out:
-                continue
-            out.append(q)
+            for q in common:
+                if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+                    break
+                if q in base_queries or q in out:
+                    continue
+                out.append(q)
 
     meta["queries"] = list(out)
     return out, meta
+
 def _dedupe_queries(queries: list[str]) -> list[str]:
     """Normalize and deduplicate query list while preserving order."""
     out: list[str] = []
