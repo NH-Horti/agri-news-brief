@@ -768,6 +768,23 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "supply")) for x in deduped]))
 
 
+    def test_supply_event_key_dedupes_same_citrus_org_promo_story(self):
+        citrus1 = self._make_article(
+            "supply",
+            "(사)제주감귤연합회, 한국민속촌서 ‘제주 만감류’ 진수 선보여…수도권 공략",
+            "(사)제주감귤연합회는 제주산 만감류의 대표 제품인 한라봉과 천혜향의 출하 시기를 홍보하며 수도권 소비자 접점을 넓힌다고 밝혔다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500177?wlog_tag3=naver",
+        )
+        citrus2 = self._make_article(
+            "supply",
+            "제주감귤연합회, 한국민속촌서 한라봉·천혜향 제철 홍보…‘기다리던 봄맛’",
+            "제주감귤연합회는 한국민속촌에서 한라봉과 천혜향을 소개하며 제철 홍보에 나섰다고 밝혔다.",
+            "https://www.segye.com/newsView/20260309515742",
+        )
+        deduped = main._dedupe_by_event_key([citrus1, citrus2], "supply")
+        self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "supply")) for x in deduped]))
+
+
     def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
         article = self._make_article(
             "supply",

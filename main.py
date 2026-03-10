@@ -1473,6 +1473,10 @@ _SUPPLY_EVENT_ANCHOR_GROUPS = (
     ("품질", ("품질", "경쟁력", "맛", "당도", "압도", "평가")),
     ("수입산", ("수입산", "수입", "만다린", "국내산")),
 )
+_SUPPLY_ORG_PROMO_RX = re.compile(r"(?:\(?사\)?\s*)?([가-힣]{2,20}(?:연합회|협회|농협|원예농협|조합|공선회))")
+_SUPPLY_ORG_PROMO_TERMS = (
+    "홍보", "제철", "출하 시기", "출하시기", "선보여", "선봬", "소개", "진수", "민속촌",
+)
 
 def _norm_story_text(title: str, desc: str) -> str:
     s = f"{title or ''} {desc or ''}".lower()
@@ -1558,6 +1562,11 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
     quality_labels = sum(1 for label in ("블라인드", "선호", "비교", "품질", "수입산") if label in labels)
     if quality_compare_like and quality_labels >= 2 and (("수입산" in labels) or ("비교" in labels) or ("블라인드" in labels)):
         return f"EV:SUPPLY:{topic_bucket}:QUALITY_COMPARE"
+    org_match = _SUPPLY_ORG_PROMO_RX.search((title or "") + " " + (desc or ""))
+    promo_hits = count_any(text, [w.lower() for w in _SUPPLY_ORG_PROMO_TERMS])
+    if org_match and promo_hits >= 2:
+        org_key = re.sub(r"\s+", "", org_match.group(1).lower())
+        return f"EV:SUPPLY:{topic_bucket}:{org_key}:PROMO_EVENT"
     if len(labels) < 2:
         return None
     return f"EV:SUPPLY:{topic_bucket}:{':'.join(sorted(labels)[:2])}"
