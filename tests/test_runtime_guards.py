@@ -54,5 +54,21 @@ class TestRuntimeGuards(unittest.TestCase):
         self.assertEqual(called.get("path"), "docs/dev/index.html")
 
 
+
+    def test_get_run_site_path_uses_preview_base_path_in_dev_mode(self):
+        old_mode = main.DEV_SINGLE_PAGE_MODE
+        old_pages = main.PAGES_BASE_URL_OVERRIDE
+        old_brief = main.BRIEF_VIEW_URL
+        try:
+            main.DEV_SINGLE_PAGE_MODE = True
+            main.PAGES_BASE_URL_OVERRIDE = "https://nh-horti.github.io/agri-news-brief/dev"
+            main.BRIEF_VIEW_URL = ""
+
+            self.assertEqual(main.get_run_site_path("NH-Horti/agri-news-brief"), "/agri-news-brief/dev/")
+        finally:
+            main.DEV_SINGLE_PAGE_MODE = old_mode
+            main.PAGES_BASE_URL_OVERRIDE = old_pages
+            main.BRIEF_VIEW_URL = old_brief
+
 if __name__ == "__main__":
     unittest.main()

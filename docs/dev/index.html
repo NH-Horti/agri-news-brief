@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="e87cd04" />
-  <title>[2026-03-10 농산물 뉴스 Brief]</title>
+  <title>[2026-03-10 농산물 뉴스 Brief] [DEV]</title>
   <style>
     :root {
       --bg:#ffffff;
@@ -35,6 +35,7 @@
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
     .navRow > *{min-width:0}
     .navBtn{white-space:nowrap}
@@ -137,61 +138,16 @@
   <div class="topbar">
     <div class="topin">
       <div>
-        <h1>[2026-03-10 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-03-09 07:00 ~ 2026-03-10 07:00 · 기사 10건</div>
+        <h1>[2026-03-10 농산물 뉴스 Brief]<span class="envBadge">DEV</span></h1>
+        <div class="sub">기간: 2026-03-09 07:00 ~ 2026-03-10 07:00 · 기사 10건 · 개발 버전 미리보기</div>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-09.html">◀ 이전</a>
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/" title="개발 미리보기 홈">DEV 미리보기</a>
+        <button class="navBtn disabled" data-nav="prev" type="button" data-msg="이전 개발 미리보기는 없습니다.">◀ 이전</button>
         <div class="dateSelWrap">
-          <select id="dateSelect" aria-label="날짜 선택">
-            <option value="/agri-news-brief/archive/2026-03-10.html" selected>26-03-10 (화)</option>
-<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
-<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (금)</option>
-<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (목)</option>
-<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (수)</option>
-<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (월)</option>
-<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-11.html">26-02-11 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (월)</option>
-<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-23.html">26-01-23 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-22.html">26-01-22 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-21.html">26-01-21 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-20.html">26-01-20 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-19.html">26-01-19 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-16.html">26-01-16 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-15.html">26-01-15 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-14.html">26-01-14 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-13.html">26-01-13 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-12.html">26-01-12 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-09.html">26-01-09 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-08.html">26-01-08 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-07.html">26-01-07 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-          </select>
+          <select id="dateSelect" aria-label="개발 미리보기 날짜"><option value="/agri-news-brief/dev/index.html" selected>DEV 단일 미리보기</option></select>
         </div>
-        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
+        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 개발 미리보기는 없습니다.">다음 ▶</button>
       </div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>

@@ -7505,6 +7505,20 @@ def build_site_url(site_path: str, rel: str) -> str:
     return site_path + rel
 
 
+
+def get_run_site_path(repo: str) -> str:
+    site_path = get_site_path(repo)
+    if not DEV_SINGLE_PAGE_MODE:
+        return site_path
+    try:
+        preview_url = get_pages_base_url(repo)
+        preview_path = (urlparse(preview_url).path or "/").rstrip("/")
+        if not preview_path:
+            return "/"
+        return preview_path + "/"
+    except Exception:
+        return site_path
+
 def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False, rel_path: str = "") -> str:
     """Build daily URL; defaults to archive path, or uses rel_path for single-page preview mode."""
     base = str(base_url or "").rstrip("/")
@@ -7838,10 +7852,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         total += n
         chips.append((sec["key"], sec["title"], n, sec["color"]))
 
-    # prev/next: 검증된 날짜 리스트 기준 (없을 때는 '알림 버튼'으로 404 방지)
+    is_dev_preview = DEV_SINGLE_PAGE_MODE
+    preview_href = build_site_url(site_path, DEV_SINGLE_PAGE_URL_PATH or "index.html") if is_dev_preview else site_path
+
+    # prev/next: dev 미리보기는 단일 페이지이므로 운영 아카이브 링크를 만들지 않는다.
     prev_href = None
     next_href = None
-    if report_date in archive_dates_desc:
+    if (not is_dev_preview) and report_date in archive_dates_desc:
         idx = archive_dates_desc.index(report_date)
         # prev(더 과거) = idx+1
         if idx + 1 < len(archive_dates_desc):
@@ -7851,17 +7868,23 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             next_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
 
     # 날짜 select (value도 절대경로)
-    options = []
-    for d in archive_dates_desc[:120]:
-        sel = " selected" if d == report_date else ""
-        options.append(
-            f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
-            f'{esc(short_date_label(d))} ({esc(weekday_label(d))})</option>'
+    if is_dev_preview:
+        options_html = (
+            f'<option value="{esc(preview_href)}" selected>'
+            f'{esc(short_date_label(report_date))} (DEV)</option>'
         )
-    if not options:
-        options_html = f'<option value="{esc(build_site_url(site_path, f"archive/{report_date}.html"))}" selected>{esc(short_date_label(report_date))}</option>'
     else:
-        options_html = "\n".join(options)
+        options = []
+        for d in archive_dates_desc[:120]:
+            sel = " selected" if d == report_date else ""
+            options.append(
+                f'<option value="{esc(build_site_url(site_path, f"archive/{d}.html"))}"{sel}>'
+                f'{esc(short_date_label(d))} ({esc(weekday_label(d))})</option>'
+            )
+        if not options:
+            options_html = f'<option value="{esc(build_site_url(site_path, f"archive/{report_date}.html"))}" selected>{esc(short_date_label(report_date))}</option>'
+        else:
+            options_html = "\n".join(options)
 
     def chip_html(k, title, n, color):
         return (
@@ -7930,7 +7953,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     dev_badge_html = '<span class="envBadge">DEV</span>' if DEV_SINGLE_PAGE_MODE else ""
     page_title = f"[{report_date} 농산물 뉴스 Brief]{dev_badge_text}"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
-    home_href = site_path
+    home_href = preview_href if is_dev_preview else site_path
+    home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
 
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str):
         if href:
@@ -8085,7 +8109,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">아카이브</a>
+        <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">{esc(home_label)}</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.", "prev")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -10159,7 +10183,7 @@ def main():
     if maintenance_task == "ux_patch":
         # 과거 아카이브 UI/UX 패치만 수행하고 종료(브리핑 생성/카톡 발송 없음)
         try:
-            site_path = get_site_path(repo)
+            site_path = get_run_site_path(repo)
         except Exception:
             site_path = "/"
 
@@ -10194,7 +10218,7 @@ def main():
         if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
             raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
         try:
-            site_path = get_site_path(repo)
+            site_path = get_run_site_path(repo)
         except Exception:
             site_path = "/"
 
@@ -10222,7 +10246,7 @@ def main():
         if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
             raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
         try:
-            site_path = get_site_path(repo)
+            site_path = get_run_site_path(repo)
         except Exception:
             site_path = "/"
         d_iso = ""
@@ -10284,7 +10308,7 @@ def main():
     ensure_not_gist(daily_url, "daily_url")
 
     # site path (✅ 4번: 404 방지 링크용)
-    site_path = get_site_path(repo)
+    site_path = get_run_site_path(repo)
 
     # 최근 아카이브 UI/UX 패치 (스와이프/스티키/로딩 배지)
     if UX_PATCH_DAYS and int(UX_PATCH_DAYS) > 0:

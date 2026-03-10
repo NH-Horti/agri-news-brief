@@ -48,8 +48,8 @@ Use two branches:
 
 - `.github/workflows/dev-verify.yml`
 
-This workflow always uses the `dev` branch as the development branch.
-It rebuilds a single preview page and writes it to `docs/dev/index.html` on `main`, so the dev result can be checked without touching production pages.
+This workflow uses the branch where the workflow was dispatched as the source code branch.
+It still rebuilds a single preview page and writes it to `docs/dev/index.html` on `main`, so the dev result can be checked without touching production pages.
 
 Behavior:
 
