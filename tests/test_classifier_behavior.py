@@ -751,6 +751,23 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(picked_urls & {flower1.link, flower2.link}), 1, msg=str([(x.link, x.score, x.topic) for x in picked]))
 
 
+    def test_supply_event_key_dedupes_same_citrus_quality_compare_story(self):
+        citrus1 = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도",
+            "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록하며 제주 감귤의 품질 경쟁력을 입증했다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        citrus2 = self._make_article(
+            "supply",
+            "제주감귤연합회 ""천혜향, 수입 만다린보다 선호도 2배""",
+            "제주감귤연합회는 제주산 천혜향이 수입 만다린과의 블라인드 비교에서 더 높은 선호도와 품질 경쟁력을 보였다고 밝혔다.",
+            "https://www.newsis.com/view/NISX20260309_0003999999",
+        )
+        deduped = main._dedupe_by_event_key([citrus1, citrus2], "supply")
+        self.assertEqual(len(deduped), 1, msg=str([(x.link, x.topic, main._event_key(x, "supply")) for x in deduped]))
+
+
     def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
         article = self._make_article(
             "supply",

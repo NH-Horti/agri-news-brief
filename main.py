@@ -1467,6 +1467,11 @@ _SUPPLY_EVENT_ANCHOR_GROUPS = (
     ("운송", ("운송비", "물류비", "해상운임")),
     ("저온", ("꽃샘추위", "한파", "저온", "냉해", "동해", "서리")),
     ("자재", ("농자재", "자재비", "비료", "포장재")),
+    ("블라인드", ("블라인드", "블라인드 테스트", "테스트", "시식")),
+    ("선호", ("선호도", "선호", "호응")),
+    ("비교", ("비교", "대결", "대조")),
+    ("품질", ("품질", "경쟁력", "맛", "당도", "압도", "평가")),
+    ("수입산", ("수입산", "수입", "만다린", "국내산")),
 )
 
 def _norm_story_text(title: str, desc: str) -> str:
@@ -1549,6 +1554,10 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
         cost_like = sum(1 for label in ("유가", "상토", "난방", "운송", "자재") if label in labels)
         if cost_like >= 2 or (cost_like >= 1 and "저온" in labels):
             return "EV:SUPPLY:화훼:COST_PRESSURE"
+    quality_compare_like = supply_feature_context_kind(title, desc) == "quality"
+    quality_labels = sum(1 for label in ("블라인드", "선호", "비교", "품질", "수입산") if label in labels)
+    if quality_compare_like and quality_labels >= 2 and (("수입산" in labels) or ("비교" in labels) or ("블라인드" in labels)):
+        return f"EV:SUPPLY:{topic_bucket}:QUALITY_COMPARE"
     if len(labels) < 2:
         return None
     return f"EV:SUPPLY:{topic_bucket}:{':'.join(sorted(labels)[:2])}"
