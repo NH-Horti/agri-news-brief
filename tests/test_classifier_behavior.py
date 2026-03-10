@@ -872,6 +872,41 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main._needs_supply_feature_refresh(candidates_sorted, thr, 5))
 
 
+    def test_supply_seed_coverage_requires_meaningful_item_match_not_incidental_mention(self):
+        article = self._make_article(
+            "supply",
+            "저장 배추 물량 감소…시세 상승 기대",
+            "배추 저장 물량이 줄었고 딸기 체험 농가도 봄철 준비에 들어갔다.",
+            "https://example.com/cabbage-with-strawberry-mention",
+        )
+        article.topic = "배추"
+        self.assertFalse(main._article_matches_seed_term(article, "딸기"))
+        self.assertTrue(main._article_matches_seed_term(article, "배추"))
+
+
+    def test_supply_recall_fallback_feature_refresh_frontloads_multiple_queries_for_missing_feature_seed(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["배추 가격", "수박 도매가격", "사과 가격", "포도 가격", "감귤 가격", "딸기 작황", "토마토 작황"],
+            "must_terms": ["배추", "수박", "사과", "포도", "감귤", "딸기", "토마토"],
+        }
+        candidates = [
+            self._make_article("supply", "저장 배추 물량 감소…시세 상승 기대", "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.", "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver"),
+            self._make_article("supply", "수박 출하 본격화에도 도매가격 약보합", "수박 출하 물량이 늘었지만 도매시장 가격은 약보합세를 보였다.", "https://www.yna.co.kr/view/AKR20260309000000001"),
+            self._make_article("supply", "사과 출하 줄며 가격 상승", "사과 출하량 감소로 도매시장 가격이 오름세를 보였다.", "https://www.fnnews.com/news/202603091111111111"),
+            self._make_article("supply", "포도 저장 물량 조정…수급 관리 강화", "포도 저장 물량 조정과 수급 관리가 이뤄지고 있다.", "https://www.nongmin.com/article/20260310500151"),
+            self._make_article("supply", "감귤 출하량 감소에 가격 강세", "감귤 출하량 감소로 가격 강세가 이어지고 있다.", "https://www.segye.com/newsView/20260310500001"),
+        ]
+        candidates[0].score = 25.0
+        candidates[1].score = 24.4
+        candidates[2].score = 23.9
+        candidates[3].score = 23.1
+        candidates[4].score = 22.8
+        queries, meta = main._build_recall_fallback_queries("supply", section_conf, candidates, 20.0)
+        self.assertGreaterEqual(len(queries), 2, msg=str(meta))
+        self.assertEqual(queries[0], "딸기 생육", msg=str(meta))
+        self.assertEqual(queries[1], "딸기 난방", msg=str(meta))
+
     def test_supply_selection_prefers_field_feature_over_generic_tail_item_when_full(self):
         cabbage = self._make_article("supply", "저장 배추 물량 감소…시세 상승 기대", "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.", "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver")
         apple = self._make_article("supply", "사과 출하 줄며 가격 상승", "사과 출하량 감소로 도매시장 가격이 오름세를 보였다.", "https://www.fnnews.com/news/202603091111111111")

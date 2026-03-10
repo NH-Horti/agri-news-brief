@@ -6445,28 +6445,36 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
 
 
-def _needs_supply_feature_refresh(candidates_sorted: list["Article"], thr: float, max_n: int) -> bool:
+def _missing_supply_feature_reps(candidates_sorted: list["Article"], thr: float, max_n: int) -> list[str]:
     if max_n <= 0 or not candidates_sorted:
-        return False
+        return []
     pool = [a for a in candidates_sorted if float(getattr(a, "score", 0.0) or 0.0) >= float(thr or 0.0)]
     if len(pool) < max_n:
-        return False
-    feature_target = min(2, max_n)
-    feature_count = sum(1 for a in pool if is_supply_feature_article(a.title or "", a.description or ""))
-    if feature_count >= feature_target:
-        return False
-    pool_reps = {
+        return []
+    preview = select_top_articles(pool, "supply", max_n)
+    if len(preview) < max_n:
+        return []
+    feature_reps = {
         (TOPIC_REP_BY_NAME_L.get((a.topic or "").strip()) or (a.topic or "").strip()).lower()
-        for a in pool if (a.topic or "").strip()
+        for a in preview
+        if (a.topic or "").strip() and is_supply_feature_article(a.title or "", a.description or "")
     }
-    query_reps = {
+    non_feature_tail = any(
+        (not getattr(a, "is_core", False)) and (not is_supply_feature_article(a.title or "", a.description or ""))
+        for a in preview
+    )
+    if not non_feature_tail:
+        return []
+    query_reps = [
         TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower())
         for seed in _extract_seed_terms_from_queries(SUPPLY_ITEM_QUERIES, limit=max(8, max_n * 3))
         if (seed or "").strip()
-    }
-    missing_reps = {rep for rep in query_reps if rep and rep not in pool_reps}
-    return bool(missing_reps)
+    ]
+    return [rep for rep in query_reps if rep and rep not in feature_reps]
 
+
+def _needs_supply_feature_refresh(candidates_sorted: list["Article"], thr: float, max_n: int) -> bool:
+    return bool(_missing_supply_feature_reps(candidates_sorted, thr, max_n))
 
 # -----------------------------
 # Optional RSS ingestion (공식/신뢰 소스 보강)
@@ -6745,11 +6753,28 @@ def _article_matches_seed_term(article: "Article", seed: str) -> bool:
     if not isinstance(article, Article):
         return False
 
-    txt = f"{getattr(article, 'title', '')} {getattr(article, 'description', '')}".lower()
-    topic_l = (getattr(article, "topic", "") or "").strip().lower()
-    for term in _topic_terms_for_seed(seed):
-        if term and (term in txt or term == topic_l):
-            return True
+    seed_l = (seed or "").strip().lower()
+    if not seed_l:
+        return False
+    rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+    topic_name = (getattr(article, "topic", "") or "").strip()
+    topic_rep = (TOPIC_REP_BY_NAME_L.get(topic_name) or topic_name).strip().lower()
+    title = getattr(article, "title", "") or ""
+    desc = getattr(article, "description", "") or ""
+    title_l = title.lower()
+    text_l = f"{title} {desc}".lower()
+    terms = [term for term in _topic_terms_for_seed(seed) if term]
+    title_hits = sum(1 for term in terms if term in title_l)
+    text_hits = sum(1 for term in terms if term in text_l)
+
+    if topic_rep == rep:
+        return True
+    if title_hits >= 1:
+        return True
+    if text_hits >= 2:
+        return True
+    if text_hits >= 1 and is_supply_feature_article(title, desc):
+        return True
     return False
 
 
@@ -6824,6 +6849,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
     topic_seed_terms: list[str] = []
     query_seed_terms: list[str] = []
     prioritized_seeds: list[str] = []
+    feature_refresh_seeds: list[str] = []
     try:
         topic_seed_terms.extend(_seed_terms_from_topics(candidates_sorted, thr, cap=4))
     except Exception:
@@ -6845,7 +6871,15 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
         if prioritized_seeds:
             seed_source = list(prioritized_seeds)
         meta["pool_seed_hits"] = dict(pool_seed_hits)
-
+        section_max_n = max(1, int(section_conf.get("max_n") or MAX_PER_SECTION or 0))
+        refresh_reps = _missing_supply_feature_reps(candidates_sorted, thr, section_max_n)
+        refresh_rep_set = set(refresh_reps)
+        feature_refresh_seeds = [
+            seed for seed in (prioritized_seeds or query_seed_terms)
+            if TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower()) in refresh_rep_set
+        ]
+        if feature_refresh_seeds:
+            meta["feature_refresh_seeds"] = list(feature_refresh_seeds)
     seed_terms: list[str] = []
     for t in seed_source:
         t = (t or "").strip()
@@ -6904,6 +6938,12 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
         sig_plan: dict[str, list[str]] = {}
         for t in prioritized_seeds:
             sig_plan[t] = list(_supply_signal_priority(t))
+
+        if feature_refresh_seeds:
+            focus_seed_cap = max(1, min(len(feature_refresh_seeds), max(1, RECALL_QUERY_CAP_PER_SECTION // 3)))
+            for t in feature_refresh_seeds[:focus_seed_cap]:
+                for sig in (sig_plan.get(t) or [])[:2]:
+                    _add_query(f"{t} {sig}")
 
         max_rounds = max((len(v) for v in sig_plan.values()), default=0)
         for round_idx in range(max_rounds):
