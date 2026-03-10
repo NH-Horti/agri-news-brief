@@ -688,6 +688,45 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.sedaily.com/article/20016226")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
+    def test_sedaily_strawberry_growth_story_prefers_supply(self):
+        title = "“온종일 불때야 하는데 막막” 초록색 딸기 바라보며 한숨"
+        desc = "딸기 체험 농장을 운영하는 농가가 생육적온을 맞추기 어려워 난방 부담이 커졌고 초록빛 딸기가 그대로 남아 있다고 설명했다."
+        best, scores = self._best_section(title, desc, "https://www.sedaily.com/article/20017059")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_fnnews_citrus_blind_test_story_prefers_supply(self):
+        title = "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도"
+        desc = "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록하며 제주 감귤의 품질 경쟁력을 입증했다."
+        best, scores = self._best_section(title, desc, "https://www.fnnews.com/news/202603091837432209")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_supply_selection_keeps_item_feature_story_without_price_signal(self):
+        article = self._make_article(
+            "supply",
+            "“온종일 불때야 하는데 막막” 초록색 딸기 바라보며 한숨",
+            "딸기 체험 농장을 운영하는 농가가 생육적온을 맞추기 어려워 난방비 부담이 커졌다고 밝혔다.",
+            "https://www.sedaily.com/article/20017059",
+        )
+        picked = main.select_top_articles([article], "supply", 5)
+        self.assertTrue(any(x.link == article.link for x in picked), msg=str([(x.link, x.score) for x in picked]))
+
+    def test_supply_seed_extraction_spreads_across_query_list(self):
+        queries = [
+            "사과 가격",
+            "배 가격",
+            "감귤 가격",
+            "천혜향 출하",
+            "포도 가격",
+            "딸기 작황",
+            "토마토 작황",
+            "화훼 가격",
+        ]
+        seeds = main._extract_seed_terms_from_queries(queries, limit=6)
+        self.assertIn("감귤", seeds)
+        self.assertIn("딸기", seeds)
+        self.assertIn("화훼", seeds)
+        self.assertLessEqual(len(seeds), 6)
+
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(
             "policy",

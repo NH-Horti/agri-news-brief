@@ -1005,6 +1005,12 @@ COMMODITY_TOPICS = [
 
 # Alias for generalized topic signals & fallback query generation
 TOPICS = COMMODITY_TOPICS
+TOPIC_REP_BY_TERM_L = {
+    (term or "").strip().lower(): ((terms[0] if terms else (name.split("/")[0] if name else "")).strip().lower())
+    for name, terms in TOPICS
+    for term in ([name] + list(terms or []))
+    if (term or "").strip()
+}
 # -----------------------------
 # Cross-topic signals (generalized)
 # -----------------------------
@@ -2266,6 +2272,43 @@ def has_direct_supply_chain_signal(text: str) -> bool:
     if count_any(t, [w.lower() for w in market_terms]) >= 1:
         return True
     return count_any(t, [w.lower() for w in _DIRECT_SUPPLY_SIGNAL_TERMS]) >= 2
+
+
+_SUPPLY_FEATURE_FIELD_TERMS = (
+    "생육", "생육적온", "재배", "작황", "농가", "농장", "산지", "생산자", "하우스", "시설",
+    "수확", "착과", "난방", "난방비", "연료비", "유가", "한파", "냉해", "동해", "꽃샘추위",
+)
+_SUPPLY_FEATURE_QUALITY_TERMS = (
+    "품질", "경쟁력", "선호도", "블라인드", "비교", "평가", "맛", "당도", "시식", "압도",
+    "수입산", "수입", "만다린", "국내산",
+)
+
+
+def supply_feature_context_kind(title: str, desc: str) -> str | None:
+    """품목 중심 현장/품질 기사 판정."""
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt or is_fruit_foodservice_event_context(txt):
+        return None
+
+    horti_sc = best_horti_score(ttl, desc or "")
+    horti_title_sc = best_horti_score(ttl, "")
+    item_hits = count_any(txt, ALL_TOPIC_TERMS_L)
+    title_item_hits = count_any(ttl.lower(), ALL_TOPIC_TERMS_L)
+    if item_hits == 0 and horti_sc < 1.8:
+        return None
+
+    field_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_FIELD_TERMS])
+    quality_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_QUALITY_TERMS])
+    compare_hits = count_any(txt, [w.lower() for w in ("수입산", "수입", "만다린", "비교", "블라인드", "경쟁력")])
+    agri_hits = count_any(txt, [w.lower() for w in ("농가", "농장", "생산자", "산지", "재배", "하우스", "시설", "과원")])
+
+    if (title_item_hits >= 1) or (horti_title_sc >= 1.2) or (horti_sc >= 2.0):
+        if field_hits >= 2 and (agri_hits >= 1 or horti_sc >= 2.2):
+            return "field"
+        if quality_hits >= 2 and compare_hits >= 1:
+            return "quality"
+    return None
 
 
 def is_local_agri_infra_designation_context(title: str, desc: str) -> bool:
@@ -4047,6 +4090,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
 
     # (미리) 원예/도매 맥락 점검( must_terms 예외처리에 사용 )
     horti_sc = best_horti_score(ttl, desc)
+    supply_feature_kind = supply_feature_context_kind(ttl, desc)
 
     # ✅ APC는 UPS/전원장비 문맥으로도 자주 등장하므로, '농업/산지유통' 문맥일 때만 인정한다.
     market_ctx_terms = ["가락시장", "도매시장", "공판장", "청과", "경락", "경락가", "반입", "중도매인", "시장도매인", "온라인 도매시장", "산지유통", "산지유통센터"]
@@ -4111,7 +4155,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
     # - 경제/정책 섹션 검색 시 '농협/가격' 등의 단어로 비관련 기사가 섞이는 경우가 있어,
     #   원예/도매/정책 강신호가 없는 경우는 컷한다.
     if normalize_host(dom).endswith("sedaily.com"):
-        if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8 and (not broad_macro_price):
+        if agri_ctx_hits == 0 and market_hits == 0 and horti_sc < 1.8 and (not broad_macro_price) and (supply_feature_kind is None):
             return _reject("sedaily_no_agri_context")
 
     # news1 로컬(/local/) 기사 과다 유입 방지:
@@ -4226,6 +4270,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         else:
             # supply/dist에서 APC/산지유통/화훼 현장성이 강하면 must_terms 미통과라도 살린다
             dist_soft_ok = (market_hits >= 1) or has_apc_agri_context(text) or ("산지유통센터" in text) or ("원예농협" in text) or ("화훼" in text) or ("절화" in text) or ("자조금" in text) or local_org_feature
+            if key == "supply" and supply_feature_kind is not None:
+                dist_soft_ok = True
             if key == "dist":
                 if (("유통" in text) or ("도매" in text) or ("출하" in text) or ("하역" in text) or ("물류" in text)) and (horti_sc >= 1.8 or agri_ctx_hits >= 1):
                     dist_soft_ok = True
@@ -4240,7 +4286,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: dict, p
         # - 품목/원예 점수(horti_sc)가 충분히 강함
         # - 도매/산지유통/시장 맥락(market_hits) 존재
         # - 농업/농산물 맥락(agri_ctx_hits) + 수급 신호(signal_hits) 동시 존재
-        supply_ok = (horti_sc >= 1.3) or (market_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1)
+        supply_ok = (horti_sc >= 1.3) or (market_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1) or (supply_feature_kind is not None)
         if not supply_ok:
             return _reject("supply_context_gate")
 
@@ -4417,6 +4463,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     local_org_feature = is_local_agri_org_feature_context(title, desc)
     infra_designation = is_local_agri_infra_designation_context(title, desc)
     direct_supply_story = has_direct_supply_chain_signal(text)
+    supply_feature_kind = supply_feature_context_kind(title, desc)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -4472,6 +4519,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+        if supply_feature_kind == "field":
+            score += 2.4
+        elif supply_feature_kind == "quality":
+            score += 2.1
         # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
         if is_local_agri_policy_program_context(text):
             score -= 4.0
@@ -5059,6 +5110,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
         signal_terms = ("가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "경매")
+        supply_feature_kind = supply_feature_context_kind(a.title or "", a.description or "")
 
         sig_hits = count_any(text, [t.lower() for t in signal_terms])
 
@@ -5073,7 +5125,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
             return False
 
         # '품목만 언급' 수준(신호 없음)인 기사는 score가 높아도 상단 노출을 막기 위해 컷(단, horti_sc가 매우 강하면 예외)
-        if sig_hits == 0 and market_hits == 0 and horti_sc < 2.4:
+        if sig_hits == 0 and market_hits == 0 and horti_sc < 2.4 and supply_feature_kind is None:
             return False
 
         return True
@@ -5927,15 +5979,15 @@ _RECALL_SIGNALS_BY_SECTION = {
 def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
     """쿼리 리스트에서 '대표 품목/키워드(첫 토큰)'를 추출.
     - 예: '배 과일 수급' -> '배', '샤인머스캣 가격' -> '샤인머스캣'
-    - 개선: 앞쪽 쿼리에 편향되지 않도록 전체 쿼리를 순회하며 고르게 seed를 수집.
-    - 개선: 따옴표/기호가 포함된 쿼리에서도 첫 의미 토큰을 안정적으로 추출.
+    - 개선: 앞쪽 query에 편향되지 않도록 전체 query를 순회하고 고르게 seed를 수집.
+    - 개선: 유사 품목군(감귤/만감류/천혜향 등)은 대표 seed로 묶어 cap을 아낀다.
     """
-    out: list[str] = []
+    raw_terms: list[str] = []
     if not queries:
-        return out
+        return raw_terms
     cap = max(0, int(limit or 0))
     if cap == 0:
-        return out
+        return raw_terms
     skip = {"과일", "채소", "농산물", "농식품", "수급", "가격", "유통", "정책", "검역"}
     for q in queries:
         q = (q or "").strip().lower()
@@ -5950,12 +6002,36 @@ def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list
             break
         if not tok:
             continue
-        if tok not in out:
-            out.append(tok)
-        if len(out) >= cap:
-            break
-    return out
+        tok = TOPIC_REP_BY_TERM_L.get(tok, tok)
+        if tok not in raw_terms:
+            raw_terms.append(tok)
+    if len(raw_terms) <= cap:
+        return raw_terms
 
+    keep_head = min(3, cap)
+    out = list(raw_terms[:keep_head])
+    remain = cap - len(out)
+    tail = raw_terms[keep_head:]
+    if remain <= 0 or not tail:
+        return out[:cap]
+    if remain >= len(tail):
+        out.extend(tail)
+        return out[:cap]
+
+    picked_idx: list[int] = []
+    span = len(tail) - 1
+    for i in range(remain):
+        idx = int(round(i * span / max(1, remain - 1)))
+        while idx in picked_idx and idx + 1 < len(tail):
+            idx += 1
+        if idx in picked_idx:
+            for alt in range(len(tail)):
+                if alt not in picked_idx:
+                    idx = alt
+                    break
+        picked_idx.append(idx)
+        out.append(tail[idx])
+    return out[:cap]
 
 _QUERY_TOKEN_STOPWORDS = {
     "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
