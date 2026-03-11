@@ -6243,10 +6243,30 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         return bool(supply_feature_context_kind(a.title or "", a.description or "") or is_flower_consumer_trend_context(txt_local))
 
+    def _is_supply_low_value_macro_brief(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        if has_direct_supply_chain_signal(txt_local):
+            return False
+        if is_supply_feature_article(a.title or "", a.description or ""):
+            return False
+        if not is_broad_macro_price_context(a.title or "", a.description or ""):
+            return False
+        if is_policy_market_brief_context(txt_local, dom_local, pr_local):
+            return True
+        aggregate_hits = count_any(
+            txt_local,
+            [t.lower() for t in ("농축산물", "농산물", "과일류", "채소류", "과일", "채소", "전주 대비", "전년 대비", "평년 대비", "대체로")],
+        )
+        return press_priority(a.press, a.domain) == 1 and aggregate_hits >= 3
+
     def _is_supply_weak_tail_story(a: Article) -> bool:
         if section_key != "supply":
             return False
-        return is_supply_weak_tail_context(a.title or "", a.description or "")
+        return is_supply_weak_tail_context(a.title or "", a.description or "") or _is_supply_low_value_macro_brief(a)
 
     def _supply_feature_topic_repeat(a: Article, selected: list[Article]) -> bool:
         if not _is_supply_feature_tail_story(a):
@@ -7055,6 +7075,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         return "supply_policy_like"
                     if _is_supply_dist_like_tail_story(a):
                         return "supply_dist_like"
+                    if _is_supply_low_value_macro_brief(a):
+                        return "supply_macro_brief"
                     if _is_supply_weak_tail_story(a):
                         return "weak_tail"
                     if _supply_feature_topic_repeat(a, selected_final):
