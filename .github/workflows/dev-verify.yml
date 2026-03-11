@@ -170,6 +170,9 @@ jobs:
             exit 1
           fi
 
+          final_preview_path="$RUNNER_TEMP/dev-preview-final.html"
+          awk '/<details class="dbgWrap">/{exit} {print}' "$preview_path" > "$final_preview_path"
+
           blocked_urls=(
             'https://www.mt.co.kr/politics/2026/03/10/2026031009405991292'
             'https://news.kbs.co.kr/news/pc/view/view.do?ncd=8504583'
@@ -177,8 +180,8 @@ jobs:
 
           failed=0
           for url in "${blocked_urls[@]}"; do
-            if grep -Fq "$url" "$preview_path"; then
-              echo "Blocked URL still present in preview: $url"
+            if grep -Fq "$url" "$final_preview_path"; then
+              echo "Blocked URL still present in final preview content: $url"
               failed=1
             fi
           done
