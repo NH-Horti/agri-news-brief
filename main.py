@@ -1189,10 +1189,19 @@ MACRO_POLICY_KEEP_TERMS = _ordered_unique_terms(
     + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
 )
 POLICY_MARKET_BRIEF_QUERIES = [
-    "농축수산물 가격 동향", "농산물 가격 동향", "과일 채소 가격 동향", "농산물 수급 동향",
-    "농산물 가격 전반 하락", "과일류 가격 전년 대비", "농산물 수급 영향 제한적",
+    "농축산물 가격 동향",
+    "농산물 가격 동향",
+    "과일 채소 가격 동향",
+    "과일류 가격 동향",
+    "농산물 수급 동향",
+    "농식품부 수급 점검",
+    "농식품부 가격 점검",
+    "농산물 가격 전반 하락",
+    "과일류 가격 전년 대비",
+    "농산물 수급 영향 제한적",
+    "정부 가용물량 과일",
 ]
-POLICY_MARKET_BRIEF_RECALL_SIGNALS = ["가격 동향", "수급 동향", "전년 대비", "영향 제한적"]
+POLICY_MARKET_BRIEF_RECALL_SIGNALS = ["가격 동향", "수급 영향", "전년 대비", "가용물량", "점검 결과", "영향 제한적"]
 
 # -----------------------------
 # Sections
@@ -6749,32 +6758,39 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
 
 def _missing_supply_feature_reps(candidates_sorted: list["Article"], thr: float, max_n: int) -> list[str]:
-    if max_n <= 0 or not candidates_sorted:
+    if max_n <= 0:
         return []
     pool = [a for a in candidates_sorted if float(getattr(a, "score", 0.0) or 0.0) >= float(thr or 0.0)]
-    if len(pool) < max_n:
+    preview = select_top_articles(pool, "supply", max_n) if pool else []
+    query_reps = [
+        TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower())
+        for seed in _extract_seed_terms_from_queries(SUPPLY_ITEM_QUERIES, limit=max(8, max_n * 3))
+        if (seed or "").strip()
+    ]
+    if not query_reps:
         return []
-    preview = select_top_articles(pool, "supply", max_n)
-    if len(preview) < max_n:
-        return []
+
     feature_reps = {
         (TOPIC_REP_BY_NAME_L.get((a.topic or "").strip()) or (a.topic or "").strip()).lower()
         for a in preview
         if (a.topic or "").strip() and is_supply_feature_article(a.title or "", a.description or "")
     }
+    preview_rep_hits: dict[str, int] = {rep: 0 for rep in query_reps}
+    for art in preview:
+        for rep in query_reps:
+            if _article_matches_seed_term(art, rep):
+                preview_rep_hits[rep] = preview_rep_hits.get(rep, 0) + 1
+
+    if len(preview) < max_n:
+        return [rep for rep in query_reps if rep and preview_rep_hits.get(rep, 0) == 0]
+
     non_feature_tail = any(
         (not getattr(a, "is_core", False)) and (not is_supply_feature_article(a.title or "", a.description or ""))
         for a in preview
     )
     if not non_feature_tail:
         return []
-    query_reps = [
-        TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower())
-        for seed in _extract_seed_terms_from_queries(SUPPLY_ITEM_QUERIES, limit=max(8, max_n * 3))
-        if (seed or "").strip()
-    ]
     return [rep for rep in query_reps if rep and rep not in feature_reps]
-
 
 def _needs_supply_feature_refresh(candidates_sorted: list["Article"], thr: float, max_n: int) -> bool:
     return bool(_missing_supply_feature_reps(candidates_sorted, thr, max_n))
@@ -7052,6 +7068,42 @@ def _topic_terms_for_seed(seed: str) -> list[str]:
     return out or [rep]
 
 
+def _supply_feature_profile(seed: str) -> str:
+    seed_l = (seed or "").strip().lower()
+    if not seed_l:
+        return "default"
+    rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+    return COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(seed_l) or COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(rep) or "default"
+
+
+def _diversify_supply_focus_seeds(seeds: list[str], limit: int) -> list[str]:
+    cap = max(0, int(limit or 0))
+    if cap == 0:
+        return []
+
+    out: list[str] = []
+    seen_profiles: set[str] = set()
+    for seed in (seeds or []):
+        seed = (seed or "").strip()
+        if not seed:
+            continue
+        profile = _supply_feature_profile(seed)
+        if profile in seen_profiles:
+            continue
+        out.append(seed)
+        seen_profiles.add(profile)
+        if len(out) >= cap:
+            return out
+
+    for seed in (seeds or []):
+        seed = (seed or "").strip()
+        if not seed or seed in out:
+            continue
+        out.append(seed)
+        if len(out) >= cap:
+            break
+    return out
+
 def _article_matches_seed_term(article: "Article", seed: str) -> bool:
     if not isinstance(article, Article):
         return False
@@ -7074,12 +7126,9 @@ def _article_matches_seed_term(article: "Article", seed: str) -> bool:
         return True
     if title_hits >= 1:
         return True
-    if text_hits >= 2:
-        return True
     if text_hits >= 1 and is_supply_feature_article(title, desc):
         return True
     return False
-
 
 def _prioritize_supply_recall_seeds(
     query_seed_terms: list[str],
@@ -7097,9 +7146,7 @@ def _prioritize_supply_recall_seeds(
     order_index = {seed: idx for idx, seed in enumerate(seed_order)}
 
     def _profile_rank(seed: str) -> tuple[int, int]:
-        seed_l = (seed or "").strip().lower()
-        rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
-        profile = COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(seed_l) or COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(rep) or "default"
+        profile = _supply_feature_profile(seed)
         rank = {
             "greenhouse": 0,
             "citrus": 1,
@@ -7223,11 +7270,9 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
         out.append(q)
 
     def _supply_signal_priority(seed: str) -> list[str]:
-        s = (seed or "").strip().lower()
-        rep = TOPIC_REP_BY_TERM_L.get(s, s)
-        profile = COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(s) or COMMODITY_FEATURE_PROFILE_BY_TERM_L.get(rep) or "default"
+        profile = _supply_feature_profile(seed)
         if profile == "citrus":
-            return ["품질", "수입산 비교", "선호도", "만다린 비교", "작황"]
+            return ["품질", "제철", "수입산 비교", "출하 시기", "선호도", "만다린 비교", "작황"]
         if profile == "greenhouse":
             return ["생육", "난방", "농가", "작황", "품질"]
         if profile == "flower":
@@ -7243,8 +7288,10 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
             sig_plan[t] = list(_supply_signal_priority(t))
 
         if feature_refresh_seeds:
-            focus_seed_cap = max(1, min(len(feature_refresh_seeds), max(1, RECALL_QUERY_CAP_PER_SECTION // 3)))
-            for t in feature_refresh_seeds[:focus_seed_cap]:
+            focus_seed_cap = max(1, min(len(feature_refresh_seeds), max(2, RECALL_QUERY_CAP_PER_SECTION // 3)))
+            focus_seeds = _diversify_supply_focus_seeds(feature_refresh_seeds, focus_seed_cap)
+            meta["feature_focus_seeds"] = list(focus_seeds)
+            for t in focus_seeds:
                 for sig in (sig_plan.get(t) or [])[:2]:
                     _add_query(f"{t} {sig}")
 

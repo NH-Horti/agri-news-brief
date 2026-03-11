@@ -1129,9 +1129,54 @@ class TestClassifierBehavior(unittest.TestCase):
 
         queries, meta = main._build_recall_fallback_queries("supply", section_conf, [covered], 7.0)
         self.assertIn("딸기 생육", queries, msg=str(meta))
-        self.assertIn("감귤 품질", queries, msg=str(meta))
-        self.assertLess(queries.index("딸기 생육"), queries.index("감귤 품질"), msg=str(meta))
+        self.assertNotIn("감귤 품질", queries, msg=str(meta))
 
+    def test_supply_seed_coverage_ignores_body_only_mentions(self):
+        article = self._make_article(
+            "supply",
+            "농식품부 과일 수급 점검 결과",
+            "과일류 가격 흐름을 설명하며 딸기와 감귤 가격도 전년 대비로 언급했다.",
+            "https://example.com/policy-brief-body-only",
+        )
+        article.topic = "정책"
+        self.assertFalse(main._article_matches_seed_term(article, "딸기"))
+        self.assertFalse(main._article_matches_seed_term(article, "감귤"))
+
+    def test_supply_underfilled_refresh_diversifies_focus_profiles(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["감귤 가격", "딸기 작황", "토마토 가격"],
+            "must_terms": ["감귤", "딸기", "토마토"],
+        }
+        cabbage = self._make_article(
+            "supply",
+            "가락시장 배추 반입 늘어 도매가 안정",
+            "배추 반입량과 도매가격 흐름을 전했다.",
+            "https://example.com/cabbage-core",
+        )
+        cabbage.topic = "배추"
+        cabbage.score = 14.0
+        flower = self._make_article(
+            "supply",
+            "화훼 농가 난방비 부담 커져",
+            "절화 농가가 난방비와 유가 부담을 호소했다.",
+            "https://example.com/flower-feature",
+        )
+        flower.topic = "화훼"
+        flower.score = 12.0
+        interview = self._make_article(
+            "supply",
+            "[afl Interview] 안진우 한국 포도 협회 회장",
+            "포도 산업과 자조금 계획을 인터뷰 형식으로 소개했다.",
+            "https://example.com/grape-interview",
+        )
+        interview.topic = "포도"
+        interview.score = 10.2
+
+        queries, meta = main._build_recall_fallback_queries("supply", section_conf, [cabbage, flower, interview], 7.0)
+        self.assertIn("딸기 생육", queries, msg=str(meta))
+        self.assertIn("감귤 품질", queries, msg=str(meta))
+        self.assertIn("감귤 제철", queries, msg=str(meta))
     def test_collect_candidates_uses_supply_feature_recall_query_when_pool_is_thin(self):
         section_conf = {
             "key": "supply",
@@ -1200,6 +1245,36 @@ class TestClassifierBehavior(unittest.TestCase):
 
 
 
+    def test_collect_candidates_can_recall_policy_market_brief_story_via_check_query(self):
+        section_conf = next(sec for sec in main.SECTIONS if sec["key"] == "policy")
+        start_kst = main.dt_kst(main.date(2026, 3, 9), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 3, 10), main.REPORT_HOUR_KST)
+        seen_queries = []
+        old_func = main.naver_news_search_paged
+        try:
+            def _fake_search(q, display=50, pages=1, sort="date"):
+                seen_queries.append(q)
+                if q == "농식품부 수급 점검":
+                    return {
+                        "items": [
+                            {
+                                "title": "농축산물 가격 대체로 하락세지만 과일값은 제한적",
+                                "description": "농식품부가 수급 점검 결과를 설명하며 정부 가용물량과 과일류 가격 흐름을 짚었다.",
+                                "link": "https://www.nocutnews.co.kr/news/6481885",
+                                "originallink": "https://www.nocutnews.co.kr/news/6481885",
+                                "pubDate": "Mon, 09 Mar 2026 09:35:00 +0000",
+                            }
+                        ]
+                    }
+                return {"items": []}
+
+            main.naver_news_search_paged = _fake_search
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+        finally:
+            main.naver_news_search_paged = old_func
+
+        self.assertIn("농식품부 수급 점검", seen_queries, msg=str(seen_queries))
+        self.assertTrue(any("6481885" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
     def test_supply_fallback_recall_runs_even_when_cond_paging_is_disabled(self):
         section_conf = {
             "key": "supply",
