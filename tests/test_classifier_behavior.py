@@ -1153,6 +1153,61 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_links = {x.link for x in picked}
         self.assertIn(citrus.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_supply_underfill_prefers_field_story_over_macro_brief(self):
+        apple = self._make_article(
+            "supply",
+            "사과 출하 줄며 가격 강세",
+            "사과 출하량 감소로 도매시장 가격이 오름세를 보이고 있다.",
+            "https://www.fnnews.com/news/202603091111111111",
+        )
+        field = self._make_article(
+            "supply",
+            "참외 작황·생육 회복 늦어 산지 출하 조절 비상",
+            "참외 산지 농가에서 작황 회복이 늦어지고 생육 불균형이 커지면서 출하 조절이 이어지고 있다.",
+            "https://www.nongmin.com/article/20260311010101",
+        )
+        macro = self._make_article(
+            "supply",
+            "농축산물 가격 전주 대비 하락",
+            "농식품부는 사과·배·딸기 등 농축산물 가격이 대체로 전주 대비 하락했다고 밝혔다.",
+            "https://www.bokuennews.com/news/article.html?no=260000",
+        )
+        apple.score = 30.6
+        field.score = 28.5
+        macro.score = 28.4
+
+        picked = main.select_top_articles([apple, field, macro], "supply", 2)
+        picked_links = {x.link for x in picked}
+        self.assertIn(field.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertNotIn(macro.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_underfill_backfill_keeps_strong_official_story_just_below_threshold(self):
+        major1 = self._make_article(
+            "policy",
+            "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 '뚝'",
+            "도매시장 휴업과 산지 출하 조정으로 딸기 가격이 흔들리자 대응 필요성이 커지고 있다.",
+            "https://www.nongmin.com/article/20260310555555",
+        )
+        major2 = self._make_article(
+            "policy",
+            "수출·물가 등 경제 '빨간불'…부·울·경 긴급 대응",
+            "중동 변수와 유가 상승에 대응해 물가와 수출 상황을 점검하고 민생안정 대책을 추진한다.",
+            "https://biz.heraldcorp.com/article/10683302",
+        )
+        official = self._make_article(
+            "policy",
+            "농식품부, 과일·채소 수급 점검…가격 안정대책 추진 상황 브리핑",
+            "농식품부는 사과·배·딸기 등 과일과 채소 가격 동향을 점검하고 할인지원과 가용물량 투입 계획을 밝혔다.",
+            "https://www.korea.kr/news/policyNewsView.do?newsId=148000000",
+        )
+        major1.score = 31.8
+        major2.score = 27.9
+        official.score = 22.8
+
+        picked = main.select_top_articles([major1, major2, official], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(official.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_supply_seed_extraction_spreads_across_query_list(self):
         queries = [
             "사과 가격",
