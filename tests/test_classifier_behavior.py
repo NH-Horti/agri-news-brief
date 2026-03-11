@@ -261,6 +261,33 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(u2, picked_links, msg=str([(x.link, x.score) for x in picked]))
         self.assertIn(u3, picked_links, msg=str([(x.link, x.score) for x in picked]))
 
+    def test_pest_underfill_backfill_keeps_strong_focus_story_just_below_threshold(self):
+        major1 = self._make_article(
+            "pest",
+            "경북, 사과 과수화상병 예찰 강화…농가 약제 살포 당부",
+            "사과 과원 정밀예찰과 약제 살포를 통해 과수화상병 확산 차단에 나선다.",
+            "https://www.yna.co.kr/view/AKR20260311000000061",
+        )
+        major2 = self._make_article(
+            "pest",
+            "전남도, 토마토뿔나방 방제 총력…재배농가 전수조사",
+            "토마토뿔나방 확산 대응을 위해 전수조사와 정밀예찰을 실시한다.",
+            "https://www.newsis.com/view/NISX20260311_0000000001",
+        )
+        backfill = self._make_article(
+            "pest",
+            "영월군, 과수화상병 예찰·약제 방제 총력",
+            "과원 정밀예찰과 약제 방제를 동시에 진행해 확산 차단에 나선다.",
+            "http://www.youngnong.co.kr/news/articleView.html?idxno=57763",
+        )
+        major1.score = 31.4
+        major2.score = 29.8
+        backfill.score = 22.5
+
+        picked = main.select_top_articles([major1, major2, backfill], "pest", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(backfill.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_fishery_origin_label_story_is_filtered(self):
         title = "비싼 옥돔 사먹었는데 옥두어였다… 원산지 속인 제주업체 15곳 적발"
         desc = "외국산 수산물을 국내산으로 속여 판매한 사례가 확인됐다."
@@ -1098,6 +1125,33 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         picked = main.select_top_articles([article], "supply", 5)
         self.assertTrue(any(x.link == article.link for x in picked), msg=str([(x.link, x.score) for x in picked]))
+
+    def test_supply_underfill_backfill_keeps_strong_field_story_just_below_threshold(self):
+        apple = self._make_article(
+            "supply",
+            "사과 출하 줄며 가격 상승",
+            "사과 출하량 감소로 도매시장 가격이 오름세를 보였다.",
+            "https://www.fnnews.com/news/202603091111111111",
+        )
+        cabbage = self._make_article(
+            "supply",
+            "저장 배추 물량 감소…시세 상승 기대",
+            "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        citrus = self._make_article(
+            "supply",
+            "기름값 지금처럼 오르면 하우스 감귤 못합니다",
+            "하우스 감귤 농가가 난방비와 유가 상승으로 생산비 부담이 커졌다고 호소했다.",
+            "https://www.sedaily.com/NewsView/2GQ9EXAMPLE",
+        )
+        apple.score = 30.6
+        cabbage.score = 28.9
+        citrus.score = 21.4
+
+        picked = main.select_top_articles([apple, cabbage, citrus], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(citrus.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_supply_seed_extraction_spreads_across_query_list(self):
         queries = [
