@@ -715,6 +715,18 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.mt.co.kr/economy/2026/03/09/2026030917232924524")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
+    def test_mt_apology_sagwa_politics_story_is_excluded(self):
+        title = "한병도 \"尹 반대 결의문, 반쪽짜리 사과 …장동혁 입장 밝혀라\""
+        desc = "더불어민주당 원내대표 한병도는 정치 복귀에 반대하며 장동혁의 입장을 요구했다. 그는 중동사태에 대한 경제대응 TF를 출범했다고 발표했다."
+        best, scores = self._best_section(title, desc, "https://www.mt.co.kr/politics/2026/03/10/2026031009405991292")
+        self.assertIsNone(best, msg=f"scores={scores}")
+
+    def test_nongmin_strawberry_export_shipping_story_prefers_dist(self):
+        title = "‘굿뜨래 싱싱 딸기 ’ 몽골행…1t 선적"
+        desc = "부여 서부여농협은 국내 딸기 가격 변동에 대응하기 위해 1t의 ‘굿뜨래 싱싱 딸기’를 몽골로 수출했다. 이는 농가 소득 증대에 도움을 주려는 노력의 일환이다."
+        best, scores = self._best_section(title, desc, "https://www.nongmin.com/article/20260309500740")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
     def test_nocut_policy_market_brief_prefers_policy(self):
         title = "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제한적'"
         desc = "최근 중동 전쟁으로 인해 기름값이 상승하고 있는 가운데 단기적인 농산물 수급 영향은 제한적일 것으로 분석됐다. 과일류도 대체로 전년 대비 낮은 수준이지만 사과는 2025년산 생산량 감소로 가격이 다소 높은 수준이며 3월 정부 가용물량을 도매시장에 분산 출하할 계획이다."
@@ -753,6 +765,40 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([cabbage, strawberry, citrus, policy_brief], "supply", 5)
         picked_urls = {a.link for a in picked}
         self.assertNotIn(policy_brief.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
+    def test_supply_selection_excludes_dist_export_shipping_story(self):
+        cabbage = self._make_article(
+            "supply",
+            "저장 배추 물량 감소…시세 상승 기대",
+            "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        strawberry = self._make_article(
+            "supply",
+            "온종일 불때야 하는데 막막 초록색 딸기 바라보며 한숨",
+            "딸기 체험 농장을 운영하는 농가가 생육적온과 난방비 부담을 호소했다.",
+            "https://www.sedaily.com/article/20017059",
+        )
+        citrus = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도",
+            "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록했다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        export_story = self._make_article(
+            "supply",
+            "‘굿뜨래 싱싱 딸기 ’ 몽골행…1t 선적",
+            "부여 서부여농협은 국내 딸기 가격 변동에 대응하기 위해 1t의 ‘굿뜨래 싱싱 딸기’를 몽골로 수출했다. 이는 농가 소득 증대에 도움을 주려는 노력의 일환이다.",
+            "https://www.nongmin.com/article/20260309500740",
+        )
+        cabbage.score = 29.4
+        strawberry.score = 28.7
+        citrus.score = 27.9
+        export_story.score = 30.5
+        picked = main.select_top_articles([cabbage, strawberry, citrus, export_story], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertNotIn(export_story.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+        self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
 
     def test_supply_selection_prefers_distinct_feature_topics_over_policy_stabilization_or_repeat_feature(self):
         cabbage = self._make_article(
@@ -1474,6 +1520,33 @@ class TestClassifierBehavior(unittest.TestCase):
         local_picked = next((x for x in picked if x.link == local.link), None)
         self.assertIsNotNone(local_picked, msg=str([(x.link, x.score, x.is_core) for x in picked]))
         self.assertFalse(getattr(local_picked, "is_core", False), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_global_reassign_moves_export_shipping_story_from_supply_to_dist(self):
+        title = "‘굿뜨래 싱싱 딸기 ’ 몽골행…1t 선적"
+        desc = "부여 서부여농협은 국내 딸기 가격 변동에 대응하기 위해 1t의 ‘굿뜨래 싱싱 딸기’를 몽골로 수출했다. 이는 농가 소득 증대에 도움을 주려는 노력의 일환이다."
+        url = "https://www.nongmin.com/article/20260309500740"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="supply",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            canon_url=main.canonicalize_url(url),
+            title_key=main.norm_title_key(title),
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf["supply"], press),
+        )
+        by = {"policy": [], "supply": [a], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["dist"]), 1)
+        self.assertEqual(by["dist"][0].section, "dist")
 
     def test_dev_render_and_kakao_message_are_labeled(self):
         orig = main.DEV_SINGLE_PAGE_MODE

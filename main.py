@@ -1255,6 +1255,8 @@ SECTIONS: list[SectionConfig] = [
             "농산물 수출 검역",
             "과일 수출 검역",
             "통관 과일 검역",
+            "농산물 수출 선적",
+            "과일 수출 선적",
             "화훼공판장 경매",
             "절화 경매",
             "화훼자조금",
@@ -1280,6 +1282,8 @@ SECTIONS: list[SectionConfig] = [
             "ca저장",
             "저장고",
             "수출",
+            "선적",
+            "수출길",
             "검역",
             "통관",
             "원산지",
@@ -2243,6 +2247,36 @@ def is_edible_pimang_context(text: str) -> bool:
 
 
 
+_APPLE_APOLOGY_MARKERS = (
+    "사과문", "사과했다", "사과합니다", "사과드립니다", "공식 사과", "대국민 사과", "유감",
+    "사과 요구", "사과를 요구", "사과 촉구", "사과하라", "사과해야", "사과하고", "사과할",
+    "반쪽짜리 사과", "진정성 없는 사과", "늦은 사과",
+)
+_APPLE_APOLOGY_RX = re.compile(
+    r"(반쪽짜리|대국민|공식|진정성 없는|늦은|거듭|재차)\s*사과|"
+    r"사과\s*(요구|촉구|하라|해야|입장|거부|논란)"
+)
+_APPLE_FRUIT_MARKERS = (
+    "과일", "과수", "과원", "사과나무", "부사", "후지", "홍로", "감홍", "아오리", "시나노",
+    "가락시장", "도매시장", "공판장", "청과", "경락", "경매", "산지", "농가", "재배", "수확",
+    "출하", "작황", "수급", "시세", "가격", "저장", "재고", "선별", "apc", "산지유통",
+)
+
+
+def is_apple_apology_context(text: str) -> bool:
+    """Return True when '사과' is clearly an apology, not the fruit."""
+    t = (text or "").lower()
+    if "사과" not in t:
+        return False
+    if any(m in t for m in _APPLE_FRUIT_MARKERS):
+        return False
+    if re.search(r"사과\s*(값|가격|시세|수급|출하|작황)", t):
+        return False
+    if any(m in t for m in _APPLE_APOLOGY_MARKERS):
+        return True
+    return _APPLE_APOLOGY_RX.search(t) is not None
+
+
 def is_edible_apple_context(text: str) -> bool:
     """Return True only when '사과' clearly refers to the fruit (apple).
 
@@ -2274,21 +2308,11 @@ def is_edible_apple_context(text: str) -> bool:
         return False
 
     # 3) '사과(謝過)' 오탐: 사과문/사과하다/공식 사과 등
-    apology_markers = (
-        "사과문", "사과했다", "사과합니다", "사과드립니다", "공식 사과", "유감", "사과 요구", "사과를 요구",
-        "사과하", "사과하고", "사과할"
-    )
-    # 과일 맥락 마커
-    fruit_markers = (
-        "과일", "과수", "과원", "사과나무", "부사", "후지", "홍로", "감홍", "아오리", "시나노",
-        "가락시장", "도매시장", "공판장", "청과", "경락", "경매", "산지", "농가", "재배", "수확",
-        "출하", "작황", "수급", "시세", "가격", "저장", "재고", "선별", "apc", "산지유통"
-    )
-    if any(m in t for m in apology_markers) and not any(m in t for m in fruit_markers):
+    if is_apple_apology_context(t):
         return False
 
     # 4) 긍정 판단: 실무 마커가 1개 이상이면 True
-    if any(m in t for m in fruit_markers):
+    if any(m in t for m in _APPLE_FRUIT_MARKERS):
         return True
 
     # 5) 보강 패턴: '사과값/사과 가격/사과 시세' 같은 표현
@@ -2755,7 +2779,7 @@ _LOCAL_AGRI_ORG_PROMO_TERMS = (
     "우수", "참여", "인증", "전략품목", "매출", "실적",
 )
 _LOCAL_AGRI_ORG_FIELD_TERMS = (
-    "수출", "검역", "통관", "공동선별", "공선출하", "판로", "판매", "유통",
+    "수출", "선적", "선적식", "검역", "통관", "공동선별", "공선출하", "판로", "판매", "유통",
     "산지유통", "산지유통센터", "apc", "선별", "브랜드",
 )
 _DIRECT_SUPPLY_SIGNAL_TERMS = (
@@ -2884,6 +2908,47 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
         return False
 
     return False
+
+_DIST_EXPORT_SHIPPING_TERMS = (
+    "수출", "선적", "선적식", "수출길", "수출 확대", "해외 수출", "판로",
+)
+_DIST_EXPORT_CHAIN_TERMS = (
+    "검역", "통관", "공동선별", "공선출하", "산지유통", "산지유통센터", "apc", "물류", "브랜드", "농협", "조합",
+)
+_DIST_EXPORT_DESTINATION_RX = re.compile(r"[가-힣A-Za-z]{2,12}행")
+
+
+def is_dist_export_shipping_context(title: str, desc: str) -> bool:
+    """Return True for hortic export/shipping stories that fit dist better than supply."""
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if is_policy_market_brief_context(txt) or is_supply_stabilization_policy_context(txt):
+        return False
+
+    title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    horti_sc = best_horti_score(ttl, desc or "")
+    horti_title_sc = best_horti_score(ttl, "")
+    horti_hit = (
+        title_item_hits >= 1
+        or horti_title_sc >= 1.2
+        or horti_sc >= 1.8
+        or (topic in _HORTI_TOPICS_SET and topic_sc >= 1.1)
+    )
+    if not horti_hit:
+        return False
+
+    export_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_SHIPPING_TERMS])
+    chain_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_CHAIN_TERMS])
+    shipping_hits = count_any(txt, [w.lower() for w in ("선적", "선적식", "수출길", "해외 수출")])
+    destination_hit = _DIST_EXPORT_DESTINATION_RX.search(ttl) is not None
+    return export_hits >= 1 and (shipping_hits >= 1 or destination_hit or chain_hits >= 2)
+
 
 def has_direct_supply_chain_signal(text: str) -> bool:
     t = (text or "").lower()
@@ -3086,8 +3151,11 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.85
         if policy_market_brief:
             base += 0.95
-    elif key == "dist" and is_local_agri_org_feature_context(title, desc):
-        base += 1.0
+    elif key == "dist":
+        if is_local_agri_org_feature_context(title, desc):
+            base += 1.0
+        if is_dist_export_shipping_context(title, desc):
+            base += 1.15
     elif key == "supply":
         feature_kind = supply_feature_context_kind(title, desc)
         if feature_kind == "field":
@@ -3098,6 +3166,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.38
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
+        if is_dist_export_shipping_context(title, desc):
+            base -= 1.45
         if is_supply_weak_tail_context(title, desc):
             base -= 1.1
         if policy_stabilization:
@@ -3165,7 +3235,7 @@ DIST_WEIGHT_MAP = {
     '가락시장': 3.5, '도매시장': 3.0, '공판장': 2.8, '경락': 2.8, '경매': 2.5, '청과': 1.5,
     '반입': 2.2, '중도매인': 2.0, '시장도매인': 2.0, '물류': 2.0, '유통센터': 1.5,
     'apc': 2.0, '선별': 1.8, '저온': 1.2, '저장': 1.2, '원산지': 2.0, '부정유통': 2.0,
-    '수출': 2.1, '검역': 1.8, '통관': 1.6, '판로': 1.2, '공동선별': 1.4, '공선출하': 1.4,
+    '수출': 2.1, '선적': 2.3, '선적식': 1.6, '수출길': 1.9, '검역': 1.8, '통관': 1.6, '판로': 1.2, '공동선별': 1.4, '공선출하': 1.4,
 
     '산지유통센터': 2.4,
     '산지유통': 2.0,
@@ -3300,7 +3370,7 @@ def eventy_penalty(text: str, title: str, section_key: str) -> float:
     return 2.8 + 0.6 * max(0, hits - 1) + 0.4 * tech
 
 SUPPLY_TITLE_CORE_TERMS = ('수급','가격','시세','경락가','작황','출하','재고','저장','물량')
-DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지','산지유통','산지유통센터','수출','검역','통관')
+DIST_TITLE_CORE_TERMS = ('가락시장','도매시장','공판장','경락','경매','반입','중도매인','시장도매인','apc','원산지','산지유통','산지유통센터','수출','선적','수출길','검역','통관')
 POLICY_TITLE_CORE_TERMS = ('대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료','물가','가격','성수품','차례상','소비자물가','물가지수','통계','kosis')
 PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
 _SECTION_TITLE_CORE_TERMS_MAP = {
@@ -4723,6 +4793,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # - 채소/농업 맥락일 때만 통과
     if "피망" in text and not is_edible_pimang_context(text):
         return _reject("pimang_non_edible_context")
+    if is_apple_apology_context(text):
+        return _reject("apple_apology_context")
     # ✅ '사과' 동음이의어(사과대/사과문 등) 오탐 차단: 과일/시장 맥락일 때만 통과
     if "사과" in text and not is_edible_apple_context(text) and (not policy_macro_keep):
         return _reject("apple_non_edible_context")
@@ -4974,6 +5046,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         if policy_market_brief:
             return _reject("supply_policy_market_brief")
 
+        title_supply_core_hits = count_any(ttl.lower(), [t.lower() for t in SUPPLY_TITLE_CORE_TERMS])
+        if is_dist_export_shipping_context(ttl, desc) and (not has_direct_supply_chain_signal(text)) and market_hits == 0 and title_supply_core_hits == 0:
+            return _reject("supply_dist_export_shipping")
+
         if broad_macro_price and (not has_direct_supply_chain_signal(text)):
             title_focus_hits = count_any(ttl.lower(), SUPPLY_TITLE_FOCUS_TERMS_L)
             if title_focus_hits < 2 and best_horti_score(ttl, "") < 2.0:
@@ -4986,6 +5062,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
     # 정책(policy): 공식 도메인/정책브리핑이 아닌 경우 '농식품/농산물 맥락' 필수 + 경제/금융 정책 오탐 차단
     if key == "policy":
+        # 수출/선적형 품목 유통 기사는 policy보다 dist가 자연스럽다.
+        if is_dist_export_shipping_context(ttl, desc):
+            return _reject("policy_dist_export_shipping")
         # 병해충 실행형 기사는 수집 단계에서 누락시키지 않고 후단 재분류/정리에서 pest로 보낸다.
         if is_pest_control_policy_context(text):
             return True
@@ -5056,11 +5135,16 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         # APC는 농업 문맥일 때만 soft 신호로 카운트
         apc_ctx = has_apc_agri_context(text)
+        dist_export_shipping = is_dist_export_shipping_context(ttl, desc)
         if apc_ctx:
             soft_hits += 1
         if local_org_feature:
             soft_hits += 2
             hard_hits = max(hard_hits, 1)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
+        if dist_export_shipping:
+            soft_hits = max(soft_hits, 1)
+            hard_hits = max(hard_hits, 2)
             agri_anchor_hits = max(agri_anchor_hits, 1)
 
         # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
@@ -5230,6 +5314,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 6.2
         if local_org_feature:
             score -= 4.8
+        if is_dist_export_shipping_context(title, desc):
+            score -= 5.0
         if is_supply_weak_tail_context(title, desc):
             score -= 5.6
         if broad_macro_price and ((not direct_supply_story) or policy_market_brief):
@@ -5254,6 +5340,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 3.5
         if local_org_feature:
             score += 3.2
+        if is_dist_export_shipping_context(title, desc):
+            score += 4.4
         if infra_designation:
             score -= 3.0
 
@@ -5727,7 +5815,7 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         dist_terms = ["가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경락가", "경매", "반입",
                       "중도매인", "시장도매인", "온라인 도매시장",
                       "선별", "저온", "저온저장", "저장고", "ca저장", "물류",
-                      "수출", "검역", "통관", "원산지", "부정유통", "단속", "산지유통", "산지유통센터"]
+                      "수출", "선적", "선적식", "수출길", "검역", "통관", "원산지", "부정유통", "단속", "산지유통", "산지유통센터"]
         dist_hits = count_any(text, [t.lower() for t in dist_terms])
         apc_ctx = has_apc_agri_context(text)
         if apc_ctx:
@@ -5755,6 +5843,8 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # dist_hits(도매/유통 강신호)가 부족하면 기본적으로 코어 불가
         # 단, APC 인프라 기사나 농업 전문/현장 매체의 '시장 현장/대목장' 리포트는 예외 허용
         if dist_hits < 2:
+            if is_dist_export_shipping_context(a.title or "", a.description or ""):
+                return True
             if apc_ctx and any(w in text for w in ("준공", "완공", "개장", "개소", "가동", "선별", "선과", "저온", "저장고", "ca저장")):
                 return True
             if ((a.press in AGRI_TRADE_PRESS or normalize_host(a.domain or "") in AGRI_TRADE_HOSTS)
@@ -6123,6 +6213,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return True
         return (a.topic or "").strip() == "정책"
 
+    def _is_supply_dist_like_tail_story(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        if has_direct_supply_chain_signal(txt_local):
+            return False
+        return is_dist_export_shipping_context(a.title or "", a.description or "")
+
     # 1) 엄격 코어 2개
     for a in pool:
         if len(core) >= 2:
@@ -6163,6 +6261,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and ((not has_direct_supply_chain_signal(mix)) or is_policy_market_brief_context(mix, dom, pr)):
                 continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
+                continue
+            if _is_supply_dist_like_tail_story(a):
                 continue
             if _is_supply_weak_tail_story(a):
                 continue
@@ -6228,6 +6328,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if is_policy_market_brief_context(text, dom, pr):
                     continue
                 if is_local_agri_org_feature_context(a.title or "", a.description or ""):
+                    continue
+                if _is_supply_dist_like_tail_story(a):
                     continue
                 if _is_supply_weak_tail_story(a):
                     continue
@@ -6374,6 +6476,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_supply_policy_like_tail_story(a):
                 continue
+            if _is_supply_dist_like_tail_story(a):
+                continue
             if _is_supply_weak_tail_story(a):
                 continue
             eligible.append(a)
@@ -6395,6 +6499,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if _supply_feature_topic_repeat(a, final):
                     continue
                 if _is_supply_policy_like_tail_story(a):
+                    continue
+                if _is_supply_dist_like_tail_story(a):
                     continue
                 if _is_supply_weak_tail_story(a):
                     continue
@@ -6448,6 +6554,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _supply_feature_topic_repeat(a, final):
                 continue
             if _is_supply_policy_like_tail_story(a):
+                continue
+            if _is_supply_dist_like_tail_story(a):
                 continue
             if _is_supply_weak_tail_story(a):
                 continue
@@ -6565,6 +6673,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if _is_supply_policy_like_tail_story(a):
                     continue
+                if _is_supply_dist_like_tail_story(a):
+                    continue
                 if _is_supply_weak_tail_story(a):
                     continue
                 if not _source_ok_local(a):
@@ -6610,6 +6720,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     if _is_supply_policy_like_tail_story(a):
                         continue
+                    if _is_supply_dist_like_tail_story(a):
+                        continue
                     if _is_supply_weak_tail_story(a):
                         continue
                     victim_idxs = [
@@ -6618,7 +6730,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     ]
                     if not victim_idxs:
                         continue
-                    weak_victim_idxs = [i for i in victim_idxs if _is_supply_weak_tail_story(final[i])]
+                    weak_victim_idxs = [i for i in victim_idxs if _is_supply_weak_tail_story(final[i]) or _is_supply_dist_like_tail_story(final[i])]
                     ranked_victim_idxs = weak_victim_idxs if weak_victim_idxs else victim_idxs
                     repl_idx = min(
                         ranked_victim_idxs,
@@ -6629,7 +6741,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         ),
                     )
                     victim = final[repl_idx]
-                    required_margin = 0.2 if _is_supply_weak_tail_story(victim) else 1.2
+                    required_margin = 0.2 if (_is_supply_weak_tail_story(victim) or _is_supply_dist_like_tail_story(victim)) else 1.2
                     if float(getattr(a, "score", 0.0) or 0.0) + required_margin < float(getattr(victim, "score", 0.0) or 0.0):
                         continue
                     final[repl_idx] = a
@@ -6900,7 +7012,7 @@ def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end
 _RECALL_SIGNALS_BY_SECTION = {
     "supply": ["무관세", "수입", "관세", "FTA", "할당관세"],
     "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["대책", "지원", "할당관세", "검역", "관세", "무관세", "수입"],
-    "dist": ["도매시장", "원산지", "단속", "검역", "통관", "수출", "물류"],
+    "dist": ["도매시장", "원산지", "단속", "검역", "통관", "수출", "선적", "판로", "물류"],
     "pest": ["병해충", "방제", "예찰", "검역"],
 }
 
@@ -7352,7 +7464,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
             if section_key == "policy":
                 common = list(POLICY_MARKET_BRIEF_QUERIES) + ["할당관세 과일", "수입 농산물 관세"]
             elif section_key == "dist":
-                common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물"]
+                common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물", "농산물 수출 선적"]
             elif section_key == "pest":
                 common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
 
@@ -8002,8 +8114,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
 
             # quick prefilter (reduce false moves)
             if k == "dist":
-                dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","유통","도매")])
-                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not local_org_feature):
+                dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","선적","수출길","유통","도매")])
+                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not local_org_feature) and (not is_dist_export_shipping_context(a.title, a.description)):
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
@@ -8326,8 +8438,10 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                     "가락시장","도매시장","공판장","공영도매시장","경락","경매","반입",
                     "산지유통","산지유통센터","apc","도매법인","중도매","시장도매인",
                     "하역","하역비","하역대란","물류","물류센터","출하","집하",
-                    "원산지","부정유통","단속","검역","통관","수출","유통","도매"
+                    "원산지","부정유통","단속","검역","통관","수출","선적","수출길","유통","도매"
                 )])
+                if is_dist_export_shipping_context(a.title, a.description):
+                    dist_like_hits = max(dist_like_hits, 3)
                 agri_media_bonus = 1 if d in {"agrinet.co.kr","nongmin.com","aflnews.co.kr","farminsight.net"} else 0
                 dist_min_hits = 2 if agri_media_bonus else 3
                 # 농업전문매체 기사라도 유통/도매/APC/출하/물류 신호가 최소 2개는 있어야 dist로 이동
@@ -8483,8 +8597,10 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 p = (a.press or "").strip()
                 dist_signals = count_any(txt, [t.lower() for t in (
                     "도매시장","공판장","가락시장","apc","산지유통","도매법인","중도매","시장도매인",
-                    "하역","물류","출하","집하","수출","통관","검역","유통","도매"
+                    "하역","물류","출하","집하","수출","선적","수출길","통관","검역","유통","도매"
                 )])
+                if is_dist_export_shipping_context(a.title, a.description):
+                    dist_signals = max(dist_signals, 3)
                 horti_signals = count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")])
                 agri_media = d in {"agrinet.co.kr","nongmin.com","aflnews.co.kr","farminsight.net"}
                 if moved_one is None and dist_conf and dist_signals >= (2 if agri_media else 3) and horti_signals >= 1:
