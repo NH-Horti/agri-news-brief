@@ -1687,6 +1687,81 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("개발 테스트 버전(운영 아님)", msg)
 
 
+    def test_dist_market_disruption_story_prefers_dist_over_supply(self):
+        title = "수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'"
+        desc = "수도권 도매시장 동시 휴업으로 출하가 몰리며 과채류 가격이 흔들리고 산지 출하 농민 불안이 커졌다는 현장 기사다."
+        best, scores = self._best_section(title, desc, "https://www.agrinet.co.kr/news/articleView.html?idxno=402440")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_supply_issue_bucket_detects_export_recovery_story(self):
+        title = "[신선농산물 수출확대 극복 과제] 샤인머스캣 수출 급증했지만, 떨어진 가격 회복 시급"
+        desc = "샤인머스캣 수출은 늘었지만 산지 가격 회복과 판로 정상화 대책이 시급하다는 분석이다."
+        bucket = main.supply_issue_context_bucket(title, desc)
+        best, scores = self._best_section(title, desc, "https://www.agrinet.co.kr/news/articleView.html?idxno=402455")
+        self.assertEqual(bucket, "export_recovery")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_supply_issue_articles_with_different_buckets_can_coexist(self):
+        export_story = self._make_article(
+            "supply",
+            "[신선농산물 수출확대 극복 과제] 샤인머스캣 수출 급증했지만, 떨어진 가격 회복 시급",
+            "샤인머스캣 수출은 늘었지만 산지 가격 회복과 판로 정상화 대책이 시급하다는 분석이다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402455",
+        )
+        farm_story = self._make_article(
+            "supply",
+            "[취재수첩] 샤인머스캣 실질적인 대책 서둘러라",
+            "샤인머스캣 산지 농가 피해가 커지고 가격 정체와 소비자 외면이 이어져 실질적인 대책 마련이 시급하다는 취재수첩이다.",
+            "https://www.nongmin.com/article/20260309500634",
+        )
+        export_story.score = 24.8
+        farm_story.score = 23.7
+
+        picked = main.select_top_articles([export_story, farm_story], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(export_story.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(farm_story.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_pest_distinct_regional_execution_stories_can_coexist_when_strong(self):
+        generic = self._make_article(
+            "pest",
+            "과수화상병 확산 막는다…전국 예찰 강화",
+            "과수화상병 확산 차단을 위해 전국 예찰과 방제 체계를 강화한다.",
+            "https://www.newsis.com/view/NISX20260311_0001111111",
+        )
+        region1 = self._make_article(
+            "pest",
+            "영월군, 과수화상병 예방 방제 약제 공급",
+            "영월군이 과수화상병 예방을 위해 약제를 공급하고 과원 예찰을 강화한다.",
+            "http://www.youngnong.co.kr/news/articleView.html?idxno=57999",
+        )
+        region2 = self._make_article(
+            "pest",
+            "충주시, 과수화상병 전수조사·예찰 총력",
+            "충주시가 과수화상병 차단을 위해 전수조사와 현장 예찰을 강화한다.",
+            "https://www.nongmin.com/article/20260311555555",
+        )
+        region3 = self._make_article(
+            "pest",
+            "진주시, 과수화상병 방제 약제 무상 공급",
+            "진주시가 과수화상병 방제 약제를 무상 공급하고 농가 현장 대응에 나선다.",
+            "https://www.news1.kr/local/test/9999999",
+        )
+        generic.score = 20.0
+        region1.score = 19.5
+        region2.score = 19.4
+        region3.score = 19.3
+
+        self.assertFalse(main._is_similar_story(region1, region2, "pest"))
+        self.assertFalse(main._is_similar_story(region2, region3, "pest"))
+
+        picked = main.select_top_articles([generic, region1, region2, region3], "pest", 4)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(len(picked), 4, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(region1.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(region2.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(region3.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
