@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T07:23:22+09:00",
-  "build_tag": "262b819",
+  "generated_at_kst": "2026-03-12T08:36:29+09:00",
+  "build_tag": "59a30aa",
   "filter_rejects": [
     {
       "section": "policy",
@@ -796,30 +796,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "cnbnews",
-      "domain": "weekly.cnbnews.com",
-      "title": "컬리, ‘3월 원더컬리’ 기획전 진행",
-      "url": "https://weekly.cnbnews.com/news/article.html?no=208255"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "thepublic",
-      "domain": "thepublic.kr",
-      "title": "조이웍스앤코, 오너리스크에 이어 경영진 배임 의혹...코스닥 상장은 '...",
-      "url": "https://www.thepublic.kr/news/articleView.html?idxno=296864"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "트럼프 한마디에 코스피 급반등…변동성 확대",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293785&inflow=N"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "PAXETV",
       "domain": "paxetv.com",
@@ -1268,6 +1244,62 @@
     },
     {
       "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "newsfreezone",
+      "domain": "newsfreezone.co.kr",
+      "title": "진안군 미생물 무상공급…농가 생산성↑",
+      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=678990"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "kyeonggi",
+      "domain": "kyeonggi.com",
+      "title": "가격 내릴까 오를까…유가 최고가격제 임박에 섞이는 기대와 우려",
+      "url": "https://www.kyeonggi.com/article/20260310580486"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "KSILBO",
+      "domain": "ksilbo.co.kr",
+      "title": "'친환경 난방 효과' 울산 시설농가 유가 쇼크 비껴갔다",
+      "url": "https://www.ksilbo.co.kr/news/articleView.html?idxno=1051043"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "economytalk",
+      "domain": "economytalk.kr",
+      "title": "[종합]\"메트로시티, 푸드루트, 아이스크림 홈런, 소이비랩\" 등 3월 10일 ...",
+      "url": "http://www.economytalk.kr/news/articleView.html?idxno=418786"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "economytalk",
+      "domain": "economytalk.kr",
+      "title": "[종합]\"푸드루트, 아이스크림 홈런, 소이비랩\" 등 3월 10일 캐시워크 돈...",
+      "url": "http://www.economytalk.kr/news/articleView.html?idxno=418769"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "중동 사태로 등윳값 ‘급등’…시설농가 ‘울상’",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8504041"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "bntnews",
+      "domain": "bntnews.co.kr",
+      "title": "[단독] 캐시워크 돈버는퀴즈 정답 3월 10일",
+      "url": "https://www.bntnews.co.kr/article/view/bnt202603100028"
+    },
+    {
+      "section": "supply",
       "reason": "apple_non_edible_context",
       "press": "GNNEWS",
       "domain": "gnnews.co.kr",
@@ -1533,18 +1565,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "youngnong",
-      "domain": "youngnong.co.kr",
-      "title": "당진에 '노지 스마트 감자벨트' 조성",
-      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57919"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "NEWSCJ",
       "domain": "newscj.com",
       "title": "산림청, 지역방제 거버넌스 대책회의로 광역선단지 확산 차단방안 논의",
       "url": "https://www.newscj.com/news/articleView.html?idxno=3383118"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "youngnong",
+      "domain": "youngnong.co.kr",
+      "title": "당진에 '노지 스마트 감자벨트' 조성",
+      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57919"
     },
     {
       "section": "pest",
@@ -1785,26 +1817,90 @@
       "domain": "joongdo.co.kr",
       "title": "충주시, 사과 신품종 '이지플' 묘목 공급 시작",
       "url": "https://joongdo.co.kr/web/view.php?key=20260310010002952"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "GGILBO",
+      "domain": "ggilbo.com",
+      "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화",
+      "url": "https://ggilbo.com/news/articleView.html?idxno=1145681"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "GGILBO",
+      "domain": "ggilbo.com",
+      "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화",
+      "url": "https://ggilbo.com/news/articleView.html?idxno=1145681"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "jeollailbo",
+      "domain": "jeollailbo.com",
+      "title": "장계농협, 농업인 '고품질 토마토 재배 교육' 실시",
+      "url": "https://jeollailbo.com/news/articleView.html?idxno=794326"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "jeollailbo",
+      "domain": "jeollailbo.com",
+      "title": "장계농협, 농업인 '고품질 토마토 재배 교육' 실시",
+      "url": "https://jeollailbo.com/news/articleView.html?idxno=794326"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "DOMIN",
+      "domain": "domin.co.kr",
+      "title": "장계농협, 고품질 토마토 재배 위한 교육 실시",
+      "url": "https://domin.co.kr/news/articleView.html?idxno=1547944"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "DOMIN",
+      "domain": "domin.co.kr",
+      "title": "장계농협, 고품질 토마토 재배 위한 교육 실시",
+      "url": "https://domin.co.kr/news/articleView.html?idxno=1547944"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "새전북신문",
+      "domain": "sjbnews.com",
+      "title": "장계농협, 고품질 토마토 재배 교육",
+      "url": "https://sjbnews.com/news/news.php?number=873354"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "새전북신문",
+      "domain": "sjbnews.com",
+      "title": "장계농협, 고품질 토마토 재배 교육",
+      "url": "https://sjbnews.com/news/news.php?number=873354"
     }
   ],
   "sections": {
     "supply": {
-      "threshold": 13.59,
-      "tail_cut": 13.99,
-      "core_min": 13.59,
-      "total_candidates": 69,
-      "total_selected": 6,
+      "threshold": 17.69,
+      "tail_cut": 18.09,
+      "core_min": 17.69,
+      "total_candidates": 75,
+      "total_selected": 3,
       "top": [
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 21.59,
+          "score": 25.69,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
           "title": "[취재수첩] 샤인머스캣 실질적인 대책 서둘러라",
           "url": "https://www.nongmin.com/article/20260309500634",
-          "reason": "supply_policy_like",
+          "reason": "",
           "signals": {
             "horti_sc": 2.4,
             "market_hits": 0,
@@ -1864,7 +1960,7 @@
           "domain": "bokuennews.com",
           "title": "농축산물 가격 전주 대비 하락",
           "url": "http://www.bokuennews.com/news/article.html?no=274896",
-          "reason": "supply_macro_brief",
+          "reason": "tail_cut",
           "signals": {
             "horti_sc": 2.0,
             "market_hits": 0,
@@ -1904,7 +2000,7 @@
           "domain": "kjmbc.co.kr",
           "title": "저장채소 오르고 시설채소 내리고…농산물 가격 '엇갈림'",
           "url": "https://kjmbc.co.kr/NewsArticle/1508474",
-          "reason": "source_cap",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 2.0,
             "market_hits": 0,
@@ -1916,7 +2012,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 16.77,
           "tier": 2,
@@ -1924,7 +2020,7 @@
           "domain": "agrinet.co.kr",
           "title": "[신선농산물 수출확대 극복 과제] 샤인머스켓 수출 급증했지만, 떨어진...",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402455",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -1944,7 +2040,7 @@
           "domain": "yna.co.kr",
           "title": "충주시, 사과 품종 '이지플' 올해 8천주 공급",
           "url": "https://www.yna.co.kr/view/AKR20260310069000064?input=1195m",
-          "reason": "headline_gate",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -1956,15 +2052,15 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 15.6,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "참외·딸기· 포도 ···경북 대표 신선과일 홍콩·베트남 홀렸다",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402349",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -1984,7 +2080,7 @@
           "domain": "jndn.com",
           "title": "저장채소 오르고 시설채소 내리고…농산물 가격 품목별 ‘희비’",
           "url": "http://www.jndn.com/article.php?aid=1773131478428511004",
-          "reason": "source_cap",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -1996,7 +2092,27 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
+          "is_core": false,
+          "score": 13.32,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "경기도농업기술원, 꽃 솎기 필요 없는 '대과 딸기 ' 개발",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402355",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
           "is_core": false,
           "score": 13.14,
           "tier": 3,
@@ -2004,7 +2120,7 @@
           "domain": "kmib.co.kr",
           "title": "119보다 먼저 달려가는 목사… 아들 같은 섬김에 마을 ‘활짝’",
           "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773125484&code=23111111&cp=nv",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 2.3,
             "market_hits": 0,
@@ -2056,15 +2172,15 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
-          "score": 12.29,
+          "score": 12.09,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
           "title": "원주 판부농협, 복숭아 묘목 공급…농가 실익·품종 경쟁력 ‘쑥’",
           "url": "https://www.nongmin.com/article/20260309500392",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -2158,7 +2274,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.43,
+          "score": 10.23,
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
@@ -2378,6 +2494,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 6.07,
+          "tier": 1,
+          "press": "newsjeju",
+          "domain": "newsjeju.net",
+          "title": "제주산 딸기 어미묘 첫 공급...모종 자급 시대 연다",
+          "url": "https://www.newsjeju.net/news/articleView.html?idxno=417705",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 6.02,
           "tier": 1,
           "press": "DYNEWS",
@@ -2458,6 +2594,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 5.82,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "도내 자체 생산 우량 딸기 어미묘 첫 공급",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=356107",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 5.37,
           "tier": 1,
           "press": "popcornnews",
@@ -2473,26 +2629,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.22,
-          "tier": 1,
-          "press": "GGILBO",
-          "domain": "ggilbo.com",
-          "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화",
-          "url": "https://www.ggilbo.com/news/articleView.html?idxno=1145681",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
           }
         },
         {
@@ -2638,7 +2774,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.73,
+          "score": 3.53,
           "tier": 1,
           "press": "SLIST",
           "domain": "slist.kr",
@@ -2653,26 +2789,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.72,
-          "tier": 1,
-          "press": "newstomato",
-          "domain": "newstomato.com",
-          "title": "[뉴스 토마토 프라임] 중동 위기가 던진 질문 '화석연료 의존'",
-          "url": "http://www.newstomato.com/ReadNews.aspx?no=1293788&inflow=N",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -2778,6 +2894,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 1.47,
+          "tier": 1,
+          "press": "GGILBO",
+          "domain": "ggilbo.com",
+          "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화",
+          "url": "https://www.ggilbo.com/news/articleView.html?idxno=1145681",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 1.01,
           "tier": 1,
           "press": "celuvmedia",
@@ -2790,6 +2926,26 @@
             "market_hits": 0,
             "strength": 0,
             "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.87,
+          "tier": 1,
+          "press": "namdonews",
+          "domain": "namdonews.com",
+          "title": "북광주농협 지산 딸기 , 품질로 승부한다",
+          "url": "https://www.namdonews.com/news/articleView.html?idxno=846724",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -2934,66 +3090,6 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.19,
-          "tier": 1,
-          "press": "ikoreanspirit",
-          "domain": "ikoreanspirit.com",
-          "title": "세상이 달라 보이는 통찰력의 비밀, 내 안의 '관찰자'를 깨워라",
-          "url": "http://www.ikoreanspirit.com/news/articleView.html?idxno=84291",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.19,
-          "tier": 1,
-          "press": "viva100",
-          "domain": "viva100.com",
-          "title": "[오늘의 신제품] 해태제과, 포키 극세 멜론 출시…\"한·일 첫 과일맛 담...",
-          "url": "https://www.viva100.com/article/20260310500298",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.18,
-          "tier": 1,
-          "press": "lawissue",
-          "domain": "lawissue.co.kr",
-          "title": "타임스퀘어, 화이트데이 맞아 '봄 맞이: 선물 해 봄' 행사",
-          "url": "http://www.lawissue.co.kr/view.php?ud=202603101310163124204ead0791_12",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 3.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
         }
       ]
     },
@@ -3001,7 +3097,7 @@
       "threshold": 28.41,
       "tail_cut": 28.61,
       "core_min": 28.41,
-      "total_candidates": 27,
+      "total_candidates": 26,
       "total_selected": 2,
       "top": [
         {
@@ -3267,26 +3363,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.94,
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "충남도, 내년 정부예산 13조5000억 목표…국비 확보 '총력'",
-          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316092",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 15.24,
           "tier": 2,
           "press": "한국농어민신문",
@@ -3527,7 +3603,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -0.46,
+          "score": -0.66,
           "tier": 1,
           "press": "EKN",
           "domain": "ekn.kr",
@@ -3679,7 +3755,7 @@
       "threshold": 26.01,
       "tail_cut": 26.01,
       "core_min": 26.01,
-      "total_candidates": 20,
+      "total_candidates": 21,
       "total_selected": 3,
       "top": [
         {
@@ -4081,6 +4157,26 @@
             "press_tier": 1,
             "press_weight": -3.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.02,
+          "tier": 1,
+          "press": "jeollailbo",
+          "domain": "jeollailbo.com",
+          "title": "\" 딸기 당도 높이고 병해충 잡고\"... 진안군 미생물 지원 '호응'",
+          "url": "http://www.jeollailbo.com/news/articleView.html?idxno=794322",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     }
@@ -4355,7 +4451,7 @@
         ],
         [
           "사과 수급",
-          10
+          9
         ],
         [
           "꽃다발 선물",
@@ -4363,7 +4459,7 @@
         ],
         [
           "사과 저장",
-          6
+          7
         ],
         [
           "포도 가격",
@@ -4371,6 +4467,10 @@
         ],
         [
           "오이 가격",
+          5
+        ],
+        [
+          "딸기 생육",
           5
         ],
         [
@@ -4382,11 +4482,11 @@
           3
         ],
         [
-          "감귤 가격",
-          2
+          "토마토 생육",
+          3
         ],
         [
-          "토마토 가격",
+          "감귤 가격",
           2
         ],
         [
@@ -4399,10 +4499,6 @@
         ],
         [
           "단감 가격",
-          1
-        ],
-        [
-          "유자 가격",
           1
         ]
       ],
@@ -4430,6 +4526,8 @@
       ],
       "recall_meta": {
         "seed_terms": [
+          "딸기",
+          "토마토",
           "파프리카",
           "사과",
           "단감",
@@ -4439,18 +4537,18 @@
           "복숭아",
           "호박",
           "피망",
-          "화훼자조금",
-          "레고",
-          "틈새"
+          "화훼자조금"
         ],
-        "reason": [],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
         "queries": [
-          "파프리카 생육",
-          "파프리카 난방",
+          "딸기 생육",
+          "딸기 난방",
           "사과 생육",
-          "곶감 작황",
-          "유자 작황",
-          "알밤 작황"
+          "토마토 생육",
+          "파프리카 생육",
+          "곶감 작황"
         ],
         "pool_seed_hits": {
           "사과": 0,
@@ -4460,8 +4558,8 @@
           "유자": 0,
           "알밤": 0,
           "복숭아": 0,
-          "딸기": 1,
-          "토마토": 1,
+          "딸기": 0,
+          "토마토": 0,
           "호박": 0,
           "피망": 0,
           "파프리카": 0,
@@ -4471,11 +4569,12 @@
           "화훼자조금": 0,
           "레고": 0,
           "틈새": 0,
-          "대책": 4,
-          "고추": 3,
-          "배": 4
+          "대책": 3,
+          "고추": 2,
+          "배": 2
         },
         "feature_refresh_seeds": [
+          "딸기",
           "파프리카",
           "사과",
           "단감",
@@ -4512,6 +4611,8 @@
           "틈새"
         ],
         "prioritized_seeds": [
+          "딸기",
+          "토마토",
           "파프리카",
           "사과",
           "단감",
@@ -4525,8 +4626,6 @@
           "레고",
           "틈새",
           "포도",
-          "딸기",
-          "토마토",
           "오이",
           "상추",
           "화훼",
@@ -4535,11 +4634,11 @@
           "배"
         ],
         "feature_focus_seeds": [
-          "파프리카",
+          "딸기",
           "사과"
         ]
       },
-      "items_total": 87,
+      "items_total": 93,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
