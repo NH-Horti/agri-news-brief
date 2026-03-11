@@ -5472,7 +5472,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if supply_feature_kind == "issue":
             score += 2.8
             if supply_issue_bucket == "export_recovery":
-                score += 0.9
+                score += 1.9
             elif supply_issue_bucket == "farm_action":
                 score += 0.7
             elif supply_issue_bucket == "commodity_issue":
