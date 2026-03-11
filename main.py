@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 agri-news-brief main.py (production)
 
@@ -2259,8 +2259,20 @@ _APPLE_APOLOGY_RX = re.compile(
 _APPLE_FRUIT_MARKERS = (
     "과일", "과수", "과원", "사과나무", "부사", "후지", "홍로", "감홍", "아오리", "시나노",
     "가락시장", "도매시장", "공판장", "청과", "경락", "경매", "산지", "농가", "재배", "수확",
-    "출하", "작황", "수급", "시세", "가격", "저장", "재고", "선별", "apc", "산지유통",
+    "apc", "산지유통",
 )
+_APPLE_FRUIT_NEAR_RX = re.compile(
+    r"사과(?:\s*값|\s*가격|\s*시세|\s*수급|\s*출하|\s*작황|\s*재고|\s*저장|\s*선별)"
+)
+
+
+def has_apple_fruit_context(text: str) -> bool:
+    t = (text or "").lower()
+    if "사과" not in t:
+        return False
+    if any(m in t for m in _APPLE_FRUIT_MARKERS):
+        return True
+    return _APPLE_FRUIT_NEAR_RX.search(t) is not None
 
 
 def is_apple_apology_context(text: str) -> bool:
@@ -2268,9 +2280,7 @@ def is_apple_apology_context(text: str) -> bool:
     t = (text or "").lower()
     if "사과" not in t:
         return False
-    if any(m in t for m in _APPLE_FRUIT_MARKERS):
-        return False
-    if re.search(r"사과\s*(값|가격|시세|수급|출하|작황)", t):
+    if has_apple_fruit_context(t):
         return False
     if any(m in t for m in _APPLE_APOLOGY_MARKERS):
         return True
@@ -2312,11 +2322,7 @@ def is_edible_apple_context(text: str) -> bool:
         return False
 
     # 4) 긍정 판단: 실무 마커가 1개 이상이면 True
-    if any(m in t for m in _APPLE_FRUIT_MARKERS):
-        return True
-
-    # 5) 보강 패턴: '사과값/사과 가격/사과 시세' 같은 표현
-    if re.search(r"사과\s*(값|가격|시세|수급|출하|작황)", t):
+    if has_apple_fruit_context(t):
         return True
 
     # 여기까지 왔으면 '사과' 단독 등장 가능성이 높으므로 False
@@ -2750,6 +2756,55 @@ def is_pest_control_policy_context(text: str) -> bool:
     # (예: "과수화상병 확산", "토마토뿔나방 발생")
     return (horti_hits >= 1) and pest_signal and ((action_hits >= 1) or (local_gov_hits >= 1 and strict_hits >= 1))
 
+
+_PEST_ACTION_TERMS = (
+    "전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제", "긴급방제", "확산 차단",
+)
+_PEST_ROUNDUP_TITLE_PREFIX_RX = re.compile(r"^\[[^\]]{1,40}\]")
+_PEST_ROUNDUP_TITLE_TERMS = (
+    "여기는", "오늘", "이 시각", "개막", "축제", "대회", "공연", "전시", "날씨", "교통", "외", "등",
+)
+
+
+def _has_named_pest_signal(text: str) -> bool:
+    t = (text or "").lower()
+    return re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
+
+
+def _pest_title_signal_count(title: str) -> int:
+    t = (title or "").lower()
+    hits = count_any(t, [w.lower() for w in PEST_TITLE_CORE_TERMS])
+    hits += count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    if _has_named_pest_signal(t):
+        hits += 1
+    return hits
+
+
+def is_roundup_digest_title(title: str) -> bool:
+    raw = (title or "").strip()
+    t = raw.lower()
+    if not t:
+        return False
+    bracketed = _PEST_ROUNDUP_TITLE_PREFIX_RX.search(raw) is not None
+    roundup_hits = count_any(t, [w.lower() for w in _PEST_ROUNDUP_TITLE_TERMS])
+    tail_digest = t.endswith(" 외") or t.endswith("외") or t.endswith(" 등") or t.endswith("등")
+    return (bracketed and roundup_hits >= 1) or (roundup_hits >= 2 and tail_digest)
+
+
+def is_pest_story_focus_strong(title: str, desc: str) -> bool:
+    t = f"{title or ''} {desc or ''}".lower()
+    strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
+    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS])
+    action_hits = count_any(t, [w.lower() for w in _PEST_ACTION_TERMS])
+    total_signal = strict_hits + weather_hits
+    if horti_hits == 0 or total_signal == 0:
+        return False
+    if _pest_title_signal_count(title) >= 1:
+        return True
+    if is_roundup_digest_title(title):
+        return False
+    return total_signal >= 2 and action_hits >= 2
 
 def is_local_agri_policy_program_context(text: str) -> bool:
     """지자체의 농산물 정책 프로그램(지원/보전/시범사업) 맥락인지 판정."""
@@ -5207,7 +5262,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         # 방제/병해충 신호가 너무 약하면 제외
         if (strict_hits + weather_hits) < 1:
-            return False
+            return _reject("pest_weak_signal")
+        if not is_pest_story_focus_strong(ttl, desc):
+            return _reject("pest_partial_mention")
 
     return True
 
@@ -5369,7 +5426,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
-        score += count_any(title_l, [t.lower() for t in PEST_TITLE_CORE_TERMS]) * 1.1
+        pest_title_hits = _pest_title_signal_count(title_l)
+        score += pest_title_hits * 1.1
+        if pest_title_hits == 0:
+            score -= 3.4
         # 지자체 발표 기사라도 방제 실행(예찰/약제/살포/전수조사) 맥락이 강하면 pest 우선
         if is_pest_control_policy_context(text):
             score += 2.8
@@ -8315,6 +8375,33 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
     return moved
 
 
+def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
+    text = ((a.title or "") + " " + (a.description or "")).lower()
+    if is_apple_apology_context(text):
+        return "apple_apology_context"
+    if section_key == "pest" and not is_pest_story_focus_strong(a.title or "", a.description or ""):
+        return "pest_partial_mention"
+    return ""
+
+
+def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    pruned = 0
+    for key, items in list((final_by_section or {}).items()):
+        keep: list[Article] = []
+        for a in (items or []):
+            if not isinstance(a, Article):
+                continue
+            reason = _postbuild_article_reject_reason(a, str(key))
+            if reason:
+                pruned += 1
+                log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
+                continue
+            keep.append(a)
+        final_by_section[str(key)] = keep
+    return pruned
+
 def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
     reset_extra_call_budget()
     raw_by_section: dict[str, list[Article]] = {}
@@ -8564,6 +8651,10 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
 
         picked: list[Article] = []
         for a in pre:
+            reason = _postbuild_article_reject_reason(a, key)
+            if reason:
+                log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
+                continue
             if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                 picked.append(a)
                 if len(picked) >= MAX_PER_SECTION:
@@ -8619,6 +8710,10 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 log.info("[REBALANCE] dist empty fallback moved 1 item: supply -> dist (%s)", normalize_host(moved_one.domain or ""))
     except Exception as e:
         log.warning("[WARN] dist empty fallback failed: %s", e)
+
+    pruned_final = _audit_final_sections(final_by_section)
+    if pruned_final:
+        log.info("[AUDIT] pruned %d final item(s) after section assembly", pruned_final)
 
     return final_by_section
 
@@ -11930,3 +12025,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
