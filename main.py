@@ -3074,11 +3074,13 @@ _SUPPLY_FEATURE_ISSUE_TITLE_TERMS = (
     "대책", "시급", "과제", "진단", "점검", "취재수첩", "기획", "현장", "회복", "비상",
 )
 _SUPPLY_FEATURE_ISSUE_ACTION_TERMS = (
-    "대책", "대응", "해법", "보완", "회복", "개선", "정상화", "확보", "지원", "조절",
+    "\uB300\uCC45", "\uB300\uC751", "\uD574\uBC95", "\uBCF4\uC644", "\uD68C\uBCF5", "\uAC1C\uC120", "\uC815\uC0C1\uD654", "\uD655\uBCF4", "\uC9C0\uC6D0", "\uC870\uC808",
+    "\uC885\uD569\uACC4\uD68D", "\uACE0\uAE09\uD654", "\uAC1C\uBC1C", "\uBCF4\uAE09", "\uD3D0\uC6D0 \uC9C0\uC6D0",
 )
 _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS = (
-    "부담", "급락", "하락", "폭락", "정체", "침체", "위기", "비상", "우려", "피해",
-    "손실", "포기", "어려움", "호소", "생산비", "난방비", "면세유", "제값", "소비자 외면",
+    "\uBD80\uB2F4", "\uAE09\uB77D", "\uD558\uB77D", "\uD3ED\uB77D", "\uC815\uCCB4", "\uCE68\uCCB4", "\uC704\uAE30", "\uBE44\uC0C1", "\uC6B0\uB824", "\uD53C\uD574",
+    "\uC190\uC2E4", "\uD3EC\uAE30", "\uC5B4\uB824\uC6C0", "\uD638\uC18C", "\uC0DD\uC0B0\uBE44", "\uB09C\uBC29\uBE44", "\uBA74\uC138\uC720", "\uC81C\uAC12", "\uC18C\uBE44\uC790 \uC678\uBA74",
+    "\uC0DD\uC0B0\uACFC\uC789", "\uACFC\uC789\uC0DD\uC0B0", "\uC6D0\uAC00", "\uBBF8\uC219\uACFC", "\uD3D0\uC6D0", "\uC2E0\uB8B0 \uC2E4\uCD94",
 )
 _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
     "수출", "수출길", "수출 확대", "선적", "검역", "통관", "판로", "해외시장", "해외 수요",
@@ -3126,7 +3128,15 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
         return "export_recovery"
     if farm_hits >= 1 and distress_hits >= 1 and (title_issue_hits >= 1 or action_hits >= 1):
         return "farm_action"
-    if (title_item_hits >= 1 or horti_title_sc >= 1.2 or horti_sc >= 2.2) and distress_hits >= 2 and title_issue_hits >= 1:
+    strong_item_context = title_item_hits >= 1 or horti_title_sc >= 1.2 or horti_sc >= 2.2
+    has_issue_frame = title_issue_hits >= 1 or issue_hits >= 3
+    issue_follow_through = (
+        distress_hits >= 2
+        or (distress_hits >= 1 and action_hits >= 1)
+        or action_hits >= 2
+        or (title_issue_hits >= 2 and issue_hits >= 3)
+    )
+    if strong_item_context and has_issue_frame and issue_follow_through:
         return "commodity_issue"
     return None
 
@@ -5465,6 +5475,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += 0.9
             elif supply_issue_bucket == "farm_action":
                 score += 0.7
+            elif supply_issue_bucket == "commodity_issue":
+                score += 1.4
             if horti_title_sc >= 1.4:
                 score += 0.6
         elif supply_feature_kind == "field":
