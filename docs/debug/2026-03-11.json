@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-11T15:47:36+09:00",
-  "build_tag": "a4c2f86",
+  "generated_at_kst": "2026-03-11T16:23:38+09:00",
+  "build_tag": "c815215",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1004,19 +1004,19 @@
     },
     {
       "section": "supply",
-      "reason": "ban_keywords",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "봄은 왔는데…청약시장 '온도차' 뚜렷",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293731&inflow=N"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "K방산, 협력사 상생 확대…산업 생태계 구축 본격화",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1293736&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "봄은 왔는데…청약시장 '온도차' 뚜렷",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293731&inflow=N"
     },
     {
       "section": "supply",
@@ -1081,14 +1081,6 @@
       "domain": "newsworker.co.kr",
       "title": "광주 남구, 나만의 초록 일터 '도심 텃밭' 인기",
       "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=416842"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "[Daily New유통] 신세계사이먼, 세라젬, 롯데월드 外",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/10/2026031000030.html"
     },
     {
       "section": "supply",
@@ -1915,22 +1907,6 @@
       "url": "https://www.woodkorea.co.kr/news/articleView.html?idxno=88585"
     },
     {
-      "section": "pest",
-      "reason": "excluded_items",
-      "press": "hansbiz",
-      "domain": "hansbiz.co.kr",
-      "title": "경북농기원, 봄철 마늘 생육 관리 강화 당부",
-      "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=823035"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "“농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란",
-      "url": "https://www.nongmin.com/article/20260309500644"
-    },
-    {
       "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "skbroadband",
@@ -2191,7 +2167,7 @@
     "supply": {
       "threshold": 18.12,
       "core_min": 18.12,
-      "total_candidates": 81,
+      "total_candidates": 80,
       "total_selected": 2,
       "top": [
         {
@@ -2277,7 +2253,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.27,
+          "score": 21.07,
           "tier": 3,
           "press": "연합뉴스",
           "domain": "yna.co.kr",
@@ -2372,26 +2348,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.3
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.02,
-          "tier": 1,
-          "press": "youngnong",
-          "domain": "youngnong.co.kr",
-          "title": "전국 딸기 1번지 경남… 달콤한 유혹에 눈길",
-          "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57931",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -2879,26 +2835,6 @@
           "is_core": false,
           "score": 6.02,
           "tier": 1,
-          "press": "jejumaeil",
-          "domain": "jejumaeil.net",
-          "title": "도내 자체 생산 우량 딸기 어미묘 첫 공급",
-          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=356107",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 6.02,
-          "tier": 1,
           "press": "DYNEWS",
           "domain": "dynews.co.kr",
           "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화…100ha 확대 목표",
@@ -2972,6 +2908,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.82,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "도내 자체 생산 우량 딸기 어미묘 첫 공급",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=356107",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -3393,6 +3349,26 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.44,
+          "tier": 1,
+          "press": "e-science",
+          "domain": "e-science.co.kr",
+          "title": "해태, 한·일 최초 과일 맛 담은 '포키 극세 멜론 ' 출시",
+          "url": "https://www.e-science.co.kr/news/articleView.html?idxno=127785",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -3525,7 +3501,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.84,
+          "score": 18.64,
           "tier": 3,
           "press": "아시아경제",
           "domain": "view.asiae.co.kr",
@@ -3685,7 +3661,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.26,
+          "score": 14.06,
           "tier": 1,
           "press": "newstomato",
           "domain": "newstomato.com",
@@ -3805,7 +3781,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.79,
+          "score": 7.59,
           "tier": 1,
           "press": "kbmaeil",
           "domain": "kbmaeil.com",
@@ -4201,7 +4177,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.85,
+          "score": 21.65,
           "tier": 1,
           "press": "DOMIN",
           "domain": "domin.co.kr",
@@ -4321,7 +4297,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.71,
+          "score": 19.51,
           "tier": 1,
           "press": "DOMIN",
           "domain": "domin.co.kr",
@@ -4441,7 +4417,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.87,
+          "score": 11.67,
           "tier": 1,
           "press": "kyongbuk",
           "domain": "kyongbuk.co.kr",
@@ -4794,11 +4770,11 @@
           5
         ],
         [
-          "딸기 가격",
-          4
+          "사과 출하",
+          3
         ],
         [
-          "사과 출하",
+          "딸기 가격",
           3
         ],
         [
@@ -4958,7 +4934,7 @@
           "사과"
         ]
       },
-      "items_total": 99,
+      "items_total": 98,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
