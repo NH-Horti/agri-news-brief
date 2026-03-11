@@ -51,13 +51,58 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Resolve run variables
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          report_date='${{ inputs.report_date }}'
+          ux_patch_days='${{ inputs.ux_patch_days }}'
+          send_kakao='${{ inputs.send_kakao }}'
+          max_per_section='${{ inputs.max_per_section }}'
+          debug_input='${{ inputs.debug }}'
+
+          if [ -z "$ux_patch_days" ]; then
+            ux_patch_days='0'
+          fi
+
+          if [ -z "$send_kakao" ]; then
+            send_kakao='true'
+          fi
+
+          if [ -z "$max_per_section" ]; then
+            max_per_section='5'
+          fi
+
+          if [ "$debug_input" = 'true' ]; then
+            debug_enabled='1'
+          else
+            debug_enabled='0'
+          fi
+
+          echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
+          echo "ux_patch_days=$ux_patch_days" >> "$GITHUB_OUTPUT"
+          echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
+          echo "max_per_section=$max_per_section" >> "$GITHUB_OUTPUT"
+          echo "debug_enabled=$debug_enabled" >> "$GITHUB_OUTPUT"
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests before rebuild
+        id: tests
+        run: |
+          python -m unittest discover -s tests -p "test_*.py"
 
       - name: Rebuild
+        id: rebuild
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_CONTENT_REF: 'main'
@@ -76,22 +121,83 @@ jobs:
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
           MAINTENANCE_TASK: rebuild_date
-          FORCE_REPORT_DATE: ${{ inputs.report_date }}
-          MAINTENANCE_SEND_KAKAO: ${{ inputs.send_kakao }}
-          MAX_PER_SECTION: ${{ inputs.max_per_section }}
+          FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
+          MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
+          MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 
           FORCE_RUN_ANYDAY: 'false'
-          UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+          UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
-          DEBUG_REPORT: ${{ inputs.debug == 'true' && '1' || '0' }}
-          DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug == 'true' && '1' || '0' }}
+          DEBUG_REPORT: ${{ steps.vars.outputs.debug_enabled }}
+          DEBUG_REPORT_WRITE_JSON: ${{ steps.vars.outputs.debug_enabled }}
           DEBUG_REPORT_MAX_CANDIDATES: '200'
           DEBUG_REPORT_MAX_REJECTS: '2000'
 
         run: |
           python main.py
+
+      - name: Verify rebuilt production archive content
+        id: verify_archive
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          archive_path="docs/archive/${{ steps.vars.outputs.report_date }}.html"
+          if [ ! -f "$archive_path" ]; then
+            echo "Archive file was not generated: $archive_path"
+            exit 1
+          fi
+
+          final_archive_path="$RUNNER_TEMP/prod-archive-final.html"
+          awk '/<details class="dbgWrap">/{exit} {print}' "$archive_path" > "$final_archive_path"
+
+          blocked_urls=(
+            'https://www.mt.co.kr/politics/2026/03/10/2026031009405991292'
+            'https://news.kbs.co.kr/news/pc/view/view.do?ncd=8504583'
+          )
+
+          failed=0
+          for url in "${blocked_urls[@]}"; do
+            if grep -Fq "$url" "$final_archive_path"; then
+              echo "Blocked URL still present in final archive content: $url"
+              failed=1
+            fi
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload rebuild artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuild-${{ steps.vars.outputs.report_date }}
+          if-no-files-found: ignore
+          path: |
+            docs/archive/${{ steps.vars.outputs.report_date }}.html
+            docs/index.html
+            docs/search_index.json
+            docs/debug/
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Rebuild Summary'
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Branch: ${{ github.ref_name }}"
+            echo "- Report date: ${{ steps.vars.outputs.report_date }}"
+            echo "- Tests: ${{ steps.tests.outcome }}"
+            echo "- Rebuild: ${{ steps.rebuild.outcome }}"
+            echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
+            echo "- Kakao sent: ${{ steps.vars.outputs.send_kakao }}"
+            echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
+            echo "- Debug JSON: https://nh-horti.github.io/agri-news-brief/debug/${{ steps.vars.outputs.report_date }}.json"
+          } >> "$GITHUB_STEP_SUMMARY"
