@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T08:36:29+09:00",
-  "build_tag": "59a30aa",
+  "generated_at_kst": "2026-03-12T08:44:59+09:00",
+  "build_tag": "3132bbb",
   "filter_rejects": [
     {
       "section": "policy",
@@ -788,14 +788,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "MBN",
-      "domain": "mbn.co.kr",
-      "title": "\"밤새 돌려야 하는데 남는 게 없어요\"…난방비 부담에 농민들도 허덕",
-      "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5180884"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "PAXETV",
       "domain": "paxetv.com",
@@ -1393,14 +1385,6 @@
       "domain": "weekly.hankooki.com",
       "title": "[주간핫이슈] 사상 첫 '호르무즈 해협' 봉쇄...요동치는 유가",
       "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7153191"
-    },
-    {
-      "section": "dist",
-      "reason": "opinion_or_editorial",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "[사설] ‘도매시장 주5일제 도입 논의’ 이대로 좋은가",
-      "url": "https://www.nongmin.com/article/20260309500637"
     },
     {
       "section": "pest",
@@ -2474,26 +2458,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.14,
-          "tier": 2,
-          "press": "뉴스1",
-          "domain": "news1.kr",
-          "title": "\"한·일 최초 과일 맛 담았다\"…해태, 포키 극세 ' 멜론 ' 출시",
-          "url": "https://www.news1.kr/industry/distribution/6095633",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.07,
           "tier": 1,
           "press": "newsjeju",
@@ -2549,6 +2513,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.94,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "\"한·일 최초 과일 맛 담았다\"…해태, 포키 극세 ' 멜론 ' 출시",
+          "url": "https://www.news1.kr/industry/distribution/6095633",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
