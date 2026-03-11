@@ -6249,6 +6249,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
+        ttl_local = (a.title or "").lower()
+        if press_priority(a.press, a.domain) == 1 and (("농축산물" in ttl_local) or ("농산물" in ttl_local)) and any(t in txt_local for t in ("전주 대비", "전년 대비", "평년 대비", "대체로")):
+            return True
         if has_direct_supply_chain_signal(txt_local):
             return False
         if is_supply_feature_article(a.title or "", a.description or ""):
@@ -6256,9 +6259,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if not is_broad_macro_price_context(a.title or "", a.description or ""):
             return False
         if is_policy_market_brief_context(txt_local, dom_local, pr_local):
-            return True
-        ttl_local = (a.title or "").lower()
-        if press_priority(a.press, a.domain) == 1 and (("농축산물" in ttl_local) or ("농산물" in ttl_local)) and any(t in txt_local for t in ("전주 대비", "전년 대비", "평년 대비", "대체로")):
             return True
         aggregate_hits = count_any(
             txt_local,
