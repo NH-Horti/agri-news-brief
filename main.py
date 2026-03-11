@@ -6281,26 +6281,84 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         return is_dist_export_shipping_context(a.title or "", a.description or "")
 
-    def _is_strong_underfill_candidate(a: Article) -> bool:
+    def _underfill_candidate_rank(a: Article) -> tuple[Any, ...] | None:
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        tier = press_priority(a.press, a.domain)
+        pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
         if section_key == "supply":
             signal_hits = count_any(
                 txt_local,
                 [t.lower() for t in ("가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "경매")],
             )
-            fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+            feature_kind = supply_feature_context_kind(a.title or "", a.description or "")
+            feature_like = feature_kind is not None
+            direct_supply = has_direct_supply_chain_signal(txt_local)
+            broad_macro = is_broad_macro_price_context(a.title or "", a.description or "")
             horti_sc = best_horti_score(a.title or "", a.description or "")
             horti_title_sc = best_horti_score(a.title or "", "")
             if _is_supply_policy_like_tail_story(a) or _is_supply_dist_like_tail_story(a) or _is_supply_weak_tail_story(a):
-                return False
-            return (
-                is_supply_feature_article(a.title or "", a.description or "")
-                or has_direct_supply_chain_signal(txt_local)
+                return None
+            if broad_macro and tier == 1 and (not direct_supply) and (not feature_like):
+                return None
+            if not (
+                feature_like
+                or direct_supply
                 or (fit_sc >= 1.3 and signal_hits >= 2 and (horti_sc >= 1.8 or horti_title_sc >= 1.2))
+            ):
+                return None
+            return (
+                1 if direct_supply else 0,
+                1 if feature_kind == "field" else 0,
+                1 if feature_kind == "quality" else 0,
+                1 if feature_kind == "promo" else 0,
+                0 if broad_macro and (not direct_supply) else 1,
+                1 if tier >= 2 else 0,
+                round(fit_sc, 3),
+                round(horti_sc, 3),
+                round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                pub_sort,
+            )
+        if section_key == "policy":
+            officialish = policy_domain_override(dom_local, txt_local) or (dom_local in POLICY_DOMAINS) or (pr_local in ("정책브리핑", "농식품부"))
+            market_brief = is_policy_market_brief_context(txt_local, dom_local, pr_local)
+            stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
+            announcement = is_policy_announcement_issue(txt_local, dom_local, pr_local)
+            macro = is_macro_policy_issue(txt_local)
+            if is_retail_sales_trend_context(txt_local):
+                return None
+            if not (market_brief or stabilization or announcement or macro):
+                return None
+            if tier < 2 and (not officialish):
+                return None
+            if fit_sc < 1.2 and (not officialish) and (not market_brief):
+                return None
+            return (
+                1 if officialish else 0,
+                1 if market_brief else 0,
+                1 if stabilization else 0,
+                1 if announcement else 0,
+                1 if macro else 0,
+                1 if tier >= 2 else 0,
+                round(fit_sc, 3),
+                round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                pub_sort,
             )
         if section_key == "pest":
-            return is_pest_story_focus_strong(a.title or "", a.description or "") or is_pest_control_policy_context(txt_local)
-        return False
+            if not (is_pest_story_focus_strong(a.title or "", a.description or "") or is_pest_control_policy_context(txt_local)):
+                return None
+            return (
+                1 if is_pest_control_policy_context(txt_local) else 0,
+                1 if tier >= 2 else 0,
+                round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                pub_sort,
+            )
+        return None
+
+    def _is_strong_underfill_candidate(a: Article) -> bool:
+        return _underfill_candidate_rank(a) is not None
 
     # 1) 엄격 코어 2개
     for a in pool:
@@ -6834,17 +6892,19 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 4.6) underfill 강신호 백필:
     # - 섹션이 2건 수준에서 끝날 때, threshold/tail-cut 바로 아래의 강한 기사 1건을 추가로 살린다.
-    # - 공급/병해충만 대상으로 하여 운영 잡음 증가는 최소화한다.
-    strong_underfill_target_by_section = {"supply": 3, "pest": 3}
+    # - policy는 공공/기관발 강기사에 한해서만 1건 보강하고, dist는 이미 별도 백필 단계가 있어 제외한다.
+    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "pest": 3}
     strong_underfill_target = min(max_n, strong_underfill_target_by_section.get(section_key, 0))
     if strong_underfill_target and len(final) < strong_underfill_target:
         need = strong_underfill_target - len(final)
         relax_margin_by_section = {
             "supply": 2.4,
+            "policy": 2.2,
             "pest": 3.2,
         }
         relax_floor_offset_by_section = {
             "supply": 0.4,
+            "policy": 0.5,
             "pest": 0.6,
         }
         relax_cut = max(
@@ -6852,7 +6912,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             thr - relax_margin_by_section.get(section_key, 2.4),
         )
         tier1_cap_relax = max(tier1_cap, 2)
-        tier2_cap_relax = max(tier2_cap, 3 if section_key == "supply" else 4)
+        tier2_cap_relax = max(tier2_cap, 3 if section_key in ("supply", "policy") else 4)
 
         def _source_ok_underfill(a: Article) -> bool:
             t = press_priority(a.press, a.domain)
@@ -6862,9 +6922,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 return tier_count[2] < tier2_cap_relax
             return True
 
+        ranked_underfill: list[tuple[tuple[Any, ...], Article]] = []
         for a in candidates_sorted:
-            if need <= 0 or len(final) >= max_n:
-                break
             if a in final:
                 continue
             if a.score < relax_cut:
@@ -6873,21 +6932,37 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
-            if not _is_strong_underfill_candidate(a):
+            rank = _underfill_candidate_rank(a)
+            if rank is None:
                 continue
-            if not _source_ok_underfill(a):
-                continue
-            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
-                continue
-            if any(_is_similar_story(a, b, section_key) for b in final):
-                continue
-            if _supply_feature_topic_repeat(a, final):
-                continue
-            a.is_core = False
-            final.append(a)
-            _mark_used(a)
-            _source_take(a)
-            need -= 1
+            ranked_underfill.append((rank, a))
+
+        ranked_underfill.sort(key=lambda item: item[0], reverse=True)
+
+        while need > 0 and len(final) < max_n:
+            picked_any = False
+            for _, a in ranked_underfill:
+                if a in final:
+                    continue
+                if _already_used(a):
+                    continue
+                if not _source_ok_underfill(a):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                    continue
+                if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
+                if _supply_feature_topic_repeat(a, final):
+                    continue
+                a.is_core = False
+                final.append(a)
+                _mark_used(a)
+                _source_take(a)
+                need -= 1
+                picked_any = True
+                break
+            if not picked_any:
+                break
 
     # 강제 섹션 이동 기사(예: policy->pest)는 최종 노출에서 사라지지 않도록 우선 포함 보장
     forced_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
