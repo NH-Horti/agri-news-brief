@@ -6257,6 +6257,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         if is_policy_market_brief_context(txt_local, dom_local, pr_local):
             return True
+        ttl_local = (a.title or "").lower()
+        if press_priority(a.press, a.domain) == 1 and (("농축산물" in ttl_local) or ("농산물" in ttl_local)) and any(t in txt_local for t in ("전주 대비", "전년 대비", "평년 대비", "대체로")):
+            return True
         aggregate_hits = count_any(
             txt_local,
             [t.lower() for t in ("농축산물", "농산물", "과일류", "채소류", "과일", "채소", "전주 대비", "전년 대비", "평년 대비", "대체로")],
