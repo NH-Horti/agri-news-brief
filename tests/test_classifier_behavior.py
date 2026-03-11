@@ -1701,22 +1701,29 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(bucket, "export_recovery")
         self.assertEqual(best, "supply", msg=f"scores={scores}")
 
+    def test_supply_issue_bucket_detects_commodity_issue_editorial(self):
+        title = "[\uCDE8\uC7AC\uC218\uCCA9] \uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC2E4\uC9C8\uC801\uC778 \uB300\uCC45 \uC11C\uB458\uB7EC\uB77C"
+        desc = "\uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC0DD\uC0B0\uACFC\uC789 \uBBF8\uC219\uACFC \uC81C\uAC12 \uD3D0\uC6D0 \uC9C0\uC6D0 \uC885\uD569\uACC4\uD68D \uC2DC\uAE09"
+        bucket = main.supply_issue_context_bucket(title, desc)
+        best, scores = self._best_section(title, desc, "https://www.nongmin.com/article/20260309500634")
+        self.assertEqual(bucket, "commodity_issue")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
     def test_supply_issue_articles_with_different_buckets_can_coexist(self):
         export_story = self._make_article(
             "supply",
-            "[신선농산물 수출확대 극복 과제] 샤인머스캣 수출 급증했지만, 떨어진 가격 회복 시급",
-            "샤인머스캣 수출은 늘었지만 산지 가격 회복과 판로 정상화 대책이 시급하다는 분석이다.",
+            "\uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC218\uCD9C \uD655\uB300 \uD68C\uBCF5 \uB300\uCC45 \uC2DC\uAE09",
+            "\uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC218\uCD9C \uAE09\uC99D \uAC00\uACA9 \uD558\uB77D \uD310\uB85C \uD68C\uBCF5 \uB300\uCC45",
             "https://www.agrinet.co.kr/news/articleView.html?idxno=402455",
         )
         farm_story = self._make_article(
             "supply",
-            "[취재수첩] 샤인머스캣 실질적인 대책 서둘러라",
-            "샤인머스캣 산지 농가 피해가 커지고 가격 정체와 소비자 외면이 이어져 실질적인 대책 마련이 시급하다는 취재수첩이다.",
+            "[\uCDE8\uC7AC\uC218\uCCA9] \uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC2E4\uC9C8\uC801\uC778 \uB300\uCC45 \uC11C\uB458\uB7EC\uB77C",
+            "\uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC0DD\uC0B0\uACFC\uC789 \uBBF8\uC219\uACFC \uC81C\uAC12 \uD3D0\uC6D0 \uC9C0\uC6D0 \uC885\uD569\uACC4\uD68D \uC2DC\uAE09",
             "https://www.nongmin.com/article/20260309500634",
         )
         export_story.score = 24.8
         farm_story.score = 23.7
-
         picked = main.select_top_articles([export_story, farm_story], "supply", 5)
         picked_links = {x.link for x in picked}
         self.assertIn(export_story.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
