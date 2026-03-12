@@ -1247,7 +1247,7 @@ class TestClassifierBehavior(unittest.TestCase):
 
     def test_supply_registry_is_single_source_for_item_queries_topics_and_must_terms(self):
         supply_conf = next(sec for sec in main.SECTIONS if sec["key"] == "supply")
-        self.assertEqual(supply_conf["queries"], list(main.SUPPLY_ITEM_QUERIES))
+        self.assertEqual(supply_conf["queries"], list(main.SUPPLY_ITEM_QUERIES) + list(main.SUPPLY_CONTEXT_QUERIES))
         self.assertEqual(supply_conf["must_terms"], list(main.SUPPLY_GENERAL_MUST_TERMS) + list(main.SUPPLY_ITEM_MUST_TERMS))
         self.assertEqual(main._HORTI_TOPICS_SET, {entry["topic"] for entry in main.COMMODITY_REGISTRY})
         self.assertEqual(main.TOPIC_REP_BY_TERM_L["배"], "배")
@@ -1923,6 +1923,74 @@ class TestClassifierBehavior(unittest.TestCase):
             main.normalize_press_label("KWNEWS", "https://www.kwnews.co.kr/page/view/2026031116255017225"),
             "\uac15\uc6d0\uc77c\ubcf4",
         )
+
+    def test_normalize_press_label_maps_bokuennews_host(self):
+        self.assertEqual(
+            main.normalize_press_label("bokuennews", "http://www.bokuennews.com/news/article.html?no=274896"),
+            "보건신문",
+        )
+
+    def test_rss_pub_to_kst_parses_plain_site_timestamp(self):
+        parsed = main._rss_pub_to_kst("2026-03-11 11:17:53")
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed.tzinfo, main.KST)
+        self.assertEqual(parsed.strftime("%Y-%m-%d %H:%M:%S"), "2026-03-11 11:17:53")
+
+    def test_supply_underfill_backfill_keeps_shock_issue_story(self):
+        anchor = self._make_article(
+            "supply",
+            "“고랭지채소 가격 안정”…강원 농산물수급관리센터 가동",
+            "광역 수급관리센터 가동으로 고랭지채소 가격 안정과 재배면적 관리에 나선 기사다.",
+            "https://www.seoul.co.kr/news/society/2026/03/10/20260310500115?wlog_tag3=naver",
+        )
+        issue = self._make_article(
+            "supply",
+            "[취재수첝] 샤인머스캣 실질적인 대책 서둘러라",
+            "샤인머스캣 생산과잉과 미숙과, 제값 회복 대책이 시급하다는 분석 기사다.",
+            "https://www.nongmin.com/article/20260309500634",
+        )
+        shock = self._make_article(
+            "supply",
+            "대형 산불에 기후변화까지…과수 묘목 품귀에 농가 울상",
+            "산불과 기후변화 여파로 과수 묘목 품귀가 이어지며 농가 부담이 커졌다는 현장 기사다.",
+            "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506106",
+        )
+        anchor.score = 36.12
+        issue.score = 25.69
+        shock.score = 17.42
+
+        picked = main.select_top_articles([anchor, issue, shock], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(issue.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(shock.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_dist_underfill_backfill_keeps_local_field_profile_story(self):
+        core = self._make_article(
+            "dist",
+            "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’",
+            "가락시장과 구리시장이 동시에 휴업하면서 딸기 가격과 출하량이 크게 흔들렸다는 현장 기사다.",
+            "https://www.nongmin.com/article/20260309500761",
+        )
+        systemic = self._make_article(
+            "dist",
+            "수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'",
+            "수도권 도매시장 동시 휴업으로 출하가 몰리며 과채류 가격이 흔들리고 산지 출하 농민 불안이 커졌다는 현장 기사다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402440",
+        )
+        local = self._make_article(
+            "dist",
+            "지역경제 선도하는 품목농협 - 대경사과원예농협",
+            "대경사과원예농협이 공동선별과 산지유통, 판로 확대 등 경제사업으로 지역경제를 선도한다는 현장 기사다.",
+            "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
+        )
+        core.score = 48.41
+        systemic.score = 36.49
+        local.score = -8.0
+
+        picked = main.select_top_articles([core, systemic, local], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(systemic.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(local.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):

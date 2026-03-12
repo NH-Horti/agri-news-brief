@@ -526,7 +526,13 @@ try:
 except Exception:
     pass
 # Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
-WHITELIST_RSS_URLS = [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]
+DEFAULT_WHITELIST_RSS_URLS = [
+    "http://www.wonyesanup.co.kr/rss/allArticle.xml",
+]
+WHITELIST_RSS_URLS: list[str] = []
+for _rss_url in list(DEFAULT_WHITELIST_RSS_URLS) + [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]:
+    if _rss_url and _rss_url not in WHITELIST_RSS_URLS:
+        WHITELIST_RSS_URLS.append(_rss_url)
 
 
 
@@ -1177,6 +1183,13 @@ SUPPLY_ITEM_MUST_TERMS = _ordered_unique_terms(
     for entry in COMMODITY_REGISTRY
     for term in _commodity_must_terms(entry)
 )
+SUPPLY_CONTEXT_QUERIES = [
+    "과수 묘목 품귀",
+    "과수 묘목",
+    "산불 과수",
+    "기후변화 과수",
+    "과수 농가 울상",
+]
 SUPPLY_TITLE_FOCUS_TERMS_L = [
     term.lower()
     for term in _ordered_unique_terms(
@@ -1211,7 +1224,7 @@ SECTIONS: list[SectionConfig] = [
         "key": "supply",
         "title": "품목 및 수급 동향",
         "color": "#0f766e",
-        "queries": list(SUPPLY_ITEM_QUERIES),
+        "queries": list(SUPPLY_ITEM_QUERIES) + list(SUPPLY_CONTEXT_QUERIES),
         "must_terms": list(SUPPLY_GENERAL_MUST_TERMS) + list(SUPPLY_ITEM_MUST_TERMS),
     },
     {
@@ -1249,6 +1262,8 @@ SECTIONS: list[SectionConfig] = [
             "품목농협 산지유통",
             "원예농협 산지유통",
             "품목농협 공동선별",
+            "품목농협 경제사업",
+            "원예농협 경제사업",
             "산지유통센터 준공",
             "스마트 농산물 산지유통센터 준공",
             "스마트 APC 준공",
@@ -4114,6 +4129,26 @@ PRESS_HOST_MAP = {
     "www.kyeongin.com": "경인일보",
     "hankooki.com": "데일리한국",
     "daily.hankooki.com": "데일리한국",
+    "bokuennews.com": "보건신문",
+    "www.bokuennews.com": "보건신문",
+    "jmbc.co.kr": "전주MBC",
+    "www.jmbc.co.kr": "전주MBC",
+    "kjmbc.co.kr": "광주MBC",
+    "www.kjmbc.co.kr": "광주MBC",
+    "chmbc.co.kr": "춘천MBC",
+    "www.chmbc.co.kr": "춘천MBC",
+    "jndn.com": "전남매일",
+    "www.jndn.com": "전남매일",
+    "knnews.co.kr": "경남신문",
+    "www.knnews.co.kr": "경남신문",
+    "gnnews.co.kr": "경남일보",
+    "www.gnnews.co.kr": "경남일보",
+    "ksilbo.co.kr": "경상일보",
+    "www.ksilbo.co.kr": "경상일보",
+    "shinailbo.co.kr": "신아일보",
+    "www.shinailbo.co.kr": "신아일보",
+    "yonhapnewstv.co.kr": "연합뉴스TV",
+    "www.yonhapnewstv.co.kr": "연합뉴스TV",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -4211,6 +4246,16 @@ ABBR_MAP = {
     "enewstoday": "이뉴스투데이",
     "kyeongin": "경인일보",
     "hankooki": "데일리한국",
+    "bokuennews": "보건신문",
+    "jmbc": "전주MBC",
+    "kjmbc": "광주MBC",
+    "chmbc": "춘천MBC",
+    "jndn": "전남매일",
+    "knnews": "경남신문",
+    "gnnews": "경남일보",
+    "ksilbo": "경상일보",
+    "shinailbo": "신아일보",
+    "yonhapnewstv": "연합뉴스TV",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -6928,6 +6973,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             )
             feature_kind = supply_feature_context_kind(a.title or "", a.description or "")
             issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
+            shock_issue = issue_bucket == "commodity_issue" and (
+                count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_INPUT_TERMS])
+                + count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS])
+            ) >= 2
             feature_like = feature_kind is not None
             direct_supply = has_direct_supply_chain_signal(txt_local)
             broad_macro = is_broad_macro_price_context(a.title or "", a.description or "")
@@ -6945,6 +6994,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 return None
             return (
                 1 if direct_supply else 0,
+                1 if shock_issue else 0,
                 1 if feature_kind == "issue" else 0,
                 1 if issue_bucket == "export_recovery" else 0,
                 1 if feature_kind == "field" else 0,
@@ -7447,7 +7497,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 break
             if a in final:
                 continue
-            if a.score < relax_cut:
+            local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
+            systemic_disruption = dist_market_disruption_scope(a.title or "", a.description or "") == "systemic"
+            effective_cut = -20.0 if local_field_profile else max(BASE_MIN_SCORE.get("dist", 7.2) - 0.6, thr - 5.0) if systemic_disruption else relax_cut
+            if a.score < effective_cut:
                 continue
             if _already_used(a):
                 continue
@@ -7626,9 +7679,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if strong_underfill_target and len(final) < strong_underfill_target:
         need = strong_underfill_target - len(final)
         relax_margin_by_section = {
-            "supply": 2.4,
+            "supply": 4.2,
             "policy": 2.2,
-            "dist": 2.4,
+            "dist": 5.0,
             "pest": 3.2,
         }
         relax_floor_offset_by_section = {
@@ -7644,6 +7697,24 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         tier1_cap_relax = max(tier1_cap, 2)
         tier2_cap_relax = max(tier2_cap, 3 if section_key in ("supply", "policy") else 4)
 
+        def _underfill_score_cut(a: Article) -> float:
+            cut = relax_cut
+            txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+            if section_key == "supply":
+                issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
+                shock_hits = count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_INPUT_TERMS]) + count_any(
+                    txt_local,
+                    [w.lower() for w in _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS],
+                )
+                if issue_bucket == "commodity_issue" and shock_hits >= 2 and press_priority(a.press, a.domain) >= 2:
+                    cut = min(cut, max(BASE_MIN_SCORE.get("supply", 6.0) + 0.4, thr - 11.5))
+            elif section_key == "dist":
+                if is_dist_local_field_profile_context(a.title or "", a.description or ""):
+                    return -20.0
+                if dist_market_disruption_scope(a.title or "", a.description or "") == "systemic":
+                    cut = min(cut, max(BASE_MIN_SCORE.get("dist", 6.0) + 0.5, thr - 5.0))
+            return cut
+
         def _source_ok_underfill(a: Article) -> bool:
             t = press_priority(a.press, a.domain)
             if t == 1:
@@ -7656,7 +7727,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         for a in candidates_sorted:
             if a in final:
                 continue
-            if a.score < relax_cut:
+            if a.score < _underfill_score_cut(a):
                 continue
             if _already_used(a):
                 continue
@@ -7955,15 +8026,24 @@ def fetch_rss_items(rss_url: str) -> list[JsonDict]:
         return []
 
 def _rss_pub_to_kst(pub: str) -> datetime | None:
-    # RSS pubDate는 형식이 다양해 보수적으로 처리(실패 시 None)
+    # RSS pubDate? ??? ??? ????? ??(?? ? None)
     if not pub:
         return None
-    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"):
+    pub = str(pub or "").strip()
+    for fmt in (
+        "%a, %d %b %Y %H:%M:%S %z",
+        "%a, %d %b %Y %H:%M:%S %Z",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d %H:%M",
+    ):
         try:
             dt = datetime.strptime(pub, fmt)
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return dt.astimezone(timezone(timedelta(hours=9)))
+                if fmt.startswith("%Y-"):
+                    dt = dt.replace(tzinfo=KST)
+                else:
+                    dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(KST)
         except Exception:
             continue
     return None
@@ -8033,7 +8113,7 @@ def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end
 # Recall backfill helpers (broad-query safety net)
 # -----------------------------
 _RECALL_SIGNALS_BY_SECTION = {
-    "supply": ["\ubb34\uad00\uc138", "\uc218\uc785", "\uad00\uc138", "FTA", "\ud560\ub2f9\uad00\uc138"],
+    "supply": ["\ubb34\uad00\uc138", "\uc218\uc785", "\uad00\uc138", "FTA", "\ud560\ub2f9\uad00\uc138", "\ubb18\ubaa9", "\ud488\uadc0", "\uc0b0\ubd88", "\uae30\ud6c4\ubcc0\ud654"],
     "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["\ub300\ucc45", "\uc9c0\uc6d0", "\ud560\ub2f9\uad00\uc138", "\uac80\uc5ed", "\uad00\uc138", "\ubb34\uad00\uc138", "\uc218\uc785"],
     "dist": ["\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc81c\ub3c4 \uac1c\uc120", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc6d0\uc0b0\uc9c0", "\ub2e8\uc18d", "\uac80\uc5ed", "\ud1b5\uad00", "\uc218\ucd9c", "\uc120\uc801", "\ud310\ub85c", "\ubb3c\ub958"],
     "pest": ["\ubcd1\ud574\ucda9", "\ubc29\uc81c", "\uc608\ucc30", "\uac80\uc5ed"],
