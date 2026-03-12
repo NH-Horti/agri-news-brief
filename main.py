@@ -1244,6 +1244,11 @@ SECTIONS: list[SectionConfig] = [
             "공판장 청과 경매",
             "시장도매인제 도매시장",
             "온라인 도매시장 청과",
+            "온라인 도매시장 제도 개선",
+            "도매시장 제도 개선",
+            "품목농협 산지유통",
+            "원예농협 산지유통",
+            "품목농협 공동선별",
             "산지유통센터 준공",
             "스마트 농산물 산지유통센터 준공",
             "스마트 APC 준공",
@@ -2950,6 +2955,46 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
 
 
+_DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS = (
+    "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\uacf5\uc120\ucd9c\ud558", "\uacbd\uc81c\uc0ac\uc5c5",
+)
+_DIST_LOCAL_FIELD_PROFILE_BODY_TERMS = (
+    "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\uacf5\uc120\ucd9c\ud558", "\uacf5\ub3d9\ud310\ub9e4", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558", "\uacbd\uc81c\uc0ac\uc5c5", "\ube0c\ub79c\ub4dc", "\ub18d\uac00\uc2e4\uc775", "\uc9c0\uc5ed\uacbd\uc81c", "\uc120\ub3c4",
+)
+
+
+def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
+    """Return True for local hortic coop profiles with real distribution/field value."""
+    if not is_local_agri_org_feature_context(title, desc):
+        return False
+
+    ttl = (title or "").lower()
+    txt = f"{title or ''} {desc or ''}".lower()
+    if not txt:
+        return False
+
+    org_title_hits = count_any(ttl, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")])
+    field_title_hits = count_any(ttl, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS])
+    field_body_hits = count_any(txt, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_BODY_TERMS])
+    market_hits = count_any(
+        txt,
+        [w.lower() for w in ("\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uacf5\ud310\uc7a5", "\uacf5\uc601\ub3c4\ub9e4\uc2dc\uc7a5", "\uacbd\ub77d", "\uacbd\ub9e4", "\ubc18\uc785", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc0b0\uc9c0\uc720\ud1b5", "\uc0b0\uc9c0\uc720\ud1b5\uc13c\ud130")],
+    )
+    if has_apc_agri_context(txt):
+        market_hits += 1
+
+    horti_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    horti_sc = best_horti_score(title or "", desc or "")
+    profile_hits = count_any(txt, [w.lower() for w in ("\uc9c0\uc5ed\uacbd\uc81c", "\uc120\ub3c4", "\ube0c\ub79c\ub4dc", "\uacbd\uc81c\uc0ac\uc5c5", "\ub18d\uac00\uc2e4\uc775", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558")])
+
+    if org_title_hits >= 1 and (horti_hits >= 1 or horti_sc >= 1.4):
+        if field_title_hits >= 1 and (field_body_hits >= 1 or profile_hits >= 2 or market_hits >= 1):
+            return True
+        if field_body_hits >= 3 and profile_hits >= 2:
+            return True
+    return False
+
+
 _DIST_LOCAL_ORG_PROFILE_TITLE_TERMS = (
     "우수조합", "전이용", "이용하면", "농업경제사업 대상", "사업 대상", "대상]",
 )
@@ -2967,6 +3012,8 @@ def is_dist_local_org_tail_context(title: str, desc: str) -> bool:
     ttl = (title or "").lower()
     txt = f"{title or ''} {desc or ''}".lower()
     if not txt:
+        return False
+    if is_dist_local_field_profile_context(title, desc):
         return False
     if is_dist_export_shipping_context(title, desc) or is_dist_market_disruption_context(title, desc):
         return False
@@ -3311,15 +3358,22 @@ _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS = (
     "\uBD80\uB2F4", "\uAE09\uB77D", "\uD558\uB77D", "\uD3ED\uB77D", "\uC815\uCCB4", "\uCE68\uCCB4", "\uC704\uAE30", "\uBE44\uC0C1", "\uC6B0\uB824", "\uD53C\uD574",
     "\uC190\uC2E4", "\uD3EC\uAE30", "\uC5B4\uB824\uC6C0", "\uD638\uC18C", "\uC0DD\uC0B0\uBE44", "\uB09C\uBC29\uBE44", "\uBA74\uC138\uC720", "\uC81C\uAC12", "\uC18C\uBE44\uC790 \uC678\uBA74",
     "\uC0DD\uC0B0\uACFC\uC789", "\uACFC\uC789\uC0DD\uC0B0", "\uC6D0\uAC00", "\uBBF8\uC219\uACFC", "\uD3D0\uC6D0", "\uC2E0\uB8B0 \uC2E4\uCD94", "\uB5A8\uC5B4\uC9C4",
+    "\uC6B8\uC0C1", "\uD488\uADC0", "\uBB3C\uB7C9 \uBD80\uC871", "\uC218\uAE09 \uCC28\uC9C8",
+)
+_SUPPLY_FEATURE_ISSUE_INPUT_TERMS = (
+    "\uBB18\uBAA9", "\uBB18\uBAA9\uB09C", "\uC885\uBB18", "\uBAA8\uC885", "\uC721\uBB18", "\uD488\uADC0",
+)
+_SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS = (
+    "\uC0B0\uBD88", "\uB300\uD615 \uC0B0\uBD88", "\uAE30\uD6C4\uBCC0\uD654", "\uC774\uC0C1\uAE30\uD6C4", "\uD3ED\uC5FC", "\uACE0\uC628", "\uD55C\uD30C", "\uB0C9\uD574", "\uC11C\uB9AC",
 )
 _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
-    "수출", "수출길", "수출 확대", "선적", "검역", "통관", "판로", "해외시장", "해외 수요",
+    "\uc218\ucd9c", "\uc218\ucd9c\uae38", "\uc218\ucd9c \ud655\ub300", "\uc120\uc801", "\uac80\uc5ed", "\ud1b5\uad00", "\ud310\ub85c", "\ud574\uc678\uc2dc\uc7a5", "\ud574\uc678 \uc218\uc694",
 )
 _SUPPLY_FEATURE_ISSUE_RECOVERY_TERMS = (
-    "회복", "반등", "정상화", "가격 회복", "시세 회복", "제값", "회복세",
+    "\ud68c\ubcf5", "\ubc18\ub4f1", "\uc815\uc0c1\ud654", "\uac00\uaca9 \ud68c\ubcf5", "\uc2dc\uc138 \ud68c\ubcf5", "\uc81c\uac12", "\ud68c\ubcf5\uc138",
 )
 _SUPPLY_FEATURE_ISSUE_FARM_TERMS = (
-    "농가", "산지", "주산지", "생산자", "재배농가", "과원", "시설", "생산비", "난방비", "면세유",
+    "\ub18d\uac00", "\uc0b0\uc9c0", "\uc8fc\uc0b0\uc9c0", "\uc0dd\uc0b0\uc790", "\uc7ac\ubc30\ub18d\uac00", "\uacfc\uc6d0", "\uc2dc\uc124", "\uc0dd\uc0b0\ube44", "\ub09c\ubc29\ube44", "\uba74\uc138\uc720",
 )
 
 
@@ -3340,21 +3394,29 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     horti_title_sc = best_horti_score(ttl, "")
     item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
-    if item_hits == 0 and horti_sc < 1.8:
-        return None
-
-    title_issue_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS])
-    issue_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS])
-    if title_issue_hits == 0 and issue_hits < 2:
-        return None
 
     title_export_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS])
+    title_issue_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS])
     export_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS])
+    issue_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS])
     recovery_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_RECOVERY_TERMS])
     farm_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_FARM_TERMS])
     distress_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS])
     title_distress_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS])
     action_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_ACTION_TERMS])
+    input_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_INPUT_TERMS])
+    climate_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS])
+    strong_item_context = title_item_hits >= 1 or horti_title_sc >= 1.2 or horti_sc >= 2.2
+    shock_issue = (
+        (strong_item_context or (farm_hits >= 1 and (input_hits >= 1 or climate_hits >= 1)))
+        and input_hits >= 1
+        and (climate_hits >= 1 or distress_hits >= 1 or title_distress_hits >= 1)
+    )
+    if item_hits == 0 and horti_sc < 1.8 and not shock_issue:
+        return None
+    if title_issue_hits == 0 and issue_hits < 2 and not shock_issue:
+        return None
+
     if title_export_hits >= 1 and (title_item_hits >= 1 or horti_title_sc >= 1.0 or horti_sc >= 1.8) and title_issue_hits >= 1 and (title_distress_hits >= 1 or distress_hits >= 1 or action_hits >= 1):
         return "export_recovery"
 
@@ -3362,7 +3424,8 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
         return "export_recovery"
     if farm_hits >= 1 and distress_hits >= 1 and (title_issue_hits >= 1 or action_hits >= 1):
         return "farm_action"
-    strong_item_context = title_item_hits >= 1 or horti_title_sc >= 1.2 or horti_sc >= 2.2
+    if shock_issue:
+        return "commodity_issue"
     has_issue_frame = title_issue_hits >= 1 or issue_hits >= 3
     issue_follow_through = (
         distress_hits >= 2
@@ -3387,12 +3450,13 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     title_item_hits = count_any(ttl.lower(), HORTI_ITEM_TERMS_L)
     title_core_hits = count_any(ttl.lower(), [w.lower() for w in SUPPLY_TITLE_CORE_TERMS])
-    if item_hits == 0 and horti_sc < 1.8:
+    issue_bucket = supply_issue_context_bucket(title, desc)
+    if item_hits == 0 and horti_sc < 1.8 and not issue_bucket:
         return None
 
     if is_supply_org_promo_feature_context(title, desc):
         return "promo"
-    if supply_issue_context_bucket(title, desc):
+    if issue_bucket:
         return "issue"
 
     field_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_FIELD_TERMS])
@@ -3575,7 +3639,9 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
         elif dist_disruption_scope == "commodity_aftershock":
             base += 0.65
         if is_local_agri_org_feature_context(title, desc):
-            if is_dist_local_org_tail_context(title, desc):
+            if is_dist_local_field_profile_context(title, desc):
+                base += 0.55
+            elif is_dist_local_org_tail_context(title, desc):
                 base -= 0.9
             else:
                 base += 0.25
@@ -4026,6 +4092,28 @@ PRESS_HOST_MAP = {
     # 농업/전문지(중요)
     "nongmin.com": "농민신문",
     "farmnmarket.com": "팜&마켓",
+    "youngnong.co.kr": "한국영농신문",
+    "www.youngnong.co.kr": "한국영농신문",
+    "wonyesanup.co.kr": "원예산업신문",
+    "www.wonyesanup.co.kr": "원예산업신문",
+    "jeonmin.co.kr": "전민일보",
+    "www.jeonmin.co.kr": "전민일보",
+    "busan.com": "부산일보",
+    "www.busan.com": "부산일보",
+    "kwnews.co.kr": "강원일보",
+    "www.kwnews.co.kr": "강원일보",
+    "idomin.com": "경남도민일보",
+    "www.idomin.com": "경남도민일보",
+    "etoday.co.kr": "이투데이",
+    "www.etoday.co.kr": "이투데이",
+    "kukinews.com": "쿠키뉴스",
+    "www.kukinews.com": "쿠키뉴스",
+    "enewstoday.co.kr": "이뉴스투데이",
+    "www.enewstoday.co.kr": "이뉴스투데이",
+    "kyeongin.com": "경인일보",
+    "www.kyeongin.com": "경인일보",
+    "hankooki.com": "데일리한국",
+    "daily.hankooki.com": "데일리한국",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -4112,6 +4200,17 @@ ABBR_MAP = {
     "sisajournal": "시사저널",
     "mediatoday": "미디어오늘",
     "newdaily": "뉴데일리경제",
+    "youngnong": "한국영농신문",
+    "wonyesanup": "원예산업신문",
+    "jeonmin": "전민일보",
+    "busan": "부산일보",
+    "kwnews": "강원일보",
+    "idomin": "경남도민일보",
+    "etoday": "이투데이",
+    "kukinews": "쿠키뉴스",
+    "enewstoday": "이뉴스투데이",
+    "kyeongin": "경인일보",
+    "hankooki": "데일리한국",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -4152,7 +4251,7 @@ def normalize_press_label(press: str, url: str = "") -> str:
     """Normalize publisher labels to canonical Korean press names.
 
     Some feeds may provide raw/english publisher labels (e.g., "newdaily").
-    Apply a small alias normalization so rendering and dedupe stay consistent.
+    Apply alias + host-based normalization so rendering and dedupe stay consistent.
     """
     p = (press or "").strip()
     if not p:
@@ -4160,19 +4259,28 @@ def normalize_press_label(press: str, url: str = "") -> str:
 
     p_compact = re.sub(r"\s+", "", p.lower())
     alias = {
-        "newdaily": "뉴데일리경제",
-        "뉴데일리": "뉴데일리경제",
-        "뉴데일리경제": "뉴데일리경제",
+        "newdaily": "\ub274\ub370\uc77c\ub9ac\uacbd\uc81c",
+        "\ub274\ub370\uc77c\ub9ac": "\ub274\ub370\uc77c\ub9ac\uacbd\uc81c",
+        "\ub274\ub370\uc77c\ub9ac\uacbd\uc81c": "\ub274\ub370\uc77c\ub9ac\uacbd\uc81c",
     }
     if p_compact in alias:
         return alias[p_compact]
 
-    # If a hostname is passed as press label, map it via host-based normalizer.
+    mapped = ""
+    if url:
+        try:
+            mapped = press_name_from_url(url)
+        except Exception:
+            mapped = ""
+
     if "." in p and "/" not in p and " " not in p:
         try:
             return press_name_from_url("https://" + p)
         except Exception:
-            return p
+            return mapped or p
+
+    if mapped and mapped != "미상" and re.fullmatch(r"[a-z0-9._-]+", p_compact):
+        return mapped
     return p
 
 
@@ -5584,6 +5692,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         apc_ctx = has_apc_agri_context(text)
         dist_export_shipping = is_dist_export_shipping_context(ttl, desc)
         dist_export_field = is_dist_export_field_context(ttl, desc, dom, press)
+        dist_local_field_profile = is_dist_local_field_profile_context(title, desc)
         dist_local_org_tail = is_dist_local_org_tail_context(title, desc)
         if dist_local_org_tail:
             return _reject("dist_local_org_profile")
@@ -5591,6 +5700,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             soft_hits += 1
         if local_org_feature and not dist_local_org_tail:
             soft_hits += 1
+            agri_anchor_hits = max(agri_anchor_hits, 1)
+        if dist_local_field_profile:
+            soft_hits = max(soft_hits, 2)
+            hard_hits = max(hard_hits, 1)
             agri_anchor_hits = max(agri_anchor_hits, 1)
         if dist_export_shipping:
             soft_hits = max(soft_hits, 1)
@@ -5689,6 +5802,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     macro_policy_like = is_macro_policy_issue(text)
     broad_macro_price = is_broad_macro_price_context(title, desc)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
+    dist_local_field_profile = is_dist_local_field_profile_context(title, desc)
     dist_local_org_tail = is_dist_local_org_tail_context(title, desc)
     infra_designation = is_local_agri_infra_designation_context(title, desc)
     direct_supply_story = has_direct_supply_chain_signal(text)
@@ -5764,6 +5878,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += 0.7
             elif supply_issue_bucket == "commodity_issue":
                 score += 1.4
+                shock_hits = count_any(text, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_INPUT_TERMS]) + count_any(text, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS])
+                if shock_hits >= 2:
+                    score += 0.9
             if horti_title_sc >= 1.4:
                 score += 0.6
         elif supply_feature_kind == "field":
@@ -5817,6 +5934,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 3.5
         if dist_local_org_tail:
             score -= 6.2
+        elif dist_local_field_profile:
+            score += 2.2
         elif local_org_feature:
             score += 0.6
         if is_dist_export_shipping_context(title, desc):
@@ -6854,15 +6973,19 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _is_dist_weak_tail_story(a):
                 return None
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
-            strong_local_org = local_org_feature and apc_ctx_local
-            if not (disruption_rank or export_shipping or export_field or strong_local_org or market_anchor_hits >= 2 or fit_sc >= 1.4):
+            local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
+            strong_local_org = local_field_profile or (local_org_feature and apc_ctx_local)
+            if local_field_profile:
+                market_anchor_hits = max(market_anchor_hits, 1)
+            if not (disruption_rank or local_field_profile or export_shipping or export_field or strong_local_org or market_anchor_hits >= 2 or fit_sc >= 1.4):
                 return None
             return (
                 disruption_rank,
+                1 if market_anchor_hits >= 2 else 0,
+                1 if local_field_profile else 0,
+                1 if strong_local_org else 0,
                 1 if export_field else 0,
                 1 if export_shipping else 0,
-                1 if market_anchor_hits >= 2 else 0,
-                1 if strong_local_org else 0,
                 1 if tier >= 2 else 0,
                 round(fit_sc, 3),
                 round(float(getattr(a, "score", 0.0) or 0.0), 3),
@@ -7143,7 +7266,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             text = (a.title + " " + a.description).lower()
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
-            strong_local_org = local_org_feature and has_apc_agri_context(text)
+            local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
+            strong_local_org = local_field_profile or (local_org_feature and has_apc_agri_context(text))
             has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or strong_local_org
             if not has_anchor:
                 continue
@@ -7909,10 +8033,10 @@ def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end
 # Recall backfill helpers (broad-query safety net)
 # -----------------------------
 _RECALL_SIGNALS_BY_SECTION = {
-    "supply": ["무관세", "수입", "관세", "FTA", "할당관세"],
-    "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["대책", "지원", "할당관세", "검역", "관세", "무관세", "수입"],
-    "dist": ["도매시장", "원산지", "단속", "검역", "통관", "수출", "선적", "판로", "물류"],
-    "pest": ["병해충", "방제", "예찰", "검역"],
+    "supply": ["\ubb34\uad00\uc138", "\uc218\uc785", "\uad00\uc138", "FTA", "\ud560\ub2f9\uad00\uc138"],
+    "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["\ub300\ucc45", "\uc9c0\uc6d0", "\ud560\ub2f9\uad00\uc138", "\uac80\uc5ed", "\uad00\uc138", "\ubb34\uad00\uc138", "\uc218\uc785"],
+    "dist": ["\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc81c\ub3c4 \uac1c\uc120", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc6d0\uc0b0\uc9c0", "\ub2e8\uc18d", "\uac80\uc5ed", "\ud1b5\uad00", "\uc218\ucd9c", "\uc120\uc801", "\ud310\ub85c", "\ubb3c\ub958"],
+    "pest": ["\ubcd1\ud574\ucda9", "\ubc29\uc81c", "\uc608\ucc30", "\uac80\uc5ed"],
 }
 
 def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
@@ -8363,7 +8487,16 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
             if section_key == "policy":
                 common = list(POLICY_MARKET_BRIEF_QUERIES) + ["할당관세 과일", "수입 농산물 관세"]
             elif section_key == "dist":
-                common = ["산지유통 수출 농산물", "검역 통관 농산물", "도매시장 반입 농산물", "농산물 수출 선적"]
+                common = [
+                    "\ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120",
+                    "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120",
+                    "\ud488\ubaa9\ub18d\ud611 \uc0b0\uc9c0\uc720\ud1b5",
+                    "\uc6d0\uc608\ub18d\ud611 \uc0b0\uc9c0\uc720\ud1b5",
+                    "\uc0b0\uc9c0\uc720\ud1b5 \uc218\ucd9c \ub18d\uc0b0\ubb3c",
+                    "\uac80\uc5ed \ud1b5\uad00 \ub18d\uc0b0\ubb3c",
+                    "\ub3c4\ub9e4\uc2dc\uc7a5 \ubc18\uc785 \ub18d\uc0b0\ubb3c",
+                    "\ub18d\uc0b0\ubb3c \uc218\ucd9c \uc120\uc801",
+                ]
             elif section_key == "pest":
                 common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
 

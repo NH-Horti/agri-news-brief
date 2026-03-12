@@ -1891,6 +1891,39 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(by["dist"]), 1)
         self.assertEqual(by["dist"][0].section, "dist")
 
+    def test_supply_shock_issue_story_prefers_supply(self):
+        title = "\ub300\ud615 \uc0b0\ubd88\uc5d0 \uae30\ud6c4\ubcc0\ud654\uae4c\uc9c0\u2026\uacfc\uc218 \ubb18\ubaa9 \ud488\uadc0\uc5d0 \ub18d\uac00 \uc6b8\uc0c1"
+        desc = "\uc0b0\ubd88\uacfc \uae30\ud6c4\ubcc0\ud654 \uc5ec\ud30c\ub85c \uacfc\uc218 \ubb18\ubaa9 \ud488\uadc0\uac00 \uc774\uc5b4\uc9c0\uba70 \ub18d\uac00 \ubd80\ub2f4\uc774 \ucee4\uc84c\ub2e4\ub294 \ud604\uc7a5 \uae30\uc0ac\ub2e4."
+        bucket = main.supply_issue_context_bucket(title, desc)
+        best, scores = self._best_section(title, desc, "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506106")
+        self.assertEqual(bucket, "commodity_issue")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_dist_local_field_profile_story_prefers_dist_and_is_not_tail(self):
+        title = "\uc9c0\uc5ed\uacbd\uc81c \uc120\ub3c4\ud558\ub294 \ud488\ubaa9\ub18d\ud611 - \ub300\uacbd \uc0ac\uacfc \uc6d0\uc608\ub18d\ud611"
+        desc = "\ub300\uacbd \uc0ac\uacfc \uc6d0\uc608\ub18d\ud611\uc774 \uacf5\ub3d9\uc120\ubcc4\uacfc \uc0b0\uc9c0\uc720\ud1b5, \ud310\ub85c \ud655\ub300 \ub4f1 \uacbd\uc81c\uc0ac\uc5c5\uc73c\ub85c \uc9c0\uc5ed\uacbd\uc81c\ub97c \uc120\ub3c4\ud55c\ub2e4\ub294 \ud604\uc7a5 \uae30\uc0ac\ub2e4."
+        url = "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
+        best, scores = self._best_section(title, desc, url)
+        self.assertTrue(main.is_dist_local_field_profile_context(title, desc))
+        self.assertFalse(main.is_dist_local_org_tail_context(title, desc))
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_dist_online_market_reform_story_prefers_dist(self):
+        title = "\uc628\ub77c\uc778\ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120 \ub098\uc130\ub2e4"
+        desc = "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120\uacfc \uac70\ub798 \uaddc\uce59 \ubcf4\uc644\uc73c\ub85c \uc0b0\uc9c0\uc720\ud1b5\uacfc \ub3c4\ub9e4\uc2dc\uc7a5 \ud604\uc7a5 \ud6a8\uc728\uc744 \ub192\uc774\ub824\ub294 \uae30\uc0ac\ub2e4."
+        best, scores = self._best_section(title, desc, "https://www.agrinet.co.kr/news/articleView.html?idxno=402439")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_normalize_press_label_uses_korean_host_name_for_ascii_label(self):
+        self.assertEqual(
+            main.normalize_press_label("wonyesanup", "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"),
+            "\uc6d0\uc608\uc0b0\uc5c5\uc2e0\ubb38",
+        )
+        self.assertEqual(
+            main.normalize_press_label("KWNEWS", "https://www.kwnews.co.kr/page/view/2026031116255017225"),
+            "\uac15\uc6d0\uc77c\ubcf4",
+        )
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
