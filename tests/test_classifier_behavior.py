@@ -596,6 +596,24 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.amnews.co.kr/news/articleView.html?idxno=71319")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
+    def test_market_disruption_story_is_not_relevant_to_policy(self):
+        title = "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’"
+        desc = "가락시장과 구리시장이 동시에 휴업하면서 딸기 가격과 출하량이 크게 흔들렸다는 현장 기사다."
+        url = "https://www.nongmin.com/article/20260309500761"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+        best, scores = self._best_section(title, desc, url)
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_policy_general_macro_tail_is_rejected_without_agri_focus(self):
+        title = "수출·물가 등 경제 ‘빨간불’…부·울·경 긴급 대응"
+        desc = "부산 울산 경남이 유가와 물가 상승 대응에 나섰고 농업용 면세유 지원이 일부 포함됐다는 종합 경제 기사다."
+        url = "https://biz.heraldcorp.com/article/10691114"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
     def test_global_reassign_moves_dist_fit_dominant_item_to_dist(self):
         title = "가락시장 하역 중단 장기화…출하 농민 피해 확산"
         desc = "가락시장 도매시장 하역대란이 장기화되며 반입 차질과 경락 지연이 이어져 산지 농가 피해가 커지고 있다."
@@ -681,11 +699,11 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_urls = {a.link for a in picked}
         self.assertEqual(len(picked_urls & {url1, url2}), 1, msg=str([(x.link, x.score) for x in picked]))
 
-    def test_local_coop_export_feature_prefers_dist_over_supply(self):
+    def test_local_coop_export_feature_is_not_forced_into_dist(self):
         title = "경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진"
         desc = "경주 현곡농협이 샤인머스캣 농가의 수출을 통해 경제적 실익을 증진하고 있다. 대만으로의 수출이 예정되어 있으며, GAP 인증을 받은 농가들이 참여하고 있다."
         best, scores = self._best_section(title, desc, "https://www.nongmin.com/article/20260306500345")
-        self.assertEqual(best, "dist", msg=f"scores={scores}")
+        self.assertNotEqual(best, "dist", msg=f"scores={scores}")
 
     def test_macro_price_article_prefers_policy_over_supply(self):
         title = "2월 물가 2.0% 올랐지만 축산물 6.0% 오르며 '들썩'… 이란 사태 반영..."
@@ -1605,7 +1623,7 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(market_brief.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
         self.assertIn(official.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
 
-    def test_local_coop_feature_can_fill_dist_when_room_but_not_core(self):
+    def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
             "dist",
             "경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진",
@@ -1626,9 +1644,8 @@ class TestClassifierBehavior(unittest.TestCase):
         )
 
         picked = main.select_top_articles([strong1, strong2, local], "dist", 5)
-        local_picked = next((x for x in picked if x.link == local.link), None)
-        self.assertIsNotNone(local_picked, msg=str([(x.link, x.score, x.is_core) for x in picked]))
-        self.assertFalse(getattr(local_picked, "is_core", False), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        picked_urls = {x.link for x in picked}
+        self.assertNotIn(local.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
 
     def test_global_reassign_moves_export_shipping_story_from_supply_to_dist(self):
         title = "‘굿뜨래 싱싱 딸기 ’ 몽골행…1t 선적"
