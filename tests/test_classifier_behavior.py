@@ -1820,6 +1820,77 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(region2.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertIn(region3.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_remote_foreign_trade_brief_is_filtered_from_policy_and_dist(self):
+        title = "미국·인도네시아 상호무역협정(ART) 서명"
+        desc = "미국과 인도네시아가 상호무역협정을 체결했다는 KOTRA 브리프로 국내 농산물·원예 수급이나 유통 현장과 직접 연결되는 설명은 없다."
+        url = "https://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_policy_export_support_brief_prefers_policy_but_stays_noncore(self):
+        title = "송미령 농식품부 장관 'K-푸드 수출 160억불…유통 개혁·AI 접목으로 식품산업 혁신'"
+        desc = "농식품부 장관이 K-푸드 수출 확대 목표와 유통 개혁, AI 접목, 식품산업 혁신 방안을 설명했다."
+        url = "https://cooknchefnews.com/news/view/1065603268596477"
+        best, scores = self._best_section(title, desc, url)
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
+        brief = self._make_article("policy", title, desc, url)
+        strong1 = self._make_article(
+            "policy",
+            "농식품부, 사과·배 수급안정 대책 발표",
+            "농식품부가 과일 수급 안정과 가격 대응 방안을 발표했다.",
+            "https://www.yna.co.kr/view/AKR20260311000100030",
+        )
+        strong2 = self._make_article(
+            "policy",
+            "정부, 온라인 도매시장 확대와 원산지 단속 강화 추진",
+            "정부가 온라인 도매시장 확대와 원산지 단속 강화 계획을 내놨다.",
+            "https://www.newsis.com/view/NISX20260311_0001112222",
+        )
+        brief.score = max(brief.score, 23.6)
+        strong1.score = max(strong1.score, 29.8)
+        strong2.score = max(strong2.score, 28.9)
+
+        picked = main.select_top_articles([brief, strong1, strong2], "policy", 5)
+        brief_picked = next((x for x in picked if x.link == brief.link), None)
+        self.assertIsNotNone(brief_picked, msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        self.assertFalse(getattr(brief_picked, "is_core", False), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_dist_export_field_story_prefers_dist_over_policy(self):
+        title = "'K푸드를 제2 반도체로…짝퉁 근절하고 수출시장 다변화'"
+        desc = "홍문표 aT 사장이 인터뷰에서 K푸드 수출시장 다변화, 유통 구조 개선, 온라인 도매시장, 직거래 플랫폼 등 현장 과제를 설명했다."
+        best, scores = self._best_section(title, desc, "https://www.donga.com/news/Economy/article/all/20260311/133511391/2")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_global_reassign_moves_dist_export_field_story_from_policy_to_dist(self):
+        title = "'K푸드를 제2 반도체로…짝퉁 근절하고 수출시장 다변화'"
+        desc = "홍문표 aT 사장이 인터뷰에서 K푸드 수출시장 다변화, 유통 구조 개선, 온라인 도매시장, 직거래 플랫폼 등 현장 과제를 설명했다."
+        url = "https://www.donga.com/news/Economy/article/all/20260311/133511391/2"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        a = main.Article(
+            section="policy",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            canon_url=main.canonicalize_url(url),
+            title_key=main.norm_title_key(title),
+            norm_key=main.make_norm_key(main.canonicalize_url(url), press, main.norm_title_key(title)),
+            topic=main.extract_topic(title, desc),
+            score=18.0,
+        )
+        by = {"policy": [a], "supply": [], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["dist"]), 1)
+        self.assertEqual(by["dist"][0].section, "dist")
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
