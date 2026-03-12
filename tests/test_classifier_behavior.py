@@ -2068,7 +2068,7 @@ class TestClassifierBehavior(unittest.TestCase):
 
     def test_dist_local_field_profile_is_not_treated_as_local_brief(self):
         title = "지역경제 선도하는 품목 농협 - 대경사과 원예농협"
-        desc = "대경사과원예농협은 지도, 구매, 유통, 가공을 총망라하는 과수 전문 품목농협으로 공동선별과 산지유통, 조합원 실익 증진과 지역경제 선도에 힘쓰는 현장 기사다."
+        desc = "대경사과원예농협은 지도, 구매, 유통, 가공을 총망라하는 109년 전통의 국내 최대 과수 전문 품목농협이다. 조합원 실익 증진과 지역경제 선도에 힘쓰는 현장 기사다."
         self.assertTrue(main.is_dist_local_field_profile_context(title, desc))
         self.assertFalse(main.is_local_brief_text(title, desc, "dist"))
 
@@ -2076,6 +2076,11 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.press_name_from_url("https://cooknchefnews.com/news/view/1065603268596477"), "쿡앤셰프")
         self.assertEqual(main.press_name_from_url("https://www.jnilbo.com/news/articleView.html?idxno=1"), "진일보")
         self.assertEqual(main.press_name_from_url("http://www.breaknews.com/123"), "브레이크뉴스")
+
+    def test_policy_export_support_brief_excludes_generic_seminar_story(self):
+        title = "글로벌 농식품 규정 변화 대응 세미나 개최"
+        desc = "농식품 수출 대응을 위한 세미나 개최 소식으로, 장관 브리핑이나 정부 업무계획 설명은 없는 행사성 기사다."
+        self.assertFalse(main.is_policy_export_support_brief_context(title, desc, "wonyesanup.co.kr", "원예산업신문"))
 
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):

@@ -2990,13 +2990,16 @@ _DIST_LOCAL_FIELD_PROFILE_BODY_TERMS = (
 
 def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
     """Return True for local hortic coop profiles with real distribution/field value."""
-    if not is_local_agri_org_feature_context(title, desc):
-        return False
-
     ttl = (title or "").lower()
     ttl_compact = re.sub(r"\s+", "", ttl)
     txt = f"{title or ''} {desc or ''}".lower()
     if not txt:
+        return False
+
+    org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(title or "") is not None) or (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl_compact) is not None) or (
+        count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS]) >= 1
+    )
+    if not org_hit:
         return False
 
     org_title_hits = count_any(ttl, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")]) + count_any(ttl_compact, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")])
@@ -3012,6 +3015,10 @@ def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
     horti_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     horti_sc = best_horti_score(title or "", desc or "")
     profile_hits = count_any(txt, [w.lower() for w in ("\uc9c0\uc5ed\uacbd\uc81c", "\uc120\ub3c4", "\ube0c\ub79c\ub4dc", "\uacbd\uc81c\uc0ac\uc5c5", "\ub18d\uac00\uc2e4\uc775", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558")])
+    title_profile_hits = count_any(ttl, [w.lower() for w in ("\uc9c0\uc5ed\uacbd\uc81c \uc120\ub3c4", "\uc9c0\uc5ed\uacbd\uc81c \uc120\ub3c4\ud558\ub294")]) + count_any(
+        ttl_compact,
+        [w.lower() for w in ("\uc9c0\uc5ed\uacbd\uc81c\uc120\ub3c4", "\uc9c0\uc5ed\uacbd\uc81c\uc120\ub3c4\ud558\ub294")],
+    )
     coop_field_hits = count_any(
         txt,
         [w.lower() for w in ("\uad6c\ub9e4", "\uac00\uacf5", "\uc9c0\ub3c4\uc0ac\uc5c5", "\uc870\ud569\uc6d0 \uc2e4\uc775", "\uc2e4\uc775", "\uc9c0\uc5ed \uacbd\uc81c", "\uacfc\uc218 \uc804\ubb38")],
@@ -3019,11 +3026,13 @@ def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
     horti_org_hits = count_any(txt, [w.lower() for w in ("\uacfc\uc218", "\uc0ac\uacfc", "\ubc30", "\ud3ec\ub3c4", "\uac10\uade4", "\uc6d0\uc608", "\ub18d\uc0b0\ubb3c", "\ub18d\uac00")])
 
     if org_title_hits >= 1 and (horti_hits >= 1 or horti_sc >= 1.4 or horti_org_hits >= 1):
-        if field_title_hits >= 1 and (field_body_hits >= 1 or profile_hits >= 2 or market_hits >= 1):
+        if field_title_hits >= 1 and (market_hits >= 1 or profile_hits >= 2):
+            return True
+        if title_profile_hits >= 1 and (field_body_hits >= 1 or market_hits >= 1 or coop_field_hits >= 1):
             return True
         if field_body_hits >= 3 and profile_hits >= 2:
             return True
-        if field_title_hits >= 1 and (field_body_hits + coop_field_hits) >= 2 and (profile_hits >= 2 or coop_field_hits >= 2):
+        if field_title_hits >= 1 and market_hits >= 1 and (field_body_hits + coop_field_hits) >= 1:
             return True
     return False
 
@@ -3228,6 +3237,9 @@ def is_policy_export_support_brief_context(title: str, desc: str, dom: str = "",
     dom_norm = normalize_host(dom or "")
     officialish = policy_domain_override(dom_norm, txt) or (dom_norm in POLICY_DOMAINS) or any(dom_norm.endswith("." + h) for h in POLICY_DOMAINS) or (press in ("\uc815\ucc45\ube0c\ub9ac\ud551", "\ub18d\uc2dd\ud488\ubd80"))
     actor_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc7a5\uad00", "\uad6d\ud68c", "\uc704\uc6d0\ud68c", "\uc5c5\ubb34\uacc4\ud68d", "\uc815\ubd80", "\uad00\uacc4\ubd80\ucc98", "at", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac")])
+    eventish_hits = count_any(txt, [w.lower() for w in ("\uc138\ubbf8\ub098", "\ud3ec\ub7fc", "\uc124\uba85\ud68c", "\uac04\ub2f4\ud68c", "\ud589\uc0ac", "\uac1c\ucd5c")])
+    if eventish_hits >= 1 and (not officialish) and actor_hits < 2:
+        return False
     return export_hits >= 2 and policy_hits >= 2 and agri_hits >= 1 and (officialish or actor_hits >= 2)
 
 
