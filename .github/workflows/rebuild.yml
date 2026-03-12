@@ -43,6 +43,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ github.token }}
+          persist-credentials: true
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
@@ -104,7 +106,7 @@ jobs:
       - name: Rebuild
         id: rebuild
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           GH_CONTENT_REF: 'main'
           GH_CONTENT_BRANCH: 'main'
 
