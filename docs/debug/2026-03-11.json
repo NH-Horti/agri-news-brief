@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T08:44:59+09:00",
-  "build_tag": "3132bbb",
+  "generated_at_kst": "2026-03-12T09:42:04+09:00",
+  "build_tag": "b0cd3a2",
   "filter_rejects": [
     {
       "section": "policy",
@@ -761,30 +761,6 @@
       "domain": "nongmin.com",
       "title": "봄동 열풍 이어가려면 품질 관리가 ‘먼저’",
       "url": "https://www.nongmin.com/article/20260309500764"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경제사업 강화…농가소득 견인",
-      "url": "https://www.nongmin.com/article/20260309500604"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "kyeonggi",
-      "domain": "kyeonggi.com",
-      "title": "가격 내릴까 오를까…유가 최고 가격 제 임박에 섞이는 기대와 우려",
-      "url": "https://www.kyeonggi.com/article/20260310580486"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "PAXETV",
-      "domain": "paxetv.com",
-      "title": "광주 남구, 나만의 초록 일터 '도심 텃밭' 인기 - 장바구니 부담‧마음...",
-      "url": "http://www.paxetv.com/news/articleView.html?idxno=264652"
     },
     {
       "section": "supply",
@@ -1873,7 +1849,7 @@
       "tail_cut": 18.09,
       "core_min": 17.69,
       "total_candidates": 75,
-      "total_selected": 3,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -1893,6 +1869,26 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 22.54,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "[신선농산물 수출확대 극복 과제] 샤인머스켓 수출 급증했지만, 떨어진...",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402455",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
           }
         },
         {
@@ -1998,26 +1994,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.77,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "[신선농산물 수출확대 극복 과제] 샤인머스켓 수출 급증했지만, 떨어진...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402455",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 16.09,
           "tier": 3,
           "press": "연합뉴스",
@@ -2118,7 +2094,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.59,
+          "score": 12.39,
           "tier": 3,
           "press": "서울경제",
           "domain": "sedaily.com",
@@ -2198,7 +2174,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.89,
+          "score": 11.69,
           "tier": 3,
           "press": "아시아경제",
           "domain": "view.asiae.co.kr",
@@ -2538,7 +2514,27 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.89,
+          "score": 5.82,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "도내 자체 생산 우량 딸기 어미묘 첫 공급",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=356107",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.69,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
@@ -2558,7 +2554,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.89,
+          "score": 5.69,
           "tier": 2,
           "press": "뉴스핌",
           "domain": "newspim.com",
@@ -2573,26 +2569,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.82,
-          "tier": 1,
-          "press": "jejumaeil",
-          "domain": "jejumaeil.net",
-          "title": "도내 자체 생산 우량 딸기 어미묘 첫 공급",
-          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=356107",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -3885,7 +3861,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.21,
+          "score": 21.01,
           "tier": 1,
           "press": "EROUN",
           "domain": "eroun.net",
@@ -4523,9 +4499,7 @@
           "피망",
           "화훼자조금"
         ],
-        "reason": [
-          "no_trade_signal_in_pool"
-        ],
+        "reason": [],
         "queries": [
           "딸기 생육",
           "딸기 난방",
@@ -4538,7 +4512,7 @@
           "사과": 0,
           "단감": 0,
           "곶감": 0,
-          "포도": 1,
+          "포도": 2,
           "유자": 0,
           "알밤": 0,
           "복숭아": 0,
