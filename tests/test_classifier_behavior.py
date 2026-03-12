@@ -1701,6 +1701,14 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(bucket, "export_recovery")
         self.assertEqual(best, "supply", msg=f"scores={scores}")
 
+    def test_supply_issue_bucket_detects_truncated_export_recovery_story(self):
+        title = "[\uC2E0\uC120\uB18D\uC0B0\uBB3C \uC218\uCD9C\uD655\uB300 \uADF9\uBCF5 \uACFC\uC81C] \uC0E4\uC778\uBA38\uC2A4\uCF13 \uC218\uCD9C \uAE09\uC99D\uD588\uC9C0\uB9CC, \uB5A8\uC5B4\uC9C4..."
+        desc = "\uB300\uB9CC \uC218\uCD9C \uAE09\uC99D \uB0AE\uC740 \uAC00\uACA9 \uC6B0\uB824"
+        bucket = main.supply_issue_context_bucket(title, desc)
+        best, scores = self._best_section(title, desc, "https://www.agrinet.co.kr/news/articleView.html?idxno=402455")
+        self.assertEqual(bucket, "export_recovery")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
     def test_supply_issue_bucket_detects_commodity_issue_editorial(self):
         title = "[\uCDE8\uC7AC\uC218\uCCA9] \uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC2E4\uC9C8\uC801\uC778 \uB300\uCC45 \uC11C\uB458\uB7EC\uB77C"
         desc = "\uC0E4\uC778\uBA38\uC2A4\uCEA3 \uC0DD\uC0B0\uACFC\uC789 \uBBF8\uC219\uACFC \uC81C\uAC12 \uD3D0\uC6D0 \uC9C0\uC6D0 \uC885\uD569\uACC4\uD68D \uC2DC\uAE09"

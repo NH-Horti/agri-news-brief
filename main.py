@@ -868,8 +868,8 @@ COMMODITY_REGISTRY = [
         "topic": "포도",
         "rep_term": "포도",
         "display_name": "포도",
-        "aliases": ["포도", "샤인머스캣"],
-        "focus_terms": ["포도", "샤인머스캣"],
+        "aliases": ["포도", "샤인머스캣", "\uC0E4\uC778\uBA38\uC2A4\uCF13"],
+        "focus_terms": ["포도", "샤인머스캣", "\uC0E4\uC778\uBA38\uC2A4\uCF13"],
         "brief_tags": ["포도"],
         "supply_queries": ["포도 수급", "포도 가격", "포도 작황", "샤인머스캣 수급", "샤인머스캣 가격", "샤인머스캣 작황"],
         "feature_profile": "orchard",
@@ -3080,7 +3080,7 @@ _SUPPLY_FEATURE_ISSUE_ACTION_TERMS = (
 _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS = (
     "\uBD80\uB2F4", "\uAE09\uB77D", "\uD558\uB77D", "\uD3ED\uB77D", "\uC815\uCCB4", "\uCE68\uCCB4", "\uC704\uAE30", "\uBE44\uC0C1", "\uC6B0\uB824", "\uD53C\uD574",
     "\uC190\uC2E4", "\uD3EC\uAE30", "\uC5B4\uB824\uC6C0", "\uD638\uC18C", "\uC0DD\uC0B0\uBE44", "\uB09C\uBC29\uBE44", "\uBA74\uC138\uC720", "\uC81C\uAC12", "\uC18C\uBE44\uC790 \uC678\uBA74",
-    "\uC0DD\uC0B0\uACFC\uC789", "\uACFC\uC789\uC0DD\uC0B0", "\uC6D0\uAC00", "\uBBF8\uC219\uACFC", "\uD3D0\uC6D0", "\uC2E0\uB8B0 \uC2E4\uCD94",
+    "\uC0DD\uC0B0\uACFC\uC789", "\uACFC\uC789\uC0DD\uC0B0", "\uC6D0\uAC00", "\uBBF8\uC219\uACFC", "\uD3D0\uC6D0", "\uC2E0\uB8B0 \uC2E4\uCD94", "\uB5A8\uC5B4\uC9C4",
 )
 _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
     "수출", "수출길", "수출 확대", "선적", "검역", "통관", "판로", "해외시장", "해외 수요",
@@ -3118,11 +3118,15 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     if title_issue_hits == 0 and issue_hits < 2:
         return None
 
+    title_export_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS])
     export_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS])
     recovery_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_RECOVERY_TERMS])
     farm_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_FARM_TERMS])
     distress_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS])
+    title_distress_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS])
     action_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_ACTION_TERMS])
+    if title_export_hits >= 1 and (title_item_hits >= 1 or horti_title_sc >= 1.0 or horti_sc >= 1.8) and title_issue_hits >= 1 and (title_distress_hits >= 1 or distress_hits >= 1 or action_hits >= 1):
+        return "export_recovery"
 
     if export_hits >= 1 and (recovery_hits >= 1 or distress_hits >= 1) and (title_issue_hits >= 1 or action_hits >= 1):
         return "export_recovery"
