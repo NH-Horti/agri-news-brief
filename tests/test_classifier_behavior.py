@@ -1979,7 +1979,7 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         local = self._make_article(
             "dist",
-            "지역경제 선도하는 품목농협 - 대경사과원예농협",
+            "지역경제 선도하는 품목 농협 - 대경사과 원예농협",
             "대경사과원예농협이 공동선별과 산지유통, 판로 확대 등 경제사업으로 지역경제를 선도한다는 현장 기사다.",
             "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
         )
@@ -2013,7 +2013,7 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         field = self._make_article(
             "dist",
-            "지역경제 선도하는 품목농협 - 대경사과원예농협",
+            "지역경제 선도하는 품목 농협 - 대경사과 원예농협",
             "대경사과원예농협이 공동선별과 산지유통, 판로 확대 등 경제사업으로 지역경제를 선도한다는 현장 기사다.",
             "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
         )
@@ -2067,7 +2067,7 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(all((x.link != export_tail.link) or (not x.is_core) for x in picked))
 
     def test_dist_local_field_profile_is_not_treated_as_local_brief(self):
-        title = "지역경제 선도하는 품목농협 - 대경사과원예농협"
+        title = "지역경제 선도하는 품목 농협 - 대경사과 원예농협"
         desc = "대경사과원예농협은 지도, 구매, 유통, 가공을 총망라하는 과수 전문 품목농협으로 공동선별과 산지유통, 조합원 실익 증진과 지역경제 선도에 힘쓰는 현장 기사다."
         self.assertTrue(main.is_dist_local_field_profile_context(title, desc))
         self.assertFalse(main.is_local_brief_text(title, desc, "dist"))

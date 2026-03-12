@@ -2874,10 +2874,10 @@ def is_local_agri_policy_program_context(text: str) -> bool:
 
 
 _LOCAL_AGRI_ORG_IN_TITLE_RX = re.compile(
-    r"(?:^|[\s·,，])(?:[가-힣]{2,4}\s+)?[가-힣]{2,12}(?:농협|원예농협|영농조합법인|농업회사법인|조합|작목반|공선회)(?=$|[\s·,，])"
+    r"(?:^|[\s·,，])(?:[가-힣]{2,4}\s+)?[가-힣]{2,12}(?:(?:품목\s*)?농협|원예\s*농협|영농조합법인|농업회사법인|조합|작목반|공선회)(?=$|[\s·,，])"
 )
 _LOCAL_AGRI_ORG_TERMS = (
-    "농협", "원예농협", "작목반", "공선회", "연합사업단", "영농조합법인", "농업회사법인", "조합",
+    "농협", "품목농협", "품목 농협", "원예농협", "원예 농협", "작목반", "공선회", "연합사업단", "영농조합법인", "농업회사법인", "조합",
 )
 _LOCAL_AGRI_ORG_PROMO_TERMS = (
     "경제사업", "농가실익", "실익", "증진", "활발", "활성화", "성과", "판로", "브랜드",
@@ -2959,11 +2959,12 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
         return False
 
     ttl = title or ""
+    ttl_compact = re.sub(r"\s+", "", ttl)
     txt = f"{ttl} {desc or ''}".lower()
     if not txt:
         return False
 
-    org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl) is not None) or (
+    org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl) is not None) or (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl_compact) is not None) or (
         count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS]) >= 1
     )
     promo_hit = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_PROMO_TERMS])
@@ -2993,12 +2994,13 @@ def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
         return False
 
     ttl = (title or "").lower()
+    ttl_compact = re.sub(r"\s+", "", ttl)
     txt = f"{title or ''} {desc or ''}".lower()
     if not txt:
         return False
 
-    org_title_hits = count_any(ttl, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")])
-    field_title_hits = count_any(ttl, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS])
+    org_title_hits = count_any(ttl, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")]) + count_any(ttl_compact, [w.lower() for w in ("\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611")])
+    field_title_hits = count_any(ttl, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS]) + count_any(ttl_compact, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS])
     field_body_hits = count_any(txt, [w.lower() for w in _DIST_LOCAL_FIELD_PROFILE_BODY_TERMS])
     market_hits = count_any(
         txt,
