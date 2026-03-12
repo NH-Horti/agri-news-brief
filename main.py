@@ -1642,6 +1642,7 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
     text = f"{title or ''} {desc or ''}".lower()
     if not text:
         return None
+    compact = re.sub(r"\s+", "", text)
     # ✅ 서울시-가락시장-부적합 농수산물(잔류농약/방사능/수거검사/불시검사) 같은 보도자료 다매체 중복을 강하게 제거
     if "서울시" in text and "가락시장" in text and ("농수산물" in text or "농산물" in text):
         if ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("수거" in text or "검사" in text or "불시" in text):
@@ -1667,6 +1668,9 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
         regs = sorted(_region_set(text))
         loc = regs[0] if regs else ""
         return f"EV:APC:{loc}"
+
+    if ("원스톱수출지원허브" in compact or ("수출지원허브" in compact and "원스톱" in compact)) and ("k-푸드" in text or "k푸드" in compact):
+        return "EV:DIST:KFOOD_EXPORT_HUB"
 
     if is_local_agri_org_feature_context(title, desc):
         org_match = _AGRI_ORG_EVENT_RX.search((title or "") + " " + (desc or ""))
@@ -7765,6 +7769,71 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 picked_any = True
                 break
             if not picked_any:
+                break
+
+    # 4.7) policy 수출지원 단신 보강:
+    # - 정책 섹션이 비는 날에는 수출지원 정책 단신 1건을 하단에만 제한적으로 허용한다.
+    if section_key == "policy" and len(final) < min(max_n, 4):
+        has_export_support_tail = any(
+            is_policy_export_support_brief_context(
+                a.title or "",
+                a.description or "",
+                normalize_host(a.domain or ""),
+                (a.press or "").strip(),
+            )
+            for a in final
+        )
+        if not has_export_support_tail:
+            policy_tail_cut = max(BASE_MIN_SCORE.get("policy", 6.0) + 0.5, thr - 10.0)
+            ranked_policy_tail: list[tuple[tuple[Any, ...], Article]] = []
+            for a in candidates_sorted:
+                if a in final:
+                    continue
+                if _already_used(a):
+                    continue
+                dom_local = normalize_host(a.domain or "")
+                pr_local = (a.press or "").strip()
+                if not is_policy_export_support_brief_context(a.title or "", a.description or "", dom_local, pr_local):
+                    continue
+                if float(getattr(a, "score", 0.0) or 0.0) < policy_tail_cut:
+                    continue
+                if _is_policy_weak_tail_story(a):
+                    continue
+                if not _headline_gate_relaxed(a, section_key):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                    continue
+                if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
+                fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+                tier = press_priority(a.press, a.domain)
+                pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+                ranked_policy_tail.append((
+                    (
+                        1 if tier >= 2 else 0,
+                        round(fit_sc, 3),
+                        round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                        pub_sort,
+                    ),
+                    a,
+                ))
+
+            ranked_policy_tail.sort(key=lambda item: item[0], reverse=True)
+            for _, a in ranked_policy_tail:
+                if len(final) >= max_n:
+                    break
+                if a in final:
+                    continue
+                if _already_used(a):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                    continue
+                if any(_is_similar_story(a, b, section_key) for b in final):
+                    continue
+                a.is_core = False
+                final.append(a)
+                _mark_used(a)
+                _source_take(a)
                 break
 
 

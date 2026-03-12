@@ -1992,6 +1992,80 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(systemic.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertIn(local.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_dist_export_hub_duplicate_gives_way_to_field_profile_story(self):
+        interview = self._make_article(
+            "dist",
+            "“K푸드를 제2 반도체로… 짝퉁 근절하고 수출 시장 다변화”",
+            "aT 사장 인터뷰 형식으로 K-푸드 수출 전략과 현장 지원 방향을 다룬 기사다.",
+            "https://www.donga.com/news/Economy/article/all/20260311/133511391/2",
+        )
+        hub_brief = self._make_article(
+            "dist",
+            "수출길 막히면 바로 해결...aT ,'K-푸드 원스톱 수출 지원 허브' 지원",
+            "aT가 K-푸드 수출 기업의 애로사항을 바로 해결하기 위한 원스톱 수출지원 허브를 운영한다고 밝혔다.",
+            "https://www.ajunews.com/view/20260311132644532",
+        )
+        hub_dup = self._make_article(
+            "dist",
+            "‘K-푸드 원스톱 수출지원 허브’ 운영",
+            "농식품부와 aT가 관계부처와 함께 K-푸드 원스톱 수출지원 허브를 운영한다고 밝힌 기사다.",
+            "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63972",
+        )
+        field = self._make_article(
+            "dist",
+            "지역경제 선도하는 품목농협 - 대경사과원예농협",
+            "대경사과원예농협이 공동선별과 산지유통, 판로 확대 등 경제사업으로 지역경제를 선도한다는 현장 기사다.",
+            "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
+        )
+        interview.score = 23.21
+        hub_brief.score = 21.66
+        hub_dup.score = 14.76
+        field.score = 9.89
+
+        picked = main.select_top_articles([interview, hub_brief, hub_dup, field], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(field.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertEqual(
+            int(hub_brief.link in picked_links) + int(hub_dup.link in picked_links),
+            1,
+            msg=str([(x.link, x.score, x.title) for x in picked]),
+        )
+
+    def test_policy_underfill_backfill_keeps_export_support_brief_story(self):
+        official = self._make_article(
+            "policy",
+            "부여군, 농산물 가격 안정 지원… 수박 재배 농가 신청 접수",
+            "부여군이 수박 재배 농가를 대상으로 가격 안정 지원 정책 신청을 받는다는 기사다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=316205",
+        )
+        proposal = self._make_article(
+            "policy",
+            "농산물 '가격 폭락 때 유통비 지원' '최소가격 보전제' 제안 눈길",
+            "농산물 가격 폭락 시 유통비 지원과 최소가격 보전제 도입 제안을 다룬 정책 기사다.",
+            "https://www.newsis.com/view/NISX20260311_0003543176",
+        )
+        macro = self._make_article(
+            "policy",
+            "2월 농축산물 물가 1.4% 상승… 전체 평균 밑돌며 '안정세'",
+            "농축산물 물가 동향과 정책 대응 여건을 짚는 기사다.",
+            "http://www.youngnong.co.kr/news/articleView.html?idxno=58015",
+        )
+        export_tail = self._make_article(
+            "policy",
+            "송미령 농식품부 장관 “K-푸드 수출 160억불…유통 개혁·AI 접목”",
+            "농식품부 장관이 K-푸드 수출 확대와 유통 개혁, AI 접목, 수출 지원 계획을 설명한 정책 브리프 기사다.",
+            "https://cooknchefnews.com/news/view/1065603268596477",
+        )
+        official.score = 24.10
+        proposal.score = 21.34
+        macro.score = 18.05
+        export_tail.score = 8.00
+
+        picked = main.select_top_articles([official, proposal, macro, export_tail], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(export_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertTrue(all((x.link != export_tail.link) or (not x.is_core) for x in picked))
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
