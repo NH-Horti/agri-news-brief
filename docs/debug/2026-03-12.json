@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T23:02:49+09:00",
-  "build_tag": "b272df0",
+  "generated_at_kst": "2026-03-12T23:42:32+09:00",
+  "build_tag": "9932aab",
   "filter_rejects": [
     {
       "section": "policy",
@@ -221,14 +221,6 @@
     {
       "section": "policy",
       "reason": "policy_macro_general_economy",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "서울시, 중동사태 비상경제회의…중소기업에 1천억 융자지원",
-      "url": "https://www.yna.co.kr/view/AKR20260311108300004?input=1195m"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_macro_general_economy",
       "press": "아주경제",
       "domain": "ajunews.com",
       "title": "서울시, 중동 사태 대응 비상경제회의…소상공인 1000억원 융자 지원",
@@ -236,8 +228,16 @@
     },
     {
       "section": "policy",
+      "reason": "policy_macro_general_economy",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "서울시, 중동사태 비상경제회의…중소기업에 1천억 융자지원",
+      "url": "https://www.yna.co.kr/view/AKR20260311108300004?input=1195m"
+    },
+    {
+      "section": "policy",
       "reason": "remote_foreign_trade_brief",
-      "press": "KOTRA",
+      "press": "대한무역투자진흥공사",
       "domain": "dream.kotra.or.kr",
       "title": "미국-인도네시아 상호무역협정(ART) 서명",
       "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
@@ -617,6 +617,14 @@
       "domain": "wonyesanup.co.kr",
       "title": "지역경제 선도하는 품목농협 - 대경사과원예농협",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001"
     },
     {
       "section": "policy",
@@ -1061,18 +1069,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "[미·이란 전쟁 2주] 주요 일지",
-      "url": "https://www.yna.co.kr/view/AKR20260311115900009?input=1195m"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "한국경제",
       "domain": "hankyung.com",
       "title": "[오늘의 운세] 2026년 3월 12일 오늘의 띠별 운세",
       "url": "https://www.hankyung.com/article/202603064221O"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "[미·이란 전쟁 2주] 주요 일지",
+      "url": "https://www.yna.co.kr/view/AKR20260311115900009?input=1195m"
     },
     {
       "section": "supply",
@@ -1381,14 +1389,6 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "sisunnews",
-      "domain": "sisunnews.co.kr",
-      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
       "press": "goodkyung",
       "domain": "goodkyung.com",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑', 하베스트 챌린지 3관왕 수...",
@@ -1397,10 +1397,18 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "fntoday",
-      "domain": "fntoday.co.kr",
+      "press": "sisunnews",
+      "domain": "sisunnews.co.kr",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
+      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
+    },
+    {
+      "section": "supply",
+      "reason": "remote_foreign_horti",
+      "press": "forbeskorea",
+      "domain": "forbeskorea.co.kr",
+      "title": "GS25 론칭, '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕",
+      "url": "https://www.forbeskorea.co.kr/news/articleView.html?idxno=401688"
     },
     {
       "section": "supply",
@@ -1413,10 +1421,10 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "forbeskorea",
-      "domain": "forbeskorea.co.kr",
-      "title": "GS25 론칭, '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕",
-      "url": "https://www.forbeskorea.co.kr/news/articleView.html?idxno=401688"
+      "press": "fntoday",
+      "domain": "fntoday.co.kr",
+      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
+      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
     },
     {
       "section": "supply",
@@ -1429,18 +1437,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "thefirstmedia",
-      "domain": "thefirstmedia.net",
-      "title": "빙그레, 신제품 '빙그레 제로 아이스티' 2종 선봬",
-      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195232"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "데일리한국",
       "domain": "sports.hankooki.com",
       "title": "빙그레, 제로슈거·제로칼로리 '빙그레 제로 아이스티' 2종 선봬",
       "url": "https://sports.hankooki.com/news/articleView.html?idxno=6928097"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "thefirstmedia",
+      "domain": "thefirstmedia.net",
+      "title": "빙그레, 신제품 '빙그레 제로 아이스티' 2종 선봬",
+      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195232"
     },
     {
       "section": "supply",
@@ -1717,7 +1725,7 @@
     {
       "section": "supply",
       "reason": "opinion_or_editorial",
-      "press": "JNILBO",
+      "press": "진일보",
       "domain": "jnilbo.com",
       "title": "아침을 열며·박찬규〉귀촌일기-봄비",
       "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000026058"
@@ -1749,7 +1757,7 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "춘천 농민들, 춘천시에 농사용 난방비 폭등 지원대책 촉구",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038149"
@@ -1765,7 +1773,7 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "\"시설 최소 한달 더 난방해야\" 유가 급등에 속타는 농심",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038367"
@@ -1813,7 +1821,7 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "\"4월까지 난방해야 하는데\"... 등유 가격 급등에 강원 하우스 농가 직격...",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038240"
@@ -1861,7 +1869,7 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "춘천 농민들, 춘천시에 농사용 난방비 폭등 지원대책 촉구",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038149"
@@ -2093,7 +2101,7 @@
     {
       "section": "supply",
       "reason": "opinion_or_editorial",
-      "press": "JNILBO",
+      "press": "진일보",
       "domain": "jnilbo.com",
       "title": "아침을 열며·박찬규〉귀촌일기-봄비",
       "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000026058"
@@ -2333,7 +2341,7 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "춘천 농민들, 춘천시에 농사용 난방비 폭등 지원대책 촉구",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038149"
@@ -2349,7 +2357,7 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "KADO",
+      "press": "강원도민일보",
       "domain": "kado.net",
       "title": "춘천 농민들, 춘천시에 농사용 난방비 폭등 지원대책 촉구",
       "url": "https://www.kado.net/news/articleView.html?idxno=2038149"
@@ -2573,7 +2581,7 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "breaknews",
+      "press": "브레이크뉴스",
       "domain": "breaknews.com",
       "title": "청송군, 농촌지도사업 41개 확정…미래 농업 전환 본격화",
       "url": "http://www.breaknews.com/1190883"
@@ -2997,7 +3005,7 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "cooknchefnews",
+      "press": "쿡앤셰프",
       "domain": "cooknchefnews.com",
       "title": "송미령 농식품부 장관 “K-푸드 수출 160억불…유통 개혁·AI 접목으로 식...",
       "url": "https://cooknchefnews.com/news/view/1065603268596477"
@@ -3092,19 +3100,19 @@
     },
     {
       "section": "dist",
-      "reason": "opinion_or_editorial",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
-    },
-    {
-      "section": "dist",
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "지역 경제 선도하는 품목농협 - 대경사과원예 농협",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
+    },
+    {
+      "section": "dist",
+      "reason": "opinion_or_editorial",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
     },
     {
       "section": "dist",
@@ -3124,19 +3132,19 @@
     },
     {
       "section": "dist",
-      "reason": "opinion_or_editorial",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "기고 / 원예 산업의 미래를 위한 원예농협 의 역할",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
-    },
-    {
-      "section": "dist",
       "reason": "dist_soft_without_infra",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "아산 원예농협 농업 경제사업 대상 수상",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63960"
+    },
+    {
+      "section": "dist",
+      "reason": "opinion_or_editorial",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "기고 / 원예 산업의 미래를 위한 원예농협 의 역할",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
     },
     {
       "section": "dist",
@@ -3148,6 +3156,38 @@
     },
     {
       "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "slownews",
+      "domain": "slownews.kr",
+      "title": "회장 선거만 바꾸면 될까? “ 농협 을 인적 분할하자.”",
+      "url": "https://slownews.kr/155964"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "대경사과원예 농협 , '지도사업대상' 전국 1위 영예",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64013"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "울산원예 농협 , '2025년 농축협 종합업적평가' 최우수상 수상 '쾌거'",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316170"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "대경사과원예 농협 , '지도사업대상' 전국 1위 영예",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64013"
+    },
+    {
+      "section": "dist",
       "reason": "dist_no_agri_anchor",
       "press": "mygoyang",
       "domain": "mygoyang.com",
@@ -3156,7 +3196,7 @@
     },
     {
       "section": "dist",
-      "reason": "dist_policy_export_support_brief",
+      "reason": "fishery_only",
       "press": "newsmaker",
       "domain": "newsmaker.or.kr",
       "title": "전남도, 수산식품산업 혁신에 1천52억 원 지원",
@@ -3165,7 +3205,7 @@
     {
       "section": "dist",
       "reason": "remote_foreign_horti",
-      "press": "KOTRA",
+      "press": "대한무역투자진흥공사",
       "domain": "dream.kotra.or.kr",
       "title": "미국-인도네시아 상호무역협정(ART) 서명",
       "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
@@ -3173,7 +3213,7 @@
     {
       "section": "dist",
       "reason": "remote_foreign_horti",
-      "press": "KOTRA",
+      "press": "대한무역투자진흥공사",
       "domain": "dream.kotra.or.kr",
       "title": "미국-인도네시아 상호무역협정(ART) 서명",
       "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
@@ -3257,14 +3297,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "농협·농가주부모임, 2026년 정기총회 개최",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64003"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_policy_export_support_brief",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001"
     },
     {
       "section": "dist",
@@ -4220,6 +4252,14 @@
     },
     {
       "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "강원도민일보",
+      "domain": "kado.net",
+      "title": "\"시설 최소 한달 더 난방해야\" 유가 급등에 속타는 농심",
+      "url": "https://kado.net/news/articleView.html?idxno=2038367"
+    },
+    {
+      "section": "supply",
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -4233,30 +4273,6 @@
       "domain": "sedaily.com",
       "title": "삼성·SK, 보유 자사주 80% 이상 소각…사상 최대 규모",
       "url": "https://sedaily.com/article/20017721"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_policy_export_support_brief",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
-      "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64001"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
-      "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64001"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "KADO",
-      "domain": "kado.net",
-      "title": "\"시설 최소 한달 더 난방해야\" 유가 급등에 속타는 농심",
-      "url": "https://kado.net/news/articleView.html?idxno=2038367"
     },
     {
       "section": "supply",
@@ -4277,7 +4293,7 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "cooknchefnews",
+      "press": "쿡앤셰프",
       "domain": "cooknchefnews.com",
       "title": "송미령 농식품부 장관 “K-푸드 수출 160억불…유통 개혁·AI 접목으로 식...",
       "url": "https://cooknchefnews.com/news/view/1065603268596477"
@@ -4501,7 +4517,7 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "KOTRA",
+      "press": "대한무역투자진흥공사",
       "domain": "dream.kotra.or.kr",
       "title": "미국-인도네시아 상호무역협정(ART) 서명",
       "url": "https://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
@@ -4521,6 +4537,14 @@
       "domain": "wonyesanup.co.kr",
       "title": "‘서일본 한국식품 수입유통협의회’ 발족",
       "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=63998"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
+      "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64001"
     },
     {
       "section": "pest",
@@ -5750,16 +5774,16 @@
       ]
     },
     "policy": {
-      "threshold": 17.08,
-      "tail_cut": 17.28,
-      "core_min": 17.08,
-      "total_candidates": 39,
+      "threshold": 16.88,
+      "tail_cut": 17.08,
+      "core_min": 16.88,
+      "total_candidates": 38,
       "total_selected": 4,
       "top": [
         {
           "selected": true,
           "is_core": false,
-          "score": 25.08,
+          "score": 24.88,
           "tier": 1,
           "press": "한국영농신문",
           "domain": "youngnong.co.kr",
@@ -5834,6 +5858,66 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.23,
+          "tier": 1,
+          "press": "강원도민일보",
+          "domain": "kado.net",
+          "title": "\"4월까지 난방해야 하는데\"... 등유 가격 급등에 강원 하우스 농가 직격...",
+          "url": "https://www.kado.net/news/articleView.html?idxno=2038240",
+          "reason": "headline_gate",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.92,
+          "tier": 1,
+          "press": "충남일보",
+          "domain": "chungnamilbo.co.kr",
+          "title": "부여군 농업인 생산비 부담 ' 가격 보장제' 가동",
+          "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=877200",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.68,
+          "tier": 1,
+          "press": "강원도민일보",
+          "domain": "kado.net",
+          "title": "\"시설 최소 한달 더 난방해야\" 유가 급등에 속타는 농심",
+          "url": "https://www.kado.net/news/articleView.html?idxno=2038367",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 4.5
           }
         },
         {
@@ -5957,66 +6041,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 15.75,
-          "tier": 1,
-          "press": "원예산업신문",
-          "domain": "wonyesanup.co.kr",
-          "title": "우리 농산물의 프리미엄 시장을 향한 도전",
-          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.42,
-          "tier": 1,
-          "press": "chungnamilbo",
-          "domain": "chungnamilbo.co.kr",
-          "title": "부여군 농업인 생산비 부담 ' 가격 보장제' 가동",
-          "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=877200",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 13.73,
-          "tier": 1,
-          "press": "KADO",
-          "domain": "kado.net",
-          "title": "\"4월까지 난방해야 하는데\"... 등유 가격 급등에 강원 하우스 농가 직격...",
-          "url": "https://www.kado.net/news/articleView.html?idxno=2038240",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 13.47,
@@ -6032,26 +6056,6 @@
             "strength": 3,
             "korea": 5,
             "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 13.18,
-          "tier": 1,
-          "press": "KADO",
-          "domain": "kado.net",
-          "title": "\"시설 최소 한달 더 난방해야\" 유가 급등에 속타는 농심",
-          "url": "https://www.kado.net/news/articleView.html?idxno=2038367",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 4,
-            "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -3.0
           }
@@ -6197,7 +6201,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 9.05,
           "tier": 1,
@@ -6205,7 +6209,7 @@
           "domain": "wonyesanup.co.kr",
           "title": "글로벌 농식품 규정 변화 대응 세미나 개최",
           "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63974",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -6261,7 +6265,7 @@
           "is_core": false,
           "score": 8.0,
           "tier": 1,
-          "press": "cooknchefnews",
+          "press": "쿡앤셰프",
           "domain": "cooknchefnews.com",
           "title": "송미령 농식품부 장관 “K-푸드 수출 160억불…유통 개혁·AI 접목으로 식...",
           "url": "https://cooknchefnews.com/news/view/1065603268596477",
@@ -6542,7 +6546,7 @@
       "threshold": 15.21,
       "tail_cut": 15.81,
       "core_min": 15.21,
-      "total_candidates": 10,
+      "total_candidates": 11,
       "total_selected": 2,
       "top": [
         {
@@ -6648,9 +6652,9 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.69,
+          "score": 7.69,
           "tier": 1,
-          "press": "KOTRA",
+          "press": "대한무역투자진흥공사",
           "domain": "dream.kotra.or.kr",
           "title": "미국-인도네시아 상호무역협정(ART) 서명",
           "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392",
@@ -6662,7 +6666,7 @@
             "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 1,
-            "press_weight": -3.0
+            "press_weight": -2.0
           }
         },
         {
@@ -6699,6 +6703,26 @@
             "horti_sc": 0.0,
             "market_hits": 0,
             "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.07,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "우리 농산물의 프리미엄 시장을 향한 도전",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
             "korea": 4,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -6799,7 +6823,7 @@
           "is_core": false,
           "score": 24.33,
           "tier": 1,
-          "press": "breaknews",
+          "press": "브레이크뉴스",
           "domain": "breaknews.com",
           "title": "음성군농업기술센터, 과수 재배농가 과수화상병 사전 방제 약제 배부",
           "url": "http://www.breaknews.com/1190917",
@@ -6875,6 +6899,26 @@
           }
         },
         {
+          "selected": true,
+          "is_core": false,
+          "score": 18.49,
+          "tier": 1,
+          "press": "진일보",
+          "domain": "jnilbo.com",
+          "title": "광양시, 과수화상병 사전 방제 추진",
+          "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000026033",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
           "selected": false,
           "is_core": false,
           "score": 18.49,
@@ -6892,26 +6936,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 17.49,
-          "tier": 1,
-          "press": "JNILBO",
-          "domain": "jnilbo.com",
-          "title": "광양시, 과수화상병 사전 방제 추진",
-          "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000026033",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
           }
         },
         {
@@ -7303,7 +7327,7 @@
         "소비자물가 과일 사과 배"
       ],
       "recall_meta": {},
-      "items_total": 23,
+      "items_total": 22,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -7617,7 +7641,7 @@
         "start_kst": "2026-03-11T07:00:00+09:00",
         "end_kst": "2026-03-12T07:00:00+09:00"
       },
-      "base_queries_n": 32,
+      "base_queries_n": 36,
       "base_queries": [
         "가락시장 청과 경락",
         "가락시장 경락가",
@@ -7635,6 +7659,10 @@
         "품목농협 공동선별",
         "품목농협 경제사업",
         "원예농협 경제사업",
+        "품목농협 조합원 실익",
+        "원예농협 지도 구매 유통 가공",
+        "품목농협 지도 구매 유통 가공",
+        "과수 전문 품목농협",
         "산지유통센터 준공",
         "스마트 농산물 산지유통센터 준공",
         "스마트 APC 준공",
@@ -7644,11 +7672,7 @@
         "원산지 표시 단속 농산물",
         "부정유통 단속 농산물",
         "농산물 수출 검역",
-        "과일 수출 검역",
-        "통관 과일 검역",
-        "농산물 수출 선적",
-        "과일 수출 선적",
-        "화훼공판장 경매"
+        "과일 수출 검역"
       ],
       "api_items_top": [
         [
@@ -7742,6 +7766,7 @@
         "가락시장 청과 경락",
         "공영도매시장 경매",
         "공판장 청과 경매",
+        "과수 전문 품목농협",
         "과일 수출 검역",
         "과일 수출 선적",
         "농산물 수출 검역",
@@ -7753,11 +7778,10 @@
         "부정유통 단속 농산물",
         "산지유통센터 준공",
         "스마트 APC 준공",
-        "스마트 농산물 산지유통센터 준공",
-        "시장도매인제 도매시장"
+        "스마트 농산물 산지유통센터 준공"
       ],
       "recall_meta": {},
-      "items_total": 20,
+      "items_total": 21,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
