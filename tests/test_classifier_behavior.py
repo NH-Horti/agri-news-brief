@@ -1985,7 +1985,7 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         core.score = 48.41
         systemic.score = 36.49
-        local.score = -8.0
+        local.score = 3.70
 
         picked = main.select_top_articles([core, systemic, local], "dist", 5)
         picked_links = {x.link for x in picked}
@@ -2020,7 +2020,7 @@ class TestClassifierBehavior(unittest.TestCase):
         interview.score = 23.21
         hub_brief.score = 21.66
         hub_dup.score = 14.76
-        field.score = 9.89
+        field.score = 3.70
 
         picked = main.select_top_articles([interview, hub_brief, hub_dup, field], "dist", 5)
         picked_links = {x.link for x in picked}
@@ -2065,6 +2065,17 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_links = {x.link for x in picked}
         self.assertIn(export_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertTrue(all((x.link != export_tail.link) or (not x.is_core) for x in picked))
+
+    def test_dist_local_field_profile_is_not_treated_as_local_brief(self):
+        title = "지역경제 선도하는 품목농협 - 대경사과원예농협"
+        desc = "대경사과원예농협은 지도, 구매, 유통, 가공을 총망라하는 과수 전문 품목농협으로 공동선별과 산지유통, 조합원 실익 증진과 지역경제 선도에 힘쓰는 현장 기사다."
+        self.assertTrue(main.is_dist_local_field_profile_context(title, desc))
+        self.assertFalse(main.is_local_brief_text(title, desc, "dist"))
+
+    def test_press_name_from_url_maps_known_korean_names(self):
+        self.assertEqual(main.press_name_from_url("https://cooknchefnews.com/news/view/1065603268596477"), "쿡앤셰프")
+        self.assertEqual(main.press_name_from_url("https://www.jnilbo.com/news/articleView.html?idxno=1"), "진일보")
+        self.assertEqual(main.press_name_from_url("http://www.breaknews.com/123"), "브레이크뉴스")
 
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):

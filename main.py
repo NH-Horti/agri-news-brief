@@ -1264,6 +1264,10 @@ SECTIONS: list[SectionConfig] = [
             "품목농협 공동선별",
             "품목농협 경제사업",
             "원예농협 경제사업",
+            "품목농협 조합원 실익",
+            "원예농협 지도 구매 유통 가공",
+            "품목농협 지도 구매 유통 가공",
+            "과수 전문 품목농협",
             "산지유통센터 준공",
             "스마트 농산물 산지유통센터 준공",
             "스마트 APC 준공",
@@ -2978,7 +2982,8 @@ _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS = (
     "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\uacf5\uc120\ucd9c\ud558", "\uacbd\uc81c\uc0ac\uc5c5",
 )
 _DIST_LOCAL_FIELD_PROFILE_BODY_TERMS = (
-    "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\uacf5\uc120\ucd9c\ud558", "\uacf5\ub3d9\ud310\ub9e4", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558", "\uacbd\uc81c\uc0ac\uc5c5", "\ube0c\ub79c\ub4dc", "\ub18d\uac00\uc2e4\uc775", "\uc9c0\uc5ed\uacbd\uc81c", "\uc120\ub3c4",
+    "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\uacf5\uc120\ucd9c\ud558", "\uacf5\ub3d9\ud310\ub9e4", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558", "\uacbd\uc81c\uc0ac\uc5c5", "\ube0c\ub79c\ub4dc", "\ub18d\uac00\uc2e4\uc775", "\uc9c0\uc5ed\uacbd\uc81c", "\uc9c0\uc5ed \uacbd\uc81c", "\uc120\ub3c4",
+    "\uad6c\ub9e4", "\uac00\uacf5", "\uc9c0\ub3c4\uc0ac\uc5c5", "\uc870\ud569\uc6d0 \uc2e4\uc775", "\uc2e4\uc775", "\uacfc\uc218 \uc804\ubb38",
 )
 
 
@@ -3005,11 +3010,18 @@ def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
     horti_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     horti_sc = best_horti_score(title or "", desc or "")
     profile_hits = count_any(txt, [w.lower() for w in ("\uc9c0\uc5ed\uacbd\uc81c", "\uc120\ub3c4", "\ube0c\ub79c\ub4dc", "\uacbd\uc81c\uc0ac\uc5c5", "\ub18d\uac00\uc2e4\uc775", "\ud310\ub85c", "\uc720\ud1b5", "\ucd9c\ud558")])
+    coop_field_hits = count_any(
+        txt,
+        [w.lower() for w in ("\uad6c\ub9e4", "\uac00\uacf5", "\uc9c0\ub3c4\uc0ac\uc5c5", "\uc870\ud569\uc6d0 \uc2e4\uc775", "\uc2e4\uc775", "\uc9c0\uc5ed \uacbd\uc81c", "\uacfc\uc218 \uc804\ubb38")],
+    )
+    horti_org_hits = count_any(txt, [w.lower() for w in ("\uacfc\uc218", "\uc0ac\uacfc", "\ubc30", "\ud3ec\ub3c4", "\uac10\uade4", "\uc6d0\uc608", "\ub18d\uc0b0\ubb3c", "\ub18d\uac00")])
 
-    if org_title_hits >= 1 and (horti_hits >= 1 or horti_sc >= 1.4):
+    if org_title_hits >= 1 and (horti_hits >= 1 or horti_sc >= 1.4 or horti_org_hits >= 1):
         if field_title_hits >= 1 and (field_body_hits >= 1 or profile_hits >= 2 or market_hits >= 1):
             return True
         if field_body_hits >= 3 and profile_hits >= 2:
+            return True
+        if field_title_hits >= 1 and (field_body_hits + coop_field_hits) >= 2 and (profile_hits >= 2 or coop_field_hits >= 2):
             return True
     return False
 
@@ -3210,8 +3222,12 @@ def is_policy_export_support_brief_context(title: str, desc: str, dom: str = "",
 
     policy_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_TERMS])
     export_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_EXPORT_TERMS])
-    agri_hits = count_any(txt, [w.lower() for w in ("농식품", "농산물", "식품산업", "k-푸드", "k푸드")])
-    return export_hits >= 2 and policy_hits >= 2 and agri_hits >= 1
+    agri_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488", "\ub18d\uc0b0\ubb3c", "\uc2dd\ud488\uc0b0\uc5c5", "k-\ud478\ub4dc", "k\ud478\ub4dc")])
+    dom_norm = normalize_host(dom or "")
+    officialish = policy_domain_override(dom_norm, txt) or (dom_norm in POLICY_DOMAINS) or any(dom_norm.endswith("." + h) for h in POLICY_DOMAINS) or (press in ("\uc815\ucc45\ube0c\ub9ac\ud551", "\ub18d\uc2dd\ud488\ubd80"))
+    actor_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc7a5\uad00", "\uad6d\ud68c", "\uc704\uc6d0\ud68c", "\uc5c5\ubb34\uacc4\ud68d", "\uc815\ubd80", "\uad00\uacc4\ubd80\ucc98", "at", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac")])
+    return export_hits >= 2 and policy_hits >= 2 and agri_hits >= 1 and (officialish or actor_hits >= 2)
+
 
 def is_dist_export_shipping_context(title: str, desc: str) -> bool:
     """Return True for hortic export/shipping stories that fit dist better than supply."""
@@ -3967,6 +3983,9 @@ def is_local_brief_text(title: str, desc: str, section_key: str) -> bool:
     if section_key != "dist":
         return False
 
+    if is_dist_local_field_profile_context(title, desc):
+        return False
+
     ttl = (title or "")
     txt = ((title or "") + " " + (desc or "")).lower()
     ttl_l = (title or "").lower()
@@ -4115,6 +4134,15 @@ PRESS_HOST_MAP = {
     "www.youngnong.co.kr": "한국영농신문",
     "wonyesanup.co.kr": "원예산업신문",
     "www.wonyesanup.co.kr": "원예산업신문",
+    "cooknchefnews.com": "쿡앤셰프",
+    "breaknews.com": "브레이크뉴스",
+    "www.breaknews.com": "브레이크뉴스",
+    "jnilbo.com": "진일보",
+    "www.jnilbo.com": "진일보",
+    "kado.net": "강원도민일보",
+    "www.kado.net": "강원도민일보",
+    "chungnamilbo.co.kr": "충남일보",
+    "www.chungnamilbo.co.kr": "충남일보",
     "jeonmin.co.kr": "전민일보",
     "www.jeonmin.co.kr": "전민일보",
     "busan.com": "부산일보",
@@ -4184,6 +4212,7 @@ PRESS_HOST_MAP = {
     "korea.kr": "정책브리핑",
     "mafra.go.kr": "농식품부",
     "at.or.kr": "aT",
+    "dream.kotra.or.kr": "대한무역투자진흥공사",
     "naqs.go.kr": "농관원",
     "krei.re.kr": "KREI",
     "agrinet.co.kr": "한국농어민신문",
@@ -4241,6 +4270,11 @@ ABBR_MAP = {
     "newdaily": "뉴데일리경제",
     "youngnong": "한국영농신문",
     "wonyesanup": "원예산업신문",
+    "cooknchefnews": "쿡앤셰프",
+    "breaknews": "브레이크뉴스",
+    "jnilbo": "진일보",
+    "kado": "강원도민일보",
+    "chungnamilbo": "충남일보",
     "jeonmin": "전민일보",
     "busan": "부산일보",
     "kwnews": "강원일보",
@@ -6158,13 +6192,19 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     score += nh_boost(text, key)
 
     # 행사/동정성 패널티(실무 신호 약하면 감점)
-    score -= eventy_penalty(text, title, key)
+    event_pen = eventy_penalty(text, title, key)
+    if key == "dist" and dist_local_field_profile:
+        event_pen = min(event_pen, 0.8)
+    score -= event_pen
 
     # 행정/정치 인터뷰성(도지사/시장 등) 기사 상단 배치 억제
     score -= governance_interview_penalty(text, title, key, horti_sc, market_hits)
 
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
-    score -= local_coop_penalty(text, press, dom, key)
+    local_coop_pen = local_coop_penalty(text, press, dom, key)
+    if key == "dist" and dist_local_field_profile:
+        local_coop_pen = min(local_coop_pen, 0.4)
+    score -= local_coop_pen
     # ✅ 제외 품목(마늘/양파)은 점수 산정 이전 단계에서 이미 컷되도록 설계.
     # 혹시라도 남아 들어오면 최하단으로 밀어내기 위해 강한 패널티를 부여한다.
     if any(w.lower() in text for w in EXCLUDED_ITEMS):
@@ -8184,7 +8224,7 @@ def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end
 _RECALL_SIGNALS_BY_SECTION = {
     "supply": ["\ubb34\uad00\uc138", "\uc218\uc785", "\uad00\uc138", "FTA", "\ud560\ub2f9\uad00\uc138", "\ubb18\ubaa9", "\ud488\uadc0", "\uc0b0\ubd88", "\uae30\ud6c4\ubcc0\ud654"],
     "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["\ub300\ucc45", "\uc9c0\uc6d0", "\ud560\ub2f9\uad00\uc138", "\uac80\uc5ed", "\uad00\uc138", "\ubb34\uad00\uc138", "\uc218\uc785"],
-    "dist": ["\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc81c\ub3c4 \uac1c\uc120", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc6d0\uc0b0\uc9c0", "\ub2e8\uc18d", "\uac80\uc5ed", "\ud1b5\uad00", "\uc218\ucd9c", "\uc120\uc801", "\ud310\ub85c", "\ubb3c\ub958"],
+    "dist": ["\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc81c\ub3c4 \uac1c\uc120", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc6d0\uc0b0\uc9c0", "\ub2e8\uc18d", "\uac80\uc5ed", "\ud1b5\uad00", "\uc218\ucd9c", "\uc120\uc801", "\ud310\ub85c", "\ubb3c\ub958", "\uc870\ud569\uc6d0 \uc2e4\uc775", "\uac00\uacf5", "\uad6c\ub9e4", "\uc9c0\ub3c4\uc0ac\uc5c5", "\uc9c0\uc5ed\uacbd\uc81c"],
     "pest": ["\ubcd1\ud574\ucda9", "\ubc29\uc81c", "\uc608\ucc30", "\uac80\uc5ed"],
 }
 
