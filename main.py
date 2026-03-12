@@ -1852,6 +1852,12 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         if _has_trade_signal(a_txt) != _has_trade_signal(b_txt):
             return False
 
+    if section_key == "dist":
+        a_scope = dist_market_disruption_scope(at, ad)
+        b_scope = dist_market_disruption_scope(bt, bd)
+        if a_scope and b_scope and {a_scope, b_scope} == {"systemic", "commodity_aftershock"}:
+            return False
+
     if section_key == "supply":
         a_feature = supply_feature_context_kind(at, ad)
         b_feature = supply_feature_context_kind(bt, bd)
@@ -3089,6 +3095,34 @@ def is_dist_market_disruption_context(title: str, desc: str) -> bool:
     return (horti_sc >= 1.6) or (horti_title_sc >= 1.2) or (agri_hits >= 1)
 
 
+def dist_market_disruption_scope(title: str, desc: str) -> str:
+    """Return a coarse scope label for dist market-disruption stories."""
+    if not is_dist_market_disruption_context(title, desc):
+        return ""
+
+    ttl = (title or "").lower()
+    txt = f"{ttl} {desc or ''}".lower()
+    systemic_core_hits = count_any(
+        txt,
+        [w.lower() for w in ("수도권", "도매시장 첫", "출하쏠림", "과채류")],
+    )
+    market_operation_hits = count_any(
+        txt,
+        [w.lower() for w in ("도매시장", "동시 휴업", "동시휴업", "가락", "구리")],
+    )
+    if ("도매시장 첫" in ttl) or systemic_core_hits >= 2 or (systemic_core_hits >= 1 and market_operation_hits >= 2):
+        return "systemic"
+
+    commodity_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    aftermath_hits = count_any(
+        txt,
+        [w.lower() for w in ("폐기량", "경락값", "경락가", "가격", "시세", "출하량", "출하 조정")],
+    )
+    if commodity_hits >= 1 and aftermath_hits >= 2:
+        return "commodity_aftershock"
+    return "market_disruption"
+
+
 _POLICY_GENERAL_MACRO_AGRI_TERMS = (
     "농산물", "농업", "농식품", "농식품부", "원예", "과수", "과일", "채소", "화훼", "청과",
     "사과", "배", "감귤", "딸기", "포도", "참외", "오이", "토마토", "파프리카",
@@ -3421,8 +3455,13 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     elif key == "dist":
         if is_dist_export_shipping_context(title, desc):
             base += 1.15
-        if is_dist_market_disruption_context(title, desc):
+        dist_disruption_scope = dist_market_disruption_scope(title, desc)
+        if dist_disruption_scope == "systemic":
+            base += 1.9
+        elif dist_disruption_scope == "market_disruption":
             base += 1.25
+        elif dist_disruption_scope == "commodity_aftershock":
+            base += 0.65
         if is_local_agri_org_feature_context(title, desc):
             if is_dist_local_org_tail_context(title, desc):
                 base -= 0.9
@@ -5523,6 +5562,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     supply_feature_kind = supply_feature_context_kind(title, desc)
     supply_issue_bucket = supply_issue_context_bucket(title, desc)
     dist_market_disruption = is_dist_market_disruption_context(title, desc)
+    dist_disruption_scope = dist_market_disruption_scope(title, desc)
     policy_stabilization = is_supply_stabilization_policy_context(text, dom, press)
     policy_market_brief = is_policy_market_brief_context(text, dom, press)
     policy_general_macro_tail = is_policy_general_macro_tail_context(title, desc, dom, press)
@@ -5719,6 +5759,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         wholesale_hits = count_any(text, [t.lower() for t in WHOLESALE_MARKET_TERMS])
         apc_ctx = has_apc_agri_context(text)
         dist_anchor = market_hits + wholesale_hits + (1 if apc_ctx else 0)
+        if dist_disruption_scope == "systemic":
+            score += 12.0
+        elif dist_disruption_scope == "market_disruption":
+            score += 4.2
+        elif dist_disruption_scope == "commodity_aftershock":
+            score -= 1.0
         # APC/산지유통 인프라 기사(준공/가동/선별/저장)는 dist 실무 가치가 높아 소폭 가점
         if apc_ctx and any(w in text for w in ("준공", "완공", "개장", "개소", "가동", "선별", "선과", "저온", "저온저장", "저장고", "ca저장")):
             score += 1.4
@@ -6255,6 +6301,8 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         return True
 
     if section_key == "dist":
+        if dist_market_disruption_scope(a.title or "", a.description or "") == "systemic":
+            return True
         # dist는 is_relevant가 있어도 '일반 물류/유통/단속' 누수가 있어, 완화 게이트에서도 맥락을 한 번 더 본다.
         agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
@@ -6569,6 +6617,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         return is_dist_local_org_tail_context(a.title or "", a.description or "")
 
+    def _is_policy_weak_tail_story(a: Article) -> bool:
+        if section_key != "policy":
+            return False
+        return is_policy_general_macro_tail_context(
+            a.title or "",
+            a.description or "",
+            normalize_host(a.domain or ""),
+            (a.press or "").strip(),
+        )
+
     def _underfill_candidate_rank(a: Article) -> tuple[Any, ...] | None:
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
         dom_local = normalize_host(a.domain or "")
@@ -6621,15 +6679,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if apc_ctx_local:
                 market_anchor_hits += 1
             market_disruption = is_dist_market_disruption_context(a.title or "", a.description or "")
+            disruption_scope = dist_market_disruption_scope(a.title or "", a.description or "")
+            disruption_rank = 2 if disruption_scope == "systemic" else 1 if market_disruption else 0
             export_shipping = is_dist_export_shipping_context(a.title or "", a.description or "")
             if _is_dist_weak_tail_story(a):
                 return None
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
             strong_local_org = local_org_feature and apc_ctx_local
-            if not (market_disruption or export_shipping or strong_local_org or market_anchor_hits >= 2 or fit_sc >= 1.4):
+            if not (disruption_rank or export_shipping or strong_local_org or market_anchor_hits >= 2 or fit_sc >= 1.4):
                 return None
             return (
-                1 if market_disruption else 0,
+                disruption_rank,
                 1 if export_shipping else 0,
                 1 if market_anchor_hits >= 2 else 0,
                 1 if strong_local_org else 0,
@@ -6644,6 +6704,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
             announcement = is_policy_announcement_issue(txt_local, dom_local, pr_local)
             macro = is_macro_policy_issue(txt_local)
+            if _is_policy_weak_tail_story(a):
+                return None
             if is_retail_sales_trend_context(txt_local):
                 return None
             if not (market_brief or stabilization or announcement or macro):
@@ -6678,6 +6740,26 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return _underfill_candidate_rank(a) is not None
 
     # 1) 엄격 코어 2개
+    if section_key == "dist":
+        for a in pool:
+            if len(core) >= 1:
+                break
+            if dist_market_disruption_scope(a.title or "", a.description or "") != "systemic":
+                continue
+            if a.score < core_min:
+                continue
+            if _already_used(a):
+                continue
+            if not _low_core_allowed(a):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            if not _source_ok_local(a):
+                continue
+            a.is_core = True
+            core.append(a)
+            _mark_used(a)
+            _source_take(a)
     for a in pool:
         if len(core) >= 2:
             break
@@ -6691,6 +6773,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
             continue
         if section_key == "dist" and _is_dist_weak_tail_story(a):
+            continue
+        if section_key == "policy" and _is_policy_weak_tail_story(a):
             continue
         if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
             continue
@@ -6776,6 +6860,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
             if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
@@ -6829,6 +6915,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if section_key == "policy" and len(core) == 0:
         for a in pool:
             if _already_used(a):
+                continue
+            if _is_policy_weak_tail_story(a):
                 continue
             if _is_low_core_source(a) or press_priority(a.press, a.domain) < 2:
                 continue
@@ -6925,6 +7013,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
                 continue
@@ -7004,6 +7094,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "dist" and len(final) >= 2 and is_local_brief_text(a.title or "", a.description or "", section_key):
                 continue
             if section_key == "dist" and _is_dist_weak_tail_story(a):
+                continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
@@ -7227,7 +7319,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 4.6) underfill 강신호 백필:
     # - 섹션이 2~3건 수준에서 끝날 때, threshold/tail-cut 바로 아래의 강한 기사 1건을 추가로 살린다.
     # - dist도 시장 충격/현장 기사 쪽으로 1건 보강하고, policy는 공공/기관발 강기사 중심으로만 보강한다.
-    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "pest": 3}
+    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "dist": 3, "pest": 3}
     strong_underfill_target = min(max_n, strong_underfill_target_by_section.get(section_key, 0))
     if strong_underfill_target and len(final) < strong_underfill_target:
         need = strong_underfill_target - len(final)
@@ -7265,6 +7357,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < relax_cut:
                 continue
             if _already_used(a):
+                continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -7371,6 +7465,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < relax_cut:
                 continue
             if _already_used(a):
+                continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -9020,7 +9116,19 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                     if _dist_hits < 2 and (not has_apc_agri_context(_mix_text)):
                         trade_like = True
 
-                if is_policy_announcement_issue(_mix_text, d, p) or is_policy_market_brief_context(_mix_text, d, p) or is_macro_policy_issue(_mix_text) or trade_like or is_supply_stabilization_policy_context(_mix_text, d, p):
+                policy_general_macro_tail = is_policy_general_macro_tail_context(a.title or "", a.description or "", d, p)
+                policy_agri_anchor_hits = count_any(
+                    _mix_text,
+                    [w.lower() for w in ("농산물", "농업", "농가", "원예", "과수", "과일", "채소", "화훼", "도매시장", "공판장", "가락시장", "산지유통", "산지유통센터", "면세유", "비료")],
+                )
+                move_to_policy = False
+                if is_policy_announcement_issue(_mix_text, d, p) or is_policy_market_brief_context(_mix_text, d, p) or trade_like or is_supply_stabilization_policy_context(_mix_text, d, p):
+                    move_to_policy = True
+                elif is_macro_policy_issue(_mix_text) and (not policy_general_macro_tail):
+                    if policy_agri_anchor_hits >= 2 or policy_domain_override(d, _mix_text) or is_trade_policy_issue(_mix_text):
+                        move_to_policy = True
+
+                if move_to_policy:
 
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링

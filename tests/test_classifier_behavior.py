@@ -1225,6 +1225,8 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([major1, major2, official], "policy", 5)
         picked_links = {x.link for x in picked}
         self.assertIn(official.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertNotIn(major1.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertNotIn(major2.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_supply_seed_extraction_spreads_across_query_list(self):
         queries = [
@@ -1709,6 +1711,30 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "수도권 도매시장 동시 휴업으로 출하가 몰리며 과채류 가격이 흔들리고 산지 출하 농민 불안이 커졌다는 현장 기사다."
         best, scores = self._best_section(title, desc, "https://www.agrinet.co.kr/news/articleView.html?idxno=402440")
         self.assertEqual(best, "dist", msg=f"scores={scores}")
+
+    def test_dist_systemic_market_disruption_can_take_core_slot(self):
+        export_story = self._make_article(
+            "dist",
+            "‘굿뜨래 싱싱딸기’ 몽골행…1t 선적",
+            "충남 부여군의 딸기 수출 선적 소식으로 산지유통과 수출 현장 흐름을 보여주는 기사다.",
+            "https://www.nongmin.com/article/20260309500740",
+        )
+        followup_story = self._make_article(
+            "dist",
+            "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’",
+            "가락시장과 구리시장이 동시에 휴업하면서 딸기 가격과 출하량이 크게 흔들렸다는 현장 기사다.",
+            "https://www.nongmin.com/article/20260309500761",
+        )
+        systemic_story = self._make_article(
+            "dist",
+            "수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'",
+            "수도권 도매시장 동시 휴업으로 출하가 몰리며 과채류 가격이 흔들리고 산지 출하 농민 불안이 커졌다는 현장 기사다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402440",
+        )
+        picked = main.select_top_articles([export_story, followup_story, systemic_story], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(systemic_story.link, picked_links, msg=str([(x.link, x.score, x.is_core) for x in picked]))
+        self.assertTrue(any(x.link == systemic_story.link and getattr(x, "is_core", False) for x in picked), msg=str([(x.link, x.score, x.is_core) for x in picked]))
 
     def test_supply_issue_bucket_detects_export_recovery_story(self):
         title = "[신선농산물 수출확대 극복 과제] 샤인머스캣 수출 급증했지만, 떨어진 가격 회복 시급"
