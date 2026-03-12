@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T09:42:04+09:00",
-  "build_tag": "b0cd3a2",
+  "generated_at_kst": "2026-03-12T11:59:41+09:00",
+  "build_tag": "eae9eb2",
   "filter_rejects": [
     {
       "section": "policy",
@@ -28,6 +28,14 @@
     },
     {
       "section": "policy",
+      "reason": "policy_macro_general_economy",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "경남도, 중동 정세 따른 '민생 안정 특별기간' 돌입…유가·물가 상승 대...",
+      "url": "https://www.newspim.com/news/view/20260310000497"
+    },
+    {
+      "section": "policy",
       "reason": "policy_context_gate",
       "press": "뉴시스",
       "domain": "newsis.com",
@@ -52,7 +60,7 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
+      "reason": "policy_regional_macro_noise",
       "press": "메트로신문",
       "domain": "metroseoul.co.kr",
       "title": "경남도, 중동 사태 대응 ‘민생 안정 특별기간’ 선포",
@@ -188,7 +196,15 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
+      "reason": "policy_macro_general_economy",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "경남도, 중동 정세 따른 '민생 안정 특별기간' 돌입…유가·물가 상승 대...",
+      "url": "https://www.newspim.com/news/view/20260310000497"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_macro_general_economy",
       "press": "노컷뉴스",
       "domain": "nocutnews.co.kr",
       "title": "'에너지 쇼크'에 전방위 대응 나선 경남도…박완수 \"맞춤형 처방\"",
@@ -220,7 +236,7 @@
     },
     {
       "section": "policy",
-      "reason": "policy_local_minor",
+      "reason": "policy_macro_general_economy",
       "press": "cstimes",
       "domain": "cstimes.com",
       "title": "구리시, '2026년 물가 모니터 요원 위촉식' 개최",
@@ -228,7 +244,7 @@
     },
     {
       "section": "policy",
-      "reason": "policy_local_minor",
+      "reason": "policy_macro_general_economy",
       "press": "weeklytoday",
       "domain": "weeklytoday.com",
       "title": "[위클리오늘] 구리시, 2026년 신규 물가 모니터 요원 위촉식 개최",
@@ -300,7 +316,7 @@
     },
     {
       "section": "policy",
-      "reason": "policy_local_minor",
+      "reason": "policy_macro_general_economy",
       "press": "IFS",
       "domain": "ifs.or.kr",
       "title": "월드 뉴스 브리프 (기준일시: 2026년 03월 10일 화요일 10:00)",
@@ -409,22 +425,6 @@
       "domain": "daejonilbo.com",
       "title": "송언석 \"과거 뒤로 하고 미래로…정권 견제하도록 국민 뜻 모아달라\"",
       "url": "https://www.daejonilbo.com/news/articleView.html?idxno=2261791"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
-      "press": "bokuennews",
-      "domain": "bokuennews.com",
-      "title": "농축산물 가격 전주 대비 하락",
-      "url": "http://www.bokuennews.com/news/article.html?no=274896"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "yonhapnewstv",
-      "domain": "yonhapnewstv.co.kr",
-      "title": "당정, 중동발 위기 총력 대응…국힘, 오세훈에 손짓",
-      "url": "http://www.yonhapnewstv.co.kr/MYH20260310110249ESc"
     },
     {
       "section": "supply",
@@ -737,30 +737,6 @@
       "domain": "ngonews.kr",
       "title": "백경학 푸르메재단 상임대표 \"작은 물방울이 모여 큰 강을 이루듯 후원...",
       "url": "https://www.ngonews.kr/news/articleView.html?idxno=225767"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "스포츠서울",
-      "domain": "sportsseoul.com",
-      "title": "컬리, ‘3월 원더컬리’ 기획전 진행…봄 제철 식탁 준비",
-      "url": "https://www.sportsseoul.com/news/read/1592649"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "(시론)주택시장 정상화를 위한 조세정책 방향",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293699&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "봄동 열풍 이어가려면 품질 관리가 ‘먼저’",
-      "url": "https://www.nongmin.com/article/20260309500764"
     },
     {
       "section": "supply",
@@ -1580,14 +1556,6 @@
     },
     {
       "section": "supply",
-      "reason": "energy_supply_offtopic",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
-      "title": "경남도, 중동 정세 따른 '민생 안정 특별기간' 돌입…유가·물가 상승 대...",
-      "url": "https://newspim.com/news/view/20260310000497"
-    },
-    {
-      "section": "supply",
       "reason": "must_terms_fail",
       "press": "bokuennews",
       "domain": "bokuennews.com",
@@ -1699,6 +1667,14 @@
       "url": "https://yna.co.kr/view/AKR20260310069000064?input=1195m"
     },
     {
+      "section": "dist",
+      "reason": "dist_local_org_profile",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "“농협 이용하면 이용할수록 이익입니다.”…농협사업 전이용 우수조합...",
+      "url": "https://nongmin.com/article/20260310500177"
+    },
+    {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "중부매일",
@@ -1745,6 +1721,22 @@
       "domain": "nocutnews.co.kr",
       "title": "충주시, 사과 품종 '이지풀' 농가 보급 본격화…8천주 우선 공급",
       "url": "https://nocutnews.co.kr/news/6482435"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "ccreview",
+      "domain": "ccreview.co.kr",
+      "title": "충주시, 사과 품종 '이지플' 묘목 공급 본격",
+      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344093"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "ccreview",
+      "domain": "ccreview.co.kr",
+      "title": "충주시, 사과 품종 '이지플' 묘목 공급 본격",
+      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344093"
     },
     {
       "section": "pest",
@@ -1848,7 +1840,7 @@
       "threshold": 17.69,
       "tail_cut": 18.09,
       "core_min": 17.69,
-      "total_candidates": 75,
+      "total_candidates": 77,
       "total_selected": 4,
       "top": [
         {
@@ -1934,7 +1926,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.94,
+          "score": 17.74,
           "tier": 1,
           "press": "bokuennews",
           "domain": "bokuennews.com",
@@ -1974,7 +1966,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.88,
+          "score": 16.68,
           "tier": 1,
           "press": "KJMBC",
           "domain": "kjmbc.co.kr",
@@ -1994,7 +1986,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.09,
+          "score": 15.89,
           "tier": 3,
           "press": "연합뉴스",
           "domain": "yna.co.kr",
@@ -2029,6 +2021,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.97,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "“농협 이용하면 이용할수록 이익입니다.”…농협사업 전이용 우수조합...",
+          "url": "https://www.nongmin.com/article/20260310500177",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
           }
         },
         {
@@ -2114,7 +2126,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.34,
+          "score": 12.14,
           "tier": 3,
           "press": "세계일보",
           "domain": "segye.com",
@@ -2154,7 +2166,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.99,
+          "score": 11.79,
           "tier": 3,
           "press": "이데일리",
           "domain": "edaily.co.kr",
@@ -2214,7 +2226,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.94,
+          "score": 10.74,
           "tier": 1,
           "press": "yonhapnewstv",
           "domain": "yonhapnewstv.co.kr",
@@ -2274,7 +2286,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.66,
+          "score": 8.46,
           "tier": 1,
           "press": "youngnong",
           "domain": "youngnong.co.kr",
@@ -2414,26 +2426,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.22,
-          "tier": 1,
-          "press": "ccreview",
-          "domain": "ccreview.co.kr",
-          "title": "충주시, 사과 품종 '이지플' 묘목 공급 본격",
-          "url": "https://www.ccreview.co.kr/news/articleView.html?idxno=344093",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.07,
           "tier": 1,
           "press": "newsjeju",
@@ -2460,26 +2452,6 @@
           "domain": "dynews.co.kr",
           "title": "충주시, 지역특화 사과 품종 '이지플' 묘목 공급 본격화…100ha 확대 목표",
           "url": "http://www.dynews.co.kr/news/articleView.html?idxno=841650",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 6.02,
-          "tier": 1,
-          "press": "MBCCB",
-          "domain": "news.mbccb.co.kr",
-          "title": "충주시, 신품종 사과 '이지플' 300㏊까지 확대",
-          "url": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260310&SEQUENCE=0105",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -2529,6 +2501,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.82,
+          "tier": 1,
+          "press": "MBCCB",
+          "domain": "news.mbccb.co.kr",
+          "title": "충주시, 신품종 사과 '이지플' 300㏊까지 확대",
+          "url": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260310&SEQUENCE=0105",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -2594,7 +2586,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.19,
+          "score": 4.99,
           "tier": 1,
           "press": "foodnews",
           "domain": "foodnews.co.kr",
@@ -2634,26 +2626,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.73,
-          "tier": 1,
-          "press": "fashionbiz",
-          "domain": "fashionbiz.co.kr",
-          "title": "타임스퀘어, 화이트데이 맞이 패션·잡화·디저트 쇼핑 큐레이션 진행",
-          "url": "https://www.fashionbiz.co.kr/article/224394",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 3.3,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 4.72,
           "tier": 1,
           "press": "중부매일",
@@ -2666,6 +2638,26 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.53,
+          "tier": 1,
+          "press": "fashionbiz",
+          "domain": "fashionbiz.co.kr",
+          "title": "타임스퀘어, 화이트데이 맞이 패션·잡화·디저트 쇼핑 큐레이션 진행",
+          "url": "https://www.fashionbiz.co.kr/article/224394",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.3,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -2794,6 +2786,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 2.27,
+          "tier": 1,
+          "press": "ccreview",
+          "domain": "ccreview.co.kr",
+          "title": "충주시, 사과 품종 '이지플' 묘목 공급 본격",
+          "url": "https://www.ccreview.co.kr/news/articleView.html?idxno=344093",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 2.22,
           "tier": 1,
           "press": "goodmorningcc",
@@ -2814,7 +2826,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.22,
+          "score": 2.02,
           "tier": 1,
           "press": "중도일보",
           "domain": "joongdo.co.kr",
@@ -2854,7 +2866,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 1.47,
+          "score": 1.27,
           "tier": 1,
           "press": "GGILBO",
           "domain": "ggilbo.com",
@@ -2974,7 +2986,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 0.44,
+          "score": 0.24,
           "tier": 1,
           "press": "koreaittimes",
           "domain": "koreaittimes.com",
@@ -3030,60 +3042,40 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.19,
-          "tier": 1,
-          "press": "joongangenews",
-          "domain": "joongangenews.com",
-          "title": "타임스퀘어, 화이트데이 선물 쇼핑 제안…패션·향수·디저트 한자리",
-          "url": "https://www.joongangenews.com/news/articleView.html?idxno=500792",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
         }
       ]
     },
     "policy": {
-      "threshold": 28.41,
-      "tail_cut": 28.61,
-      "core_min": 28.41,
-      "total_candidates": 26,
-      "total_selected": 2,
+      "threshold": 13.91,
+      "tail_cut": 14.11,
+      "core_min": 13.91,
+      "total_candidates": 23,
+      "total_selected": 6,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 36.41,
+          "score": 21.91,
           "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’",
-          "url": "https://www.nongmin.com/article/20260309500761",
+          "press": "아시아경제",
+          "domain": "view.asiae.co.kr",
+          "title": "경남도, 중동 사태 관련 민생안정 긴급 대응 … \"모든 수단 총동원\"",
+          "url": "https://view.asiae.co.kr/article/2026031011070688016",
           "reason": "",
           "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 3,
-            "strength": 4,
-            "korea": 3,
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 5,
             "offtopic_pen": 0,
             "press_tier": 3,
-            "press_weight": 10.7
+            "press_weight": 9.5
           }
         },
         {
           "selected": true,
-          "is_core": false,
-          "score": 27.95,
+          "is_core": true,
+          "score": 21.55,
           "tier": 3,
           "press": "헤럴드경제",
           "domain": "biz.heraldcorp.com",
@@ -3101,75 +3093,15 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 24.69,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402440",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 2,
-            "strength": 6,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 24.6,
-          "tier": 2,
-          "press": "뉴스핌",
-          "domain": "newspim.com",
-          "title": "경남도, 중동 정세 따른 '민생 안정 특별기간' 돌입…유가·물가 상승 대...",
-          "url": "https://www.newspim.com/news/view/20260310000497",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 22.11,
-          "tier": 3,
-          "press": "아시아경제",
-          "domain": "view.asiae.co.kr",
-          "title": "경남도, 중동 사태 관련 민생안정 긴급 대응 … \"모든 수단 총동원\"",
-          "url": "https://view.asiae.co.kr/article/2026031011070688016",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 21.26,
+          "score": 21.06,
           "tier": 1,
           "press": "bokuennews",
           "domain": "bokuennews.com",
           "title": "농축산물 가격 전주 대비 하락",
           "url": "http://www.bokuennews.com/news/article.html?no=274896",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -3181,27 +3113,7 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
-          "score": 19.9,
-          "tier": 1,
-          "press": "IDOMIN",
-          "domain": "idomin.com",
-          "title": "경남도, 중동전쟁 파장 에너지·물가 위기에 '민생안정 특별대책'",
-          "url": "https://www.idomin.com/news/articleView.html?idxno=2000888",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 18.64,
           "tier": 3,
@@ -3209,7 +3121,7 @@
           "domain": "view.asiae.co.kr",
           "title": "[르포] \"인건비도 안 나와\" 기름값 공포에 광주·전남 민생 '휘청'",
           "url": "https://view.asiae.co.kr/article/2026031014203194230",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 2.0,
             "market_hits": 0,
@@ -3229,7 +3141,7 @@
           "domain": "news.skbroadband.com",
           "title": "[주간알뜰장보기] \"봄이 왔네 봄이 와\"…상추·깻잎 가격 '뚝' (3월 2주)",
           "url": "https://news.skbroadband.com/news/articleView.html?idxno=220263",
-          "reason": "below_threshold",
+          "reason": "source_cap",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -3241,15 +3153,15 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 17.94,
+          "score": 17.74,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
           "title": "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락",
           "url": "https://www.newsis.com/view/NISX20260310_0003541762",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 2.8,
             "market_hits": 0,
@@ -3263,13 +3175,13 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.36,
+          "score": 17.16,
           "tier": 1,
           "press": "POINTE",
           "domain": "pointe.co.kr",
           "title": "G마켓·옥션, 미국산 육류 할인 행사…장바구니 부담 낮춘다",
           "url": "https://www.pointe.co.kr/news/articleView.html?idxno=74478",
-          "reason": "below_threshold",
+          "reason": "source_cap",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -3289,7 +3201,7 @@
           "domain": "gnnews.co.kr",
           "title": "농축산물 수급 동향 점검… 가격 대체로 전주 대비 하락",
           "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=632204",
-          "reason": "below_threshold",
+          "reason": "source_cap",
           "signals": {
             "horti_sc": 2.0,
             "market_hits": 0,
@@ -3301,15 +3213,15 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 16.59,
+          "score": 16.39,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
           "title": "배달·운송업 직격탄…경남도 긴급 경영자금 50억 투입",
           "url": "https://www.newsis.com/view/NISX20260310_0003541569",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -3329,7 +3241,7 @@
           "domain": "agrinet.co.kr",
           "title": "유가 폭등에 농촌 비상",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402445",
-          "reason": "below_threshold",
+          "reason": "headline_gate",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -3349,7 +3261,7 @@
           "domain": "newstomato.com",
           "title": "중동발 물류 쇼크…식탁 물가 '흔들'",
           "url": "http://www.newstomato.com/ReadNews.aspx?no=1293773&inflow=N",
-          "reason": "below_threshold",
+          "reason": "headline_gate",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -3363,21 +3275,21 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.86,
+          "score": 13.5,
           "tier": 1,
-          "press": "kjdaily",
-          "domain": "kjdaily.com",
-          "title": "지역 채솟값 하락에도 먹거리 물가 부담 여전",
-          "url": "http://www.kjdaily.com/article.php?aid=1773140442674632004",
+          "press": "IDOMIN",
+          "domain": "idomin.com",
+          "title": "경남도, 중동전쟁 파장 에너지·물가 위기에 '민생안정 특별대책'",
+          "url": "https://www.idomin.com/news/articleView.html?idxno=2000888",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 1,
             "press_tier": 1,
-            "press_weight": -2.0
+            "press_weight": -3.0
           }
         },
         {
@@ -3403,7 +3315,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.09,
+          "score": 9.89,
           "tier": 1,
           "press": "노컷뉴스",
           "domain": "nocutnews.co.kr",
@@ -3503,6 +3415,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 5.46,
+          "tier": 1,
+          "press": "kjdaily",
+          "domain": "kjdaily.com",
+          "title": "지역 채솟값 하락에도 먹거리 물가 부담 여전",
+          "url": "http://www.kjdaily.com/article.php?aid=1773140442674632004",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 4.51,
           "tier": 1,
           "press": "namdonews",
@@ -3586,8 +3518,8 @@
       "threshold": 29.6,
       "tail_cut": 30.2,
       "core_min": 29.6,
-      "total_candidates": 6,
-      "total_selected": 3,
+      "total_candidates": 5,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
@@ -3611,42 +3543,42 @@
         },
         {
           "selected": true,
+          "is_core": true,
+          "score": 36.41,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "가락·구리 시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’",
+          "url": "https://www.nongmin.com/article/20260309500761",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 3,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
           "is_core": false,
-          "score": 28.64,
+          "score": 24.69,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402440",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
-            "horti_sc": 1.0,
+            "horti_sc": 0.0,
             "market_hits": 2,
             "strength": 6,
-            "korea": 3,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 28.27,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "“농협 이용하면 이용할수록 이익입니다.”…농협사업 전이용 우수조합...",
-          "url": "https://www.nongmin.com/article/20260310500177",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 1,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.7
           }
         },
         {
@@ -3687,26 +3619,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -6.3,
-          "tier": 1,
-          "press": "viva100",
-          "domain": "viva100.com",
-          "title": "안성시, 농가-식품기업 계약재배 협약…단 호박 상생모델 시동",
-          "url": "https://www.viva100.com/article/20260310500795",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         }
       ]
@@ -3981,26 +3893,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.13,
-          "tier": 1,
-          "press": "inews365",
-          "domain": "inews365.com",
-          "title": "복숭아 농사, 지금 방제 가 '승부처'…옥천 농기센터 현장지도 강화",
-          "url": "https://www.inews365.com/news/article.html?no=909844",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 18.11,
           "tier": 1,
           "press": "새전북신문",
@@ -4021,18 +3913,18 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.34,
+          "score": 17.93,
           "tier": 1,
-          "press": "kbmaeil",
-          "domain": "kbmaeil.com",
-          "title": "청도군, 탄저병 예방 위해 특허 미생물 GH1-13 공급",
-          "url": "https://www.kbmaeil.com/article/20260310500181",
+          "press": "inews365",
+          "domain": "inews365.com",
+          "title": "복숭아 농사, 지금 방제 가 '승부처'…옥천 농기센터 현장지도 강화",
+          "url": "https://www.inews365.com/news/article.html?no=909844",
           "reason": "below_threshold",
           "signals": {
-            "horti_sc": 0.0,
+            "horti_sc": 1.4,
             "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
+            "strength": 4,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -4056,6 +3948,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.14,
+          "tier": 1,
+          "press": "kbmaeil",
+          "domain": "kbmaeil.com",
+          "title": "청도군, 탄저병 예방 위해 특허 미생물 GH1-13 공급",
+          "url": "https://www.kbmaeil.com/article/20260310500181",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -4248,10 +4160,6 @@
           3
         ],
         [
-          "정책브리핑 농축수산물",
-          1
-        ],
-        [
           "사과 배 가격 하락",
           1
         ],
@@ -4291,7 +4199,7 @@
         "소비자물가 과일 사과 배"
       ],
       "recall_meta": {},
-      "items_total": 12,
+      "items_total": 11,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -4410,16 +4318,16 @@
           11
         ],
         [
-          "사과 수급",
-          9
-        ],
-        [
           "꽃다발 선물",
           9
         ],
         [
+          "사과 수급",
+          8
+        ],
+        [
           "사과 저장",
-          7
+          8
         ],
         [
           "포도 가격",
