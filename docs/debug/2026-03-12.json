@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-12T23:59:13+09:00",
-  "build_tag": "5bfb5d4",
+  "generated_at_kst": "2026-03-13T00:14:02+09:00",
+  "build_tag": "12b8300",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1069,18 +1069,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "[미·이란 전쟁 2주] 주요 일지",
-      "url": "https://www.yna.co.kr/view/AKR20260311115900009?input=1195m"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "한국경제",
       "domain": "hankyung.com",
       "title": "[오늘의 운세] 2026년 3월 12일 오늘의 띠별 운세",
       "url": "https://www.hankyung.com/article/202603064221O"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "[미·이란 전쟁 2주] 주요 일지",
+      "url": "https://www.yna.co.kr/view/AKR20260311115900009?input=1195m"
     },
     {
       "section": "supply",
@@ -1389,26 +1389,10 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "goodkyung",
-      "domain": "goodkyung.com",
-      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑', 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.goodkyung.com/news/articleView.html?idxno=284271"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "sisunnews",
-      "domain": "sisunnews.co.kr",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "fntoday",
-      "domain": "fntoday.co.kr",
-      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
+      "url": "https://www.newspim.com/news/view/20260310000880"
     },
     {
       "section": "supply",
@@ -1421,10 +1405,26 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
+      "press": "fntoday",
+      "domain": "fntoday.co.kr",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.newspim.com/news/view/20260310000880"
+      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
+    },
+    {
+      "section": "supply",
+      "reason": "remote_foreign_horti",
+      "press": "sisunnews",
+      "domain": "sisunnews.co.kr",
+      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
+      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
+    },
+    {
+      "section": "supply",
+      "reason": "remote_foreign_horti",
+      "press": "goodkyung",
+      "domain": "goodkyung.com",
+      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑', 하베스트 챌린지 3관왕 수...",
+      "url": "https://www.goodkyung.com/news/articleView.html?idxno=284271"
     },
     {
       "section": "supply",
@@ -1437,18 +1437,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "thefirstmedia",
-      "domain": "thefirstmedia.net",
-      "title": "빙그레, 신제품 '빙그레 제로 아이스티' 2종 선봬",
-      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195232"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "데일리한국",
       "domain": "sports.hankooki.com",
       "title": "빙그레, 제로슈거·제로칼로리 '빙그레 제로 아이스티' 2종 선봬",
       "url": "https://sports.hankooki.com/news/articleView.html?idxno=6928097"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "thefirstmedia",
+      "domain": "thefirstmedia.net",
+      "title": "빙그레, 신제품 '빙그레 제로 아이스티' 2종 선봬",
+      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195232"
     },
     {
       "section": "supply",
@@ -1828,19 +1828,19 @@
     },
     {
       "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "( 토마토 칼럼)호르무즈 해협 봉쇄 공포",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293909&inflow=N"
-    },
-    {
-      "section": "supply",
       "reason": "energy_supply_offtopic",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "(시론)에너지 안보에서 전력 안보로의 패러다임 전환",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1293845&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "opinion_or_editorial",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "( 토마토 칼럼)호르무즈 해협 봉쇄 공포",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1293909&inflow=N"
     },
     {
       "section": "supply",
@@ -2519,16 +2519,16 @@
       "reason": "supply_context_gate",
       "press": "DKILBO",
       "domain": "dkilbo.com",
-      "title": "청도군, 탄저병 예방 '특허 미생물' 농가에 무상 공급",
-      "url": "https://www.dkilbo.com/news/articleView.html?idxno=536708"
+      "title": "청송군, 2026년 농촌지도사업 확정… 스마트 농업 전환 가속화",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=536679"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "DKILBO",
       "domain": "dkilbo.com",
-      "title": "청송군, 2026년 농촌지도사업 확정… 스마트 농업 전환 가속화",
-      "url": "https://www.dkilbo.com/news/articleView.html?idxno=536679"
+      "title": "청도군, 탄저병 예방 '특허 미생물' 농가에 무상 공급",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=536708"
     },
     {
       "section": "supply",
@@ -2543,16 +2543,16 @@
       "reason": "supply_context_gate",
       "press": "siminilbo",
       "domain": "siminilbo.co.kr",
-      "title": "화성특례시, 재배 기술부터 경영까지... ‘강한 농업인’ 키운다",
-      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160274904486720"
+      "title": "진주시, 과수 저온 피해 선제 대응한다!",
+      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160305431704846"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "siminilbo",
       "domain": "siminilbo.co.kr",
-      "title": "진주시, 과수 저온 피해 선제 대응한다!",
-      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160305431704846"
+      "title": "화성특례시, 재배 기술부터 경영까지... ‘강한 농업인’ 키운다",
+      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160274904486720"
     },
     {
       "section": "supply",
@@ -2601,14 +2601,6 @@
       "domain": "kbsm.net",
       "title": "청송군, '농촌지도사업' 41개 대상자 확정",
       "url": "https://www.kbsm.net/news/view.php?idx=511343"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "sisafocus",
-      "domain": "sisafocus.co.kr",
-      "title": "청송군, '스마트 농업 전환' 본격화",
-      "url": "http://www.sisafocus.co.kr/news/articleView.html?idxno=356840"
     },
     {
       "section": "supply",
@@ -3055,14 +3047,6 @@
       "reason": "dist_soft_without_infra",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "지역경제 선도하는 품목농협 - 대경사과원예 농협",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
       "title": "\"군대에서도 샐러드 즐긴다\"",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63988"
     },
@@ -3092,19 +3076,19 @@
     },
     {
       "section": "dist",
-      "reason": "opinion_or_editorial",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
-    },
-    {
-      "section": "dist",
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "지역 경제 선도하는 품목농협 - 대경사과원예 농협",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
+    },
+    {
+      "section": "dist",
+      "reason": "opinion_or_editorial",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
     },
     {
       "section": "dist",
@@ -3129,14 +3113,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "기고 / 원예 산업의 미래를 위한 원예농협 의 역할",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "아산 원예농협 농업 경제사업 대상 수상",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63960"
     },
     {
       "section": "dist",
@@ -4535,6 +4511,14 @@
       "reason": "supply_context_gate",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
+      "title": "아산 원예농협 농업 경제사업 대상 수상",
+      "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=63960"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
       "title": "우리 농산물의 프리미엄 시장을 향한 도전",
       "url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64001"
     },
@@ -5895,7 +5879,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.68,
+          "score": 20.48,
           "tier": 1,
           "press": "강원도민일보",
           "domain": "kado.net",
@@ -6538,8 +6522,8 @@
       "threshold": 15.21,
       "tail_cut": 15.81,
       "core_min": 15.21,
-      "total_candidates": 11,
-      "total_selected": 2,
+      "total_candidates": 12,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -6624,26 +6608,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.89,
-          "tier": 1,
-          "press": "원예산업신문",
-          "domain": "wonyesanup.co.kr",
-          "title": "지역경제 선도하는 품목 농협 - 대경사과 원예농협",
-          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 2,
-            "strength": 3,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 7.69,
           "tier": 1,
           "press": "대한무역투자진흥공사",
@@ -6696,6 +6660,46 @@
             "market_hits": 0,
             "strength": 4,
             "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.15,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "아산 원예농협 농업 경제사업 대상 수상",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63960",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 3.1,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "지역경제 선도하는 품목농협 - 대경사과원예농협",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 6,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7742,11 +7746,15 @@
           1
         ],
         [
-          "원예농협 산지유통",
+          "품목농협 산지유통",
           1
         ],
         [
           "품목농협 경제사업",
+          1
+        ],
+        [
+          "원예농협 경제사업",
           1
         ]
       ],
@@ -7773,7 +7781,7 @@
         "스마트 농산물 산지유통센터 준공"
       ],
       "recall_meta": {},
-      "items_total": 21,
+      "items_total": 22,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
