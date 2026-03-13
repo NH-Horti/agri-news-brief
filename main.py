@@ -7032,7 +7032,8 @@ BASE_MIN_SCORE = {
 def _dist_selection_reference_score(candidates_sorted: list["Article"]) -> float:
     if not candidates_sorted:
         return BASE_MIN_SCORE.get("dist", 7.2)
-    top_scores = [float(getattr(a, "score", 0.0) or 0.0) for a in candidates_sorted[:5]]
+    unique_candidates = _dedupe_by_event_key(list(candidates_sorted), "dist")
+    top_scores = [float(getattr(a, "score", 0.0) or 0.0) for a in unique_candidates[:5]]
     ref = top_scores[0]
     best_gap = 0.0
     ref_idx = 0
