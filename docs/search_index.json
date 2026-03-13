@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-03-13T23:15:35.171133+09:00",
+  "updated_at": "2026-03-13T23:23:06.752227+09:00",
   "items": [
     {
       "id": "f94a4d8a9b3a",
@@ -199,17 +199,45 @@
       "press_tier": 1
     },
     {
-      "id": "a0ef928b39f7",
+      "id": "8abf350eaf4a",
       "date": "2026-03-13",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
       "rank": 3,
+      "title": "가락시장 토요일 휴업, 농산물 시세 하락 부추겼나",
+      "press": "ikpnews",
+      "summary": "전일(6일) 대비 가격 하락 폭이 가장 큰 품목은 딸기 로 확인된다. 반입물량이 259톤에서 248톤으로 감소했음에도 가격 이 약 19.8% 떨어졌다. 휴업 직후 지난 9일 딸기 평균 경락가는 2kg 상자 기준(상품) 1만6436원으로 6일...",
+      "url": "http://www.ikpnews.net/news/articleView.html?idxno=69836",
+      "archive": "/agri-news-brief/archive/2026-03-13.html#sec-dist",
+      "score": 19.28,
+      "press_tier": 1
+    },
+    {
+      "id": "a0ef928b39f7",
+      "date": "2026-03-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
       "title": "온라인도매시장 제도개선 ‧활성화 TF 운영 논의",
       "press": "AMNEWS",
       "summary": "이에 농림축산식품부와 aT는 차관을 단장으로 하는 ' 온라인도매시장 제도개선 ‧활성화 TF'를 발족하기로 하였다. TF에서는 2024년부터 2026년 2월까지 전체 거래실적에 대한 회계·법무 법인 등 외부 전문기관의 정밀 검증...",
       "url": "http://www.amnews.co.kr/news/articleView.html?idxno=71432",
       "archive": "/agri-news-brief/archive/2026-03-13.html#sec-dist",
       "score": 12.87,
+      "press_tier": 1
+    },
+    {
+      "id": "1d6d45b16045",
+      "date": "2026-03-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출 업계 ...",
+      "press": "이투데이",
+      "summary": "딸기와 배 등 주요 농산물 수출 과정에서 제기된 규제 애로를 개선한 사례가 공유되는 한편 홍삼 등 전략... 또 곤충 원료 펫푸드 수출 과정에서 제품 성분에 따라 식물 검역 을 거쳐 수출 하는 사례가 있었던 점을 반영해...",
+      "url": "https://www.etoday.co.kr/news/view/2564743",
+      "archive": "/agri-news-brief/archive/2026-03-13.html#sec-dist",
+      "score": 12.64,
       "press_tier": 1
     },
     {
