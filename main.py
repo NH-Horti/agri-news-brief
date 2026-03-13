@@ -1599,6 +1599,7 @@ _SUPPLY_ORG_PROMO_TERMS = (
 )
 _AGRI_ORG_EVENT_RX = _SUPPLY_ORG_PROMO_RX
 _DIST_COOP_ORG_RX = re.compile(r"([가-힣]{2,12})\s*농협")
+_DIST_COOP_HEADQUARTERS_RX = re.compile(r"농협\s*([가-힣]{2,12})본부")
 _POLICY_EVENT_AGENCY_GROUPS = (
     ("mafra", ("농식품부", "농림축산식품부")),
     ("at", ("aT", "한국농수산식품유통공사")),
@@ -1657,6 +1658,18 @@ def _matched_labels(text: str, groups: tuple[tuple[str, tuple[str, ...]], ...]) 
         return []
     return [label for label, terms in groups if any(term.lower() in t for term in terms)]
 
+def _dist_sales_channel_group_key(title: str, desc: str) -> str:
+    src = (title or "") + " " + (desc or "")
+    compact = re.sub(r"\s+", "", src)
+    for rx in (_DIST_COOP_HEADQUARTERS_RX, _DIST_COOP_ORG_RX):
+        m = rx.search(src) or rx.search(compact)
+        if m:
+            return re.sub(r"\s+", "", m.group(1).lower())
+    regs = sorted(_region_set(src))
+    if regs:
+        return re.sub(r"\s+", "", regs[0].lower())
+    return ""
+
 def _dist_story_signature(title: str, desc: str) -> str | None:
     text = f"{title or ''} {desc or ''}".lower()
     if not text:
@@ -1700,13 +1713,9 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
         ("연합판매사업" in text) and count_any(text, [w.lower() for w in ("직거래", "평가회", "워크숍")]) >= 2
     )
     if sales_channel_signature_like:
-        org_src = (title or "") + " " + (desc or "")
-        org_match = _DIST_COOP_ORG_RX.search(org_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_src)) or _AGRI_ORG_EVENT_RX.search(org_src)
-        if org_match:
-            org_key = re.sub(r"\s+", "", org_match.group(1).lower())
-            if getattr(getattr(org_match, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
-                org_key = f"{org_key}농협"
-            return f"EV:DIST:SALES_CHANNEL:{org_key}"
+        sales_group = _dist_sales_channel_group_key(title, desc)
+        if sales_group:
+            return f"EV:DIST:SALES_CHANNEL:{sales_group}"
         regs = sorted(_region_set(text))
         loc = regs[0] if regs else ""
         return f"EV:DIST:SALES_CHANNEL:{loc or 'joint_sales'}"
@@ -1860,6 +1869,10 @@ def _dedupe_prefer_bonus(a: "Article", section_key: str) -> float:
         if section_key == "dist" and is_dist_sales_channel_ops_context(title, desc):
             if ("연합판매사업" in txt) and ("직거래" in txt):
                 b += 1.2
+            if ("직거래" in title) and (("활성화" in title) or ("워크숍" in title)):
+                b += 2.0
+            if "농심천심운동" in txt:
+                b -= 1.0
             if p in WIRE_SERVICES:
                 b -= 1.2
 
@@ -6669,18 +6682,10 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
         sales_channel_terms = [w.lower() for w in ("연합판매사업", "직거래", "평가회", "워크숍")]
         a_sales_hits = count_any(a_text, sales_channel_terms)
         b_sales_hits = count_any(b_text, sales_channel_terms)
-        org_a_src = (a.title or "") + " " + (a.description or "")
-        org_b_src = (b.title or "") + " " + (b.description or "")
-        org_a = _DIST_COOP_ORG_RX.search(org_a_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_a_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_a_src)) or _AGRI_ORG_EVENT_RX.search(org_a_src)
-        org_b = _DIST_COOP_ORG_RX.search(org_b_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_b_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_b_src)) or _AGRI_ORG_EVENT_RX.search(org_b_src)
-        org_a_key = re.sub(r"\s+", "", org_a.group(1).lower()) if org_a else ""
-        org_b_key = re.sub(r"\s+", "", org_b.group(1).lower()) if org_b else ""
-        if org_a and getattr(getattr(org_a, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
-            org_a_key = f"{org_a_key}농협"
-        if org_b and getattr(getattr(org_b, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
-            org_b_key = f"{org_b_key}농협"
-        same_org = bool(org_a_key and org_b_key and org_a_key == org_b_key)
-        if (same_region or same_org) and ("연합판매사업" in a_text) and ("연합판매사업" in b_text) and a_sales_hits >= 2 and b_sales_hits >= 2:
+        sales_group_a = _dist_sales_channel_group_key(a.title or "", a.description or "")
+        sales_group_b = _dist_sales_channel_group_key(b.title or "", b.description or "")
+        same_sales_group = bool(sales_group_a and sales_group_b and sales_group_a == sales_group_b)
+        if (same_region or same_sales_group) and ("연합판매사업" in a_text) and ("연합판매사업" in b_text) and a_sales_hits >= 2 and b_sales_hits >= 2:
             return True
         if (same_region or common_core >= 2) and jac >= 0.50:
             return True
@@ -7023,6 +7028,25 @@ BASE_MIN_SCORE = {
     "dist": 7.2,
     "pest": 6.6,
 }
+
+def _dist_selection_reference_score(candidates_sorted: list["Article"]) -> float:
+    if not candidates_sorted:
+        return BASE_MIN_SCORE.get("dist", 7.2)
+    top_scores = [float(getattr(a, "score", 0.0) or 0.0) for a in candidates_sorted[:5]]
+    ref = top_scores[0]
+    best_gap = 0.0
+    ref_idx = 0
+    for idx in range(len(top_scores) - 1):
+        gap = top_scores[idx] - top_scores[idx + 1]
+        if gap > best_gap:
+            best_gap = gap
+            ref_idx = idx + 1
+    if best_gap >= 7.0 and 0 <= ref_idx < len(top_scores):
+        ref = top_scores[ref_idx]
+    elif len(top_scores) >= 2 and (top_scores[0] - top_scores[1]) >= 7.5:
+        ref = top_scores[1]
+    return ref
+
 def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> float:
     """상위 기사 분포에 맞춰 동적으로 임계치를 잡아 '약한 기사'를 컷한다.
     - 최상위(best)에서 일정 마진을 빼고, 섹션별 최소선(BASE_MIN_SCORE)보다 낮아지지 않게.
@@ -7041,10 +7065,8 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
                 break
 
     best = float(getattr(best_article, "score", 0.0) or 0.0)
-    if section_key == "dist" and len(candidates_sorted) >= 2:
-        second = float(getattr(candidates_sorted[1], "score", 0.0) or 0.0)
-        if best - second >= 7.5:
-            best = second
+    if section_key == "dist":
+        best = _dist_selection_reference_score(candidates_sorted)
     margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
     return max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
@@ -7094,10 +7116,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
     tail_ref_score = best_score
-    if section_key == "dist" and len(pool) >= 2:
-        second_score = float(getattr(pool[1], "score", 0.0) or 0.0)
-        if best_score - second_score >= 7.5:
-            tail_ref_score = second_score
+    if section_key == "dist":
+        tail_ref_score = _dist_selection_reference_score(pool)
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
     tail_margin_by_section = {
         "supply": 3.6,
