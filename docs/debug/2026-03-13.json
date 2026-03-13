@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-13T23:15:32+09:00",
-  "build_tag": "beba0b1",
+  "generated_at_kst": "2026-03-13T23:23:04+09:00",
+  "build_tag": "6f70cef",
   "filter_rejects": [
     {
       "section": "policy",
@@ -173,18 +173,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "CPBC",
-      "domain": "news.cpbc.co.kr",
-      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
-      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "obsnews",
       "domain": "obsnews.co.kr",
       "title": "\"공공요금 동결·신속 추경…취약계층 직접 지원 \"",
       "url": "https://www.obsnews.co.kr/news/articleView.html?idxno=1516979"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "CPBC",
+      "domain": "news.cpbc.co.kr",
+      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
+      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
     },
     {
       "section": "policy",
@@ -253,18 +253,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "국민일보",
-      "domain": "kmib.co.kr",
-      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
-      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "뉴스핌",
       "domain": "newspim.com",
       "title": "[종합] 李대통령 \"민생경제 골든타임 사수…밤새워서라도 추경 신속히\"",
       "url": "https://www.newspim.com/news/view/20260312001237"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "국민일보",
+      "domain": "kmib.co.kr",
+      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
+      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
     },
     {
       "section": "policy",
@@ -309,14 +309,6 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "tvchosun",
-      "domain": "news.tvchosun.com",
-      "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
-      "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "KBS",
       "domain": "news.kbs.co.kr",
       "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
@@ -325,10 +317,10 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
+      "press": "tvchosun",
+      "domain": "news.tvchosun.com",
+      "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
+      "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
     },
     {
       "section": "policy",
@@ -337,6 +329,14 @@
       "domain": "newsis.com",
       "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적\"...",
       "url": "https://www.newsis.com/view/NISX20260312_0003546260"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
     },
     {
       "section": "policy",
@@ -356,19 +356,19 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
-      "url": "https://www.news1.kr/photos/7794289"
+      "reason": "policy_context_gate",
+      "press": "inews365",
+      "domain": "inews365.com",
+      "title": "이 대통령, 중동 전쟁 관련, 추경 편성 신속 지시",
+      "url": "https://www.inews365.com/news/article.html?no=910398"
     },
     {
       "section": "policy",
       "reason": "fishery_title_only",
       "press": "뉴스1",
       "domain": "news1.kr",
-      "title": "李 대통령, \" 농축수산물 할인 지원 확대\"",
-      "url": "https://www.news1.kr/photos/7794286"
+      "title": "이재명 대통령, \" 농축수산물 할인 지원 확대\"",
+      "url": "https://www.news1.kr/photos/7794293"
     },
     {
       "section": "policy",
@@ -724,19 +724,19 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "andongmbc",
-      "domain": "andongmbc.co.kr",
-      "title": "[R] 'K- 사과 대학' 출범.. \"미국산 수입 대응\"",
-      "url": "http://andongmbc.co.kr/adboard/NewsView81275"
-    },
-    {
-      "section": "supply",
       "reason": "apple_apology_context",
       "press": "00NEWS",
       "domain": "00news.co.kr",
       "title": "하루아침 606원 올린 알뜰주유소..고개숙인 석유공사 사장",
       "url": "http://www.00news.co.kr/news/articleView.html?idxno=102541"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "andongmbc",
+      "domain": "andongmbc.co.kr",
+      "title": "[R] 'K- 사과 대학' 출범.. \"미국산 수입 대응\"",
+      "url": "http://andongmbc.co.kr/adboard/NewsView81275"
     },
     {
       "section": "supply",
@@ -797,10 +797,10 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "“화장실 쓰려면 2000원”... 카페 키오스크 메뉴에 ‘갑론을박’",
-      "url": "https://www.chosun.com/national/national_general/2026/03/12/FGX5KLOFPJFJNKEQR47ZCABODA/"
+      "press": "financialreview",
+      "domain": "financialreview.co.kr",
+      "title": "[오늘의 카페] 투썸플레이스·메가MGC커피·공차코리아·크리스피크림 ...",
+      "url": "http://www.financialreview.co.kr/news/articleView.html?idxno=40870"
     },
     {
       "section": "supply",
@@ -1724,19 +1724,19 @@
     },
     {
       "section": "supply",
-      "reason": "ban_keywords",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "(시론)공급구조 개선이 부동산 문제의 해법",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294001&inflow=N"
-    },
-    {
-      "section": "supply",
       "reason": "opinion_or_editorial",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "( 토마토 칼럼)미디어 구조 개편, 이제는 산업의 시간",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294038&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "(시론)공급구조 개선이 부동산 문제의 해법",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294001&inflow=N"
     },
     {
       "section": "supply",
@@ -1823,16 +1823,16 @@
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "식품사 가격 인하 스타트…뜯어보면 '생색내기'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294107&inflow=N"
+      "title": "팔도, 정부 물가안정 동참…'비빔면'도 3.9% 인하",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294112&inflow=N"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "팔도, 정부 물가안정 동참…'비빔면'도 3.9% 인하",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294112&inflow=N"
+      "title": "식품사 가격 인하 스타트…뜯어보면 '생색내기'",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294107&inflow=N"
     },
     {
       "section": "supply",
@@ -1841,14 +1841,6 @@
       "domain": "thefirstmedia.net",
       "title": "맘스터치, '후덕죽 셰프 컬렉션' 3종 첫 선",
       "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195369"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "중동 전쟁 불똥…여행사 '황금알' 유럽 상품에 직격탄",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294093&inflow=N"
     },
     {
       "section": "supply",
@@ -1865,6 +1857,14 @@
       "domain": "socialvalue.kr",
       "title": "11번가, 장보기 부담 낮추는 ‘마트대전’ 진행…제철 식재료 특가 판매",
       "url": "https://www.socialvalue.kr/news/view/1065599297415228"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "중동 전쟁 불똥…여행사 '황금알' 유럽 상품에 직격탄",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294093&inflow=N"
     },
     {
       "section": "supply",
@@ -2149,18 +2149,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "팜&마켓",
-      "domain": "farmnmarket.com",
-      "title": "농식품부, K-푸드 수출 가로막는 ‘비관세장벽’ 현장서 뚫는다",
-      "url": "https://www.farmnmarket.com/news/article.html?no=25851"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "gndomin",
       "domain": "gndomin.com",
       "title": "진주시 '일본 국제식품박람회'서 홍보활동 펼쳐",
       "url": "http://www.gndomin.com/news/articleView.html?idxno=468204"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "팜&마켓",
+      "domain": "farmnmarket.com",
+      "title": "농식품부, K-푸드 수출 가로막는 ‘비관세장벽’ 현장서 뚫는다",
+      "url": "https://www.farmnmarket.com/news/article.html?no=25851"
     },
     {
       "section": "supply",
@@ -3037,18 +3037,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "livesnews",
       "domain": "livesnews.com",
       "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
       "url": "https://www.livesnews.com/news/article.html?no=60127"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "M-I",
+      "domain": "m-i.kr",
+      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
     },
     {
       "section": "dist",
@@ -3165,18 +3165,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "livesnews",
-      "domain": "livesnews.com",
-      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
-      "url": "https://www.livesnews.com/news/article.html?no=60127"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "M-I",
       "domain": "m-i.kr",
       "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "livesnews",
+      "domain": "livesnews.com",
+      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
+      "url": "https://www.livesnews.com/news/article.html?no=60127"
     },
     {
       "section": "dist",
@@ -6143,11 +6143,11 @@
       ]
     },
     "dist": {
-      "threshold": 30.71,
-      "tail_cut": 31.31,
-      "core_min": 30.71,
+      "threshold": 11.28,
+      "tail_cut": 11.88,
+      "core_min": 11.28,
       "total_candidates": 14,
-      "total_selected": 3,
+      "total_selected": 5,
       "top": [
         {
           "selected": true,
@@ -6218,7 +6218,7 @@
           "domain": "fntimes.com",
           "title": "농협강원본부, 2026년 강원농협 연합판매사업 직거래 평가회·활성화 워...",
           "url": "http://www.fntimes.com/html/view.php?ud=202603121804596740dd55077bc2_18",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 2,
@@ -6238,7 +6238,7 @@
           "domain": "pressian.com",
           "title": "‘2026년 강원농협 연합판매사업 직거래 평가회 및 활성화 워크숍’ 개...",
           "url": "https://www.pressian.com/pages/articles/2026031213542778915",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 2,
@@ -6258,7 +6258,7 @@
           "domain": "yna.co.kr",
           "title": "강원 농협 , 2026년 연합판매사업 활성화 워크숍 개최",
           "url": "https://www.yna.co.kr/view/PYH20260312141000062?input=1196m",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -6270,7 +6270,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 19.28,
           "tier": 1,
@@ -6278,7 +6278,7 @@
           "domain": "ikpnews.net",
           "title": "가락시장 토요일 휴업, 농산물 시세 하락 부추겼나",
           "url": "http://www.ikpnews.net/news/articleView.html?idxno=69836",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 3,
@@ -6298,7 +6298,7 @@
           "domain": "kwnews.co.kr",
           "title": "[포토뉴스]2026년 강원 농협 연합판매사업 직거래 평가회 및 활성화 워크...",
           "url": "https://www.kwnews.co.kr/page/view/2026031214270391348",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -6318,7 +6318,7 @@
           "domain": "kado.net",
           "title": "농협 강원본부 연합판매사업 직거래 평가회",
           "url": "https://www.kado.net/news/articleView.html?idxno=2038582",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -6350,7 +6350,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 12.64,
           "tier": 1,
@@ -6358,7 +6358,7 @@
           "domain": "etoday.co.kr",
           "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출 업계 ...",
           "url": "https://www.etoday.co.kr/news/view/2564743",
-          "reason": "below_threshold",
+          "reason": "",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
