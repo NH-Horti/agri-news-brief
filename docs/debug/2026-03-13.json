@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-13T22:33:00+09:00",
-  "build_tag": "9f30722",
+  "generated_at_kst": "2026-03-13T23:06:42+09:00",
+  "build_tag": "a1226f7",
   "filter_rejects": [
     {
       "section": "policy",
@@ -325,18 +325,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적\"...",
-      "url": "https://www.newsis.com/view/NISX20260312_0003546260"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적\"...",
+      "url": "https://www.newsis.com/view/NISX20260312_0003546260"
     },
     {
       "section": "policy",
@@ -356,11 +356,11 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "inews365",
-      "domain": "inews365.com",
-      "title": "이 대통령, 중동 전쟁 관련, 추경 편성 신속 지시",
-      "url": "https://www.inews365.com/news/article.html?no=910398"
+      "reason": "fishery_title_only",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "이 대통령, \" 농축수산물 할인 확대\"",
+      "url": "https://www.news1.kr/photos/7794285"
     },
     {
       "section": "policy",
@@ -588,7 +588,7 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
+      "reason": "remote_foreign_trade_brief",
       "press": "한국경제",
       "domain": "hankyung.com",
       "title": "이란, 호르무즈 봉쇄 강경 메시지…국제유가 급등·뉴욕증시 급락 마감...",
@@ -1668,14 +1668,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
-      "title": "세븐일레븐, 일본 스타일 오리지널 즉석 스무디 도입...전국 순차 배치",
-      "url": "https://www.newspim.com/news/view/20260312000224"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "newstomato",
       "domain": "newstomato.com",
@@ -1812,19 +1804,19 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "강원일보",
-      "domain": "kwnews.co.kr",
-      "title": "춘천 시설농가들, ‘난방비 폭등’ 긴급지원책 마련 촉구",
-      "url": "https://www.kwnews.co.kr/page/view/2026031117170451344"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "강원일보",
+      "domain": "kwnews.co.kr",
+      "title": "춘천 시설농가들, ‘난방비 폭등’ 긴급지원책 마련 촉구",
+      "url": "https://www.kwnews.co.kr/page/view/2026031117170451344"
     },
     {
       "section": "supply",
@@ -1852,6 +1844,14 @@
     },
     {
       "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[유통가 레이더] '오땅'이 50살... 오리온, '오징어땅콩' 패키지 리뉴얼...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=337965"
+    },
+    {
+      "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
@@ -1865,14 +1865,6 @@
       "domain": "socialvalue.kr",
       "title": "11번가, 장보기 부담 낮추는 ‘마트대전’ 진행…제철 식재료 특가 판매",
       "url": "https://www.socialvalue.kr/news/view/1065599297415228"
-    },
-    {
-      "section": "supply",
-      "reason": "fishery_title_only",
-      "press": "greened",
-      "domain": "greened.kr",
-      "title": "[유통가 레이더] '오땅'이 50살... 오리온, '오징어땅콩' 패키지 리뉴얼...",
-      "url": "https://www.greened.kr/news/articleView.html?idxno=337965"
     },
     {
       "section": "supply",
@@ -2699,6 +2691,222 @@
       "url": "https://www.gukjenews.com/news/articleView.html?idxno=3526905"
     },
     {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "AI가 24시간 온도 조절…'농식품 수출 강국' 네덜란드",
+      "url": "https://www.hankyung.com/article/2026031274031"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "고위험 병해충 주의보…경남 도내 발생 분포 조사",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=539561"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "경남농업기술원 \"고위험 병해충 8종 발생 분포 조사\"",
+      "url": "https://www.newsis.com/view/NISX20260312_0003545549"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "영농철 앞두고 면세유 가격 상승 가팔라…농가경영 ‘직격탄’",
+      "url": "https://www.nongmin.com/article/20260311500659"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "AI가 24시간 온도 조절…'농식품 수출 강국' 네덜란드",
+      "url": "https://www.hankyung.com/article/2026031274031"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "hansbiz",
+      "domain": "hansbiz.co.kr",
+      "title": "시그니파이, 우듬지팜 온실에 LED 솔루션 확대",
+      "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=823607"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "무등일보",
+      "domain": "mdilbo.com",
+      "title": "AI활용 생육 예측 가능···차별화된 스마트농업 구축",
+      "url": "http://www.mdilbo.com/detail/DDAuq0/753769"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "고위험 병해충 주의보…경남 도내 발생 분포 조사",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=539561"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "NEWSAM",
+      "domain": "newsam.co.kr",
+      "title": "농업 패러다임 바꾸는 신비의 광물 일라이트!!",
+      "url": "https://www.newsam.co.kr/news/article.html?no=42312"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "경남농업기술원 \"고위험 병해충 8종 발생 분포 조사\"",
+      "url": "https://www.newsis.com/view/NISX20260312_0003545549"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "EPNC",
+      "domain": "epnc.co.kr",
+      "title": "시그니파이, 우듬지팜에 필립스 원예용 LED 솔루션 재 적용",
+      "url": "https://www.epnc.co.kr/news/articleView.html?idxno=329776"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "kmecnews",
+      "domain": "kmecnews.co.kr",
+      "title": "경기도, 스마트팜 기술개발 위해 네덜란드와 국제공동연구 추진",
+      "url": "http://www.kmecnews.co.kr/news/articleView.html?idxno=45888"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "지디넷코리아",
+      "domain": "zdnet.co.kr",
+      "title": "시그니파이, 우듬지팜에 필립스 원예용 LED솔루션 추가 도입",
+      "url": "https://zdnet.co.kr/view/?no=20260312110151"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "datanet",
+      "domain": "datanet.co.kr",
+      "title": "우듬지팜, 필립스 원예용 LED 솔루션 재도입",
+      "url": "https://www.datanet.co.kr/news/articleView.html?idxno=210001"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "[요즘 이기술] 흰가루병 예방…환기 신경쓰고 약제 주기적으로 살포",
+      "url": "https://www.nongmin.com/article/20260311500756"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "AI가 24시간 온도 조절…'농식품 수출 강국' 네덜란드",
+      "url": "https://www.hankyung.com/article/2026031274031"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "고위험 병해충 주의보…경남 도내 발생 분포 조사",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=539561"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "경남농업기술원 \"고위험 병해충 8종 발생 분포 조사\"",
+      "url": "https://www.newsis.com/view/NISX20260312_0003545549"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "무등일보",
+      "domain": "mdilbo.com",
+      "title": "AI활용 생육 예측 가능···차별화된 스마트농업 구축",
+      "url": "http://www.mdilbo.com/detail/DDAuq0/753769"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "고위험 병해충 주의보…경남 도내 발생 분포 조사",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=539561"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "NEWSAM",
+      "domain": "newsam.co.kr",
+      "title": "농업 패러다임 바꾸는 신비의 광물 일라이트!!",
+      "url": "https://www.newsam.co.kr/news/article.html?no=42312"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "경남농업기술원 \"고위험 병해충 8종 발생 분포 조사\"",
+      "url": "https://www.newsis.com/view/NISX20260312_0003545549"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "중앙일보",
+      "domain": "joongang.co.kr",
+      "title": "\"도심 지하에 이런 곳이\" 흉물의 반전…17억 쏟은 '놀라운 농장'",
+      "url": "https://www.joongang.co.kr/article/25411209"
+    },
+    {
       "section": "dist",
       "reason": "dist_soft_without_infra",
       "press": "farminsight",
@@ -3004,11 +3212,51 @@
     },
     {
       "section": "dist",
-      "reason": "dist_context_gate",
+      "reason": "remote_foreign_trade_brief",
+      "press": "매일경제",
+      "domain": "mk.co.kr",
+      "title": "유가에 백악관도 골머리…‘미국 선박만 항구간 운송’ 일시 면제 검토",
+      "url": "https://www.mk.co.kr/article/11987052"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_trade_brief",
+      "press": "연합뉴스TV",
+      "domain": "yonhapnewstv.co.kr",
+      "title": "유가에 놀란 백악관…선박 규제 30일 면제 검토",
+      "url": "http://www.yonhapnewstv.co.kr/AKR20260313062007R4L"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_trade_brief",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 30일 면제 검토(종합)",
+      "url": "https://www.yna.co.kr/view/AKR20260313008351071?input=1195m"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_trade_brief",
       "press": "헤럴드경제",
       "domain": "biz.heraldcorp.com",
       "title": "유가 급등에 美 ‘존스법’ 일시면제 검토…외국 선박도 美 항구 운송 ...",
       "url": "https://biz.heraldcorp.com/article/10693282"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_trade_brief",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
+      "url": "https://biz.sbs.co.kr/article_hub/20000297123?division=NAVER"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_trade_brief",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
+      "url": "https://www.yna.co.kr/view/AKR20260313008300071?input=1195m"
     },
     {
       "section": "dist",
@@ -3563,20 +3811,20 @@
       "url": "https://joongdo.co.kr/web/view.php?key=20260312010003769"
     },
     {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
-      "url": "https://biz.sbs.co.kr/article_hub/20000297123?division=NAVER"
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "fntimes",
+      "domain": "fntimes.com",
+      "title": "농협강원본부, 2026년 강원농협 연합판매사업 직거래 평가회·활성화 워...",
+      "url": "https://fntimes.com/html/view.php?ud=202603121804596740dd55077bc2_18"
     },
     {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스TV",
-      "domain": "yonhapnewstv.co.kr",
-      "title": "유가에 놀란 백악관…선박 규제 30일 면제 검토",
-      "url": "https://yonhapnewstv.co.kr/AKR20260313062007R4L"
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "프레시안",
+      "domain": "pressian.com",
+      "title": "‘2026년 강원농협 연합판매사업 직거래 평가회 및 활성화 워크숍’ 개...",
+      "url": "https://pressian.com/pages/articles/2026031213542778915"
     },
     {
       "section": "supply",
@@ -3589,34 +3837,10 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "매일경제",
-      "domain": "mk.co.kr",
-      "title": "유가에 백악관도 골머리…‘미국 선박만 항구간 운송’ 일시 면제 검토",
-      "url": "https://mk.co.kr/article/11987052"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "강원일보",
       "domain": "kwnews.co.kr",
       "title": "[포토뉴스]2026년 강원 농협 연합판매사업 직거래 평가회 및 활성화 워크...",
       "url": "https://kwnews.co.kr/page/view/2026031214270391348"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출 업계 ...",
-      "url": "https://etoday.co.kr/news/view/2564743"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 30일 면제 검토(종합)",
-      "url": "https://yna.co.kr/view/AKR20260313008351071?input=1195m"
     },
     {
       "section": "supply",
@@ -3628,11 +3852,11 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
-      "url": "https://yna.co.kr/view/AKR20260313008300071?input=1195m"
+      "reason": "supply_context_gate",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출 업계 ...",
+      "url": "https://etoday.co.kr/news/view/2564743"
     },
     {
       "section": "supply",
@@ -3661,22 +3885,22 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 23.44,
-      "tail_cut": 23.84,
-      "core_min": 23.44,
-      "total_candidates": 86,
+      "threshold": 25.54,
+      "tail_cut": 25.94,
+      "core_min": 25.54,
+      "total_candidates": 88,
       "total_selected": 5,
       "top": [
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 31.44,
+          "score": 33.54,
           "tier": 3,
           "press": "한국경제",
           "domain": "hankyung.com",
           "title": "[생글기자 코너] 미국산 만다린 관세 철폐와 제주 감귤 산업",
           "url": "https://www.hankyung.com/article/2026030632081",
-          "reason": "supply_policy_like",
+          "reason": "",
           "signals": {
             "horti_sc": 3.9,
             "market_hits": 0,
@@ -3768,7 +3992,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 23.51,
           "tier": 3,
@@ -3776,7 +4000,7 @@
           "domain": "news.kbs.co.kr",
           "title": "대형 산불에 기후변화까지…과수 묘목 품귀에 농가 울상",
           "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506520",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -4145,6 +4369,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.62,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "전남농기원, 복합내병성 갖춘 토마토 접목용 대목 육성 박차",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316238",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
           }
         },
         {
@@ -4810,6 +5054,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 2.69,
+          "tier": 1,
+          "press": "GGILBO",
+          "domain": "ggilbo.com",
+          "title": "우듬지팜, 온실 LED 도입 효과 ··· 토마토 수확량 27%↑·에너지 사용...",
+          "url": "https://www.ggilbo.com/news/articleView.html?idxno=1146268",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 2.61,
           "tier": 1,
           "press": "hansbiz",
@@ -4826,76 +5090,16 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.17,
-          "tier": 1,
-          "press": "EROUN",
-          "domain": "eroun.net",
-          "title": "충북농기원, 국산 와인 살릴 '주정강화 기술' 등 특허 18종 한꺼번에 푼...",
-          "url": "https://www.eroun.net/news/articleView.html?idxno=75337",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.12,
-          "tier": 1,
-          "press": "jeonmae",
-          "domain": "jeonmae.co.kr",
-          "title": "충남도 스마트농업본부, 1만㎡ 규모 딸기 스마트팜 육묘장 조성",
-          "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1238063",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
         }
       ]
     },
     "policy": {
-      "threshold": 30.71,
-      "tail_cut": 30.91,
-      "core_min": 30.71,
-      "total_candidates": 57,
-      "total_selected": 3,
+      "threshold": 27.03,
+      "tail_cut": 27.23,
+      "core_min": 27.03,
+      "total_candidates": 52,
+      "total_selected": 2,
       "top": [
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 38.71,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "강원도 ‘농산물 광역수급관리센터’ 개소…배추·무 수급 선제 관리",
-          "url": "https://www.nongmin.com/article/20260312500218",
-          "reason": "",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 1,
-            "strength": 7,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.7
-          }
-        },
         {
           "selected": true,
           "is_core": true,
@@ -4918,7 +5122,7 @@
         },
         {
           "selected": true,
-          "is_core": false,
+          "is_core": true,
           "score": 31.75,
           "tier": 1,
           "press": "AMNEWS",
@@ -4939,53 +5143,13 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.63,
-          "tier": 1,
-          "press": "강원도민일보",
-          "domain": "kado.net",
-          "title": "강원농협 연합판매사업 직거래 평가회 개최… 농심천심운동 앞장 다짐",
-          "url": "https://www.kado.net/news/articleView.html?idxno=2038417",
-          "reason": "source_cap",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 30.83,
-          "tier": 2,
-          "press": "뉴스1",
-          "domain": "news1.kr",
-          "title": "강원농협, '연합판매사업 직거래 평가회·활성화 워크숍' 개최",
-          "url": "https://www.news1.kr/local/kangwon/6099371",
-          "reason": "tail_cut",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 29.88,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
           "title": "라면·식용유, 최대 14.6% '가격 인하' 동참…장바구니 물가 숨통 트이나",
           "url": "https://www.newsis.com/view/NISX20260312_0003545690",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -5005,7 +5169,7 @@
           "domain": "dailian.co.kr",
           "title": "라면·식용유 가격 인하…가공식품 물가 부담 완화",
           "url": "https://www.dailian.co.kr/news/view/1620171/?sc=Naver",
-          "reason": "below_threshold",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -5025,7 +5189,7 @@
           "domain": "cooknchefnews.com",
           "title": "농축산물 가격 전반 하락…정부, 체감물가 안정 대응 강화",
           "url": "https://cooknchefnews.com/news/view/1065588440245985",
-          "reason": "below_threshold",
+          "reason": "source_cap",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -5134,46 +5298,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 23.93,
-          "tier": 1,
-          "press": "fntimes",
-          "domain": "fntimes.com",
-          "title": "농협강원본부, 2026년 강원농협 연합판매사업 직거래 평가회·활성화 워...",
-          "url": "http://www.fntimes.com/html/view.php?ud=202603121804596740dd55077bc2_18",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 23.93,
-          "tier": 1,
-          "press": "프레시안",
-          "domain": "pressian.com",
-          "title": "‘2026년 강원농협 연합판매사업 직거래 평가회 및 활성화 워크숍’ 개...",
-          "url": "https://www.pressian.com/pages/articles/2026031213542778915",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -5879,7 +6003,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 0.61,
+          "score": 0.41,
           "tier": 1,
           "press": "biztribune",
           "domain": "biztribune.co.kr",
@@ -6019,26 +6143,86 @@
       ]
     },
     "dist": {
-      "threshold": 11.28,
-      "tail_cut": 11.88,
-      "core_min": 11.28,
+      "threshold": 30.71,
+      "tail_cut": 31.31,
+      "core_min": 30.71,
       "total_candidates": 14,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 19.28,
-          "tier": 1,
-          "press": "ikpnews",
-          "domain": "ikpnews.net",
-          "title": "가락시장 토요일 휴업, 농산물 시세 하락 부추겼나",
-          "url": "http://www.ikpnews.net/news/articleView.html?idxno=69836",
+          "score": 38.71,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "강원도 ‘농산물 광역수급관리센터’ 개소…배추·무 수급 선제 관리",
+          "url": "https://www.nongmin.com/article/20260312500218",
           "reason": "",
           "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 3,
+            "horti_sc": 0.0,
+            "market_hits": 1,
             "strength": 7,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 34.83,
+          "tier": 1,
+          "press": "강원도민일보",
+          "domain": "kado.net",
+          "title": "강원농협 연합판매사업 직거래 평가회 개최… 농심천심운동 앞장 다짐",
+          "url": "https://www.kado.net/news/articleView.html?idxno=2038417",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 34.03,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "강원농협, '연합판매사업 직거래 평가회·활성화 워크숍' 개최",
+          "url": "https://www.news1.kr/local/kangwon/6099371",
+          "reason": "similar_story",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 27.13,
+          "tier": 1,
+          "press": "fntimes",
+          "domain": "fntimes.com",
+          "title": "농협강원본부, 2026년 강원농협 연합판매사업 직거래 평가회·활성화 워...",
+          "url": "http://www.fntimes.com/html/view.php?ud=202603121804596740dd55077bc2_18",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 4,
             "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -6046,55 +6230,35 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
-          "score": 14.47,
-          "tier": 3,
-          "press": "SBS",
-          "domain": "biz.sbs.co.kr",
-          "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
-          "url": "https://biz.sbs.co.kr/article_hub/20000297123?division=NAVER",
-          "reason": "",
+          "score": 27.13,
+          "tier": 1,
+          "press": "프레시안",
+          "domain": "pressian.com",
+          "title": "‘2026년 강원농협 연합판매사업 직거래 평가회 및 활성화 워크숍’ 개...",
+          "url": "https://www.pressian.com/pages/articles/2026031213542778915",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 3,
             "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
           "selected": false,
           "is_core": false,
-          "score": 14.27,
-          "tier": 1,
-          "press": "연합뉴스TV",
-          "domain": "yonhapnewstv.co.kr",
-          "title": "유가에 놀란 백악관…선박 규제 30일 면제 검토",
-          "url": "http://www.yonhapnewstv.co.kr/AKR20260313062007R4L",
-          "reason": "similar_story",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 8.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 14.24,
+          "score": 19.74,
           "tier": 3,
           "press": "연합뉴스",
           "domain": "yna.co.kr",
           "title": "강원 농협 , 2026년 연합판매사업 활성화 워크숍 개최",
           "url": "https://www.yna.co.kr/view/PYH20260312141000062?input=1196m",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -6108,38 +6272,58 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.07,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mk.co.kr",
-          "title": "유가에 백악관도 골머리…‘미국 선박만 항구간 운송’ 일시 면제 검토",
-          "url": "https://www.mk.co.kr/article/11987052",
-          "reason": "similar_story",
+          "score": 19.28,
+          "tier": 1,
+          "press": "ikpnews",
+          "domain": "ikpnews.net",
+          "title": "가락시장 토요일 휴업, 농산물 시세 하락 부추겼나",
+          "url": "http://www.ikpnews.net/news/articleView.html?idxno=69836",
+          "reason": "below_threshold",
           "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
+            "horti_sc": 1.0,
+            "market_hits": 3,
+            "strength": 7,
+            "korea": 3,
             "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
-          "score": 13.14,
+          "score": 16.34,
           "tier": 1,
           "press": "강원일보",
           "domain": "kwnews.co.kr",
           "title": "[포토뉴스]2026년 강원 농협 연합판매사업 직거래 평가회 및 활성화 워크...",
           "url": "https://www.kwnews.co.kr/page/view/2026031214270391348",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
             "strength": 0,
             "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 15.49,
+          "tier": 1,
+          "press": "강원도민일보",
+          "domain": "kado.net",
+          "title": "농협 강원본부 연합판매사업 직거래 평가회",
+          "url": "https://www.kado.net/news/articleView.html?idxno=2038582",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
@@ -6174,7 +6358,7 @@
           "domain": "etoday.co.kr",
           "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출 업계 ...",
           "url": "https://www.etoday.co.kr/news/view/2564743",
-          "reason": "source_cap",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -6183,66 +6367,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.47,
-          "tier": 3,
-          "press": "연합뉴스",
-          "domain": "yna.co.kr",
-          "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 30일 면제 검토(종합)",
-          "url": "https://www.yna.co.kr/view/AKR20260313008351071?input=1195m",
-          "reason": "similar_title",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.3
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.29,
-          "tier": 1,
-          "press": "강원도민일보",
-          "domain": "kado.net",
-          "title": "농협 강원본부 연합판매사업 직거래 평가회",
-          "url": "https://www.kado.net/news/articleView.html?idxno=2038582",
-          "reason": "source_cap",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 11.67,
-          "tier": 3,
-          "press": "연합뉴스",
-          "domain": "yna.co.kr",
-          "title": "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토",
-          "url": "https://www.yna.co.kr/view/AKR20260313008300071?input=1195m",
-          "reason": "tail_cut",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.3
           }
         },
         {
@@ -6335,15 +6459,15 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 29.11,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
           "title": "예산군농업기술센터, 과수화상병 확산 차단 총력… 방제 약제 무상 공급",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316282",
-          "reason": "",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 0,
@@ -6356,7 +6480,7 @@
         },
         {
           "selected": true,
-          "is_core": false,
+          "is_core": true,
           "score": 29.01,
           "tier": 2,
           "press": "한국농어민신문",
@@ -6395,7 +6519,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 28.68,
           "tier": 2,
@@ -6403,7 +6527,7 @@
           "domain": "aflnews.co.kr",
           "title": "공주시농기센터, 과수화상병 차단 총력… 예방교육·약제 지원",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316279",
-          "reason": "source_cap",
+          "reason": "",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -7044,13 +7168,120 @@
         "단감 작황",
         "단호박 가격"
       ],
-      "recall_meta": {},
-      "items_total": 110,
+      "recall_meta": {
+        "seed_terms": [
+          "토마토",
+          "파프리카",
+          "오이",
+          "고추",
+          "단감",
+          "유자",
+          "자두",
+          "매실",
+          "호박",
+          "피망",
+          "소비",
+          "레고"
+        ],
+        "reason": [],
+        "queries": [
+          "파프리카 생육",
+          "파프리카 난방",
+          "단감 생육",
+          "토마토 생육",
+          "오이 생육",
+          "고추 생육"
+        ],
+        "pool_seed_hits": {
+          "사과": 1,
+          "단감": 0,
+          "감귤": 1,
+          "포도": 1,
+          "유자": 0,
+          "자두": 0,
+          "매실": 0,
+          "토마토": 0,
+          "호박": 0,
+          "피망": 0,
+          "파프리카": 0,
+          "오이": 0,
+          "고추": 0,
+          "소비": 0,
+          "레고": 0,
+          "보태니컬": 0,
+          "과수": 0,
+          "기후변화": 0,
+          "대책": 1,
+          "배": 0
+        },
+        "feature_refresh_seeds": [
+          "파프리카",
+          "오이",
+          "고추",
+          "단감",
+          "피망",
+          "소비",
+          "레고"
+        ],
+        "topic_seed_terms": [
+          "대책",
+          "사과",
+          "배",
+          "단감"
+        ],
+        "query_seed_terms": [
+          "사과",
+          "단감",
+          "감귤",
+          "포도",
+          "유자",
+          "자두",
+          "매실",
+          "토마토",
+          "호박",
+          "피망",
+          "파프리카",
+          "오이",
+          "고추",
+          "소비",
+          "레고",
+          "보태니컬",
+          "과수",
+          "기후변화"
+        ],
+        "prioritized_seeds": [
+          "토마토",
+          "파프리카",
+          "오이",
+          "고추",
+          "단감",
+          "유자",
+          "자두",
+          "매실",
+          "호박",
+          "피망",
+          "소비",
+          "레고",
+          "보태니컬",
+          "과수",
+          "기후변화",
+          "사과",
+          "감귤",
+          "포도",
+          "배",
+          "대책"
+        ],
+        "feature_focus_seeds": [
+          "파프리카",
+          "단감"
+        ]
+      },
+      "items_total": 112,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
         "max_pages": 1,
-        "budget_used": 0,
+        "budget_used": 6,
         "budget_total": 12
       }
     },
@@ -7160,10 +7391,6 @@
           6
         ],
         [
-          "농산물 수출 선적",
-          5
-        ],
-        [
           "농협 연합판매사업 직거래",
           3
         ],
@@ -7219,12 +7446,12 @@
         "부정유통 단속 농산물"
       ],
       "recall_meta": {},
-      "items_total": 22,
+      "items_total": 17,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
         "max_pages": 1,
-        "budget_used": 0,
+        "budget_used": 6,
         "budget_total": 12
       }
     },
@@ -7320,7 +7547,7 @@
         "enabled": false,
         "base_pages": 1,
         "max_pages": 1,
-        "budget_used": 0,
+        "budget_used": 6,
         "budget_total": 12
       }
     }
