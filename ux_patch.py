@@ -209,35 +209,90 @@ def build_archive_ux_html(
       }});
     }}
 
-    var sx=0, sy=0;
+    var sx=0, sy=0, st=0;
+    var swipeActive = false;
+    var blocked = false;
+    var swipeTarget = null;
+    var swipePointerId = null;
     var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
+    function _eventPoint(e, phase){{
+      try{{
+        if(!e) return null;
+        if(phase !== 'end' && e.touches && e.touches.length === 1) return {{ x: e.touches[0].clientX, y: e.touches[0].clientY }};
+        if(phase === 'end' && e.changedTouches && e.changedTouches.length === 1) return {{ x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }};
+        if(typeof e.clientX === 'number' && typeof e.clientY === 'number') return {{ x: e.clientX, y: e.clientY }};
+      }}catch(_evtErr){{}}
+      return null;
+    }}
+    function _resetSwipe(){{
+      try{{
+        if(swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null){{
+          swipeArea.releasePointerCapture(swipePointerId);
+        }}
+      }}catch(_releaseErr){{}}
+      swipeActive = false;
+      blocked = false;
+      swipeTarget = null;
+      swipePointerId = null;
+    }}
+    function _beginSwipe(e){{
+      if(!swipeArea) return;
+      if(e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
+      if(e && !e.pointerType && typeof e.button === 'number' && e.button !== 0) return;
+      var point = _eventPoint(e, 'start');
+      if(!point) return;
+      blocked = isBlockedTarget(e ? e.target : null);
+      swipeActive = true;
+      swipeTarget = e ? (e.target || null) : null;
+      swipePointerId = (e && typeof e.pointerId === 'number') ? e.pointerId : null;
+      sx = point.x;
+      sy = point.y;
+      st = Date.now();
+      try{{
+        if(swipeArea.setPointerCapture && swipePointerId !== null) swipeArea.setPointerCapture(swipePointerId);
+      }}catch(_captureErr){{}}
+    }}
+    function _endSwipe(e){{
+      if(!swipeActive) return;
+      if(swipePointerId !== null && e && typeof e.pointerId === 'number' && e.pointerId !== swipePointerId) return;
+      var point = _eventPoint(e, 'end');
+      var startedBlocked = blocked;
+      var startedTarget = swipeTarget;
+      _resetSwipe();
+      if(!point) return;
+      if(startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+      try{{
+        var selected = window.getSelection ? String(window.getSelection()) : '';
+        if(selected && selected.trim()) return;
+      }}catch(_selectionErr){{}}
+      var dx = point.x - sx;
+      var dy = point.y - sy;
+      var dt = Date.now() - st;
+      if(dt > 900 || Math.abs(dx) < 60) return;
+      if(Math.abs(dx) < Math.abs(dy) * 1.2) return;
+      if(dx > 0) {{
+        var p = prev || _pick('prev');
+        var href = _getHref(p);
+        if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{PREV_BRIEF_MESSAGE}'); return; }}
+        _showLoading(); window.location.href = href; return;
+      }}
+      var n = next || _pick('next');
+      var href2 = _getHref(n);
+      if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{NEXT_BRIEF_MESSAGE}'); return; }}
+      _showLoading(); window.location.href = href2;
+    }}
     if(swipeArea && swipeArea.addEventListener){{
-      swipeArea.addEventListener('touchstart', function(e){{
-        try{{
-          var t = e.changedTouches[0];
-          sx = t.clientX; sy = t.clientY;
-        }}catch(_e){{}}
-      }}, {{passive:true}});
-      swipeArea.addEventListener('touchend', function(e){{
-        try{{
-          var t = e.changedTouches[0];
-          var dx = t.clientX - sx;
-          var dy = t.clientY - sy;
-          if(Math.abs(dx) < 60) return;
-          if(Math.abs(dx) < Math.abs(dy)) return;
-          if(dx > 0) {{
-            var p = prev || _pick('prev');
-            var href = _getHref(p);
-            if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{PREV_BRIEF_MESSAGE}'); return; }}
-            _showLoading(); window.location.href = href; return;
-          }} else {{
-            var n = next || _pick('next');
-            var href2 = _getHref(n);
-            if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{NEXT_BRIEF_MESSAGE}'); return; }}
-            _showLoading(); window.location.href = href2; return;
-          }}
-        }}catch(_e){{}}
-      }}, {{passive:true}});
+      if(window.PointerEvent){{
+        swipeArea.addEventListener('pointerdown', function(e){{ _beginSwipe(e); }}, {{passive:true}});
+        window.addEventListener('pointerup', function(e){{ _endSwipe(e); }}, {{passive:true}});
+        window.addEventListener('pointercancel', function(){{ _resetSwipe(); }}, {{passive:true}});
+      }} else {{
+        swipeArea.addEventListener('touchstart', function(e){{ _beginSwipe(e); }}, {{passive:true}});
+        swipeArea.addEventListener('touchend', function(e){{ _endSwipe(e); }}, {{passive:true}});
+        swipeArea.addEventListener('mousedown', function(e){{ _beginSwipe(e); }});
+        window.addEventListener('mouseup', function(e){{ _endSwipe(e); }});
+      }}
+      window.addEventListener('blur', function(){{ _resetSwipe(); }});
     }}
   }})();
   </script>
@@ -251,7 +306,7 @@ def build_archive_ux_html(
             flags=re.S | re.I,
         )
     else:
-        html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend)[\s\S]*?</script>\s*", "", html_new, flags=re.S | re.I)
+        html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend|pointerdown|pointerup|mousedown|mouseup)[\s\S]*?</script>\s*", "", html_new, flags=re.S | re.I)
         html_new = re.sub(r"(</body>)", lambda _m: js_block + _m.group(1), html_new, count=1, flags=re.I)
 
     # Safety: never commit if HTML looks broken.

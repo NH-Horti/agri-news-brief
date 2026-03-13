@@ -11561,35 +11561,118 @@ try {{ _ensureDates(); }} catch (e) {{}}
       }}
 
       var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
       var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
-      swipeArea.addEventListener("touchstart", function(e) {{
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx = t.clientX;
-        sy = t.clientY;
+      function getSwipePoint(e, phase) {{
+        try {{
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {{
+            return {{ x: e.touches[0].clientX, y: e.touches[0].clientY }};
+          }}
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {{
+            return {{ x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }};
+          }}
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {{
+            return {{ x: e.clientX, y: e.clientY }};
+          }}
+        }} catch (_evtErr) {{}}
+        return null;
+      }}
+
+      function resetSwipeState() {{
+        try {{
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {{
+            swipeArea.releasePointerCapture(swipePointerId);
+          }}
+        }} catch (_releaseErr) {{}}
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }}
+
+      function beginSwipe(e) {{
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
         st = Date.now();
+        try {{
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {{
+            swipeArea.setPointerCapture(swipePointerId);
+          }}
+        }} catch (_captureErr) {{}}
+      }}
+
+      function endSwipe(e) {{
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {{
+          var selected = window.getSelection ? String(window.getSelection()) : "";
+          if (selected && selected.trim()) return;
+        }} catch (_selectionErr) {{}}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {{
+          gotoByOffset(-1, "\ub2e4\uc74c \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.");
+        }} else {{
+          gotoByOffset(+1, "\uc774\uc804 \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.");
+        }}
+      }}
+
+      if (window.PointerEvent) {{
+        swipeArea.addEventListener("pointerdown", function(e) {{
+          beginSwipe(e);
+        }}, {{ passive: true }});
+        window.addEventListener("pointerup", function(e) {{
+          endSwipe(e);
+        }}, {{ passive: true }});
+        window.addEventListener("pointercancel", function() {{
+          resetSwipeState();
+        }}, {{ passive: true }});
+      }}
+
+      swipeArea.addEventListener("touchstart", function(e) {{
+        if (window.PointerEvent) return;
+        beginSwipe(e);
       }}, {{ passive: true }});
 
       swipeArea.addEventListener("touchend", function(e) {{
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx = t.clientX - sx;
-        var dy = t.clientY - sy;
-        var dt = Date.now() - st;
-
-        // accidental 방지: 더 강한 임계치
-        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-
-        // 스와이프 동작: 왼쪽(←, dx<0)=다음(신규) / 오른쪽(→, dx>0)=이전(과거)
-        if (dx < 0) {{
-          gotoByOffset(-1, "다음 브리핑이 없습니다.");
-        }} else {{
-          gotoByOffset(+1, "이전 브리핑이 없습니다.");
-        }}
+        if (window.PointerEvent) return;
+        endSwipe(e);
       }}, {{ passive: true }});
+
+      swipeArea.addEventListener("mousedown", function(e) {{
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }});
+
+      window.addEventListener("mouseup", function(e) {{
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }});
+
+      window.addEventListener("blur", function() {{
+        resetSwipeState();
+      }});
 
       document.addEventListener("keydown", function(e) {{
         if (!e) return;

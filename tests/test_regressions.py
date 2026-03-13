@@ -26,6 +26,13 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('getElementById("dateSelect")', self.text)
         self.assertIn('addEventListener("change"', self.text)
 
+    def test_desktop_swipe_support_exists(self):
+        self.assertIn('window.PointerEvent', self.text)
+        self.assertIn('addEventListener("pointerdown"', self.text)
+        self.assertIn('addEventListener("pointerup"', self.text)
+        self.assertIn('addEventListener("mousedown"', self.text)
+        self.assertIn('addEventListener("mouseup"', self.text)
+
     def test_rebuild_helpers_exist(self):
         self.assertIn("def _compute_window_for_report_date", self.text)
         self.assertIn("def maintenance_rebuild_date", self.text)

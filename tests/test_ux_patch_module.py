@@ -74,6 +74,11 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIn(MOVING_LABEL, out)
         self.assertIn(PREV_BRIEF_MESSAGE, out)
         self.assertIn(NEXT_BRIEF_MESSAGE, out)
+        self.assertIn("PointerEvent", out)
+        self.assertIn("pointerdown", out)
+        self.assertIn("pointerup", out)
+        self.assertIn("mousedown", out)
+        self.assertIn("mouseup", out)
 
     def test_build_archive_ux_html_updates_nav_even_if_only_manifest_nav_changed(self):
         def _extract(text: str):
