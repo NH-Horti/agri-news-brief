@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-13T23:06:42+09:00",
-  "build_tag": "a1226f7",
+  "generated_at_kst": "2026-03-13T23:15:32+09:00",
+  "build_tag": "beba0b1",
   "filter_rejects": [
     {
       "section": "policy",
@@ -173,18 +173,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "obsnews",
-      "domain": "obsnews.co.kr",
-      "title": "\"공공요금 동결·신속 추경…취약계층 직접 지원 \"",
-      "url": "https://www.obsnews.co.kr/news/articleView.html?idxno=1516979"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "CPBC",
       "domain": "news.cpbc.co.kr",
       "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
       "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "obsnews",
+      "domain": "obsnews.co.kr",
+      "title": "\"공공요금 동결·신속 추경…취약계층 직접 지원 \"",
+      "url": "https://www.obsnews.co.kr/news/articleView.html?idxno=1516979"
     },
     {
       "section": "policy",
@@ -253,18 +253,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
-      "title": "[종합] 李대통령 \"민생경제 골든타임 사수…밤새워서라도 추경 신속히\"",
-      "url": "https://www.newspim.com/news/view/20260312001237"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "국민일보",
       "domain": "kmib.co.kr",
       "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
       "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[종합] 李대통령 \"민생경제 골든타임 사수…밤새워서라도 추경 신속히\"",
+      "url": "https://www.newspim.com/news/view/20260312001237"
     },
     {
       "section": "policy",
@@ -359,16 +359,16 @@
       "reason": "fishery_title_only",
       "press": "뉴스1",
       "domain": "news1.kr",
-      "title": "이 대통령, \" 농축수산물 할인 확대\"",
-      "url": "https://www.news1.kr/photos/7794285"
+      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
+      "url": "https://www.news1.kr/photos/7794289"
     },
     {
       "section": "policy",
       "reason": "fishery_title_only",
       "press": "뉴스1",
       "domain": "news1.kr",
-      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
-      "url": "https://www.news1.kr/photos/7794289"
+      "title": "李 대통령, \" 농축수산물 할인 지원 확대\"",
+      "url": "https://www.news1.kr/photos/7794286"
     },
     {
       "section": "policy",
@@ -1844,19 +1844,19 @@
     },
     {
       "section": "supply",
-      "reason": "fishery_title_only",
-      "press": "greened",
-      "domain": "greened.kr",
-      "title": "[유통가 레이더] '오땅'이 50살... 오리온, '오징어땅콩' 패키지 리뉴얼...",
-      "url": "https://www.greened.kr/news/articleView.html?idxno=337965"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "중동 전쟁 불똥…여행사 '황금알' 유럽 상품에 직격탄",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294093&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[유통가 레이더] '오땅'이 50살... 오리온, '오징어땅콩' 패키지 리뉴얼...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=337965"
     },
     {
       "section": "supply",
@@ -2149,18 +2149,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "gndomin",
-      "domain": "gndomin.com",
-      "title": "진주시 '일본 국제식품박람회'서 홍보활동 펼쳐",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=468204"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "팜&마켓",
       "domain": "farmnmarket.com",
       "title": "농식품부, K-푸드 수출 가로막는 ‘비관세장벽’ 현장서 뚫는다",
       "url": "https://www.farmnmarket.com/news/article.html?no=25851"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "진주시 '일본 국제식품박람회'서 홍보활동 펼쳐",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468204"
     },
     {
       "section": "supply",
@@ -3165,18 +3165,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "livesnews",
       "domain": "livesnews.com",
       "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
       "url": "https://www.livesnews.com/news/article.html?no=60127"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "M-I",
+      "domain": "m-i.kr",
+      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
     },
     {
       "section": "dist",
@@ -6147,7 +6147,7 @@
       "tail_cut": 31.31,
       "core_min": 30.71,
       "total_candidates": 14,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -6170,15 +6170,15 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 34.83,
           "tier": 1,
           "press": "강원도민일보",
           "domain": "kado.net",
           "title": "강원농협 연합판매사업 직거래 평가회 개최… 농심천심운동 앞장 다짐",
           "url": "https://www.kado.net/news/articleView.html?idxno=2038417",
-          "reason": "",
+          "reason": "similar_story",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 2,
@@ -6190,15 +6190,15 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 34.03,
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
           "title": "강원농협, '연합판매사업 직거래 평가회·활성화 워크숍' 개최",
           "url": "https://www.news1.kr/local/kangwon/6099371",
-          "reason": "similar_story",
+          "reason": "",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 2,
@@ -6310,7 +6310,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 15.49,
           "tier": 1,
@@ -6318,7 +6318,7 @@
           "domain": "kado.net",
           "title": "농협 강원본부 연합판매사업 직거래 평가회",
           "url": "https://www.kado.net/news/articleView.html?idxno=2038582",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
@@ -7091,7 +7091,7 @@
         ],
         [
           "꽃다발 선물",
-          17
+          16
         ],
         [
           "딸기 수급",
