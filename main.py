@@ -1598,6 +1598,7 @@ _SUPPLY_ORG_PROMO_TERMS = (
     "홍보", "제철", "출하 시기", "출하시기", "선보여", "선봬", "소개", "진수", "민속촌",
 )
 _AGRI_ORG_EVENT_RX = _SUPPLY_ORG_PROMO_RX
+_DIST_COOP_ORG_RX = re.compile(r"([가-힣]{2,12})\s*농협")
 _POLICY_EVENT_AGENCY_GROUPS = (
     ("mafra", ("농식품부", "농림축산식품부")),
     ("at", ("aT", "한국농수산식품유통공사")),
@@ -1689,6 +1690,30 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
 
     if ("원스톱수출지원허브" in compact or ("수출지원허브" in compact and "원스톱" in compact)) and ("k-푸드" in text or "k푸드" in compact):
         return "EV:DIST:KFOOD_EXPORT_HUB"
+
+    if is_dist_supply_management_center_context(title, desc):
+        regs = sorted(_region_set(text))
+        loc = regs[0] if regs else ""
+        return f"EV:DIST:SUPPLY_CENTER:{loc or 'center'}"
+
+    sales_channel_signature_like = is_dist_sales_channel_ops_context(title, desc) or (
+        ("연합판매사업" in text) and count_any(text, [w.lower() for w in ("직거래", "평가회", "워크숍")]) >= 2
+    )
+    if sales_channel_signature_like:
+        org_src = (title or "") + " " + (desc or "")
+        org_match = _DIST_COOP_ORG_RX.search(org_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_src)) or _AGRI_ORG_EVENT_RX.search(org_src)
+        if org_match:
+            org_key = re.sub(r"\s+", "", org_match.group(1).lower())
+            if getattr(getattr(org_match, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
+                org_key = f"{org_key}농협"
+            return f"EV:DIST:SALES_CHANNEL:{org_key}"
+        regs = sorted(_region_set(text))
+        loc = regs[0] if regs else ""
+        return f"EV:DIST:SALES_CHANNEL:{loc or 'joint_sales'}"
+
+    if is_dist_market_ops_context(title, desc):
+        if "온라인도매시장" in compact or "온라인 도매시장" in text:
+            return "EV:DIST:ONLINE_WHOLESALE_OPS"
 
     if is_local_agri_org_feature_context(title, desc):
         org_match = _AGRI_ORG_EVENT_RX.search((title or "") + " " + (desc or ""))
@@ -1826,9 +1851,17 @@ def _dedupe_prefer_bonus(a: "Article", section_key: str) -> float:
         if ("제주소식" in title) or title.strip().endswith("소식"):
             b -= 1.2
 
+        if ("포토뉴스" in title) or ("포토" in title):
+            b -= 2.0
+
         # dist에서 로컬 단신/공지형이면 중복 그룹에서 강하게 밀어냄
         if section_key == "dist" and is_local_brief_text(title, desc, "dist"):
             b -= 2.0
+        if section_key == "dist" and is_dist_sales_channel_ops_context(title, desc):
+            if ("연합판매사업" in txt) and ("직거래" in txt):
+                b += 1.2
+            if p in WIRE_SERVICES:
+                b -= 1.2
 
         if section_key == "policy":
             if policy_domain_override(d, txt) or (d in OFFICIAL_HOSTS) or any(d.endswith("." + h) for h in OFFICIAL_HOSTS):
@@ -3260,6 +3293,9 @@ _REMOTE_FOREIGN_TRADE_TERMS = (
     "상호무역협정", "무역협정", "자유무역협정", "fta", "무역정책", "관세", "상호관세", "보복관세",
     "검역", "통관", "원산지", "수입", "수출", "시장개방", "교역", "서명", "체결",
 )
+_REMOTE_FOREIGN_SHIPPING_TERMS = (
+    "선박", "항구", "항만", "운송", "해운", "해상운송", "연안운송", "운임",
+)
 _REMOTE_FOREIGN_TRADE_DOMESTIC_HINTS = (
     "국내", "한국", "우리나라", "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼",
     "가락시장", "도매시장", "공판장", "농협", "농식품부", "aT",
@@ -3293,12 +3329,16 @@ def is_remote_foreign_trade_brief_context(title: str, desc: str, dom: str = "") 
 
     foreign_hits = count_any(txt, [w.lower() for w in _FOREIGN_REMOTE_MARKERS])
     trade_hits = count_any(txt, [w.lower() for w in _REMOTE_FOREIGN_TRADE_TERMS])
+    shipping_hits = count_any(txt, [w.lower() for w in _REMOTE_FOREIGN_SHIPPING_TERMS])
     domestic_hits = count_any(txt, [w.lower() for w in _REMOTE_FOREIGN_TRADE_DOMESTIC_HINTS])
     horti_sc = best_horti_score(ttl, desc or "")
     horti_title_sc = best_horti_score(ttl, "")
     dom_norm = normalize_host(dom or "")
+    foreign_shipping_like = shipping_hits >= 2 and any(w in txt for w in ("백악관", "미국", "美", "미 항구", "미항구", "미 선박", "미선박"))
 
-    if foreign_hits < 2 or trade_hits < 2:
+    if foreign_hits < 2 and not foreign_shipping_like:
+        return False
+    if (trade_hits + shipping_hits) < 2:
         return False
     if horti_sc >= 1.8 or horti_title_sc >= 1.4:
         return False
@@ -3308,7 +3348,7 @@ def is_remote_foreign_trade_brief_context(title: str, desc: str, dom: str = "") 
         w in txt for w in ("농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "가락시장", "도매시장", "공판장", "농협", "농식품부", "aT")
     ):
         return False
-    return (dom_norm == "dream.kotra.or.kr") or (foreign_hits >= 3)
+    return (dom_norm == "dream.kotra.or.kr") or (foreign_hits >= 3) or foreign_shipping_like
 
 
 def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -3590,6 +3630,9 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     climate_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS])
     trade_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_TERMS])
     title_trade_hits = count_any(ttl.lower(), [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_TERMS])
+    hard_trade_terms = [w.lower() for w in ("관세", "할당관세", "무관세", "fta", "통상", "비관세장벽", "통관", "검역")]
+    hard_trade_hits = count_any(txt, hard_trade_terms)
+    title_hard_trade_hits = count_any(ttl.lower(), hard_trade_terms)
     trade_impact_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_IMPACT_TERMS])
     strong_item_context = title_item_hits >= 1 or horti_title_sc >= 1.2 or horti_sc >= 2.2
     shock_issue = (
@@ -3599,9 +3642,11 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     )
     trade_pressure_issue = (
         strong_item_context
-        and trade_hits >= 2
-        and (title_trade_hits >= 1 or title_item_hits >= 1)
-        and (trade_impact_hits >= 2 or distress_hits >= 1 or action_hits >= 1)
+        and hard_trade_hits >= 1
+        and title_hard_trade_hits >= 1
+        and trade_hits >= 1
+        and (title_item_hits >= 1 or horti_title_sc >= 1.0)
+        and (trade_impact_hits >= 1 or distress_hits >= 1 or action_hits >= 1)
     )
     if item_hits == 0 and horti_sc < 1.8 and not shock_issue:
         return None
@@ -6211,12 +6256,20 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 7.2
         if dist_sales_channel_ops:
             score += 5.4
+            if ("연합판매사업" in text) and ("직거래" in text):
+                score += 3.2
         elif local_org_feature:
             score += 0.6
         if is_dist_export_shipping_context(title, desc):
             score += 4.4
         if dist_export_field:
             score += 4.0
+            export_resolution_hits = count_any(
+                text,
+                [t.lower() for t in ("비관세장벽", "애로", "애로 해결", "간담회", "현장간담회", "원스톱", "n-데스크", "n desk", "상시 애로")],
+            )
+            if export_resolution_hits >= 2 and horti_sc >= 1.2:
+                score += 3.2
         if dist_market_disruption:
             score += 4.8
         if infra_designation:
@@ -6227,6 +6280,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += count_any(title_l, [t.lower() for t in POLICY_TITLE_CORE_TERMS]) * 1.2
         if dist_market_disruption:
             score -= 7.0
+        if dist_market_ops:
+            score -= 8.0
+        if dist_supply_center:
+            score -= 10.0
+        if dist_sales_channel_ops:
+            score -= 9.0
         if dist_export_field:
             score -= 5.8
         # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
@@ -6391,6 +6450,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         event_pen = min(event_pen, 0.8)
     if key == "dist" and dist_market_ops:
         event_pen = min(event_pen, 0.5)
+    if key == "dist" and (dist_supply_center or dist_sales_channel_ops):
+        event_pen = min(event_pen, 0.5)
     score -= event_pen
 
     # 행정/정치 인터뷰성(도지사/시장 등) 기사 상단 배치 억제
@@ -6399,6 +6460,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 지역 단위 농협 동정성 기사 패널티(특히 농민신문 지역농협 소식 과다 방지)
     local_coop_pen = local_coop_penalty(text, press, dom, key)
     if key == "dist" and dist_local_field_profile:
+        local_coop_pen = min(local_coop_pen, 0.4)
+    if key == "dist" and (dist_supply_center or dist_sales_channel_ops):
         local_coop_pen = min(local_coop_pen, 0.4)
     score -= local_coop_pen
     # ✅ 제외 품목(마늘/양파)은 점수 산정 이전 단계에서 이미 컷되도록 설계.
@@ -6575,6 +6638,17 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
 
     if section_key == "pest":
         common_core = len((ta & tb) & _PEST_CORE_TOKENS)
+        a_text = ((a.title or "") + " " + (a.description or "")).lower()
+        b_text = ((b.title or "") + " " + (b.description or "")).lower()
+        same_disease = any(
+            term in a_text and term in b_text
+            for term in ("과수화상병", "탄저병", "냉해", "동해", "토마토뿔나방", "월동해충")
+        )
+        pest_action_terms = [w.lower() for w in ("사전 방제", "사전방제", "방제", "예찰", "약제", "무상 공급", "무상공급", "예방교육", "확산 차단")]
+        a_action_hits = count_any(a_text, pest_action_terms)
+        b_action_hits = count_any(b_text, pest_action_terms)
+        if same_region and same_disease and a_action_hits >= 1 and b_action_hits >= 1:
+            return True
         # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
         if same_region and common_core >= 2 and jac >= 0.45:
             return True
@@ -6590,6 +6664,24 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
 
     if section_key == "dist":
         common_core = len((ta & tb) & _DIST_CORE_TOKENS)
+        a_text = ((a.title or "") + " " + (a.description or "")).lower()
+        b_text = ((b.title or "") + " " + (b.description or "")).lower()
+        sales_channel_terms = [w.lower() for w in ("연합판매사업", "직거래", "평가회", "워크숍")]
+        a_sales_hits = count_any(a_text, sales_channel_terms)
+        b_sales_hits = count_any(b_text, sales_channel_terms)
+        org_a_src = (a.title or "") + " " + (a.description or "")
+        org_b_src = (b.title or "") + " " + (b.description or "")
+        org_a = _DIST_COOP_ORG_RX.search(org_a_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_a_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_a_src)) or _AGRI_ORG_EVENT_RX.search(org_a_src)
+        org_b = _DIST_COOP_ORG_RX.search(org_b_src) or _DIST_COOP_ORG_RX.search(re.sub(r"\s+", "", org_b_src)) or _AGRI_ORG_EVENT_RX.search(re.sub(r"\s+", "", org_b_src)) or _AGRI_ORG_EVENT_RX.search(org_b_src)
+        org_a_key = re.sub(r"\s+", "", org_a.group(1).lower()) if org_a else ""
+        org_b_key = re.sub(r"\s+", "", org_b.group(1).lower()) if org_b else ""
+        if org_a and getattr(getattr(org_a, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
+            org_a_key = f"{org_a_key}농협"
+        if org_b and getattr(getattr(org_b, "re", None), "pattern", "") == _DIST_COOP_ORG_RX.pattern:
+            org_b_key = f"{org_b_key}농협"
+        same_org = bool(org_a_key and org_b_key and org_a_key == org_b_key)
+        if (same_region or same_org) and ("연합판매사업" in a_text) and ("연합판매사업" in b_text) and a_sales_hits >= 2 and b_sales_hits >= 2:
+            return True
         if (same_region or common_core >= 2) and jac >= 0.50:
             return True
 
@@ -6949,6 +7041,10 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
                 break
 
     best = float(getattr(best_article, "score", 0.0) or 0.0)
+    if section_key == "dist" and len(candidates_sorted) >= 2:
+        second = float(getattr(candidates_sorted[1], "score", 0.0) or 0.0)
+        if best - second >= 7.5:
+            best = second
     margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
     return max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
@@ -6997,6 +7093,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
+    tail_ref_score = best_score
+    if section_key == "dist" and len(pool) >= 2:
+        second_score = float(getattr(pool[1], "score", 0.0) or 0.0)
+        if best_score - second_score >= 7.5:
+            tail_ref_score = second_score
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
     tail_margin_by_section = {
         "supply": 3.6,
@@ -7016,7 +7117,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         extra = max(0.0, min(extra, 12.0))
         tail_margin += extra
 
-    tail_cut = max(thr, best_score - tail_margin)
+    tail_cut = max(thr, tail_ref_score - tail_margin)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -7167,10 +7268,23 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if section_key != "supply":
             return False
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        title_local = (a.title or "").lower()
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
         issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
         if issue_bucket:
+            return False
+        strong_item_context = (
+            count_any(title_local, HORTI_ITEM_TERMS_L) >= 1
+            or best_horti_score(a.title or "", "") >= 1.2
+            or best_horti_score(a.title or "", a.description or "") >= 2.2
+        )
+        trade_hits = count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_TERMS])
+        hard_trade_terms = [w.lower() for w in ("관세", "할당관세", "무관세", "fta", "통상", "비관세장벽", "통관", "검역")]
+        title_trade_hits = count_any(title_local, hard_trade_terms)
+        hard_trade_hits = count_any(txt_local, hard_trade_terms)
+        trade_impact_hits = count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_IMPACT_TERMS])
+        if strong_item_context and title_trade_hits >= 1 and hard_trade_hits >= 1 and trade_hits >= 1 and trade_impact_hits >= 1:
             return False
         if is_supply_stabilization_policy_context(txt_local, dom_local, pr_local):
             return True
@@ -7979,7 +8093,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             BASE_MIN_SCORE.get(section_key, 6.0) + relax_floor_offset_by_section.get(section_key, 0.0),
             thr - relax_margin_by_section.get(section_key, 2.4),
         )
-        tier1_cap_relax = max(tier1_cap, 4 if section_key == "dist" else 2)
+        tier1_cap_relax = max(tier1_cap, 5 if section_key == "dist" else 2)
         tier2_cap_relax = max(tier2_cap, 3 if section_key in ("supply", "policy") else 4)
 
         def _underfill_score_cut(a: Article) -> float:
@@ -8158,6 +8272,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     break
                 if ea in final:
                     continue
+                if any(_is_similar_story(ea, x, section_key) for x in final):
+                    continue
                 if len(final) < max_n:
                     final.append(ea)
                     need_exec -= 1
@@ -8230,6 +8346,32 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         seen.add(k)
         deduped.append(a)
+
+    if section_key == "pest":
+        pest_unique: list[Article] = []
+        for a in deduped:
+            if any(_is_similar_story(a, b, "pest") for b in pest_unique):
+                continue
+            pest_unique.append(a)
+        if len(pest_unique) < len(deduped):
+            refill_cut = max(BASE_MIN_SCORE.get("pest", 6.6), thr - 4.0)
+            for a in candidates_sorted:
+                if len(pest_unique) >= max_n:
+                    break
+                if a in pest_unique:
+                    continue
+                if float(getattr(a, "score", 0.0) or 0.0) < refill_cut:
+                    continue
+                if any((a.canon_url or _dup_key(a)) == (b.canon_url or _dup_key(b)) for b in pest_unique):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in pest_unique):
+                    continue
+                if any(_is_similar_story(a, b, "pest") for b in pest_unique):
+                    continue
+                if not _headline_gate_relaxed(a, "pest"):
+                    continue
+                pest_unique.append(a)
+        deduped = pest_unique
 
     # Debug report payload (top candidates + selection decisions)
     if DEBUG_REPORT:
@@ -9569,6 +9711,9 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         strong_pest_context = is_pest_control_policy_context(txt)
         local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
         dist_market_disruption = is_dist_market_disruption_context(a.title or "", a.description or "")
+        dist_market_ops_like = is_dist_market_ops_context(a.title or "", a.description or "", dom, press)
+        dist_supply_center_like = is_dist_supply_management_center_context(a.title or "", a.description or "")
+        dist_sales_channel_ops_like = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
         dist_local_org_tail = is_dist_local_org_tail_context(a.title or "", a.description or "")
         macro_policy_like = is_macro_policy_issue(txt)
         broad_macro_price = is_broad_macro_price_context(a.title or "", a.description or "")
@@ -9593,7 +9738,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             if k == "dist":
                 dist_like = count_any(txt, [t.lower() for t in ("도매시장","공판장","가락시장","경락","경매","반입","산지유통","산지유통센터","apc","물류","원산지","단속","검역","통관","수출","선적","수출길","유통","도매")])
                 strong_local_org = local_org_feature and (not dist_local_org_tail) and has_apc_agri_context(txt)
-                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not strong_local_org) and (not is_dist_export_shipping_context(a.title, a.description)) and (not dist_export_field_like) and (not dist_market_disruption):
+                if dist_like < 2 and (not has_apc_agri_context(txt)) and (not strong_local_org) and (not is_dist_export_shipping_context(a.title, a.description)) and (not dist_export_field_like) and (not dist_market_disruption) and (not dist_market_ops_like) and (not dist_supply_center_like) and (not dist_sales_channel_ops_like):
                     continue
             if k == "policy":
                 # 정책성 문맥이 거의 없으면 이동 후보에서 제외(단, 공식 도메인은 예외)
@@ -9652,16 +9797,24 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
         prefer_move_to_dist = (
             cur != "dist"
-            and (dist_market_disruption or is_dist_export_shipping_context(a.title, a.description) or dist_export_field_like or (local_org_feature and (not dist_local_org_tail) and has_apc_agri_context(txt)))
+            and (dist_market_disruption or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like or is_dist_export_shipping_context(a.title, a.description) or dist_export_field_like or (local_org_feature and (not dist_local_org_tail) and has_apc_agri_context(txt)))
             and ("dist" in cand_scores)
-            and (cand_fits.get("dist", float("-inf")) + 0.2 >= cur_fit)
-            and (cand_scores.get("dist", float("-inf")) + 1.0 >= cur_score)
+            and (
+                (dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like)
+                or (
+                    (cand_fits.get("dist", float("-inf")) + 0.2 >= cur_fit)
+                    and (cand_scores.get("dist", float("-inf")) + 1.0 >= cur_score)
+                )
+            )
         )
         prefer_move_to_policy = (
             cur != "policy"
             and (policy_market_brief_like or macro_policy_like or broad_macro_price or policy_stabilization_like or policy_export_support_like)
             and (not policy_general_macro_tail)
             and (not dist_export_field_like)
+            and (not dist_market_ops_like)
+            and (not dist_supply_center_like)
+            and (not dist_sales_channel_ops_like)
             and ((not direct_supply_story) or policy_market_brief_like or policy_export_support_like)
             and ("policy" in cand_scores)
             and (cand_fits.get("policy", float("-inf")) + 0.2 >= cur_fit)
@@ -9855,6 +10008,9 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 p = (a.press or "").strip()
                 _mix_text = (a.title + " " + a.description).lower()
                 dist_export_field_like = is_dist_export_field_context(a.title or "", a.description or "", d, p)
+                dist_market_ops_like = is_dist_market_ops_context(a.title or "", a.description or "", d, p)
+                dist_supply_center_like = is_dist_supply_management_center_context(a.title or "", a.description or "")
+                dist_sales_channel_ops_like = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
                 policy_export_support_like = is_policy_export_support_brief_context(a.title or "", a.description or "", d, p)
                 # policy-like(정책/통상/제도) 기사면 policy로 이동
                 trade_like = False
@@ -9883,7 +10039,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 elif is_macro_policy_issue(_mix_text) and (not policy_general_macro_tail):
                     if policy_agri_anchor_hits >= 2 or policy_domain_override(d, _mix_text) or (is_trade_policy_issue(_mix_text) and (not dist_export_field_like)):
                         move_to_policy = True
-                if dist_export_field_like:
+                if dist_export_field_like or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like:
                     move_to_policy = False
 
                 if move_to_policy:
@@ -10017,6 +10173,9 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
             d = normalize_host(a.domain or "")
             p = (a.press or "").strip()
             dist_export_field_like = is_dist_export_field_context(a.title or "", a.description or "", d, p)
+            dist_market_ops_like = is_dist_market_ops_context(a.title or "", a.description or "", d, p)
+            dist_supply_center_like = is_dist_supply_management_center_context(a.title or "", a.description or "")
+            dist_sales_channel_ops_like = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
             policy_export_support_like = is_policy_export_support_brief_context(a.title or "", a.description or "", d, p)
             remote_foreign_trade_like = is_remote_foreign_trade_brief_context(a.title or "", a.description or "", d)
 
@@ -10031,7 +10190,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                 or is_macro_policy_issue(mix)
                 or policy_export_support_like
             )
-            if remote_foreign_trade_like or dist_export_field_like:
+            if remote_foreign_trade_like or dist_export_field_like or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like:
                 policy_like = False
 
             if not policy_like:

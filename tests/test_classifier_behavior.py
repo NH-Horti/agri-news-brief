@@ -2256,6 +2256,131 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         self.assertIn(other_region.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
+        story = self._make_article(
+            "supply",
+            "[생글기자 코너] 미국산 만다린 관세 철폐와 제주 감귤 산업",
+            "[생글기자 코너] 미국산 만다린 관세 철폐와 제주 감귤 산업, 미국산 만다린 무관세는 소비자에게 좋은 대안을 제시할 수 있지만, 제주도 감귤 산업에 큰 타격을 입힐 수도 있다. 정부의 적절한 대응과 제주 감귤 산업의 자체적 노력이 필요한 시점이다.",
+            "https://www.hankyung.com/article/2026030632081",
+        )
+        peer = self._make_article(
+            "supply",
+            "사과 값 고공행진에 묘목도 '불티'…30% 이상 가격 급등",
+            "사과 가격 급등 여파로 묘목 수요와 가격이 함께 오르며 농가 부담이 커졌다는 기사다.",
+            "https://www.yna.co.kr/view/AKR20260313000000000",
+        )
+        story.topic = "정책"
+        story.score = 31.44
+        peer.score = 28.94
+
+        picked = main.select_top_articles([story, peer], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(story.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_remote_foreign_shipping_story_is_blocked(self):
+        title = "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토"
+        desc = "미국 백악관이 연안 운송 규제를 한시 완화하는 방안을 검토 중이라는 외신 기사다."
+        self.assertTrue(main.is_remote_foreign_trade_brief_context(title, desc, "sbs.co.kr"))
+        self.assertFalse(
+            main.is_relevant(
+                title,
+                desc,
+                "sbs.co.kr",
+                "https://news.sbs.co.kr/news/endPage.do?news_id=N1008044518",
+                next(s for s in main.SECTIONS if s["key"] == "dist"),
+                "SBS",
+            )
+        )
+
+    def test_global_reassign_moves_supply_center_story_from_policy_to_dist(self):
+        title = "강원도 ‘농산물 광역수급관리센터’ 개소…배추·무 수급 선제 관리"
+        desc = "강원특별자치도가 농산물 광역수급관리센터 개소식을 열고 채소류 수급 관리 시범사업을 시작했다."
+        url = "https://www.nongmin.com/article/20260312500218"
+        a = self._make_article("policy", title, desc, url)
+        a.score = 38.71
+        raw = {"policy": [a], "supply": [], "dist": [], "pest": []}
+
+        moved = main._global_section_reassign(raw, self.now, self.now)
+
+        self.assertGreaterEqual(moved, 1)
+        self.assertFalse(raw["policy"], msg=str([(x.section, x.link, x.score) for x in raw["policy"]]))
+        self.assertEqual(len(raw["dist"]), 1, msg=str([(x.section, x.link, x.score) for x in raw["dist"]]))
+        self.assertEqual(raw["dist"][0].link, url)
+
+    def test_dist_selection_keeps_export_resolution_story_with_outlier_present(self):
+        center = self._make_article(
+            "dist",
+            "강원도 ‘농산물 광역수급관리센터’ 개소…배추·무 수급 선제 관리",
+            "강원특별자치도가 농산물 광역수급관리센터 개소식을 열고 채소류 수급 관리 시범사업을 시작했다.",
+            "https://www.nongmin.com/article/20260312500218",
+        )
+        disruption = self._make_article(
+            "dist",
+            "가락시장 토요일 휴업, 농산물 시세 하락 부추겼나",
+            "가락시장 운영 차질로 농산물 시세 하락 우려를 짚는 기사다.",
+            "https://www.ikpnews.net/news/articleView.html?idxno=99999",
+        )
+        sales_ops = self._make_article(
+            "dist",
+            "강원농협, '연합판매사업 직거래 평가회·활성화 워크숍' 개최",
+            "농협 강원본부가 연합판매사업 직거래 평가회와 활성화 워크숍을 열어 농가 판로 확대를 점검했다.",
+            "https://www.news1.kr/local/kangwon/6099371",
+        )
+        market_ops = self._make_article(
+            "dist",
+            "온라인도매시장 제도개선·활성화 TF 운영 논의",
+            "aT가 온라인도매시장 제도개선 TF를 열고 거래실적과 개선방안을 논의했다.",
+            "http://www.amnews.co.kr/news/articleView.html?idxno=71432",
+        )
+        export_resolution = self._make_article(
+            "dist",
+            "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 간담회",
+            "부여 인삼공사 공장에서 현장간담회…딸기·배 수출 애로 해결 사례 공유, N-데스크를 통한 상시 애로 접수 내용을 담았다.",
+            "https://www.etoday.co.kr/news/view/2564743",
+        )
+        center.score = 30.54
+        disruption.score = 19.28
+        sales_ops.score = 11.10
+        market_ops.score = 12.87
+        export_resolution.score = 12.64
+
+        picked = main.select_top_articles([center, disruption, sales_ops, market_ops, export_resolution], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(export_resolution.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_dist_sales_channel_roundups_are_treated_as_same_story(self):
+        news_story = self._make_article(
+            "dist",
+            "강원농협, '연합판매사업 직거래 평가회·활성화 워크숍' 개최",
+            "농협 강원본부가 연합판매사업 직거래 평가회와 활성화 워크숍을 열어 농가 판로 확대를 점검했다.",
+            "https://www.news1.kr/local/kangwon/6099371",
+        )
+        wire_story = self._make_article(
+            "dist",
+            "강원 농협, 2026년 연합판매사업 활성화 워크숍 개최",
+            "강원 농협이 연합판매사업 활성화 워크숍과 직거래 평가회를 열었다는 기사다.",
+            "https://www.yna.co.kr/view/AKR20260312000000062",
+        )
+        photo_story = self._make_article(
+            "dist",
+            "[포토뉴스]2026년 강원 농협 연합판매사업 직거래 평가회 및 활성화 워크숍",
+            "강원 농협의 연합판매사업 직거래 평가회 현장을 담은 포토 기사다.",
+            "https://www.kwnews.co.kr/page/view/20260312000000000",
+        )
+        other = self._make_article(
+            "dist",
+            "온라인도매시장 제도개선·활성화 TF 운영 논의",
+            "aT가 온라인도매시장 제도개선 TF를 열고 거래실적과 개선방안을 논의했다.",
+            "http://www.amnews.co.kr/news/articleView.html?idxno=71432",
+        )
+        news_story.score = 11.10
+        wire_story.score = 14.24
+        photo_story.score = 13.14
+        other.score = 12.87
+
+        self.assertTrue(main._is_similar_story(news_story, wire_story, "dist"))
+        self.assertTrue(main._is_similar_story(photo_story, wire_story, "dist"))
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
