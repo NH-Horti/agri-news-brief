@@ -2166,6 +2166,96 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertNotIn(hub_brief.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertEqual(len(picked), 3, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_supply_feature_issue_recognizes_citrus_tariff_pressure_story(self):
+        title = "미국산 만다린 관세 철폐와 제주 감귤 산업"
+        desc = "미국산 만다린 무관세는 소비자에게 좋은 대안을 제시할 수 있지만, 제주도 감귤 산업에 큰 타격을 입힐 수도 있다. 정부의 적절한 대응과 제주 감귤 산업의 자체적 노력이 필요한 시점이다."
+        self.assertEqual(main.supply_issue_context_bucket(title, desc), "commodity_issue")
+        self.assertEqual(main.supply_feature_context_kind(title, desc), "issue")
+
+    def test_dist_supply_management_center_context_matches_center_story(self):
+        title = "강원도 농산물 광역수급관리센터 개소…배추·무 수급 선제 관리"
+        desc = "강원특별자치도가 농산물 광역수급관리센터 개소식을 열고 채소류 수급 관리 시범사업을 시작했다."
+        self.assertTrue(main.is_dist_supply_management_center_context(title, desc))
+
+    def test_dist_sales_channel_ops_context_matches_joint_sales_workshop(self):
+        title = "강원농협, 연합판매사업 직거래 평가회·활성화 워크숍 개최"
+        desc = "농협 강원본부는 연합판매사업 직거래 평가회 및 활성화 워크숍을 열고 농가 판로 확대 방안을 점검했다."
+        self.assertTrue(main.is_dist_sales_channel_ops_context(title, desc))
+
+    def test_dist_selection_keeps_center_and_sales_channel_ops_stories(self):
+        export_field = self._make_article(
+            "dist",
+            "K-푸드 수출 막는 비관세장벽 현장에서 푼다…농식품부, 수출업계 간담회",
+            "부여 인삼공사 공장에서 현장간담회…딸기·배 수출 애로 해결 사례 공유",
+            "https://www.etoday.co.kr/news/view/2564743",
+        )
+        field_profile = self._make_article(
+            "dist",
+            "밀양 무안농협, 농가조직화·품질 제고로 판매사업 성과",
+            "농가조직화와 품질 제고를 통해 판매사업 성과를 낸 현장 기사다.",
+            "https://www.nongmin.com/article/20260311500561",
+        )
+        online_ops = self._make_article(
+            "dist",
+            "온라인도매시장 제도개선·활성화 TF 운영 논의",
+            "aT가 온라인도매시장 제도개선 TF를 열고 거래실적과 개선방안을 논의했다.",
+            "http://www.amnews.co.kr/news/articleView.html?idxno=71432",
+        )
+        center = self._make_article(
+            "dist",
+            "강원도 농산물 광역수급관리센터 개소…배추·무 수급 선제 관리",
+            "강원특별자치도가 농산물 광역수급관리센터 개소식을 열고 채소류 수급 관리 시범사업을 시작했다.",
+            "https://www.nongmin.com/article/20260312500218",
+        )
+        sales_ops = self._make_article(
+            "dist",
+            "강원농협, 연합판매사업 직거래 평가회·활성화 워크숍 개최",
+            "농협 강원본부는 연합판매사업 직거래 평가회 및 활성화 워크숍을 열고 농가 판로 확대 방안을 점검했다.",
+            "https://www.news1.kr/local/kangwon/6099371",
+        )
+        export_field.score = 9.47
+        field_profile.score = 10.05
+        online_ops.score = 14.57
+        center.score = 13.60
+        sales_ops.score = 8.40
+
+        picked = main.select_top_articles([export_field, field_profile, online_ops, center, sales_ops], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(center.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(sales_ops.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_pest_same_region_duplicate_prefers_single_story(self):
+        brief = self._make_article(
+            "pest",
+            "예산군농업기술센터, 과수화상병 사전방제 적극 홍보",
+            "예산군농업기술센터가 과수화상병 확산을 막기 위해 사과·배 재배 농가를 대상으로 사전방제 약제를 공급한다.",
+            "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=877506",
+        )
+        exec_story = self._make_article(
+            "pest",
+            "예산군농업기술센터, 과수화상병 확산 차단 총력… 방제약제 무상 공급",
+            "예산군농업기술센터가 과수화상병 예방을 위해 사과와 배 재배 농가에 방제 약제를 무상 공급한다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=316282",
+        )
+        other_region = self._make_article(
+            "pest",
+            "수원시, 과수화상병 확산 대응 총력",
+            "수원시가 사과·배 재배 농가 대상 방제 약제를 배부하며 과수화상병 대응에 나섰다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402500",
+        )
+        brief.score = 19.4
+        exec_story.score = 21.1
+        other_region.score = 18.7
+
+        picked = main.select_top_articles([brief, exec_story, other_region], "pest", 5)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(
+            int(brief.link in picked_links) + int(exec_story.link in picked_links),
+            1,
+            msg=str([(x.link, x.score, x.title) for x in picked]),
+        )
+        self.assertIn(other_region.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
