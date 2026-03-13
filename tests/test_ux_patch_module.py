@@ -3,6 +3,12 @@ import unittest
 from ux_patch import build_archive_ux_html, ensure_swipe_ignore_attributes, insert_nav_loading_badge
 
 
+ARCHIVE_LABEL = "\uc544\uce74\uc774\ube0c"
+MOVING_LABEL = "\ub0a0\uc9dc \uc774\ub3d9 \uc911..."
+PREV_BRIEF_MESSAGE = "\uc774\uc804 \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4."
+NEXT_BRIEF_MESSAGE = "\ub2e4\uc74c \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4."
+
+
 class TestUxPatchModule(unittest.TestCase):
     def test_insert_nav_loading_badge(self):
         html = '<div class="navRow">x</div><div class="wrap">y</div>'
@@ -11,14 +17,15 @@ class TestUxPatchModule(unittest.TestCase):
             s = text.find('<div class="navRow">')
             if s < 0:
                 return None
-            e = text.find('</div>', s)
+            e = text.find("</div>", s)
             if e < 0:
                 return None
-            e += len('</div>')
+            e += len("</div>")
             return (s, e, text[s:e])
 
         out = insert_nav_loading_badge(html, _extract)
         self.assertIn('id="navLoading"', out)
+        self.assertIn(MOVING_LABEL, out)
         self.assertIn('<div class="wrap">y</div>', out)
 
     def test_ensure_swipe_ignore_attributes_is_idempotent(self):
@@ -27,23 +34,23 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertEqual(out.count('data-swipe-ignore="1"'), 2)
 
     def test_build_archive_ux_html_contract(self):
-        html = """
+        html = f"""
 <html><body>
-<div class=\"navRow\"><a class=\"navBtn\">아카이브</a></div>
-<div class=\"chipbar\"><div class=\"chips\"></div></div>
-<div class=\"wrap\">body</div>
+<div class="navRow"><a class="navBtn">{ARCHIVE_LABEL}</a></div>
+<div class="chipbar"><div class="chips"></div></div>
+<div class="wrap">body</div>
 </body></html>
 """
 
         def _extract(text: str):
-            marker = '<div class=\"navRow\">'
+            marker = '<div class="navRow">'
             s = text.find(marker)
             if s < 0:
                 return None
-            e = text.find('</div>', s)
+            e = text.find("</div>", s)
             if e < 0:
                 return None
-            e += len('</div>')
+            e += len("</div>")
             return (s, e, text[s:e])
 
         out = build_archive_ux_html(
@@ -64,6 +71,9 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIsInstance(out, str)
         self.assertIn('id="navLoading"', out)
         self.assertIn('data-swipe-ignore="1"', out)
+        self.assertIn(MOVING_LABEL, out)
+        self.assertIn(PREV_BRIEF_MESSAGE, out)
+        self.assertIn(NEXT_BRIEF_MESSAGE, out)
 
     def test_build_archive_ux_html_updates_nav_even_if_only_manifest_nav_changed(self):
         def _extract(text: str):
@@ -71,15 +81,15 @@ class TestUxPatchModule(unittest.TestCase):
             s = text.find(marker)
             if s < 0:
                 return None
-            e = text.find('</div>', s)
+            e = text.find("</div>", s)
             if e < 0:
                 return None
-            e += len('</div>')
+            e += len("</div>")
             return (s, e, text[s:e])
 
-        seed = """
+        seed = f"""
 <html><body>
-<div class="navRow"><a class="navBtn">아카이브</a></div>
+<div class="navRow"><a class="navBtn">{ARCHIVE_LABEL}</a></div>
 <div class="chipbar" data-swipe-ignore="1"><div class="chips" data-swipe-ignore="1"></div></div>
 <div class="wrap">body</div>
 </body></html>
@@ -117,7 +127,7 @@ class TestUxPatchModule(unittest.TestCase):
         )
 
         self.assertIsInstance(second, str)
-        self.assertIn('nav-b', second)
+        self.assertIn("nav-b", second)
 
 
 if __name__ == "__main__":

@@ -7,3 +7,5 @@ __pycache__/
 .mypy_cache/
 
 reports/
+tmp_dev_*.patch
+tmp_dev_*.html

@@ -9,6 +9,12 @@ if str(ROOT) not in sys.path:
 import main
 
 
+ARCHIVE_LABEL = "\uc544\uce74\uc774\ube0c"
+MOVING_LABEL = "\ub0a0\uc9dc \uc774\ub3d9 \uc911..."
+EMPTY_BRIEF_MESSAGE = "\uc774\ub3d9\ud560 \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4."
+ONE_COUNT = "1\uac74"
+
+
 class TestUxPatchBehavior(unittest.TestCase):
     def _run_patch(self, iso_date: str, raw_html: str):
         path = f"{main.DOCS_ARCHIVE_DIR}/{iso_date}.html"
@@ -46,12 +52,12 @@ class TestUxPatchBehavior(unittest.TestCase):
 
     def test_patch_archive_page_ux_preserves_tail_after_nav_loading_insert(self):
         iso_date = "2026-03-06"
-        raw_html = """
+        raw_html = f"""
 <html>
 <head><title>ux patch test</title></head>
 <body>
-<div class="navRow"><a class="navBtn" href="/">아카이브</a></div>
-<div class="wrap"><section id="sec-supply"><div class="secCount">1건</div></section></div>
+<div class="navRow"><a class="navBtn" href="/">{ARCHIVE_LABEL}</a></div>
+<div class="wrap"><section id="sec-supply"><div class="secCount">{ONE_COUNT}</div></section></div>
 <div id="tail">TAIL_SENTINEL</div>
 </body>
 </html>
@@ -64,6 +70,7 @@ class TestUxPatchBehavior(unittest.TestCase):
 
         out = saved.get("content", "")
         self.assertIn('id="navLoading"', out)
+        self.assertIn(MOVING_LABEL, out)
         self.assertIn("TAIL_SENTINEL", out)
 
         lower = out.lower()
@@ -72,17 +79,17 @@ class TestUxPatchBehavior(unittest.TestCase):
 
     def test_patch_archive_page_ux_keeps_swipe_ignore_attribute_idempotent(self):
         iso_date = "2026-03-06"
-        raw_html = """
+        raw_html = f"""
 <html>
 <head><title>ux patch test</title></head>
 <body>
-<div class="navRow"><a class="navBtn" href="/">아카이브</a></div>
+<div class="navRow"><a class="navBtn" href="/">{ARCHIVE_LABEL}</a></div>
 <div class="chipbar" data-swipe-ignore="1">
   <div class="chipwrap">
     <div class="chips" data-swipe-ignore="1"></div>
   </div>
 </div>
-<div class="wrap"><section id="sec-supply"><div class="secCount">1건</div></section></div>
+<div class="wrap"><section id="sec-supply"><div class="secCount">{ONE_COUNT}</div></section></div>
 </body>
 </html>
 """.strip()
@@ -96,6 +103,7 @@ class TestUxPatchBehavior(unittest.TestCase):
         self.assertRegex(out, r'class="chips"[^>]*data-swipe-ignore="1"')
         self.assertNotRegex(out, r'class="chipbar"[^>]*data-swipe-ignore="1"[^>]*data-swipe-ignore="1"')
         self.assertNotRegex(out, r'class="chips"[^>]*data-swipe-ignore="1"[^>]*data-swipe-ignore="1"')
+        self.assertIn(EMPTY_BRIEF_MESSAGE, out)
 
 
 if __name__ == "__main__":
