@@ -699,6 +699,27 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_urls = {a.link for a in picked}
         self.assertEqual(len(picked_urls & {url1, url2}), 1, msg=str([(x.link, x.score) for x in picked]))
 
+    def test_supply_event_dedupe_collapses_similar_grape_fuel_story(self):
+        url1 = "https://www.ytn.co.kr/_ln/0115_202603121048360743"
+        url2 = "https://www.ytn.co.kr/_ln/0115_202603121445460543"
+        a1 = self._make_article(
+            "supply",
+            "고유가에 포도 농가 '비상'...기름보일러 가구도 걱정",
+            "국제유가 상승 여파로 포도 농가의 난방비 부담이 커졌다. 기름보일러를 쓰는 농가들은 비상이라고 호소했다.",
+            url1,
+        )
+        a2 = self._make_article(
+            "supply",
+            "고유가에 포도 농가 '비상'...면세 등유 가격 올라",
+            "유가 상승으로 면세 등유 가격이 오르면서 하우스 포도 농가의 연료비 부담이 커졌다. 난방비 비상이라는 현장 목소리가 나온다.",
+            url2,
+        )
+
+        self.assertEqual(main._event_key(a1, "supply"), main._event_key(a2, "supply"))
+        picked = main.select_top_articles([a1, a2], "supply", 5)
+        picked_urls = {a.link for a in picked}
+        self.assertEqual(len(picked_urls & {url1, url2}), 1, msg=str([(x.link, x.score) for x in picked]))
+
     def test_local_coop_export_feature_is_not_forced_into_dist(self):
         title = "경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진"
         desc = "경주 현곡농협이 샤인머스캣 농가의 수출을 통해 경제적 실익을 증진하고 있다. 대만으로의 수출이 예정되어 있으며, GAP 인증을 받은 농가들이 참여하고 있다."

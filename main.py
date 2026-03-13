@@ -1781,6 +1781,9 @@ def _supply_story_signature(title: str, desc: str) -> str | None:
     else:
         return None
 
+    if topic_bucket != "화훼" and is_supply_input_cost_pressure_context(title, desc):
+        return f"EV:SUPPLY:{topic_bucket}:INPUT_COST_PRESSURE"
+
     labels = _matched_labels(text, _SUPPLY_EVENT_ANCHOR_GROUPS)
     if topic_bucket == "화훼":
         cost_like = sum(1 for label in ("유가", "상토", "난방", "운송", "자재") if label in labels)
@@ -3595,6 +3598,10 @@ _SUPPLY_FEATURE_ISSUE_INPUT_TERMS = (
 _SUPPLY_FEATURE_ISSUE_CLIMATE_TERMS = (
     "\uC0B0\uBD88", "\uB300\uD615 \uC0B0\uBD88", "\uAE30\uD6C4\uBCC0\uD654", "\uC774\uC0C1\uAE30\uD6C4", "\uD3ED\uC5FC", "\uACE0\uC628", "\uD55C\uD30C", "\uB0C9\uD574", "\uC11C\uB9AC",
 )
+_SUPPLY_INPUT_COST_PRESSURE_TERMS = (
+    "유가", "국제유가", "유류비", "기름값", "면세유", "면세 등유", "등유",
+    "난방", "난방비", "연료비", "보일러", "기름보일러",
+)
 _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
     "\uc218\ucd9c", "\uc218\ucd9c\uae38", "\uc218\ucd9c \ud655\ub300", "\uc120\uc801", "\uac80\uc5ed", "\ud1b5\uad00", "\ud310\ub85c", "\ud574\uc678\uc2dc\uc7a5", "\ud574\uc678 \uc218\uc694",
 )
@@ -3725,6 +3732,26 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
         if quality_hits >= 2 and compare_hits >= 1:
             return "quality"
     return None
+
+
+def is_supply_input_cost_pressure_context(title: str, desc: str) -> bool:
+    txt = f"{title or ''} {desc or ''}".lower()
+    if not txt or is_fruit_foodservice_event_context(txt):
+        return False
+    try:
+        topic, topic_sc = best_topic_and_score(title or "", desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    if topic not in _HORTI_TOPICS_SET or topic_sc < 1.2:
+        return False
+    feature_kind = supply_feature_context_kind(title, desc)
+    issue_bucket = supply_issue_context_bucket(title, desc)
+    if feature_kind not in {"field", "issue"} and issue_bucket != "commodity_issue":
+        return False
+    cost_hits = count_any(txt, [w.lower() for w in _SUPPLY_INPUT_COST_PRESSURE_TERMS])
+    distress_hits = count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS])
+    return cost_hits >= 2 and distress_hits >= 1
+
 
 def is_supply_feature_article(title: str, desc: str) -> bool:
     txt = f"{title or ''} {desc or ''}".lower()
