@@ -1372,7 +1372,7 @@ class TestClassifierBehavior(unittest.TestCase):
         queries, meta = main._build_recall_fallback_queries("supply", section_conf, [cabbage, flower, interview], 7.0)
         self.assertIn("딸기 생육", queries, msg=str(meta))
         self.assertIn("감귤 품질", queries, msg=str(meta))
-        self.assertIn("감귤 제철", queries, msg=str(meta))
+        self.assertIn("농산물 가격 동향", queries, msg=str(meta))
     def test_collect_candidates_uses_supply_feature_recall_query_when_pool_is_thin(self):
         section_conf = {
             "key": "supply",
@@ -2411,23 +2411,44 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
 
+    def test_flower_novelty_noise_with_hwae_association_mentions_is_still_rejected(self):
+        title = "유재석 꽃다발 논란…화원협회 '화훼 농가 또 다른 상처'"
+        desc = "화원협회가 시상식 레고 꽃다발 논란을 두고 화훼 농가 생존권과 소비 촉진 정책을 언급한 기사다."
+        self.assertTrue(main.is_flower_novelty_noise_context(title, desc))
+
     def test_flower_market_trend_with_agri_context_still_prefers_supply(self):
         title = "졸업식 대목 앞둔 꽃시장…절화 경매가 오르고 화훼 농가 기대"
         desc = "졸업식 성수기를 앞두고 꽃시장 절화 경매가 상승하고 화훼 농가 출하가 늘고 있다는 현장 기사다."
         best, scores = self._best_section(title, desc, "https://example.com/flower-market")
         self.assertEqual(best, "supply", msg=f"scores={scores}")
 
-    def test_recall_fallback_queries_expand_for_low_recall_january_archive_dates(self):
+    def test_flower_supply_registry_avoids_lifestyle_bouquet_queries(self):
+        flower_entry = next(entry for entry in main.COMMODITY_REGISTRY if entry.get("topic") == "화훼")
+        joined = " ".join(flower_entry.get("supply_queries") or [])
+        self.assertNotIn("레고", joined)
+        self.assertNotIn("꽃다발 선물", joined)
+        self.assertIn("화훼 경매", joined)
+        self.assertIn("화훼공판장 경매", joined)
+
+    def test_recall_fallback_queries_expand_with_generic_archive_safe_queries(self):
         supply_queries, _ = main._build_recall_fallback_queries("supply", self.conf["supply"], [], 99.0, report_date="2026-01-12")
         policy_queries, _ = main._build_recall_fallback_queries("policy", self.conf["policy"], [], 99.0, report_date="2026-01-05")
         dist_queries, _ = main._build_recall_fallback_queries("dist", self.conf["dist"], [], 99.0, report_date="2026-01-05")
         pest_queries, _ = main._build_recall_fallback_queries("pest", self.conf["pest"], [], 99.0, report_date="2026-01-05")
 
-        self.assertIn("한파 농산물", main._recall_common_queries("supply", "2026-01-12"))
+        self.assertIn("농산물 가격 동향", main._recall_common_queries("supply", "2026-01-12"))
         self.assertTrue(len(supply_queries) > 0)
-        self.assertIn("새해 달라지는 농업 제도", policy_queries)
-        self.assertIn("농산물 초매식", dist_queries)
-        self.assertIn("과수 동해 예방", pest_queries)
+        self.assertIn("농식품부 농산물 수급 점검", policy_queries)
+        self.assertIn("도매시장 경매", dist_queries)
+        self.assertIn("과수화상병 예방", main._recall_common_queries("pest", "2026-01-05"))
+        self.assertTrue(len(pest_queries) > 0)
+
+    def test_web_recall_queries_follow_fallback_then_common_registry(self):
+        recall_meta = {}
+        queries = main._build_web_recall_queries("dist", ["산지유통센터", "도매시장 경매"], recall_meta)
+        self.assertEqual(queries[:2], ["산지유통센터", "도매시장 경매"])
+        self.assertIn("web_queries", recall_meta)
+        self.assertLessEqual(len(queries), main.WEB_RECALL_QUERY_CAP_PER_SECTION)
 
     def test_reset_debug_report_clears_previous_state(self):
         original_debug = main.DEBUG_REPORT

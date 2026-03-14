@@ -55,9 +55,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('"농산물 가격 동향"', self.text)
         self.assertIn("POLICY_MARKET_BRIEF_RECALL_SIGNALS", self.text)
         self.assertIn("def _recall_common_queries", self.text)
-        self.assertIn('"농산물 초매식"', self.text)
-        self.assertIn('"새해 달라지는 농업 제도"', self.text)
+        self.assertIn('"도매시장 경매"', self.text)
+        self.assertIn('"농산물 수급 안정 대책"', self.text)
         self.assertIn('return _reject("flower_novelty_noise")', self.text)
+        self.assertIn("def _build_web_recall_queries", self.text)
         self.assertIn("def reset_debug_report", self.text)
 
     def test_manual_force_report_date_short_circuits_in_main(self):
@@ -111,6 +112,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)
+        self.assertIn('preview_ref = GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"', self.text)
 
     def test_promote_workflow_exists_for_dev_to_main(self):
         self.assertIn("name: agri-news-brief (promote dev to main)", self.promote_text)

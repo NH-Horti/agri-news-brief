@@ -39,7 +39,7 @@ import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
-from typing import Any, TypedDict
+from typing import Any, Sequence, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 import requests  # type: ignore[import-untyped]
@@ -269,6 +269,11 @@ PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
 PEST_WEB_RECALL_ENABLED = os.getenv("PEST_WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "2") or 2)
 PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
+WEB_RECALL_ENABLED = os.getenv("WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+WEB_RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("WEB_RECALL_QUERY_CAP_PER_SECTION", "2") or 2)
+WEB_RECALL_QUERY_CAP_PER_SECTION = max(0, min(WEB_RECALL_QUERY_CAP_PER_SECTION, 8))
+WEB_RECALL_DISPLAY = int(os.getenv("WEB_RECALL_DISPLAY", "10") or 10)
+WEB_RECALL_DISPLAY = max(5, min(WEB_RECALL_DISPLAY, 20))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -1072,14 +1077,13 @@ COMMODITY_REGISTRY = [
         "topic": "화훼",
         "rep_term": "화훼",
         "display_name": "화훼",
-        "aliases": ["화훼", "절화", "국화", "장미", "백합", "꽃다발", "생화", "부케", "플라워"],
-        "focus_terms": ["화훼", "절화", "꽃다발", "생화", "플라워"],
+        "aliases": ["화훼", "절화", "국화", "장미", "백합", "생화", "꽃시장", "화훼공판장"],
+        "focus_terms": ["화훼", "절화", "생화", "꽃시장", "화훼공판장"],
         "brief_tags": ["화훼"],
         "supply_queries": [
-            "화훼 가격", "절화 가격", "꽃 소비", "화훼 수급", "화훼자조금",
-            "꽃다발 선물", "꽃다발 선물 트렌드", "꽃다발 소비", "레고 꽃", "레고 꽃다발",
-            "레고 보태니컬", "보태니컬 시리즈 꽃", "장난감 꽃다발 화훼", "화훼 소비 트렌드",
-            "생화 꽃다발 소비", "꽃다발 선물 사라진 시대", "틈새 파고든 레고 꽃",
+            "화훼 가격", "절화 가격", "화훼 수급", "화훼자조금",
+            "화훼 경매", "절화 경매", "화훼공판장 경매", "꽃시장 경매",
+            "국화 경매", "장미 경매", "백합 가격", "생화 출하",
         ],
         "feature_profile": "flower",
     },
@@ -2555,6 +2559,16 @@ _FLOWER_TREND_EXCLUDE_MARKERS = [
 _FLOWER_TREND_NOISE_MARKERS = [
     "레고", "보태니컬", "장난감", "블록", "시상식", "유재석", "셀럽", "연예인", "굿즈",
 ]
+_FLOWER_NOVELTY_EVENT_MARKERS = [
+    "시상식", "대상", "연예대상", "연말 시상식", "레드카펫", "셀럽", "연예인", "유재석", "굿즈", "레고", "보태니컬",
+]
+_FLOWER_NOVELTY_MARKET_SIGNAL_MARKERS = [
+    "가격", "시세", "경매", "경락", "경락가", "반입", "출하", "물량", "작황", "재배", "산지",
+    "도매시장", "공판장", "꽃시장", "수급", "유통", "저온", "보관",
+]
+_FLOWER_NOVELTY_ASSOCIATION_MARKERS = [
+    "협회", "화원협회", "상처", "반발", "비판", "논란", "불만", "생존권", "무색",
+]
 
 def is_flower_consumer_trend_context(text: str) -> bool:
     """화훼 '소비/선물 트렌드' 유형(예: 레고 꽃다발 논란/꽃다발 선물 트렌드)을 판정한다.
@@ -2577,16 +2591,27 @@ def is_flower_consumer_trend_context(text: str) -> bool:
 
 def is_flower_novelty_noise_context(title: str, desc: str) -> bool:
     """장난감/연예/라이프스타일성 '꽃다발' 기사를 원예 기사에서 배제한다."""
-    text = f"{title or ''} {desc or ''}".lower()
+    title_l = (title or "").lower()
+    desc_l = (desc or "").lower()
+    text = f"{title_l} {desc_l}".strip()
     if not text:
         return False
     novelty_hits = count_any(text, [w.lower() for w in _FLOWER_TREND_NOISE_MARKERS])
     bouquet_hits = count_any(text, [w.lower() for w in ("꽃다발", "부케", "플라워", "꽃 선물", "꽃다발 선물")])
-    agri_hits = count_any(text, [w.lower() for w in _FLOWER_TREND_AGRI_MARKERS])
-    market_hits = count_any(text, [w.lower() for w in ("화훼", "절화", "꽃시장", "경매", "공판장", "도매")])
-    if novelty_hits == 0:
+    event_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_EVENT_MARKERS])
+    market_signal_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_MARKET_SIGNAL_MARKERS])
+    association_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_ASSOCIATION_MARKERS])
+    if novelty_hits == 0 and event_hits == 0:
         return False
-    return bouquet_hits >= 1 and agri_hits == 0 and market_hits == 0
+    if bouquet_hits == 0 and not ("꽃" in title_l and event_hits >= 1):
+        return False
+    if market_signal_hits >= 2:
+        return False
+    if event_hits >= 1 and market_signal_hits == 0:
+        return True
+    if novelty_hits >= 1 and bouquet_hits >= 1 and market_signal_hits <= 1 and association_hits >= 1:
+        return True
+    return False
 
 
 # -----------------------------
@@ -9020,83 +9045,81 @@ def _prioritize_supply_recall_seeds(
 
 
 def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:
-    month = 0
-    try:
-        month = date.fromisoformat(str(report_date or "").strip()).month
-    except Exception:
-        month = 0
-
+    _ = report_date
     common: list[str] = []
     if section_key == "supply":
-        base_common = [
-            "과수 한파 피해",
-            "시설채소 난방비",
-            "월동채소 수급",
+        common = [
+            "농산물 가격 동향",
+            "농산물 수급 동향",
+            "과일 가격",
+            "채소 가격",
+            "과일 수급",
+            "채소 수급",
             "농산물 출하 동향",
             "화훼 경매",
             "절화 경매",
+            "꽃시장 경매",
         ]
-        seasonal_common: list[str] = []
-        if month in (1, 2):
-            seasonal_common.extend([
-                "한파 농산물",
-                "겨울 채소 가격",
-                "설 성수품 과일",
-                "졸업식 화훼 경매",
-            ])
-        common = seasonal_common + base_common
     elif section_key == "policy":
-        base_common = list(POLICY_MARKET_BRIEF_QUERIES) + [
+        common = list(POLICY_MARKET_BRIEF_QUERIES) + [
             "농식품부 농산물 수급 점검",
-            "농식품부 원예 지원",
-            "온라인 도매시장 정책",
+            "농식품부 가격 점검",
+            "농산물 소비자물가",
+            "농산물 수급 안정 대책",
             "농산물 유통 구조 개선",
-            "원예 농가 지원 사업",
+            "온라인 도매시장 정책",
+            "농식품부 원예",
         ]
-        seasonal_common = []
-        if month in (1, 2):
-            seasonal_common.extend([
-                "농식품부 신년 업무계획",
-                "새해 달라지는 농업 제도",
-                "농식품부 업무계획 원예",
-                "농산물 수급 안정 대책",
-            ])
-        common = seasonal_common + base_common
     elif section_key == "dist":
-        base_common = [
-            "도매시장 제도 개선",
+        common = [
+            "도매시장 경매",
+            "공판장 경매",
+            "가락시장 경락",
             "온라인 도매시장 제도 개선",
+            "도매시장 제도 개선",
             "품목농협 산지유통",
             "원예농협 산지유통",
-            "산지유통센터 가동",
-            "농산물 도매시장 경매",
-            "화훼공판장 경매",
-            "절화 경매",
+            "연합판매사업 직거래",
+            "산지유통센터",
+            "스마트 APC",
+            "농산물 광역수급관리센터",
         ]
-        seasonal_common = []
-        if month in (1, 2):
-            seasonal_common.extend([
-                "농산물 초매식",
-                "청과 초매식",
-                "화훼 초매식",
-                "절화 초매식",
-                "도매시장 첫 경매",
-                "가락시장 초매식",
-                "공판장 경매 시작",
-            ])
-        common = seasonal_common + base_common
     elif section_key == "pest":
-        base_common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충", "과수 월동 병해충", "시설채소 한파 대응"]
-        seasonal_common = []
-        if month in (1, 2):
-            seasonal_common.extend([
-                "과수 동해 예방",
-                "과수 냉해 예방",
-                "월동 병해충 예찰",
-                "시설채소 냉해 방제",
-            ])
-        common = seasonal_common + base_common
+        common = [
+            "과수 병해충 방제",
+            "병해충 예찰",
+            "검역 병해충",
+            "과수화상병 예방",
+            "탄저병 방제",
+            "월동 병해충 예찰",
+            "시설채소 방제",
+        ]
     return _dedupe_queries(common)
+
+
+def _build_web_recall_queries(
+    section_key: str,
+    fallback_queries: Sequence[str] | None,
+    recall_meta: JsonDict | None = None,
+) -> list[str]:
+    if not WEB_RECALL_ENABLED or WEB_RECALL_QUERY_CAP_PER_SECTION <= 0:
+        return []
+    out: list[str] = []
+    for q in list(fallback_queries or []):
+        qn = (q or "").strip()
+        if qn and qn not in out:
+            out.append(qn)
+        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
+            break
+    for q in _recall_common_queries(section_key):
+        qn = (q or "").strip()
+        if qn and qn not in out:
+            out.append(qn)
+        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
+            break
+    if isinstance(recall_meta, dict):
+        recall_meta["web_queries"] = list(out)
+    return out
 
 
 def _build_recall_fallback_queries(
@@ -9285,6 +9308,24 @@ def _build_recall_fallback_queries(
             continue
         out.append(q)
 
+    if common_queries:
+        first_common = next((q for q in common_queries if q and q not in base_queries), "")
+        if first_common and first_common not in out:
+            if len(out) >= RECALL_QUERY_CAP_PER_SECTION and out:
+                replace_idx = len(out) - 1
+                seed_counts: dict[str, int] = {}
+                for q in out:
+                    seed = (q or "").split()[0] if (q or "").split() else (q or "")
+                    seed_counts[seed] = seed_counts.get(seed, 0) + 1
+                for idx in range(len(out) - 1, -1, -1):
+                    seed = (out[idx] or "").split()[0] if (out[idx] or "").split() else (out[idx] or "")
+                    if seed_counts.get(seed, 0) > 1:
+                        replace_idx = idx
+                        break
+                out[replace_idx] = first_common
+            elif len(out) < RECALL_QUERY_CAP_PER_SECTION:
+                out.append(first_common)
+
     meta["queries"] = list(out)
     return out, meta
 
@@ -9337,6 +9378,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
     api_items_by_query: dict[str, int] = {}    # raw items returned by API per query (before time/relevance filters)
     page1_full_queries: set[str] = set()       # API returned full display(=50) on page1 -> high volume hint
     recall_meta: JsonDict = {}                  # recall backfill metadata (for debug)
+    last_fallback_queries: list[str] = []
 
     def _ingest_naver_items(q: str, data: NaverSearchResponse) -> None:
         nonlocal items, _local_dedupe
@@ -9375,6 +9417,65 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
                 continue
 
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+
+            art = Article(
+                section=section_key,
+                title=title,
+                description=desc,
+                link=link,
+                originallink=origin,
+                pub_dt_kst=pub,
+                domain=dom,
+                press=press,
+                norm_key=norm_key,
+                title_key=title_key,
+                canon_url=canon,
+                topic=topic,
+            )
+            art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+            items.append(art)
+            hits_by_query[q] = hits_by_query.get(q, 0) + 1
+
+    def _ingest_web_items(q: str, data: NaverSearchResponse) -> None:
+        nonlocal items, _local_dedupe
+        if not isinstance(data, dict):
+            return
+        for it in (data.get("items", []) or []):
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            origin = link
+            if not link:
+                continue
+
+            pub = parse_pubdate_to_kst(it.get("pubDate", ""))
+            if pub <= datetime.min.replace(tzinfo=KST):
+                pub2 = _best_effort_article_pubdate_kst(origin or link)
+                pub = pub2 if isinstance(pub2, datetime) else pub
+            if pub <= datetime.min.replace(tzinfo=KST):
+                continue
+            if pub < effective_start_kst or pub >= end_kst:
+                continue
+
+            dom = domain_of(origin) or domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
+
+            press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
+            if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+            if QUERY_ARTICLE_MATCH_GATE_ENABLED and (not _query_article_match_ok(q, title, desc, section_key)):
+                continue
+
+            canon = canonicalize_url(origin or link)
+            title_key = norm_title_key(title)
+            topic = extract_topic(title, desc)
+            norm_key = make_norm_key(canon, press, title_key)
+
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
             if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
                 continue
 
@@ -9460,59 +9561,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 except Exception as e:
                     log.warning("[WARN] pest web recall query failed: %s", e)
                     continue
-                for it in (data_w.get("items", []) if isinstance(data_w, dict) else []):
-                    title = clean_text(it.get("title", ""))
-                    desc = clean_text(it.get("description", ""))
-                    link = strip_tracking_params(it.get("link", "") or "")
-                    origin = link
-                    if not link:
-                        continue
-
-                    pub = parse_pubdate_to_kst(it.get("pubDate", ""))
-                    if pub <= datetime.min.replace(tzinfo=KST):
-                        pub2 = _best_effort_article_pubdate_kst(origin or link)
-                        pub = pub2 if isinstance(pub2, datetime) else pub
-                    if pub <= datetime.min.replace(tzinfo=KST):
-                        continue
-                    if pub < effective_start_kst or pub >= end_kst:
-                        continue
-
-                    dom = domain_of(origin) or domain_of(link)
-                    if not dom or is_blocked_domain(dom):
-                        continue
-
-                    press = normalize_press_label(press_name_from_url(origin or link), (origin or link))
-                    if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
-                        continue
-
-                    canon = canonicalize_url(origin or link)
-                    title_key = norm_title_key(title)
-                    topic = extract_topic(title, desc)
-                    norm_key = make_norm_key(canon, press, title_key)
-
-                    if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
-                        continue
-
-                    if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
-                        continue
-
-                    art = Article(
-                        section=section_key,
-                        title=title,
-                        description=desc,
-                        link=link,
-                        originallink=origin,
-                        pub_dt_kst=pub,
-                        domain=dom,
-                        press=press,
-                        norm_key=norm_key,
-                        title_key=title_key,
-                        canon_url=canon,
-                        topic=topic,
-                    )
-                    art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
-                    items.append(art)
-                    hits_by_query[q] = hits_by_query.get(q, 0) + 1
+                _ingest_web_items(q, data_w)
     except Exception:
         pass
 
@@ -9553,6 +9602,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 # pool이 부족하거나(특히 min 미달), 후보 수도 넉넉치 않을 때만 보강
                 need_more = (pool_cnt < min_n) or (pool_cnt < max_n and len(items) < max(12, max_n * 3)) or supply_feature_refresh
                 if need_more:
+                    fallback_qs: list[str] = []
                     if recall_candidate:
                         # fallback recall은 1페이지 보강이므로, page2 활성화 여부와 무관하게 수행한다.
                         fallback_qs, recall_meta = _build_recall_fallback_queries(
@@ -9562,6 +9612,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                             thr,
                             report_date=end_kst.date().isoformat(),
                         )
+                        last_fallback_queries = list(fallback_qs)
                         if fallback_qs:
                             fallback_added = 0
                             for fq in fallback_qs:
@@ -9653,6 +9704,36 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                             )
                             items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                             items.sort(key=_sort_key_major_first, reverse=True)
+
+                    web_recall_candidate = bool(
+                        section_key in ("supply", "policy", "dist")
+                        and WEB_RECALL_ENABLED
+                        and WEB_RECALL_QUERY_CAP_PER_SECTION > 0
+                    )
+                    if web_recall_candidate:
+                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                        thr = _dynamic_threshold(candidates_sorted, section_key)
+                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+                        still_need_web = (pool_cnt < min_n) or (len(items) == 0)
+                        if still_need_web:
+                            web_qs = _build_web_recall_queries(section_key, fallback_qs or last_fallback_queries, recall_meta)
+                            if web_qs:
+                                web_added = 0
+                                for wq in web_qs:
+                                    if not _take_extra_call_budget_for_section(section_key, 1, require_cond_paging=False):
+                                        break
+                                    try:
+                                        data_w = naver_web_search(wq, display=WEB_RECALL_DISPLAY, start=1, sort="date")
+                                    except Exception as e:
+                                        log.warning("[WARN] web recall query failed: %s", e)
+                                        continue
+                                    before = len(items)
+                                    _ingest_web_items(wq, data_w)
+                                    web_added += max(0, len(items) - before)
+                                if web_added > 0:
+                                    items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
+                                    items.sort(key=_sort_key_major_first, reverse=True)
+                                recall_meta["web_added"] = int(web_added)
     except Exception:
         # extra pass should never break the pipeline
         pass
@@ -13464,15 +13545,16 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
 
     if DEV_SINGLE_PAGE_MODE:
+        preview_ref = GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"
         version_path = _dev_single_page_version_repo_path()
         version_json = build_dev_preview_version_json(report_date)
-        _raw_version_old, sha_version = github_get_file(repo, version_path, token, ref="main")
-        github_put_file(repo, version_path, version_json, token, f"Update dev preview version {report_date}", sha=sha_version, branch="main")
+        _raw_version_old, sha_version = github_get_file(repo, version_path, token, ref=preview_ref)
+        github_put_file(repo, version_path, version_json, token, f"Update dev preview version {report_date}", sha=sha_version, branch=preview_ref)
         log.info("[MAINT PUT] %s", version_path)
 
         preview_path = DEV_SINGLE_PAGE_PATH or "docs/dev/index.html"
-        _raw_preview_old, sha_preview = github_get_file(repo, preview_path, token, ref="main")
-        github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch="main")
+        _raw_preview_old, sha_preview = github_get_file(repo, preview_path, token, ref=preview_ref)
+        github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch=preview_ref)
         log.info("[MAINT PUT] %s", preview_path)
 
         if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
@@ -13480,8 +13562,8 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
                 DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
                 debug_path = _dev_single_page_debug_repo_path(report_date)
                 debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
-                _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
-                github_put_file(repo, debug_path, debug_json, token, f"Update dev preview debug {report_date}", sha=sha_dbg_old, branch="main")
+                _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref=preview_ref)
+                github_put_file(repo, debug_path, debug_json, token, f"Update dev preview debug {report_date}", sha=sha_dbg_old, branch=preview_ref)
                 log.info("[MAINT PUT] %s", debug_path)
             except Exception as e:
                 log.warning("[WARN] dev preview debug upload failed: %s", e)
