@@ -10599,6 +10599,43 @@ def _mark_debug_postbuild_reject(section_key: str, article: "Article", reason: s
         return
 
 
+def _sync_debug_with_final_sections(final_by_section: dict[str, list["Article"]]) -> None:
+    try:
+        sections = DEBUG_DATA.get("sections")
+        if not isinstance(sections, dict):
+            return
+        for section_key, payload in list(sections.items()):
+            if not isinstance(payload, dict):
+                continue
+            rows = payload.get("top")
+            if not isinstance(rows, list):
+                continue
+            final_items = [a for a in (final_by_section.get(str(section_key)) or []) if isinstance(a, Article)]
+            final_keys = {
+                (
+                    (a.originallink or a.link or "")[:500],
+                    (a.title or "")[:160],
+                )
+                for a in final_items
+            }
+            selected_count = 0
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                row_key = ((row.get("url") or "")[:500], (row.get("title") or "")[:160])
+                is_sel = row_key in final_keys
+                row["selected"] = bool(is_sel)
+                if not is_sel:
+                    row["is_core"] = False
+                    if not row.get("reason"):
+                        row["reason"] = "postbuild_pruned"
+                else:
+                    selected_count += 1
+            payload["total_selected"] = selected_count
+    except Exception:
+        return
+
+
 def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
     if not isinstance(final_by_section, dict):
         return 0
@@ -10961,6 +10998,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     pruned_final = _audit_final_sections(final_by_section)
     if pruned_final:
         log.info("[AUDIT] pruned %d final item(s) after section assembly", pruned_final)
+    _sync_debug_with_final_sections(final_by_section)
 
     return final_by_section
 

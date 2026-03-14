@@ -2462,6 +2462,38 @@ class TestClassifierBehavior(unittest.TestCase):
             main.DEBUG_DATA.clear()
             main.DEBUG_DATA.update(original)
 
+    def test_sync_debug_with_final_sections_marks_pruned_rows(self):
+        article = self._make_article(
+            "policy",
+            "장난감 꽃, 화훼 농가 생존권 위협",
+            "생화 너무 비싸 장난감 꽃 시장이 커진다는 내용으로 화훼 농가 생존권 우려를 담은 기사",
+            "https://www.seoul.co.kr/news/society/2026/01/12/20260112010005?wlog_tag3=naver",
+        )
+        original = dict(main.DEBUG_DATA)
+        try:
+            main.DEBUG_DATA["sections"] = {
+                "policy": {
+                    "total_selected": 1,
+                    "top": [
+                        {
+                            "selected": True,
+                            "is_core": True,
+                            "title": article.title[:160],
+                            "url": article.originallink[:500],
+                            "reason": "",
+                        }
+                    ],
+                }
+            }
+            main._sync_debug_with_final_sections({"policy": []})
+            row = main.DEBUG_DATA["sections"]["policy"]["top"][0]
+            self.assertFalse(row["selected"])
+            self.assertEqual(row["reason"], "postbuild_pruned")
+            self.assertEqual(main.DEBUG_DATA["sections"]["policy"]["total_selected"], 0)
+        finally:
+            main.DEBUG_DATA.clear()
+            main.DEBUG_DATA.update(original)
+
     def test_flower_market_trend_with_agri_context_still_prefers_supply(self):
         title = "졸업식 대목 앞둔 꽃시장…절화 경매가 오르고 화훼 농가 기대"
         desc = "졸업식 성수기를 앞두고 꽃시장 절화 경매가 상승하고 화훼 농가 출하가 늘고 있다는 현장 기사다."
