@@ -1,0 +1,1118 @@
+{
+  "generated_at_kst": "2026-03-15T01:57:35+09:00",
+  "build_tag": "001502c",
+  "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "[설 대목 과일시장] 사과, 특품 적어 품위간 값차 클듯",
+      "url": "https://www.nongmin.com/article/20260121500689"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "하이닥",
+      "domain": "news.hidoc.co.kr",
+      "title": "\"사과 한 개보다 많다\"… 의외로 섬유질 많은 음식 5가지",
+      "url": "https://news.hidoc.co.kr/news/articleView.html?idxno=57828"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "DAUM",
+      "domain": "v.daum.net",
+      "title": "'좋은 사과 vs 나쁜 사과'... 김동연의 반성은 왜 달랐나",
+      "url": "https://v.daum.net/v/20260121163736415"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "연합인포맥스",
+      "domain": "news.einfomax.co.kr",
+      "title": "트럼프 \"머지 않은 미래에 새 연준 의장 발표…증시 2배 오를 것\"(상보)",
+      "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4394693"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "skbroadband",
+      "domain": "news.skbroadband.com",
+      "title": "전국고용서비스협회, 건설 현장 임금 개정안 재검토 촉구",
+      "url": "https://news.skbroadband.com/news/articleView.html?idxno=215713"
+    },
+    {
+      "section": "supply",
+      "reason": "opinion_or_editorial",
+      "press": "경남신문",
+      "domain": "knnews.co.kr",
+      "title": "[사설] 난방비 폭탄 맞은 시설원예 농가 적극 지원을",
+      "url": "https://www.knnews.co.kr/news/articleView.php?idxno=1480254"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "농업정보신문",
+      "domain": "nongup.net",
+      "title": "전남농기원, 농업 빅데이터·AI 기반 영농 서비스 추진",
+      "url": "http://www.nongup.net/news/articleView.html?idxno=32235"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "전남농기원, 농업 빅데이터·AI 기반 영농 서비스 추진",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63570"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "전남농기원, 농업 빅데이터·AI 기반 영농 서비스 추진",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=312636"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "[설 대목 과일시장] 사과, 특품 적어 품위간 값차 클듯",
+      "url": "https://www.nongmin.com/article/20260121500689"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "경북도, 예년보다 이른 산불에 산불조심기간 12일 앞당겨 시행",
+      "url": "https://www.yna.co.kr/view/AKR20260121116600053"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "경북매일",
+      "domain": "kbmaeil.com",
+      "title": "경북도 산불방지 특별종합대책 본격 가동",
+      "url": "https://www.kbmaeil.com/article/20260121500620"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "연합뉴스TV",
+      "domain": "yonhapnewstv.co.kr",
+      "title": "경북도, 산불조심기간 앞당겨…드론 산불감시체계 확대",
+      "url": "https://www.yonhapnewstv.co.kr/news/AKR20260121164453YA3"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "프라임경제",
+      "domain": "newsprime.co.kr",
+      "title": "경북도, 산불 대응 특별종합대책 가동···골든타임 확보 중점",
+      "url": "https://m.newsprime.co.kr/section_view.html?no=721159&menu=index"
+    },
+    {
+      "section": "pest",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "경북도 '봄철 산불조심 기간' 조기 운영…\"초기 대응 강화\"",
+      "url": "https://www.news1.kr/local/daegu-gyeongbuk/6046249"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "이로운넷",
+      "domain": "eroun.net",
+      "title": "경북도, 산불 대응 골든타임 확보 위해 ‘2026년 종합대책’ 가동 나선다",
+      "url": "https://www.eroun.net/news/articleView.html?idxno=71537"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "고추, 질병에 강하고 안정적 작황 위한 내병성 품종 선호",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=312292"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "고추, 질병에 강하고 안정적 작황 위한 내병성 품종 선호",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=312292"
+    }
+  ],
+  "sections": {
+    "supply": {
+      "threshold": 7.04,
+      "tail_cut": 7.44,
+      "core_min": 7.8,
+      "total_candidates": 5,
+      "total_selected": 3,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 15.04,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "고추, 질병에 강하고 안정적 작황 위한 내병성 품종 선호",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=312292",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 13.49,
+          "tier": 1,
+          "press": "경남신문",
+          "domain": "knnews.co.kr",
+          "title": "“1년새 2배” 비닐하우스 난방비 폭탄에 우는 농가",
+          "url": "http://www.knnews.co.kr/news/articleView.php?idxno=1480264",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.89,
+          "tier": 1,
+          "press": "datasom",
+          "domain": "datasom.co.kr",
+          "title": "농가 교역조건 회복세, 2020년 수준은 회복 못 해",
+          "url": "https://www.datasom.co.kr/news/articleView.html?idxno=207635",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 9.93,
+          "tier": 1,
+          "press": "JIBS",
+          "domain": "jibs.co.kr",
+          "title": "감귤 닮은 미국 만다린 \"맛이 별로네\"…무 관세 들여온 수입상들도 판매...",
+          "url": "https://www.jibs.co.kr/news/articles/articlesDetail/56774?feed=na",
+          "reason": "",
+          "signals": {
+            "horti_sc": 5.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.84,
+          "tier": 1,
+          "press": "경인일보",
+          "domain": "kyeongin.com",
+          "title": "한파에 못다 핀 프리지아… 졸업식 시즌 ‘한숨 한다발’",
+          "url": "https://www.kyeongin.com/article/1758029",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 2.3,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    },
+    "dist": {
+      "threshold": 17.34,
+      "tail_cut": 17.94,
+      "core_min": 17.34,
+      "total_candidates": 1,
+      "total_selected": 1,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 25.34,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "포항 공판장서 사과 원물 본격 경매",
+          "url": "https://www.nongmin.com/article/20260121500632",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 2,
+            "strength": 2,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        }
+      ]
+    }
+  },
+  "collections": {
+    "policy": {
+      "effective_window": {
+        "start_kst": "2026-01-21T07:00:00+09:00",
+        "end_kst": "2026-01-22T07:00:00+09:00"
+      },
+      "base_queries_n": 26,
+      "base_queries": [
+        "농식품부 정책브리핑",
+        "농식품부 보도자료 농산물",
+        "정책브리핑 농축수산물",
+        "농축수산물 할인지원",
+        "성수품 가격 안정 대책",
+        "할당관세 과일 검역",
+        "원산지 단속 농산물",
+        "온라인 도매시장 농식품부",
+        "설 이후 과일 가격 하락",
+        "사과 배 가격 하락",
+        "성수품 물가 과일",
+        "차례상 물가 과일",
+        "소비자물가 과일 사과 배",
+        "KOSIS 소비자물가 사과 배",
+        "물가정보 설 과일",
+        "농축산물 가격 동향",
+        "농산물 가격 동향",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "농산물 수급 동향",
+        "농식품부 수급 점검",
+        "농식품부 가격 점검",
+        "농산물 가격 전반 하락",
+        "과일류 가격 전년 대비",
+        "농산물 수급 영향 제한적",
+        "정부 가용물량 과일"
+      ],
+      "api_items_top": [
+        [
+          "농식품부 정책브리핑",
+          50
+        ],
+        [
+          "농식품부 보도자료 농산물",
+          50
+        ],
+        [
+          "정책브리핑 농축수산물",
+          50
+        ],
+        [
+          "농축수산물 할인지원",
+          50
+        ],
+        [
+          "성수품 가격 안정 대책",
+          50
+        ],
+        [
+          "할당관세 과일 검역",
+          50
+        ],
+        [
+          "원산지 단속 농산물",
+          50
+        ],
+        [
+          "온라인 도매시장 농식품부",
+          50
+        ],
+        [
+          "설 이후 과일 가격 하락",
+          50
+        ],
+        [
+          "사과 배 가격 하락",
+          50
+        ],
+        [
+          "성수품 물가 과일",
+          50
+        ],
+        [
+          "차례상 물가 과일",
+          50
+        ],
+        [
+          "소비자물가 과일 사과 배",
+          50
+        ],
+        [
+          "KOSIS 소비자물가 사과 배",
+          50
+        ],
+        [
+          "물가정보 설 과일",
+          50
+        ]
+      ],
+      "window_hits_top": [],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "KOSIS 소비자물가 사과 배",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "과일류 가격 전년 대비",
+        "농산물 가격 동향",
+        "농산물 가격 전반 하락",
+        "농산물 수급 동향",
+        "농산물 수급 영향 제한적",
+        "농식품부 가격 점검",
+        "농식품부 보도자료 농산물",
+        "농식품부 수급 점검",
+        "농식품부 정책브리핑",
+        "농축산물 가격 동향",
+        "농축수산물 할인지원",
+        "물가정보 설 과일",
+        "사과 배 가격 하락",
+        "설 이후 과일 가격 하락",
+        "성수품 가격 안정 대책",
+        "성수품 물가 과일",
+        "소비자물가 과일 사과 배"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향"
+        ],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
+        "queries": [
+          "사과",
+          "배",
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "농식품부 농산물 수급 점검"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "사과",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향",
+          "과일류",
+          "전반",
+          "영향",
+          "정부"
+        ],
+        "report_date": "2026-01-22",
+        "common_queries": [
+          "농축산물 가격 동향",
+          "농산물 가격 동향",
+          "과일 채소 가격 동향",
+          "과일류 가격 동향",
+          "농산물 수급 동향",
+          "농식품부 수급 점검",
+          "농식품부 가격 점검",
+          "농산물 가격 전반 하락",
+          "과일류 가격 전년 대비",
+          "농산물 수급 영향 제한적",
+          "정부 가용물량 과일",
+          "농식품부 농산물 수급 점검",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
+          "농산물 유통 구조 개선",
+          "온라인 도매시장 정책",
+          "농식품부 예산"
+        ],
+        "web_queries": [
+          "사과",
+          "배"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "사과",
+          "배"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 0,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 6,
+        "budget_total": 12
+      }
+    },
+    "supply": {
+      "effective_window": {
+        "start_kst": "2026-01-21T07:00:00+09:00",
+        "end_kst": "2026-01-22T07:00:00+09:00"
+      },
+      "base_queries_n": 100,
+      "base_queries": [
+        "사과 수급",
+        "사과 가격",
+        "사과 작황",
+        "사과 저장",
+        "사과 출하",
+        "배 과일 수급",
+        "배 과일 가격",
+        "배 과일 작황",
+        "배 과일 저장",
+        "배 과일 출하",
+        "단감 수급",
+        "단감 가격",
+        "단감 작황",
+        "곶감 수급",
+        "떫은감 작황",
+        "감귤 수급",
+        "감귤 가격",
+        "감귤 작황",
+        "감귤 관세",
+        "감귤 무관세",
+        "제주 감귤 관세",
+        "만다린 관세",
+        "감귤 FTA",
+        "만감류 출하",
+        "한라봉 출하",
+        "레드향 출하",
+        "천혜향 출하",
+        "포도 수급",
+        "포도 가격",
+        "포도 작황"
+      ],
+      "api_items_top": [
+        [
+          "사과 수급",
+          50
+        ],
+        [
+          "사과 가격",
+          50
+        ],
+        [
+          "사과 작황",
+          50
+        ],
+        [
+          "사과 저장",
+          50
+        ],
+        [
+          "사과 출하",
+          50
+        ],
+        [
+          "배 과일 수급",
+          50
+        ],
+        [
+          "배 과일 가격",
+          50
+        ],
+        [
+          "배 과일 작황",
+          50
+        ],
+        [
+          "배 과일 저장",
+          50
+        ],
+        [
+          "배 과일 출하",
+          50
+        ],
+        [
+          "단감 수급",
+          50
+        ],
+        [
+          "단감 가격",
+          50
+        ],
+        [
+          "단감 작황",
+          50
+        ],
+        [
+          "곶감 수급",
+          50
+        ],
+        [
+          "떫은감 작황",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "제주 감귤 관세",
+          1
+        ],
+        [
+          "포도 작황",
+          1
+        ],
+        [
+          "오이 작황",
+          1
+        ],
+        [
+          "풋고추 가격",
+          1
+        ],
+        [
+          "절화 가격",
+          1
+        ],
+        [
+          "생화 출하",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "감귤 FTA",
+        "감귤 가격",
+        "감귤 관세",
+        "감귤 무관세",
+        "감귤 수급",
+        "감귤 작황",
+        "고추 작황",
+        "곶감 수급",
+        "과수 농가 울상",
+        "과수 묘목",
+        "과수 묘목 품귀",
+        "국화 경매",
+        "기후변화 과수",
+        "꽃시장 경매",
+        "단감 가격",
+        "단감 수급",
+        "단감 작황",
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "토마토",
+          "멜론",
+          "참외",
+          "사과",
+          "단감",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "수박",
+          "피망"
+        ],
+        "reason": [],
+        "queries": [
+          "멜론 생육",
+          "농산물 가격 동향",
+          "사과 생육",
+          "토마토 생육",
+          "참외 생육",
+          "곶감 작황"
+        ],
+        "pool_seed_hits": {
+          "사과": 0,
+          "단감": 0,
+          "곶감": 0,
+          "포도": 1,
+          "키위": 0,
+          "알밤": 0,
+          "복숭아": 0,
+          "매실": 0,
+          "토마토": 0,
+          "수박": 0,
+          "피망": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
+          "고추": 2,
+          "화훼자조금": 0,
+          "과수": 1,
+          "기후변화": 0,
+          "화훼": 2,
+          "배": 4
+        },
+        "feature_refresh_seeds": [
+          "멜론",
+          "참외",
+          "사과",
+          "단감",
+          "곶감",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금",
+          "포도"
+        ],
+        "topic_seed_terms": [
+          "고추",
+          "화훼",
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "토마토",
+          "수박",
+          "피망",
+          "멜론",
+          "참외",
+          "상추",
+          "고추",
+          "화훼자조금",
+          "과수",
+          "기후변화"
+        ],
+        "report_date": "2026-01-22",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매"
+        ],
+        "prioritized_seeds": [
+          "토마토",
+          "멜론",
+          "참외",
+          "사과",
+          "단감",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "수박",
+          "피망",
+          "상추",
+          "화훼자조금",
+          "기후변화",
+          "포도",
+          "고추",
+          "과수",
+          "화훼",
+          "배"
+        ],
+        "feature_focus_seeds": [
+          "멜론",
+          "사과"
+        ]
+      },
+      "items_total": 6,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 8,
+        "budget_total": 12
+      }
+    },
+    "dist": {
+      "effective_window": {
+        "start_kst": "2026-01-21T07:00:00+09:00",
+        "end_kst": "2026-01-22T07:00:00+09:00"
+      },
+      "base_queries_n": 43,
+      "base_queries": [
+        "가락시장 청과 경락",
+        "가락시장 경락가",
+        "도매시장 청과 경락",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "시장도매인제 도매시장",
+        "온라인 도매시장 청과",
+        "온라인 도매시장 제도 개선",
+        "도매시장 제도 개선",
+        "품목농협 산지유통",
+        "원예농협 산지유통",
+        "농협 연합판매사업 직거래",
+        "연합판매사업 직거래",
+        "연합판매사업 직거래 활성화",
+        "품목농협 공동선별",
+        "품목농협 경제사업",
+        "원예농협 경제사업",
+        "품목농협 조합원 실익",
+        "원예농협 지도 구매 유통 가공",
+        "품목농협 지도 구매 유통 가공",
+        "과수 전문 품목농협",
+        "산지유통센터 준공",
+        "스마트 농산물 산지유통센터 준공",
+        "스마트 APC 준공",
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "원산지 표시 단속 농산물"
+      ],
+      "api_items_top": [
+        [
+          "가락시장 청과 경락",
+          50
+        ],
+        [
+          "가락시장 경락가",
+          50
+        ],
+        [
+          "도매시장 청과 경락",
+          50
+        ],
+        [
+          "도매시장 반입량",
+          50
+        ],
+        [
+          "도매시장 수급",
+          50
+        ],
+        [
+          "공영도매시장 경매",
+          50
+        ],
+        [
+          "공판장 청과 경매",
+          50
+        ],
+        [
+          "시장도매인제 도매시장",
+          50
+        ],
+        [
+          "온라인 도매시장 청과",
+          50
+        ],
+        [
+          "온라인 도매시장 제도 개선",
+          50
+        ],
+        [
+          "도매시장 제도 개선",
+          50
+        ],
+        [
+          "품목농협 산지유통",
+          50
+        ],
+        [
+          "원예농협 산지유통",
+          50
+        ],
+        [
+          "농협 연합판매사업 직거래",
+          50
+        ],
+        [
+          "연합판매사업 직거래",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "절화 경매",
+          1
+        ]
+      ],
+      "google_hits_top": [
+        [
+          "도매시장 경매",
+          1
+        ]
+      ],
+      "page1_full_queries": [
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "가락시장 경락가",
+        "가락시장 청과 경락",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "과수 전문 품목농협",
+        "과일 수출 검역",
+        "과일 수출 선적",
+        "광역수급관리센터 수급 관리",
+        "농산물 광역수급관리센터",
+        "농산물 수출 검역",
+        "농산물 수출 선적",
+        "농협 연합판매사업 직거래",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "도매시장 제도 개선",
+        "도매시장 청과 경락",
+        "부정유통 단속 농산물"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "가락시장",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "과수",
+          "대책",
+          "수출",
+          "수출업계"
+        ],
+        "reason": [],
+        "queries": [
+          "가락시장 경매",
+          "도매시장 경매",
+          "사과",
+          "배",
+          "가락시장",
+          "apc"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "가락시장",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "과수",
+          "대책",
+          "수출",
+          "수출업계",
+          "광역수급관리센터",
+          "화훼",
+          "화훼자조금"
+        ],
+        "report_date": "2026-01-22",
+        "common_queries": [
+          "가락시장 경매",
+          "도매시장 경매",
+          "공판장 경매",
+          "가락시장 경락",
+          "초매식",
+          "첫 경매",
+          "경매 시작",
+          "온라인 도매시장 제도 개선",
+          "도매시장 제도 개선",
+          "품목농협 계통 유통",
+          "원예농협 계통 유통",
+          "통합마케팅 직거래",
+          "광역유통센터",
+          "스마트 APC",
+          "농산물 광역수급관리센터"
+        ],
+        "web_queries": [
+          "가락시장 경매",
+          "도매시장 경매"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "가락시장 경매",
+          "도매시장 경매"
+        ],
+        "google_news_added": 1
+      },
+      "items_total": 2,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 10,
+        "budget_total": 12
+      }
+    },
+    "pest": {
+      "effective_window": {
+        "start_kst": "2026-01-21T07:00:00+09:00",
+        "end_kst": "2026-01-22T07:00:00+09:00"
+      },
+      "base_queries_n": 10,
+      "base_queries": [
+        "과수화상병 방제",
+        "탄저병 방제",
+        "월동 해충 방제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰 방제",
+        "과수화상병",
+        "과수화상병 약제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제",
+        "병해충 예찰"
+      ],
+      "api_items_top": [
+        [
+          "과수화상병 방제",
+          50
+        ],
+        [
+          "탄저병 방제",
+          50
+        ],
+        [
+          "월동 해충 방제",
+          50
+        ],
+        [
+          "냉해 동해 과수 피해",
+          50
+        ],
+        [
+          "병해충 예찰 방제",
+          50
+        ],
+        [
+          "과수화상병",
+          50
+        ],
+        [
+          "과수화상병 약제",
+          50
+        ],
+        [
+          "토마토뿔나방",
+          50
+        ],
+        [
+          "토마토뿔나방 방제",
+          50
+        ],
+        [
+          "병해충 예찰",
+          50
+        ]
+      ],
+      "window_hits_top": [],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "과수화상병",
+        "과수화상병 방제",
+        "과수화상병 약제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰",
+        "병해충 예찰 방제",
+        "월동 해충 방제",
+        "탄저병 방제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "병해충"
+        ],
+        "reason": [],
+        "queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "사과",
+          "배",
+          "병해충",
+          "사과 병해충"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "병해충"
+        ],
+        "report_date": "2026-01-22",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예찰",
+          "응애 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 0,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 12,
+        "budget_total": 12
+      }
+    }
+  }
+}
