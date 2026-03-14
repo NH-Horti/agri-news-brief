@@ -2440,7 +2440,7 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(len(supply_queries) > 0)
         self.assertIn("농식품부 농산물 수급 점검", policy_queries)
         self.assertIn("도매시장 경매", dist_queries)
-        self.assertIn("과수화상병 예방", main._recall_common_queries("pest", "2026-01-05"))
+        self.assertIn("과수화상병 예찰", main._recall_common_queries("pest", "2026-01-05"))
         self.assertTrue(len(pest_queries) > 0)
 
     def test_web_recall_queries_follow_fallback_then_common_registry(self):

@@ -45,6 +45,16 @@ class TestHistoricalRecall(unittest.TestCase):
         self.assertIn("before%3A2026-01-06", url)
         self.assertIn("hl=ko&gl=KR&ceid=KR:ko", url)
 
+    def test_date_hint_from_url_parses_common_article_patterns(self):
+        self.assertEqual(
+            main._date_hint_from_url("https://www.nongmin.com/article/20260105500755"),
+            datetime(2026, 1, 5, tzinfo=main.KST).date(),
+        )
+        self.assertEqual(
+            main._date_hint_from_url("https://www.mt.co.kr/politics/2026/03/10/2026031009405991292"),
+            datetime(2026, 3, 10, tzinfo=main.KST).date(),
+        )
+
     def test_decode_google_news_url_restores_original_link(self):
         html = '<c-wiz><div jscontroller="X" data-n-a-sg="SIG123" data-n-a-ts="1700"></div></c-wiz>'
         payload = json.dumps([[None, None, json.dumps([None, "https://example.com/article?utm_source=test"]) ]])

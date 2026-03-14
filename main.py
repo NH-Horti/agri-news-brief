@@ -1534,6 +1534,25 @@ def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
     return None
 
 
+def _date_hint_from_url(url: str) -> date | None:
+    try:
+        parsed = urlparse(str(url or "").strip())
+        path = parsed.path or ""
+        for ptn in (r"/(20\d{2})/(\d{2})/(\d{2})(?:/|$)", r"/article/(20\d{2})(\d{2})(\d{2})\d*"):
+            mm = re.search(ptn, path)
+            if not mm:
+                continue
+            yy, mo, dd = int(mm.group(1)), int(mm.group(2)), int(mm.group(3))
+            return date(yy, mo, dd)
+        mm2 = re.search(r"(20\d{2})(\d{2})(\d{2})", path)
+        if mm2:
+            yy, mo, dd = int(mm2.group(1)), int(mm2.group(2)), int(mm2.group(3))
+            return date(yy, mo, dd)
+    except Exception:
+        return None
+    return None
+
+
 def clean_text(s: str) -> str:
     if not s:
         return ""
@@ -9238,6 +9257,64 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
     return _dedupe_queries(common)
 
 
+def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:  # type: ignore[no-redef]
+    _ = report_date
+    common: list[str] = []
+    if section_key == "supply":
+        common = [
+            "농산물 가격 동향",
+            "농산물 수급 동향",
+            "경락값 분석",
+            "과일 가격",
+            "채소 가격",
+            "과일 수급",
+            "채소 수급",
+            "농산물 출하 동향",
+            "화훼 경매",
+            "절화 경매",
+            "꽃시장 경매",
+        ]
+    elif section_key == "policy":
+        common = list(POLICY_MARKET_BRIEF_QUERIES) + [
+            "농식품부 농산물 수급 점검",
+            "농식품부 가격 점검",
+            "농산물 소비자물가",
+            "농산물 수급 안정 대책",
+            "농산물 유통 구조 개선",
+            "온라인 도매시장 정책",
+            "농식품부 예산",
+        ]
+    elif section_key == "dist":
+        common = [
+            "가락시장 경매",
+            "도매시장 경매",
+            "공판장 경매",
+            "가락시장 경락",
+            "초매식",
+            "첫 경매",
+            "경매 시작",
+            "온라인 도매시장 제도 개선",
+            "도매시장 제도 개선",
+            "품목농협 계통 유통",
+            "원예농협 계통 유통",
+            "통합마케팅 직거래",
+            "광역유통센터",
+            "스마트 APC",
+            "농산물 광역수급관리센터",
+        ]
+    elif section_key == "pest":
+        common = [
+            "과수 병해충 방제",
+            "병해충 예찰",
+            "검역 병해충",
+            "과수화상병 예찰",
+            "응애 방제",
+            "월동 병해충 예찰",
+            "시설채소 방제",
+        ]
+    return _dedupe_queries(common)
+
+
 def _build_web_recall_queries(
     section_key: str,
     fallback_queries: Sequence[str] | None,
@@ -9247,17 +9324,17 @@ def _build_web_recall_queries(
         return []
     out: list[str] = []
     for q in list(fallback_queries or []):
+        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
+            break
         qn = (q or "").strip()
         if qn and qn not in out:
             out.append(qn)
-        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
-            break
     for q in _recall_common_queries(section_key):
+        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
+            break
         qn = (q or "").strip()
         if qn and qn not in out:
             out.append(qn)
-        if len(out) >= WEB_RECALL_QUERY_CAP_PER_SECTION:
-            break
     if isinstance(recall_meta, dict):
         recall_meta["web_queries"] = list(out)
     return out
@@ -9650,6 +9727,15 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 continue
 
             pub = _rss_pub_to_kst(it.get("pubDate", ""))
+            if (not pub) or pub < effective_start_kst or pub >= end_kst:
+                pub2 = _best_effort_article_pubdate_kst(origin or link)
+                if isinstance(pub2, datetime):
+                    pub = pub2
+            if (not pub) or pub < effective_start_kst or pub >= end_kst:
+                hinted = _date_hint_from_url(origin or link)
+                if isinstance(hinted, date):
+                    hint_hour = 6 if hinted == end_kst.astimezone(KST).date() else 12
+                    pub = datetime(hinted.year, hinted.month, hinted.day, hint_hour, 0, 0, tzinfo=KST)
             if not pub:
                 continue
             if pub < effective_start_kst or pub >= end_kst:
