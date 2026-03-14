@@ -11568,6 +11568,10 @@ try {{ _ensureDates(); }} catch (e) {{}}
       var swipeRootUserSelect = "";
       var swipeRootWebkitUserSelect = "";
       var swipeBodyCursor = "";
+      var wheelSwipeDx = 0;
+      var wheelSwipeDy = 0;
+      var wheelSwipeAt = 0;
+      var wheelSwipeLockUntil = 0;
       var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
       function getSwipePoint(e, phase) {{
@@ -11627,6 +11631,39 @@ try {{ _ensureDates(); }} catch (e) {{}}
             document.body.style.cursor = swipeBodyCursor;
           }}
         }} catch (_desktopSwipeErr) {{}}
+      }}
+
+      function resetWheelSwipe() {{
+        wheelSwipeDx = 0;
+        wheelSwipeDy = 0;
+        wheelSwipeAt = 0;
+      }}
+
+      function handleWheelSwipe(e) {{
+        if (!e || isNavigating) return;
+        if (e.ctrlKey) return;
+        if (isBlockedTarget(e.target)) return;
+        var now = Date.now();
+        if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+        if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {{
+          resetWheelSwipe();
+        }}
+        wheelSwipeAt = now;
+        wheelSwipeDx += Number(e.deltaX || 0);
+        wheelSwipeDy += Number(e.deltaY || 0);
+        if (Math.abs(wheelSwipeDx) < 120) return;
+        if (Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+        wheelSwipeLockUntil = now + 700;
+        try {{
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        }} catch (_wheelPreventErr) {{}}
+        var totalDx = wheelSwipeDx;
+        resetWheelSwipe();
+        if (totalDx > 0) {{
+          gotoByOffset(-1, "\ub2e4\uc74c \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.");
+        }} else {{
+          gotoByOffset(+1, "\uc774\uc804 \ube0c\ub9ac\ud551\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.");
+        }}
       }}
 
       function beginSwipe(e) {{
@@ -11721,8 +11758,13 @@ try {{ _ensureDates(); }} catch (e) {{}}
         }} catch (_dragErr) {{}}
       }});
 
+      swipeArea.addEventListener("wheel", function(e) {{
+        handleWheelSwipe(e);
+      }}, {{ passive: false }});
+
       window.addEventListener("blur", function() {{
         resetSwipeState();
+        resetWheelSwipe();
       }});
 
       document.addEventListener("keydown", function(e) {{

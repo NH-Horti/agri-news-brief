@@ -35,6 +35,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('setDesktopSwipeMode(true)', self.text)
         self.assertIn('selection.removeAllRanges()', self.text)
         self.assertIn('addEventListener("dragstart"', self.text)
+        self.assertIn('handleWheelSwipe(e)', self.text)
+        self.assertIn('addEventListener("wheel"', self.text)
+        self.assertIn('gotoByOffset(-1', self.text)
 
     def test_rebuild_helpers_exist(self):
         self.assertIn("def _compute_window_for_report_date", self.text)

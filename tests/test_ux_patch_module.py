@@ -80,6 +80,8 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIn("_setDesktopSwipeMode", out)
         self.assertIn("removeAllRanges", out)
         self.assertIn("dragstart", out)
+        self.assertIn("_handleWheelSwipe", out)
+        self.assertIn("addEventListener('wheel'", out)
         self.assertIn("pointerdown", out)
         self.assertIn("pointerup", out)
         self.assertIn("mousedown", out)
