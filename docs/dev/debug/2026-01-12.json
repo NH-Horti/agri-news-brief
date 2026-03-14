@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T21:18:12+09:00",
-  "build_tag": "2083a86",
+  "generated_at_kst": "2026-03-14T22:20:32+09:00",
+  "build_tag": "d9bbbc8",
   "filter_rejects": [
     {
       "section": "supply",
@@ -25,6 +25,30 @@
       "domain": "view.asiae.co.kr",
       "title": "식당서 자취 감추는 감자…\"가격 강세 5월까지 계속\"",
       "url": "https://view.asiae.co.kr/article/2026010810223175029"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "[안병익의 식신 맛집] 새해에는 모든 어려움이 칼국수 면처럼 술술 풀릴...",
+      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2379594"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "세계일보",
+      "domain": "segye.com",
+      "title": "‘서민 음식’ 칼국수도 집에서 즐긴다",
+      "url": "https://www.segye.com/newsView/20260111501268"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "조선일보",
+      "domain": "biz.chosun.com",
+      "title": "[오늘의 와인] 눈먼 강이 들려주는 땅의 이야기… 라파우라 스프링스 로...",
+      "url": "https://biz.chosun.com/distribution/food/2026/01/10/5H52EKNSJ5CNJID6PO5QV2QZ3A/"
     },
     {
       "section": "pest",
@@ -53,706 +77,26 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 9.09,
-      "tail_cut": 9.49,
-      "core_min": 9.09,
-      "total_candidates": 35,
-      "total_selected": 2,
+      "threshold": 7.87,
+      "tail_cut": 8.27,
+      "core_min": 7.87,
+      "total_candidates": 1,
+      "total_selected": 1,
       "top": [
         {
           "selected": true,
-          "is_core": false,
-          "score": 17.09,
-          "tier": 3,
-          "press": "이데일리",
-          "domain": "edaily.co.kr",
-          "title": "유재석도 받은 '이 꽃다발'…화원협회 \"또 다른 상처\" 이유는",
-          "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=01886006645316408",
-          "reason": "",
-          "signals": {
-            "horti_sc": 4.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.8,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mk.co.kr",
-          "title": "연말 시상식 레고 꽃다발, 반발 나왔다 “화훼농가에 상처”",
-          "url": "https://www.mk.co.kr/article/11928956",
-          "reason": "headline_gate",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.55,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mbn.mk.co.kr",
-          "title": "연말 시상식 등장한 '레고 꽃다발'에 화훼업계 반발",
-          "url": "http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00009&news_seq_no=5167871",
-          "reason": "headline_gate",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.3,
-          "tier": 3,
-          "press": "국민일보",
-          "domain": "kmib.co.kr",
-          "title": "시상식에 레고 꽃다발…화훼업계 “생계 위협” 반발",
-          "url": "https://www.kmib.co.kr/article/view.asp?arcid=0029231097&code=61121111&cp=nv",
-          "reason": "headline_gate",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.25,
-          "tier": 3,
-          "press": "파이낸셜뉴스",
-          "domain": "fnnews.com",
-          "title": "'대상' 유재석이 든 '레고 꽃다발 '에 \" 화훼 농가·종사자 상처\" 업계 반발",
-          "url": "http://www.fnnews.com/news/202601101124486006",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 6.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.25,
-          "tier": 3,
-          "press": "머니투데이",
-          "domain": "mt.co.kr",
-          "title": "유재석도 받은 '레고 꽃다발 '에 \"상처받았다\" 발끈…무슨 일?",
-          "url": "https://www.mt.co.kr/society/2026/01/10/2026011012583323664",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 5.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.25,
-          "tier": 3,
-          "press": "한국경제",
-          "domain": "hankyung.com",
-          "title": "유재석도 받은 '레고 꽃다발 '에 \"상처 받았다\" 분노…무슨 일?",
-          "url": "https://www.hankyung.com/article/2026011025957",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 5.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.0,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mbn.mk.co.kr",
-          "title": "\"상처받았다\"…유재석이 안은 '레고 꽃다발'에 화훼업계 반발",
-          "url": "http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00009&news_seq_no=5167958",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": true,
           "is_core": true,
-          "score": 16.0,
-          "tier": 3,
-          "press": "서울신문",
-          "domain": "seoul.co.kr",
-          "title": "유재석 안은 ‘ 꽃다발 ’에 “상처받았다”… 정식으로 불만 제기한 화훼 ...",
-          "url": "https://www.seoul.co.kr/news/society/2026/01/11/20260111500001?wlog_tag3=naver",
-          "reason": "",
-          "signals": {
-            "horti_sc": 6.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.9,
-          "tier": 3,
-          "press": "YTN",
-          "domain": "ytn.co.kr",
-          "title": "\"상처 받았다\"...'대상' 유재석 손에 들린 꽃다발 에 업계 뿔난 이유 [지...",
-          "url": "https://www.ytn.co.kr/_ln/0134_202601110841497162",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 4.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 15.87,
           "tier": 1,
           "press": "NAEIL",
           "domain": "naeil.com",
           "title": "화훼농가 SECA 비준 앞두고 생존 호소",
           "url": "https://www.naeil.com/news/read/573873",
-          "reason": "supply_policy_like",
+          "reason": "",
           "signals": {
-            "horti_sc": 4.4,
+            "horti_sc": 5.7,
             "market_hits": 0,
             "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.75,
-          "tier": 3,
-          "press": "서울경제",
-          "domain": "sedaily.com",
-          "title": "유재석이 든 ‘레고 꽃다발’에 \"상처 받았다\"는 화훼업계…반발한 이유...",
-          "url": "https://www.sedaily.com/NewsView/2K79E1OTHS",
-          "reason": "topic_repeat",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.16,
-          "tier": 3,
-          "press": "동아일보",
-          "domain": "donga.com",
-          "title": "연예대상에 등장한 ‘레고 꽃다발’…화원협회 “상처받았다”",
-          "url": "https://www.donga.com/news/Culture/article/all/20260110/133129262/2",
-          "reason": "supply_policy_like",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.16,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mk.co.kr",
-          "title": "유재석도 받은 레고 꽃다발…화원협회 “생계 직결인데, 상처”",
-          "url": "https://www.mk.co.kr/article/11928953",
-          "reason": "supply_policy_like",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.36,
-          "tier": 3,
-          "press": "중앙일보",
-          "domain": "joongang.co.kr",
-          "title": "\"장난감 꽃에 상처\"…연예대상 '레고 꽃다발' 비난, 무슨 일",
-          "url": "https://www.joongang.co.kr/article/25396553",
-          "reason": "supply_policy_like",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 10.5,
-          "tier": 2,
-          "press": "아주경제",
-          "domain": "ajunews.com",
-          "title": "\"상처 받았다\"…유재석도 받은 '레고 꽃다발' 뭐길래, 화제?",
-          "url": "https://www.ajunews.com/view/20260110182646266",
-          "reason": "supply_policy_like",
-          "signals": {
-            "horti_sc": 3.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 10.5,
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "유재석도 받은 '레고 꽃다발'에 \"상처\"…화원 협회 뿔났다",
-          "url": "https://www.newsis.com/view/NISX20260110_0003472104",
-          "reason": "supply_policy_like",
-          "signals": {
-            "horti_sc": 3.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.26,
-          "tier": 2,
-          "press": "데일리안",
-          "domain": "dailian.co.kr",
-          "title": "\"유재석이 레고 꽃다발을…상처 받았다\" 분노한 화원 단체",
-          "url": "https://www.dailian.co.kr/news/view/1596675/?sc=Naver",
-          "reason": "tail_cut",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.5,
-          "tier": 1,
-          "press": "spotvnews",
-          "domain": "spotvnews.co.kr",
-          "title": "유재석·김숙이 든 ' 장난감 꽃다발 '에 화훼 업계 반발 \"정부도 지원하는...",
-          "url": "https://www.spotvnews.co.kr/news/articleView.html?idxno=792370",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.1,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.4,
-          "tier": 1,
-          "press": "insight",
-          "domain": "insight.co.kr",
-          "title": "MBC 연예대상 '레고 꽃다발' 후폭풍... \"생화 농가 두 번 죽이는 처사\" ...",
-          "url": "https://www.insight.co.kr/news/537396",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 6.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.15,
-          "tier": 1,
-          "press": "문화일보",
-          "domain": "munhwa.com",
-          "title": "유재석이 든 ‘레고 꽃다발’에 화난 화훼업계…왜?",
-          "url": "https://www.munhwa.com/article/11559888",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.9,
-          "tier": 1,
-          "press": "seoulwire",
-          "domain": "seoulwire.com",
-          "title": "생화 빠진 연말 시상식…화훼업계 \"소상공인 생계 직결 문제\"",
-          "url": "http://www.seoulwire.com/news/articleView.html?idxno=701026",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.8,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.6,
-          "tier": 1,
-          "press": "topstarnews",
-          "domain": "topstarnews.net",
-          "title": "유재석, '레고 꽃다발 ' 들었다가… 화훼 농가 반발 터졌다",
-          "url": "https://www.topstarnews.net/news/articleView.html?idxno=15930635",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.4,
-          "tier": 1,
-          "press": "STOO",
-          "domain": "stoo.com",
-          "title": "화원협회, 연예대상 '레고 꽃다발 '에 유감 \"또다른 상처\"",
-          "url": "http://www.stoo.com/article.php?aid=104553844976",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.35,
-          "tier": 1,
-          "press": "mydaily",
-          "domain": "mydaily.co.kr",
-          "title": "유재석이 든 '레고 꽃다발 '에 불붙은 논란… 화훼 업계 \"상처 줬다\" 공개...",
-          "url": "https://www.mydaily.co.kr/page/view/2026011018070662127",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.15,
-          "tier": 1,
-          "press": "OSEN",
-          "domain": "osen.co.kr",
-          "title": "유재석이 든 ‘레고 꽃다발’ 왜?..“화훼농가에 상처” 반발 터졌다 [O...",
-          "url": "http://www.osen.co.kr/article/G1112726157",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.9,
-          "tier": 1,
-          "press": "IMAEIL",
-          "domain": "imaeil.com",
-          "title": "대상 유재석 손에 들린 레고 꽃다발?… 화훼업계 뿔났다",
-          "url": "https://www.imaeil.com/page/view/2026011012342866392",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.88,
-          "tier": 1,
-          "press": "노컷뉴스",
-          "domain": "nocutnews.co.kr",
-          "title": "연예대상 레고 꽃다발에…화원업계 \"또 다른 상처\" 무슨 일?",
-          "url": "https://www.nocutnews.co.kr/news/6454315",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 3.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.6,
-          "tier": 1,
-          "press": "ISPLUS",
-          "domain": "isplus.com",
-          "title": "[왓IS] 유재석 든 꽃다발 뭐길래… 화훼 업계 “상처 줬다” 반발",
-          "url": "https://isplus.com/article/view/isp202601100040",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 6.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.6,
-          "tier": 1,
-          "press": "MHNSE",
-          "domain": "mhnse.com",
-          "title": "시상식서 레고 꽃다발 든 유재석... 화훼 농가 \"상처받았다\"",
-          "url": "https://www.mhnse.com/news/articleView.html?idxno=498919",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.6,
-          "tier": 1,
-          "press": "FTIMES",
-          "domain": "ftimes.kr",
-          "title": "유재석 '레고 꽃다발 ' 논란.. 화훼 업계 \"소상공인 생존권 짓밟아\" 울분",
-          "url": "https://www.ftimes.kr/news/articleView.html?idxno=35216",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 4.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.6,
-          "tier": 1,
-          "press": "NEWSEN",
-          "domain": "newsen.com",
-          "title": "화웨농가 지적한 레고 꽃다발 에 “생계와 직결돼vs과한 참견” 갑론을박",
-          "url": "https://www.newsen.com/news_view.php?uid=202601101151102410",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.35,
-          "tier": 1,
-          "press": "OSEN",
-          "domain": "osen.co.kr",
-          "title": "유재석 굿이라도 해야하나..이이경·조세호 억까에 레고 꽃다발 까지 말...",
-          "url": "http://www.osen.co.kr/article/G1112726436",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 4.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 1.41,
-          "tier": 1,
-          "press": "IKBC",
-          "domain": "ikbc.co.kr",
-          "title": "유재석도 안은 '장난감 꽃다발'에 화원협회 \"상처 줬다\" 반발...왜?",
-          "url": "https://www.ikbc.co.kr/article/view/kbc202601100028",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.96,
-          "tier": 1,
-          "press": "MONEYS",
-          "domain": "moneys.co.kr",
-          "title": "'대상' 유재석이 품은 레고 꽃다발에 \"생계 직결인데, 상처\"… 무슨 일?",
-          "url": "https://www.moneys.co.kr/article/2026011013162220364",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 1,
             "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -779,7 +123,7 @@
           "url": "https://www.seoul.co.kr/news/society/2026/01/12/20260112010005?wlog_tag3=naver",
           "reason": "",
           "signals": {
-            "horti_sc": 3.8,
+            "horti_sc": 5.1,
             "market_hits": 0,
             "strength": 3,
             "korea": 2,
@@ -908,7 +252,7 @@
           "url": "https://www.nongmin.com/article/20260108500539",
           "reason": "",
           "signals": {
-            "horti_sc": 2.4,
+            "horti_sc": 4.7,
             "market_hits": 2,
             "strength": 3,
             "korea": 4,
@@ -1064,7 +408,7 @@
           "농식품부",
           "대책",
           "정책브리핑",
-          "가락시장"
+          "농식품부 농산물 수급 점검"
         ],
         "topic_seed_terms": [
           "사과",
@@ -1086,7 +430,33 @@
           "전반",
           "영향",
           "정부"
-        ]
+        ],
+        "report_date": "2026-01-12",
+        "common_queries": [
+          "농축산물 가격 동향",
+          "농산물 가격 동향",
+          "과일 채소 가격 동향",
+          "과일류 가격 동향",
+          "농산물 수급 동향",
+          "농식품부 수급 점검",
+          "농식품부 가격 점검",
+          "농산물 가격 전반 하락",
+          "과일류 가격 전년 대비",
+          "농산물 수급 영향 제한적",
+          "정부 가용물량 과일",
+          "농식품부 농산물 수급 점검",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
+          "농산물 유통 구조 개선",
+          "온라인 도매시장 정책",
+          "농식품부 원예"
+        ],
+        "web_queries": [
+          "사과",
+          "배",
+          "농축산물 가격 동향"
+        ],
+        "web_added": 0
       },
       "items_total": 0,
       "cond_paging": {
@@ -1102,7 +472,7 @@
         "start_kst": "2026-01-09T07:00:00+09:00",
         "end_kst": "2026-01-12T07:00:00+09:00"
       },
-      "base_queries_n": 105,
+      "base_queries_n": 100,
       "base_queries": [
         "사과 수급",
         "사과 가격",
@@ -1199,14 +569,6 @@
       ],
       "window_hits_top": [
         [
-          "보태니컬 시리즈 꽃",
-          20
-        ],
-        [
-          "장난감 꽃다발 화훼",
-          14
-        ],
-        [
           "절화 가격",
           3
         ],
@@ -1227,126 +589,146 @@
         "과수 농가 울상",
         "과수 묘목",
         "과수 묘목 품귀",
+        "국화 경매",
         "기후변화 과수",
-        "꽃 소비",
-        "꽃다발 선물",
-        "꽃다발 선물 트렌드",
-        "꽃다발 소비",
+        "꽃시장 경매",
         "단감 가격",
         "단감 수급",
         "단감 작황",
-        "단호박 가격"
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
       ],
       "recall_meta": {
         "seed_terms": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
-          "매실",
-          "호박"
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실"
         ],
         "reason": [],
         "queries": [
-          "파프리카 생육",
-          "파프리카 난방",
-          "감귤 품질",
-          "감귤 제철",
+          "멜론 생육",
+          "농산물 가격 동향",
+          "사과 생육",
           "토마토 생육",
-          "오이 생육"
+          "참외 생육",
+          "고추 생육"
         ],
         "pool_seed_hits": {
           "사과": 0,
           "단감": 0,
-          "감귤": 0,
+          "곶감": 0,
           "포도": 0,
-          "유자": 0,
-          "자두": 0,
+          "키위": 0,
+          "알밤": 0,
+          "복숭아": 0,
           "매실": 0,
           "토마토": 0,
-          "호박": 0,
+          "수박": 0,
           "피망": 0,
-          "파프리카": 0,
-          "오이": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
           "고추": 0,
-          "소비": 1,
-          "레고": 0,
-          "보태니컬": 0,
+          "화훼자조금": 0,
           "과수": 0,
           "기후변화": 0,
-          "대책": 1,
+          "화훼": 1,
           "배": 0
         },
         "feature_refresh_seeds": [
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
-          "피망",
-          "레고",
-          "소비"
+          "곶감",
+          "포도",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금"
         ],
         "topic_seed_terms": [
-          "대책",
+          "화훼",
           "사과",
           "배"
         ],
         "query_seed_terms": [
           "사과",
           "단감",
-          "감귤",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
           "토마토",
-          "호박",
+          "수박",
           "피망",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
+          "상추",
           "고추",
-          "소비",
-          "레고",
-          "보태니컬",
+          "화훼자조금",
           "과수",
           "기후변화"
         ],
+        "report_date": "2026-01-12",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매"
+        ],
         "prioritized_seeds": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
+          "수박",
           "피망",
-          "레고",
-          "보태니컬",
+          "상추",
+          "화훼자조금",
           "과수",
           "기후변화",
-          "소비",
           "배",
-          "대책"
+          "화훼"
         ],
         "feature_focus_seeds": [
-          "파프리카",
-          "감귤"
-        ]
+          "멜론",
+          "사과"
+        ],
+        "web_queries": [
+          "멜론 생육",
+          "농산물 가격 동향"
+        ],
+        "web_added": 0
       },
-      "items_total": 39,
+      "items_total": 5,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -1498,30 +880,30 @@
       "recall_meta": {
         "seed_terms": [
           "대책",
-          "가락시장",
+          "화훼",
           "사과",
           "배",
+          "가락시장",
           "apc",
           "농협",
           "연합판매사업",
           "품목농협",
           "원예농협",
           "과수",
-          "수출",
-          "수출업계"
+          "수출"
         ],
         "reason": [],
         "queries": [
           "대책",
-          "가락시장",
+          "화훼",
           "사과",
           "배",
-          "apc",
-          "농협"
+          "가락시장",
+          "도매시장 경매"
         ],
         "topic_seed_terms": [
           "대책",
-          "가락시장",
+          "화훼",
           "사과",
           "배"
         ],
@@ -1539,6 +921,20 @@
           "광역수급관리센터",
           "화훼",
           "화훼자조금"
+        ],
+        "report_date": "2026-01-12",
+        "common_queries": [
+          "도매시장 경매",
+          "공판장 경매",
+          "가락시장 경락",
+          "온라인 도매시장 제도 개선",
+          "도매시장 제도 개선",
+          "품목농협 산지유통",
+          "원예농협 산지유통",
+          "연합판매사업 직거래",
+          "산지유통센터",
+          "스마트 APC",
+          "농산물 광역수급관리센터"
         ]
       },
       "items_total": 4,
@@ -1631,12 +1027,12 @@
         ],
         "reason": [],
         "queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
           "사과",
           "배",
           "병해충",
-          "사과 병해충",
-          "사과 방제",
-          "배 병해충"
+          "사과 병해충"
         ],
         "topic_seed_terms": [
           "사과",
@@ -1644,6 +1040,16 @@
         ],
         "query_seed_terms": [
           "병해충"
+        ],
+        "report_date": "2026-01-12",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예방",
+          "탄저병 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
         ]
       },
       "items_total": 0,
