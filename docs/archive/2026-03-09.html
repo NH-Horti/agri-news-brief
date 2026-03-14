@@ -6,7 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="60d3387" />
+  <meta name="agri-build" content="0b9fe0a" />
+
   <title>[2026-03-09 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -35,6 +36,7 @@
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
     .navRow > *{min-width:0}
     .navBtn{white-space:nowrap}
@@ -97,6 +99,7 @@
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -138,14 +141,14 @@
     <div class="topin">
       <div>
         <h1>[2026-03-09 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-03-06 07:00 ~ 2026-03-09 07:00 · 기사 16건</div>
+        <div class="sub">기간: 2026-03-06 07:00 ~ 2026-03-09 07:00 · 기사 12건</div>
       </div>
       <div class="navRow">
-  <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-  <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-06.html">◀ 이전</a>
-  <div class="dateSelWrap">
-    <select id="dateSelect" aria-label="날짜 선택">
-      <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-06.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
 <option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
 <option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
 <option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
@@ -192,53 +195,36 @@
 <option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
 <option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
 <option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-    </select>
-  </div>
-  <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-03-10.html">다음 ▶</a>
-</div>
+          </select>
+        </div>
+        <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-03-10.html">다음 ▶</a>
+      </div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1">
+    <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
-<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">4</span></a>
-<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">5</span></a></div>
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">2</span></a></div>
       </div>
     </div>
   </div>
 
   <div class="wrap">
-
+    
             <section id="sec-supply" class="sec">
               <div class="secHead" style="border-left:8px solid #0f766e;">
                 <div class="secTitle">
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
                 </div>
-                <div class="secCount">2건</div>
+                <div class="secCount">4건</div>
               </div>
               <div class="secBody">
-            <div class="card" style="border-left-color:#0f766e">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  <span class="press">SBS</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 09:14</span>
-                  <span class="dot">·</span>
-                  <span class="topic">도매시장</span>
-                </div>
-                <a class="btnOpen" href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008466155&amp;plink=ORI&amp;cooper=NAVER" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">[친절한 경제] SNS 점령하자 품절까지…식품업계도 &#x27;들썩&#x27;</div>
-              <div class="sum">SNS가 농산물 수급에 영향을 미치며, 가격 상승이 심화되고 있다. 도매시장과 온라인몰에서 340건의 농산물을 검사한 결과, 문제점이 발견되었다.</div>
-            </div>
-
-
             <div class="card" style="border-left-color:#0f766e">
               <div class="cardTop">
                 <div class="meta">
@@ -252,11 +238,62 @@
                 <a class="btnOpen" href="https://www.ytn.co.kr/_ln/0103_202603071412402937" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">유가 급등에 난방비도 치솟아... 화훼 농가 &#x27;울상&#x27;</div>
-              <div class="sum">유가 급등으로 화훼 농가들이 심각한 경제적 타격을 받고 있다. 해외에서 수입되는 원예용 상토의 운송비 증가가 추가적인 부담을 주고 있다.</div>
+              <div class="sum">유가 급등으로 원예용 상토 운송비가 상승하며 화훼 농가의 운영에 어려움이 가중되고 있다. 중동 사태로 농민들의 고통이 심화되고 있다는 소식이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">SBS</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/06 09:14</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008466155&amp;plink=ORI&amp;cooper=NAVER" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[친절한 경제] SNS 점령하자 품절까지…식품업계도 &#x27;들썩&#x27;</div>
+              <div class="sum">SNS를 통한 농산물 구매 증가로 인해 급격한 가격 상승이 발생하고 있다. 농산물 수급 구조로 인해 식품업계의 움직임이 활발해지고 있다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">KBS</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/06 21:51</span>
+                  <span class="dot">·</span>
+                  <span class="topic">수출/검역</span>
+                </div>
+                <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8501790" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">“유류비 인상에 수출길 막혀”…농축산업계는 ‘비상’</div>
+              <div class="sum">유류비 인상으로 농축산업계가 비상상황에 직면하고 있다. 오이 농가는 난방비 상승으로 생산 비용이 20% 이상 증가할 것으로 우려하고 있다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">한국농어민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/06 19:02</span>
+                  <span class="dot">·</span>
+                  <span class="topic">사과</span>
+                </div>
+                <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402325" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[경산묘목특집] 산불 여파 &#x27; 사과 묘목&#x27; 품귀…&quot;예약 없인 못사요&quot; 시장 ...</div>
+              <div class="sum">경산지역 사과 묘목 생산량이 감소하면서 품귀현상이 발생하고 있다. 기후 변화와 산불 여파로 묘목 예약 없이는 구매가 어려운 상황이다.</div>
             </div>
             </div>
             </section>
-
+            
 
             <section id="sec-policy" class="sec">
               <div class="secHead" style="border-left:8px solid #1d4ed8;">
@@ -264,93 +301,27 @@
                   <span class="dotColor" style="background:#1d4ed8"></span>
                   정책 및 주요 이슈
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">1건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#1d4ed8">
               <div class="cardTop">
                 <div class="meta">
-                  <span class="press">팜&amp;마켓</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 10:52</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25786" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">농축산물 물가 1%대 안착, 수급 안정·할인지원에 예산 집중 투입</div>
-              <div class="sum">농식품부는 농축산물의 가격 안정을 위해 정부양곡 15만 톤을 방출하고, 사과의 물량을 계약재배와 지정출하로 조정할 예정이다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#1d4ed8">
-              <div class="cardTop">
-                <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">조선일보</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 10:52</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://it.chosun.com/news/articleView.html?idxno=2023092158205" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">한은 &quot;물가, 중동 사태 따른 국제 유가가 변수&quot;</div>
-              <div class="sum">농축수산물 물가는 1.7% 상승하며 한 달 만에 상승폭이 축소되었다. 정부는 할인지원과 출하 확대를 통해 물가 안정을 시도하고 있다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#1d4ed8">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="press">세계일보</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 19:01</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://www.segye.com/newsView/20260306506243" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">2월 물가 2.0% 올랐지만 축산물 6.0% 오르며 ‘들썩’… 이란 사태 반영...</div>
-              <div class="sum">2월 물가가 2.0% 상승했지만, 축산물은 6.0% 급등하며 시장이 불안정해지고 있다. 농식품부는 쌀과 사과의 공급을 조절해 안정화를 도모할 계획이다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#1d4ed8">
-              <div class="cardTop">
-                <div class="meta">
-
-                  <span class="press">농민신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 14:06</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://www.nongmin.com/article/20260306500258" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">농산물 최대 50% 할인 지속…정부 “석유류·먹거리 가격 안정 총력”</div>
-              <div class="sum">농축산물 소비자물가는 물가 상승률 2.0%보다 낮은 1.4%로 나타났다. 농림부는 가격 안정을 위해 다양한 노력을 기울이고 있다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#1d4ed8">
-              <div class="cardTop">
-                <div class="meta">
-
                   <span class="press">KBS</span>
                   <span class="dot">·</span>
-                  <span class="time">03/06 21:45</span>
+                  <span class="time">03/06 09:33</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8501767" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8501128" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">충북 소비자물가 다시 상승…밥상 물가 ‘꿈틀’</div>
-              <div class="sum">충북의 소비자물가가 상승하며 과일 가격이 큰 폭으로 증가하고 있다. 재배 및 수급 조정이 필요한 상황이다.</div>
+              <div class="ttl">2월 농축산물 소비자물가 1.4%↑…“쌀·사과 공급 안정 노력”</div>
+              <div class="sum">2월 농축산물 소비자 물가는 전년 대비 1.4% 상승했으며 축산물은 6.0% 상승했다. 농식품부는 주요 농축산물 수급 동향을 점검할 방침이다.</div>
             </div>
             </div>
             </section>
-
+            
 
             <section id="sec-dist" class="sec">
               <div class="secHead" style="border-left:8px solid #6d28d9;">
@@ -358,46 +329,13 @@
                   <span class="dotColor" style="background:#6d28d9"></span>
                   유통 및 현장 (도매시장/APC/수출)
                 </div>
-                <div class="secCount">4건</div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#6d28d9">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">뉴스핌</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/07 12:00</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://www.newspim.com/news/view/20260305001313" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">[도매의 진화] ① 농산물 유통의 진화…새벽 경매에서 온라인 거래로</div>
-              <div class="sum">농산물 유통이 온라인 거래로 변화하고 있으며, 물류 효율성을 높이기 위한 노력이 진행되고 있다. 이는 경매와 출하 과정을 개선하기 위함이다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#6d28d9">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  <span class="press">농수축산신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 09:24</span>
-                  <span class="dot">·</span>
-                  <span class="topic">APC/산지유통</span>
-                </div>
-                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315801" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">흥양농협, 원예농산물 산지유통센터 준공 식 개최</div>
-              <div class="sum">흥양농협이 원예농산물 산지유통센터를 준공하며 지역 농민들에게 혜택을 제공하고 있다. 농산물 유통 효율성을 높이는 기회를 마련했다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#6d28d9">
-              <div class="cardTop">
-                <div class="meta">
                   <span class="press">헤럴드경제</span>
                   <span class="dot">·</span>
                   <span class="time">03/06 10:02</span>
@@ -407,27 +345,79 @@
                 <a class="btnOpen" href="https://biz.heraldcorp.com/article/10688433" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">의성군, 2026년 노지 스마트농업 육성지구 최종 선정</div>
-              <div class="sum">의성군이 2026년 노지 스마트농업 육성지구로 선정되어 기반 시설 확충을 목표로 하고 있다. 스마트 농산물산지유통센터도 연계하여 발전할 계획이다.</div>
+              <div class="sum">의성군이 2026년 스마트농업 육성지구로 최종 선정되었다. 스마트 농산물산지유통센터와의 통합 거점화를 단계적으로 추진할 예정이다.</div>
             </div>
-
+            
 
             <div class="card" style="border-left-color:#6d28d9">
               <div class="cardTop">
                 <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">뉴스핌</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/07 12:00</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+                <a class="btnOpen" href="https://www.newspim.com/news/view/20260305001313" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[도매의 진화] ① 농산물 유통의 진화…새벽 경매에서 온라인 거래로</div>
+              <div class="sum">경남 거제에서 온라인 도매시장으로 농산물 유통이 진화하고 있다. 공동구매를 통해 유통비용을 줄이고 농가 수취 가격을 상승시키는 효과가 나타났다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">팜&amp;마켓</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/06 18:14</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.farmnmarket.com/news/article.html?no=25789" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농식품부·aT, 온라인도매시장 내실화 &#x27;총력&#x27;</div>
+              <div class="sum">농식품부와 aT가 온라인 도매시장 활성화를 위해 TF를 발족했다. 2024년부터 2026년까지 거래 실적에 대한 감독 강화를 추진할 예정이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">농수축산신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/06 09:24</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315801" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">흥양 농협 , 원예 농산물 산지유통 센터 준공식 개최</div>
+              <div class="sum">흥양 농협이 원예 농산물 산지유통 센터 준공식을 성황리에 개최했다. 이 시설은 지역 농산물 유통을 지원할 중요한 거점이 될 예정이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
-                  <span class="time">03/06 15:50</span>
+                  <span class="time">03/09 05:02</span>
                   <span class="dot">·</span>
-                  <span class="topic">수출/검역</span>
+                  <span class="topic">기타</span>
                 </div>
-                <a class="btnOpen" href="https://www.nongmin.com/article/20260306500345" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260306500727" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">경주 현곡농협, 수출 등 활발한 경제사업으로 농가실익 증진</div>
-              <div class="sum">경주 현곡농협이 샤인머스캣 농가의 수출을 통해 경제적 실익을 증진하고 있다. 대만으로의 수출이 예정되어 있으며, GAP 인증을 받은 농가들이 참여하고 있다.</div>
+              <div class="ttl">경제사업 활발…‘작지만 강한 농협 ’ 부상</div>
+              <div class="sum">남면 농협이 지역 특산물인 땅콩을 중심으로 경제사업을 활성화하고 있다. 참기름과 들기름 판매도 순조롭게 진행되고 있다.</div>
             </div>
             </div>
             </section>
-
+            
 
             <section id="sec-pest" class="sec">
               <div class="secHead" style="border-left:8px solid #b45309;">
@@ -435,64 +425,13 @@
                   <span class="dotColor" style="background:#b45309"></span>
                   병해충 및 방제
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">2건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#b45309">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">KBS</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 21:58</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-                <a class="btnOpen" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8501833" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경기·충남서 과수화상병 병원균 확인…“주의 필요”</div>
-              <div class="sum">경기와 충남에서 과수화상병 병원균이 발견되어 주의가 요구된다. 철저한 예찰과 방제가 필요하며, 발병 시 치료제가 없어 경각심이 요구된다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#b45309">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  <span class="press">농수축산신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 19:28</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315875" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">예산군, 과수화상병 확산 차단 &#x27;선제 예찰&#x27; 강화</div>
-              <div class="sum">예산군이 과수화상병 확산 방지를 위해 선제 예방 점검을 강화하고 있다. 감염주를 사전에 제거하는 방식으로 효과적인 방제를 추진할 예정이다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#b45309">
-              <div class="cardTop">
-                <div class="meta">
-
-                  <span class="press">헤럴드경제</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/06 08:15</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-                <a class="btnOpen" href="https://biz.heraldcorp.com/article/10688240" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">딸기 수확량, 모주 관리가 결정</div>
-              <div class="sum">딸기 수확량은 모주 관리가 중요하며, 육묘 과정에서 병해충 방제가 필요하다. 건강한 자묘 확보를 위해 주의가 요구된다.</div>
-            </div>
-
-
-            <div class="card" style="border-left-color:#b45309">
-              <div class="cardTop">
-                <div class="meta">
-
                   <span class="press">YTN</span>
                   <span class="dot">·</span>
                   <span class="time">03/07 04:50</span>
@@ -501,216 +440,485 @@
                 </div>
                 <a class="btnOpen" href="https://www.ytn.co.kr/_ln/0115_202603070450107718" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">[녹색] 사과·배 화상병 예방, 꽃 피기 전 &#x27;적기 방제 &#x27; 당부</div>
-              <div class="sum">사과와 배의 화상병 예방을 위해 정확한 방제가 필요하다는 농촌진흥청의 권고가 이어지고 있다. 적기 방제가 이루어지지 않을 경우 큰 피해가 우려된다.</div>
+              <div class="ttl">[녹색] 사과·배 화상병 예방, 꽃 피기 전 &#x27;적기 방제&#x27; 당부</div>
+              <div class="sum">농촌진흥청은 과수화상병 예방을 위해 사과와 배 방제를 적기에 실시할 것을 당부했다. 적절한 방제를 통해 농작물 피해를 최소화해야 한다.</div>
             </div>
-
+            
 
             <div class="card" style="border-left-color:#b45309">
               <div class="cardTop">
                 <div class="meta">
-
+                  
                   <span class="press">농수축산신문</span>
                   <span class="dot">·</span>
-                  <span class="time">03/06 19:40</span>
+                  <span class="time">03/06 09:12</span>
                   <span class="dot">·</span>
-                  <span class="topic">병해충</span>
+                  <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315831" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=315798" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">홍성군 농기센터, &#x27;봄&#x27;엔 과수화상병 예방 방제 가 필수</div>
-              <div class="sum">홍성군농업기술센터가 과수화상병 예방을 위해 방제 요령을 홍보하고 있으며, 농가의 적극적인 참여를 요청하고 있다. 방제 작업이 시급히 필요하다.</div>
+              <div class="ttl">성산일출봉농협, &#x27;2025년 농업경제사업 대상&#x27; 최우수상 수상</div>
+              <div class="sum">성산일출봉농협이 &#x27;2025년 농업경제사업 대상&#x27;에서 최우수상을 수상했다. 조합원 지원과 토양개량제 공동살포 등을 통해 영농비 부담을 경감시켰다.</div>
             </div>
             </div>
             </section>
-
+            
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    
   </div>
 
-  <!-- build: 60d3387 -->
-
-
-  
-  
-  
-  
-  <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
   <script>
-  (function(){
-    var navRow = document.querySelector('.navRow');
-    var navLoading = document.getElementById('navLoading');
+    (function() {
 
-    function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
-    function _showLoading(){
-      try{
-        if(navLoading) navLoading.classList.add('show');
-        setTimeout(_hideLoading, 1200);
-      }catch(e){}
-    }
-
-    function _toast(msg){
-      try{
-        var t = document.getElementById('uxToast');
-        if(!t){
-          t = document.createElement('div');
-          t.id = 'uxToast';
-          t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
-          document.body.appendChild(t);
-        }
-        t.textContent = msg || '이동할 브리핑이 없습니다.';
-        t.style.display = 'block';
-        clearTimeout(t.__t);
-        t.__t = setTimeout(function(){ t.style.display='none'; }, 1600);
-      }catch(e){}
-    }
-
-    function _getHref(el){
-      if(!el) return '';
-      try{
-        var tag = (el.tagName||'').toLowerCase();
-        if(tag === 'a') return el.getAttribute('href') || el.href || '';
-        return el.getAttribute('data-href') || el.getAttribute('href') || '';
-      }catch(e){ return ''; }
-    }
-    function _isDisabled(el){
-      try{
-        if(!el) return true;
-        if(el.disabled) return true;
-        if(el.classList && el.classList.contains('disabled')) return true;
-        return false;
-      }catch(e){ return true; }
-    }
-
-    function _pick(kind){
-      if(!navRow) return null;
-      var el = navRow.querySelector('[data-nav="' + kind + '"]');
-      if(el) return el;
-      var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
-      for(var i=0;i<btns.length;i++){
-        var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute ? (btns[i].getAttribute('title')||'') : '');
-        if(kind==='prev' && t.indexOf('이전')>=0) return btns[i];
-        if(kind==='next' && t.indexOf('다음')>=0) return btns[i];
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+          }
+        });
       }
-      return null;
-    }
 
-    function _bindNav(el, msg){
-      if(!el || !el.addEventListener) return;
-      el.addEventListener('click', function(e){
-        var href = _getHref(el);
-        if(!href || _isDisabled(el)){
-          try{ e.preventDefault(); }catch(_e){}
-          _hideLoading();
-          _toast(msg);
-          return false;
-        }
-        _showLoading();
-      }, true);
-    }
-
-    var prev = _pick('prev');
-    var next = _pick('next');
-    _bindNav(prev, '이전 브리핑이 없습니다.');
-    _bindNav(next, '다음 브리핑이 없습니다.');
-
-    var sel = document.getElementById('dateSelect');
-    if(sel){
-      try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
-      sel.addEventListener('change', function(){
-        var v = sel.value;
-        if(!v) return;
-        _showLoading();
-        window.location.href = v;
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
       });
-    }
 
-    var sx=0, sy=0, st=0;
-    var swipeActive = false;
-    var blocked = false;
-    var swipeTarget = null;
-    var swipePointerId = null;
-    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
-    function _eventPoint(e, phase){
-      try{
-        if(!e) return null;
-        if(phase !== 'end' && e.touches && e.touches.length === 1) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        if(phase === 'end' && e.changedTouches && e.changedTouches.length === 1) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-        if(typeof e.clientX === 'number' && typeof e.clientY === 'number') return { x: e.clientX, y: e.clientY };
-      }catch(_evtErr){}
-      return null;
-    }
-    function _resetSwipe(){
-      try{
-        if(swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null){
-          swipeArea.releasePointerCapture(swipePointerId);
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
         }
-      }catch(_releaseErr){}
-      swipeActive = false;
-      blocked = false;
-      swipeTarget = null;
-      swipePointerId = null;
-    }
-    function _beginSwipe(e){
-      if(!swipeArea) return;
-      if(e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
-      if(e && !e.pointerType && typeof e.button === 'number' && e.button !== 0) return;
-      var point = _eventPoint(e, 'start');
-      if(!point) return;
-      blocked = isBlockedTarget(e ? e.target : null);
-      swipeActive = true;
-      swipeTarget = e ? (e.target || null) : null;
-      swipePointerId = (e && typeof e.pointerId === 'number') ? e.pointerId : null;
-      sx = point.x;
-      sy = point.y;
-      st = Date.now();
-      try{
-        if(swipeArea.setPointerCapture && swipePointerId !== null) swipeArea.setPointerCapture(swipePointerId);
-      }catch(_captureErr){}
-    }
-    function _endSwipe(e){
-      if(!swipeActive) return;
-      if(swipePointerId !== null && e && typeof e.pointerId === 'number' && e.pointerId !== swipePointerId) return;
-      var point = _eventPoint(e, 'end');
-      var startedBlocked = blocked;
-      var startedTarget = swipeTarget;
-      _resetSwipe();
-      if(!point) return;
-      if(startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
-      try{
-        var selected = window.getSelection ? String(window.getSelection()) : '';
-        if(selected && selected.trim()) return;
-      }catch(_selectionErr){}
-      var dx = point.x - sx;
-      var dy = point.y - sy;
-      var dt = Date.now() - st;
-      if(dt > 900 || Math.abs(dx) < 60) return;
-      if(Math.abs(dx) < Math.abs(dy) * 1.2) return;
-      if(dx > 0) {
-        var p = prev || _pick('prev');
-        var href = _getHref(p);
-        if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
-        _showLoading(); window.location.href = href; return;
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
       }
-      var n = next || _pick('next');
-      var href2 = _getHref(n);
-      if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
-      _showLoading(); window.location.href = href2;
-    }
-    if(swipeArea && swipeArea.addEventListener){
-      if(window.PointerEvent){
-        swipeArea.addEventListener('pointerdown', function(e){ _beginSwipe(e); }, {passive:true});
-        window.addEventListener('pointerup', function(e){ _endSwipe(e); }, {passive:true});
-        window.addEventListener('pointercancel', function(){ _resetSwipe(); }, {passive:true});
-      } else {
-        swipeArea.addEventListener('touchstart', function(e){ _beginSwipe(e); }, {passive:true});
-        swipeArea.addEventListener('touchend', function(e){ _endSwipe(e); }, {passive:true});
-        swipeArea.addEventListener('mousedown', function(e){ _beginSwipe(e); });
-        window.addEventListener('mouseup', function(e){ _endSwipe(e); });
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
       }
-      window.addEventListener('blur', function(){ _resetSwipe(); });
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    var href = String(window.location.href || "");
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
     }
-  })();
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = _getRootPrefix() + "archive_manifest.json";
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    window.location.href = url;
+    return;
+  }
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      window.location.href = url;
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selected = window.getSelection ? String(window.getSelection()) : "";
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
   </script>
-  <!-- UX_PATCH_END -->
+  <!-- build: 0b9fe0a -->
+
 </body>
 </html>
