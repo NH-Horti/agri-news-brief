@@ -404,6 +404,7 @@
 
 
   
+  
   <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
   <script>
   (function(){
@@ -496,9 +497,13 @@
 
     var sx=0, sy=0, st=0;
     var swipeActive = false;
+    var swipeSuppressSelection = false;
     var blocked = false;
     var swipeTarget = null;
     var swipePointerId = null;
+    var swipeRootUserSelect = '';
+    var swipeRootWebkitUserSelect = '';
+    var swipeBodyCursor = '';
     var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
     function isBlockedTarget(target){
       if(!target || !target.closest) return false;
@@ -522,10 +527,40 @@
           swipeArea.releasePointerCapture(swipePointerId);
         }
       }catch(_releaseErr){}
+      _setDesktopSwipeMode(false);
       swipeActive = false;
       blocked = false;
       swipeTarget = null;
       swipePointerId = null;
+    }
+    function _setDesktopSwipeMode(active){
+      var root = document.documentElement;
+      try{
+        if(active){
+          if(swipeSuppressSelection) return;
+          swipeSuppressSelection = true;
+          swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || '') : '';
+          swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || '') : '';
+          swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || '') : '';
+          if(root && root.style){
+            root.style.userSelect = 'none';
+            root.style.webkitUserSelect = 'none';
+          }
+          if(document.body && document.body.style){
+            document.body.style.cursor = 'grabbing';
+          }
+          return;
+        }
+        if(!swipeSuppressSelection) return;
+        swipeSuppressSelection = false;
+        if(root && root.style){
+          root.style.userSelect = swipeRootUserSelect;
+          root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+        }
+        if(document.body && document.body.style){
+          document.body.style.cursor = swipeBodyCursor;
+        }
+      }catch(_desktopSwipeErr){}
     }
     function _beginSwipe(e){
       if(!swipeArea) return;
@@ -534,6 +569,9 @@
       var point = _eventPoint(e, 'start');
       if(!point) return;
       blocked = isBlockedTarget(e ? e.target : null);
+      if(e && (e.pointerType === 'mouse' || (!e.pointerType && !e.touches))){
+        _setDesktopSwipeMode(true);
+      }
       swipeActive = true;
       swipeTarget = e ? (e.target || null) : null;
       swipePointerId = (e && typeof e.pointerId === 'number') ? e.pointerId : null;
@@ -549,12 +587,18 @@
       if(swipePointerId !== null && e && typeof e.pointerId === 'number' && e.pointerId !== swipePointerId) return;
       var point = _eventPoint(e, 'end');
       var startedBlocked = blocked;
+      var startedDesktopSwipe = swipeSuppressSelection;
       var startedTarget = swipeTarget;
       _resetSwipe();
       if(!point) return;
       if(startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
       try{
-        var selected = window.getSelection ? String(window.getSelection()) : '';
+        var selection = window.getSelection ? window.getSelection() : null;
+        var selected = selection ? String(selection) : '';
+        if(startedDesktopSwipe && selection && selection.removeAllRanges){
+          selection.removeAllRanges();
+          selected = '';
+        }
         if(selected && selected.trim()) return;
       }catch(_selectionErr){}
       var dx = point.x - sx;
@@ -584,6 +628,12 @@
         swipeArea.addEventListener('mousedown', function(e){ _beginSwipe(e); });
         window.addEventListener('mouseup', function(e){ _endSwipe(e); });
       }
+      swipeArea.addEventListener('dragstart', function(e){
+        if(!swipeActive && !swipeSuppressSelection) return;
+        try{
+          if(e && e.preventDefault) e.preventDefault();
+        }catch(_dragErr){}
+      });
       window.addEventListener('blur', function(){ _resetSwipe(); });
     }
   })();
