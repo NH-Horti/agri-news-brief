@@ -75,6 +75,8 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIn(PREV_BRIEF_MESSAGE, out)
         self.assertIn(NEXT_BRIEF_MESSAGE, out)
         self.assertIn("PointerEvent", out)
+        self.assertIn("function isBlockedTarget", out)
+        self.assertIn('target.closest(\'.topbar\')', out)
         self.assertIn("pointerdown", out)
         self.assertIn("pointerup", out)
         self.assertIn("mousedown", out)

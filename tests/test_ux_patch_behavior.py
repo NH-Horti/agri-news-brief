@@ -104,6 +104,8 @@ class TestUxPatchBehavior(unittest.TestCase):
         self.assertNotRegex(out, r'class="chipbar"[^>]*data-swipe-ignore="1"[^>]*data-swipe-ignore="1"')
         self.assertNotRegex(out, r'class="chips"[^>]*data-swipe-ignore="1"[^>]*data-swipe-ignore="1"')
         self.assertIn(EMPTY_BRIEF_MESSAGE, out)
+        self.assertIn("function isBlockedTarget", out)
+        self.assertIn('target.closest(\'.topbar\')', out)
         self.assertIn("pointerdown", out)
         self.assertIn("pointerup", out)
         self.assertIn("mousedown", out)
