@@ -40,7 +40,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Sequence, TypedDict
-from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
 
 import requests  # type: ignore[import-untyped]
 from requests.adapters import HTTPAdapter  # type: ignore[import-untyped]
@@ -274,6 +274,13 @@ WEB_RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("WEB_RECALL_QUERY_CAP_PER_SECTI
 WEB_RECALL_QUERY_CAP_PER_SECTION = max(0, min(WEB_RECALL_QUERY_CAP_PER_SECTION, 8))
 WEB_RECALL_DISPLAY = int(os.getenv("WEB_RECALL_DISPLAY", "10") or 10)
 WEB_RECALL_DISPLAY = max(5, min(WEB_RECALL_DISPLAY, 20))
+GOOGLE_NEWS_RECALL_ENABLED = os.getenv("GOOGLE_NEWS_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION", "3") or 3)
+GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION = max(0, min(GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION, 8))
+GOOGLE_NEWS_RECALL_ITEM_CAP = int(os.getenv("GOOGLE_NEWS_RECALL_ITEM_CAP", "8") or 8)
+GOOGLE_NEWS_RECALL_ITEM_CAP = max(3, min(GOOGLE_NEWS_RECALL_ITEM_CAP, 20))
+GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = int(os.getenv("GOOGLE_NEWS_RECALL_MIN_AGE_DAYS", "5") or 5)
+GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = max(1, min(GOOGLE_NEWS_RECALL_MIN_AGE_DAYS, 90))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -8694,6 +8701,140 @@ def _rss_pub_to_kst(pub: str) -> datetime | None:
             continue
     return None
 
+
+_GOOGLE_NEWS_DECODE_CACHE: dict[str, str] = {}
+_GOOGLE_NEWS_DECODE_LOCK = threading.Lock()
+
+
+def should_use_google_news_recall(end_kst: datetime) -> bool:
+    if not GOOGLE_NEWS_RECALL_ENABLED:
+        return False
+    try:
+        age_days = (datetime.now(KST).date() - end_kst.astimezone(KST).date()).days
+    except Exception:
+        return False
+    return age_days >= GOOGLE_NEWS_RECALL_MIN_AGE_DAYS
+
+
+def build_google_news_rss_search_url(query: str, start_kst: datetime, end_kst: datetime) -> str:
+    # Google News RSS supports coarse after:/before: filters. Keep the window slightly wider
+    # than our exact KST cutoff and let the normal pubDate filter enforce the final boundary.
+    after_day = (start_kst.astimezone(KST).date() - timedelta(days=1)).isoformat()
+    before_day = (end_kst.astimezone(KST).date() + timedelta(days=1)).isoformat()
+    full_query = f"{(query or '').strip()} after:{after_day} before:{before_day}".strip()
+    return (
+        "https://news.google.com/rss/search?q="
+        + quote(full_query)
+        + "&hl=ko&gl=KR&ceid=KR:ko"
+    )
+
+
+def _extract_google_news_base64(source_url: str) -> str:
+    try:
+        parsed = urlparse(source_url)
+        path = [p for p in (parsed.path or "").split("/") if p]
+        if parsed.hostname != "news.google.com" or len(path) < 2:
+            return ""
+        if path[-2] not in ("articles", "read"):
+            return ""
+        return path[-1]
+    except Exception:
+        return ""
+
+
+def decode_google_news_url(source_url: str) -> str:
+    base64_str = _extract_google_news_base64(source_url)
+    if not base64_str:
+        return source_url
+    with _GOOGLE_NEWS_DECODE_LOCK:
+        cached = _GOOGLE_NEWS_DECODE_CACHE.get(base64_str)
+    if cached:
+        return cached
+
+    decoded = source_url
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        article_url = f"https://news.google.com/rss/articles/{base64_str}"
+        r = http_session().get(article_url, headers=headers, timeout=20)
+        if r.ok:
+            sig_m = re.search(r'data-n-a-sg="([^"]+)"', r.text or "")
+            ts_m = re.search(r'data-n-a-ts="([^"]+)"', r.text or "")
+            if sig_m and ts_m:
+                payload = [
+                    "Fbv4je",
+                    (
+                        '["garturlreq",[["X","X",["X","X"],null,null,1,1,"US:en",null,1,null,'
+                        'null,null,null,null,0,1],"X","X",1,[1,1,1],1,1,null,0,0,null,0],'
+                        f'"{base64_str}",{ts_m.group(1)},"{sig_m.group(1)}"]'
+                    ),
+                ]
+                batched = http_session().post(
+                    "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+                    headers={
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                        "User-Agent": "Mozilla/5.0",
+                    },
+                    data=f"f.req={quote(json.dumps([[payload]]))}",
+                    timeout=20,
+                )
+                if batched.ok:
+                    parts = (batched.text or "").split("\n\n", 1)
+                    if len(parts) == 2:
+                        decoded_json = json.loads(parts[1])
+                        if decoded_json and len(decoded_json[0]) >= 3:
+                            decoded = json.loads(decoded_json[0][2])[1]
+    except Exception:
+        decoded = source_url
+
+    decoded = strip_tracking_params(decoded or source_url)
+    with _GOOGLE_NEWS_DECODE_LOCK:
+        _GOOGLE_NEWS_DECODE_CACHE[base64_str] = decoded
+    return decoded
+
+
+def fetch_google_news_search_items(
+    query: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    item_cap: int | None = None,
+) -> list[JsonDict]:
+    cap = max(1, int(item_cap or GOOGLE_NEWS_RECALL_ITEM_CAP or 0))
+    url = build_google_news_rss_search_url(query, start_kst, end_kst)
+    try:
+        r = http_session().get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        if not r.ok:
+            return []
+        import xml.etree.ElementTree as ET
+
+        root = ET.fromstring(r.text)
+        items: list[JsonDict] = []
+        for it in root.findall(".//item"):
+            title = clean_text(it.findtext("title") or "")
+            google_link = (it.findtext("link") or "").strip()
+            if not title or not google_link:
+                continue
+            source = clean_text(it.findtext("source") or "")
+            if source and title.endswith(f" - {source}"):
+                title = title[: -(len(source) + 3)].strip()
+            desc = clean_text(re.sub(r"<[^>]+>", " ", it.findtext("description") or ""))
+            direct_link = decode_google_news_url(google_link)
+            items.append(
+                {
+                    "title": title,
+                    "description": desc,
+                    "link": direct_link,
+                    "originallink": direct_link,
+                    "google_link": google_link,
+                    "source": source,
+                    "pubDate": (it.findtext("pubDate") or "").strip(),
+                }
+            )
+            if len(items) >= cap:
+                break
+        return items
+    except Exception:
+        return []
+
 def collect_rss_candidates(section_conf: SectionConfig, start_kst: datetime, end_kst: datetime) -> list[Article]:
     if not WHITELIST_RSS_URLS:
         return []
@@ -9374,6 +9515,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
         effective_start_kst = start_kst
 
     hits_by_query: dict[str, int] = {}
+    google_hits_by_query: dict[str, int] = {}
 
     api_items_by_query: dict[str, int] = {}    # raw items returned by API per query (before time/relevance filters)
     page1_full_queries: set[str] = set()       # API returned full display(=50) on page1 -> high volume hint
@@ -9496,6 +9638,62 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
             items.append(art)
             hits_by_query[q] = hits_by_query.get(q, 0) + 1
+
+    def _ingest_google_news_items(q: str, rows: Sequence[JsonDict]) -> None:
+        nonlocal items, _local_dedupe
+        for it in list(rows or []):
+            title = clean_text(it.get("title", ""))
+            desc = clean_text(it.get("description", ""))
+            link = strip_tracking_params(it.get("link", "") or "")
+            origin = strip_tracking_params(it.get("originallink", "") or link)
+            if not title or not origin:
+                continue
+
+            pub = _rss_pub_to_kst(it.get("pubDate", ""))
+            if not pub:
+                continue
+            if pub < effective_start_kst or pub >= end_kst:
+                continue
+
+            dom = domain_of(origin) or domain_of(link)
+            if not dom or is_blocked_domain(dom):
+                continue
+
+            source_press = clean_text(it.get("source", ""))
+            press_seed = source_press or press_name_from_url(origin or link)
+            press = normalize_press_label(press_seed, (origin or link))
+            if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
+                continue
+            if QUERY_ARTICLE_MATCH_GATE_ENABLED and (not _query_article_match_ok(q, title, desc, section_key)):
+                continue
+
+            canon = canonicalize_url(origin or link)
+            title_key = norm_title_key(title)
+            topic = extract_topic(title, desc)
+            norm_key = make_norm_key(canon, press, title_key)
+
+            if CROSSDAY_DEDUPE_ENABLED and (canon in RECENT_HISTORY_CANON or norm_key in RECENT_HISTORY_NORM):
+                continue
+            if not _local_dedupe.add_and_check(canon, press, title_key, norm_key):
+                continue
+
+            art = Article(
+                section=section_key,
+                title=title,
+                description=desc,
+                link=link or origin,
+                originallink=origin,
+                pub_dt_kst=pub,
+                domain=dom,
+                press=press,
+                norm_key=norm_key,
+                title_key=title_key,
+                canon_url=canon,
+                topic=topic,
+            )
+            art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
+            items.append(art)
+            google_hits_by_query[q] = google_hits_by_query.get(q, 0) + 1
 
     # -----------------------------
     # 1) Base pass: always 1 page
@@ -9734,6 +9932,36 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                                     items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
                                     items.sort(key=_sort_key_major_first, reverse=True)
                                 recall_meta["web_added"] = int(web_added)
+
+                    google_recall_candidate = bool(
+                        should_use_google_news_recall(end_kst)
+                        and GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION > 0
+                    )
+                    if google_recall_candidate:
+                        candidates_sorted = sorted(items, key=_sort_key_major_first, reverse=True)
+                        thr = _dynamic_threshold(candidates_sorted, section_key)
+                        pool_cnt = sum(1 for a in candidates_sorted if getattr(a, "score", 0.0) >= thr)
+                        still_need_google = (pool_cnt < min_n) or (len(items) < max(3, min_n))
+                        if still_need_google:
+                            google_qs = _build_web_recall_queries(section_key, fallback_qs or last_fallback_queries, None)
+                            google_qs = list(google_qs[:GOOGLE_NEWS_RECALL_QUERY_CAP_PER_SECTION])
+                            if google_qs:
+                                recall_meta["google_news_queries"] = list(google_qs)
+                                google_added = 0
+                                for gq in google_qs:
+                                    rows = fetch_google_news_search_items(
+                                        gq,
+                                        effective_start_kst,
+                                        end_kst,
+                                        item_cap=GOOGLE_NEWS_RECALL_ITEM_CAP,
+                                    )
+                                    before = len(items)
+                                    _ingest_google_news_items(gq, rows)
+                                    google_added += max(0, len(items) - before)
+                                if google_added > 0:
+                                    items = [a for a in items if (a.pub_dt_kst is not None) and (effective_start_kst <= a.pub_dt_kst < end_kst)]
+                                    items.sort(key=_sort_key_major_first, reverse=True)
+                                recall_meta["google_news_added"] = int(google_added)
     except Exception:
         # extra pass should never break the pipeline
         pass
@@ -9744,6 +9972,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
         try:
             hits_top = sorted(list(hits_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             api_top = sorted(list(api_items_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
+            google_top = sorted(list(google_hits_by_query.items()), key=lambda x: x[1], reverse=True)[:15]
             meta = {
                 "effective_window": {
                     "start_kst": effective_start_kst.isoformat() if isinstance(effective_start_kst, datetime) else str(effective_start_kst),
@@ -9753,6 +9982,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 "base_queries": list(queries[:30]),
                 "api_items_top": api_top,
                 "window_hits_top": hits_top,
+                "google_hits_top": google_top,
                 "page1_full_queries": sorted(list(page1_full_queries))[:20],
                 "recall_meta": recall_meta if isinstance(recall_meta, dict) else {},
                 "items_total": int(len(items)),

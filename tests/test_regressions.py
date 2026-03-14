@@ -59,6 +59,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('"농산물 수급 안정 대책"', self.text)
         self.assertIn('return _reject("flower_novelty_noise")', self.text)
         self.assertIn("def _build_web_recall_queries", self.text)
+        self.assertIn("GOOGLE_NEWS_RECALL_ENABLED", self.text)
+        self.assertIn("def build_google_news_rss_search_url", self.text)
+        self.assertIn("def fetch_google_news_search_items", self.text)
         self.assertIn("def reset_debug_report", self.text)
 
     def test_manual_force_report_date_short_circuits_in_main(self):
