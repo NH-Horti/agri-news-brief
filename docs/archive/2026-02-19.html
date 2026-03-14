@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="ef6efbd" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="0b9fe0a" />
+
   <title>[2026-02-19 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -32,6 +36,7 @@
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
     .navRow > *{min-width:0}
     .navBtn{white-space:nowrap}
@@ -94,6 +99,7 @@
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -135,14 +141,15 @@
     <div class="topin">
       <div>
         <h1>[2026-02-19 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-19 07:00 · 기사 16건</div>
+        <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-19 07:00 · 기사 13건</div>
       </div>
       <div class="navRow">
-  <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-  <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-02-13.html">◀ 이전</a>
-  <div class="dateSelWrap">
-    <select id="dateSelect" aria-label="날짜 선택">
-      <option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-02-13.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
 <option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
 <option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
 <option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
@@ -188,21 +195,21 @@
 <option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
 <option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
 <option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-    </select>
-  </div>
-  <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-02-20.html">다음 ▶</a>
-</div>
+          </select>
+        </div>
+        <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-02-20.html">다음 ▶</a>
+      </div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1">
+    <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">4</span></a>
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">4</span></a>
-<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">3</span></a></div>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">1</span></a></div>
       </div>
     </div>
   </div>
@@ -215,7 +222,7 @@
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">3건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#0f766e">
@@ -230,8 +237,8 @@
                 </div>
                 <a class="btnOpen" href="https://www.mediajeju.com/news/articleView.html?idxno=362911" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">수입 만다린 유입 속 물량 관리 성과…만감류 5031톤 판매</div>
-              <div class="sum">내 수급 균형을 이끌었다고 밝혔다. 센터에 따르면 2월 8일 기준 만감류 판매 실적은 5031톤, 415억원 규모다. 품목별로는 레드향 2568톤, 천혜향 1408톤, 한라봉 1055톤이 유통됐다. 센터는 제주농협조합공동법인, 제주 감귤 농...</div>
+              <div class="ttl">수입 만다린 유입 속 물량 관리 성과… 만감류 5031톤 판매</div>
+              <div class="sum">제주 만감류 가 출하 집중 시기 선제적 물량 조절과 판촉 확대에 힘입어 가격 안정 흐름을 이어가고 있다. 제주농산물수급관리센터는 10일 &#x27;2025년산 만감류 수급안정사업&#x27; 추진 결과를 발표하고, 출하 조절과 통합...</div>
             </div>
             
 
@@ -239,40 +246,6 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">세계일보</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/15 18:07</span>
-                  <span class="dot">·</span>
-                  <span class="topic">사과</span>
-                </div>
-                <a class="btnOpen" href="https://www.segye.com/newsView/20260215505252" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">&quot;할머니, 조상님도 미국산 소고기 좋아하실 거야&quot;…한우· 사과 값 폭격에...</div>
-              <div class="sum">이처럼 가격이 오른 이유는 이상 기후 및 작황 부진으로 과일 및 채소류의 가격이 상승한 영향이 크다. 한국농수산식품유통공사 가격정보에 따르면 사과 는 후지 상품 10개 평균 소매가격이 지난 13일 기준...</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">농민신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/16 20:01</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="https://www.nongmin.com/article/20260212500515" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">“12개 품목 선정”…정부, 올해 농축산물 수출 확대 박차</div>
-              <div class="sum">생산· 수급 여건 등을 종합 검토해 중점추진품목(안)을 마련했다. 이번 위원회에선 2026년 수출검역협상 중점추진품목으로 포도(페루), 배(튀르키예), 만감류(필리핀), 참외(중국·베트남·미국), 파프리카(칠레), 감귤 류...</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e">
-              <div class="cardTop">
-                <div class="meta">
-                  
                   <span class="press">헤럴드경제</span>
                   <span class="dot">·</span>
                   <span class="time">02/13 09:59</span>
@@ -299,7 +272,7 @@
                 <a class="btnOpen" href="https://biz.heraldcorp.com/article/10677013" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">‘꽃다발 선물’ 사라진 시대, 틈새 파고든 OO</div>
-              <div class="sum">지난해 12월 화훼 유통정보를 제공하는 한국농수산식품유통공사(aT) 화훼 사업센터 월간 거래 동향에 따르면 절화 주요 품목인 장미 1속 가격 은 1만4122원으로 전년 동월 대비 19원 올랐다. 백합 1속도 전년 동월 대비 1152원...</div>
+              <div class="sum">지난해 12월 화훼 유통정보를 제공하는 한국농수산식품유통공사(aT) 화훼사업센터 월간 거래 동향에 따르면 절화 주요 품목인 장미 1속 가격 은 1만4122원으로 전년 동월 대비 19원 올랐다. 백합 1속도 전년 동월 대비 1152원...</div>
             </div>
             </div>
             </section>
@@ -311,23 +284,23 @@
                   <span class="dotColor" style="background:#1d4ed8"></span>
                   정책 및 주요 이슈
                 </div>
-                <div class="secCount">4건</div>
+                <div class="secCount">5건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#1d4ed8">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">정책브리핑</span>
+                  <span class="press">서울경제</span>
                   <span class="dot">·</span>
-                  <span class="time">02/13 17:49</span>
+                  <span class="time">02/15 21:00</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="https://www.korea.kr/news/reporterView.do?newsId=148959464&amp;call_from=naver_news" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.sedaily.com/article/20009512" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">설 성수품의 안정적 공급으로 이번 설도 풍성하게 보낼 수 있어요</div>
-              <div class="sum">이번 설에는 어떤 품목이 할인 되는지 살펴보던 중, 설 성수품 공급 및 할인 지원 소식을 접했다. 정부는 이번... 50%까지 할인 한다. 농축수산물 뿐만 아니라 전국 하나로마트와 농협몰, 수협 등에서도 제수용품과 선물...</div>
+              <div class="ttl">“내일까지 장 봐야겠네”...설 물가 부담에 최대 40% 지원 나선다</div>
+              <div class="sum">정부는 소비자 부담을 덜기 위해 오는 16일까지 설 성수품 등을 대상으로 최대 40% 할인 지원에 나선다.... 고환율 영향을 받는 수입 과일 은 가격 부담이 여전하다. 망고 1개(상품)는 5874원으로 전년 대비 35.2...</div>
             </div>
             
 
@@ -335,16 +308,16 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">MBN</span>
+                  <span class="press">정책브리핑</span>
                   <span class="dot">·</span>
-                  <span class="time">02/15 20:00</span>
+                  <span class="time">02/16 08:58</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176103" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.korea.kr/news/policyNewsView.do?newsId=148959235&amp;call_from=naver_news" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">&quot;고기도 생선도 선뜻 못 집겠어요&quot; 40% 할인 지원에도 장 보기 &#x27;부담&#x27;</div>
-              <div class="sum">&quot; 배값은 그나마 떨어졌지만 딸기도 가격이 만만치 않고, 치솟은 환율에 수입산 과일 가격도 부담이 됩니다. 고기나 생선값도 만만치 않습니다. 축산물과 수산물 가격이 모두 작년보다 4% 넘게 상승해 그야말로 밥상 물가 ...</div>
+              <div class="ttl">모두가 민생회복 체감할 수 있게!</div>
+              <div class="sum">위한 대책 을 마련했다. 성수품 물가 안정 1. 성수품 물가 안정 장바구니 걱정 없는 넉넉한 명절 정부는 설 명절을 앞두고 농축수산물 가격 과 수급 안정 을 위해 16대 성수품 을 중심으로 역대 최대 규모의 공급과 할인...</div>
             </div>
             
 
@@ -352,16 +325,16 @@
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">헤럴드경제</span>
+                  <span class="press">데일리안</span>
                   <span class="dot">·</span>
-                  <span class="time">02/15 08:13</span>
+                  <span class="time">02/14 09:01</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="https://biz.heraldcorp.com/article/10677037" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.dailian.co.kr/news/view/1610821/?sc=Naver" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">설 앞두고 배 27%↑·한우 12%↑…정부, 최대 40% 할인 지원</div>
-              <div class="sum">농축산물 수급 동향과 할인지원 사업 현장을 점검하고 있다. [농림축산식품부 제공] [헤럴드경제=배문숙... 고환율 영향을 받는 수입 과일 도 올랐다. 망고는 1개(상품) 5874원으로 작년보다 35.2% 비싸고 평년보다 13.4...</div>
+              <div class="ttl">설 농축산물 물가 안정 …과실류는 ‘설 이후 상승’ 구조 고착</div>
+              <div class="sum">올해 설 명절 농축산물 물가는 전반적으로 안정 세를 보였지만, 사과·배 등 과실류는 명절 이후에도 가격 이... 정부의 설 명절 물가 안정 대책 은 공급 확대와 할인 지원을 중심으로 추진됐다. 올해는 10대 성수품 공급을...</div>
             </div>
             
 
@@ -369,16 +342,33 @@
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">파이낸셜뉴스</span>
+                  <span class="press">뉴스핌</span>
                   <span class="dot">·</span>
-                  <span class="time">02/15 13:23</span>
+                  <span class="time">02/16 06:00</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-                <a class="btnOpen" href="http://www.fnnews.com/news/202602151247596120" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.newspim.com/news/view/20260213001025" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">&quot;내일까지 장 봐야겠네&quot;···뛴 설 물가에 최대 40% 정부 지원</div>
-              <div class="sum">15일 한국농수산식품유통공사 농산물유통정보(KAMIS)에 따르면 사과 (후지 상품)는 10개 평균 소매 가격 이... 갈치는 국산 냉장(대) 한 마리가 1만5000원대로 전년보다 4%가량 가격 이 하락 했지만 국산 냉동(대)은...</div>
+              <div class="ttl">[AI로 읽는 경제] 명절마다 반복되는 할인 정책…&quot;취약계층·선별지원 전...</div>
+              <div class="sum">설 명절을 앞두고 정부가 주요 성수품 공급을 평시 대비 1.7배로 확대하고 566억원 규모 할인 지원에 나섰다.... 물가 안정대책 진단과 과제&#x27; 보고서에 따르면, 현재 농축산물 가격 은 전반적으로 지난해 추석 대비 안정 적인...</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">연합뉴스TV</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/15 16:18</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="http://www.yonhapnewstv.co.kr/MYH20260215161718f5K" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">명절 &#x27;밥상 물가 &#x27; 상승…정부, 할인 지원</div>
+              <div class="sum">고환율의 영향을 받는 수입 과일 값도 올라 망고는 지난해보다 35.2% 비싸고, 쌀값은 20㎏에 6만 2천여원으로... 이에 따라 정부는 오는 16일까지 대형마트와 전통시장 등에서 설 성수품 및 대체 소비 품목에 대해 최대...</div>
             </div>
             </div>
             </section>
@@ -397,6 +387,40 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="press">한국농어민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/13 17:08</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=401763" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">비상임 조합장 연임 2회 제한···농협법 개정안 국회 통과</div>
+              <div class="sum">개선 하고 금품선거를 근절하는 2차 개혁에도 나설 것&quot;이라며 &quot;농민을 위한 투명하고 건전한 조직으로 농협이 완전히 탈바꿈할 수 있도록 끝까지 챙기겠다&quot;고 밝혔다. 이날 본회의에서는 농수산물 온라인도매시장 의 법적...</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">02/14 11:01</span>
+                  <span class="dot">·</span>
+                  <span class="topic">딸기</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260213500515" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">“바쁘지만 행복해요”…명절도 반납한 ‘명품딸기 수출현장’ 가보니</div>
+              <div class="sum">전략 품목 정책인 ‘베리 굿 프로젝트(Berry Good Project)에 적극 참여하면서 수출품으로 육성됐다. 수출 주요... 남상주 농협 은 수출농가를 대상으로 기술교육과 선진지 견학을 펼치는 것은 물론 생산· 공동선별 ·수출까지 전...</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
                   <span class="press">농업정보신문</span>
                   <span class="dot">·</span>
                   <span class="time">02/13 12:08</span>
@@ -413,51 +437,17 @@
             <div class="card" style="border-left-color:#6d28d9">
               <div class="cardTop">
                 <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  <span class="press">shinailbo</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/18 10:08</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="http://www.shinailbo.co.kr/news/articleView.html?idxno=2192892" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">송옥주 의원 &quot;도매법인 평가때 자조금 거출 가점줘야&quot;</div>
-              <div class="sum">화훼 품목의 경우 자조금 단체가 농가들과 협의하고 총회 의결을 거쳐 공영도매시장 경매액의 0.75%를 자조금 으로 공제하고 있다. 송 의원은 &quot;정부·여당이 추진하고 있는 농산물가격안정제 도입과 함께 농산 자조금 법이...</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#6d28d9">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">한국농어민신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/13 17:08</span>
-                  <span class="dot">·</span>
-                  <span class="topic">도매시장</span>
-                </div>
-                <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=401745" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">도매시장 유통인, 설 맞아 어려운 이웃돕기 앞장</div>
-              <div class="sum">총 3000만원 상당의 제수용품 세트에는 사과 · 배 ·대추를 포함한 신선 과일과 김·북어포·약과 등 차례상 필수... 명절을 맞아 취약계층과 신선한 과일을 나누고, 수급 불균형과 가격 하락 으로 어려움을 겪는 포도 농가도...</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#6d28d9">
-              <div class="cardTop">
-                <div class="meta">
                   
                   <span class="press">뉴스1</span>
                   <span class="dot">·</span>
                   <span class="time">02/13 16:31</span>
                   <span class="dot">·</span>
-                  <span class="topic">정책</span>
+                  <span class="topic">도매시장</span>
                 </div>
                 <a class="btnOpen" href="https://www.news1.kr/local/gyeonggi/6073647" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">송옥주 의원 &quot;도매법인 자조금 거출, 평가에 반영해야&quot;</div>
-              <div class="sum">지난달 29일 국회를 통과한 ‘농수산물 유통 및 가격 안정에 관한 법률(농안법)’ 개정안에 따르면... 현재 개별 농가 직접 거출 방식의 납부율은 40~50% 수준이나, 도매시장을 통한 자동 거출 방식인 화훼 나 축산물(한우...</div>
+              <div class="sum">방식인 화훼 나 축산물(한우·한돈)은 100%에 가까운 납부율을 보이고 있다. 송 의원은 &quot;공영도매시장 수익이 해당 품목 생산 농업인을 위한 자조금 으로 재투자되는 선순환 체계가 필요하다&quot;며 &quot;특히 가락시장에서 거출된...</div>
             </div>
             </div>
             </section>
@@ -469,198 +459,483 @@
                   <span class="dotColor" style="background:#b45309"></span>
                   병해충 및 방제
                 </div>
-                <div class="secCount">3건</div>
+                <div class="secCount">1건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#b45309">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">연합뉴스</span>
+                  <span class="press">NEWSAM</span>
                   <span class="dot">·</span>
-                  <span class="time">02/14 09:10</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-                <a class="btnOpen" href="https://www.yna.co.kr/view/AKR20260212156600053?input=1195m" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">청송에 재해 대응형 하우스 사과 생산 시스템 보급…70억 투입</div>
-              <div class="sum">무인 방제 및 환경제어 시스템 구축 등을 한다. 농업기술원은 노지 재배의 한계인 탄저병 과 저온 피해 등을 원천 차단하는 하우스 재배의 장점에 초밀식 다축 재배를 결합해 생산성을 극대화할 수 있을 것으로 예상한다....</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#b45309">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  <span class="press">한겨레</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/16 10:02</span>
+                  <span class="time">02/13 10:58</span>
                   <span class="dot">·</span>
                   <span class="topic">병해충</span>
                 </div>
-                <a class="btnOpen" href="https://www.hani.co.kr/arti/society/society_general/1245202.html" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://www.newsam.co.kr/news/article.html?no=42137" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">트럼프 “기후변화는 사기극”…농사를 안 지어봐서 하는 소리다</div>
-              <div class="sum">고추 탄저병 은 밭 한쪽에서 발병하면 삽시간에 번지고, 농약을 뿌려도 방제 가 쉽지 않은 병이다. 탄저병 곰팡이 포자는 밭의 흙에 섞여 있다 빗물이 튈 때 주변 고추나무 가지나 열매로 전염된다. 고온다습하고 비가...</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#b45309">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">농수축산신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">02/13 09:42</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-                <a class="btnOpen" href="http://www.aflnews.co.kr/news/articleView.html?idxno=314444" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경북도, 미래형 사과 산업 선점...전국 최대 &#x27;재해대응형 하우스재배&#x27; 국...</div>
-              <div class="sum">무인 방제 와 환경제어 시스템 등이 포함된다. 시설하우스 내 초밀식 다축재배 특히 이번 모델은 노지 재배의 한계인 탄저병 과 저온 피해 등을 원천 차단하는 하우스재배의 강점에 생산성을 극대화한 &#x27;초밀식 다축 재배(2주...</div>
+              <div class="ttl">과수 냉해 예방, 3월이 오기 전 &#x27;골든타임&#x27; 잡아야</div>
+              <div class="sum">천지바이오는 배, 사과, 복숭아 등의 과수 농가의 냉해 , 동해 와 같은 저온 피해 를 예방하기 위해 3월이 오기 전 반드시 다음의 3단계 작업을 마칠 것을 권고했다. 첫째, 원줄기(주간부) 보호 조치이다. 2월~3월은 낮과 밤의...</div>
             </div>
             </div>
             </section>
             
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    
   </div>
 
-  <!-- build: ef6efbd -->
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <!-- UX_PATCH_BEGIN v20260301-uxnav-toast -->
   <script>
-  (function(){
-    var navRow = document.querySelector('.navRow');
-    var navLoading = document.getElementById('navLoading');
+    (function() {
 
-    function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
-    function _showLoading(){
-      try{
-        if(navLoading) navLoading.classList.add('show');
-        setTimeout(_hideLoading, 1200);
-      }catch(e){}
-    }
-
-    function _toast(msg){
-      try{
-        var t = document.getElementById('uxToast');
-        if(!t){
-          t = document.createElement('div');
-          t.id = 'uxToast';
-          t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
-          document.body.appendChild(t);
-        }
-        t.textContent = msg || '이동할 브리핑이 없습니다.';
-        t.style.display = 'block';
-        clearTimeout(t.__t);
-        t.__t = setTimeout(function(){ t.style.display='none'; }, 1600);
-      }catch(e){}
-    }
-
-    function _getHref(el){
-      if(!el) return '';
-      try{
-        var tag = (el.tagName||'').toLowerCase();
-        if(tag === 'a') return el.getAttribute('href') || el.href || '';
-        return el.getAttribute('data-href') || el.getAttribute('href') || '';
-      }catch(e){ return ''; }
-    }
-    function _isDisabled(el){
-      try{
-        if(!el) return true;
-        if(el.disabled) return true;
-        if(el.classList && el.classList.contains('disabled')) return true;
-        return false;
-      }catch(e){ return true; }
-    }
-
-    function _pick(kind){
-      if(!navRow) return null;
-      var el = navRow.querySelector('[data-nav="' + kind + '"]');
-      if(el) return el;
-      var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
-      for(var i=0;i<btns.length;i++){
-        var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute? (btns[i].getAttribute('title')||'') : '');
-        if(kind==='prev' && t.indexOf('이전')>=0) return btns[i];
-        if(kind==='next' && t.indexOf('다음')>=0) return btns[i];
-      }
-      return null;
-    }
-
-    function _bindNav(el, msg){
-      if(!el || !el.addEventListener) return;
-      el.addEventListener('click', function(e){
-        var href = _getHref(el);
-        if(!href || _isDisabled(el)){
-          try{ e.preventDefault(); }catch(_e){}
-          _hideLoading();
-          _toast(msg);
-          return false;
-        }
-        _showLoading();
-      }, true);
-    }
-
-    var prev = _pick('prev');
-    var next = _pick('next');
-    _bindNav(prev, '이전 브리핑이 없습니다.');
-    _bindNav(next, '다음 브리핑이 없습니다.');
-
-    var sel = document.getElementById('dateSelect');
-    if(sel){
-      try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
-      sel.addEventListener('change', function(){
-        var v = sel.value;
-        if(!v) return;
-        _showLoading();
-        window.location.href = v;
-      });
-    }
-
-    var sx=0, sy=0;
-    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
-    if(swipeArea && swipeArea.addEventListener){
-      swipeArea.addEventListener('touchstart', function(e){
-        try{
-          var t = e.changedTouches[0];
-          sx = t.clientX; sy = t.clientY;
-        }catch(_e){}
-      }, {passive:true});
-      swipeArea.addEventListener('touchend', function(e){
-        try{
-          var t = e.changedTouches[0];
-          var dx = t.clientX - sx;
-          var dy = t.clientY - sy;
-          if(Math.abs(dx) < 60) return;
-          if(Math.abs(dx) < Math.abs(dy)) return;
-          if(dx > 0) {
-            var p = prev || _pick('prev');
-            var href = _getHref(p);
-            if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
-            _showLoading(); window.location.href = href; return;
-          } else {
-            var n = next || _pick('next');
-            var href2 = _getHref(n);
-            if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
-            _showLoading(); window.location.href = href2; return;
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
           }
-        }catch(_e){}
-      }, {passive:true});
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
+        }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
+      }
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    var href = String(window.location.href || "");
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
     }
-  })();
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = _getRootPrefix() + "archive_manifest.json";
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    window.location.href = url;
+    return;
+  }
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      window.location.href = url;
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selected = window.getSelection ? String(window.getSelection()) : "";
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
   </script>
-  <!-- UX_PATCH_END -->
+  <!-- build: 0b9fe0a -->
+
 </body>
 </html>
