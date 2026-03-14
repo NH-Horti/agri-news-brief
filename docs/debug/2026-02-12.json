@@ -1,0 +1,3243 @@
+{
+  "generated_at_kst": "2026-03-15T00:56:40+09:00",
+  "build_tag": "001502c",
+  "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "dtnews24",
+      "domain": "dtnews24.com",
+      "title": "전통시장 설 차례상 비용 최저...백화점보다 29만 원 절약",
+      "url": "http://www.dtnews24.com/news/articleView.html?idxno=806988"
+    },
+    {
+      "section": "policy",
+      "reason": "excluded_items",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소. 과일 은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "policy",
+      "reason": "fishery_title_only",
+      "press": "전남매일",
+      "domain": "jndn.com",
+      "title": "채소·과일·수산물 값 ‘들썩’…장바구니 부담",
+      "url": "http://www.jndn.com/article.php?aid=1770800601427166004"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "joongboo",
+      "domain": "joongboo.com",
+      "title": "\"명절인지 평일인지\"… '간소한 차례상' 달라진 명절문화에 특수 사라져",
+      "url": "https://www.joongboo.com/news/articleView.html?idxno=363717070"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "현대이지웰, 복지몰 인기 설 선물은 '한라봉·한우' … 13일까지 판매",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/11/2026021100101.html"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "한겨레",
+      "domain": "hani.co.kr",
+      "title": "조국 “민주당 제안 ‘통합 준비위’ 동의…정청래 사과 수용”",
+      "url": "https://www.hani.co.kr/arti/politics/politics_general/1244427.html"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소. 과일 은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "강원일보",
+      "domain": "kwnews.co.kr",
+      "title": "태백 4인 가족 차례상 비용 31만3,880원…전년대비 5.3% 상승",
+      "url": "https://www.kwnews.co.kr/page/view/2026021111425785452"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "[포토] '한국감협회' 명칭 변경",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=06182806645349536"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "보건신문",
+      "domain": "bokuennews.com",
+      "title": "'한국감협회'로 명칭 변경",
+      "url": "http://www.bokuennews.com/news/article.html?no=273748"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "dtnews24",
+      "domain": "dtnews24.com",
+      "title": "전통시장 설 차례상 비용 최저...백화점보다 29만 원 절약",
+      "url": "http://www.dtnews24.com/news/articleView.html?idxno=806988"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "skbroadband",
+      "domain": "news.skbroadband.com",
+      "title": "주간알뜰장보기 / 2월2주",
+      "url": "https://news.skbroadband.com/news/articleView.html?idxno=217965"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "skbroadband",
+      "domain": "news.skbroadband.com",
+      "title": "주간알뜰장보기 / 2월2주",
+      "url": "https://news.skbroadband.com/news/articleView.html?idxno=217965"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "SENTV",
+      "domain": "sentv.co.kr",
+      "title": "소진공 “설 장보기 전통시장서…온누리상품권 환급도”",
+      "url": "https://www.sentv.co.kr/article/view/sentv202602110022"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "[포토] '한국감협회' 명칭 변경",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=06182806645349536"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "설 차례상 비용, 가락몰이 대형마트보다 24% 저렴",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314275"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "보건신문",
+      "domain": "bokuennews.com",
+      "title": "'한국감협회'로 명칭 변경",
+      "url": "http://www.bokuennews.com/news/article.html?no=273748"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "inews365",
+      "domain": "inews365.com",
+      "title": "이재명 대통령, 충주서 '설 민심 행보'…\"굶지 말고 훔치지 말자\" 당부",
+      "url": "https://www.inews365.com/news/article.html?no=906895"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "강원일보",
+      "domain": "kwnews.co.kr",
+      "title": "태백 4인 가족 차례상 비용 31만3,880원…전년대비 5.3% 상승",
+      "url": "https://www.kwnews.co.kr/page/view/2026021111425785452"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_field",
+      "press": "jejumaeil",
+      "domain": "jejumaeil.net",
+      "title": "제주시, 남원시와 설 앞두고 만감류 직거래 협력 강화",
+      "url": "http://www.jejumaeil.net/news/articleView.html?idxno=355413"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_field",
+      "press": "JEMIN",
+      "domain": "jemin.com",
+      "title": "제주시·남원시, 설 맞아 만감류 직거래 협력 강화",
+      "url": "https://www.jemin.com/news/articleView.html?idxno=833505"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_field",
+      "press": "중도일보",
+      "domain": "joongdo.co.kr",
+      "title": "제주특별시-남원시, 만감류 직거래 협력 강화",
+      "url": "https://www.joongdo.co.kr/web/view.php?key=20260211010004232"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_field",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "제주시-남원시, 만감류 직거래 협력 강화",
+      "url": "http://www.shinailbo.co.kr/news/articleView.html?idxno=2191218"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_field",
+      "press": "getnews",
+      "domain": "getnews.co.kr",
+      "title": "제주시, 설 맞아 남원시와 만감류 직거래 협력 강화",
+      "url": "https://www.getnews.co.kr/news/articleView.html?idxno=860975"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "sommeliertimes",
+      "domain": "sommeliertimes.com",
+      "title": "아마로네 와인과 밀라노-코르티나 동계올림픽의 도시, 베로나에서 열린...",
+      "url": "https://www.sommeliertimes.com/news/articleView.html?idxno=130299"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "설맞이 전국 우수인증 로컬푸드 직매장 할인 행사 진행",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63768"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "춘천시, 강원여성구직활동 지원사업 참여자 모집",
+      "url": "http://www.shinailbo.co.kr/news/articleView.html?idxno=2190999"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "문화일보",
+      "domain": "munhwa.com",
+      "title": "공매도 대기자금 141조 사상최대… 변동성 더 커지나",
+      "url": "https://www.munhwa.com/article/11567778"
+    },
+    {
+      "section": "supply",
+      "reason": "hard_offtopic_no_agri_context",
+      "press": "IMAEIL",
+      "domain": "imaeil.com",
+      "title": "증시 랠리에 대차잔고도 141조…공매도로 변동성 더 키우나",
+      "url": "https://www.imaeil.com/page/view/2026021109484608086"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "스포츠서울",
+      "domain": "sportsseoul.com",
+      "title": "춘천시, 강원여성구직활동 지원사업 참여자 모집",
+      "url": "https://www.sportsseoul.com/news/read/1585455"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "노동력 감소 속 '스마트팜ㆍ품종 차별화'가 과채 산업의 생존 열쇠",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117253"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "노동력 감소 속 '스마트팜ㆍ품종 차별화'가 과채 산업의 생존 열쇠",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117253"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "농금원, 지난해 농어업 정책 보험 가입 72조원 넘어…올해 2660억 규모 신...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117270"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "THE-PR",
+      "domain": "the-pr.co.kr",
+      "title": "오리온, 해외 성장 힘입어 배당 40% 늘린다...주주환원 강화 정책 펼쳐",
+      "url": "https://www.the-pr.co.kr/news/articleView.html?idxno=60515"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "노동력 감소 속 '스마트팜ㆍ품종 차별화'가 과채 산업의 생존 열쇠",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117253"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "한국영농신문",
+      "domain": "youngnong.co.kr",
+      "title": "aT 광주전남지역본부 \"설 앞두고 농수산물 일부 품목 가격 상승\"",
+      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57528"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "[르포] 사과 1개에 9천원 … 설 앞두고 장보러 갔더니 '이렇게 비쌌나' ...",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/11/2026021100127.html"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_tech_path_no_agri",
+      "press": "동아일보",
+      "domain": "donga.com",
+      "title": "“한복·떡국, 멍쫀쿠까지”… ‘프리미엄 펫 산업’ 커진다",
+      "url": "https://www.donga.com/news/Culture/article/all/20260211/133345456/1"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "skbroadband",
+      "domain": "news.skbroadband.com",
+      "title": "주간알뜰장보기 / 2월2주",
+      "url": "https://news.skbroadband.com/news/articleView.html?idxno=217965"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "노동력 감소 속 '스마트팜ㆍ품종 차별화'가 과채 산업의 생존 열쇠",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117253"
+    },
+    {
+      "section": "supply",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_title_only",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "새벽 도매시장 가보니.. 채소.과일은 맑음, 수산물.육류는 흐림",
+      "url": "https://kjmbc.co.kr/NewsArticle/1504822"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "제주시, 고양서 만감류 소비촉진 캠페인 전개",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401569"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "siminsori",
+      "domain": "siminsori.com",
+      "title": "강진군민장학재단, 장학금 기탁 잇따라…지역 인재 육성 온기 확산",
+      "url": "http://www.siminsori.com/news/articleView.html?idxno=311266"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "안정열 안성시의회 의장 \"농업은 안성의 미래…혁신으로 경쟁력 높일 것...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401583"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "제주시, 고양서 만감류 소비촉진 캠페인 전개",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401569"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "newsworker",
+      "domain": "newsworker.co.kr",
+      "title": "강진군민장학재단, 지역사회 온정으로 미래 인재 키운다",
+      "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=413940"
+    },
+    {
+      "section": "dist",
+      "reason": "finance_strict_no_agri_context",
+      "press": "tournews21",
+      "domain": "tournews21.com",
+      "title": "김종민 광주은행 부행장, 강진군장학재단에 1천만원 기탁",
+      "url": "https://www.tournews21.com/news/articleView.html?idxno=129429"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "IMINJU",
+      "domain": "iminju.net",
+      "title": "전남 강진군민장학재단, 지역사회 온정으로 미래 인재 키운다",
+      "url": "http://www.iminju.net/news/articleView.html?idxno=157835"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "siminilbo",
+      "domain": "siminilbo.co.kr",
+      "title": "강진군민장학재단, 지역사회 온정으로 미래 인재 육성 가속",
+      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160271011257870"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "강진군민장학재단, 장학금 기탁 잇따라···지역 인재 육성 '온정 확산...",
+      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2393545"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "안정열 안성시의회 의장 \"농업은 안성의 미래…혁신으로 경쟁력 높일 것...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401583"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "jejusori",
+      "domain": "jejusori.net",
+      "title": "제주 만감류 '선제적 수급관리' 통했다…농가-소비자 '가교' 톡톡",
+      "url": "https://www.jejusori.net/news/articleView.html?idxno=443783"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "'천년이음 나주배' 프리미엄 시식 행사로 판촉 성과",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314238"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "headlinejeju",
+      "domain": "headlinejeju.co.kr",
+      "title": "제주 만감류 선제적 수급관리, '가격안정.소비촉진' 효과 톡톡",
+      "url": "http://www.headlinejeju.co.kr/news/articleView.html?idxno=586755"
+    },
+    {
+      "section": "dist",
+      "reason": "apple_non_edible_context",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "sommeliertimes",
+      "domain": "sommeliertimes.com",
+      "title": "아마로네 와인과 밀라노-코르티나 동계올림픽의 도시, 베로나에서 열린...",
+      "url": "https://www.sommeliertimes.com/news/articleView.html?idxno=130299"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_only",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "통영시, 농축산물 원산지 표시 특별 단속 실시",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=534551"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "김대현(신임 국립원예특작과학원장) - 국민체감형 연구기관 3대 원칙, 현...",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63740"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "프라임경제",
+      "domain": "newsprime.co.kr",
+      "title": "\"산불, 한순간도 방심 없다\"…당진시, 44명 통합대응단·무인감시망 전면 가동",
+      "url": "https://m.newsprime.co.kr/section_view.html?no=724047&menu=index"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "전북금강일보",
+      "domain": "gkg.co.kr",
+      "title": "산림재난으로부터 군민 안전 지킨다",
+      "url": "https://m.gkg.co.kr/a.html?uid=178245"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+      "url": "https://dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "식탁물가 들썩이자…20년 만에 '가격 재결정 명령' 꺼냈다",
+      "url": "https://hankyung.com/article/2026021198761"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "정부, '민생물가 TF' 가동…담합· 유통 구조까지 전방위 점검",
+      "url": "https://newsis.com/view/NISX20260211_0003511433"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "20년 만에 '가격 재결정 명령' 꺼냈다 … 담합 땐 가격 강제 조정",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/11/2026021100495.html"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "taxtimes",
+      "domain": "taxtimes.co.kr",
+      "title": "보세구역 반출의무 위반 23개 업체 적발…185억 추징",
+      "url": "https://taxtimes.co.kr/news/article.html?no=273809"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "INTN",
+      "domain": "intn.co.kr",
+      "title": "관세청, 할당관세 불법· 부정 적용 행위 엄단...수입 물가안정 총력전",
+      "url": "https://intn.co.kr/news/articleView.html?idxno=2049002"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "사천 농관원, 전통시장서 '올바른 원산지 표시 캠페인' 전개",
+      "url": "https://newsgn.com/news/articleView.html?idxno=534540"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "joseilbo",
+      "domain": "joseilbo.com",
+      "title": "관세청, 할당관세 불법· 부정 적용 엄단.. \"수입 물가안정 총력\"",
+      "url": "https://joseilbo.com/news/news_read.php?uid=562775&class=8&grp="
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "newsprime",
+      "domain": "newsprime.co.kr",
+      "title": "[통영시 소식] 통영시, 설 명절 앞두고…'청렴통영' 캠페인 전개",
+      "url": "https://newsprime.co.kr/news/article.html?no=724044"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "NAEIL",
+      "domain": "naeil.com",
+      "title": "‘물가도둑’ 잡는 장관TF 가동 …“안 내리면 가격 강제조정”",
+      "url": "https://naeil.com/news/read/577830"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "올해 어떤 고추품종이 좋을까?",
+      "url": "https://agrinet.co.kr/news/articleView.html?idxno=401570"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "올해 어떤 고추품종이 좋을까?",
+      "url": "https://agrinet.co.kr/news/articleView.html?idxno=401570"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "samdailbo",
+      "domain": "samdailbo.com",
+      "title": "제주도, 만감류 유통 관리·소비 촉진 등 지원 총력",
+      "url": "https://samdailbo.com/news/articleView.html?idxno=259503"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "samdailbo",
+      "domain": "samdailbo.com",
+      "title": "제주도, 만감류 유통 관리·소비 촉진 등 지원 총력",
+      "url": "https://samdailbo.com/news/articleView.html?idxno=259503"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "설 차례상 비용, 가락몰이 대형마트보다 24% 저렴",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=314275"
+    }
+  ],
+  "sections": {
+    "supply": {
+      "threshold": 30.92,
+      "tail_cut": 31.32,
+      "core_min": 30.92,
+      "total_candidates": 51,
+      "total_selected": 2,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 38.92,
+          "tier": 3,
+          "press": "YTN",
+          "domain": "ytn.co.kr",
+          "title": "제주산 만감류 가격 회복세...\"고품질 출하·소비 대책 영향\"",
+          "url": "https://www.ytn.co.kr/_ln/0115_202602111724322674",
+          "reason": "",
+          "signals": {
+            "horti_sc": 7.9,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 31.22,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "설 차례상 비용, 가락몰이 대형마트보다 24% 저렴",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314275",
+          "reason": "",
+          "signals": {
+            "horti_sc": 3.1,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 25.65,
+          "tier": 3,
+          "press": "YTN",
+          "domain": "ytn.co.kr",
+          "title": "제주산 만감류, 품질·신선도로 수입산과 경쟁",
+          "url": "https://www.ytn.co.kr/_ln/0115_202602112108563114",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 6.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 25.11,
+          "tier": 1,
+          "press": "headlinejeju",
+          "domain": "headlinejeju.co.kr",
+          "title": "제주 만감류 선제적 수급관리, '가격안정.소비촉진' 효과 톡톡",
+          "url": "http://www.headlinejeju.co.kr/news/articleView.html?idxno=586755",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 24.79,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "제주 만감류 선제적 수급 관리 효과…\"가격 안정·소비 촉진\"",
+          "url": "https://www.newsis.com/view/NISX20260211_0003511160",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.9,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.36,
+          "tier": 3,
+          "press": "파이낸셜뉴스",
+          "domain": "fnnews.com",
+          "title": "떫은감 협회→'감' 협회로 이름 바뀐다",
+          "url": "http://www.fnnews.com/news/202602111539392307",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.16,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "제주산 만감류 선제적 대책 통했다 '5031t 판매'",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=355417",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.99,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "'농심천심' 실천 나선 농협 서귀포시지부, 설명절 만감류로 고객 사은행...",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=314245",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 8.9,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.36,
+          "tier": 1,
+          "press": "jejusori",
+          "domain": "jejusori.net",
+          "title": "제주 만감류 '선제적 수급관리' 통했다…농가-소비자 '가교' 톡톡",
+          "url": "https://www.jejusori.net/news/articleView.html?idxno=443783",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.11,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "농협경제, '한국떫은감협회'→'한국감협회'로 명칭 변경",
+          "url": "https://www.newsis.com/view/NISX20260211_0003510961",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.27,
+          "tier": 3,
+          "press": "매일경제",
+          "domain": "mk.co.kr",
+          "title": "“두쫀쿠 제쳤다”… 강주은 흑 곶감 에 최민수 엄지척",
+          "url": "https://www.mk.co.kr/article/11960312",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.19,
+          "tier": 3,
+          "press": "서울신문",
+          "domain": "seoul.co.kr",
+          "title": "“설 선물은 지역 특산으로”…지자체, 샤인머스켓 와인·돌산갓·천마...",
+          "url": "https://www.seoul.co.kr/news/society/2026/02/11/20260211500113?wlog_tag3=naver",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 5,
+            "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.94,
+          "tier": 3,
+          "press": "서울신문",
+          "domain": "seoul.co.kr",
+          "title": "참외 강정·돌산갓… “설 선물은 지역 특산품”",
+          "url": "https://www.seoul.co.kr/news/publicnews/local_govern/2026/02/12/20260212019007?wlog_tag3=naver",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 15.66,
+          "tier": 2,
+          "press": "팜&마켓",
+          "domain": "farmnmarket.com",
+          "title": "‘떫은감’에서 ‘감’으로... 「한국감협회」 명칭 변경",
+          "url": "https://www.farmnmarket.com/news/article.html?no=25634",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 15.43,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "제주시, 고양서 만감류 소비촉진 캠페인 전개",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401569",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 5.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.44,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "일조량 부족한 겨울에도 다수확 [디지털농업 I 주목받는 신품종]",
+          "url": "https://www.nongmin.com/article/20260211500043",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.59,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "올해 어떤 고추품종이 좋을까?",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401570",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.39,
+          "tier": 1,
+          "press": "newsjeju",
+          "domain": "newsjeju.net",
+          "title": "아라동 단체장협의회 회의 개최 - 지역 현안 공유 및 협력체계 강화",
+          "url": "https://www.newsjeju.net/news/articleView.html?idxno=416346",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.1,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.74,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "'설엔 역시 제주 만감류 '...제주도, 소비촉진·유통 안정 총력",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401605",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.9,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.41,
+          "tier": 1,
+          "press": "newsdream",
+          "domain": "newsdream.kr",
+          "title": "농협경제, '떫은감협회' 명칭 '감협회'로 바꿨다",
+          "url": "http://www.newsdream.kr/news/articleView.html?idxno=107569",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.41,
+          "tier": 1,
+          "press": "discoverynews",
+          "domain": "discoverynews.kr",
+          "title": "농협, '떫은감'에서 '감'으로... '한국감협회' 명칭 변경",
+          "url": "https://www.discoverynews.kr/news/articleView.html?idxno=1085018",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.35,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "지역농산물 유통구조 이끌어가는 품목농협 - 익산원예농협",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63798",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.1,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.16,
+          "tier": 1,
+          "press": "NEWSCJ",
+          "domain": "newscj.com",
+          "title": "정읍시, 설 앞두고 고품질 만감류 출하 본격화",
+          "url": "https://www.newscj.com/news/articleView.html?idxno=3374189",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.96,
+          "tier": 1,
+          "press": "newswhoplus",
+          "domain": "newswhoplus.com",
+          "title": "한국감협회, '떫은감' 떼고 명칭 변경",
+          "url": "https://www.newswhoplus.com/news/articleView.html?idxno=54170",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.96,
+          "tier": 1,
+          "press": "worktoday",
+          "domain": "worktoday.co.kr",
+          "title": "'떫은감'에서 '감'으로 ... '한국감협회' 명칭 변경",
+          "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=81185",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.54,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "donga.com",
+          "title": "강아지도 설에 한복 입고 떡국 먹고… 펫 소비시장 고급화 가속",
+          "url": "https://www.donga.com/news/Economy/article/all/20260211/133348035/2",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.33,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "양산시, 설 명절 공원묘원 생화 무료나눔 행사 진행",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534560",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.96,
+          "tier": 1,
+          "press": "QUEEN",
+          "domain": "queen.co.kr",
+          "title": "'떫은감'에서 '감'으로... '한국감협회'로 명칭 변경",
+          "url": "http://www.queen.co.kr/news/articleView.html?idxno=451320",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.96,
+          "tier": 1,
+          "press": "BBSI",
+          "domain": "news.bbsi.co.kr",
+          "title": "'떫은감'에서 '감'으로...'한국감협회' 명칭 변경",
+          "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4066888",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.95,
+          "tier": 1,
+          "press": "foodnews",
+          "domain": "foodnews.co.kr",
+          "title": "노동력 감소 속 '스마트팜ㆍ품종 차별화'가 과채 산업의 생존 열쇠",
+          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117253",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.23,
+          "tier": 1,
+          "press": "경남일보",
+          "domain": "gnnews.co.kr",
+          "title": "진주·양산시, 친환경 조문문화 정착 생화 1800다발 제공",
+          "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=630434",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.23,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "진주시 \"공원묘원 내 생화 사용\"",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534653",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.19,
+          "tier": 1,
+          "press": "한국영농신문",
+          "domain": "youngnong.co.kr",
+          "title": "올가홀푸드, '시그니처 1%' 앞세운 2026 설 선물세트 본행사 전개",
+          "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57514",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.99,
+          "tier": 1,
+          "press": "EKN",
+          "domain": "ekn.kr",
+          "title": "경북도·경북교육청, 민생·미래·교육 전방위 정책 행보",
+          "url": "https://www.ekn.kr/web/view.php?key=20260211024138536",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.82,
+          "tier": 1,
+          "press": "데일리한국",
+          "domain": "daily.hankooki.com",
+          "title": "현대이지웰 \"설 선물, '한라봉·한우' 강세…판매량 전년 대비 20%↑\"",
+          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1334829",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.43,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "'서귀포in정' 2021년 출범 후 작년 처음 역성장",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=355375",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 5.1,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.78,
+          "tier": 1,
+          "press": "SIDAE",
+          "domain": "sidae.com",
+          "title": "[진주 소식] \"성묘땐 조화대신 생화를 사용하세요\"",
+          "url": "https://www.sidae.com/article/2026021114102053458",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.51,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "음성군, 농촌 인력난 해소 '3대 공급망' 조기 가동",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63744",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.29,
+          "tier": 1,
+          "press": "samdailbo",
+          "domain": "samdailbo.com",
+          "title": "제주도, 만감류 유통 관리·소비 촉진 등 지원 총력",
+          "url": "http://www.samdailbo.com/news/articleView.html?idxno=259503",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.9,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.51,
+          "tier": 1,
+          "press": "DNEWS",
+          "domain": "dnews.co.kr",
+          "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+          "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.35,
+          "tier": 1,
+          "press": "경남도민일보",
+          "domain": "idomin.com",
+          "title": "경남도, 설 연휴 '친환경 추모' 위해 생화 나눔행사 마련",
+          "url": "https://www.idomin.com/news/articleView.html?idxno=956286",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.21,
+          "tier": 1,
+          "press": "kwangju",
+          "domain": "kwangju.co.kr",
+          "title": "“달콤한 사랑을 전하세요”",
+          "url": "http://www.kwangju.co.kr/article.php?aid=1770805800795599280",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.09,
+          "tier": 1,
+          "press": "startuptoday",
+          "domain": "startuptoday.co.kr",
+          "title": "한국맥도날드, '한국의 맛' 판매 3000만 개 돌파",
+          "url": "https://www.startuptoday.co.kr/news/articleView.html?idxno=584877",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.8,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "경남도, 설 연휴 친환경 추모문화 확산 위한 생화 나눔 행사 진행",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534618",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.64,
+          "tier": 1,
+          "press": "smartbizn",
+          "domain": "smartbizn.com",
+          "title": "제주특별시-남원시, 만감류 직거래 지속가능 모델 구축 논의",
+          "url": "https://www.smartbizn.com/news/articleView.html?idxno=135733",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.9,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.83,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "양산시 설 명절 공원묘원 생화 무료나눔 행사 진행",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465280",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 1.59,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "설 앞두고 사과· 배 똑똑하게 고르는 요령 안내",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63787",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 1.03,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "진주시 '플라스틱 조화 근절' 친환경 공원묘원 조성",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465326",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.3,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.9,
+          "tier": 1,
+          "press": "gnmaeil",
+          "domain": "gnmaeil.com",
+          "title": "설 성묘객 생화 무료 나눔... 14일부터 선착순 2900다발",
+          "url": "http://www.gnmaeil.com/news/articleView.html?idxno=580580",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.4,
+          "tier": 1,
+          "press": "straightnews",
+          "domain": "straightnews.co.kr",
+          "title": "경남, 설 성묘길에 생화 한 다발",
+          "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=294832",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.7,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "경남도 설 연휴 친환경 추모문화 확산 생화 나눔 행사",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465191",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    },
+    "policy": {
+      "threshold": 26.79,
+      "tail_cut": 26.99,
+      "core_min": 26.79,
+      "total_candidates": 23,
+      "total_selected": 3,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 34.79,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "올 설 차례상 비용 '평균 20만2691원'",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401641",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 31.96,
+          "tier": 3,
+          "press": "정책브리핑",
+          "domain": "korea.kr",
+          "title": "정부, '민생물가 특별관리 TF' 출범…\"상반기 민생품목 집중 점검\"",
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148959419&call_from=naver_news",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 1,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 4,
+            "press_weight": 13.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 30.71,
+          "tier": 3,
+          "press": "한국경제",
+          "domain": "hankyung.com",
+          "title": "식탁물가 들썩이자…20년 만에 '가격 재결정 명령' 꺼냈다",
+          "url": "https://www.hankyung.com/article/2026021198761",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 1,
+            "strength": 4,
+            "korea": 1,
+            "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.35,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "정부, '민생물가 TF' 가동…담합· 유통 구조까지 전방위 점검",
+          "url": "https://www.newsis.com/view/NISX20260211_0003511433",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 6,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.81,
+          "tier": 1,
+          "press": "ksmnews",
+          "domain": "ksmnews.co.kr",
+          "title": "경북도, 설 명절 차례상 과일 수급 안정 총력",
+          "url": "https://www.ksmnews.co.kr/news/view.php?idx=590331",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.81,
+          "tier": 1,
+          "press": "중도일보",
+          "domain": "joongdo.co.kr",
+          "title": "경북도, 설 명절 차례상 과일 수급 안정 현장 점검",
+          "url": "https://www.joongdo.co.kr/web/view.php?key=20260211010003934",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.16,
+          "tier": 1,
+          "press": "POINTE",
+          "domain": "pointe.co.kr",
+          "title": "경북도, 설 앞두고 사과 등 차례상 과일 수급 안정 총력",
+          "url": "https://www.pointe.co.kr/news/articleView.html?idxno=71720",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.58,
+          "tier": 1,
+          "press": "headlinejeju",
+          "domain": "headlinejeju.co.kr",
+          "title": "제주 만감류 , 설 앞두고 가격 회복세 뚜렷...14~16% 상승",
+          "url": "http://www.headlinejeju.co.kr/news/articleView.html?idxno=586839",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.9,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.51,
+          "tier": 1,
+          "press": "kyongbuk",
+          "domain": "kyongbuk.co.kr",
+          "title": "설 앞두고 사과값 다시 상승…경북도, 과일 수급 안정 총력",
+          "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4064418",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 3,
+            "strength": 8,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.4,
+          "tier": 1,
+          "press": "뉴데일리경제",
+          "domain": "biz.newdaily.co.kr",
+          "title": "20년 만에 '가격 재결정 명령' 꺼냈다 … 담합 땐 가격 강제 조정",
+          "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/11/2026021100495.html",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.88,
+          "tier": 1,
+          "press": "DNEWS",
+          "domain": "dnews.co.kr",
+          "title": "[경북 브리핑 모음 ( 2월 11일) 국립백두대간수목원 , 산림 재래원종 20...",
+          "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202602111319102010626",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.21,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "원예인 新農直說 - 화훼 산업, 도전에서 응전으로 발전 위해 최선 다 할...",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63806",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.36,
+          "tier": 1,
+          "press": "NAEIL",
+          "domain": "naeil.com",
+          "title": "청과 도매법인 포도 1만상자 기부",
+          "url": "https://www.naeil.com/news/read/577842",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 3,
+            "strength": 6,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.22,
+          "tier": 1,
+          "press": "yeongnam",
+          "domain": "yeongnam.com",
+          "title": "‘5만원으로 차리는 차례상’…영남일보 3년째 ‘설 장바구니 실험’",
+          "url": "https://www.yeongnam.com/web/view.php?key=20260211022195984",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.34,
+          "tier": 1,
+          "press": "INTN",
+          "domain": "intn.co.kr",
+          "title": "관세청, 할당관세 불법· 부정 적용 행위 엄단...수입 물가안정 총력전",
+          "url": "http://www.intn.co.kr/news/articleView.html?idxno=2049002",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.76,
+          "tier": 1,
+          "press": "강원일보",
+          "domain": "kwnews.co.kr",
+          "title": "태백 4인 가족 차례상 비용 31만3,880원…전년대비 5.3% 상승",
+          "url": "https://www.kwnews.co.kr/page/view/2026021111425785452",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.46,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "사천 농관원, 전통시장서 '올바른 원산지 표시 캠페인' 전개",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534540",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.46,
+          "tier": 1,
+          "press": "뉴데일리경제",
+          "domain": "biz.newdaily.co.kr",
+          "title": "\"숫자보다 체감이 더 무거운 명절\" … 쌀·축산물· 과일 값 '엇갈린 고공...",
+          "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/11/2026021100119.html",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.83,
+          "tier": 1,
+          "press": "EKN",
+          "domain": "ekn.kr",
+          "title": "경북 시·군, 생활 밀착 행정 본격화",
+          "url": "https://www.ekn.kr/web/view.php?key=20260211021268568",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 4,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.82,
+          "tier": 1,
+          "press": "taxtimes",
+          "domain": "taxtimes.co.kr",
+          "title": "보세구역 반출의무 위반 23개 업체 적발…185억 추징",
+          "url": "https://www.taxtimes.co.kr/news/article.html?no=273809",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.54,
+          "tier": 1,
+          "press": "joseilbo",
+          "domain": "joseilbo.com",
+          "title": "관세청, 할당관세 불법· 부정 적용 엄단.. \"수입 물가안정 총력\"",
+          "url": "http://www.joseilbo.com/news/news_read.php?uid=562775&class=8&grp=",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 6,
+            "korea": 2,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.29,
+          "tier": 1,
+          "press": "newsprime",
+          "domain": "newsprime.co.kr",
+          "title": "[통영시 소식] 통영시, 설 명절 앞두고…'청렴통영' 캠페인 전개",
+          "url": "http://www.newsprime.co.kr/news/article.html?no=724044",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -11.2,
+          "tier": 1,
+          "press": "NAEIL",
+          "domain": "naeil.com",
+          "title": "‘물가도둑’ 잡는 장관TF 가동 …“안 내리면 가격 강제조정”",
+          "url": "https://www.naeil.com/news/read/577830",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        }
+      ]
+    },
+    "dist": {
+      "threshold": 7.2,
+      "tail_cut": 7.2,
+      "core_min": 8.2,
+      "total_candidates": 12,
+      "total_selected": 3,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 20.81,
+          "tier": 3,
+          "press": "매일경제",
+          "domain": "mk.co.kr",
+          "title": "최상급 한우·고당도 과일 … '프리미엄'을 선물하세요",
+          "url": "https://www.mk.co.kr/article/11959875",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 3,
+            "strength": 5,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 19.91,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "지역농산물 유통구조 이끌어가는 품목농협 - 익산원예 농협",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63798",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 3,
+            "strength": 5,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 10.49,
+          "tier": 1,
+          "press": "경남일보",
+          "domain": "gnnews.co.kr",
+          "title": "진주·양산시, 친환경 조문문화 정착 생화 1800다발 제공",
+          "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=630434",
+          "reason": "",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.49,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "진주시 \"공원묘원 내 생화 사용\"",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534653",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.49,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "양산시, 설 명절 공원묘원 생화 무료나눔 행사 진행",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534560",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.79,
+          "tier": 1,
+          "press": "경남도민일보",
+          "domain": "idomin.com",
+          "title": "경남도, 설 연휴 '친환경 추모' 위해 생화 나눔행사 마련",
+          "url": "https://www.idomin.com/news/articleView.html?idxno=956286",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.24,
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "경남도, 설 연휴 친환경 추모문화 확산 위한 생화 나눔 행사 진행",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=534618",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.99,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "진주시 '플라스틱 조화 근절' 친환경 공원묘원 조성",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465326",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.3,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.99,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "양산시 설 명절 공원묘원 생화 무료나눔 행사 진행",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465280",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.34,
+          "tier": 1,
+          "press": "gnmaeil",
+          "domain": "gnmaeil.com",
+          "title": "설 성묘객 생화 무료 나눔... 14일부터 선착순 2900다발",
+          "url": "http://www.gnmaeil.com/news/articleView.html?idxno=580580",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.04,
+          "tier": 1,
+          "press": "straightnews",
+          "domain": "straightnews.co.kr",
+          "title": "경남, 설 성묘길에 생화 한 다발",
+          "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=294832",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.26,
+          "tier": 1,
+          "press": "gndomin",
+          "domain": "gndomin.com",
+          "title": "경남도 설 연휴 친환경 추모문화 확산 생화 나눔 행사",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=465191",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.7,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    }
+  },
+  "collections": {
+    "policy": {
+      "effective_window": {
+        "start_kst": "2026-02-11T07:00:00+09:00",
+        "end_kst": "2026-02-12T07:00:00+09:00"
+      },
+      "base_queries_n": 26,
+      "base_queries": [
+        "농식품부 정책브리핑",
+        "농식품부 보도자료 농산물",
+        "정책브리핑 농축수산물",
+        "농축수산물 할인지원",
+        "성수품 가격 안정 대책",
+        "할당관세 과일 검역",
+        "원산지 단속 농산물",
+        "온라인 도매시장 농식품부",
+        "설 이후 과일 가격 하락",
+        "사과 배 가격 하락",
+        "성수품 물가 과일",
+        "차례상 물가 과일",
+        "소비자물가 과일 사과 배",
+        "KOSIS 소비자물가 사과 배",
+        "물가정보 설 과일",
+        "농축산물 가격 동향",
+        "농산물 가격 동향",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "농산물 수급 동향",
+        "농식품부 수급 점검",
+        "농식품부 가격 점검",
+        "농산물 가격 전반 하락",
+        "과일류 가격 전년 대비",
+        "농산물 수급 영향 제한적",
+        "정부 가용물량 과일"
+      ],
+      "api_items_top": [
+        [
+          "농식품부 정책브리핑",
+          50
+        ],
+        [
+          "농식품부 보도자료 농산물",
+          50
+        ],
+        [
+          "정책브리핑 농축수산물",
+          50
+        ],
+        [
+          "농축수산물 할인지원",
+          50
+        ],
+        [
+          "성수품 가격 안정 대책",
+          50
+        ],
+        [
+          "할당관세 과일 검역",
+          50
+        ],
+        [
+          "원산지 단속 농산물",
+          50
+        ],
+        [
+          "온라인 도매시장 농식품부",
+          50
+        ],
+        [
+          "설 이후 과일 가격 하락",
+          50
+        ],
+        [
+          "사과 배 가격 하락",
+          50
+        ],
+        [
+          "성수품 물가 과일",
+          50
+        ],
+        [
+          "차례상 물가 과일",
+          50
+        ],
+        [
+          "소비자물가 과일 사과 배",
+          50
+        ],
+        [
+          "KOSIS 소비자물가 사과 배",
+          50
+        ],
+        [
+          "물가정보 설 과일",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "설 이후 과일 가격 하락",
+          2
+        ],
+        [
+          "과일류 가격 전년 대비",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "KOSIS 소비자물가 사과 배",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "과일류 가격 전년 대비",
+        "농산물 가격 동향",
+        "농산물 가격 전반 하락",
+        "농산물 수급 동향",
+        "농산물 수급 영향 제한적",
+        "농식품부 가격 점검",
+        "농식품부 보도자료 농산물",
+        "농식품부 수급 점검",
+        "농식품부 정책브리핑",
+        "농축산물 가격 동향",
+        "농축수산물 할인지원",
+        "물가정보 설 과일",
+        "사과 배 가격 하락",
+        "설 이후 과일 가격 하락",
+        "성수품 가격 안정 대책",
+        "성수품 물가 과일",
+        "소비자물가 과일 사과 배"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "대책",
+          "사과",
+          "배",
+          "농식품부",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향"
+        ],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
+        "queries": [
+          "대책",
+          "사과",
+          "배",
+          "농식품부",
+          "정책브리핑",
+          "농식품부 농산물 수급 점검"
+        ],
+        "topic_seed_terms": [
+          "대책",
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "사과",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향",
+          "과일류",
+          "전반",
+          "영향",
+          "정부"
+        ],
+        "report_date": "2026-02-12",
+        "common_queries": [
+          "농축산물 가격 동향",
+          "농산물 가격 동향",
+          "과일 채소 가격 동향",
+          "과일류 가격 동향",
+          "농산물 수급 동향",
+          "농식품부 수급 점검",
+          "농식품부 가격 점검",
+          "농산물 가격 전반 하락",
+          "과일류 가격 전년 대비",
+          "농산물 수급 영향 제한적",
+          "정부 가용물량 과일",
+          "농식품부 농산물 수급 점검",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
+          "농산물 유통 구조 개선",
+          "온라인 도매시장 정책",
+          "농식품부 예산"
+        ],
+        "web_queries": [
+          "대책",
+          "사과"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "대책",
+          "사과"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 3,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 6,
+        "budget_total": 12
+      }
+    },
+    "supply": {
+      "effective_window": {
+        "start_kst": "2026-02-11T07:00:00+09:00",
+        "end_kst": "2026-02-12T07:00:00+09:00"
+      },
+      "base_queries_n": 100,
+      "base_queries": [
+        "사과 수급",
+        "사과 가격",
+        "사과 작황",
+        "사과 저장",
+        "사과 출하",
+        "배 과일 수급",
+        "배 과일 가격",
+        "배 과일 작황",
+        "배 과일 저장",
+        "배 과일 출하",
+        "단감 수급",
+        "단감 가격",
+        "단감 작황",
+        "곶감 수급",
+        "떫은감 작황",
+        "감귤 수급",
+        "감귤 가격",
+        "감귤 작황",
+        "감귤 관세",
+        "감귤 무관세",
+        "제주 감귤 관세",
+        "만다린 관세",
+        "감귤 FTA",
+        "만감류 출하",
+        "한라봉 출하",
+        "레드향 출하",
+        "천혜향 출하",
+        "포도 수급",
+        "포도 가격",
+        "포도 작황"
+      ],
+      "api_items_top": [
+        [
+          "사과 수급",
+          50
+        ],
+        [
+          "사과 가격",
+          50
+        ],
+        [
+          "사과 작황",
+          50
+        ],
+        [
+          "사과 저장",
+          50
+        ],
+        [
+          "사과 출하",
+          50
+        ],
+        [
+          "배 과일 수급",
+          50
+        ],
+        [
+          "배 과일 가격",
+          50
+        ],
+        [
+          "배 과일 작황",
+          50
+        ],
+        [
+          "배 과일 저장",
+          50
+        ],
+        [
+          "배 과일 출하",
+          50
+        ],
+        [
+          "단감 수급",
+          50
+        ],
+        [
+          "단감 가격",
+          50
+        ],
+        [
+          "단감 작황",
+          50
+        ],
+        [
+          "곶감 수급",
+          50
+        ],
+        [
+          "떫은감 작황",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "만감류 출하",
+          11
+        ],
+        [
+          "화훼자조금",
+          11
+        ],
+        [
+          "단감 수급",
+          10
+        ],
+        [
+          "샤인머스캣 수급",
+          8
+        ],
+        [
+          "감귤 무관세",
+          5
+        ],
+        [
+          "배 과일 작황",
+          2
+        ],
+        [
+          "단호박 가격",
+          2
+        ],
+        [
+          "참외 수급",
+          2
+        ],
+        [
+          "화훼 수급",
+          2
+        ],
+        [
+          "배 과일 저장",
+          1
+        ],
+        [
+          "곶감 수급",
+          1
+        ],
+        [
+          "포도 작황",
+          1
+        ],
+        [
+          "키위 가격",
+          1
+        ],
+        [
+          "토마토 작황",
+          1
+        ],
+        [
+          "수박 수급",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "감귤 FTA",
+        "감귤 가격",
+        "감귤 관세",
+        "감귤 무관세",
+        "감귤 수급",
+        "감귤 작황",
+        "고추 작황",
+        "곶감 수급",
+        "과수 농가 울상",
+        "과수 묘목",
+        "과수 묘목 품귀",
+        "국화 경매",
+        "기후변화 과수",
+        "꽃시장 경매",
+        "단감 가격",
+        "단감 수급",
+        "단감 작황",
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "토마토",
+          "멜론",
+          "참외",
+          "고추",
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실"
+        ],
+        "reason": [],
+        "queries": [
+          "멜론 생육",
+          "농산물 가격 동향",
+          "사과 생육",
+          "토마토 생육",
+          "참외 생육",
+          "고추 생육"
+        ],
+        "pool_seed_hits": {
+          "사과": 0,
+          "단감": 0,
+          "곶감": 0,
+          "포도": 0,
+          "키위": 0,
+          "알밤": 0,
+          "복숭아": 0,
+          "매실": 0,
+          "토마토": 0,
+          "수박": 0,
+          "피망": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
+          "고추": 0,
+          "화훼자조금": 0,
+          "과수": 0,
+          "기후변화": 0,
+          "감귤": 2,
+          "배": 0
+        },
+        "feature_refresh_seeds": [
+          "멜론",
+          "참외",
+          "고추",
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금"
+        ],
+        "topic_seed_terms": [
+          "감귤",
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "토마토",
+          "수박",
+          "피망",
+          "멜론",
+          "참외",
+          "상추",
+          "고추",
+          "화훼자조금",
+          "과수",
+          "기후변화"
+        ],
+        "report_date": "2026-02-12",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매"
+        ],
+        "prioritized_seeds": [
+          "토마토",
+          "멜론",
+          "참외",
+          "고추",
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "수박",
+          "피망",
+          "상추",
+          "화훼자조금",
+          "과수",
+          "기후변화",
+          "배",
+          "감귤"
+        ],
+        "feature_focus_seeds": [
+          "멜론",
+          "사과"
+        ],
+        "web_queries": [
+          "멜론 생육",
+          "농산물 가격 동향"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "멜론 생육",
+          "농산물 가격 동향"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 60,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 8,
+        "budget_total": 12
+      }
+    },
+    "dist": {
+      "effective_window": {
+        "start_kst": "2026-02-11T07:00:00+09:00",
+        "end_kst": "2026-02-12T07:00:00+09:00"
+      },
+      "base_queries_n": 43,
+      "base_queries": [
+        "가락시장 청과 경락",
+        "가락시장 경락가",
+        "도매시장 청과 경락",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "시장도매인제 도매시장",
+        "온라인 도매시장 청과",
+        "온라인 도매시장 제도 개선",
+        "도매시장 제도 개선",
+        "품목농협 산지유통",
+        "원예농협 산지유통",
+        "농협 연합판매사업 직거래",
+        "연합판매사업 직거래",
+        "연합판매사업 직거래 활성화",
+        "품목농협 공동선별",
+        "품목농협 경제사업",
+        "원예농협 경제사업",
+        "품목농협 조합원 실익",
+        "원예농협 지도 구매 유통 가공",
+        "품목농협 지도 구매 유통 가공",
+        "과수 전문 품목농협",
+        "산지유통센터 준공",
+        "스마트 농산물 산지유통센터 준공",
+        "스마트 APC 준공",
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "원산지 표시 단속 농산물"
+      ],
+      "api_items_top": [
+        [
+          "가락시장 청과 경락",
+          50
+        ],
+        [
+          "가락시장 경락가",
+          50
+        ],
+        [
+          "도매시장 청과 경락",
+          50
+        ],
+        [
+          "도매시장 반입량",
+          50
+        ],
+        [
+          "도매시장 수급",
+          50
+        ],
+        [
+          "공영도매시장 경매",
+          50
+        ],
+        [
+          "공판장 청과 경매",
+          50
+        ],
+        [
+          "시장도매인제 도매시장",
+          50
+        ],
+        [
+          "온라인 도매시장 청과",
+          50
+        ],
+        [
+          "온라인 도매시장 제도 개선",
+          50
+        ],
+        [
+          "도매시장 제도 개선",
+          50
+        ],
+        [
+          "품목농협 산지유통",
+          50
+        ],
+        [
+          "원예농협 산지유통",
+          50
+        ],
+        [
+          "농협 연합판매사업 직거래",
+          50
+        ],
+        [
+          "연합판매사업 직거래",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "화훼자조금",
+          11
+        ],
+        [
+          "부정유통 단속 농산물",
+          10
+        ],
+        [
+          "품목농협 공동선별",
+          3
+        ],
+        [
+          "공영도매시장 경매",
+          1
+        ],
+        [
+          "공판장 청과 경매",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "가락시장 경락가",
+        "가락시장 청과 경락",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "과수 전문 품목농협",
+        "과일 수출 검역",
+        "과일 수출 선적",
+        "광역수급관리센터 수급 관리",
+        "농산물 광역수급관리센터",
+        "농산물 수출 검역",
+        "농산물 수출 선적",
+        "농협 연합판매사업 직거래",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "도매시장 제도 개선",
+        "도매시장 청과 경락",
+        "부정유통 단속 농산물"
+      ],
+      "recall_meta": {},
+      "items_total": 26,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 8,
+        "budget_total": 12
+      }
+    },
+    "pest": {
+      "effective_window": {
+        "start_kst": "2026-02-11T07:00:00+09:00",
+        "end_kst": "2026-02-12T07:00:00+09:00"
+      },
+      "base_queries_n": 10,
+      "base_queries": [
+        "과수화상병 방제",
+        "탄저병 방제",
+        "월동 해충 방제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰 방제",
+        "과수화상병",
+        "과수화상병 약제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제",
+        "병해충 예찰"
+      ],
+      "api_items_top": [
+        [
+          "과수화상병 방제",
+          50
+        ],
+        [
+          "탄저병 방제",
+          50
+        ],
+        [
+          "월동 해충 방제",
+          50
+        ],
+        [
+          "냉해 동해 과수 피해",
+          50
+        ],
+        [
+          "병해충 예찰 방제",
+          50
+        ],
+        [
+          "과수화상병",
+          50
+        ],
+        [
+          "과수화상병 약제",
+          50
+        ],
+        [
+          "토마토뿔나방",
+          50
+        ],
+        [
+          "토마토뿔나방 방제",
+          50
+        ],
+        [
+          "병해충 예찰",
+          50
+        ]
+      ],
+      "window_hits_top": [],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "과수화상병",
+        "과수화상병 방제",
+        "과수화상병 약제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰",
+        "병해충 예찰 방제",
+        "월동 해충 방제",
+        "탄저병 방제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "병해충"
+        ],
+        "reason": [],
+        "queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "사과",
+          "배",
+          "병해충",
+          "사과 병해충"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "병해충"
+        ],
+        "report_date": "2026-02-12",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예찰",
+          "응애 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 0,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 10,
+        "budget_total": 12
+      }
+    }
+  }
+}
