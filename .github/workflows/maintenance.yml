@@ -24,6 +24,11 @@ on:
       skip_openai:
         description: 'Skip OpenAI summaries to run faster (true/false)'
         required: false
+        default: false
+        type: boolean
+      debug:
+        description: 'Write debug JSON for rebuilt archive pages (true/false)'
+        required: false
         default: true
         type: boolean
       sleep_sec:
@@ -62,11 +67,18 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests before backfill
+        run: |
+          python -m unittest discover -s tests -p "test_*.py"
 
       - name: Backfill rebuild
         env:
@@ -102,6 +114,10 @@ jobs:
 
           NAVER_MAX_WORKERS: '1'
           NAVER_MIN_INTERVAL_SEC: '0.6'
+          DEBUG_REPORT: ${{ inputs.debug && '1' || '0' }}
+          DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug && '1' || '0' }}
+          DEBUG_REPORT_MAX_CANDIDATES: '200'
+          DEBUG_REPORT_MAX_REJECTS: '2000'
 
         run: |
           python main.py

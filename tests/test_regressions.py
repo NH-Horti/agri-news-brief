@@ -54,6 +54,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("POLICY_MARKET_BRIEF_QUERIES", self.text)
         self.assertIn('"농산물 가격 동향"', self.text)
         self.assertIn("POLICY_MARKET_BRIEF_RECALL_SIGNALS", self.text)
+        self.assertIn("def _recall_common_queries", self.text)
+        self.assertIn('"농산물 초매식"', self.text)
+        self.assertIn('"새해 달라지는 농업 제도"', self.text)
+        self.assertIn('return _reject("flower_novelty_noise")', self.text)
+        self.assertIn("def reset_debug_report", self.text)
 
     def test_manual_force_report_date_short_circuits_in_main(self):
         idx_main = self.text.find("def main(")
@@ -124,5 +129,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
+
+    def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
+        self.assertIn("requirements-dev.txt", self.maintenance_text)
+        self.assertIn("Run tests before backfill", self.maintenance_text)
+        self.assertIn("python -m unittest discover -s tests -p \"test_*.py\"", self.maintenance_text)
+        self.assertIn("DEBUG_REPORT:", self.maintenance_text)
+        self.assertIn("Write debug JSON for rebuilt archive pages", self.maintenance_text)
 if __name__ == "__main__":
     unittest.main()

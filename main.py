@@ -461,6 +461,20 @@ def dbg_set_collection(section: str, payload: JsonDict) -> None:
         pass
 
 
+def reset_debug_report() -> None:
+    if not DEBUG_REPORT:
+        return
+    try:
+        with _DEBUG_LOCK:
+            DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+            DEBUG_DATA["build_tag"] = BUILD_TAG
+            DEBUG_DATA["filter_rejects"] = []
+            DEBUG_DATA["sections"] = {}
+            DEBUG_DATA["collections"] = {}
+    except Exception:
+        pass
+
+
 STATE_FILE_PATH = ".agri_state.json"
 ARCHIVE_MANIFEST_PATH = ".agri_archive.json"
 DOCS_INDEX_PATH = "docs/index.html"
@@ -806,7 +820,7 @@ HORTI_CORE_GENERAL_TERMS = [
     "자조금", "원예자조금", "과수자조금", "국화", "장미",
 ]
 SUPPLY_GENERAL_MUST_TERMS = [
-    "원예", "과수", "과일", "화훼", "절화", "꽃다발", "생화", "부케", "플라워", "레고", "시설채소", "과채",
+    "원예", "과수", "과일", "화훼", "절화", "생화", "시설채소", "과채",
 ]
 
 
@@ -2109,8 +2123,8 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     "꽃": [
         re.compile(r"(?:^|[\s\W])꽃(?:값|가격|시세)"),
         re.compile(r"(?:^|[\s\W])꽃\s*(경매|도매|소매|시장)"),
-        re.compile(r"꽃다발"),
-        re.compile(r"부케"),
+        re.compile(r"절화"),
+        re.compile(r"생화"),
     ],
     # '귤' (감귤 맥락)
     "귤": [
@@ -2527,11 +2541,19 @@ _FLOWER_TREND_TREND_MARKERS = [
     "화이트데이", "프로포즈", "선호", "랭킹", "주목", "판매", "매출", "레고", "콜라보", "논란",
 ]
 
+_FLOWER_TREND_AGRI_MARKERS = [
+    "화훼", "절화", "생화", "꽃시장", "경매", "도매", "공판장", "화훼자조금", "농가", "출하",
+]
+
 _FLOWER_TREND_EXCLUDE_MARKERS = [
     "축제", "박람회", "전시회", "공연", "콘서트", "포토존", "야경", "관광", "여행", "데이트코스",
     "연예", "아이돌", "드라마", "배우", "인플루언서", "셀럽", "패션",
     "창업", "프랜차이즈", "카페 창업", "매장 오픈",
     "게임", "피규어", "애니메이션", "캐릭터 굿즈",
+]
+
+_FLOWER_TREND_NOISE_MARKERS = [
+    "레고", "보태니컬", "장난감", "블록", "시상식", "유재석", "셀럽", "연예인", "굿즈",
 ]
 
 def is_flower_consumer_trend_context(text: str) -> bool:
@@ -2542,15 +2564,29 @@ def is_flower_consumer_trend_context(text: str) -> bool:
     t = (text or "").lower()
     if any(w.lower() in t for w in _FLOWER_TREND_EXCLUDE_MARKERS):
         return False
+    if any(w.lower() in t for w in _FLOWER_TREND_NOISE_MARKERS):
+        return False
     core_hits = sum(1 for w in _FLOWER_TREND_CORE_MARKERS if w.lower() in t)
     trend_hits = sum(1 for w in _FLOWER_TREND_TREND_MARKERS if w.lower() in t)
-    # 최소 조건: 꽃다발/화훼 계열 1개 이상 + 트렌드/선물/레고 등 1개 이상
-    if core_hits >= 1 and trend_hits >= 1:
-        return True
-    # 레고+꽃다발 조합은 강하게 인정
-    if ("레고" in t and ("꽃다발" in t or "보태니컬" in t)):
+    agri_hits = sum(1 for w in _FLOWER_TREND_AGRI_MARKERS if w.lower() in t)
+    # 최소 조건: 화훼 계열 1개 이상 + 트렌드/소비 1개 이상 + 실제 화훼 유통/농가 맥락 1개 이상
+    if core_hits >= 1 and trend_hits >= 1 and agri_hits >= 1:
         return True
     return False
+
+
+def is_flower_novelty_noise_context(title: str, desc: str) -> bool:
+    """장난감/연예/라이프스타일성 '꽃다발' 기사를 원예 기사에서 배제한다."""
+    text = f"{title or ''} {desc or ''}".lower()
+    if not text:
+        return False
+    novelty_hits = count_any(text, [w.lower() for w in _FLOWER_TREND_NOISE_MARKERS])
+    bouquet_hits = count_any(text, [w.lower() for w in ("꽃다발", "부케", "플라워", "꽃 선물", "꽃다발 선물")])
+    agri_hits = count_any(text, [w.lower() for w in _FLOWER_TREND_AGRI_MARKERS])
+    market_hits = count_any(text, [w.lower() for w in ("화훼", "절화", "꽃시장", "경매", "공판장", "도매")])
+    if novelty_hits == 0:
+        return False
+    return bouquet_hits >= 1 and agri_hits == 0 and market_hits == 0
 
 
 # -----------------------------
@@ -5629,6 +5665,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("hardblock_macro_trade_noise")
     if is_remote_foreign_trade_brief_context(ttl, desc, dom):
         return _reject("remote_foreign_trade_brief")
+    if key in ("supply", "policy") and is_flower_novelty_noise_context(ttl, desc):
+        return _reject("flower_novelty_noise")
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
@@ -8981,7 +9019,93 @@ def _prioritize_supply_recall_seeds(
     return prioritized, pool_seed_hits
 
 
-def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, candidates_sorted: list["Article"], thr: float) -> tuple[list[str], JsonDict]:
+def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:
+    month = 0
+    try:
+        month = date.fromisoformat(str(report_date or "").strip()).month
+    except Exception:
+        month = 0
+
+    common: list[str] = []
+    if section_key == "supply":
+        base_common = [
+            "과수 한파 피해",
+            "시설채소 난방비",
+            "월동채소 수급",
+            "농산물 출하 동향",
+            "화훼 경매",
+            "절화 경매",
+        ]
+        seasonal_common: list[str] = []
+        if month in (1, 2):
+            seasonal_common.extend([
+                "한파 농산물",
+                "겨울 채소 가격",
+                "설 성수품 과일",
+                "졸업식 화훼 경매",
+            ])
+        common = seasonal_common + base_common
+    elif section_key == "policy":
+        base_common = list(POLICY_MARKET_BRIEF_QUERIES) + [
+            "농식품부 농산물 수급 점검",
+            "농식품부 원예 지원",
+            "온라인 도매시장 정책",
+            "농산물 유통 구조 개선",
+            "원예 농가 지원 사업",
+        ]
+        seasonal_common = []
+        if month in (1, 2):
+            seasonal_common.extend([
+                "농식품부 신년 업무계획",
+                "새해 달라지는 농업 제도",
+                "농식품부 업무계획 원예",
+                "농산물 수급 안정 대책",
+            ])
+        common = seasonal_common + base_common
+    elif section_key == "dist":
+        base_common = [
+            "도매시장 제도 개선",
+            "온라인 도매시장 제도 개선",
+            "품목농협 산지유통",
+            "원예농협 산지유통",
+            "산지유통센터 가동",
+            "농산물 도매시장 경매",
+            "화훼공판장 경매",
+            "절화 경매",
+        ]
+        seasonal_common = []
+        if month in (1, 2):
+            seasonal_common.extend([
+                "농산물 초매식",
+                "청과 초매식",
+                "화훼 초매식",
+                "절화 초매식",
+                "도매시장 첫 경매",
+                "가락시장 초매식",
+                "공판장 경매 시작",
+            ])
+        common = seasonal_common + base_common
+    elif section_key == "pest":
+        base_common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충", "과수 월동 병해충", "시설채소 한파 대응"]
+        seasonal_common = []
+        if month in (1, 2):
+            seasonal_common.extend([
+                "과수 동해 예방",
+                "과수 냉해 예방",
+                "월동 병해충 예찰",
+                "시설채소 냉해 방제",
+            ])
+        common = seasonal_common + base_common
+    return _dedupe_queries(common)
+
+
+def _build_recall_fallback_queries(
+    section_key: str,
+    section_conf: JsonDict,
+    candidates_sorted: list["Article"],
+    thr: float,
+    report_date: str | None = None,
+) -> tuple[list[str], JsonDict]:
     """후보 수 부족을 줄이기 위한 '광역 보강 쿼리'를 생성.
     반환: (queries, meta)
     - meta는 DEBUG_REPORT에서 확인 가능하도록 요약만 남긴다.
@@ -9040,6 +9164,7 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
     meta["seed_terms"] = list(seed_terms)
     meta["topic_seed_terms"] = list(topic_seed_terms)
     meta["query_seed_terms"] = list(query_seed_terms)
+    meta["report_date"] = str(report_date or "")
 
     has_trade = False
     if section_key in ("supply", "policy"):
@@ -9076,6 +9201,13 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
         if profile == "flower":
             return ["농가", "난방", "작황", "품질"]
         return ["작황", "생육", "품질", "농가"]
+
+    common_queries = _recall_common_queries(section_key, report_date)
+    meta["common_queries"] = list(common_queries)
+    if section_key != "supply" and ((not candidates_sorted) or len(candidates_sorted) < 3):
+        starter_cap = 2 if section_key in ("policy", "dist", "pest") else 1
+        for q in common_queries[:starter_cap]:
+            _add_query(q)
 
     if section_key == "supply":
         prioritized_seeds = [t for t in (prioritized_seeds or seed_terms) if t]
@@ -9145,30 +9277,13 @@ def _build_recall_fallback_queries(section_key: str, section_conf: JsonDict, can
                     if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
                         break
                     _add_query(f"{t} {sig}")
-        else:
-            common = []
-            if section_key == "policy":
-                common = list(POLICY_MARKET_BRIEF_QUERIES) + ["할당관세 과일", "수입 농산물 관세"]
-            elif section_key == "dist":
-                common = [
-                    "\ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120",
-                    "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5 \uc81c\ub3c4 \uac1c\uc120",
-                    "\ud488\ubaa9\ub18d\ud611 \uc0b0\uc9c0\uc720\ud1b5",
-                    "\uc6d0\uc608\ub18d\ud611 \uc0b0\uc9c0\uc720\ud1b5",
-                    "\uc0b0\uc9c0\uc720\ud1b5 \uc218\ucd9c \ub18d\uc0b0\ubb3c",
-                    "\uac80\uc5ed \ud1b5\uad00 \ub18d\uc0b0\ubb3c",
-                    "\ub3c4\ub9e4\uc2dc\uc7a5 \ubc18\uc785 \ub18d\uc0b0\ubb3c",
-                    "\ub18d\uc0b0\ubb3c \uc218\ucd9c \uc120\uc801",
-                ]
-            elif section_key == "pest":
-                common = ["과수 병해충 방제", "병해충 예찰", "검역 병해충"]
 
-            for q in common:
-                if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
-                    break
-                if q in base_queries or q in out:
-                    continue
-                out.append(q)
+    for q in common_queries:
+        if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
+            break
+        if q in base_queries or q in out:
+            continue
+        out.append(q)
 
     meta["queries"] = list(out)
     return out, meta
@@ -9440,7 +9555,13 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 if need_more:
                     if recall_candidate:
                         # fallback recall은 1페이지 보강이므로, page2 활성화 여부와 무관하게 수행한다.
-                        fallback_qs, recall_meta = _build_recall_fallback_queries(section_key, section_conf, candidates_sorted, thr)
+                        fallback_qs, recall_meta = _build_recall_fallback_queries(
+                            section_key,
+                            section_conf,
+                            candidates_sorted,
+                            thr,
+                            report_date=end_kst.date().isoformat(),
+                        )
                         if fallback_qs:
                             fallback_added = 0
                             for fq in fallback_qs:
@@ -10060,6 +10181,7 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
 
 def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
     reset_extra_call_budget()
+    reset_debug_report()
     raw_by_section: dict[str, list[Article]] = {}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
@@ -13206,6 +13328,17 @@ def backfill_rebuild_recent_archives(
             raw_old, sha_old = github_get_file(repo, bf_path, token, ref="main")
             github_put_file(repo, bf_path, bf_html, token, f"Backfill rebuild {d}", sha=sha_old, branch="main")
             log.info("[BACKFILL PUT] %s", bf_path)
+
+            if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+                try:
+                    DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+                    debug_path = f"docs/debug/{d}.json"
+                    debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+                    _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
+                    github_put_file(repo, debug_path, debug_json, token, f"Backfill debug report {d}", sha=sha_dbg_old, branch="main")
+                    log.info("[BACKFILL PUT] %s", debug_path)
+                except Exception as e:
+                    log.warning("[BACKFILL] debug upload failed for %s: %s", d, e)
 
             # search index update for that day
             search_idx = update_search_index(search_idx, d, bf_by_section, site_path)

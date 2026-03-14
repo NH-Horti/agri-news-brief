@@ -2402,6 +2402,60 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main._is_similar_story(news_story, wire_story, "dist"))
         self.assertTrue(main._is_similar_story(photo_story, wire_story, "dist"))
 
+    def test_flower_novelty_noise_is_rejected_from_supply_and_policy(self):
+        title = "유재석도 받은 '이 꽃다발'…졸업 선물로 뜬 레고 보태니컬"
+        desc = "레고 꽃다발과 보태니컬 시리즈가 시상식 선물과 소비 트렌드로 주목받는다는 기사다."
+        url = "https://example.com/lego-bouquet"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
+    def test_flower_market_trend_with_agri_context_still_prefers_supply(self):
+        title = "졸업식 대목 앞둔 꽃시장…절화 경매가 오르고 화훼 농가 기대"
+        desc = "졸업식 성수기를 앞두고 꽃시장 절화 경매가 상승하고 화훼 농가 출하가 늘고 있다는 현장 기사다."
+        best, scores = self._best_section(title, desc, "https://example.com/flower-market")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+
+    def test_recall_fallback_queries_expand_for_low_recall_january_archive_dates(self):
+        supply_queries, _ = main._build_recall_fallback_queries("supply", self.conf["supply"], [], 99.0, report_date="2026-01-12")
+        policy_queries, _ = main._build_recall_fallback_queries("policy", self.conf["policy"], [], 99.0, report_date="2026-01-05")
+        dist_queries, _ = main._build_recall_fallback_queries("dist", self.conf["dist"], [], 99.0, report_date="2026-01-05")
+        pest_queries, _ = main._build_recall_fallback_queries("pest", self.conf["pest"], [], 99.0, report_date="2026-01-05")
+
+        self.assertIn("한파 농산물", main._recall_common_queries("supply", "2026-01-12"))
+        self.assertTrue(len(supply_queries) > 0)
+        self.assertIn("새해 달라지는 농업 제도", policy_queries)
+        self.assertIn("농산물 초매식", dist_queries)
+        self.assertIn("과수 동해 예방", pest_queries)
+
+    def test_reset_debug_report_clears_previous_state(self):
+        original_debug = main.DEBUG_REPORT
+        original_data = {
+            "generated_at_kst": main.DEBUG_DATA.get("generated_at_kst"),
+            "build_tag": main.DEBUG_DATA.get("build_tag"),
+            "filter_rejects": list(main.DEBUG_DATA.get("filter_rejects", [])),
+            "sections": dict(main.DEBUG_DATA.get("sections", {})),
+            "collections": dict(main.DEBUG_DATA.get("collections", {})),
+        }
+        try:
+            main.DEBUG_REPORT = True
+            main.DEBUG_DATA["filter_rejects"] = [{"reason": "old"}]
+            main.DEBUG_DATA["sections"] = {"supply": {"total_selected": 9}}
+            main.DEBUG_DATA["collections"] = {"supply": {"queries": ["old"]}}
+            main.reset_debug_report()
+            self.assertEqual(main.DEBUG_DATA["filter_rejects"], [])
+            self.assertEqual(main.DEBUG_DATA["sections"], {})
+            self.assertEqual(main.DEBUG_DATA["collections"], {})
+            self.assertTrue(main.DEBUG_DATA["generated_at_kst"])
+        finally:
+            main.DEBUG_REPORT = original_debug
+            main.DEBUG_DATA["generated_at_kst"] = original_data["generated_at_kst"]
+            main.DEBUG_DATA["build_tag"] = original_data["build_tag"]
+            main.DEBUG_DATA["filter_rejects"] = original_data["filter_rejects"]
+            main.DEBUG_DATA["sections"] = original_data["sections"]
+            main.DEBUG_DATA["collections"] = original_data["collections"]
+
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
