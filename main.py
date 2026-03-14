@@ -10555,6 +10555,11 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_apple_apology_context(text):
         return "apple_apology_context"
+    if section_key in ("supply", "policy"):
+        if is_flower_novelty_noise_context(a.title or "", a.description or ""):
+            return "flower_novelty_noise"
+        if any(phrase in text for phrase in ("장난감 꽃", "생화 너무 비싸", "레고 꽃다발", "조화(가짜 꽃)")):
+            return "flower_novelty_noise"
     if section_key == "pest" and not is_pest_story_focus_strong(a.title or "", a.description or ""):
         return "pest_partial_mention"
     return ""

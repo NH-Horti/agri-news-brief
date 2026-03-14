@@ -2421,6 +2421,15 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "생화 너무 비싸 장난감 꽃 시장이 커진다는 내용으로 화훼 농가 생존권 우려를 담은 기사"
         self.assertTrue(main.is_flower_novelty_noise_context(title, desc))
 
+    def test_postbuild_audit_drops_toy_flower_policy_story(self):
+        article = self._make_article(
+            "policy",
+            "장난감 꽃, 화훼 농가 생존권 위협",
+            "생화 너무 비싸 장난감 꽃 시장이 커진다는 내용으로 화훼 농가 생존권 우려를 담은 기사",
+            "https://www.seoul.co.kr/news/society/2026/01/12/20260112010005?wlog_tag3=naver",
+        )
+        self.assertEqual(main._postbuild_article_reject_reason(article, "policy"), "flower_novelty_noise")
+
     def test_flower_market_trend_with_agri_context_still_prefers_supply(self):
         title = "졸업식 대목 앞둔 꽃시장…절화 경매가 오르고 화훼 농가 기대"
         desc = "졸업식 성수기를 앞두고 꽃시장 절화 경매가 상승하고 화훼 농가 출하가 늘고 있다는 현장 기사다."
