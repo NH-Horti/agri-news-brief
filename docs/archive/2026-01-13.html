@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="ef6efbd" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="0b9fe0a" />
+
   <title>[2026-01-13 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -32,6 +36,7 @@
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
     .navRow > *{min-width:0}
     .navBtn{white-space:nowrap}
@@ -94,6 +99,7 @@
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -135,14 +141,23 @@
     <div class="topin">
       <div>
         <h1>[2026-01-13 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-01-12 07:00 ~ 2026-01-13 07:00 · 기사 6건</div>
+        <div class="sub">기간: 2026-01-12 07:00 ~ 2026-01-13 07:00 · 기사 5건</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
         <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-01-12.html">◀ 이전</a>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
-            <option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
+            <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
 <option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
 <option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
 <option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
@@ -191,8 +206,8 @@
 
     <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
-<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">0</span></a>
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">1</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">0</span></a></div>
       </div>
@@ -207,7 +222,7 @@
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">3건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#0f766e">
@@ -223,7 +238,7 @@
                 <a class="btnOpen" href="https://radio.ytn.co.kr/program/?f=2&amp;id=106830&amp;s_mcd=0206&amp;s_hcd=15" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">새해들어 한파 지속에 감자·고추값 만만찮네</div>
-              <div class="sum">한파 지속으로 감자와 고추가격이 상승, 지난주 감자는 100g당 3397원으로 10% 이상 오른 것으로 나타났다. 청양고추는 100그램당 1374원으로 전주 대비 상승폭이 두드러진다.</div>
+              <div class="sum">한파로 감자와 고추 가격이 상승, 지난주 감자는 100g당 3397원으로 10% 이상 올랐다. 청양고추는 100g당 1374원으로 가격 상승세를 보이고 있다.</div>
             </div>
             
 
@@ -240,7 +255,7 @@
                 <a class="btnOpen" href="https://radio.ytn.co.kr/program/?f=2&amp;id=106836&amp;s_mcd=0478&amp;s_hcd=01" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">발차기로 수박 &#x27;퍽&#x27; 중국의 국뽕? 왜 돌려차기 로봇 만들었나</div>
-              <div class="sum">중국의 돌려차기 로봇 개발은 R&amp;D 비용과 부품 수급 문제로 어려운 과정을 겪고 있다. 이 기술이 성공적으로 실현되면 다양한 분야에서 활용될 것으로 보인다.</div>
+              <div class="sum">중국이 발차기로 수박을 내리치는 로봇을 제작했지만, 완전한 인간형 로봇 개발은 높은 비용과 부품 수급 문제로 어렵다. 이 로봇은 시장에서의 경쟁력을 높이기 위한 시도로 보인다.</div>
             </div>
             
 
@@ -257,41 +272,7 @@
                 <a class="btnOpen" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5168080" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[인터넷 와글와글] 대상 받은 유재석 &#x27;레고 꽃다발 &#x27;에 화훼 업계 반발</div>
-              <div class="sum">유재석의 &#x27;레고 꽃다발&#x27; 수상에 화훼 업계가 반발하고 있다. 의견이 엇갈리는 가운데, 업계는 생화 대신 장난감 꽃다발 사용에 대한 우려를 표명했다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">한겨레</span>
-                  <span class="dot">·</span>
-                  <span class="time">01/12 14:20</span>
-                  <span class="dot">·</span>
-                  <span class="topic">화훼</span>
-                </div>
-                <a class="btnOpen" href="https://www.hani.co.kr/arti/society/society_general/1239205.html" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">유재석도 든 MBC ‘레고 꽃다발 ’에 화훼 업계 반발…“마음에 상처”</div>
-              <div class="sum">한국화원협회는 MBC에서 &#x27;레고 꽃다발&#x27;이 사용된 것에 대해 공식 이의를 제기하며 화훼 업계에 상처를 입혔다고 밝혔다. 업계는 생화 사용의 중요성을 강조하고 있다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">E2NEWS</span>
-                  <span class="dot">·</span>
-                  <span class="time">01/12 09:40</span>
-                  <span class="dot">·</span>
-                  <span class="topic">정책</span>
-                </div>
-                <a class="btnOpen" href="http://www.e2news.com/news/articleView.html?idxno=326819" target="_blank" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">플로라운지–에코기어, 생화 코팅 기술 협력 MOU 체결</div>
-              <div class="sum">플로라운지와 에코기어가 생화 코팅 기술에 관한 MOU를 체결하고, 최대 7억 원 규모의 연구개발 지원을 받기로 했다. 이 기술은 수급 불균형 및 가격 변동 문제 해결을 목표로 한다.</div>
+              <div class="sum">유재석의 &#x27;레고 꽃다발&#x27; 수상에 화훼 업계가 반발하고 있다, 가격이 비싸다는 의견과 색다른 시도라는 의견이 엇갈리고 있다. 화훼 업계는 꽃값 상승에 대한 우려를 표명하고 있다.</div>
             </div>
             </div>
             </section>
@@ -303,9 +284,25 @@
                   <span class="dotColor" style="background:#1d4ed8"></span>
                   정책 및 주요 이슈
                 </div>
-                <div class="secCount">0건</div>
+                <div class="secCount">1건</div>
               </div>
-              <div class="secBody"><div class="empty">해당사항 없음</div></div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">skbroadband</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/12 08:32</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://news.skbroadband.com/news/articleView.html?idxno=214820" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">내 지갑을 지켜줘 - &#x27;쌀값에 난방비까지&#x27; 겨울 장바구니, 어디까지 오르...</div>
+              <div class="sum">겨울 장바구니 물가가 상승하고 있으며, 신선 과일 가격도 오름세를 보인다. 귤과 사과는 각각 8.8%와 7.2% 상승했지만, 파(-26.4%)와 토마토(-13.0%)는 하락세를 나타냈다.</div>
+            </div>
+            </div>
             </section>
             
 
@@ -331,7 +328,7 @@
                 <a class="btnOpen" href="http://www.fnnews.com/news/202601121501168012" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">송미령 장관 &quot;농협 개혁 핵심은 협동조합 정신 회복... 온정주의 안돼&quot;</div>
-              <div class="sum">송미령 장관은 농협 개혁의 핵심은 협동조합 정신의 회복이라고 강조하며, 온정주의는 지양해야 한다고 말했다. 현재 미국산 농산물 15개 품목이 한국 수출을 위한 검역 절차를 거치고 있다.</div>
+              <div class="sum">송미령 장관은 농협 개혁의 핵심을 협동조합 정신 회복으로 강조하며 온정주의를 지양하라고 밝혔다. 현재 15개 미국산 농산물이 한국으로 수출을 위한 검역 절차를 진행 중이다.</div>
             </div>
             </div>
             </section>
@@ -349,10 +346,12 @@
             </section>
             
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    
   </div>
 
   <script>
     (function() {
+
       var sel = document.getElementById("dateSelect");
       if (sel) {
         sel.setAttribute("data-swipe-ignore", "1");
@@ -643,35 +642,118 @@ try { _ensureDates(); } catch (e) {}
       }
 
       var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
       var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
-      swipeArea.addEventListener("touchstart", function(e) {
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx = t.clientX;
-        sy = t.clientY;
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
         st = Date.now();
-      }, { passive: true });
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
 
-      swipeArea.addEventListener("touchend", function(e) {
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx = t.clientX - sx;
-        var dy = t.clientY - sy;
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selected = window.getSelection ? String(window.getSelection()) : "";
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
         var dt = Date.now() - st;
-
-        // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-
-        // 스와이프 동작: 왼쪽(←, dx<0)=다음(신규) / 오른쪽(→, dx>0)=이전(과거)
         if (dx < 0) {
           gotoByOffset(-1, "다음 브리핑이 없습니다.");
         } else {
           gotoByOffset(+1, "이전 브리핑이 없습니다.");
         }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
       }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+      });
 
       document.addEventListener("keydown", function(e) {
         if (!e) return;
@@ -718,7 +800,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: ef6efbd -->
+  <!-- build: 0b9fe0a -->
 
 </body>
 </html>
