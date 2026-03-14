@@ -11562,8 +11562,12 @@ try {{ _ensureDates(); }} catch (e) {{}}
 
       var sx = 0, sy = 0, st = 0, blocked = false;
       var swipeActive = false;
+      var swipeSuppressSelection = false;
       var swipeTarget = null;
       var swipePointerId = null;
+      var swipeRootUserSelect = "";
+      var swipeRootWebkitUserSelect = "";
+      var swipeBodyCursor = "";
       var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
       function getSwipePoint(e, phase) {{
@@ -11588,10 +11592,41 @@ try {{ _ensureDates(); }} catch (e) {{}}
             swipeArea.releasePointerCapture(swipePointerId);
           }}
         }} catch (_releaseErr) {{}}
+        setDesktopSwipeMode(false);
         swipeActive = false;
         blocked = false;
         swipeTarget = null;
         swipePointerId = null;
+      }}
+
+      function setDesktopSwipeMode(active) {{
+        var root = document.documentElement;
+        try {{
+          if (active) {{
+            if (swipeSuppressSelection) return;
+            swipeSuppressSelection = true;
+            swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || "") : "";
+            swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || "") : "";
+            swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || "") : "";
+            if (root && root.style) {{
+              root.style.userSelect = "none";
+              root.style.webkitUserSelect = "none";
+            }}
+            if (document.body && document.body.style) {{
+              document.body.style.cursor = "grabbing";
+            }}
+            return;
+          }}
+          if (!swipeSuppressSelection) return;
+          swipeSuppressSelection = false;
+          if (root && root.style) {{
+            root.style.userSelect = swipeRootUserSelect;
+            root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+          }}
+          if (document.body && document.body.style) {{
+            document.body.style.cursor = swipeBodyCursor;
+          }}
+        }} catch (_desktopSwipeErr) {{}}
       }}
 
       function beginSwipe(e) {{
@@ -11601,6 +11636,9 @@ try {{ _ensureDates(); }} catch (e) {{}}
         var point = getSwipePoint(e, "start");
         if (!point) return;
         blocked = isBlockedTarget(e ? e.target : null);
+        if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {{
+          setDesktopSwipeMode(true);
+        }}
         swipeActive = true;
         swipeTarget = e ? (e.target || null) : null;
         swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
@@ -11619,12 +11657,18 @@ try {{ _ensureDates(); }} catch (e) {{}}
         if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
         var point = getSwipePoint(e, "end");
         var startedBlocked = blocked;
+        var startedDesktopSwipe = swipeSuppressSelection;
         var startedTarget = swipeTarget;
         resetSwipeState();
         if (!point) return;
         if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
         try {{
-          var selected = window.getSelection ? String(window.getSelection()) : "";
+          var selection = window.getSelection ? window.getSelection() : null;
+          var selected = selection ? String(selection) : "";
+          if (startedDesktopSwipe && selection && selection.removeAllRanges) {{
+            selection.removeAllRanges();
+            selected = "";
+          }}
           if (selected && selected.trim()) return;
         }} catch (_selectionErr) {{}}
         var dx = point.x - sx;
@@ -11668,6 +11712,13 @@ try {{ _ensureDates(); }} catch (e) {{}}
       window.addEventListener("mouseup", function(e) {{
         if (window.PointerEvent) return;
         endSwipe(e);
+      }});
+
+      swipeArea.addEventListener("dragstart", function(e) {{
+        if (!swipeActive && !swipeSuppressSelection) return;
+        try {{
+          if (e && e.preventDefault) e.preventDefault();
+        }} catch (_dragErr) {{}}
       }});
 
       window.addEventListener("blur", function() {{
