@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T22:52:23+09:00",
-  "build_tag": "ec0c476",
+  "generated_at_kst": "2026-03-14T23:06:20+09:00",
+  "build_tag": "d9e657e",
   "filter_rejects": [
     {
       "section": "policy",
@@ -76,43 +76,19 @@
     },
     {
       "section": "policy",
+      "reason": "ban_keywords",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "최대 7배 체증되는 사망보험 ‘스텝업700NH종신보험’ 출시",
+      "url": "https://www.nongmin.com/article/20260105500762"
+    },
+    {
+      "section": "policy",
       "reason": "finance_strict_no_agri_context",
       "press": "시사저널e",
       "domain": "sisajournal-e.com",
       "title": "[주간e종목] 지난해 주가 21배 오른 원익홀딩스 화제몰이",
       "url": "https://www.sisajournal-e.com/news/articleView.html?idxno=418288"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농축산물 물가 안정에도 먹거리 체감은 글쎄…기저효과에 일부품목 고공행진",
-      "url": "https://www.newsis.com/view/NISX20260102_0003463294"
-    },
-    {
-      "section": "policy",
-      "reason": "livestock_only",
-      "press": "아시아투데이",
-      "domain": "asiatoday.co.kr",
-      "title": "[단독] 계란 한 판 7990원… 농식품부, 미국산 수입 카드 만지작",
-      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260104010001122"
-    },
-    {
-      "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "고등어 값 10% 급등 했는데, 물가 안정?.. 커지는 물가 괴리감",
-      "url": "https://www.fnnews.com/news/202601021659283723"
-    },
-    {
-      "section": "policy",
-      "reason": "finance_strict_no_agri_context",
-      "press": "강원일보",
-      "domain": "kwnews.co.kr",
-      "title": "[2026년 강원 경제는]체감 물가 5년 연속 상승… 2026년 환율 발(發) 인플레이션 압력 현실화 우려",
-      "url": "https://m.kwnews.co.kr/page/view/2026010116540570803"
     },
     {
       "section": "supply",
@@ -188,6 +164,22 @@
     },
     {
       "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "YTN",
+      "domain": "ytn.co.kr",
+      "title": "[사건X파일] '모임통장' 전성시대, 곗돈 갖고 \"배째라\" 잠적한다면? 법적 대응 ABC",
+      "url": "https://www.ytn.co.kr/_ln/0102_202601021114500642"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "네이트",
+      "domain": "news.nate.com",
+      "title": "\"딸기값 40% 폭등했는데\"…농가는 왜 딸기를 버릴까?",
+      "url": "https://m.news.nate.com/view/20260105n02269?sect=sisa&list=rank&cate=interest"
+    },
+    {
+      "section": "dist",
       "reason": "fishery_title_only",
       "press": "중앙일보",
       "domain": "joongang.co.kr",
@@ -196,19 +188,27 @@
     },
     {
       "section": "dist",
-      "reason": "dist_no_agri_anchor",
-      "press": "한겨레",
-      "domain": "hani.co.kr",
-      "title": "[포토] 힘차게 시작하는 새해 첫 경매",
-      "url": "https://www.hani.co.kr/arti/society/society_general/1237690.html"
+      "reason": "fishery_title_only",
+      "press": "DAUM",
+      "domain": "v.daum.net",
+      "title": "243㎏ 초대형 참치 47억원에 낙찰…도쿄 시장 역대 최고가",
+      "url": "https://v.daum.net/v/20260105151141383"
     },
     {
       "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "두릅 재배농가 대상 선별·출하 교육",
-      "url": "https://www.nongmin.com/article/20260102500574"
+      "reason": "fishery_title_only",
+      "press": "머니투데이",
+      "domain": "mt.co.kr",
+      "title": "243㎏ 참치 한 마리 47억원 '역대 최고가'...\"주가 오를 징조\" 왜?",
+      "url": "https://www.mt.co.kr/world/2026/01/05/2026010514522642889"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_title_only",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "\"참치 한 마리에 47억원\"...日 '하츠세리' 수십억 베팅 왜?",
+      "url": "https://www.newspim.com/news/view/20260105000127"
     },
     {
       "section": "pest",
@@ -217,6 +217,14 @@
       "domain": "aflnews.co.kr",
       "title": "[2026 신년메시지] 최정록 농림축산검역본부 본부장",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=311549"
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "프레시안",
+      "domain": "pressian.com",
+      "title": "정읍시, 산림청 직접일자리 기간제근로자 채용…오는 7일까지",
+      "url": "https://www.pressian.com/pages/articles/2026010511172587089"
     },
     {
       "section": "pest",
@@ -232,9 +240,29 @@
       "threshold": 7.2,
       "tail_cut": 7.2,
       "core_min": 8.2,
-      "total_candidates": 1,
-      "total_selected": 1,
+      "total_candidates": 3,
+      "total_selected": 3,
       "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 25.74,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "병오년 초매식 ‘활기’…가락시장 과일류 첫 경매",
+          "url": "https://www.nongmin.com/article/20260105500755",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
         {
           "selected": true,
           "is_core": true,
@@ -253,6 +281,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 10.34,
+          "tier": 1,
+          "press": "농업인신문",
+          "domain": "nongupin.co.kr",
+          "title": "한국청과, 도매시장 최초 출하비용 보전사업 추진",
+          "url": "https://www.nongupin.co.kr/news/articleView.html?idxno=205669",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
           }
         }
       ]
@@ -444,18 +492,16 @@
           "농산물 수급 안정 대책",
           "농산물 유통 구조 개선",
           "온라인 도매시장 정책",
-          "농식품부 원예"
+          "농식품부 예산"
         ],
         "web_queries": [
           "사과",
-          "배",
-          "농축산물 가격 동향"
+          "배"
         ],
         "web_added": 0,
         "google_news_queries": [
           "사과",
-          "배",
-          "농축산물 가격 동향"
+          "배"
         ],
         "google_news_added": 0
       },
@@ -685,6 +731,7 @@
         "common_queries": [
           "농산물 가격 동향",
           "농산물 수급 동향",
+          "경락값 분석",
           "과일 가격",
           "채소 가격",
           "과일 수급",
@@ -845,7 +892,12 @@
           1
         ]
       ],
-      "google_hits_top": [],
+      "google_hits_top": [
+        [
+          "가락시장 경매",
+          2
+        ]
+      ],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -885,8 +937,8 @@
         ],
         "reason": [],
         "queries": [
+          "가락시장 경매",
           "도매시장 경매",
-          "공판장 경매",
           "apc",
           "사과",
           "배",
@@ -914,30 +966,34 @@
         ],
         "report_date": "2026-01-05",
         "common_queries": [
+          "가락시장 경매",
           "도매시장 경매",
           "공판장 경매",
           "가락시장 경락",
+          "초매식",
+          "첫 경매",
+          "경매 시작",
           "온라인 도매시장 제도 개선",
           "도매시장 제도 개선",
-          "품목농협 산지유통",
-          "원예농협 산지유통",
-          "연합판매사업 직거래",
-          "산지유통센터",
+          "품목농협 계통 유통",
+          "원예농협 계통 유통",
+          "통합마케팅 직거래",
+          "광역유통센터",
           "스마트 APC",
           "농산물 광역수급관리센터"
         ],
         "web_queries": [
-          "도매시장 경매",
-          "공판장 경매"
+          "가락시장 경매",
+          "도매시장 경매"
         ],
         "web_added": 0,
         "google_news_queries": [
-          "도매시장 경매",
-          "공판장 경매"
+          "가락시장 경매",
+          "도매시장 경매"
         ],
-        "google_news_added": 0
+        "google_news_added": 2
       },
-      "items_total": 1,
+      "items_total": 3,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -1047,8 +1103,8 @@
           "과수 병해충 방제",
           "병해충 예찰",
           "검역 병해충",
-          "과수화상병 예방",
-          "탄저병 방제",
+          "과수화상병 예찰",
+          "응애 방제",
           "월동 병해충 예찰",
           "시설채소 방제"
         ],
