@@ -2627,6 +2627,8 @@ def is_flower_novelty_noise_context(title: str, desc: str) -> bool:
     event_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_EVENT_MARKERS])
     market_signal_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_MARKET_SIGNAL_MARKERS])
     association_hits = count_any(text, [w.lower() for w in _FLOWER_NOVELTY_ASSOCIATION_MARKERS])
+    if any(phrase in text for phrase in ("장난감 꽃", "생화 너무 비싸", "레고 꽃", "조화 시장")) and market_signal_hits <= 1:
+        return True
     if novelty_hits == 0 and event_hits == 0:
         return False
     if bouquet_hits == 0 and not ("꽃" in title_l and event_hits >= 1):

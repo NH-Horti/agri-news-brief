@@ -2416,6 +2416,11 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "화원협회가 시상식 레고 꽃다발 논란을 두고 화훼 농가 생존권과 소비 촉진 정책을 언급한 기사다."
         self.assertTrue(main.is_flower_novelty_noise_context(title, desc))
 
+    def test_flower_novelty_noise_catches_toy_flower_policy_story(self):
+        title = "장난감 꽃, 화훼 농가 생존권 위협"
+        desc = "생화 너무 비싸 장난감 꽃 시장이 커진다는 내용으로 화훼 농가 생존권 우려를 담은 기사"
+        self.assertTrue(main.is_flower_novelty_noise_context(title, desc))
+
     def test_flower_market_trend_with_agri_context_still_prefers_supply(self):
         title = "졸업식 대목 앞둔 꽃시장…절화 경매가 오르고 화훼 농가 기대"
         desc = "졸업식 성수기를 앞두고 꽃시장 절화 경매가 상승하고 화훼 농가 출하가 늘고 있다는 현장 기사다."
