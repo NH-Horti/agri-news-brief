@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T20:07:57+09:00",
-  "build_tag": "a31e762",
+  "generated_at_kst": "2026-03-14T22:16:27+09:00",
+  "build_tag": "d9bbbc8",
   "filter_rejects": [
     {
       "section": "policy",
@@ -220,19 +220,19 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
-      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
-    },
-    {
-      "section": "policy",
       "reason": "policy_macro_general_economy",
       "press": "메트로신문",
       "domain": "metroseoul.co.kr",
       "title": "파주시, 비상경제대응 TF 운영",
       "url": "http://www.metroseoul.co.kr/article/20260313500107"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
+      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
     },
     {
       "section": "policy",
@@ -1373,18 +1373,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "노컷뉴스",
-      "domain": "nocutnews.co.kr",
-      "title": "중동 사태 여파…시설 재배 '직격탄'",
-      "url": "https://www.nocutnews.co.kr/news/6484719"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "mydaily",
       "domain": "mydaily.co.kr",
       "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
       "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "노컷뉴스",
+      "domain": "nocutnews.co.kr",
+      "title": "중동 사태 여파…시설 재배 '직격탄'",
+      "url": "https://www.nocutnews.co.kr/news/6484719"
     },
     {
       "section": "supply",
@@ -1844,323 +1844,19 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "asiatime",
-      "domain": "asiatime.co.kr",
-      "title": "“봄이 온다”…외식업계 프로모션 늘리고 고객 맞이 분주",
-      "url": "https://www.asiatime.co.kr/article/20260313500248"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "예술도 힐링도 구독…끊을 수 없는 매력",
-      "url": "https://www.joongang.co.kr/article/25411700"
-    },
-    {
-      "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "동아일보",
-      "domain": "donga.com",
-      "title": "[사설]李 ‘추경 속도전’ 주문… ‘선별과 절제’로 선거용 논란 없애...",
-      "url": "https://www.donga.com/news/Opinion/article/all/20260313/133528562/2"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "RCAST",
-      "domain": "rcast.co.kr",
-      "title": "신한투자증권, 승계형 SME M&A 자문 강화 위해 브릿지코드와 MOU 체결 外",
-      "url": "https://www.rcast.co.kr/news/articleView.html?idxno=30287"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "econovill",
-      "domain": "econovill.com",
-      "title": "화이트데이 D-1…아직 준비 못 했다면 '이 디저트' 주목",
-      "url": "https://www.econovill.com/news/articleView.html?idxno=733104"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스TV",
-      "domain": "yonhapnewstv.co.kr",
-      "title": "'벚꽃추경' 속도전…\"초과세수로 최대한 신속히\"",
-      "url": "http://www.yonhapnewstv.co.kr/MYH20260313183937ybb"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "kfenews",
-      "domain": "kfenews.co.kr",
-      "title": "[KFE 유통로그]제주신라호텔·시몬스·LX하우시스",
-      "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=655581"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "대한무역투자진흥공사",
-      "domain": "dream.kotra.or.kr",
-      "title": "콜롬비아-에콰도르 양국 간 관세 조치 동향…국경 물류·전력 거래까지...",
-      "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239622"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "\"피어라 매화꽃 어우러진 봄\" 광양매화축제 팡파르",
-      "url": "https://www.newsis.com/view/NISX20260313_0003547735"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "insightkorea",
-      "domain": "insightkorea.co.kr",
-      "title": "[히든챔피언⑥] K패션 꽃 '마르디 메크르디', 글로벌 확장력 주목",
-      "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242725"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newsworks",
-      "domain": "newsworks.co.kr",
-      "title": "최고가격 시행 첫날…주유소 휘발유·경유 하락폭 확대",
-      "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=834049"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "아주경제",
-      "domain": "ajunews.com",
-      "title": "머무는 여행의 도시 산청, 2026 웰니스 관광도시 도약",
-      "url": "https://www.ajunews.com/view/20260313163213476"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newsmaker",
-      "domain": "newsmaker.or.kr",
-      "title": "광양매화축제, 자동차ㆍ바가지ㆍ1회용품 없는 3무(無) 축제 추진",
-      "url": "http://www.newsmaker.or.kr/news/articleView.html?idxno=175185"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "NC",
-      "domain": "nc.press",
-      "title": "[창간 20주년 기획-'한복'] ④일상 속으로 돌아온 우리 옷",
-      "url": "https://www.nc.press/news/articleView.html?idxno=610046"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "00NEWS",
-      "domain": "00news.co.kr",
-      "title": "중동發 '벚꽃 추경' 초읽기",
-      "url": "http://www.00news.co.kr/news/articleView.html?idxno=102568"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "thefairnews",
-      "domain": "thefairnews.co.kr",
-      "title": "\"기억 속에 매화 꽃과 향기만 남는다\"...광양매화축제의 봄 여행",
-      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71430"
-    },
-    {
-      "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "[기고] 편의 뒤에 숨은 시간 도둑들",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1346245"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "(잃어버린 경영을 찾아서)분홍색 옷의 여인 : 시장의 지각과 진실 사이...",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294151&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "businesskorea",
-      "domain": "businesskorea.co.kr",
-      "title": "스킨오프 와이드 포어 버블 세럼, 고객 감사 이벤트 진행",
-      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265143"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "중도일보",
-      "domain": "joongdo.co.kr",
-      "title": "지역상생형 광양매화축제 13일 개막",
-      "url": "https://www.joongdo.co.kr/web/view.php?key=20260316010004422"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "smartbizn",
-      "domain": "smartbizn.com",
-      "title": "광양시, 매화축제 입장료 전액 지역상품권 환급 '상생 모델 강화'",
-      "url": "https://www.smartbizn.com/news/articleView.html?idxno=138945"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "포인트데일리",
-      "domain": "pointdaily.co.kr",
-      "title": "\"꽃향기와 추억만 남기세요\" 광양매화축제, '3무(無) 원칙'으로 품격 높...",
-      "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=295945"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "siminsori",
-      "domain": "siminsori.com",
-      "title": "광양매화축제 '3무 축제' 운영",
-      "url": "http://www.siminsori.com/news/articleView.html?idxno=313667"
+      "reason": "supply_context_gate",
+      "press": "enetnews",
+      "domain": "enetnews.co.kr",
+      "title": "원주 '하누엔', 4월 30일까지 리뷰 이벤트 진행",
+      "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=47790"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "greened",
-      "domain": "greened.kr",
-      "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
-      "url": "https://www.greened.kr/news/articleView.html?idxno=337989"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "YTN",
-      "domain": "radio.ytn.co.kr",
-      "title": "李대통령 \"밤 새워서라도 신속히..\" 추경, 얼마나? 어디에?",
-      "url": "https://radio.ytn.co.kr/program/?f=2&id=107796&s_mcd=0206&s_hcd=15"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "오마이뉴스",
-      "domain": "ohmynews.com",
-      "title": "도대체 다이소에 무슨 일이 생긴걸까요",
-      "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003212750&CMPT_CD=P0010"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "goodkyung",
-      "domain": "goodkyung.com",
-      "title": "김태흠 '태안국제원예치유박람회' 승부수…충남 관광·농업 1조 경제효...",
-      "url": "https://www.goodkyung.com/news/articleView.html?idxno=284435"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "석유 최고가격제에 기름값 내렸지만 … 정유업계 눈치 싸움 치열해진 까...",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/13/2026031300131.html"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "'석유 최고가격제' 첫날…시민들 \"체감 안 돼, 더 내려야\"[현장]",
-      "url": "https://www.newsis.com/view/NISX20260313_0003547016"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "'축제의 신' 김장호 구미시장, 회색도시를 낭만도시로 '탈바꿈'",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1346372"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "YTN",
-      "domain": "ytn.co.kr",
-      "title": "李대통령 \"밤 새워서라도 신속히..\" 추경, 얼마나? 어디에?",
-      "url": "https://www.ytn.co.kr/_ln/0102_202603131103337234"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "아주경제",
-      "domain": "ajunews.com",
-      "title": "[강원 소식] 삼척 가곡에 유황온천과 허브정원 결합한 '가곡 허브정원 ...",
-      "url": "https://www.ajunews.com/view/20260313104821160"
-    },
-    {
-      "section": "supply",
-      "reason": "fishery_title_only",
-      "press": "sisajournal-e",
-      "domain": "sisajournal-e.com",
-      "title": "작년 신기록 넘어선 해외여행···이란 전쟁發 유가 복병",
-      "url": "https://www.sisajournal-e.com/news/articleView.html?idxno=419774"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "megaeconomy",
-      "domain": "megaeconomy.co.kr",
-      "title": "파라다이스, 화이트데이 시즌 한정 디저트·선물세트 선봬",
-      "url": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065576776075684"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "m-economynews",
-      "domain": "m-economynews.com",
-      "title": "사람·동물·식물이 함께 사는 도시, 서울",
-      "url": "https://www.m-economynews.com/news/article.html?no=65374"
-    },
-    {
-      "section": "supply",
-      "reason": "livestock_only",
-      "press": "s-journal",
-      "domain": "s-journal.co.kr",
-      "title": "[유통 브리프] SPC 풀무원 대상 hy 서울우유 外",
-      "url": "https://www.s-journal.co.kr/news/articleView.html?idxno=39332"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "safetynews",
-      "domain": "safetynews.co.kr",
-      "title": "벚꽃추경 속도전 강조한 김동연…\"경기도 상반기 예산 조기집행\"",
-      "url": "https://www.safetynews.co.kr/news/articleView.html?idxno=246691"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "mediafine",
-      "domain": "mediafine.co.kr",
-      "title": "14일 화이트데이, 남자는 사탕, 여자는 돈 선호",
-      "url": "https://www.mediafine.co.kr/news/articleView.html?idxno=75872"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "가평군, 군민 일상에 독서·문화 꽃피운다… 상반기 문화학교·도서관 ...",
-      "url": "http://www.breaknews.com/1191760"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "kidshankook",
-      "domain": "kidshankook.kr",
-      "title": "'기다렸어!' 테마공원 봄 축제",
-      "url": "https://www.kidshankook.kr/news/articleView.html?idxno=16582"
+      "press": "safetimes",
+      "domain": "safetimes.co.kr",
+      "title": "[오늘의 주요일정·13일] 10·29 이태원 참사 진상규명 청문회",
+      "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=240614"
     },
     {
       "section": "supply",
@@ -2356,6 +2052,46 @@
     },
     {
       "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "동아일보",
+      "domain": "donga.com",
+      "title": "휘발유값 급등에 다급해진 美, 러産 원유 제재 한달간 해제",
+      "url": "https://www.donga.com/news/Inter/article/all/20260313/133528516/2"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "농산물 유통 전문가 협의체 '첫발'···\"유통구조 개선 정책 구체화\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402560"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "대한무역투자진흥공사",
+      "domain": "dream.kotra.or.kr",
+      "title": "콜롬비아-에콰도르 양국 간 관세 조치 동향 …국경 물류·전력 거래까지...",
+      "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239622"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "joongboo",
+      "domain": "joongboo.com",
+      "title": "[금주의 안성시] 중동 전시 상황 속 '지역경제·민생안정 대응회의' 개최...",
+      "url": "https://www.joongboo.com/news/articleView.html?idxno=363719566"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "국제뉴스",
+      "domain": "gukjenews.com",
+      "title": "﻿위바이옴, 롯데홈쇼핑 '요즘쇼핑 유리네'서 '리얼 100 하스카프베리'...",
+      "url": "https://www.gukjenews.com/news/articleView.html?idxno=3528380"
+    },
+    {
+      "section": "supply",
       "reason": "supply_context_gate",
       "press": "NEWSAM",
       "domain": "newsam.co.kr",
@@ -2367,16 +2103,16 @@
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
     },
     {
       "section": "supply",
@@ -2863,16 +2599,16 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
     },
     {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -3808,8 +3544,8 @@
       "threshold": 13.97,
       "tail_cut": 14.37,
       "core_min": 13.97,
-      "total_candidates": 64,
-      "total_selected": 4,
+      "total_candidates": 27,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -3892,66 +3628,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 14.44,
-          "tier": 3,
-          "press": "연합뉴스",
-          "domain": "yna.co.kr",
-          "title": "코트 떠나는 '블로퀸' 양효진, 8천400득점 돌파…라스트댄스는",
-          "url": "https://www.yna.co.kr/view/AKR20260313053600007?input=1195m",
-          "reason": "",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.3
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.34,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "“사탕·초콜릿은 그다지”…‘화이트데이’ 여성 선호 선물 1위는?",
-          "url": "https://www.nongmin.com/article/20260313500301",
-          "reason": "headline_gate",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.04,
-          "tier": 3,
-          "press": "SBS",
-          "domain": "news.sbs.co.kr",
-          "title": "코트 떠나는 '블로퀸' 양효진, 8천400득점 돌파…라스트 댄스는",
-          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008475927&plink=ORI&cooper=NAVER",
-          "reason": "headline_gate",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 13.92,
@@ -3974,106 +3650,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.34,
-          "tier": 3,
-          "press": "파이낸셜뉴스",
-          "domain": "fnnews.com",
-          "title": "화이트데이, 여성이 받고 싶은 선물 1위는 '돈'..남성은?",
-          "url": "http://www.fnnews.com/news/202603132207535198",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 13.24,
-          "tier": 3,
-          "press": "MBC",
-          "domain": "enews.imbc.com",
-          "title": "박소담 \"스스로 갑갑할 때 有 내려놓으려고 노력 중\"…공효진 격려",
-          "url": "http://enews.imbc.com/News/RetrieveNewsInfo/497818",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.84,
-          "tier": 3,
-          "press": "경향신문",
-          "domain": "sports.khan.co.kr",
-          "title": "박소담X공효진 의외의 ‘찐친 케미’ (당분간 공효진)",
-          "url": "https://sports.khan.co.kr/article/202603130952013?pt=nv",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.59,
-          "tier": 3,
-          "press": "머니투데이",
-          "domain": "mt.co.kr",
-          "title": "\"가만 안 둬\" 남편과 바람난 여성에 전화...\"협박죄로 맞고소 당했다\"",
-          "url": "https://www.mt.co.kr/society/2026/03/13/2026031307575624118",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.34,
-          "tier": 3,
-          "press": "세계일보",
-          "domain": "segye.com",
-          "title": "화이트데이, 여성이 받고 싶은 선물 ‘돈’·남성은 ‘사탕’ 선물 가장...",
-          "url": "https://www.segye.com/newsView/20260313507248",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 12.27,
           "tier": 1,
           "press": "한국영농신문",
@@ -4089,46 +3665,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 11.93,
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "성산일출봉농협, 만감류 정지·전정 현장교육 실시",
-          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316329",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 5.9,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.44,
-          "tier": 3,
-          "press": "동아일보",
-          "domain": "sports.donga.com",
-          "title": "박소담, 공효진과 진솔 토크…‘예의 바른 J’ 매력 폭발",
-          "url": "https://sports.donga.com/ent/article/all/20260313/133522545/1",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
           }
         },
         {
@@ -4514,486 +4050,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 1.68,
-          "tier": 1,
-          "press": "esquirekorea",
-          "domain": "esquirekorea.co.kr",
-          "title": "지금 눈여겨봐야 할, 지금 가장 트렌디한 꽃다발 4",
-          "url": "https://www.esquirekorea.co.kr/article/1898678",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 3.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 1.39,
-          "tier": 1,
-          "press": "kpinews",
-          "domain": "kpinews.kr",
-          "title": "모빌리티 항공사 섬에어, 사천-김포 노선 운항 시작",
-          "url": "https://www.kpinews.kr/newsView/1065576479568125",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 1.24,
-          "tier": 1,
-          "press": "goodnews1",
-          "domain": "goodnews1.com",
-          "title": "'블로퀸' 양효진, 8,400득점 돌파…마지막 경기는",
-          "url": "https://www.goodnews1.com/news/articleView.html?idxno=457596",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 1.19,
-          "tier": 1,
-          "press": "국제뉴스",
-          "domain": "gukjenews.com",
-          "title": "'3월 14일' 화이트 데이 VS 백설기 데이 유래와 선물 추천 리스트",
-          "url": "https://www.gukjenews.com/news/articleView.html?idxno=3528704",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.99,
-          "tier": 1,
-          "press": "gosiweek",
-          "domain": "gosiweek.com",
-          "title": "화이트데이 챙긴다는 2030 줄었지만… 선물 취향은 더 분명해져, “남성...",
-          "url": "https://www.gosiweek.com/article/1065583507311978",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.74,
-          "tier": 1,
-          "press": "디지털타임스",
-          "domain": "dt.co.kr",
-          "title": "‘화이트데이’ 선호 선물 1위는…남자는 ‘사탕’ 여자는 ‘현금’",
-          "url": "https://www.dt.co.kr/article/12051397",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.74,
-          "tier": 1,
-          "press": "노컷뉴스",
-          "domain": "nocutnews.co.kr",
-          "title": "'은퇴 앞두고 또 새 역사' 양효진, 여자부 첫 8400득점 금자탑",
-          "url": "https://www.nocutnews.co.kr/news/6484341",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.74,
-          "tier": 1,
-          "press": "topstarnews",
-          "domain": "topstarnews.net",
-          "title": "\"8천406득점·1천748블로킹\" 양효진, 정규리그 마지막 무대만 남았다",
-          "url": "https://www.topstarnews.net/news/articleView.html?idxno=16002921",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.64,
-          "tier": 1,
-          "press": "topstarnews",
-          "domain": "topstarnews.net",
-          "title": "서효림 \"꽃과 함께 퇴근\"… 선물 들고 전한 감사 인사",
-          "url": "https://www.topstarnews.net/news/articleView.html?idxno=16003478",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "tvdaily",
-          "domain": "tvdaily.co.kr",
-          "title": "박소담, 공효진과 찐친 케미…‘예의 바른 J’부터 연기 갈증까지",
-          "url": "http://www.tvdaily.co.kr/read.php3?aid=17733861081780532002",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "tvreport",
-          "domain": "tvreport.co.kr",
-          "title": "'암 투병' 박소담, 완치 후 먹먹한 근황…\"스스로 갑갑할 때 있어\"",
-          "url": "https://www.tvreport.co.kr/star/article/1012649/",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "xportsnews",
-          "domain": "xportsnews.com",
-          "title": "박소담, 얼마나 계획형 인간이길래…\"스스로 갑갑, 내려놓으려고 노력 ...",
-          "url": "https://www.xportsnews.com/article/2122828",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "spotvnews",
-          "domain": "spotvnews.co.kr",
-          "title": "박소담, 공효진도 놀란 J성향…이 정도였나 \"스스로 갑갑할 때 있어\"",
-          "url": "https://www.spotvnews.co.kr/news/articleView.html?idxno=803260",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "bntnews",
-          "domain": "bntnews.co.kr",
-          "title": "박소담, 유튜브 ‘당분간 공효진’ 출연",
-          "url": "https://www.bntnews.co.kr/article/view/bnt202603130111",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.44,
-          "tier": 1,
-          "press": "sportschosun",
-          "domain": "sportschosun.com",
-          "title": "박소담 \"너무 빡빡하게 사는 편, 계획 틀어지면 불안해\"→공효진式 조언...",
-          "url": "https://www.sportschosun.com/entertainment/2026-03-12/202603130100086710006058",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.24,
-          "tier": 1,
-          "press": "NEWSCJ",
-          "domain": "newscj.com",
-          "title": "[배구] 코트 떠나는 '블로퀸' 양효진, 8400득점 돌파… 마지막 한 경기 ...",
-          "url": "https://www.newscj.com/news/articleView.html?idxno=3384089",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 0.19,
-          "tier": 1,
-          "press": "xportsnews",
-          "domain": "xportsnews.com",
-          "title": "송혜교, 화이트데이에 꽃다발 받는 여배우…벌써 봄이네 [★해시태그]",
-          "url": "https://www.xportsnews.com/article/2122785",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.7,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.06,
-          "tier": 1,
-          "press": "stardailynews",
-          "domain": "stardailynews.co.kr",
-          "title": "박소담, 공효진과 진솔한 우정 공개 \"연기 더 재밌어졌다\"",
-          "url": "https://www.stardailynews.co.kr/news/articleView.html?idxno=527631",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.26,
-          "tier": 1,
-          "press": "newsinside",
-          "domain": "newsinside.kr",
-          "title": "배우 박소담, 공효진 유튜브 속 '예의 바른 J' 면모",
-          "url": "https://www.newsinside.kr/news/articleView.html?idxno=4507220",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.26,
-          "tier": 1,
-          "press": "이투데이",
-          "domain": "enter.etoday.co.kr",
-          "title": "박소담 “연기 갈증 더 커졌다”, 공효진 앞에서 털어놓은 솔직한 속내",
-          "url": "https://enter.etoday.co.kr/news/view/294450",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.33,
-          "tier": 1,
-          "press": "joongangenews",
-          "domain": "joongangenews.com",
-          "title": "서귀포 가볼 만한 곳, 물빛 가득한 폭포와 탐험의 시간",
-          "url": "https://www.joongangenews.com/news/articleView.html?idxno=502344",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.56,
-          "tier": 1,
-          "press": "OSEN",
-          "domain": "osen.co.kr",
-          "title": "박소담, '갑상선유두암' 극복 후..\"스스로 갑갑할 때 있어\" ('당분간 공...",
-          "url": "http://www.osen.co.kr/article/G1112760087",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.56,
-          "tier": 1,
-          "press": "SLIST",
-          "domain": "slist.kr",
-          "title": "박소담-공효진, 촬영 에피소드→MBTI 토크…우정 과시",
-          "url": "https://www.slist.kr/news/articleView.html?idxno=723486",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.57,
-          "tier": 1,
-          "press": "EKN",
-          "domain": "ekn.kr",
-          "title": "“시들지 않는 꽃이 뜬다”…화이트데이 앞두고 캐릭터·블록 꽃 선물 인...",
-          "url": "https://www.ekn.kr/web/view.php?key=20260313028377660",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 3.3,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": -0.71,
           "tier": 1,
           "press": "siminilbo",
@@ -5010,6 +4066,26 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -6.93,
+          "tier": 1,
+          "press": "노컷뉴스",
+          "domain": "nocutnews.co.kr",
+          "title": "'2026 청주 딸기 팝업 페스타' 내달 4~5일 열려",
+          "url": "https://www.nocutnews.co.kr/news/6484451",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -5017,7 +4093,7 @@
       "threshold": 25.01,
       "tail_cut": 25.21,
       "core_min": 25.01,
-      "total_candidates": 62,
+      "total_candidates": 60,
       "total_selected": 2,
       "top": [
         {
@@ -5223,7 +4299,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.23,
+          "score": 20.03,
           "tier": 1,
           "press": "FSNEWS",
           "domain": "fsnews.co.kr",
@@ -5543,7 +4619,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.44,
+          "score": 11.24,
           "tier": 2,
           "press": "아주경제",
           "domain": "ajunews.com",
@@ -5715,26 +4791,6 @@
             "market_hits": 0,
             "strength": 4,
             "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 7.02,
-          "tier": 1,
-          "press": "headlinejeju",
-          "domain": "headlinejeju.co.kr",
-          "title": "국립종자원 제주지원, 봄철 종자 유통조사 실시",
-          "url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=588574",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.1,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -6023,27 +5079,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -2.18,
-          "tier": 1,
-          "press": "JIBS",
-          "domain": "jibs.co.kr",
-          "title": "불법 종자 유통 차단.. 단속 강화",
-          "url": "https://www.jibs.co.kr/news/articles/articlesDetail/58876?feed=na",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.1,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -6.4,
+          "score": -6.6,
           "tier": 1,
           "press": "bizwnews",
           "domain": "bizwnews.com",
@@ -6219,6 +5255,46 @@
             "press_tier": 1,
             "press_weight": -3.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -7.6,
+          "tier": 1,
+          "press": "DYNEWS",
+          "domain": "dynews.co.kr",
+          "title": "﻿정부· 업계 한자리에…KGC인삼공사 부여공장서 'K-홍삼 수출 돌파구' ...",
+          "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842146",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -8.4,
+          "tier": 1,
+          "press": "NAEIL",
+          "domain": "naeil.com",
+          "title": "‘K홍삼 부흥’ 민관 머리 맞댔다",
+          "url": "https://www.naeil.com/news/read/581101",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
         }
       ]
     },
@@ -6226,7 +5302,7 @@
       "threshold": 8.97,
       "tail_cut": 9.57,
       "core_min": 8.97,
-      "total_candidates": 35,
+      "total_candidates": 36,
       "total_selected": 5,
       "top": [
         {
@@ -6327,6 +5403,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.11,
+          "tier": 1,
+          "press": "mygoyang",
+          "domain": "mygoyang.com",
+          "title": "꽃은 피지만, 산업은 어디로 가고 있는가?",
+          "url": "http://www.mygoyang.com/news/articleView.html?idxno=87924",
+          "reason": "not_selected",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 2,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -6959,26 +6055,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
-          "score": 24.63,
-          "tier": 1,
-          "press": "djtimes",
-          "domain": "djtimes.co.kr",
-          "title": "당진시, 사과·배 농가에 과수화상병 개화 전 방제 당부",
-          "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111237",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 21.96,
@@ -7016,6 +6092,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 19.41,
+          "tier": 1,
+          "press": "djtimes",
+          "domain": "djtimes.co.kr",
+          "title": "당진시, 사과 ·배 농가에 과수화상병 개화 전 방제 당부",
+          "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111237",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -7225,7 +6321,7 @@
         "start_kst": "2026-03-13T07:00:00+09:00",
         "end_kst": "2026-03-14T07:00:00+09:00"
       },
-      "base_queries_n": 105,
+      "base_queries_n": 100,
       "base_queries": [
         "사과 수급",
         "사과 가격",
@@ -7322,10 +6418,6 @@
       ],
       "window_hits_top": [
         [
-          "꽃다발 선물",
-          31
-        ],
-        [
           "딸기 가격",
           13
         ],
@@ -7334,15 +6426,7 @@
           5
         ],
         [
-          "감귤 품질",
-          4
-        ],
-        [
           "샤인머스캣 가격",
-          2
-        ],
-        [
-          "꽃 소비",
           2
         ],
         [
@@ -7380,6 +6464,18 @@
         [
           "화훼 가격",
           1
+        ],
+        [
+          "화훼 경매",
+          1
+        ],
+        [
+          "과수 묘목",
+          1
+        ],
+        [
+          "기후변화 과수",
+          1
         ]
       ],
       "page1_full_queries": [
@@ -7394,132 +6490,146 @@
         "과수 농가 울상",
         "과수 묘목",
         "과수 묘목 품귀",
+        "국화 경매",
         "기후변화 과수",
-        "꽃 소비",
-        "꽃다발 선물",
-        "꽃다발 선물 트렌드",
-        "꽃다발 소비",
+        "꽃시장 경매",
         "단감 가격",
         "단감 수급",
         "단감 작황",
-        "단호박 가격"
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
       ],
       "recall_meta": {
         "seed_terms": [
-          "파프리카",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
-          "유자",
-          "자두",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
-          "피망",
-          "레고",
-          "보태니컬"
+          "수박",
+          "피망"
         ],
         "reason": [
           "no_trade_signal_in_pool"
         ],
         "queries": [
-          "파프리카 생육",
-          "파프리카 난방",
-          "감귤 품질",
-          "감귤 제철",
+          "멜론 생육",
+          "농산물 가격 동향",
+          "사과 생육",
+          "참외 생육",
           "고추 생육",
-          "유자 작황"
+          "곶감 작황"
         ],
         "pool_seed_hits": {
           "사과": 0,
           "단감": 0,
-          "감귤": 0,
+          "곶감": 0,
           "포도": 1,
-          "유자": 0,
-          "자두": 0,
+          "키위": 0,
+          "알밤": 0,
+          "복숭아": 0,
           "매실": 0,
           "토마토": 1,
-          "호박": 0,
+          "수박": 0,
           "피망": 0,
-          "파프리카": 0,
-          "오이": 2,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
           "고추": 0,
-          "소비": 1,
-          "레고": 0,
-          "보태니컬": 0,
+          "화훼자조금": 0,
           "과수": 1,
           "기후변화": 0,
-          "화훼": 3,
           "딸기": 3,
+          "대책": 2,
           "배": 1
         },
         "feature_refresh_seeds": [
-          "파프리카",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
-          "피망",
-          "레고",
-          "오이",
-          "소비",
-          "딸기"
+          "곶감",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금",
+          "포도"
         ],
         "topic_seed_terms": [
-          "화훼",
           "딸기",
+          "대책",
           "사과",
           "배"
         ],
         "query_seed_terms": [
           "사과",
           "단감",
-          "감귤",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
           "토마토",
-          "호박",
+          "수박",
           "피망",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
+          "상추",
           "고추",
-          "소비",
-          "레고",
-          "보태니컬",
+          "화훼자조금",
           "과수",
           "기후변화"
         ],
+        "report_date": "2026-03-14",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매"
+        ],
         "prioritized_seeds": [
-          "파프리카",
+          "멜론",
+          "참외",
           "고추",
-          "감귤",
           "사과",
           "단감",
-          "유자",
-          "자두",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
+          "수박",
           "피망",
-          "레고",
-          "보태니컬",
+          "상추",
+          "화훼자조금",
           "기후변화",
           "포도",
           "토마토",
-          "오이",
-          "소비",
           "과수",
-          "화훼",
           "딸기",
+          "대책",
           "배"
         ],
         "feature_focus_seeds": [
-          "파프리카",
-          "감귤"
+          "멜론",
+          "사과"
         ]
       },
-      "items_total": 70,
+      "items_total": 33,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -7790,7 +6900,7 @@
           "사과",
           "배",
           "대책 병해충",
-          "대책 방제"
+          "과수 병해충 방제"
         ],
         "topic_seed_terms": [
           "대책",
@@ -7800,6 +6910,16 @@
         ],
         "query_seed_terms": [
           "병해충"
+        ],
+        "report_date": "2026-03-14",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예방",
+          "탄저병 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
         ]
       },
       "items_total": 6,
