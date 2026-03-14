@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T22:16:27+09:00",
-  "build_tag": "d9bbbc8",
+  "generated_at_kst": "2026-03-14T22:27:04+09:00",
+  "build_tag": "bb16546",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1567,16 +1567,16 @@
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
+      "title": "기름값 폭등에 친환경차 관심 급증",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "기름값 폭등에 친환경차 관심 급증",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
+      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
     },
     {
       "section": "supply",
@@ -2599,6 +2599,14 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
       "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
     },
@@ -2609,14 +2617,6 @@
       "domain": "agrinet.co.kr",
       "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "한국농어민신문",
-      "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "pest",
@@ -2701,18 +2701,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "thepowernews",
-      "domain": "thepowernews.co.kr",
-      "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
-      "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "djtimes",
       "domain": "djtimes.co.kr",
       "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
       "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "thepowernews",
+      "domain": "thepowernews.co.kr",
+      "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
+      "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
     },
     {
       "section": "pest",
