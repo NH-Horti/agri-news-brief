@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T21:41:33+09:00",
-  "build_tag": "526e753",
+  "generated_at_kst": "2026-03-14T23:54:20+09:00",
+  "build_tag": "001502c",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1037,18 +1037,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "한국경제",
-      "domain": "hankyung.com",
-      "title": "[오늘의 운세] 2026년 3월 12일 오늘의 띠별 운세",
-      "url": "https://www.hankyung.com/article/202603064221O"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
       "title": "[미·이란 전쟁 2주] 주요 일지",
       "url": "https://www.yna.co.kr/view/AKR20260311115900009?input=1195m"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "[오늘의 운세] 2026년 3월 12일 오늘의 띠별 운세",
+      "url": "https://www.hankyung.com/article/202603064221O"
     },
     {
       "section": "supply",
@@ -1349,18 +1349,10 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "goodkyung",
-      "domain": "goodkyung.com",
-      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑', 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.goodkyung.com/news/articleView.html?idxno=284271"
-    },
-    {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "sisunnews",
-      "domain": "sisunnews.co.kr",
+      "press": "fntoday",
+      "domain": "fntoday.co.kr",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
+      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
     },
     {
       "section": "supply",
@@ -1381,10 +1373,18 @@
     {
       "section": "supply",
       "reason": "remote_foreign_horti",
-      "press": "fntoday",
-      "domain": "fntoday.co.kr",
+      "press": "sisunnews",
+      "domain": "sisunnews.co.kr",
       "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑' 하베스트 챌린지 3관왕 수...",
-      "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=379408"
+      "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=235386"
+    },
+    {
+      "section": "supply",
+      "reason": "remote_foreign_horti",
+      "press": "goodkyung",
+      "domain": "goodkyung.com",
+      "title": "GS25 론칭 '라나크 레인 말보로 소비뇽 블랑', 하베스트 챌린지 3관왕 수...",
+      "url": "https://www.goodkyung.com/news/articleView.html?idxno=284271"
     },
     {
       "section": "supply",
@@ -1397,18 +1397,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "데일리한국",
-      "domain": "sports.hankooki.com",
-      "title": "빙그레, 제로슈거·제로칼로리 '빙그레 제로 아이스티' 2종 선봬",
-      "url": "https://sports.hankooki.com/news/articleView.html?idxno=6928097"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "thefirstmedia",
       "domain": "thefirstmedia.net",
       "title": "빙그레, 신제품 '빙그레 제로 아이스티' 2종 선봬",
       "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195232"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "데일리한국",
+      "domain": "sports.hankooki.com",
+      "title": "빙그레, 제로슈거·제로칼로리 '빙그레 제로 아이스티' 2종 선봬",
+      "url": "https://sports.hankooki.com/news/articleView.html?idxno=6928097"
     },
     {
       "section": "supply",
@@ -2173,46 +2173,6 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "MTN",
-      "domain": "news.mtn.co.kr",
-      "title": "연애도 가성비 따지는 시대...K로맨스도 '효율' 택했다 [엔터그알]",
-      "url": "https://news.mtn.co.kr/news-detail/2026031011540980409"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "dailynk",
-      "domain": "dailynk.com",
-      "title": "3·8절에 아내 손 잡고 커피숍 찾은 남편들…분위기 '화기애애'",
-      "url": "https://www.dailynk.com/20260311-1"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "asiatoday",
-      "domain": "asiatoday.co.kr",
-      "title": "핑크빈 찾고 떡볶이 먹고…테마파크에 찾아온 봄",
-      "url": "https://www.asiatoday.co.kr/view.php?key=20260311010003203"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "theasian",
-      "domain": "kor.theasian.asia",
-      "title": "[역사속 오늘·3.11] 유한양행 유일한 설립자 별세(1971)·동일본 쓰나미...",
-      "url": "http://kor.theasian.asia/archives/402017"
-    },
-    {
-      "section": "supply",
-      "reason": "flower_novelty_noise",
-      "press": "asiatoday",
-      "domain": "asiatoday.co.kr",
-      "title": "핑크빈 찾고 떡볶이 먹고…테마파크에 찾아온 봄",
-      "url": "https://www.asiatoday.co.kr/view.php?key=20260311010003203"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "국제뉴스",
       "domain": "gukjenews.com",
       "title": "충주시, 과수 고품질현대화·신규과원 조성사업 추진",
@@ -2717,10 +2677,170 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "industrynews",
-      "domain": "industrynews.co.kr",
-      "title": "[In터뷰] 아트팜 김규하 대표, \"에너지비용 30% 시대, 영농형 태양광은 ...",
-      "url": "https://www.industrynews.co.kr/news/articleView.html?idxno=78831"
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "아주경제",
+      "domain": "ajunews.com",
+      "title": "[물가 덮친 고유가] 3월 소비자물가 급등 우려…회복 중인 소비에 찬물",
+      "url": "https://www.ajunews.com/view/20260311141334598"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "cnbnews",
+      "domain": "weekly.cnbnews.com",
+      "title": "서울시, 중동 사태 대응 비상경제회의…수출기업 지원 확대중소기업자...",
+      "url": "https://weekly.cnbnews.com/news/article.html?no=208367"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "FSNEWS",
+      "domain": "fsnews.co.kr",
+      "title": "농산물 수급 '대체로 안정'",
+      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60300"
+    },
+    {
+      "section": "supply",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "서천군 \"고유가 부담, 농업인 월급제 내달 3일까지 신청\"",
+      "url": "https://www.news1.kr/local/daejeon-chungnam/6098032"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "womentimes",
+      "domain": "womentimes.co.kr",
+      "title": "중동 긴장에 기름값 들썩...서울시 \"주유소 424곳 긴급 점검\"",
+      "url": "https://www.womentimes.co.kr/news/articleView.html?idxno=101123"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "socialvalue",
+      "domain": "socialvalue.kr",
+      "title": "서울시, 중동 정세 불안 대응 강화…물가·수출기업 지원",
+      "url": "https://www.socialvalue.kr/news/view/1065595693307775"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "서울시, 중동사태 비상경제회의…중기·소상공인 1000억원 융자",
+      "url": "https://biz.heraldcorp.com/article/10692027"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "서울시 중동 사태 대응 비상경제회의…중소기업자금 1000억 지원",
+      "url": "https://www.dailian.co.kr/news/view/1619600/?sc=Naver"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "중동 사태 대응…서울시, 수출기업 지원 확대·중소기업자금 1000억 지원",
+      "url": "https://www.newspim.com/news/view/20260311001024"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "TF",
+      "domain": "news.tf.co.kr",
+      "title": "서울시, '중동 리스크' 중기·소상공인 1000억 융자 지원",
+      "url": "https://news.tf.co.kr/read/life/2300983.htm"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "issuenbiz",
+      "domain": "issuenbiz.com",
+      "title": "서울시, 중동 사태 대응 비상경제회의…중소기업 1천억 지원",
+      "url": "http://www.issuenbiz.com/news/articleView.html?idxno=74020"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "아주경제",
+      "domain": "ajunews.com",
+      "title": "서울시, 중동 사태 대응 비상경제회의…소상공인 1000억원 융자 지원",
+      "url": "https://www.ajunews.com/view/20260311140744587"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "서울시, 중동사태 비상경제회의…중소기업에 1천억 융자지원",
+      "url": "https://www.yna.co.kr/view/AKR20260311108300004?input=1195m"
+    },
+    {
+      "section": "supply",
+      "reason": "remote_foreign_trade_brief",
+      "press": "대한무역투자진흥공사",
+      "domain": "dream.kotra.or.kr",
+      "title": "미국-인도네시아 상호무역협정(ART) 서명",
+      "url": "http://dream.kotra.or.kr/kotranews/cms/news/actionKotraBoardDetail.do?SITE_NO=3&MENU_ID=90&CONTENTS_NO=1&bbsGbn=244&bbsSn=244&pNttSn=239392"
+    },
+    {
+      "section": "supply",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "서울시, 중동 사태 대응 비상경제회의…\"중소기업 자금 1000억 지원\"",
+      "url": "https://www.news1.kr/local/moi/6097592"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "서울시, 이란전쟁 후 사재기 단속…피해 기업 1000억 융자",
+      "url": "https://www.newsis.com/view/NISX20260311_0003543853"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "중동 사태에 서울시 수출기업 지원↑…중기·소상공인 1000억 융자",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=04011446645382336"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "pinpointnews",
+      "domain": "pinpointnews.co.kr",
+      "title": "서울시, 중동 사태 대응 '비상경제회의'… 수출기업 지원 확대·중소기...",
+      "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=435835"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "서울시 \"중·소상공인 1000억 규모 융자 지원…사재기 점검 강화\"",
+      "url": "https://view.asiae.co.kr/article/2026031113463265776"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "농산물 가격 대체로 전주 대비 하락세",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64012"
     },
     {
       "section": "supply",
@@ -2756,19 +2876,11 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "FSNEWS",
-      "domain": "fsnews.co.kr",
-      "title": "농산물 수급 '대체로 안정'",
-      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60300"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
+      "reason": "supply_context_gate",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "농산물 가격 대체로 전주 대비 하락세",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64012"
+      "title": "우리 농산물의 프리미엄 시장을 향한 도전",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64001"
     },
     {
       "section": "dist",
@@ -2852,19 +2964,19 @@
     },
     {
       "section": "dist",
-      "reason": "opinion_or_editorial",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
-    },
-    {
-      "section": "dist",
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "지역 경제 선도하는 품목농협 - 대경사과원예 농협",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002"
+    },
+    {
+      "section": "dist",
+      "reason": "opinion_or_editorial",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "기고 / 원예산업의 미래를 위한 원예 농협 의 역할",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64000"
     },
     {
       "section": "dist",
@@ -4232,7 +4344,7 @@
       "threshold": 22.32,
       "tail_cut": 22.72,
       "core_min": 22.32,
-      "total_candidates": 79,
+      "total_candidates": 80,
       "total_selected": 4,
       "top": [
         {
@@ -4670,6 +4782,26 @@
             "market_hits": 1,
             "strength": 3,
             "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.37,
+          "tier": 1,
+          "press": "국제뉴스",
+          "domain": "gukjenews.com",
+          "title": "면세유 가격 상승에 농가 부담 '가중'",
+          "url": "https://www.gukjenews.com/news/articleView.html?idxno=3526001",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -5413,26 +5545,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.29,
-          "tier": 1,
-          "press": "newsprime",
-          "domain": "newsprime.co.kr",
-          "title": "SNS가 키운 봄동 비빔밥…편의점 도시락까지 등장",
-          "url": "http://www.newsprime.co.kr/news/article.html?no=726709",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         }
       ]
@@ -6190,7 +6302,7 @@
       "threshold": 17.53,
       "tail_cut": 18.13,
       "core_min": 17.53,
-      "total_candidates": 12,
+      "total_candidates": 14,
       "total_selected": 5,
       "top": [
         {
@@ -6231,6 +6343,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 16.19,
+          "tier": 3,
+          "press": "파이낸셜뉴스",
+          "domain": "fnnews.com",
+          "title": "제주 봄 알리는 춘란 향연… 한란전시관서 만난다",
+          "url": "http://www.fnnews.com/news/202603110821383102",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 1,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -6316,6 +6448,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 5.39,
+          "tier": 1,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "음성 화훼 유통센터 개장 10주년 기념행사 개최",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=63986",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 1,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 4.07,
           "tier": 1,
           "press": "원예산업신문",
@@ -6354,7 +6506,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 3.5,
           "tier": 1,
@@ -6362,7 +6514,7 @@
           "domain": "wonyesanup.co.kr",
           "title": "지역경제 선도하는 품목농협 - 대경사과원예농협",
           "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64002",
-          "reason": "",
+          "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -6944,6 +7096,7 @@
           2
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
         "과일 채소 가격 동향",
@@ -6981,7 +7134,7 @@
         "start_kst": "2026-03-11T07:00:00+09:00",
         "end_kst": "2026-03-12T07:00:00+09:00"
       },
-      "base_queries_n": 105,
+      "base_queries_n": 100,
       "base_queries": [
         "사과 수급",
         "사과 가격",
@@ -7130,14 +7283,15 @@
           2
         ],
         [
-          "사과 출하",
-          1
+          "화훼 경매",
+          2
         ],
         [
-          "포도 가격",
+          "사과 출하",
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "감귤 FTA",
         "감귤 가격",
@@ -7150,69 +7304,72 @@
         "과수 농가 울상",
         "과수 묘목",
         "과수 묘목 품귀",
+        "국화 경매",
         "기후변화 과수",
-        "꽃 소비",
-        "꽃다발 선물",
-        "꽃다발 선물 트렌드",
-        "꽃다발 소비",
+        "꽃시장 경매",
         "단감 가격",
         "단감 수급",
         "단감 작황",
-        "단호박 가격"
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
       ],
       "recall_meta": {
         "seed_terms": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
           "피망",
-          "소비",
-          "레고"
+          "상추",
+          "화훼자조금"
         ],
         "reason": [],
         "queries": [
-          "파프리카 생육",
-          "파프리카 난방",
-          "피망 작황",
-          "피망 생육",
+          "멜론 생육",
+          "멜론 난방",
+          "곶감 작황",
+          "농산물 가격 동향",
           "토마토 생육",
-          "오이 생육"
+          "참외 생육"
         ],
         "pool_seed_hits": {
           "사과": 1,
           "단감": 1,
-          "감귤": 2,
+          "곶감": 0,
           "포도": 0,
-          "유자": 0,
-          "자두": 0,
+          "키위": 1,
+          "알밤": 0,
+          "복숭아": 0,
           "매실": 0,
           "토마토": 0,
-          "호박": 0,
+          "수박": 1,
           "피망": 0,
-          "파프리카": 0,
-          "오이": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
           "고추": 0,
-          "소비": 0,
-          "레고": 0,
-          "보태니컬": 0,
+          "화훼자조금": 0,
           "과수": 1,
           "기후변화": 1,
-          "키위": 1,
+          "감귤": 2,
           "배": 4
         },
         "feature_refresh_seeds": [
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
-          "피망",
-          "소비",
-          "레고"
+          "곶감",
+          "포도",
+          "복숭아",
+          "상추",
+          "화훼자조금",
+          "수박"
         ],
         "topic_seed_terms": [
           "감귤",
@@ -7223,60 +7380,65 @@
         "query_seed_terms": [
           "사과",
           "단감",
-          "감귤",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
           "토마토",
-          "호박",
+          "수박",
           "피망",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
+          "상추",
           "고추",
-          "소비",
-          "레고",
-          "보태니컬",
+          "화훼자조금",
           "과수",
           "기후변화"
         ],
         "report_date": "2026-03-12",
         "common_queries": [
-          "과수 한파 피해",
-          "시설채소 난방비",
-          "월동채소 수급",
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
           "농산물 출하 동향",
           "화훼 경매",
-          "절화 경매"
+          "절화 경매",
+          "꽃시장 경매"
         ],
         "prioritized_seeds": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
           "피망",
-          "소비",
-          "레고",
-          "보태니컬",
+          "상추",
+          "화훼자조금",
           "사과",
           "단감",
-          "감귤",
+          "키위",
+          "수박",
           "과수",
           "기후변화",
-          "키위",
+          "감귤",
           "배"
         ],
         "feature_focus_seeds": [
-          "파프리카",
-          "피망"
+          "멜론",
+          "곶감"
         ]
       },
-      "items_total": 101,
+      "items_total": 104,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -7415,6 +7577,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -7529,6 +7692,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "과수화상병",
         "과수화상병 방제",
