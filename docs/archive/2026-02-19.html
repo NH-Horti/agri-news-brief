@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="0b9fe0a" />
+  <meta name="agri-build" content="001502c" />
 
   <title>[2026-02-19 농산물 뉴스 Brief]</title>
   <style>
@@ -144,11 +144,11 @@
         <div class="sub">기간: 2026-02-13 07:00 ~ 2026-02-19 07:00 · 기사 13건</div>
       </div>
       <div class="navRow">
-  <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-  <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-02-13.html">◀ 이전</a>
-  <div class="dateSelWrap">
-    <select id="dateSelect" aria-label="날짜 선택">
-      <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-02-13.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
 <option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
 <option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
 <option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
@@ -195,16 +195,16 @@
 <option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
 <option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
 <option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-    </select>
-  </div>
-  <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-02-20.html">다음 ▶</a>
-</div>
+          </select>
+        </div>
+        <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-02-20.html">다음 ▶</a>
+      </div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
 
-    <div class="chipbar" data-swipe-ignore="1">
+    <div class="chipbar">
       <div class="chipwrap">
         <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
@@ -484,288 +484,664 @@
     
   </div>
 
-  <!-- build: 0b9fe0a -->
-
-
-  
-  
-  
-  <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
   <script>
-  (function(){
-    var navRow = document.querySelector('.navRow');
-    var navLoading = document.getElementById('navLoading');
+    (function() {
 
-    function _hideLoading(){ try{ if(navLoading) navLoading.classList.remove('show'); }catch(e){} }
-    function _showLoading(){
-      try{
-        if(navLoading) navLoading.classList.add('show');
-        setTimeout(_hideLoading, 1200);
-      }catch(e){}
-    }
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+          }
+        });
+      }
 
-    function _toast(msg){
-      try{
-        var t = document.getElementById('uxToast');
-        if(!t){
-          t = document.createElement('div');
-          t.id = 'uxToast';
-          t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
-          document.body.appendChild(t);
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
         }
-        t.textContent = msg || '이동할 브리핑이 없습니다.';
-        t.style.display = 'block';
-        clearTimeout(t.__t);
-        t.__t = setTimeout(function(){ t.style.display='none'; }, 1600);
-      }catch(e){}
-    }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
 
-    function _getHref(el){
-      if(!el) return '';
-      try{
-        var tag = (el.tagName||'').toLowerCase();
-        if(tag === 'a') return el.getAttribute('href') || el.href || '';
-        return el.getAttribute('data-href') || el.getAttribute('href') || '';
-      }catch(e){ return ''; }
-    }
-    function _isDisabled(el){
-      try{
-        if(!el) return true;
-        if(el.disabled) return true;
-        if(el.classList && el.classList.contains('disabled')) return true;
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
+      }
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
         return false;
-      }catch(e){ return true; }
-    }
-
-    function _pick(kind){
-      if(!navRow) return null;
-      var el = navRow.querySelector('[data-nav="' + kind + '"]');
-      if(el) return el;
-      var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
-      for(var i=0;i<btns.length;i++){
-        var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute ? (btns[i].getAttribute('title')||'') : '');
-        if(kind==='prev' && t.indexOf('이전')>=0) return btns[i];
-        if(kind==='next' && t.indexOf('다음')>=0) return btns[i];
       }
-      return null;
-    }
 
-    function _bindNav(el, msg){
-      if(!el || !el.addEventListener) return;
-      el.addEventListener('click', function(e){
-        var href = _getHref(el);
-        if(!href || _isDisabled(el)){
-          try{ e.preventDefault(); }catch(_e){}
-          _hideLoading();
-          _toast(msg);
-          return false;
-        }
-        _showLoading();
-      }, true);
-    }
-
-    var prev = _pick('prev');
-    var next = _pick('next');
-    _bindNav(prev, '이전 브리핑이 없습니다.');
-    _bindNav(next, '다음 브리핑이 없습니다.');
-
-    var sel = document.getElementById('dateSelect');
-    if(sel){
-      try{ sel.setAttribute('data-swipe-ignore','1'); }catch(e){}
-      sel.addEventListener('change', function(){
-        var v = sel.value;
-        if(!v) return;
-        _showLoading();
-        window.location.href = v;
-      });
-    }
-
-    var sx=0, sy=0, st=0;
-    var swipeActive = false;
-    var swipeSuppressSelection = false;
-    var blocked = false;
-    var swipeTarget = null;
-    var swipePointerId = null;
-    var swipeRootUserSelect = '';
-    var swipeRootWebkitUserSelect = '';
-    var swipeBodyCursor = '';
-    var wheelSwipeDx = 0;
-    var wheelSwipeDy = 0;
-    var wheelSwipeAt = 0;
-    var wheelSwipeLockUntil = 0;
-    var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
-    function isBlockedTarget(target){
-      if(!target || !target.closest) return false;
-      if(target.closest('[data-swipe-ignore="1"]')) return true;
-      if(target.closest('.topbar')) return true;
-      if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
-      return false;
-    }
-    function _eventPoint(e, phase){
-      try{
-        if(!e) return null;
-        if(phase !== 'end' && e.touches && e.touches.length === 1) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        if(phase === 'end' && e.changedTouches && e.changedTouches.length === 1) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-        if(typeof e.clientX === 'number' && typeof e.clientY === 'number') return { x: e.clientX, y: e.clientY };
-      }catch(_evtErr){}
-      return null;
-    }
-    function _resetSwipe(){
-      try{
-        if(swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null){
-          swipeArea.releasePointerCapture(swipePointerId);
-        }
-      }catch(_releaseErr){}
-      _setDesktopSwipeMode(false);
-      swipeActive = false;
-      blocked = false;
-      swipeTarget = null;
-      swipePointerId = null;
-    }
-    function _setDesktopSwipeMode(active){
-      var root = document.documentElement;
-      try{
-        if(active){
-          if(swipeSuppressSelection) return;
-          swipeSuppressSelection = true;
-          swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || '') : '';
-          swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || '') : '';
-          swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || '') : '';
-          if(root && root.style){
-            root.style.userSelect = 'none';
-            root.style.webkitUserSelect = 'none';
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
           }
-          if(document.body && document.body.style){
-            document.body.style.cursor = 'grabbing';
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    var href = String(window.location.href || "");
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
+    }
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = _getRootPrefix() + "archive_manifest.json";
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    window.location.href = url;
+    return;
+  }
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      window.location.href = url;
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeSuppressSelection = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeRootUserSelect = "";
+      var swipeRootWebkitUserSelect = "";
+      var swipeBodyCursor = "";
+      var wheelSwipeDx = 0;
+      var wheelSwipeDy = 0;
+      var wheelSwipeAt = 0;
+      var wheelSwipeLockUntil = 0;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
           }
-          return;
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        setDesktopSwipeMode(false);
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function setDesktopSwipeMode(active) {
+        var root = document.documentElement;
+        try {
+          if (active) {
+            if (swipeSuppressSelection) return;
+            swipeSuppressSelection = true;
+            swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || "") : "";
+            swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || "") : "";
+            swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || "") : "";
+            if (root && root.style) {
+              root.style.userSelect = "none";
+              root.style.webkitUserSelect = "none";
+            }
+            if (document.body && document.body.style) {
+              document.body.style.cursor = "grabbing";
+            }
+            return;
+          }
+          if (!swipeSuppressSelection) return;
+          swipeSuppressSelection = false;
+          if (root && root.style) {
+            root.style.userSelect = swipeRootUserSelect;
+            root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+          }
+          if (document.body && document.body.style) {
+            document.body.style.cursor = swipeBodyCursor;
+          }
+        } catch (_desktopSwipeErr) {}
+      }
+
+      function resetWheelSwipe() {
+        wheelSwipeDx = 0;
+        wheelSwipeDy = 0;
+        wheelSwipeAt = 0;
+      }
+
+      function handleWheelSwipe(e) {
+        if (!e || isNavigating) return;
+        if (e.ctrlKey) return;
+        if (isBlockedTarget(e.target)) return;
+        var now = Date.now();
+        if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+        if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {
+          resetWheelSwipe();
         }
-        if(!swipeSuppressSelection) return;
-        swipeSuppressSelection = false;
-        if(root && root.style){
-          root.style.userSelect = swipeRootUserSelect;
-          root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+        wheelSwipeAt = now;
+        wheelSwipeDx += Number(e.deltaX || 0);
+        wheelSwipeDy += Number(e.deltaY || 0);
+        if (Math.abs(wheelSwipeDx) < 120) return;
+        if (Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+        wheelSwipeLockUntil = now + 700;
+        try {
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        } catch (_wheelPreventErr) {}
+        var totalDx = wheelSwipeDx;
+        resetWheelSwipe();
+        if (totalDx > 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
         }
-        if(document.body && document.body.style){
-          document.body.style.cursor = swipeBodyCursor;
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {
+          setDesktopSwipeMode(true);
         }
-      }catch(_desktopSwipeErr){}
-    }
-    function _resetWheelSwipe(){
-      wheelSwipeDx = 0;
-      wheelSwipeDy = 0;
-      wheelSwipeAt = 0;
-    }
-    function _handleWheelSwipe(e){
-      if(!e) return;
-      if(e.ctrlKey) return;
-      if(isBlockedTarget(e.target)) return;
-      var now = Date.now();
-      if(wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
-      if(!wheelSwipeAt || (now - wheelSwipeAt) > 240){
-        _resetWheelSwipe();
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
       }
-      wheelSwipeAt = now;
-      wheelSwipeDx += Number(e.deltaX || 0);
-      wheelSwipeDy += Number(e.deltaY || 0);
-      if(Math.abs(wheelSwipeDx) < 120) return;
-      if(Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
-      wheelSwipeLockUntil = now + 700;
-      try{
-        if(e.cancelable && e.preventDefault) e.preventDefault();
-      }catch(_wheelPreventErr){}
-      var totalDx = wheelSwipeDx;
-      _resetWheelSwipe();
-      if(totalDx > 0) {
-        var n = next || _pick('next');
-        var href2 = _getHref(n);
-        if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
-        _showLoading(); window.location.href = href2; return;
-      }
-      var p = prev || _pick('prev');
-      var href = _getHref(p);
-      if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
-      _showLoading(); window.location.href = href;
-    }
-    function _beginSwipe(e){
-      if(!swipeArea) return;
-      if(e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
-      if(e && !e.pointerType && typeof e.button === 'number' && e.button !== 0) return;
-      var point = _eventPoint(e, 'start');
-      if(!point) return;
-      blocked = isBlockedTarget(e ? e.target : null);
-      if(e && (e.pointerType === 'mouse' || (!e.pointerType && !e.touches))){
-        _setDesktopSwipeMode(true);
-      }
-      swipeActive = true;
-      swipeTarget = e ? (e.target || null) : null;
-      swipePointerId = (e && typeof e.pointerId === 'number') ? e.pointerId : null;
-      sx = point.x;
-      sy = point.y;
-      st = Date.now();
-      try{
-        if(swipeArea.setPointerCapture && swipePointerId !== null) swipeArea.setPointerCapture(swipePointerId);
-      }catch(_captureErr){}
-    }
-    function _endSwipe(e){
-      if(!swipeActive) return;
-      if(swipePointerId !== null && e && typeof e.pointerId === 'number' && e.pointerId !== swipePointerId) return;
-      var point = _eventPoint(e, 'end');
-      var startedBlocked = blocked;
-      var startedDesktopSwipe = swipeSuppressSelection;
-      var startedTarget = swipeTarget;
-      _resetSwipe();
-      if(!point) return;
-      if(startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
-      try{
-        var selection = window.getSelection ? window.getSelection() : null;
-        var selected = selection ? String(selection) : '';
-        if(startedDesktopSwipe && selection && selection.removeAllRanges){
-          selection.removeAllRanges();
-          selected = '';
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedDesktopSwipe = swipeSuppressSelection;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selection = window.getSelection ? window.getSelection() : null;
+          var selected = selection ? String(selection) : "";
+          if (startedDesktopSwipe && selection && selection.removeAllRanges) {
+            selection.removeAllRanges();
+            selected = "";
+          }
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
         }
-        if(selected && selected.trim()) return;
-      }catch(_selectionErr){}
-      var dx = point.x - sx;
-      var dy = point.y - sy;
-      var dt = Date.now() - st;
-      if(dt > 900 || Math.abs(dx) < 60) return;
-      if(Math.abs(dx) < Math.abs(dy) * 1.2) return;
-      if(dx > 0) {
-        var p = prev || _pick('prev');
-        var href = _getHref(p);
-        if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
-        _showLoading(); window.location.href = href; return;
       }
-      var n = next || _pick('next');
-      var href2 = _getHref(n);
-      if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
-      _showLoading(); window.location.href = href2;
-    }
-    if(swipeArea && swipeArea.addEventListener){
-      if(window.PointerEvent){
-        swipeArea.addEventListener('pointerdown', function(e){ _beginSwipe(e); }, {passive:true});
-        window.addEventListener('pointerup', function(e){ _endSwipe(e); }, {passive:true});
-        window.addEventListener('pointercancel', function(){ _resetSwipe(); }, {passive:true});
-      } else {
-        swipeArea.addEventListener('touchstart', function(e){ _beginSwipe(e); }, {passive:true});
-        swipeArea.addEventListener('touchend', function(e){ _endSwipe(e); }, {passive:true});
-        swipeArea.addEventListener('mousedown', function(e){ _beginSwipe(e); });
-        window.addEventListener('mouseup', function(e){ _endSwipe(e); });
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
       }
-      swipeArea.addEventListener('dragstart', function(e){
-        if(!swipeActive && !swipeSuppressSelection) return;
-        try{
-          if(e && e.preventDefault) e.preventDefault();
-        }catch(_dragErr){}
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
       });
-      swipeArea.addEventListener('wheel', function(e){
-        _handleWheelSwipe(e);
-      }, {passive:false});
-      window.addEventListener('blur', function(){ _resetSwipe(); });
-    }
-  })();
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      swipeArea.addEventListener("dragstart", function(e) {
+        if (!swipeActive && !swipeSuppressSelection) return;
+        try {
+          if (e && e.preventDefault) e.preventDefault();
+        } catch (_dragErr) {}
+      });
+
+      swipeArea.addEventListener("wheel", function(e) {
+        handleWheelSwipe(e);
+      }, { passive: false });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+        resetWheelSwipe();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
   </script>
-  <!-- UX_PATCH_END -->
+  <!-- build: 001502c -->
+
+    <style>
+      details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
+      details.dbgWrap summary { cursor:pointer; font-weight:700; }
+      .dbgMeta { margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:8px; }
+      .dbgkv { background:#f8fafc; border:1px solid var(--line); padding:6px 8px; border-radius:10px; font-size:12px; }
+      .dbgLinks a { font-size:12px; color:var(--btn); }
+      .dbgSec { margin-top:16px; }
+      .dbgSecHead { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+      .dbgTableWrap { overflow:auto; border:1px solid var(--line); border-radius:12px; margin-top:8px; }
+      table.dbgTable { width:100%; border-collapse:collapse; font-size:12px; min-width:980px; }
+      table.dbgTable th, table.dbgTable td { border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:top; }
+      table.dbgTable th { position:sticky; top:0; background:#f9fafb; z-index:1; }
+      .dbgTable .c { text-align:center; white-space:nowrap; }
+      .dbgTable .r { text-align:right; white-space:nowrap; }
+      .muted { color:var(--muted); }
+    </style>
+    <details class="dbgWrap">
+      <summary>디버그 리포트 (선정/필터 로그)</summary>
+      <div class='dbgLinks'><a href='/agri-news-brief/debug/2026-02-19.json' target='_blank' rel='noopener'>debug json 보기</a></div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 001502c</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-15T00:45:03+09:00</span></div>
+      <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: fishery_title_only(60), policy_retail_sales_trend(49), supply_context_gate(49), supply_macro_price_watch(33), policy_macro_general_economy(24), supply_policy_market_brief(23), policy_context_gate(22), must_terms_fail(22), apple_non_edible_context(14), remote_foreign_horti(13), ban_keywords(12), pest_partial_mention(9)</div>
+      
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>supply</b>
+            <span class="muted">candidates=39 selected=3 thr=26.26 tail=26.66 core_min=26.26</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>34.26</td><td class='c'>1</td><td>미디어제주</td><td class='muted'>mediajeju.com</td><td class='r'>5.3</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.mediajeju.com/news/articleView.html?idxno=362911' target='_blank' rel='noopener'>수입 만다린 유입 속 물량 관리 성과… 만감류 5031톤 판매</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>30.84</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>3</td><td class='r'>1</td><td class='muted'></td><td><a href='https://biz.heraldcorp.com/article/10676227' target='_blank' rel='noopener'>생산량이 가른 과일 값…사과 오르고, 배는 내렸다 [푸드360]</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>30.72</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>4.1</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>supply_policy_like</td><td><a href='https://www.nongmin.com/article/20260212500515' target='_blank' rel='noopener'>“12개 품목 선정”…정부, 올해 농축산물 수출 확대 박차</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>24.67</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>5.3</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'></td><td><a href='https://biz.heraldcorp.com/article/10677013' target='_blank' rel='noopener'>‘꽃다발 선물’ 사라진 시대, 틈새 파고든 OO</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.58</td><td class='c'>3</td><td>세계일보</td><td class='muted'>segye.com</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.segye.com/newsView/20260206513475' target='_blank' rel='noopener'>“딸기 가격 이 5만원?” 계산하는 손이 ‘덜덜’…딸기보다 비타민C함량...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.59</td><td class='c'>3</td><td>세계일보</td><td class='muted'>segye.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.segye.com/newsView/20260215502558' target='_blank' rel='noopener'>‘골드바’ 대신 ‘골든 웰니스’…2026년 설, 황금빛 건강을 선물하다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.07</td><td class='c'>3</td><td>세계일보</td><td class='muted'>segye.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.segye.com/newsView/20260205508322' target='_blank' rel='noopener'>식비 새는 집 vs 아끼는 집, 냉동 보관에서 갈린다 [FOOD+]</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.91</td><td class='c'>1</td><td>문화일보</td><td class='muted'>munhwa.com</td><td class='r'>2.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.munhwa.com/article/11568634' target='_blank' rel='noopener'>설 차례상 비용 작년 대비 4.3%↑… 가장 많이 오른 품목은?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.29</td><td class='c'>2</td><td>뉴스1</td><td class='muted'>news1.kr</td><td class='r'>1.0</td><td class='r'>1</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.news1.kr/local/gyeonggi/6073647' target='_blank' rel='noopener'>송옥주 의원 &quot;도매법인 자조금 거출, 평가에 반영해야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.76</td><td class='c'>1</td><td>jejumaeil</td><td class='muted'>jejumaeil.net</td><td class='r'>4.1</td><td class='r'>1</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jejumaeil.net/news/articleView.html?idxno=355450' target='_blank' rel='noopener'>제주 농업·골목상권 위기 타파 &#x27;수눌음&#x27; 정신 강조</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.72</td><td class='c'>3</td><td>경향신문</td><td class='muted'>khan.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.khan.co.kr/article/202602170934001' target='_blank' rel='noopener'>15년째, 몰래 두고 간 과일 이 1279상자···이번 명절에도 찾아온 광주...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.59</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>3.1</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://biz.heraldcorp.com/article/10676696' target='_blank' rel='noopener'>오영훈 제주지사 “복지·의료 등 사회안전망 구축…1차산업도 성과” ...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.21</td><td class='c'>1</td><td>econonews</td><td class='muted'>econonews.co.kr</td><td class='r'>2.4</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=427584' target='_blank' rel='noopener'>농협경제지주, &#x27;한국떫은감협회&#x27;→&#x27;한국감협회&#x27;로 명칭 변경...감 산업 ...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.48</td><td class='c'>1</td><td>econonews</td><td class='muted'>econonews.co.kr</td><td class='r'>2.3</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=427783' target='_blank' rel='noopener'>농식품부, 검역협상 중점품목 12개 선정-K-푸드 수출 가속...페루 포도·...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.0</td><td class='c'>2</td><td>뉴스1</td><td class='muted'>news1.kr</td><td class='r'>7.7</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.news1.kr/economy/agri-food/6074515' target='_blank' rel='noopener'>설 선물 &#x27; 만감류 3인방&#x27; 차이점은?…식감은 레드향, 향기는 천혜향</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.87</td><td class='c'>3</td><td>한겨레</td><td class='muted'>hani.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.hani.co.kr/arti/society/society_general/1245202.html' target='_blank' rel='noopener'>트럼프 “기후변화는 사기극”…농사를 안 지어봐서 하는 소리다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.82</td><td class='c'>3</td><td>경향신문</td><td class='muted'>khan.co.kr</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.khan.co.kr/article/202602151524001' target='_blank' rel='noopener'>없어서 못 파는 ‘새조개’에 ‘백두쫀쿠’까지···연휴 인기 가족 여...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.44</td><td class='c'>1</td><td>노컷뉴스</td><td class='muted'>nocutnews.co.kr</td><td class='r'>3.1</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nocutnews.co.kr/news/6472173' target='_blank' rel='noopener'>오영훈 지사 &quot;제주 우주산업 일자리 68%가 도민&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.26</td><td class='c'>1</td><td>한국영농신문</td><td class='muted'>youngnong.co.kr</td><td class='r'>2.3</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.youngnong.co.kr/news/articleView.html?idxno=57584' target='_blank' rel='noopener'>농식품부, 2026년 수출검역협상 중점추진품목 선정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.43</td><td class='c'>3</td><td>한겨레</td><td class='muted'>hani.co.kr</td><td class='r'>3.3</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.hani.co.kr/arti/area/yeongnam/1245103.html' target='_blank' rel='noopener'>“할머니, 물 많이 틀지 마요” 3살 아이 말 한마디가 바꾼 가족의 일상</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.04</td><td class='c'>1</td><td>bzeronews</td><td class='muted'>bzeronews.com</td><td class='r'>1.4</td><td class='r'>2</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.bzeronews.com/news/articleView.html?idxno=811473' target='_blank' rel='noopener'>&#x27;하늘그린오이&#x27; 본격 출하…천안 로컬푸드 &#x27;안전성&#x27;까지 입증</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.28</td><td class='c'>3</td><td>서울경제</td><td class='muted'>sedaily.com</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.sedaily.com/article/20009342' target='_blank' rel='noopener'>“전통시장을 누가 가나요”… 옛말 된 ‘설 대목’에 상인들 울상</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.87</td><td class='c'>1</td><td>djtimes</td><td class='muted'>djtimes.co.kr</td><td class='r'>1.0</td><td class='r'>1</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.djtimes.co.kr/news/articleView.html?idxno=110972' target='_blank' rel='noopener'>[세상 사는 이야기] 고미현 농부(43, 신평면 거산리) 농사 경험 &#x27;0&#x27;에서 ...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.11</td><td class='c'>1</td><td>노컷뉴스</td><td class='muted'>nocutnews.co.kr</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nocutnews.co.kr/news/6472106' target='_blank' rel='noopener'>농업 고용인력 64%가 외국인…저출산·고령화 &#x27;직격탄&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>10.29</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH202602131304360cP' target='_blank' rel='noopener'>설 대목 전통시장 &#x27;북적&#x27;…명절 맞이로 분주</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>10.04</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260213225900IVa' target='_blank' rel='noopener'>갓 부친 전에 참기름 냄새…설 앞둔 전통시장 &#x27;북적&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>10.04</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260213135909nUF' target='_blank' rel='noopener'>명절 맞이로 분주한 전통시장…골목마다 &#x27;북적&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.96</td><td class='c'>1</td><td>한국영농신문</td><td class='muted'>youngnong.co.kr</td><td class='r'>2.4</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.youngnong.co.kr/news/articleView.html?idxno=57542' target='_blank' rel='noopener'>&#x27;떫은감&#x27;에서 &#x27;감&#x27;으로... &#x27;한국감협회&#x27; 명칭 변경</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.68</td><td class='c'>1</td><td>보건신문</td><td class='muted'>bokuennews.com</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.bokuennews.com/news/article.html?no=273859' target='_blank' rel='noopener'>올해 수출 중점추진품목 12개 선정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.34</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.shinailbo.co.kr/news/articleView.html?idxno=2192892' target='_blank' rel='noopener'>송옥주 의원 &quot;도매법인 평가때 자조금 거출 가점줘야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>8.61</td><td class='c'>1</td><td>financialpost</td><td class='muted'>financialpost.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.financialpost.co.kr/news/articleView.html?idxno=247422' target='_blank' rel='noopener'>설 차례상 비용 오르고, 세뱃돈도 부담...&quot;그래도 즐겁게&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>8.34</td><td class='c'>1</td><td>NSPNA</td><td class='muted'>nspna.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nspna.com/news/?mode=view&amp;newsid=803216' target='_blank' rel='noopener'>송옥주 의원, “도매법인 평가때 자조금 거출 가점 줘야”</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>6.78</td><td class='c'>2</td><td>팜&amp;마켓</td><td class='muted'>farmnmarket.com</td><td class='r'>3.3</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farmnmarket.com/news/article.html?no=25662' target='_blank' rel='noopener'>완주군과 ‘플라스틱 조화 사용 근절’ 협약 체결</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>6.04</td><td class='c'>1</td><td>gokorea</td><td class='muted'>gokorea.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.gokorea.kr/news/articleView.html?idxno=857820' target='_blank' rel='noopener'>[기획] 떡국 한 그릇이 무섭다… 2026 설 상차림 30만 원 시대 생존법</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>1.68</td><td class='c'>1</td><td>전주MBC</td><td class='muted'>jmbc.co.kr</td><td class='r'>3.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jmbc.co.kr/news/view/62389' target='_blank' rel='noopener'>완주, &quot;조화대신 생화로&quot; 장사시설 &#x27;플라스틱 꽃&#x27; 근절 업무협약</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>-0.12</td><td class='c'>1</td><td>jeollailbo</td><td class='muted'>jeollailbo.com</td><td class='r'>3.3</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jeollailbo.com/news/articleView.html?idxno=792438' target='_blank' rel='noopener'>완주군, 공설 장사시설 내 &#x27;플라스틱 조화 근절&#x27; 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>-0.27</td><td class='c'>1</td><td>DOMIN</td><td class='muted'>domin.co.kr</td><td class='r'>3.3</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.domin.co.kr/news/articleView.html?idxno=1545826' target='_blank' rel='noopener'>완주군, 공설 장사시설 내&#x27;플라스틱 조화 근절&#x27;추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>-0.33</td><td class='c'>1</td><td>siminilbo</td><td class='muted'>siminilbo.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.siminilbo.co.kr/news/newsview.php?ncode=1160283508006522' target='_blank' rel='noopener'>인천시 연수구, 설 명절 맞아 따뜻한 기부와 나눔 이어져</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>-0.73</td><td class='c'>1</td><td>TF</td><td class='muted'>news.tf.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://news.tf.co.kr/read/life/2293427.htm' target='_blank' rel='noopener'>[르포] 비싸서 &#x27;들었다 놨다&#x27; 되풀이…매출 반토막 전통시장은 &#x27;한숨&#x27;</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>policy</b>
+            <span class="muted">candidates=77 selected=5 thr=33.4 tail=33.6 core_min=33.4</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>41.4</td><td class='c'>3</td><td>서울경제</td><td class='muted'>sedaily.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>1</td><td class='muted'></td><td><a href='https://www.sedaily.com/article/20009512' target='_blank' rel='noopener'>“내일까지 장 봐야겠네”...설 물가 부담에 최대 40% 지원 나선다</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>40.14</td><td class='c'>2</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.dailian.co.kr/news/view/1610821/?sc=Naver' target='_blank' rel='noopener'>설 농축산물 물가 안정 …과실류는 ‘설 이후 상승’ 구조 고착</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>38.77</td><td class='c'>3</td><td>서울경제</td><td class='muted'>sedaily.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>not_selected</td><td><a href='https://www.sedaily.com/article/20009723' target='_blank' rel='noopener'>쌀·감자 최고가에 ASF·AI까지 확산…설 이후 물가 다시 뛰나</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>38.25</td><td class='c'>2</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.newspim.com/news/view/20260213001025' target='_blank' rel='noopener'>[AI로 읽는 경제] 명절마다 반복되는 할인 정책…&quot;취약계층·선별지원 전...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>37.6</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>1</td><td class='muted'></td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260215161718f5K' target='_blank' rel='noopener'>명절 &#x27;밥상 물가 &#x27; 상승…정부, 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>37.35</td><td class='c'>2</td><td>뉴시스</td><td class='muted'>newsis.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>7</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.newsis.com/view/NISX20260212_0003514058' target='_blank' rel='noopener'>설 성수품 가격에 소비자 울상…&#x27;장관급 물가관리 TF&#x27; 시험대</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>37.27</td><td class='c'>2</td><td>아주경제</td><td class='muted'>ajunews.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.ajunews.com/view/20260216234734512' target='_blank' rel='noopener'>KREI &quot;설 물가 대책 , 저소득층 지원으로 재구성해야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>37.02</td><td class='c'>1</td><td>econovill</td><td class='muted'>econovill.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.econovill.com/news/articleView.html?idxno=729941' target='_blank' rel='noopener'>5년간 과일값 연 8% 상승 …&quot;명절 할인보다 취약층 지원 강화해야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>36.41</td><td class='c'>3</td><td>정책브리핑</td><td class='muted'>korea.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>policy_event_tail</td><td><a href='https://www.korea.kr/news/reporterView.do?newsId=148959464&amp;call_from=naver_news' target='_blank' rel='noopener'>설 성수품의 안정적 공급으로 이번 설도 풍성하게 보낼 수 있어요</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>36.1</td><td class='c'>1</td><td>강원도민일보</td><td class='muted'>kado.net</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.kado.net/news/articleView.html?idxno=2034354' target='_blank' rel='noopener'>설 앞두고 과일 ·고기 가격 올라…정부, 16일까지 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>35.8</td><td class='c'>1</td><td>viva100</td><td class='muted'>viva100.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.viva100.com/article/20260215500097' target='_blank' rel='noopener'>설 앞두고 과일 ·축산물 가격 상승…정부, 성수품 최대 40% 할인 지원</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>35.15</td><td class='c'>3</td><td>정책브리핑</td><td class='muted'>korea.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.korea.kr/news/policyNewsView.do?newsId=148959235&amp;call_from=naver_news' target='_blank' rel='noopener'>모두가 민생회복 체감할 수 있게!</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>34.75</td><td class='c'>2</td><td>뉴시스</td><td class='muted'>newsis.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.newsis.com/view/NISX20260213_0003515466' target='_blank' rel='noopener'>과실류 물가, 5년간 年8.3% 올라…&quot;일시적 재정 할인정책은 한계&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>34.08</td><td class='c'>3</td><td>파이낸셜뉴스</td><td class='muted'>fnnews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='http://www.fnnews.com/news/202602151247596120' target='_blank' rel='noopener'>&quot;내일까지 장 봐야겠네&quot;···뛴 설 물가에 최대 40% 정부 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>34.0</td><td class='c'>2</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>1</td><td class='muted'>similar_story</td><td><a href='https://www.newspim.com/news/view/20260213001131' target='_blank' rel='noopener'>[AI로 읽는 경제] 온누리 1조·할인 910억에도…&#x27;설 특수&#x27;는 왜 카드·플...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>31.95</td><td class='c'>1</td><td>DDAILY</td><td class='muted'>ddaily.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ddaily.co.kr/page/view/2026021516274965438' target='_blank' rel='noopener'>&quot;풍성한 설 명절 되세요&quot; 정부, 성수품 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>31.7</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.ytn.co.kr/_ln/0102_202602161631577259' target='_blank' rel='noopener'>&#x27;명절 휴장&#x27; 코스피, 연휴 이후 상승랠리 이어갈까?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>31.24</td><td class='c'>1</td><td>문화일보</td><td class='muted'>munhwa.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.munhwa.com/article/11568856' target='_blank' rel='noopener'>설 끝나면 제자리?…“566억 할인 지원, 일시 땜질일 뿐”</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>31.12</td><td class='c'>1</td><td>economist</td><td class='muted'>economist.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://economist.co.kr/article/view/ecn202602150013' target='_blank' rel='noopener'>“지금 사야 해”…정부, 성수품 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>30.47</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>7</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.shinailbo.co.kr/news/articleView.html?idxno=2192639' target='_blank' rel='noopener'>설 앞두고 &#x27;장바구니 비상&#x27;…정부, 성수품 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>30.04</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://biz.heraldcorp.com/article/10677037' target='_blank' rel='noopener'>설 앞두고 배 27%↑·한우 12%↑…정부, 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>29.72</td><td class='c'>1</td><td>dealsite</td><td class='muted'>dealsite.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://dealsite.co.kr/articles/156952' target='_blank' rel='noopener'>담합 수사·정부 압박 덕 설 물가부담 완화</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>29.65</td><td class='c'>3</td><td>세계일보</td><td class='muted'>segye.com</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.segye.com/newsView/20260215502317' target='_blank' rel='noopener'>“설 보너스는 없는데, 물가 는 모두 올랐네”…사과·딸기·한우·돼지고...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>28.85</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260215171252YIR' target='_blank' rel='noopener'>[이시각헤드라인] 2월 15일 일요와이드(17시)</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>28.56</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=02118886645350520' target='_blank' rel='noopener'>“ 차례상 비용, 설 민심 흔들라”…공정위 ‘봉인된 칼’ 꺼냈다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>27.75</td><td class='c'>2</td><td>아주경제</td><td class='muted'>ajunews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ajunews.com/view/20260215105014145' target='_blank' rel='noopener'>설 명절 앞두고 먹거리 물가 고공행진…정부 할인전 펼쳐</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.73</td><td class='c'>1</td><td>siminilbo</td><td class='muted'>siminilbo.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291371314605' target='_blank' rel='noopener'>금천구, 설 장바구니 부담 낮춘다... 물가안정 대책 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.34</td><td class='c'>3</td><td>SBS</td><td class='muted'>biz.sbs.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://biz.sbs.co.kr/article_hub/20000291856?division=NAVER' target='_blank' rel='noopener'>설 차례상 걱정이네…고기· 과일 ·쌀값 &#x27;들썩&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>24.88</td><td class='c'>3</td><td>세계일보</td><td class='muted'>segye.com</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.segye.com/newsView/20260215505252' target='_blank' rel='noopener'>&quot;할머니, 조상님도 미국산 소고기 좋아하실 거야&quot;…한우·사과값 폭격에...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.41</td><td class='c'>1</td><td>문화일보</td><td class='muted'>munhwa.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.munhwa.com/article/11568634' target='_blank' rel='noopener'>설 차례상 비용 작년 대비 4.3%↑… 가장 많이 오른 품목은?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.81</td><td class='c'>1</td><td>namdonews</td><td class='muted'>namdonews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.namdonews.com/news/articleView.html?idxno=901540' target='_blank' rel='noopener'>세뱃돈 보다 부담 된다…장바구니 고 물가</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.72</td><td class='c'>1</td><td>WOWTV</td><td class='muted'>wowtv.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202602150056&amp;t=NN' target='_blank' rel='noopener'>명절 장바구니 &#x27;비상&#x27;…최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.61</td><td class='c'>3</td><td>파이낸셜뉴스</td><td class='muted'>fnnews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.fnnews.com/news/202602131416437426' target='_blank' rel='noopener'>&quot;차례 비용, 설 직전 하락 해 30만5900원&quot;…&#x27;작년보다 상승&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.55</td><td class='c'>1</td><td>daejonilbo</td><td class='muted'>daejonilbo.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.daejonilbo.com/news/articleView.html?idxno=2256295' target='_blank' rel='noopener'>[설 특집] 온가족 도란도란… 행복을 나눠요</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.32</td><td class='c'>1</td><td>ZIKSIR</td><td class='muted'>ziksir.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ziksir.com/news/articleView.html?idxno=123620' target='_blank' rel='noopener'>차례상 20만원대 &#x27;선방&#x27;했지만…체감물가는 여전히 &#x27;억&#x27; 소리</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.8</td><td class='c'>1</td><td>getnews</td><td class='muted'>getnews.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.getnews.co.kr/news/articleView.html?idxno=861492' target='_blank' rel='noopener'>설 앞두고 먹거리 가격 올라…정부, 16일까지 최대 40% 할인</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.62</td><td class='c'>1</td><td>쿠키뉴스</td><td class='muted'>kukinews.com</td><td class='r'>2.1</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.kukinews.com/article/view/kuk202602150043' target='_blank' rel='noopener'>설 차례상 차리기 무섭다…평년보다 쌀 14%·갈비 11% 높아</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.42</td><td class='c'>1</td><td>중부매일</td><td class='muted'>jbnews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.jbnews.com/news/articleView.html?idxno=1499026' target='_blank' rel='noopener'>설 앞두고 장바구니 물가 &#x27;비상&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.8</td><td class='c'>1</td><td>SIDAE</td><td class='muted'>sidae.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.sidae.com/article/2026021610240968063' target='_blank' rel='noopener'>&quot;오늘 장 봐야겠네&quot;…정부, 설 앞두고 성수품 최대 40% 할인</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.72</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.shinailbo.co.kr/news/articleView.html?idxno=2192913' target='_blank' rel='noopener'>권칠승 의원, 설 앞두고 수원 지동시장·영동시장 방문, 명절 물가·체감...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.61</td><td class='c'>2</td><td>뉴스1</td><td class='muted'>news1.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.news1.kr/economy/trend/6073910' target='_blank' rel='noopener'>사과 63%·딸기 103%↑…6년 새 2배 뛴 설 차례상 , 누적 인상에 &#x27;허덕&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.43</td><td class='c'>1</td><td>straightnews</td><td class='muted'>straightnews.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.straightnews.co.kr/news/articleView.html?idxno=295193' target='_blank' rel='noopener'>설 앞두고 장바구니 &#x27;비상&#x27;…제수용 품목 희비 엇갈려</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.41</td><td class='c'>1</td><td>M-I</td><td class='muted'>m-i.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.m-i.kr/news/articleView.html?idxno=1337244' target='_blank' rel='noopener'>[기획] 월급은 제자리, 물가 는 껑충…정부 &#x27; 물가 잡기&#x27; 총력전</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.99</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>1.0</td><td class='r'>2</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.shinailbo.co.kr/news/articleView.html?idxno=2192892' target='_blank' rel='noopener'>송옥주 의원 &quot;도매법인 평가때 자조금 거출 가점줘야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.86</td><td class='c'>1</td><td>asiatime</td><td class='muted'>asiatime.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.asiatime.co.kr/article/20260212500079' target='_blank' rel='noopener'>비싸게 느껴지는 설날 장바구니 물가 …&quot;한 푼이라도 덜 쓴다&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.41</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>0.0</td><td class='r'>3</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=401742' target='_blank' rel='noopener'>한국 청과 , 출하농가에 출하비용 보전금 첫 지급</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.99</td><td class='c'>1</td><td>NSPNA</td><td class='muted'>nspna.com</td><td class='r'>1.0</td><td class='r'>2</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nspna.com/news/?mode=view&amp;newsid=803216' target='_blank' rel='noopener'>송옥주 의원, “도매법인 평가때 자조금 거출 가점 줘야”</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.92</td><td class='c'>1</td><td>thereport</td><td class='muted'>thereport.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.thereport.co.kr/news/articleView.html?idxno=84213' target='_blank' rel='noopener'>권칠승 의원, 설 앞두고 지역 전통시장서 명절 물가·체감경기 점검</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.71</td><td class='c'>1</td><td>SENTV</td><td class='muted'>sentv.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.sentv.co.kr/article/view/sentv202602150002' target='_blank' rel='noopener'>설 앞두고 과일 ·축산물 가격 들썩…정부, 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.4</td><td class='c'>1</td><td>NEWSCJ</td><td class='muted'>newscj.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newscj.com/news/articleView.html?idxno=3375444' target='_blank' rel='noopener'>과일·축산물 가격 상승… 설 앞두고 정부 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.21</td><td class='c'>2</td><td>팜&amp;마켓</td><td class='muted'>farmnmarket.com</td><td class='r'>0.0</td><td class='r'>3</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farmnmarket.com/news/article.html?no=25649' target='_blank' rel='noopener'>한국 청과 , 출하비용 보전사업 ‘첫 집행’</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.19</td><td class='c'>1</td><td>tvchosun</td><td class='muted'>news.tvchosun.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://news.tvchosun.com/site/data/html_dir/2026/02/17/2026021790087.html' target='_blank' rel='noopener'>&#x27; 물가 와의 전쟁&#x27;, 경제부총리가 직접 TF 꾸린다는데…</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.16</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.0</td><td class='r'>1</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=401745' target='_blank' rel='noopener'>도매시장 유통인, 설 맞아 어려운 이웃돕기 앞장</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.77</td><td class='c'>1</td><td>ikpnews</td><td class='muted'>ikpnews.net</td><td class='r'>1.4</td><td class='r'>1</td><td class='r'>7</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.ikpnews.net/news/articleView.html?idxno=69633' target='_blank' rel='noopener'>불완전한 무 관세 만다린 대책, 여전히 불안한 산지</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.73</td><td class='c'>1</td><td>inews24</td><td class='muted'>inews24.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.inews24.com/view/1938582' target='_blank' rel='noopener'>&quot;명절 스트레스 1위가 &#x27;전 부치기&#x27;라고요?&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.73</td><td class='c'>1</td><td>joongangenews</td><td class='muted'>joongangenews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.joongangenews.com/news/articleView.html?idxno=496229' target='_blank' rel='noopener'>명절 상차림 비용 부담 &#x27;커졌다&#x27;...정부 최대 40% 할인 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.6</td><td class='c'>1</td><td>NEWSCJ</td><td class='muted'>newscj.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newscj.com/news/articleView.html?idxno=3375606' target='_blank' rel='noopener'>[천지일보 이슈종합] 동계올림픽·아파트 보유·사법 체계 개편안·식재...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.9</td><td class='c'>2</td><td>팜&amp;마켓</td><td class='muted'>farmnmarket.com</td><td class='r'>2.3</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farmnmarket.com/news/article.html?no=25693' target='_blank' rel='noopener'>농식품부, ‘2026년 K-푸드 수출 12대 전략 품목’ 선정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.65</td><td class='c'>1</td><td>EBN</td><td class='muted'>ebn.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ebn.co.kr/news/articleView.html?idxno=1699949' target='_blank' rel='noopener'>설 제수비용 30만5916원...3주 전보다 0.3%↓, 체감은 &#x27;글쎄&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.54</td><td class='c'>1</td><td>inews24</td><td class='muted'>inews24.com</td><td class='r'>1.0</td><td class='r'>2</td><td class='r'>4</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='http://www.inews24.com/view/1939664' target='_blank' rel='noopener'>더불어민주당 송옥주 국회의원, “도매법인 자조금 거출, 운영평가에 반...</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>dist</b>
+            <span class="muted">candidates=18 selected=4 thr=25.27 tail=25.87 core_min=25.27</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'></td><td class='r'>33.27</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.nongmin.com/article/20260213500515' target='_blank' rel='noopener'>“바쁘지만 행복해요”…명절도 반납한 ‘명품딸기 수출현장’ 가보니</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>27.27</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>1</td><td class='r'>1</td><td class='muted'></td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=401763' target='_blank' rel='noopener'>비상임 조합장 연임 2회 제한···농협법 개정안 국회 통과</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>21.76</td><td class='c'>2</td><td>농업정보신문</td><td class='muted'>nongup.net</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>2</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.nongup.net/news/articleView.html?idxno=32473' target='_blank' rel='noopener'>도매시장 사용료, 시설현대화 투입 법제화</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>20.6</td><td class='c'>2</td><td>뉴스1</td><td class='muted'>news1.kr</td><td class='r'>1.0</td><td class='r'>2</td><td class='r'>2</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.news1.kr/local/gyeonggi/6073647' target='_blank' rel='noopener'>송옥주 의원 &quot;도매법인 자조금 거출, 평가에 반영해야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.51</td><td class='c'>1</td><td>한국영농신문</td><td class='muted'>youngnong.co.kr</td><td class='r'>0.0</td><td class='r'>3</td><td class='r'>4</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='http://www.youngnong.co.kr/news/articleView.html?idxno=57561' target='_blank' rel='noopener'>농협개혁·유통혁신 속도 낸다…민생법안 4건 국회 본회의 통과</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.29</td><td class='c'>1</td><td>포인트데일리</td><td class='muted'>pointdaily.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.pointdaily.co.kr/news/articleView.html?idxno=292969' target='_blank' rel='noopener'>농협 비상임조합장 연임 2회 제한·무이자 자금 운용계획 공개</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.59</td><td class='c'>1</td><td>newsroad</td><td class='muted'>newsroad.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>3</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='http://www.newsroad.co.kr/news/articleView.html?idxno=54512' target='_blank' rel='noopener'>농협 비상임조합장, 이제 최대 3선까지…연임 제한 법안 국회 통과</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.15</td><td class='c'>1</td><td>보건신문</td><td class='muted'>bokuennews.com</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>3</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='http://www.bokuennews.com/news/article.html?no=273848' target='_blank' rel='noopener'>송옥주 의원, 농산물 도매시장 시설 현대화법 발의</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.32</td><td class='c'>1</td><td>보건신문</td><td class='muted'>bokuennews.com</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>1</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='http://www.bokuennews.com/news/article.html?no=273913' target='_blank' rel='noopener'>&#x27;농업협동조합법&#x27; 개정안 국회 본회의 통과</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.88</td><td class='c'>1</td><td>kyongbuk</td><td class='muted'>kyongbuk.co.kr</td><td class='r'>0.0</td><td class='r'>3</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.kyongbuk.co.kr/news/articleView.html?idxno=4064662' target='_blank' rel='noopener'>[인터뷰] 강매영 영주시 유통지원과장 &quot;유통 혁신, 농가 삶의 안정으로...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.29</td><td class='c'>3</td><td>한겨레</td><td class='muted'>hani.co.kr</td><td class='r'>3.3</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.hani.co.kr/arti/area/yeongnam/1245103.html' target='_blank' rel='noopener'>“할머니, 물 많이 틀지 마요” 3살 아이 말 한마디가 바꾼 가족의 일상</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.26</td><td class='c'>1</td><td>충남일보</td><td class='muted'>chungnamilbo.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.chungnamilbo.co.kr/news/articleView.html?idxno=873748' target='_blank' rel='noopener'>생산·출하자 대표들, 노은 도매시장 &#x27;공모제 언급&#x27;은 본질 벗어나</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>10.96</td><td class='c'>1</td><td>pinpointnews</td><td class='muted'>pinpointnews.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.pinpointnews.co.kr/news/articleView.html?idxno=428868' target='_blank' rel='noopener'>&quot;지자체가 도매 법인· 시장 도매 인에게 징수한 사용료를 투입토록 의무화...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.44</td><td class='c'>1</td><td>asiatoday</td><td class='muted'>asiatoday.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.asiatoday.co.kr/view.php?key=20260216010005222' target='_blank' rel='noopener'>&#x27;거래액 1조&#x27; 온라인 도매시장 , 단독법 제정… 향후 성과관리체계 갖춘...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>8.32</td><td class='c'>1</td><td>ikpnews</td><td class='muted'>ikpnews.net</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.ikpnews.net/news/articleView.html?idxno=69650' target='_blank' rel='noopener'>온라인도매시장 성장 실적, 어디까지 진실인가</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>4.29</td><td class='c'>1</td><td>NEWSAM</td><td class='muted'>newsam.co.kr</td><td class='r'>0.0</td><td class='r'>2</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newsam.co.kr/news/article.html?no=42140' target='_blank' rel='noopener'>KREI, 2026년 10대 농정 이슈</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.14</td><td class='c'>1</td><td>EKN</td><td class='muted'>ekn.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.ekn.kr/web/view.php?key=20260213029119833' target='_blank' rel='noopener'>윤영미 수입협회장, 남미·중앙亞·아프리카 3개국 연쇄 회동…‘공급망...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.34</td><td class='c'>1</td><td>전주MBC</td><td class='muted'>jmbc.co.kr</td><td class='r'>3.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jmbc.co.kr/news/view/62389' target='_blank' rel='noopener'>완주, &quot;조화대신 생화로&quot; 장사시설 &#x27;플라스틱 꽃&#x27; 근절 업무협약</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>pest</b>
+            <span class="muted">candidates=1 selected=1 thr=6.6 tail=6.6 core_min=7.0</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>10.19</td><td class='c'>1</td><td>NEWSAM</td><td class='muted'>newsam.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.newsam.co.kr/news/article.html?no=42137' target='_blank' rel='noopener'>과수 냉해 예방, 3월이 오기 전 &#x27;골든타임&#x27; 잡아야</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+      <div class="dbgSec">
+        <div class="dbgSecHead"><b>필터링 제외(샘플)</b><span class="muted">최대 60건 표시</span></div>
+        <div class="dbgTableWrap">
+          <table class="dbgTable">
+            <thead><tr><th class="c">섹션</th><th>사유</th><th>매체</th><th>도메인</th><th>제목</th></tr></thead>
+            <tbody><tr><td class='c'>policy</td><td class='muted'>fishery_only</td><td>정책브리핑</td><td class='muted'>korea.kr</td><td><a href='https://www.korea.kr/news/reporterView.do?newsId=148959464&amp;call_from=naver_news' target='_blank' rel='noopener'>설 성수품의 안정적 공급으로 이번 설도 풍성하게 보낼 수 있어요</a></td></tr><tr><td class='c'>policy</td><td class='muted'>ban_keywords</td><td>PPSS</td><td class='muted'>ppss.kr</td><td><a href='https://www.ppss.kr/news/articleView.html?idxno=286391' target='_blank' rel='noopener'>재경부, &quot;경기 회복세 이어진다&quot;...&#x27;내수 개선·수출 호조&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KIDD</td><td class='muted'>kidd.co.kr</td><td><a href='https://kidd.co.kr/news/245012' target='_blank' rel='noopener'>한국 경제, 회복세 지속…“반도체 수출 호조·내수 개선이 회복 견인”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>gndomin</td><td class='muted'>gndomin.com</td><td><a href='http://www.gndomin.com/news/articleView.html?idxno=465564' target='_blank' rel='noopener'>양산시 전통시장 현장 소통·물가 안정 캠페인</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>DKILBO</td><td class='muted'>dkilbo.com</td><td><a href='https://www.dkilbo.com/news/articleView.html?idxno=534177' target='_blank' rel='noopener'>영덕군, &#x27;설 명절 종합 대책 &#x27; 가동...125명 투입해 민생·안전 사수</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>ccdailynews</td><td class='muted'>ccdailynews.com</td><td><a href='https://www.ccdailynews.com/news/articleView.html?idxno=2398271' target='_blank' rel='noopener'>서천군, 설 명절 앞두고 물가 안정 캠페인 실시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>cctimes</td><td class='muted'>cctimes.kr</td><td><a href='http://www.cctimes.kr/news/articleView.html?idxno=892033' target='_blank' rel='noopener'>서천군, 설 명절 앞두고 물가 안정 캠페인 실시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>news1_local_weak_context</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/local/gyeonggi/6075037' target='_blank' rel='noopener'>설 연휴 경기 남부 지자체 비상근무 돌입…안전관리 강화</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676362' target='_blank' rel='noopener'>700억 할인도 ‘반짝 효과’…설 물가 잡으려 할인 퍼붓기?</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>siminilbo</td><td class='muted'>siminilbo.co.kr</td><td><a href='https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291371314605' target='_blank' rel='noopener'>금천구, 설 장바구니 부담 낮춘다... 물가 안정 대책 추진</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>포인트데일리</td><td class='muted'>pointdaily.co.kr</td><td><a href='https://www.pointdaily.co.kr/news/articleView.html?idxno=293220' target='_blank' rel='noopener'>군산시, 2026년 &#x27;설 명절 민생 안정 종합 대책 &#x27; 가동</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3507454' target='_blank' rel='noopener'>안성시, 설 연휴 전까지 물가 안정 특별기간 운영</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_only</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260215_0003516429' target='_blank' rel='noopener'>[구미소식]낙동강 체육공원 캠핑장·자전거 대여소 정상 운영 등</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260214010005075' target='_blank' rel='noopener'>천안시, 설 성수품 30개 품목 집중 관리…&#x27;물가 안정 총력&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>KGNEWS</td><td class='muted'>kgnews.co.kr</td><td><a href='https://www.kgnews.co.kr/news/article.html?no=884732' target='_blank' rel='noopener'>설 앞둔 안성시, ‘물가 안정 특별 대책 ’ 가동… 바가지요금 뿌리 뽑는다</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3507021' target='_blank' rel='noopener'>서천군, 설 명절 앞두고 물가 안정 및 전통시장 이용 홍보에 나서</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>lawissue</td><td class='muted'>lawissue.co.kr</td><td><a href='http://www.lawissue.co.kr/view.php?ud=202602130912386653edd30pn2gj_12' target='_blank' rel='noopener'>태백시 &#x27;설 명절 물가 안정 특별 대책 기간&#x27; 최종 점검 실시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>thebigdata</td><td class='muted'>thebigdata.co.kr</td><td><a href='http://www.thebigdata.co.kr/view.php?ud=202602131637394291e91b94b033_23' target='_blank' rel='noopener'>고흥군, 전통시장 현장 누비며 민생 물가 챙기기</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>ccnnews</td><td class='muted'>ccnnews.co.kr</td><td><a href='http://www.ccnnews.co.kr/news/articleView.html?idxno=401576' target='_blank' rel='noopener'>천안시, 설 성수품 30개 품목 집중관리</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>메트로신문</td><td class='muted'>metroseoul.co.kr</td><td><a href='http://www.metroseoul.co.kr/article/20260213500387' target='_blank' rel='noopener'>부산시 사하구, 상인회와 설 명절 ‘물가 안정 캠페인’ 진행</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>EKN</td><td class='muted'>ekn.kr</td><td><a href='https://www.ekn.kr/web/view.php?key=20260214027349756' target='_blank' rel='noopener'>[E-로컬뉴스] 경주시, 포항시, iM뱅크, 대구북구, 계명대동산병원, 대구...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>EKN</td><td class='muted'>ekn.kr</td><td><a href='https://www.ekn.kr/web/view.php?key=20260213021239592' target='_blank' rel='noopener'>안성시, 반도체 소부장 기업 특화 지원사업 추진...기업당 최대 1000만원...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>ILYO</td><td class='muted'>ilyo.co.kr</td><td><a href='https://ilyo.co.kr/?ac=article_view&amp;entry_id=508324' target='_blank' rel='noopener'>안성시, 설 연휴까지 ‘물가 안정 특별 대책 기간’ 운영</a></td></tr><tr><td class='c'>policy</td><td class='muted'>must_terms_fail_policy</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=314510' target='_blank' rel='noopener'>온라인도매시장 이상거래 의혹, 일파만파</a></td></tr><tr><td class='c'>policy</td><td class='muted'>must_terms_fail_policy</td><td>보건신문</td><td class='muted'>bokuennews.com</td><td><a href='http://www.bokuennews.com/news/article.html?no=273913' target='_blank' rel='noopener'>&#x27;농업협동조합법&#x27; 개정안 국회 본회의 통과</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676362' target='_blank' rel='noopener'>700억 할인도 ‘반짝 효과’… 설 물가 잡으려 할인 퍼붓기?</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676362' target='_blank' rel='noopener'>700억 할인도 ‘반짝 효과’…설 물가 잡으려 할인 퍼붓기?</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>inews24</td><td class='muted'>inews24.com</td><td><a href='http://www.inews24.com/view/1938582' target='_blank' rel='noopener'>&quot;명절 스트레스 1위가 &#x27;전 부치기&#x27;라고요?&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td><a href='https://view.asiae.co.kr/article/2026021610223621051' target='_blank' rel='noopener'>[이슈] 광주·전남 소비자 물가 상승세…&#x27;서민 부담&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>gokorea</td><td class='muted'>gokorea.kr</td><td><a href='https://www.gokorea.kr/news/articleView.html?idxno=858133' target='_blank' rel='noopener'>설 명절 앞둔 서울 시장… 전통시장 물가 &#x27;초비상&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>meconomynews</td><td class='muted'>meconomynews.com</td><td><a href='https://www.meconomynews.com/news/articleView.html?idxno=127909' target='_blank' rel='noopener'>과일·고기·생선·쌀값 상승에... 정부, 설 성수품 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>NEWSCJ</td><td class='muted'>newscj.com</td><td><a href='https://www.newscj.com/news/articleView.html?idxno=3375431' target='_blank' rel='noopener'>설 장보기 어디가 쌀까… 전통시장 vs 대형마트 가격 비교</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>중앙일보</td><td class='muted'>joongang.co.kr</td><td><a href='https://www.joongang.co.kr/article/25405248' target='_blank' rel='noopener'>설 앞두고 과일·고기·생선·쌀값 ‘들썩’…정부 최대 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676227' target='_blank' rel='noopener'>생산량이 가른 과일값… 사과 오르고, 배는 내렸다 [푸드360]</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>youthdaily</td><td class='muted'>youthdaily.co.kr</td><td><a href='https://www.youthdaily.co.kr/news/article.html?no=213149' target='_blank' rel='noopener'>&quot;제사용품, 설 직전에 저렴&quot;…작년 대비 물가 상승</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676046' target='_blank' rel='noopener'>“제사용품 평균비용, 설 직전 내렸다”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>M-I</td><td class='muted'>m-i.kr</td><td><a href='https://www.m-i.kr/news/articleView.html?idxno=1337244' target='_blank' rel='noopener'>[기획] 월급은 제자리, 물가 는 껑충…정부 &#x27; 물가 잡기&#x27; 총력전</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>tvchosun</td><td class='muted'>news.tvchosun.com</td><td><a href='https://news.tvchosun.com/site/data/html_dir/2026/02/17/2026021790087.html' target='_blank' rel='noopener'>&#x27; 물가 와의 전쟁&#x27;, 경제부총리가 직접 TF 꾸린다는데…</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>JIBS</td><td class='muted'>jibs.co.kr</td><td><a href='https://www.jibs.co.kr/news/articles/articlesDetail/57914?feed=na' target='_blank' rel='noopener'>“비싸도 믿고 샀는데”… 설 밥상 뒤흔든 ‘원산지 둔갑’, 5년 7,700건</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/economy/trend/6073910' target='_blank' rel='noopener'>사과 63%·딸기 103%↑…6년 새 2배 뛴 설 차례상, 누적 인상에 &#x27;허덕&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260212_0003514058' target='_blank' rel='noopener'>설 성수품 가격에 소비자 울상…&#x27;장관급 물가 관리 TF&#x27; 시험대</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10676362' target='_blank' rel='noopener'>700억 할인도 ‘반짝 효과’…설 물가 잡으려 할인 퍼붓기?</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>세계일보</td><td class='muted'>segye.com</td><td><a href='https://www.segye.com/newsView/20260215504973' target='_blank' rel='noopener'>설 차례상 27만원 육박… 밥상 물가 흔드는 ‘기후플레이션’</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>womaneconomy</td><td class='muted'>womaneconomy.co.kr</td><td><a href='https://www.womaneconomy.co.kr/news/articleView.html?idxno=249994' target='_blank' rel='noopener'>&quot;설 장보기 겁난다&quot;···사과·고기·생선 가격 줄줄이 상승</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>dealsite</td><td class='muted'>dealsite.co.kr</td><td><a href='https://dealsite.co.kr/articles/156952' target='_blank' rel='noopener'>담합 수사·정부 압박 덕 설 물가 부담 완화</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>tfmedia</td><td class='muted'>tfmedia.co.kr</td><td><a href='https://www.tfmedia.co.kr/news/article.html?no=201568' target='_blank' rel='noopener'>설 앞두고 과일 ·고기·생선·쌀값 올라…정부 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>inews24</td><td class='muted'>inews24.com</td><td><a href='http://www.inews24.com/view/1939935' target='_blank' rel='noopener'>설 앞두고 과일 ·고기·생선·쌀값↑⋯정부 16일까지 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>straightnews</td><td class='muted'>straightnews.co.kr</td><td><a href='https://www.straightnews.co.kr/news/articleView.html?idxno=295193' target='_blank' rel='noopener'>설 앞두고 장바구니 &#x27;비상&#x27;…제수용 품목 희비 엇갈려</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>MBN</td><td class='muted'>mbn.co.kr</td><td><a href='http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5176103' target='_blank' rel='noopener'>&quot;고기도 생선도 선뜻 못 집겠어요&quot; 40% 할인 지원에도 장 보기 &#x27;부담&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>gokorea</td><td class='muted'>gokorea.kr</td><td><a href='https://www.gokorea.kr/news/articleView.html?idxno=858133' target='_blank' rel='noopener'>설 명절 앞둔 서울 시장… 전통시장 물가 &#x27;초비상&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>CBCI</td><td class='muted'>cbci.co.kr</td><td><a href='https://www.cbci.co.kr/news/articleView.html?idxno=556053' target='_blank' rel='noopener'>설 앞두고 장바구니 물가 들썩… 과일 ·축산물·수산물 전반적 상승</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_offtopic_gate</td><td>DDAILY</td><td class='muted'>ddaily.co.kr</td><td><a href='https://www.ddaily.co.kr/page/view/2026021516274965438' target='_blank' rel='noopener'>&quot;풍성한 설 명절 되세요&quot; 정부, 성수품 최대 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>asiatime</td><td class='muted'>asiatime.co.kr</td><td><a href='https://www.asiatime.co.kr/article/20260215500015' target='_blank' rel='noopener'>설 앞두고 과일 ·고기·생선 등 가격 올라…정부, 최대 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>econovill</td><td class='muted'>econovill.com</td><td><a href='https://www.econovill.com/news/articleView.html?idxno=729971' target='_blank' rel='noopener'>설 앞두고 과일 ·고기·생선·쌀값 올라…정부, 성수품 최대 40% 할인 지...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>문화일보</td><td class='muted'>munhwa.com</td><td><a href='https://www.munhwa.com/article/11568634' target='_blank' rel='noopener'>설 차례상 비용 작년 대비 4.3%↑… 가장 많이 오른 품목은?</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>insight</td><td class='muted'>insight.co.kr</td><td><a href='https://www.insight.co.kr/news/543313' target='_blank' rel='noopener'>&quot;쌀값 비싸 떡국도 못 먹는다&quot; 호소에... 정부, 설 성수품 40% 할인 지원</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>joongboo</td><td class='muted'>joongboo.com</td><td><a href='https://www.joongboo.com/news/articleView.html?idxno=363717420' target='_blank' rel='noopener'>&quot;발 디딜 틈 없네&quot;… 안양중앙시장, 설 대목 맞아 &#x27;북새통&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>아주경제</td><td class='muted'>ajunews.com</td><td><a href='https://www.ajunews.com/view/20260217102233573' target='_blank' rel='noopener'>중기부, 전통시장 방문...설 명절 장바구니 물가 점검</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>g-enews</td><td class='muted'>g-enews.com</td><td><a href='https://www.g-enews.com/view.php?ud=20260217090954854578e43e3ead_1' target='_blank' rel='noopener'>“홍동백서·조율이시는 없다” 성균관도 권고한 ‘뺄셈’의 차례상</a></td></tr><tr><td class='c'>policy</td><td class='muted'>ban_keywords</td><td>동아일보</td><td class='muted'>donga.com</td><td><a href='https://www.donga.com/news/Society/article/all/20260213/133358739/1' target='_blank' rel='noopener'>“1년치 스팸-참치 쟁일 기회”…중고 생필품은 명절이 대목</a></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    
 </body>
 </html>
