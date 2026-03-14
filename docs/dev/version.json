@@ -1,6 +1,12 @@
 {
-  "build_tag": "b0b6295",
-  "generated_at_kst": "2026-03-14T19:30:34+09:00",
+  "build_tag": "a31e762",
+  "generated_at_kst": "2026-03-14T20:05:20+09:00",
   "report_date": "2026-03-14",
-  "preview_path": "docs/dev/index.html"
+  "preview_path": "docs/dev/index.html",
+  "content_ref": "main",
+  "content_branch": "codex/dev-preview",
+  "asset_base_url": "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev",
+  "preview_url": "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/index.html",
+  "version_url": "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json",
+  "debug_url": "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-03-14.json"
 }
