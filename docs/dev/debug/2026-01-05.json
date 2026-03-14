@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T22:35:33+09:00",
-  "build_tag": "bb16546",
+  "generated_at_kst": "2026-03-14T22:52:23+09:00",
+  "build_tag": "ec0c476",
   "filter_rejects": [
     {
       "section": "policy",
@@ -17,6 +17,102 @@
       "domain": "news1.kr",
       "title": "\" 물가 2%라는데 왜 비쌀까\"…10개 중 4개 품목, 5년새 20% 이상↑",
       "url": "https://www.news1.kr/economy/trend/6027021"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "조선일보",
+      "domain": "chosun.com",
+      "title": "어느새 여기까지 올라왔네, 현재 한국에서 가장 맛있는 사과가 나는 곳",
+      "url": "https://www.chosun.com/economy/startup_story/2026/01/03/BRKLFFMG5JD6PCLQTOZ5W3R4SM/"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "2025년 ‘사과’ 생산량 전년보다 2.6% 감소",
+      "url": "https://www.nongmin.com/article/20260102500618"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "23년만에 장수 사과 수확 체험 종료…이상기후에 '헤어질 결심'",
+      "url": "https://www.yna.co.kr/view/AKR20260102118900055"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_apology_context",
+      "press": "경향신문",
+      "domain": "khan.co.kr",
+      "title": "법무부, 뚜안씨 유족에 공식 사과···“미등록 이주민 단속 정책 개선”",
+      "url": "https://www.khan.co.kr/article/202601020926001"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "한겨레",
+      "domain": "hani.co.kr",
+      "title": "정청래, 공천헌금 의혹 사과하며 “1인1표제 재추진” 의지",
+      "url": "https://www.hani.co.kr/arti/politics/politics_general/1237860.html"
+    },
+    {
+      "section": "policy",
+      "reason": "ban_keywords",
+      "press": "문화일보",
+      "domain": "munhwa.com",
+      "title": "이혜훈, 갑질 인턴에 사과 시도…인턴 “사과받지 않겠다는 뜻 전달했다” 거절",
+      "url": "https://www.munhwa.com/article/11558202"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "안동인터넷뉴스",
+      "domain": "adinews.co.kr",
+      "title": "한국미래농업연구원, 사과농가 데이터 보고서 제공...농가 영농상태·개선점까지 한눈에",
+      "url": "http://www.adinews.co.kr/news/articleView.html?idxno=66770"
+    },
+    {
+      "section": "policy",
+      "reason": "finance_strict_no_agri_context",
+      "press": "시사저널e",
+      "domain": "sisajournal-e.com",
+      "title": "[주간e종목] 지난해 주가 21배 오른 원익홀딩스 화제몰이",
+      "url": "https://www.sisajournal-e.com/news/articleView.html?idxno=418288"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "농축산물 물가 안정에도 먹거리 체감은 글쎄…기저효과에 일부품목 고공행진",
+      "url": "https://www.newsis.com/view/NISX20260102_0003463294"
+    },
+    {
+      "section": "policy",
+      "reason": "livestock_only",
+      "press": "아시아투데이",
+      "domain": "asiatoday.co.kr",
+      "title": "[단독] 계란 한 판 7990원… 농식품부, 미국산 수입 카드 만지작",
+      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260104010001122"
+    },
+    {
+      "section": "policy",
+      "reason": "fishery_title_only",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "고등어 값 10% 급등 했는데, 물가 안정?.. 커지는 물가 괴리감",
+      "url": "https://www.fnnews.com/news/202601021659283723"
+    },
+    {
+      "section": "policy",
+      "reason": "finance_strict_no_agri_context",
+      "press": "강원일보",
+      "domain": "kwnews.co.kr",
+      "title": "[2026년 강원 경제는]체감 물가 5년 연속 상승… 2026년 환율 발(發) 인플레이션 압력 현실화 우려",
+      "url": "https://m.kwnews.co.kr/page/view/2026010116540570803"
     },
     {
       "section": "supply",
@@ -89,6 +185,46 @@
       "domain": "dtnews24.com",
       "title": "고흥군, 농·축·수산 잇는 ' 스마트 통합 혁신지구' 완성",
       "url": "http://www.dtnews24.com/news/articleView.html?idxno=804518"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_title_only",
+      "press": "중앙일보",
+      "domain": "joongang.co.kr",
+      "title": "[포토타임] 참치 한 마리에 47억…도쿄 새해 첫 경매, 역대 최고가 경신",
+      "url": "https://www.joongang.co.kr/article/25395148"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_no_agri_anchor",
+      "press": "한겨레",
+      "domain": "hani.co.kr",
+      "title": "[포토] 힘차게 시작하는 새해 첫 경매",
+      "url": "https://www.hani.co.kr/arti/society/society_general/1237690.html"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "두릅 재배농가 대상 선별·출하 교육",
+      "url": "https://www.nongmin.com/article/20260102500574"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "[2026 신년메시지] 최정록 농림축산검역본부 본부장",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=311549"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "산림재난대응단 통합·스마트임업...2026년 달라지는 산림정책",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=311463"
     }
   ],
   "sections": {
@@ -220,6 +356,7 @@
         ]
       ],
       "window_hits_top": [],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
         "과일 채소 가격 동향",
@@ -314,7 +451,13 @@
           "배",
           "농축산물 가격 동향"
         ],
-        "web_added": 0
+        "web_added": 0,
+        "google_news_queries": [
+          "사과",
+          "배",
+          "농축산물 가격 동향"
+        ],
+        "google_news_added": 0
       },
       "items_total": 0,
       "cond_paging": {
@@ -431,6 +574,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "감귤 FTA",
         "감귤 가격",
@@ -579,7 +723,12 @@
           "멜론 생육",
           "농산물 가격 동향"
         ],
-        "web_added": 0
+        "web_added": 0,
+        "google_news_queries": [
+          "멜론 생육",
+          "농산물 가격 동향"
+        ],
+        "google_news_added": 0
       },
       "items_total": 1,
       "cond_paging": {
@@ -696,6 +845,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -780,7 +930,12 @@
           "도매시장 경매",
           "공판장 경매"
         ],
-        "web_added": 0
+        "web_added": 0,
+        "google_news_queries": [
+          "도매시장 경매",
+          "공판장 경매"
+        ],
+        "google_news_added": 0
       },
       "items_total": 1,
       "cond_paging": {
@@ -852,6 +1007,7 @@
         ]
       ],
       "window_hits_top": [],
+      "google_hits_top": [],
       "page1_full_queries": [
         "과수화상병",
         "과수화상병 방제",
@@ -895,7 +1051,12 @@
           "탄저병 방제",
           "월동 병해충 예찰",
           "시설채소 방제"
-        ]
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 0
       },
       "items_total": 0,
       "cond_paging": {
