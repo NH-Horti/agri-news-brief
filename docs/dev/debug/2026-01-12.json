@@ -1,7 +1,71 @@
 {
-  "generated_at_kst": "2026-03-14T22:30:19+09:00",
-  "build_tag": "bb16546",
+  "generated_at_kst": "2026-03-14T23:15:08+09:00",
+  "build_tag": "d9e657e",
   "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "DAUM",
+      "domain": "v.daum.net",
+      "title": "[내일은 못볼지도] '호남의 지붕' 500m 산지마저 흔들리는 사과 재배",
+      "url": "https://v.daum.net/v/20260110071258515"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "경북매일",
+      "domain": "kbmaeil.com",
+      "title": "美사과 들어오면 경북농가 견딜 수 있을까",
+      "url": "https://www.kbmaeil.com/article/20260111500020"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "‘사과 과원관리사’에 도전하세요",
+      "url": "https://www.nongmin.com/article/20260108500288"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "AI 승률 95% 웃돌던 신민준, LG배 결승 1국 통한의 역전패",
+      "url": "https://www.yna.co.kr/view/AKR20260112126600007"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "조선일보",
+      "domain": "chosun.com",
+      "title": "스마트폰 중독, 불면·우울증 위험 3배 높여",
+      "url": "https://www.chosun.com/national/welfare-medical/2026/01/10/EZT6UN7Q6BERLEBYJ7UFKG5VTQ/"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "동아일보",
+      "domain": "donga.com",
+      "title": "스스로 판단하는 ‘AI 팩토리’… 반도체 설계속도 20배 빨라져",
+      "url": "https://www.donga.com/news/Economy/article/all/20260112/133134277/2"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "문화일보",
+      "domain": "munhwa.com",
+      "title": "“삼전·하닉 2배 먹는다” 100억 들고 홍콩 간 불개미의 이유",
+      "url": "https://www.munhwa.com/article/11559989"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "세무사신문",
+      "domain": "webzine.kacta.or.kr",
+      "title": "\"스마트폰 중독, 수면·정신건강 악화 불러…우울증 2.8배\"",
+      "url": "https://webzine.kacta.or.kr/news/articleView.html?idxno=24310"
+    },
     {
       "section": "supply",
       "reason": "supply_context_gate",
@@ -51,6 +115,22 @@
       "url": "https://biz.chosun.com/distribution/food/2026/01/10/5H52EKNSJ5CNJID6PO5QV2QZ3A/"
     },
     {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "[유통가 사람들] “산지와 소통하며 공정한 거래 진행”",
+      "url": "https://www.nongmin.com/article/20260112500722"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "pigpeople",
+      "domain": "pigpeople.net",
+      "title": "옥수수 가격 강세에 세계곡물가격지수 2개월 연속 상승",
+      "url": "https://www.pigpeople.net/news/article.html?no=18451"
+    },
+    {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "SBS",
@@ -67,6 +147,54 @@
       "url": "https://www.yna.co.kr/view/AKR20260109085700055?input=1195m"
     },
     {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "현대경제",
+      "domain": "hdnews.co.kr",
+      "title": "서산시, 2026년 농작물 병해충 방제 약제 확정",
+      "url": "https://www.hdnews.co.kr/news/articleView.html?idxno=338012"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "‘사과 과원관리사’에 도전하세요",
+      "url": "https://www.nongmin.com/article/20260108500288"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "‘과원관리사 민간 자격시험’ 참가자 접수",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400364"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "현대경제",
+      "domain": "hdnews.co.kr",
+      "title": "서산시, 2026년 농작물 병해충 방제 약제 확정",
+      "url": "https://www.hdnews.co.kr/news/articleView.html?idxno=338012"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "뉴스후플러스",
+      "domain": "newswhoplus.com",
+      "title": "시민 삶과 맞닿은 장애·보건·양육 조례 체계화",
+      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=50851"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "내외뉴스통신",
+      "domain": "nbnnews.co.kr",
+      "title": "의정부시 김지호 의원, 의정부시 소상공인 보호 및 지원에 관한 조례 일부개정조례 등 8건 공포",
+      "url": "http://www.nbnnews.co.kr/news/articleView.html?idxno=1003259"
+    },
+    {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "농민신문",
@@ -80,8 +208,8 @@
       "threshold": 7.87,
       "tail_cut": 8.27,
       "core_min": 7.87,
-      "total_candidates": 1,
-      "total_selected": 1,
+      "total_candidates": 2,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
@@ -101,6 +229,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 13.89,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[2026년 1월12일(월)] 무·양배추·고추·대파·피망 경락값 분석",
+          "url": "https://www.nongmin.com/article/20260112500339",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 1,
+            "strength": 1,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
           }
         }
       ]
@@ -362,6 +510,7 @@
         ]
       ],
       "window_hits_top": [],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
         "과일 채소 가격 동향",
@@ -449,14 +598,18 @@
           "농산물 수급 안정 대책",
           "농산물 유통 구조 개선",
           "온라인 도매시장 정책",
-          "농식품부 원예"
+          "농식품부 예산"
         ],
         "web_queries": [
           "사과",
-          "배",
-          "농축산물 가격 동향"
+          "배"
         ],
-        "web_added": 0
+        "web_added": 0,
+        "google_news_queries": [
+          "사과",
+          "배"
+        ],
+        "google_news_added": 0
       },
       "items_total": 0,
       "cond_paging": {
@@ -577,6 +730,12 @@
           2
         ]
       ],
+      "google_hits_top": [
+        [
+          "농산물 가격 동향",
+          1
+        ]
+      ],
       "page1_full_queries": [
         "감귤 FTA",
         "감귤 가격",
@@ -687,6 +846,7 @@
         "common_queries": [
           "농산물 가격 동향",
           "농산물 수급 동향",
+          "경락값 분석",
           "과일 가격",
           "채소 가격",
           "과일 수급",
@@ -726,9 +886,14 @@
           "멜론 생육",
           "농산물 가격 동향"
         ],
-        "web_added": 0
+        "web_added": 0,
+        "google_news_queries": [
+          "멜론 생육",
+          "농산물 가격 동향"
+        ],
+        "google_news_added": 1
       },
-      "items_total": 5,
+      "items_total": 6,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -855,6 +1020,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -899,7 +1065,7 @@
           "사과",
           "배",
           "가락시장",
-          "도매시장 경매"
+          "가락시장 경매"
         ],
         "topic_seed_terms": [
           "대책",
@@ -924,15 +1090,19 @@
         ],
         "report_date": "2026-01-12",
         "common_queries": [
+          "가락시장 경매",
           "도매시장 경매",
           "공판장 경매",
           "가락시장 경락",
+          "초매식",
+          "첫 경매",
+          "경매 시작",
           "온라인 도매시장 제도 개선",
           "도매시장 제도 개선",
-          "품목농협 산지유통",
-          "원예농협 산지유통",
-          "연합판매사업 직거래",
-          "산지유통센터",
+          "품목농협 계통 유통",
+          "원예농협 계통 유통",
+          "통합마케팅 직거래",
+          "광역유통센터",
           "스마트 APC",
           "농산물 광역수급관리센터"
         ]
@@ -1007,6 +1177,7 @@
         ]
       ],
       "window_hits_top": [],
+      "google_hits_top": [],
       "page1_full_queries": [
         "과수화상병",
         "과수화상병 방제",
@@ -1046,11 +1217,16 @@
           "과수 병해충 방제",
           "병해충 예찰",
           "검역 병해충",
-          "과수화상병 예방",
-          "탄저병 방제",
+          "과수화상병 예찰",
+          "응애 방제",
           "월동 병해충 예찰",
           "시설채소 방제"
-        ]
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 0
       },
       "items_total": 0,
       "cond_paging": {
