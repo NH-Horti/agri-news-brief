@@ -10565,6 +10565,40 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     return ""
 
 
+def _mark_debug_postbuild_reject(section_key: str, article: "Article", reason: str) -> None:
+    try:
+        payload = (DEBUG_DATA.get("sections") or {}).get(str(section_key))
+        if not isinstance(payload, dict):
+            return
+        rows = payload.get("top")
+        if not isinstance(rows, list):
+            return
+        target_url = (article.originallink or article.link or "")[:500]
+        target_title = (article.title or "")[:160]
+        changed = False
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            same = False
+            if target_url and row.get("url") == target_url:
+                same = True
+            elif target_title and row.get("title") == target_title:
+                same = True
+            if not same:
+                continue
+            row["selected"] = False
+            row["is_core"] = False
+            row["reason"] = str(reason or "postbuild_reject")
+            changed = True
+        if changed:
+            try:
+                payload["total_selected"] = max(0, int(payload.get("total_selected") or 0) - 1)
+            except Exception:
+                payload["total_selected"] = 0
+    except Exception:
+        return
+
+
 def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
     if not isinstance(final_by_section, dict):
         return 0
@@ -10577,6 +10611,7 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
             reason = _postbuild_article_reject_reason(a, str(key))
             if reason:
                 pruned += 1
+                _mark_debug_postbuild_reject(str(key), a, reason)
                 log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
                 continue
             keep.append(a)
