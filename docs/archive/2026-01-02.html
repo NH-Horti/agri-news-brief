@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="agri-build" content="ef6efbd" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="0b9fe0a" />
+
   <title>[2026-01-02 농산물 뉴스 Brief]</title>
   <style>
     :root {
@@ -32,6 +36,7 @@
     .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
     h1{margin:0;font-size:18px;letter-spacing:-0.2px}
     .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
     .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
     .navRow > *{min-width:0}
     .navBtn{white-space:nowrap}
@@ -94,6 +99,7 @@
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -135,14 +141,23 @@
     <div class="topin">
       <div>
         <h1>[2026-01-02 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2025-12-31 07:00 ~ 2026-01-02 07:00 · 기사 2건</div>
+        <div class="sub">기간: 2025-12-31 07:00 ~ 2026-01-02 07:00 · 기사 6건</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
         <button class="navBtn disabled" data-nav="prev" type="button" data-msg="이전 브리핑이 없습니다.">◀ 이전</button>
         <div class="dateSelWrap">
           <select id="dateSelect" aria-label="날짜 선택">
-            <option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
+            <option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
 <option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
 <option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
 <option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
@@ -191,9 +206,9 @@
 
     <div class="chipbar">
       <div class="chipwrap">
-        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">1</span></a>
-<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">0</span></a>
-<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">1</span></a>
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">2</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">3</span></a>
 <a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">0</span></a></div>
       </div>
     </div>
@@ -207,23 +222,40 @@
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
                 </div>
-                <div class="secCount">1건</div>
+                <div class="secCount">2건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#0f766e">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">farminsight</span>
+                  <span class="press">SBS</span>
                   <span class="dot">·</span>
-                  <span class="time">01/01 23:48</span>
+                  <span class="time">01/01 16:05</span>
                   <span class="dot">·</span>
-                  <span class="topic">정책</span>
+                  <span class="topic">파프리카</span>
                 </div>
-                <a class="btnOpen" href="https://www.farminsight.net/news/articleView.html?idxno=15800" target="_blank" rel="noopener">원문 열기</a>
+                <a class="btnOpen" href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008389063&amp;plink=ORI&amp;cooper=NAVER" target="_blank" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">한국 청과 , 도매시장 최초 &#x27;출하비용 보전사업&#x27; 전격 시행</div>
-              <div class="sum">한국 청과가 도매시장 최초로 농가의 출하비용을 보전하는 사업을 시행하여 고품질 농산물의 수급 보호 및 경락 가격 안정성을 목표로 하고 있다. 이 사업은 농산물 유통산업에서 중요한 이정표가 될 것으로 기대된다.</div>
+              <div class="ttl">[D리포트] 목도리 두른 송아지…갑작스런 한파에 농가 비상</div>
+              <div class="sum">한파로 인해 화훼와 파프리카 농가들이 비상에 처했다. 특히 화훼는 난방 비용 상승으로 어려움이 가중되고 있다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">원예산업신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">12/31 16:20</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+                <a class="btnOpen" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=63460" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">2025년산 사과 줄고 배는 증가</div>
+              <div class="sum">2025년산 사과는 줄어들고 배는 늘어날 것으로 예상된다. 단감은 강우와 탄저병의 영향으로 생산량이 3.1% 감소할 전망이다.</div>
             </div>
             </div>
             </section>
@@ -235,9 +267,25 @@
                   <span class="dotColor" style="background:#1d4ed8"></span>
                   정책 및 주요 이슈
                 </div>
-                <div class="secCount">0건</div>
+                <div class="secCount">1건</div>
               </div>
-              <div class="secBody"><div class="empty">해당사항 없음</div></div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">머니투데이</span>
+                  <span class="dot">·</span>
+                  <span class="time">12/31 09:00</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.mt.co.kr/economy/2025/12/31/2025123017122758245" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">산단 근로자 &#x27;1000원 아침밥&#x27; 제공…중소기업 점심 최대 4만원 지원</div>
+              <div class="sum">중소기업 근로자들에게 1000원 아침밥과 최대 4만원 점심 지원이 이루어진다. 이 사업은 국산 신선농산물 구매를 촉진하여 어린이의 올바른 식습관 형성에 기여하고자 한다.</div>
+            </div>
+            </div>
             </section>
             
 
@@ -247,9 +295,26 @@
                   <span class="dotColor" style="background:#6d28d9"></span>
                   유통 및 현장 (도매시장/APC/수출)
                 </div>
-                <div class="secCount">1건</div>
+                <div class="secCount">3건</div>
               </div>
               <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/02 05:01</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20251231500446" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">파프리카, 일조량 늘어 생육 좋아…반입량 증가 ‘약세’</div>
+              <div class="sum">파프리카는 일조량 증가로 생육이 개선되었으나 반입량 증가로 가격이 약세를 보이고 있다. 빨강파프리카는 5㎏ 기준으로 1만6349원에 거래되고 있다.</div>
+            </div>
+            
+
             <div class="card" style="border-left-color:#6d28d9">
               <div class="cardTop">
                 <div class="meta">
@@ -263,7 +328,24 @@
                 <a class="btnOpen" href="https://www.farminsight.net/news/articleView.html?idxno=15796" target="_blank" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">&#x27;못 믿을 농협… 참다 참다 각자도생 나선 감귤 농민들&#x27;이란 기사에 붙...</div>
-              <div class="sum">농민들은 경매제도를 유통 비효율의 원인으로 지적하며 각자도생의 길을 선택하고 있다. 현재 노지 감귤의 평균 경락 가격은 1만 2,000원에서 1만 4,000원 사이로, 농가의 수익 보장이 문제로 대두되고 있다.</div>
+              <div class="sum">노지 감귤 농민들이 유통 비효율을 문제삼으며 자생적인 대응에 나섰다. 평균 경락 가격이 1만 2천원에서 1만 4천원 사이인데 농가 수취 가격은 2만 원에 달한다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">foodnews</span>
+                  <span class="dot">·</span>
+                  <span class="time">12/31 09:00</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="http://www.foodnews.co.kr/news/articleView.html?idxno=116621" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[농식품 분야 새해 달라지는 제도] 푸드테크 산업 분야 규제창구 일원화</div>
+              <div class="sum">2026년부터 초등학생 대상으로 건강한 과일 간식이 제공될 예정이다. 푸드테크 산업 분야 규제는 현장 의견을 반영하여 유형별로 일원화된다.</div>
             </div>
             </div>
             </section>
@@ -281,10 +363,12 @@
             </section>
             
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    
   </div>
 
   <script>
     (function() {
+
       var sel = document.getElementById("dateSelect");
       if (sel) {
         sel.setAttribute("data-swipe-ignore", "1");
@@ -575,35 +659,118 @@ try { _ensureDates(); } catch (e) {}
       }
 
       var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
       var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
 
-      swipeArea.addEventListener("touchstart", function(e) {
-        if (!e.touches || e.touches.length !== 1) return;
-        blocked = isBlockedTarget(e.target);
-        var t = e.touches[0];
-        sx = t.clientX;
-        sy = t.clientY;
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
         st = Date.now();
-      }, { passive: true });
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
 
-      swipeArea.addEventListener("touchend", function(e) {
-        if (!e.changedTouches || e.changedTouches.length !== 1) return;
-        if (blocked || isBlockedTarget(e.target)) return;
-        var t = e.changedTouches[0];
-        var dx = t.clientX - sx;
-        var dy = t.clientY - sy;
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selected = window.getSelection ? String(window.getSelection()) : "";
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
         var dt = Date.now() - st;
-
-        // accidental 방지: 더 강한 임계치
         if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-
-        // 스와이프 동작: 왼쪽(←, dx<0)=다음(신규) / 오른쪽(→, dx>0)=이전(과거)
         if (dx < 0) {
           gotoByOffset(-1, "다음 브리핑이 없습니다.");
         } else {
           gotoByOffset(+1, "이전 브리핑이 없습니다.");
         }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
       }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+      });
 
       document.addEventListener("keydown", function(e) {
         if (!e) return;
@@ -650,7 +817,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: ef6efbd -->
+  <!-- build: 0b9fe0a -->
 
 </body>
 </html>
