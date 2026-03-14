@@ -32,10 +32,11 @@ git push
 
 ## Dev / Prod Separation
 
-Use two branches:
+Use three branches:
 
 - `main`: production operation only
-- `dev`: development and pre-merge verification
+- `dev`: development code and pre-merge verification
+- `codex/dev-preview`: generated preview artifacts only
 
 ### Production workflows (main only)
 
@@ -44,22 +45,37 @@ Use two branches:
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`
 
-### Development verification workflow
+`main` is the only branch that publishes production Pages content under `docs/`.
+
+### Development verification workflow (`dev`)
 
 - `.github/workflows/dev-verify.yml`
 
-This workflow uses the branch where the workflow was dispatched as the source code branch.
-It still rebuilds a single preview page and writes it to `docs/dev/index.html` on `main`, so the dev result can be checked without touching production pages.
+This workflow uses `dev` as the source code branch, reads production content from `main`, and writes preview artifacts to `codex/dev-preview`.
+The stable `/dev/` URL on GitHub Pages stays on `main`, but now acts as a loader page that fetches the latest preview assets from `codex/dev-preview`.
 
 Behavior:
 
-- Dev run overwrites a single preview page: `docs/dev/index.html`
-- Kakao link is fixed to dev preview URL: `${{ inputs.brief_view_url }}/index.html?v=<build>`
-- Runtime guard blocks writes outside `docs/dev/index.html` when `DEV_SINGLE_PAGE_MODE=true`
+- Dev run never writes generated preview files back to `main`
+- Preview artifacts live on `codex/dev-preview`:
+  - `docs/dev/index.html`
+  - `docs/dev/version.json`
+  - `docs/dev/debug/YYYY-MM-DD.json`
+- Stable loader URL: `https://nh-horti.github.io/agri-news-brief/dev/`
+- Raw preview asset base: `https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev`
+- Runtime guard blocks writes outside the dev preview paths when `DEV_SINGLE_PAGE_MODE=true`
+
+### Promotion workflow
+
+- `.github/workflows/promote-dev.yml`
+
+This workflow fast-forwards `main` to `origin/dev` and can optionally dispatch a production rebuild after promotion.
+The workflow is intentionally `ff-only` so development history stays clean and production only moves to code that already exists on `dev`.
 
 ### Simple operation flow
 
 1. Develop code on `dev`
-2. Run `dev-verify.yml` to check the result on `/dev/index.html`
-3. When ready, merge `dev` into `main`
-4. Keep production operation on `main`
+2. Push to `dev` or run `dev-verify.yml` manually
+3. Review the result on `/dev/`
+4. When ready, run `promote-dev.yml` to fast-forward `main` to `dev`
+5. Optionally trigger `rebuild.yml` for the production date and Kakao send

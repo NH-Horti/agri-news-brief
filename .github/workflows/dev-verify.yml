@@ -25,7 +25,6 @@ on:
         type: string
   push:
     branches:
-      - main
       - dev
     paths:
       - 'main.py'
@@ -51,6 +50,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref_name == 'dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout workflow branch
@@ -118,7 +118,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_CONTENT_REF: main
-          GH_CONTENT_BRANCH: main
+          GH_CONTENT_BRANCH: codex/dev-preview
 
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
@@ -128,10 +128,11 @@ jobs:
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
 
           PUBLISH_MODE: github_pages
-          PAGES_BRANCH: main
+          PAGES_BRANCH: codex/dev-preview
           PAGES_FILE_PATH: docs/dev/index.html
           PAGES_BASE_URL: ${{ steps.vars.outputs.brief_view_url }}
           BRIEF_VIEW_URL: ${{ steps.vars.outputs.brief_view_url }}
+          DEV_PREVIEW_ASSET_BASE_URL: https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev
 
           DEV_SINGLE_PAGE_MODE: 'true'
           DEV_SINGLE_PAGE_PATH: docs/dev/index.html
@@ -159,6 +160,19 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Pull latest preview artifact branch files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin codex/dev-preview
+          mkdir -p docs/dev/debug
+          git show origin/codex/dev-preview:docs/dev/index.html > docs/dev/index.html
+          git show origin/codex/dev-preview:docs/dev/version.json > docs/dev/version.json
+          if git cat-file -e "origin/codex/dev-preview:docs/dev/debug/${{ steps.vars.outputs.report_date }}.json" 2>/dev/null; then
+            git show "origin/codex/dev-preview:docs/dev/debug/${{ steps.vars.outputs.report_date }}.json" > "docs/dev/debug/${{ steps.vars.outputs.report_date }}.json"
+          fi
 
       - name: Verify rebuilt preview content
         id: verify_preview
@@ -200,6 +214,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             docs/dev/index.html
+            docs/dev/version.json
             docs/dev/debug/
 
       - name: Publish summary
@@ -215,6 +230,8 @@ jobs:
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Preview verify: ${{ steps.verify_preview.outcome }}"
             echo "- Kakao sent: ${{ steps.vars.outputs.send_kakao }}"
-            echo "- Preview: ${{ steps.vars.outputs.brief_view_url }}/index.html"
-            echo "- Debug JSON: ${{ steps.vars.outputs.brief_view_url }}/debug/${{ steps.vars.outputs.report_date }}.json"
+            echo "- Preview: ${{ steps.vars.outputs.brief_view_url }}/"
+            echo "- Preview branch: codex/dev-preview"
+            echo "- Raw preview: https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/index.html"
+            echo "- Raw debug JSON: https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"

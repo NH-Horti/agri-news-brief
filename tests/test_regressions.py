@@ -7,6 +7,9 @@ DEV_VERIFY_WORKFLOW = ROOT / ".github" / "workflows" / "dev-verify.yml"
 DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
+PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "promote-dev.yml"
+DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
+DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
 
 class TestRegressions(unittest.TestCase):
     @classmethod
@@ -16,6 +19,9 @@ class TestRegressions(unittest.TestCase):
         cls.daily_text = DAILY_WORKFLOW.read_text(encoding="utf-8")
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
+        cls.promote_text = PROMOTE_WORKFLOW.read_text(encoding="utf-8")
+        cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
+        cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
 
     def test_has_data_nav_buttons(self):
         self.assertIn('data-nav="prev"', self.text)
@@ -96,6 +102,23 @@ class TestRegressions(unittest.TestCase):
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
+        self.assertIn("GH_CONTENT_REF: main", self.dev_verify_text)
+        self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
+        self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
+        self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)
+
+    def test_promote_workflow_exists_for_dev_to_main(self):
+        self.assertIn("name: agri-news-brief (promote dev to main)", self.promote_text)
+        self.assertIn("git merge --ff-only origin/dev", self.promote_text)
+        self.assertIn("actions/workflows/rebuild.yml/dispatches", self.promote_text)
+
+    def test_dev_loader_uses_preview_branch_assets(self):
+        self.assertIn("codex/dev-preview", self.dev_loader_text)
+        self.assertIn("previewFrame", self.dev_loader_text)
+        self.assertIn("srcdoc", self.dev_loader_text)
+        self.assertIn("raw preview", self.dev_loader_text)
+        self.assertIn('"mode": "loader"', self.dev_loader_version_text)
+        self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
 
     def test_prod_workflows_do_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)

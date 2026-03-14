@@ -603,6 +603,7 @@ DEV_SINGLE_PAGE_PATH = (os.getenv("DEV_SINGLE_PAGE_PATH", "").strip() or "docs/d
 DEV_SINGLE_PAGE_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_URL_PATH", "").strip() or "index.html")
 DEV_SINGLE_PAGE_VERSION_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_PATH", "").strip() or "")
 DEV_SINGLE_PAGE_VERSION_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_URL_PATH", "").strip() or "")
+DEV_PREVIEW_ASSET_BASE_URL = (os.getenv("DEV_PREVIEW_ASSET_BASE_URL", "").strip() or "").rstrip("/")
 
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
@@ -4933,7 +4934,35 @@ def _dev_single_page_version_repo_path() -> str:
 
 def _dev_single_page_version_url(site_path: str) -> str:
     rel = (DEV_SINGLE_PAGE_VERSION_URL_PATH or "version.json").strip() or "version.json"
+    return _dev_single_page_asset_url(rel, site_path)
+
+
+def _dev_single_page_asset_base_url() -> str:
+    base = (DEV_PREVIEW_ASSET_BASE_URL or "").strip().rstrip("/")
+    if not base:
+        return ""
+    if base.startswith(("http://", "https://")):
+        return base
+    log.warning("[WARN] DEV_PREVIEW_ASSET_BASE_URL invalid (no http/https): %s", base)
+    return ""
+
+
+def _dev_single_page_asset_url(rel_path: str, site_path: str) -> str:
+    rel = (rel_path or "").strip().lstrip("/")
+    base = _dev_single_page_asset_base_url()
+    if base:
+        return f"{base}/{rel}" if rel else base
     return build_site_url(site_path, rel)
+
+
+def _dev_single_page_debug_repo_path(report_date: str) -> str:
+    preview_path = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    head, _, _tail = preview_path.rpartition("/")
+    return f"{head}/debug/{report_date}.json" if head else f"debug/{report_date}.json"
+
+
+def _dev_single_page_debug_url(report_date: str, site_path: str) -> str:
+    return _dev_single_page_asset_url(f"debug/{report_date}.json", site_path)
 
 
 def _assert_dev_single_page_write_path(path: str) -> None:
@@ -4942,12 +4971,16 @@ def _assert_dev_single_page_write_path(path: str) -> None:
         return
     allowed = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
     allowed_paths = {allowed, _dev_single_page_version_repo_path()}
+    allowed_debug_dir = _dev_single_page_debug_repo_path("_marker_").rsplit("_marker_.json", 1)[0]
     target = _normalize_repo_path(path)
-    if target not in allowed_paths:
-        allowed_text = ", ".join(sorted(p for p in allowed_paths if p))
-        raise RuntimeError(
-            f"[DEV GUARD] blocked write path '{target}'. allowed paths: '{allowed_text}' (DEV_SINGLE_PAGE_MODE=true)"
-        )
+    if target in allowed_paths:
+        return
+    if allowed_debug_dir and target.startswith(allowed_debug_dir) and target.endswith(".json"):
+        return
+    allowed_text = ", ".join(sorted(p for p in allowed_paths if p) + ([allowed_debug_dir + "*.json"] if allowed_debug_dir else []))
+    raise RuntimeError(
+        f"[DEV GUARD] blocked write path '{target}'. allowed paths: '{allowed_text}' (DEV_SINGLE_PAGE_MODE=true)"
+    )
 
 
 
@@ -10767,7 +10800,10 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
     # JSON 링크(작성 옵션이 켜져 있을 때만)
     json_href = ""
     if DEBUG_REPORT_WRITE_JSON:
-        json_href = build_site_url(site_path, f"debug/{report_date}.json")
+        if DEV_SINGLE_PAGE_MODE:
+            json_href = _dev_single_page_debug_url(report_date, site_path)
+        else:
+            json_href = build_site_url(site_path, f"debug/{report_date}.json")
 
     def _kv(label: str, value: str) -> str:
         return f"<span class='dbgkv'><b>{esc(label)}:</b> {esc(value)}</span>"
@@ -11071,6 +11107,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var currentBuild = {json.dumps(BUILD_TAG)};
       var devVersionUrl = {json.dumps(dev_version_url)};
       function syncLatestDevBuild() {{
+        if (window.top && window.top !== window) return;
         if (!devVersionUrl || !window.fetch) return;
         var bustUrl = devVersionUrl + (devVersionUrl.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
         fetch(bustUrl, {{ cache: "no-store" }}).then(function(r) {{ return (r && r.ok) ? r.json() : null; }}).then(function(data) {{ if (!data || typeof data.build_tag !== "string") return; var latest = data.build_tag; if (!latest || latest === currentBuild) return; var u = new URL(window.location.href); if (u.searchParams.get("v") === latest) return; u.searchParams.set("v", latest); window.location.replace(u.toString()); }}).catch(function() {{}});
@@ -13248,12 +13285,20 @@ def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str) -> Non
 
 
 def build_dev_preview_version_json(report_date: str) -> str:
+    asset_base = _dev_single_page_asset_base_url()
     payload: JsonDict = {
         "build_tag": BUILD_TAG,
         "generated_at_kst": RENDERED_AT_KST,
         "report_date": report_date,
         "preview_path": _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html"),
+        "content_ref": GH_CONTENT_REF,
+        "content_branch": GH_CONTENT_BRANCH,
+        "asset_base_url": asset_base,
     }
+    if asset_base:
+        payload["preview_url"] = f"{asset_base}/index.html"
+        payload["version_url"] = f"{asset_base}/version.json"
+        payload["debug_url"] = f"{asset_base}/debug/{report_date}.json"
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
 
@@ -13296,6 +13341,17 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         _raw_preview_old, sha_preview = github_get_file(repo, preview_path, token, ref="main")
         github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch="main")
         log.info("[MAINT PUT] %s", preview_path)
+
+        if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
+            try:
+                DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+                debug_path = _dev_single_page_debug_repo_path(report_date)
+                debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
+                _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
+                github_put_file(repo, debug_path, debug_json, token, f"Update dev preview debug {report_date}", sha=sha_dbg_old, branch="main")
+                log.info("[MAINT PUT] %s", debug_path)
+            except Exception as e:
+                log.warning("[WARN] dev preview debug upload failed: %s", e)
 
         if MAINTENANCE_SEND_KAKAO:
             try:

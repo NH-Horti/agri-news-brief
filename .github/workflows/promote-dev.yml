@@ -1,0 +1,164 @@
+name: agri-news-brief (promote dev to main)
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_rebuild:
+        description: 'Trigger a production rebuild after promotion'
+        required: false
+        default: false
+        type: boolean
+      report_date:
+        description: 'Rebuild report date (YYYY-MM-DD). Leave empty to use current KST date.'
+        required: false
+        default: ''
+        type: string
+      send_kakao:
+        description: 'Send Kakao message when rebuild is triggered'
+        required: false
+        default: false
+        type: boolean
+      ux_patch_days:
+        description: 'Patch recent archives after rebuild (0 = off)'
+        required: false
+        default: '0'
+        type: string
+      max_per_section:
+        description: 'Max items per section for triggered rebuild'
+        required: false
+        default: '5'
+        type: string
+      debug:
+        description: 'Write debug report when rebuild is triggered'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: agri-news-brief-promote-main
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          token: ${{ github.token }}
+          persist-credentials: true
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve run variables
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          trigger_rebuild='${{ inputs.trigger_rebuild }}'
+          report_date='${{ inputs.report_date }}'
+          send_kakao='${{ inputs.send_kakao }}'
+          ux_patch_days='${{ inputs.ux_patch_days }}'
+          max_per_section='${{ inputs.max_per_section }}'
+          debug_enabled='${{ inputs.debug }}'
+
+          if [ -z "$ux_patch_days" ]; then
+            ux_patch_days='0'
+          fi
+
+          if [ -z "$max_per_section" ]; then
+            max_per_section='5'
+          fi
+
+          if [ "$trigger_rebuild" = 'true' ] && [ -z "$report_date" ]; then
+            report_date="$(TZ=Asia/Seoul date +%F)"
+          fi
+
+          echo "trigger_rebuild=$trigger_rebuild" >> "$GITHUB_OUTPUT"
+          echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
+          echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
+          echo "ux_patch_days=$ux_patch_days" >> "$GITHUB_OUTPUT"
+          echo "max_per_section=$max_per_section" >> "$GITHUB_OUTPUT"
+          echo "debug_enabled=$debug_enabled" >> "$GITHUB_OUTPUT"
+
+      - name: Fast-forward main to dev
+        id: promote
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main dev
+          git checkout -B main origin/main
+
+          before_sha="$(git rev-parse origin/main)"
+          dev_sha="$(git rev-parse origin/dev)"
+
+          if ! git merge-base --is-ancestor origin/main origin/dev; then
+            echo "origin/main is not an ancestor of origin/dev. Reconcile dev before promotion."
+            exit 1
+          fi
+
+          git merge --ff-only origin/dev
+          after_sha="$(git rev-parse HEAD)"
+
+          promoted='false'
+          if [ "$after_sha" != "$before_sha" ]; then
+            git push origin HEAD:main
+            promoted='true'
+          fi
+
+          echo "before_sha=$before_sha" >> "$GITHUB_OUTPUT"
+          echo "dev_sha=$dev_sha" >> "$GITHUB_OUTPUT"
+          echo "after_sha=$after_sha" >> "$GITHUB_OUTPUT"
+          echo "promoted=$promoted" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch production rebuild
+        if: steps.vars.outputs.trigger_rebuild == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/rebuild.yml/dispatches" \
+            -d @- <<EOF
+          {
+            "ref": "main",
+            "inputs": {
+              "report_date": "${{ steps.vars.outputs.report_date }}",
+              "ux_patch_days": "${{ steps.vars.outputs.ux_patch_days }}",
+              "send_kakao": "${{ steps.vars.outputs.send_kakao }}",
+              "max_per_section": "${{ steps.vars.outputs.max_per_section }}",
+              "debug": "${{ steps.vars.outputs.debug_enabled }}"
+            }
+          }
+          EOF
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Promote Summary'
+            echo "- Promoted: ${{ steps.promote.outputs.promoted }}"
+            echo "- Main before: ${{ steps.promote.outputs.before_sha }}"
+            echo "- Dev target: ${{ steps.promote.outputs.dev_sha }}"
+            echo "- Main after: ${{ steps.promote.outputs.after_sha }}"
+            echo "- Trigger rebuild: ${{ steps.vars.outputs.trigger_rebuild }}"
+            echo "- Rebuild report date: ${{ steps.vars.outputs.report_date }}"
+            echo "- Rebuild Kakao: ${{ steps.vars.outputs.send_kakao }}"
+            echo "- Stable dev preview: https://nh-horti.github.io/agri-news-brief/dev/"
+          } >> "$GITHUB_STEP_SUMMARY"
