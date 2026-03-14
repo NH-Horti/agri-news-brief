@@ -456,6 +456,7 @@
   
   
   
+  
   <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
   <script>
   (function(){
@@ -555,6 +556,10 @@
     var swipeRootUserSelect = '';
     var swipeRootWebkitUserSelect = '';
     var swipeBodyCursor = '';
+    var wheelSwipeDx = 0;
+    var wheelSwipeDy = 0;
+    var wheelSwipeAt = 0;
+    var wheelSwipeLockUntil = 0;
     var swipeArea = document.querySelector('.wrap') || document.documentElement || document.body;
     function isBlockedTarget(target){
       if(!target || !target.closest) return false;
@@ -612,6 +617,42 @@
           document.body.style.cursor = swipeBodyCursor;
         }
       }catch(_desktopSwipeErr){}
+    }
+    function _resetWheelSwipe(){
+      wheelSwipeDx = 0;
+      wheelSwipeDy = 0;
+      wheelSwipeAt = 0;
+    }
+    function _handleWheelSwipe(e){
+      if(!e) return;
+      if(e.ctrlKey) return;
+      if(isBlockedTarget(e.target)) return;
+      var now = Date.now();
+      if(wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+      if(!wheelSwipeAt || (now - wheelSwipeAt) > 240){
+        _resetWheelSwipe();
+      }
+      wheelSwipeAt = now;
+      wheelSwipeDx += Number(e.deltaX || 0);
+      wheelSwipeDy += Number(e.deltaY || 0);
+      if(Math.abs(wheelSwipeDx) < 120) return;
+      if(Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+      wheelSwipeLockUntil = now + 700;
+      try{
+        if(e.cancelable && e.preventDefault) e.preventDefault();
+      }catch(_wheelPreventErr){}
+      var totalDx = wheelSwipeDx;
+      _resetWheelSwipe();
+      if(totalDx > 0) {
+        var n = next || _pick('next');
+        var href2 = _getHref(n);
+        if(!href2 || _isDisabled(n)){ _hideLoading(); _toast('다음 브리핑이 없습니다.'); return; }
+        _showLoading(); window.location.href = href2; return;
+      }
+      var p = prev || _pick('prev');
+      var href = _getHref(p);
+      if(!href || _isDisabled(p)){ _hideLoading(); _toast('이전 브리핑이 없습니다.'); return; }
+      _showLoading(); window.location.href = href;
     }
     function _beginSwipe(e){
       if(!swipeArea) return;
@@ -685,6 +726,9 @@
           if(e && e.preventDefault) e.preventDefault();
         }catch(_dragErr){}
       });
+      swipeArea.addEventListener('wheel', function(e){
+        _handleWheelSwipe(e);
+      }, {passive:false});
       window.addEventListener('blur', function(){ _resetSwipe(); });
     }
   })();
