@@ -1,0 +1,2429 @@
+{
+  "generated_at_kst": "2026-03-15T01:12:44+09:00",
+  "build_tag": "001502c",
+  "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "쿠키뉴스",
+      "domain": "kukinews.com",
+      "title": "전북자치도, 설 명절 민생안정 종합대책 본격 가동",
+      "url": "https://www.kukinews.com/article/view/kuk202602050123"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "viva100",
+      "domain": "viva100.com",
+      "title": "전북특별자치도, 설 앞두고 민생안정 종합대책 가동",
+      "url": "https://www.viva100.com/article/20260205500680"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "viva100",
+      "domain": "viva100.com",
+      "title": "전북특별자치도, 설 앞두고 민생안정 종합대책 가동",
+      "url": "https://www.viva100.com/article/20260205500552"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "조기 21% 상추 27%↑…차례상 덮친 물가 폭탄, 먹거리 80%가 올랐다",
+      "url": "https://www.news1.kr/economy/trend/6063800"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "독자 여러분께 사과 드립니다",
+      "url": "https://www.hankyung.com/article/2026020698441"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "JTBC",
+      "domain": "news.jtbc.co.kr",
+      "title": "\"합당 제안이지 선언 아냐\"…정청래, 초선들 만나 ‘사과’",
+      "url": "https://news.jtbc.co.kr/article/NB12283640"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "헬로디디",
+      "domain": "hellodd.com",
+      "title": "\"엔비디아보다 2.1배 빠르다\"···KAIST, 반도체 AI 개발",
+      "url": "https://www.hellodd.com/news/articleView.html?idxno=110777"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "전남농협, 설 성수기 배 산지 출하 현장 점검",
+      "url": "https://www.nongmin.com/article/20260205500131"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "조선일보",
+      "domain": "chosun.com",
+      "title": "AI인프라 투자 2배 늘린 구글...안정적인 클라우드·광고 수익있어 가능",
+      "url": "https://www.chosun.com/economy/tech_it/2026/02/05/EICMA46UVVAJHNAPWBCENHRTSM/"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "[르포] \"신선함만 드려요\" 설 대목 앞둔 이마트 후레쉬센터 … 과일 선별...",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/05/2026020500099.html"
+    },
+    {
+      "section": "supply",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "[르포] \"레드향 맛 올랐는데 값 떨어져 아쉬움\"…본격 출하 작업 분주",
+      "url": "https://www.news1.kr/local/jeju/6063520"
+    },
+    {
+      "section": "supply",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "[르포] \" 레드향 맛 올랐는데 값 떨어져 아쉬움\"…본격 출하 작업 분주",
+      "url": "https://www.news1.kr/local/jeju/6063520"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "조선일보",
+      "domain": "biz.chosun.com",
+      "title": "실적 터지고, 공매도 항복했다… 한온시스템 이달에만 23% ‘질주’",
+      "url": "https://biz.chosun.com/stock/stock_general/2026/02/06/LUFWMNEM3RBPPLGORJAWCACEIM/"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "biztribune",
+      "domain": "biztribune.co.kr",
+      "title": "[브리프]롯데백화점 신세계백화점 현대백화점 이마트 쿠팡 우아한형제...",
+      "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=348520"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "asiatime",
+      "domain": "asiatime.co.kr",
+      "title": "오리온, 원재료값 상승에도 지난해 매출·영업익 동반 상승",
+      "url": "https://www.asiatime.co.kr/article/20260205500268"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "seoulwire",
+      "domain": "seoulwire.com",
+      "title": "'상생' 선택한 쿠팡, 분위기 반전 가능할까",
+      "url": "http://www.seoulwire.com/news/articleView.html?idxno=705248"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "오리온, 2025년 연결기준 매출액 3조3324억·영업익 5582억…\"제품력 기...",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=106973"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "ibabynews",
+      "domain": "ibabynews.com",
+      "title": "오리온, 2025년 연결기준 매출액 3조 3324억 원, 영업이익 5582억 원 기록",
+      "url": "https://www.ibabynews.com/news/articleView.html?idxno=148286"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "오리온, 2025년 연결기준 매출액 3조 3324억 원, 영업이익 5582억 원 기록",
+      "url": "https://www.g-enews.com/view.php?ud=202602051653493096a96f092d0c_1"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "newsway",
+      "domain": "newsway.co.kr",
+      "title": "오리온, 지난해 영업익 전년比 2.7%↑…국내·해외 매출 동반 성장",
+      "url": "https://www.newsway.co.kr/news/view?ud=2026020513572274406"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "IDSN",
+      "domain": "idsn.co.kr",
+      "title": "오리온, 지난해 영업이익 5582억원...전년比 2.7%↑",
+      "url": "https://idsn.co.kr/news/view/1065592554528902"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "thevaluenews",
+      "domain": "thevaluenews.co.kr",
+      "title": "오리온, 4Q 매출액 9245억...전년동기比 7.3%↑",
+      "url": "http://www.thevaluenews.co.kr/news/view.php?idx=196776"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "LCNEWS",
+      "domain": "lcnews.co.kr",
+      "title": "오리온, 지난해 영업익 5582억원… 전년比 2.7%↑",
+      "url": "https://www.lcnews.co.kr/news/articleView.html?idxno=123169"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "newslock",
+      "domain": "newslock.co.kr",
+      "title": "오리온, 지난해 연결기준 매출액 7.3%↑... '해외 법인 고성장에 신공장...",
+      "url": "http://www.newslock.co.kr/news/articleView.html?idxno=124662"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "thefirstmedia",
+      "domain": "thefirstmedia.net",
+      "title": "오리온, 지난해 영업익 5582억 원... 전년비 2.7% 증가",
+      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=192901"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "opinionnews",
+      "domain": "opinionnews.co.kr",
+      "title": "오리온, '원가 인상' 리스크 이긴 글로벌 시장의 성장",
+      "url": "http://www.opinionnews.co.kr/news/articleView.html?idxno=132968"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "sportsq",
+      "domain": "sportsq.co.kr",
+      "title": "오리온, 2025년 가장 높은 매출 성장 보인 나라는?",
+      "url": "http://www.sportsq.co.kr/news/articleView.html?idxno=490870"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "updownnews",
+      "domain": "updownnews.co.kr",
+      "title": "오리온, 지난해 매출 3.3조·영업익 5582억…러시아·인도법인 '고성장'",
+      "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316122"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "WOWTV",
+      "domain": "wowtv.co.kr",
+      "title": "오리온, 지난해 영업익 3% 증가…\"러시아 사업 성장\"",
+      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202602050500&t=NN"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "dizzotv",
+      "domain": "dizzotv.com",
+      "title": "오리온, 지난해 영업이익 2.7% 증가…러시아·인도 법인 고성장",
+      "url": "https://www.dizzotv.com/site/data/html_dir/2026/02/05/2026020580161.html"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "socialvalue",
+      "domain": "socialvalue.kr",
+      "title": "해외서 날개 단 오리온, 지난해 영업익 5582억…전년비 2.7%↑",
+      "url": "https://www.socialvalue.kr/news/view/1065595093157925"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "오리온, 글로벌 고성장에 실적 방어…지난해 영업익 2.7% 증가",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1332412"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "getnews",
+      "domain": "getnews.co.kr",
+      "title": "러시아·인도 시장 선전에...오리온, 작년 영업익 5582억원 '전년比 2.7%...",
+      "url": "https://www.getnews.co.kr/news/articleView.html?idxno=860267"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "bizwnews",
+      "domain": "bizwnews.com",
+      "title": "\"명절 특수 부재·원가 부담에도 수익성 '방어'\"…오리온, 2025년 영업익...",
+      "url": "http://www.bizwnews.com/news/articleView.html?idxno=124346"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "theviewers",
+      "domain": "theviewers.co.kr",
+      "title": "\"러시아·인도 장사 잘했다\"…오리온, 지난해 매출 3조3324억원 달성",
+      "url": "https://theviewers.co.kr/View.aspx?No=3966129"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "EFNEWS",
+      "domain": "efnews.co.kr",
+      "title": "오리온, 작년 연간 영업이익 5천500억원 돌파…전년比 2.7% 성장",
+      "url": "http://www.efnews.co.kr/news/articleView.html?idxno=127321"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "\"해외 법인 고성장\" 오리온, 지난해 영업이익 2.7% 증가",
+      "url": "https://www.newspim.com/news/view/20260205001082"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "seoulwire",
+      "domain": "seoulwire.com",
+      "title": "'상생' 선택한 쿠팡, 분위기 반전 가능할까",
+      "url": "http://www.seoulwire.com/news/articleView.html?idxno=705248"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "IMAEIL",
+      "domain": "imaeil.com",
+      "title": "여노연 성주군의원, 고령화 대비 인력 수급 방안 마련 강조",
+      "url": "https://www.imaeil.com/page/view/2026020514043812755"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "조기 21% 상추 27%↑…차례상 덮친 물가 폭탄, 먹거리 80%가 올랐다",
+      "url": "https://www.news1.kr/economy/trend/6063800"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "e-science",
+      "domain": "e-science.co.kr",
+      "title": "문화와 역사가 흐르는 영광 가볼 만한 곳, 시간의 흔적을 걷다",
+      "url": "https://www.e-science.co.kr/news/articleView.html?idxno=125013"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "newsfarm",
+      "domain": "newsfarm.co.kr",
+      "title": "전남농기원, 농업 빅데이터·AI 기반 영농 서비스 추진",
+      "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100305"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "biztribune",
+      "domain": "biztribune.co.kr",
+      "title": "[브리프]롯데백화점 신세계백화점 현대백화점 이마트 쿠팡 우아한형제...",
+      "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=348520"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "ONEWS",
+      "domain": "onews.tv",
+      "title": "안성시 농기센터 목별 농업기계 장기임대사업 신청자 모집",
+      "url": "https://www.onews.tv/news/articleView.html?idxno=273406"
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "EKN",
+      "domain": "ekn.kr",
+      "title": "[보험사 풍향계] 교보생명, 퇴직연금 IRP 원리금비보장 수익률 1위 外",
+      "url": "https://www.ekn.kr/web/view.php?key=20260205023136545"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "siminilbo",
+      "domain": "siminilbo.co.kr",
+      "title": "안성시, 2026년도 농업기계 장기임대 사업 신청자 모집",
+      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160281245635555"
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "SISAON",
+      "domain": "sisaon.co.kr",
+      "title": "한화생명, 미성년 자녀 대상 증여·투자 통합 플랫폼 '파이'(Pi) 출시…삼...",
+      "url": "http://www.sisaon.co.kr/news/articleView.html?idxno=180267"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "KMAEIL",
+      "domain": "kmaeil.com",
+      "title": "안성시, 농업기계 장기임대 사업 신청자 모집",
+      "url": "https://www.kmaeil.com/news/articleView.html?idxno=628984"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "NSPNA",
+      "domain": "nspna.com",
+      "title": "안성시, 2026년도 농업기계 장기임대 사업 신청자 모집",
+      "url": "https://www.nspna.com/news/?mode=view&newsid=801337"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "안성 ‘ 품목 별 농업기계 장기임대사업’ 시행",
+      "url": "http://www.shinailbo.co.kr/news/articleView.html?idxno=2188390"
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "[오늘의 보험·카드소식] 삼성생명·한화생명·교보생명·라이나생명·농...",
+      "url": "http://www.shinailbo.co.kr/news/articleView.html?idxno=2188338"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "안성시, 2026년도 농업기계 장기임대 사업 신청자 모집",
+      "url": "https://www.newsis.com/view/NISX20260205_0003504077"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "안성시, '농업기계 장기임대사업' 대상자 모집…오는 20일까지",
+      "url": "http://www.inews24.com/view/1936085"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "weeklytoday",
+      "domain": "weeklytoday.com",
+      "title": "[위클리오늘] 안성시, 2026년도 농업기계 장기임대 사업 신청자 모집",
+      "url": "http://www.weeklytoday.com/news/articleView.html?idxno=757174"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "안성시, 2026년도 농업기계 장기임대 사업 신청자 모집",
+      "url": "http://www.breaknews.com/1182713"
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "pressman",
+      "domain": "pressman.kr",
+      "title": "[금융 스케치] 농협 은행 'NH올원뱅크', 통합 자원봉사 신청 서비스 출시",
+      "url": "https://www.pressman.kr/news/articleView.html?idxno=99544"
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "농협 손보, '농작물재해보험' 판매…첫 품목 사과·배·단감",
+      "url": "https://www.news1.kr/finance/insurance-card/6062657"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "[수지만나] 허치훈 후레쉬센터 센터장이 말하는 \"이마트 신선의 힘\"",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/02/05/2026020500085.html"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_horti",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "‘충주 사과’ 15년째 미국인 입맛 사로잡아",
+      "url": "https://www.nongmin.com/article/20260204500519"
+    },
+    {
+      "section": "dist",
+      "reason": "remote_foreign_horti",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "‘충주 사과’ 15년째 미국인 입맛 사로잡아",
+      "url": "https://www.nongmin.com/article/20260204500519"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "대저 토마토 본격 출하…“올해 더 맛나요”",
+      "url": "https://www.nongmin.com/article/20260204500556"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "대저 토마토 본격 출하…“올해 더 맛나요”",
+      "url": "https://www.nongmin.com/article/20260204500556"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "busynews",
+      "domain": "busynews.net",
+      "title": "일반경제신문 국민매일",
+      "url": "http://www.busynews.net/m/page/detail.html?no=25782"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "한국농촌경제신문",
+      "domain": "kenews.co.kr",
+      "title": "이승돈 농촌진흥청장 \"농민이 손에 쥘 수 있는 실질적 성과 내겠다\"",
+      "url": "https://www.kenews.co.kr/news/article.html?no=88848"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "한국식품의약신문",
+      "domain": "kfmn.co.kr",
+      "title": "최정록 검역본부장, 제주지역 국경검역·방역 현장 점검",
+      "url": "https://www.kfmn.co.kr/news/articleView.html?idxno=40870"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "옥과농협 정병오·김성희 부부, ‘이달의 새농민상’ 수상",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=313744"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "weeklytoday",
+      "domain": "weeklytoday.com",
+      "title": "[전기자의 장보기] 설 장바구니의 민낯 \"할인 넘치는데, 고물가에 체감...",
+      "url": "https://weeklytoday.com/news/articleView.html?idxno=757092"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "asiatime",
+      "domain": "asiatime.co.kr",
+      "title": "[5일 안성시] 설 기간 전통시장 주변 주정차 단속 유예 등",
+      "url": "https://asiatime.co.kr/article/20260205500306"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "EKN",
+      "domain": "ekn.kr",
+      "title": "청년 정책 실험부터 농업 경쟁력 강화까지… 경북 시·군, 생활 밀착형...",
+      "url": "https://ekn.kr/web/view.php?key=20260205029056270"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "EKN",
+      "domain": "ekn.kr",
+      "title": "청년 정책 실험부터 농업 경쟁력 강화까지… 경북 시·군, 생활 밀착형...",
+      "url": "https://ekn.kr/web/view.php?key=20260205029056270"
+    }
+  ],
+  "sections": {
+    "supply": {
+      "threshold": 18.29,
+      "tail_cut": 18.69,
+      "core_min": 18.29,
+      "total_candidates": 34,
+      "total_selected": 5,
+      "top": [
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 26.29,
+          "tier": 3,
+          "press": "서울경제",
+          "domain": "sedaily.com",
+          "title": "“요즘 딸기, 20알에 5만원?” 마트 가면 손이 ‘벌벌’...기후 충격에 ...",
+          "url": "https://www.sedaily.com/article/20005357",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.1,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 22.13,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "\"미국산 만다린에 품질로 승부\"… 제주 만감류 본격 출하",
+          "url": "https://www.newsis.com/view/NISX20260205_0003503832",
+          "reason": "",
+          "signals": {
+            "horti_sc": 6.3,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 21.84,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "‘제주 레드향 ’ 서울 소비자 입맛 공략",
+          "url": "https://www.nongmin.com/article/20260204500558",
+          "reason": "",
+          "signals": {
+            "horti_sc": 3.5,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.76,
+          "tier": 2,
+          "press": "데일리안",
+          "domain": "dailian.co.kr",
+          "title": "농진청, 설 앞두고 사과·배 고르는 법 안내…국산 과일 소비 촉진",
+          "url": "https://www.dailian.co.kr/news/view/1606942/?sc=Naver",
+          "reason": "source_cap",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 20.63,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "만감류 여왕 '레드향' 본격 출하",
+          "url": "https://www.newsis.com/view/NISI20260205_0021151747",
+          "reason": "",
+          "signals": {
+            "horti_sc": 6.3,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 19.76,
+          "tier": 3,
+          "press": "아시아경제",
+          "domain": "view.asiae.co.kr",
+          "title": "\"이게 5만원이라고요?\" 마트 갔다가 '깜짝'…겨울 과일값 고공행진",
+          "url": "https://view.asiae.co.kr/article/2026020510480295538",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.1,
+            "market_hits": 1,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.61,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "'미국산 만다린 공세 맞선다, 제주산 만감류 본격 출하'",
+          "url": "https://www.newsis.com/view/NISI20260205_0021151744",
+          "reason": "topic_repeat",
+          "signals": {
+            "horti_sc": 5.3,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.47,
+          "tier": 3,
+          "press": "MBN",
+          "domain": "mbn.co.kr",
+          "title": "\"장작불에 구워야 제맛이죠\"…공주 군밤축제 개막",
+          "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5173821",
+          "reason": "not_selected",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.26,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "제주산 만감류 본격 출하",
+          "url": "https://www.newsis.com/view/NISI20260205_0021151740",
+          "reason": "topic_repeat",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.03,
+          "tier": 1,
+          "press": "jejudomin",
+          "domain": "jejudomin.co.kr",
+          "title": "[현장] 수입산 만다린 공세에 '고품질'로 승부…제주 만감류 본격 출하",
+          "url": "https://www.jejudomin.co.kr/news/articleView.html?idxno=316796",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 6.3,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.27,
+          "tier": 3,
+          "press": "YTN",
+          "domain": "science.ytn.co.kr",
+          "title": "달콤한 겨울 추억 한가득...공주 군밤 축제 개막",
+          "url": "https://science.ytn.co.kr/program/view.php?mcd=0082&hcd=&key=202602051111339309",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.26,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "[현장] 본격 출하 철 맞은 제주 만감류 고품질로 승부",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=355213",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 4,
+            "strength": 7,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.76,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "만감류 유통 점검 나선 이춘협 농협 제주본부장",
+          "url": "https://www.newsis.com/view/NISI20260205_0021151748",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.98,
+          "tier": 1,
+          "press": "newsjeju",
+          "domain": "newsjeju.net",
+          "title": "\"지금 출하 가 성패 가른다\"… 제주 만감류, 완숙·고품질로 정면 승부",
+          "url": "https://www.newsjeju.net/news/articleView.html?idxno=416056",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 5.9,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.88,
+          "tier": 1,
+          "press": "jejunews",
+          "domain": "jejunews.com",
+          "title": "무 관세 미국산 만다린 공세… 제주 만감류 '품질'로 정면돌파",
+          "url": "http://www.jejunews.com/news/articleView.html?idxno=2223439",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 6.3,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.83,
+          "tier": 1,
+          "press": "JEMIN",
+          "domain": "jemin.com",
+          "title": "[시론담론] 감귤 산업 위기와 기회 그리고 경쟁력",
+          "url": "https://www.jemin.com/news/articleView.html?idxno=833276",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 5.5,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.47,
+          "tier": 1,
+          "press": "newsjeju",
+          "domain": "newsjeju.net",
+          "title": "설 명절, 따뜻한 마음을 전하는 만감류 한 상자",
+          "url": "https://www.newsjeju.net/news/articleView.html?idxno=416095",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 6.9,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.91,
+          "tier": 1,
+          "press": "JEMIN",
+          "domain": "jemin.com",
+          "title": "수입 만다린 급증…제주 만감류 '품질'로 승부",
+          "url": "https://www.jemin.com/news/articleView.html?idxno=833246",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 5.3,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.47,
+          "tier": 1,
+          "press": "kihoilbo",
+          "domain": "kihoilbo.co.kr",
+          "title": "여주시 '2026 설맞이 농특산물 직거래장터' 마련",
+          "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3012668",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.67,
+          "tier": 1,
+          "press": "g-enews",
+          "domain": "g-enews.com",
+          "title": "여주시, 설맞이 여주 농특산물 직거래장터 개최",
+          "url": "https://www.g-enews.com/view.php?ud=202602051520223591a141c47927_1",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.09,
+          "tier": 1,
+          "press": "쿠키뉴스",
+          "domain": "kukinews.com",
+          "title": "충남지역 어린이·청소년 ‘무료버스’ 이용 300만 건 폭증 [힘쎈충남 브...",
+          "url": "https://www.kukinews.com/article/view/kuk202602050073",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.79,
+          "tier": 1,
+          "press": "headlinejeju",
+          "domain": "headlinejeju.co.kr",
+          "title": "[전문] 제주도의회 교섭단체 대표연설 - 국민의힘 김황국 의원",
+          "url": "http://www.headlinejeju.co.kr/news/articleView.html?idxno=586399",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 3.1,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 1.49,
+          "tier": 1,
+          "press": "joongangenews",
+          "domain": "joongangenews.com",
+          "title": "이마트, 설 선물세트 본판매 돌입... 최대 50% 할인·상품권 혜택",
+          "url": "https://www.joongangenews.com/news/articleView.html?idxno=492995",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.64,
+          "tier": 1,
+          "press": "EKN",
+          "domain": "ekn.kr",
+          "title": "청년 정책 실험부터 농업 경쟁력 강화까지… 경북 시·군, 생활 밀착형...",
+          "url": "https://www.ekn.kr/web/view.php?key=20260205029056270",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.14,
+          "tier": 1,
+          "press": "theviewers",
+          "domain": "theviewers.co.kr",
+          "title": "\"사전예약 역대 최대 매출\" 이마트, 설 선물 본 판매 시작",
+          "url": "https://theviewers.co.kr/View.aspx?No=3965324",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.11,
+          "tier": 1,
+          "press": "thefirstmedia",
+          "domain": "thefirstmedia.net",
+          "title": "이마트, 설 선물세트 본 판매 돌입",
+          "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=192816",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.11,
+          "tier": 1,
+          "press": "thepowernews",
+          "domain": "thepowernews.co.kr",
+          "title": "이마트, 설 선물세트 본 판매 돌입…사전예약 매출 역대 최대 기록",
+          "url": "https://www.thepowernews.co.kr/view.php?ud=202602051045416664de3f0aa1be_7",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.11,
+          "tier": 1,
+          "press": "dizzotv",
+          "domain": "dizzotv.com",
+          "title": "이마트, 설 선물세트 본 판매 돌입…사전예약 매출 ‘역대 최대’",
+          "url": "https://www.dizzotv.com/site/data/html_dir/2026/02/05/2026020580040.html",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.11,
+          "tier": 1,
+          "press": "pressman",
+          "domain": "pressman.kr",
+          "title": "이마트, 설 선물세트 본 판매 돌입",
+          "url": "https://www.pressman.kr/news/articleView.html?idxno=99517",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.11,
+          "tier": 1,
+          "press": "cnbnews",
+          "domain": "weekly.cnbnews.com",
+          "title": "이마트, 설 선물세트 사전예약 매출 역대 최대 달성",
+          "url": "https://weekly.cnbnews.com/news/article.html?no=205033",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.36,
+          "tier": 1,
+          "press": "biztribune",
+          "domain": "biztribune.co.kr",
+          "title": "[브리프]롯데백화점 신세계백화점 현대백화점 이마트 쿠팡 우아한형제...",
+          "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=348520",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.46,
+          "tier": 1,
+          "press": "새전북신문",
+          "domain": "sjbnews.com",
+          "title": "설 앞두고 국산 과일 소비 촉진…사과· 배 똑똑하게 고르기",
+          "url": "http://sjbnews.com/news/news.php?number=871208",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -4.4
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.11,
+          "tier": 1,
+          "press": "APNEWS",
+          "domain": "apnews.kr",
+          "title": "이마트, 설 선물 '본 판매'…사전예약 '매출 신기록' 기세 잇는다",
+          "url": "https://www.apnews.kr/news/articleView.html?idxno=3045585",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.11,
+          "tier": 1,
+          "press": "PAXETV",
+          "domain": "paxetv.com",
+          "title": "이마트, 설 선물세트 본 판매 돌입...\"사전예약 매출 역대 최대 달\"",
+          "url": "http://www.paxetv.com/news/articleView.html?idxno=260860",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        }
+      ]
+    },
+    "policy": {
+      "threshold": 20.33,
+      "tail_cut": 20.53,
+      "core_min": 20.33,
+      "total_candidates": 6,
+      "total_selected": 1,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 28.33,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[한눈에 보는 시세] 시금치, 가격 주춤…제수용 소비로 반등 전망",
+          "url": "https://www.nongmin.com/article/20260204500591",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 4,
+            "strength": 6,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.94,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "설 성수기 가락 시장 '입차 스케줄링' 적용",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401408",
+          "reason": "not_selected",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 2,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.5,
+          "tier": 1,
+          "press": "weeklytoday",
+          "domain": "weeklytoday.com",
+          "title": "[전기자의 장보기] 설 장바구니의 민낯 \"할인 넘치는데, 고물가에 체감...",
+          "url": "http://www.weeklytoday.com/news/articleView.html?idxno=757092",
+          "reason": "tail_cut",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.99,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "[설 대목장 점검] 성수품 수요 줄면서 채소류 거래 잠잠···탕·국용 무...",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=401404",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.87,
+          "tier": 1,
+          "press": "newsfreezone",
+          "domain": "newsfreezone.co.kr",
+          "title": "강종순 창원시 농업기술센터 소장 \"스마트 기술 중심의 정밀 농업 실현...",
+          "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=673554",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 1,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -2.53,
+          "tier": 1,
+          "press": "asiatime",
+          "domain": "asiatime.co.kr",
+          "title": "[5일 안성시] 설 기간 전통시장 주변 주정차 단속 유예 등",
+          "url": "https://www.asiatime.co.kr/article/20260205500306",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    },
+    "dist": {
+      "threshold": 17.38,
+      "tail_cut": 17.98,
+      "core_min": 17.38,
+      "total_candidates": 8,
+      "total_selected": 5,
+      "top": [
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 25.38,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[설 대목 과일 시장 점검] 샤인머스캣, 경도 위주 선별땐 ‘승산’",
+          "url": "https://www.nongmin.com/article/20260204500589",
+          "reason": "",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 4,
+            "strength": 6,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 20.76,
+          "tier": 3,
+          "press": "아시아경제",
+          "domain": "view.asiae.co.kr",
+          "title": "'품질의 신세계' 인증…신세계百 선물세트 '5스타'",
+          "url": "https://view.asiae.co.kr/article/2026020413595581215",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 3,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 18.41,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "구리 도매시장 , 설 명절 맞아 휴업일정 공개",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=313725",
+          "reason": "",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 17.34,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "\"지금이 제일 맛있을 때\" 레드향 출하",
+          "url": "https://www.news1.kr/photos/7734033",
+          "reason": "",
+          "signals": {
+            "horti_sc": 3.5,
+            "market_hits": 2,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 16.33,
+          "tier": 1,
+          "press": "jejumaeil",
+          "domain": "jejumaeil.net",
+          "title": "[현장] 본격 출하철 맞은 제주 만감류 고품질로 승부",
+          "url": "http://www.jejumaeil.net/news/articleView.html?idxno=355213",
+          "reason": "",
+          "signals": {
+            "horti_sc": 4.9,
+            "market_hits": 4,
+            "strength": 6,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.26,
+          "tier": 1,
+          "press": "asiatoday",
+          "domain": "asiatoday.co.kr",
+          "title": "[설 선물 특집] '품격·실속' 담아 고마움 전하세요",
+          "url": "https://www.asiatoday.co.kr/view.php?key=20260204010001377",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 3,
+            "strength": 6,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.06,
+          "tier": 1,
+          "press": "businessplus",
+          "domain": "businessplus.kr",
+          "title": "[마켓+]마트·백화점 올해 설 선물세트…'가성비·프리미엄'으로 구성",
+          "url": "https://www.businessplus.kr/news/articleView.html?idxno=106884",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 3,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.28,
+          "tier": 1,
+          "press": "ikpnews",
+          "domain": "ikpnews.net",
+          "title": "\"말이 아닌 행동으로 시장도매인 변화와 발전 이끌겠다\"",
+          "url": "http://www.ikpnews.net/news/articleView.html?idxno=69541",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    }
+  },
+  "collections": {
+    "policy": {
+      "effective_window": {
+        "start_kst": "2026-02-05T07:00:00+09:00",
+        "end_kst": "2026-02-06T07:00:00+09:00"
+      },
+      "base_queries_n": 26,
+      "base_queries": [
+        "농식품부 정책브리핑",
+        "농식품부 보도자료 농산물",
+        "정책브리핑 농축수산물",
+        "농축수산물 할인지원",
+        "성수품 가격 안정 대책",
+        "할당관세 과일 검역",
+        "원산지 단속 농산물",
+        "온라인 도매시장 농식품부",
+        "설 이후 과일 가격 하락",
+        "사과 배 가격 하락",
+        "성수품 물가 과일",
+        "차례상 물가 과일",
+        "소비자물가 과일 사과 배",
+        "KOSIS 소비자물가 사과 배",
+        "물가정보 설 과일",
+        "농축산물 가격 동향",
+        "농산물 가격 동향",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "농산물 수급 동향",
+        "농식품부 수급 점검",
+        "농식품부 가격 점검",
+        "농산물 가격 전반 하락",
+        "과일류 가격 전년 대비",
+        "농산물 수급 영향 제한적",
+        "정부 가용물량 과일"
+      ],
+      "api_items_top": [
+        [
+          "농식품부 정책브리핑",
+          50
+        ],
+        [
+          "농식품부 보도자료 농산물",
+          50
+        ],
+        [
+          "정책브리핑 농축수산물",
+          50
+        ],
+        [
+          "농축수산물 할인지원",
+          50
+        ],
+        [
+          "성수품 가격 안정 대책",
+          50
+        ],
+        [
+          "할당관세 과일 검역",
+          50
+        ],
+        [
+          "원산지 단속 농산물",
+          50
+        ],
+        [
+          "온라인 도매시장 농식품부",
+          50
+        ],
+        [
+          "설 이후 과일 가격 하락",
+          50
+        ],
+        [
+          "사과 배 가격 하락",
+          50
+        ],
+        [
+          "성수품 물가 과일",
+          50
+        ],
+        [
+          "차례상 물가 과일",
+          50
+        ],
+        [
+          "소비자물가 과일 사과 배",
+          50
+        ],
+        [
+          "KOSIS 소비자물가 사과 배",
+          50
+        ],
+        [
+          "물가정보 설 과일",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "과일류 가격 동향",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "KOSIS 소비자물가 사과 배",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "과일류 가격 전년 대비",
+        "농산물 가격 동향",
+        "농산물 가격 전반 하락",
+        "농산물 수급 동향",
+        "농산물 수급 영향 제한적",
+        "농식품부 가격 점검",
+        "농식품부 보도자료 농산물",
+        "농식품부 수급 점검",
+        "농식품부 정책브리핑",
+        "농축산물 가격 동향",
+        "농축수산물 할인지원",
+        "물가정보 설 과일",
+        "사과 배 가격 하락",
+        "설 이후 과일 가격 하락",
+        "성수품 가격 안정 대책",
+        "성수품 물가 과일",
+        "소비자물가 과일 사과 배"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "단감",
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물"
+        ],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
+        "queries": [
+          "사과",
+          "배",
+          "단감",
+          "농식품부",
+          "대책",
+          "농식품부 농산물 수급 점검"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배",
+          "단감"
+        ],
+        "query_seed_terms": [
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "사과",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향",
+          "과일류",
+          "전반",
+          "영향",
+          "정부"
+        ],
+        "report_date": "2026-02-06",
+        "common_queries": [
+          "농축산물 가격 동향",
+          "농산물 가격 동향",
+          "과일 채소 가격 동향",
+          "과일류 가격 동향",
+          "농산물 수급 동향",
+          "농식품부 수급 점검",
+          "농식품부 가격 점검",
+          "농산물 가격 전반 하락",
+          "과일류 가격 전년 대비",
+          "농산물 수급 영향 제한적",
+          "정부 가용물량 과일",
+          "농식품부 농산물 수급 점검",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
+          "농산물 유통 구조 개선",
+          "온라인 도매시장 정책",
+          "농식품부 예산"
+        ],
+        "web_queries": [
+          "사과",
+          "배"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "사과",
+          "배"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 1,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 6,
+        "budget_total": 12
+      }
+    },
+    "supply": {
+      "effective_window": {
+        "start_kst": "2026-02-05T07:00:00+09:00",
+        "end_kst": "2026-02-06T07:00:00+09:00"
+      },
+      "base_queries_n": 100,
+      "base_queries": [
+        "사과 수급",
+        "사과 가격",
+        "사과 작황",
+        "사과 저장",
+        "사과 출하",
+        "배 과일 수급",
+        "배 과일 가격",
+        "배 과일 작황",
+        "배 과일 저장",
+        "배 과일 출하",
+        "단감 수급",
+        "단감 가격",
+        "단감 작황",
+        "곶감 수급",
+        "떫은감 작황",
+        "감귤 수급",
+        "감귤 가격",
+        "감귤 작황",
+        "감귤 관세",
+        "감귤 무관세",
+        "제주 감귤 관세",
+        "만다린 관세",
+        "감귤 FTA",
+        "만감류 출하",
+        "한라봉 출하",
+        "레드향 출하",
+        "천혜향 출하",
+        "포도 수급",
+        "포도 가격",
+        "포도 작황"
+      ],
+      "api_items_top": [
+        [
+          "사과 수급",
+          50
+        ],
+        [
+          "사과 가격",
+          50
+        ],
+        [
+          "사과 작황",
+          50
+        ],
+        [
+          "사과 저장",
+          50
+        ],
+        [
+          "사과 출하",
+          50
+        ],
+        [
+          "배 과일 수급",
+          50
+        ],
+        [
+          "배 과일 가격",
+          50
+        ],
+        [
+          "배 과일 작황",
+          50
+        ],
+        [
+          "배 과일 저장",
+          50
+        ],
+        [
+          "배 과일 출하",
+          50
+        ],
+        [
+          "단감 수급",
+          50
+        ],
+        [
+          "단감 가격",
+          50
+        ],
+        [
+          "단감 작황",
+          50
+        ],
+        [
+          "곶감 수급",
+          50
+        ],
+        [
+          "떫은감 작황",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "샤인머스캣 작황",
+          10
+        ],
+        [
+          "만다린 관세",
+          5
+        ],
+        [
+          "레드향 출하",
+          4
+        ],
+        [
+          "알밤 가격",
+          4
+        ],
+        [
+          "제주 감귤 관세",
+          3
+        ],
+        [
+          "감귤 작황",
+          2
+        ],
+        [
+          "한라봉 출하",
+          2
+        ],
+        [
+          "배 과일 저장",
+          1
+        ],
+        [
+          "단감 수급",
+          1
+        ],
+        [
+          "감귤 FTA",
+          1
+        ],
+        [
+          "복숭아 수급",
+          1
+        ],
+        [
+          "대추방울토마토 가격",
+          1
+        ],
+        [
+          "국화 경매",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "감귤 FTA",
+        "감귤 가격",
+        "감귤 관세",
+        "감귤 무관세",
+        "감귤 수급",
+        "감귤 작황",
+        "고추 작황",
+        "곶감 수급",
+        "과수 농가 울상",
+        "과수 묘목",
+        "과수 묘목 품귀",
+        "국화 경매",
+        "기후변화 과수",
+        "꽃시장 경매",
+        "단감 가격",
+        "단감 수급",
+        "단감 작황",
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "토마토",
+          "멜론",
+          "참외",
+          "고추",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "복숭아",
+          "매실",
+          "수박",
+          "피망"
+        ],
+        "reason": [],
+        "queries": [
+          "멜론 생육",
+          "농산물 가격 동향",
+          "단감 생육",
+          "토마토 생육",
+          "참외 생육",
+          "고추 생육"
+        ],
+        "pool_seed_hits": {
+          "사과": 1,
+          "단감": 0,
+          "곶감": 0,
+          "포도": 0,
+          "키위": 0,
+          "알밤": 1,
+          "복숭아": 0,
+          "매실": 0,
+          "토마토": 0,
+          "수박": 0,
+          "피망": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
+          "고추": 0,
+          "화훼자조금": 0,
+          "과수": 0,
+          "기후변화": 0,
+          "감귤": 7,
+          "배": 1
+        },
+        "feature_refresh_seeds": [
+          "멜론",
+          "참외",
+          "고추",
+          "단감",
+          "곶감",
+          "포도",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금",
+          "사과"
+        ],
+        "topic_seed_terms": [
+          "감귤",
+          "사과",
+          "배",
+          "단감"
+        ],
+        "query_seed_terms": [
+          "사과",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "알밤",
+          "복숭아",
+          "매실",
+          "토마토",
+          "수박",
+          "피망",
+          "멜론",
+          "참외",
+          "상추",
+          "고추",
+          "화훼자조금",
+          "과수",
+          "기후변화"
+        ],
+        "report_date": "2026-02-06",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매"
+        ],
+        "prioritized_seeds": [
+          "토마토",
+          "멜론",
+          "참외",
+          "고추",
+          "단감",
+          "곶감",
+          "포도",
+          "키위",
+          "복숭아",
+          "매실",
+          "수박",
+          "피망",
+          "상추",
+          "화훼자조금",
+          "과수",
+          "기후변화",
+          "사과",
+          "알밤",
+          "감귤",
+          "배"
+        ],
+        "feature_focus_seeds": [
+          "멜론",
+          "단감"
+        ]
+      },
+      "items_total": 36,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 8,
+        "budget_total": 12
+      }
+    },
+    "dist": {
+      "effective_window": {
+        "start_kst": "2026-02-05T07:00:00+09:00",
+        "end_kst": "2026-02-06T07:00:00+09:00"
+      },
+      "base_queries_n": 43,
+      "base_queries": [
+        "가락시장 청과 경락",
+        "가락시장 경락가",
+        "도매시장 청과 경락",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "시장도매인제 도매시장",
+        "온라인 도매시장 청과",
+        "온라인 도매시장 제도 개선",
+        "도매시장 제도 개선",
+        "품목농협 산지유통",
+        "원예농협 산지유통",
+        "농협 연합판매사업 직거래",
+        "연합판매사업 직거래",
+        "연합판매사업 직거래 활성화",
+        "품목농협 공동선별",
+        "품목농협 경제사업",
+        "원예농협 경제사업",
+        "품목농협 조합원 실익",
+        "원예농협 지도 구매 유통 가공",
+        "품목농협 지도 구매 유통 가공",
+        "과수 전문 품목농협",
+        "산지유통센터 준공",
+        "스마트 농산물 산지유통센터 준공",
+        "스마트 APC 준공",
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "원산지 표시 단속 농산물"
+      ],
+      "api_items_top": [
+        [
+          "가락시장 청과 경락",
+          50
+        ],
+        [
+          "가락시장 경락가",
+          50
+        ],
+        [
+          "도매시장 청과 경락",
+          50
+        ],
+        [
+          "도매시장 반입량",
+          50
+        ],
+        [
+          "도매시장 수급",
+          50
+        ],
+        [
+          "공영도매시장 경매",
+          50
+        ],
+        [
+          "공판장 청과 경매",
+          50
+        ],
+        [
+          "시장도매인제 도매시장",
+          50
+        ],
+        [
+          "온라인 도매시장 청과",
+          50
+        ],
+        [
+          "온라인 도매시장 제도 개선",
+          50
+        ],
+        [
+          "도매시장 제도 개선",
+          50
+        ],
+        [
+          "품목농협 산지유통",
+          50
+        ],
+        [
+          "원예농협 산지유통",
+          50
+        ],
+        [
+          "농협 연합판매사업 직거래",
+          50
+        ],
+        [
+          "연합판매사업 직거래",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "공판장 청과 경매",
+          3
+        ],
+        [
+          "가락시장 청과 경락",
+          2
+        ],
+        [
+          "도매시장 반입량",
+          2
+        ],
+        [
+          "도매시장 청과 경락",
+          1
+        ],
+        [
+          "공영도매시장 경매",
+          1
+        ],
+        [
+          "시장도매인제 도매시장",
+          1
+        ],
+        [
+          "과수 전문 품목농협",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "가락시장 경락가",
+        "가락시장 청과 경락",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "과수 전문 품목농협",
+        "과일 수출 검역",
+        "과일 수출 선적",
+        "광역수급관리센터 수급 관리",
+        "농산물 광역수급관리센터",
+        "농산물 수출 검역",
+        "농산물 수출 선적",
+        "농협 연합판매사업 직거래",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "도매시장 제도 개선",
+        "도매시장 청과 경락",
+        "부정유통 단속 농산물"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "대책",
+          "가락시장",
+          "사과",
+          "배",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "과수",
+          "수출",
+          "수출업계"
+        ],
+        "reason": [],
+        "queries": [
+          "대책",
+          "가락시장",
+          "사과",
+          "배",
+          "apc",
+          "가락시장 경매"
+        ],
+        "topic_seed_terms": [
+          "대책",
+          "가락시장",
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "가락시장",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "과수",
+          "대책",
+          "수출",
+          "수출업계",
+          "광역수급관리센터",
+          "화훼",
+          "화훼자조금"
+        ],
+        "report_date": "2026-02-06",
+        "common_queries": [
+          "가락시장 경매",
+          "도매시장 경매",
+          "공판장 경매",
+          "가락시장 경락",
+          "초매식",
+          "첫 경매",
+          "경매 시작",
+          "온라인 도매시장 제도 개선",
+          "도매시장 제도 개선",
+          "품목농협 계통 유통",
+          "원예농협 계통 유통",
+          "통합마케팅 직거래",
+          "광역유통센터",
+          "스마트 APC",
+          "농산물 광역수급관리센터"
+        ]
+      },
+      "items_total": 11,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 10,
+        "budget_total": 12
+      }
+    },
+    "pest": {
+      "effective_window": {
+        "start_kst": "2026-02-05T07:00:00+09:00",
+        "end_kst": "2026-02-06T07:00:00+09:00"
+      },
+      "base_queries_n": 10,
+      "base_queries": [
+        "과수화상병 방제",
+        "탄저병 방제",
+        "월동 해충 방제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰 방제",
+        "과수화상병",
+        "과수화상병 약제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제",
+        "병해충 예찰"
+      ],
+      "api_items_top": [
+        [
+          "과수화상병 방제",
+          50
+        ],
+        [
+          "탄저병 방제",
+          50
+        ],
+        [
+          "월동 해충 방제",
+          50
+        ],
+        [
+          "냉해 동해 과수 피해",
+          50
+        ],
+        [
+          "병해충 예찰 방제",
+          50
+        ],
+        [
+          "과수화상병",
+          50
+        ],
+        [
+          "과수화상병 약제",
+          50
+        ],
+        [
+          "토마토뿔나방",
+          50
+        ],
+        [
+          "토마토뿔나방 방제",
+          50
+        ],
+        [
+          "병해충 예찰",
+          50
+        ]
+      ],
+      "window_hits_top": [],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "과수화상병",
+        "과수화상병 방제",
+        "과수화상병 약제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰",
+        "병해충 예찰 방제",
+        "월동 해충 방제",
+        "탄저병 방제",
+        "토마토뿔나방",
+        "토마토뿔나방 방제"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "병해충"
+        ],
+        "reason": [],
+        "queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "사과",
+          "배",
+          "병해충",
+          "사과 병해충"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "병해충"
+        ],
+        "report_date": "2026-02-06",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예찰",
+          "응애 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 0,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 12,
+        "budget_total": 12
+      }
+    }
+  }
+}
