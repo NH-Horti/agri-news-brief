@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T22:27:04+09:00",
-  "build_tag": "bb16546",
+  "generated_at_kst": "2026-03-14T23:53:01+09:00",
+  "build_tag": "001502c",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1373,18 +1373,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "mydaily",
-      "domain": "mydaily.co.kr",
-      "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
-      "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "노컷뉴스",
       "domain": "nocutnews.co.kr",
       "title": "중동 사태 여파…시설 재배 '직격탄'",
       "url": "https://www.nocutnews.co.kr/news/6484719"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "mydaily",
+      "domain": "mydaily.co.kr",
+      "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
+      "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
     },
     {
       "section": "supply",
@@ -2599,8 +2599,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -2615,8 +2615,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "pest",
@@ -2701,18 +2701,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "djtimes",
-      "domain": "djtimes.co.kr",
-      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
-      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "thepowernews",
       "domain": "thepowernews.co.kr",
       "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
       "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "djtimes",
+      "domain": "djtimes.co.kr",
+      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
+      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
     },
     {
       "section": "pest",
@@ -3493,18 +3493,18 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "ZIKSIR",
-      "domain": "ziksir.com",
-      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
-      "url": "https://ziksir.com/news/articleView.html?idxno=126956"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "WOWTV",
       "domain": "wowtv.co.kr",
       "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
       "url": "https://wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "ZIKSIR",
+      "domain": "ziksir.com",
+      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
+      "url": "https://ziksir.com/news/articleView.html?idxno=126956"
     },
     {
       "section": "supply",
@@ -5890,10 +5890,10 @@
           "is_core": false,
           "score": 4.12,
           "tier": 1,
-          "press": "ZIKSIR",
-          "domain": "ziksir.com",
-          "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
-          "url": "https://www.ziksir.com/news/articleView.html?idxno=126956",
+          "press": "WOWTV",
+          "domain": "wowtv.co.kr",
+          "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
+          "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
@@ -5910,10 +5910,10 @@
           "is_core": false,
           "score": 4.12,
           "tier": 1,
-          "press": "WOWTV",
-          "domain": "wowtv.co.kr",
-          "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
-          "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN",
+          "press": "ZIKSIR",
+          "domain": "ziksir.com",
+          "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=126956",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
@@ -6284,6 +6284,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
         "과일 채소 가격 동향",
@@ -6478,6 +6479,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "감귤 FTA",
         "감귤 가격",
@@ -6592,6 +6594,7 @@
         "common_queries": [
           "농산물 가격 동향",
           "농산물 수급 동향",
+          "경락값 분석",
           "과일 가격",
           "채소 가격",
           "과일 수급",
@@ -6768,6 +6771,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -6874,6 +6878,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "과수화상병",
         "과수화상병 방제",
@@ -6916,8 +6921,8 @@
           "과수 병해충 방제",
           "병해충 예찰",
           "검역 병해충",
-          "과수화상병 예방",
-          "탄저병 방제",
+          "과수화상병 예찰",
+          "응애 방제",
           "월동 병해충 예찰",
           "시설채소 방제"
         ]
