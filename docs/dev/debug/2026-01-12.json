@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T23:15:08+09:00",
-  "build_tag": "d9e657e",
+  "generated_at_kst": "2026-03-14T23:22:40+09:00",
+  "build_tag": "b3c24e3",
   "filter_rejects": [
     {
       "section": "policy",
@@ -121,14 +121,6 @@
       "domain": "nongmin.com",
       "title": "[유통가 사람들] “산지와 소통하며 공정한 거래 진행”",
       "url": "https://www.nongmin.com/article/20260112500722"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "pigpeople",
-      "domain": "pigpeople.net",
-      "title": "옥수수 가격 강세에 세계곡물가격지수 2개월 연속 상승",
-      "url": "https://www.pigpeople.net/news/article.html?no=18451"
     },
     {
       "section": "pest",
