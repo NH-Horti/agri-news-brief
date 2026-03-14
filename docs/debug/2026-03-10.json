@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-14T21:46:45+09:00",
-  "build_tag": "526e753",
+  "generated_at_kst": "2026-03-15T00:01:17+09:00",
+  "build_tag": "001502c",
   "filter_rejects": [
     {
       "section": "policy",
@@ -275,6 +275,14 @@
       "url": "https://www.news1.kr/industry/distribution/6095248"
     },
     {
+      "section": "policy",
+      "reason": "policy_local_minor",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "\"원재료값 내렸으니 제품값도 내려라\"… 농식품부 , 라면ㆍ커피업계 정조...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
+    },
+    {
       "section": "supply",
       "reason": "apple_non_edible_context",
       "press": "andongmbc",
@@ -316,6 +324,14 @@
     },
     {
       "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "농축산물 가격 대체로 하락세…정부 \"체감물가 부담 완화 총력\"",
+      "url": "https://www.newsis.com/view/NISX20260309_0003540960"
+    },
+    {
+      "section": "supply",
       "reason": "apple_non_edible_context",
       "press": "브레이크뉴스",
       "domain": "breaknews.com",
@@ -329,14 +345,6 @@
       "domain": "foodnews.co.kr",
       "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농축산물 가격 대체로 하락세…정부 \"체감물가 부담 완화 총력\"",
-      "url": "https://www.newsis.com/view/NISX20260309_0003540960"
     },
     {
       "section": "supply",
@@ -589,10 +597,10 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "medipana",
-      "domain": "medipana.com",
+      "press": "PRESS9",
+      "domain": "press9.kr",
       "title": "HK이노엔, '티로그 스파클링 레몬라임 아이스티' 출시",
-      "url": "https://www.medipana.com/news/articleView.html?idxno=407882"
+      "url": "http://www.press9.kr/news/articleView.html?idxno=73155"
     },
     {
       "section": "supply",
@@ -605,10 +613,10 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "PRESS9",
-      "domain": "press9.kr",
+      "press": "medipana",
+      "domain": "medipana.com",
       "title": "HK이노엔, '티로그 스파클링 레몬라임 아이스티' 출시",
-      "url": "http://www.press9.kr/news/articleView.html?idxno=73155"
+      "url": "https://www.medipana.com/news/articleView.html?idxno=407882"
     },
     {
       "section": "supply",
@@ -676,19 +684,19 @@
     },
     {
       "section": "supply",
-      "reason": "excluded_items",
-      "press": "서울경제",
-      "domain": "sedaily.com",
-      "title": "“몸에 좋다길래 따라했다가”…SNS 난리 ‘봄동비빔밥’의 함정[헬시타...",
-      "url": "https://www.sedaily.com/article/20017005"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_only",
       "press": "연합뉴스TV",
       "domain": "yonhapnewstv.co.kr",
       "title": "'봄의 전령'…전남 광양 매화축제 13일 개막",
       "url": "http://www.yonhapnewstv.co.kr/AKR20260309161101L5L"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "“몸에 좋다길래 따라했다가”…SNS 난리 ‘봄동비빔밥’의 함정[헬시타...",
+      "url": "https://www.sedaily.com/article/20017005"
     },
     {
       "section": "supply",
@@ -1165,18 +1173,18 @@
     {
       "section": "supply",
       "reason": "supply_policy_market_brief",
-      "press": "foodnews",
-      "domain": "foodnews.co.kr",
-      "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
-      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "농축산물 가격 대체로 하락세…정부 \"체감물가 부담 완화 총력\"",
       "url": "https://www.newsis.com/view/NISX20260309_0003540960"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
     },
     {
       "section": "supply",
@@ -1253,18 +1261,18 @@
     {
       "section": "supply",
       "reason": "supply_policy_market_brief",
-      "press": "foodnews",
-      "domain": "foodnews.co.kr",
-      "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
-      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "농축산물 가격 대체로 하락세…정부 \"체감물가 부담 완화 총력\"",
       "url": "https://www.newsis.com/view/NISX20260309_0003540960"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
     },
     {
       "section": "supply",
@@ -1436,43 +1444,99 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "2026년 화이트데이, 하트 시그널을 올려줄 뷰티 기프트",
-      "url": "https://www.chosun.com/special/boutique/boutique-beauty/2026/03/09/6IWXGQVENFFLDMD32C6DV6VZ4Q/"
+      "reason": "remote_foreign_horti",
+      "press": "KNN",
+      "domain": "news.knn.co.kr",
+      "title": "화훼농가는 시름, 주유소는 휘발유 품절",
+      "url": "https://news.knn.co.kr/news/article/184717"
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "TECHM",
-      "domain": "techm.kr",
-      "title": "사탕 매대 치우고 '스몰 럭셔리' 팝업... 공식 깨진 화이트데이 유통가",
-      "url": "https://www.techm.kr/news/articleView.html?idxno=150025"
+      "reason": "melon_non_edible_context",
+      "press": "뉴데일리경제",
+      "domain": "cc.newdaily.co.kr",
+      "title": "천안 ‘하늘그린 멜론 ’ 본격 관리 돌입",
+      "url": "https://cc.newdaily.co.kr/site/data/html/2026/03/09/2026030900130.html"
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "TECHM",
-      "domain": "techm.kr",
-      "title": "사탕 매대 치우고 '스몰 럭셔리' 팝업... 공식 깨진 화이트데이 유통가",
-      "url": "https://www.techm.kr/news/articleView.html?idxno=150025"
+      "reason": "livestock_only",
+      "press": "news2day",
+      "domain": "news2day.co.kr",
+      "title": "축산물 6% 상승…유가·환율 압박에 장바구니 물가 '들썩'",
+      "url": "https://www.news2day.co.kr/article/20260309500184"
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "IKBC",
-      "domain": "ikbc.co.kr",
-      "title": "국제유가 상승 계속...화물차·시설농가 '막막'",
-      "url": "https://www.ikbc.co.kr/article/view/kbc202603090067"
+      "reason": "livestock_only",
+      "press": "FSNEWS",
+      "domain": "fsnews.co.kr",
+      "title": "세계식량 가격 지수 두 달 만에 상승",
+      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60288"
     },
     {
       "section": "supply",
       "reason": "supply_policy_market_brief",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농축산물 가격 대체로 하락세…정부 \"체감물가 부담 완화 총력\"",
-      "url": "https://www.newsis.com/view/NISX20260309_0003540960"
+      "press": "daejonilbo",
+      "domain": "daejonilbo.com",
+      "title": "농식품부 \"농축산물 가격 하락세…물가 부담 완화 총력 대응\"",
+      "url": "https://www.daejonilbo.com/news/articleView.html?idxno=2261624"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "정부 “농축산물 가격 대체로 하락…수급 관리 강화”",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8503244"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "팜&마켓",
+      "domain": "farmnmarket.com",
+      "title": "농축산물 가격 ‘하락세’ 전환",
+      "url": "https://www.farmnmarket.com/news/article.html?no=25826"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only",
+      "press": "머니투데이",
+      "domain": "mt.co.kr",
+      "title": "다음주 美 신선란 112만개 공급…홈플러스·메가마트서 한판 5790원",
+      "url": "https://www.mt.co.kr/economy/2026/03/09/2026030917232924524"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "\"원재료값 내렸으니 제품값도 내려라\"…농식품부, 라면ㆍ커피업계 정조...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117579"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "노컷뉴스",
+      "domain": "nocutnews.co.kr",
+      "title": "농축산물 가격 대체로 하락세…중동 전쟁에 따른 농산물 수급 영향 '제...",
+      "url": "https://www.nocutnews.co.kr/news/6481885"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "EKN",
+      "domain": "ekn.kr",
+      "title": "［E-로컬뉴스］김천시, 구미시, 상주시, 문경시 성주군, 고령군 소식",
+      "url": "https://www.ekn.kr/web/view.php?key=20260309024456324"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "GGILBO",
+      "domain": "ggilbo.com",
+      "title": "한일사료 주가, 급등세... 무슨 회사길래?",
+      "url": "https://www.ggilbo.com/news/articleView.html?idxno=1145359"
     },
     {
       "section": "dist",
@@ -2304,7 +2368,7 @@
       "threshold": 23.2,
       "tail_cut": 23.6,
       "core_min": 23.2,
-      "total_candidates": 50,
+      "total_candidates": 51,
       "total_selected": 3,
       "top": [
         {
@@ -2985,6 +3049,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.7,
+          "tier": 1,
+          "press": "데일리한국",
+          "domain": "sports.hankooki.com",
+          "title": "두쫀쿠 열풍에 베이커리 매출 9.5%↑…기세 꺾이자 '봄동 비빔밥' 뜬다",
+          "url": "https://sports.hankooki.com/news/articleView.html?idxno=6927764",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 1,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -4644,6 +4728,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
         "과일 채소 가격 동향",
@@ -4688,7 +4773,7 @@
           "배",
           "농식품부",
           "정책브리핑",
-          "가락시장"
+          "농식품부 농산물 수급 점검"
         ],
         "topic_seed_terms": [
           "대책",
@@ -4726,11 +4811,17 @@
           "농산물 수급 영향 제한적",
           "정부 가용물량 과일",
           "농식품부 농산물 수급 점검",
-          "농식품부 원예 지원",
-          "온라인 도매시장 정책",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
           "농산물 유통 구조 개선",
-          "원예 농가 지원 사업"
-        ]
+          "온라인 도매시장 정책",
+          "농식품부 예산"
+        ],
+        "web_queries": [
+          "대책",
+          "사과"
+        ],
+        "web_added": 0
       },
       "items_total": 18,
       "cond_paging": {
@@ -4746,7 +4837,7 @@
         "start_kst": "2026-03-09T07:00:00+09:00",
         "end_kst": "2026-03-10T07:00:00+09:00"
       },
-      "base_queries_n": 105,
+      "base_queries_n": 100,
       "base_queries": [
         "사과 수급",
         "사과 가격",
@@ -4903,6 +4994,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "감귤 FTA",
         "감귤 가격",
@@ -4915,57 +5007,57 @@
         "과수 농가 울상",
         "과수 묘목",
         "과수 묘목 품귀",
+        "국화 경매",
         "기후변화 과수",
-        "꽃 소비",
-        "꽃다발 선물",
-        "꽃다발 선물 트렌드",
-        "꽃다발 소비",
+        "꽃시장 경매",
         "단감 가격",
         "단감 수급",
         "단감 작황",
-        "단호박 가격"
+        "단호박 가격",
+        "대추방울토마토 가격",
+        "딸기 가격"
       ],
       "recall_meta": {
         "seed_terms": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
           "사과",
           "단감",
-          "유자",
-          "자두",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
-          "피망",
-          "레고"
+          "수박"
         ],
         "reason": [],
         "queries": [
-          "파프리카 생육",
-          "파프리카 난방",
+          "멜론 생육",
+          "농산물 가격 동향",
           "사과 생육",
           "토마토 생육",
-          "오이 생육",
+          "참외 생육",
           "고추 생육"
         ],
         "pool_seed_hits": {
           "사과": 0,
           "단감": 0,
-          "감귤": 2,
+          "곶감": 0,
           "포도": 1,
-          "유자": 0,
-          "자두": 0,
+          "키위": 0,
+          "알밤": 0,
+          "복숭아": 0,
           "매실": 0,
           "토마토": 0,
-          "호박": 0,
+          "수박": 0,
           "피망": 0,
-          "파프리카": 0,
-          "오이": 0,
+          "멜론": 0,
+          "참외": 0,
+          "상추": 0,
           "고추": 0,
-          "소비": 1,
-          "레고": 0,
-          "보태니컬": 0,
+          "화훼자조금": 0,
           "과수": 0,
           "기후변화": 0,
           "대책": 5,
@@ -4973,15 +5065,16 @@
           "배": 1
         },
         "feature_refresh_seeds": [
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
           "사과",
           "단감",
-          "피망",
-          "레고",
-          "감귤",
-          "소비"
+          "곶감",
+          "복숭아",
+          "수박",
+          "상추",
+          "화훼자조금"
         ],
         "topic_seed_terms": [
           "대책",
@@ -4992,61 +5085,66 @@
         "query_seed_terms": [
           "사과",
           "단감",
-          "감귤",
+          "곶감",
           "포도",
-          "유자",
-          "자두",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
           "토마토",
-          "호박",
+          "수박",
           "피망",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
+          "상추",
           "고추",
-          "소비",
-          "레고",
-          "보태니컬",
+          "화훼자조금",
           "과수",
           "기후변화"
         ],
         "report_date": "2026-03-10",
         "common_queries": [
-          "과수 한파 피해",
-          "시설채소 난방비",
-          "월동채소 수급",
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
           "농산물 출하 동향",
           "화훼 경매",
-          "절화 경매"
+          "절화 경매",
+          "꽃시장 경매"
         ],
         "prioritized_seeds": [
           "토마토",
-          "파프리카",
-          "오이",
+          "멜론",
+          "참외",
           "고추",
           "사과",
           "단감",
-          "유자",
-          "자두",
+          "곶감",
+          "키위",
+          "알밤",
+          "복숭아",
           "매실",
-          "호박",
+          "수박",
           "피망",
-          "레고",
-          "보태니컬",
+          "상추",
+          "화훼자조금",
           "과수",
           "기후변화",
-          "감귤",
           "포도",
-          "소비",
           "대책",
           "화훼",
           "배"
         ],
         "feature_focus_seeds": [
-          "파프리카",
+          "멜론",
           "사과"
         ]
       },
-      "items_total": 70,
+      "items_total": 71,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -5181,6 +5279,7 @@
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
@@ -5283,6 +5382,7 @@
           2
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "과수화상병",
         "과수화상병 방제",
@@ -5309,7 +5409,7 @@
           "사과",
           "배",
           "병해충 병해충",
-          "병해충 방제"
+          "과수 병해충 방제"
         ],
         "topic_seed_terms": [
           "병해충",
@@ -5325,8 +5425,10 @@
           "과수 병해충 방제",
           "병해충 예찰",
           "검역 병해충",
-          "과수 월동 병해충",
-          "시설채소 한파 대응"
+          "과수화상병 예찰",
+          "응애 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제"
         ]
       },
       "items_total": 9,
