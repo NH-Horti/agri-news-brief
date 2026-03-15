@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T15:10:03+09:00",
-  "build_tag": "de6418c",
+  "generated_at_kst": "2026-03-15T15:31:14+09:00",
+  "build_tag": "8d27d83",
   "filter_rejects": [
     {
       "section": "policy",
@@ -220,19 +220,19 @@
     },
     {
       "section": "policy",
-      "reason": "policy_macro_general_economy",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "파주시, 비상경제대응 TF 운영",
-      "url": "http://www.metroseoul.co.kr/article/20260313500107"
-    },
-    {
-      "section": "policy",
       "reason": "policy_context_gate",
       "press": "이뉴스투데이",
       "domain": "enewstoday.co.kr",
       "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
       "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_macro_general_economy",
+      "press": "메트로신문",
+      "domain": "metroseoul.co.kr",
+      "title": "파주시, 비상경제대응 TF 운영",
+      "url": "http://www.metroseoul.co.kr/article/20260313500107"
     },
     {
       "section": "policy",
@@ -1775,16 +1775,16 @@
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
+      "title": "기름값 폭등에 친환경차 관심 급증",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "기름값 폭등에 친환경차 관심 급증",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
+      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
     },
     {
       "section": "supply",
@@ -2421,18 +2421,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "DNEWS",
-      "domain": "dnews.co.kr",
-      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
-      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "FINOMY",
       "domain": "finomy.com",
       "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
       "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
     },
     {
       "section": "supply",
@@ -2617,14 +2617,6 @@
       "domain": "smartbizn.com",
       "title": "라면은 내리고 버거는 올리고···먹거리 가격 '엇갈린 흐름'",
       "url": "https://www.smartbizn.com/news/articleView.html?idxno=138893"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "dealsite",
-      "domain": "dealsite.co.kr",
-      "title": "[오늘의 유통가] LF, 닥스골프·헤지스골프 롯데본점 매장 리뉴얼 外",
-      "url": "https://dealsite.co.kr/articles/158395"
     },
     {
       "section": "supply",
@@ -2997,22 +2989,6 @@
     {
       "section": "supply",
       "reason": "carrot_non_edible_context",
-      "press": "kpinews",
-      "domain": "kpinews.kr",
-      "title": "bhc, ' 당근 '에서 포장주문 서비스 오픈",
-      "url": "https://www.kpinews.kr/newsView/1065576887494382"
-    },
-    {
-      "section": "supply",
-      "reason": "carrot_non_edible_context",
-      "press": "newswell",
-      "domain": "newswell.co.kr",
-      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-      "url": "http://www.newswell.co.kr/news/articleView.html?idxno=16699"
-    },
-    {
-      "section": "supply",
-      "reason": "carrot_non_edible_context",
       "press": "jejusori",
       "domain": "jejusori.net",
       "title": "'바가지 차단' 제주 들불축제 아메리카노 4000원",
@@ -3087,16 +3063,16 @@
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
+      "title": "양파 값 추락···중국산 수입 관리를",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
     },
     {
       "section": "supply",
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "양파 값 추락···중국산 수입 관리를",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
+      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
     },
     {
       "section": "supply",
@@ -4997,18 +4973,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "businesskorea",
-      "domain": "businesskorea.co.kr",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
-      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "ASIAA",
       "domain": "asiaa.co.kr",
       "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
       "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businesskorea",
+      "domain": "businesskorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
+      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
     },
     {
       "section": "dist",
@@ -5397,18 +5373,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "ZIKSIR",
-      "domain": "ziksir.com",
-      "title": "농식품부 , KGC인삼공사 현장 간담회… 비관세 장벽 대응 논의",
-      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "WOWTV",
       "domain": "wowtv.co.kr",
       "title": "농식품부 , KGC인삼공사서 현장간담회… 비관세 대응 논의",
       "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ZIKSIR",
+      "domain": "ziksir.com",
+      "title": "농식품부 , KGC인삼공사 현장 간담회… 비관세 장벽 대응 논의",
+      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
     },
     {
       "section": "dist",
@@ -5829,22 +5805,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "한국농어민신문",
-      "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "고양 벽제농협, 기후변화 대응 맞춤형 영농교육 실시",
-      "url": "https://www.nongmin.com/article/20260312500702"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "djtimes",
       "domain": "djtimes.co.kr",
       "title": "당진 황토 감자 파종 시작…적기 관리가 수확량 좌우",
@@ -5852,11 +5812,227 @@
     },
     {
       "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "연합뉴스TV",
+      "domain": "yonhapnewstv.co.kr",
+      "title": "\"태우지 말고 파쇄\"…영농 부산물 처리 산불 예방",
+      "url": "http://www.yonhapnewstv.co.kr/MYH20260314184621yat"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "EKN",
+      "domain": "ekn.kr",
+      "title": "경북 북부권, 농업·산림·교육·청소년 정책 동시 추진… 정착·복지·...",
+      "url": "https://www.ekn.kr/web/view.php?key=20260314027597752"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "국립경국대, 글로컬 K- 사과 대학 공식 출범",
+      "url": "https://biz.heraldcorp.com/article/10693640"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "광주MBC",
+      "domain": "kjmbc.co.kr",
+      "title": "[안동] 'K- 사과 대학' 출범.. \"미국산 수입 대응\"",
+      "url": "https://kjmbc.co.kr/NewsArticle/1509055"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "포인트데일리",
+      "domain": "pointdaily.co.kr",
+      "title": "장성군, 영농부산물 파쇄 지원… 산불 예방·농가 돕기 '일석이조'",
+      "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=296139"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "연합뉴스TV",
+      "domain": "yonhapnewstv.co.kr",
+      "title": "\"태우지 말고 파쇄\"…영농 부산물 처리 산불 예방",
+      "url": "http://www.yonhapnewstv.co.kr/MYH20260314184621yat"
+    },
+    {
+      "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "djtimes",
-      "domain": "djtimes.co.kr",
-      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
-      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
+      "press": "시사저널",
+      "domain": "sisajournal.com",
+      "title": "[성주 24시] 성주군-와이씨켐㈜, 반도체 제5공장 164억원 투자협약",
+      "url": "https://www.sisajournal.com/news/articleView.html?idxno=365665"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "시사저널",
+      "domain": "sisajournal.com",
+      "title": "[성주 24시] 성주군-와이씨켐㈜, 반도체 제5공장 164억원 투자협약",
+      "url": "https://www.sisajournal.com/news/articleView.html?idxno=365665"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "DAILYT",
+      "domain": "dailyt.co.kr",
+      "title": "꿀벌이 사라지면 식탁도 멈춘다! 중요한 건 ‘응애 방제 타이밍’",
+      "url": "https://www.dailyt.co.kr/newsView/dlt202603130001"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "경농, 저항성 진딧물에 '두레온' 추천",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316261"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "ccdailynews",
+      "domain": "ccdailynews.com",
+      "title": "진천군, 스마트 유통·고품질 딸기 교육 등 농업인대학 운영",
+      "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2403074"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부, 수출 비관세장벽 해소 총력… 현장간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국영농신문",
+      "domain": "youngnong.co.kr",
+      "title": "딸기 수확량 모주 관리가 결정... 충남농업기술원, 모주 관리법 안내",
+      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58086"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "진천군, '26 농업인대학 교육생 40명 오는 20일까지 모집",
+      "url": "http://www.breaknews.com/1191718"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "“프리미엄 딸기 , 나야 나”…크기·당도·수량 모두 잡았다 [디지털농...",
+      "url": "https://www.nongmin.com/article/20260312500376"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부, 수출 비관세장벽 해소 총력… 현장간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국영농신문",
+      "domain": "youngnong.co.kr",
+      "title": "딸기 수확량 모주 관리가 결정... 충남농업기술원, 모주 관리법 안내",
+      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58086"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "경농, 저항성 진딧물에 '두레온' 추천",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316261"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "“프리미엄 딸기 , 나야 나”…크기·당도·수량 모두 잡았다 [디지털농...",
+      "url": "https://www.nongmin.com/article/20260312500376"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "DAILYT",
+      "domain": "dailyt.co.kr",
+      "title": "꿀벌이 사라지면 식탁도 멈춘다! 중요한 건 ‘응애 방제 타이밍’",
+      "url": "https://www.dailyt.co.kr/newsView/dlt202603130001"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국영농신문",
+      "domain": "youngnong.co.kr",
+      "title": "영암국유림관리소, '야간 훈련부터 부산물 파쇄까지' 산불 예방 총력",
+      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58096"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "APTN",
+      "domain": "aptn.co.kr",
+      "title": "[조경] 모과나무 전지 & 수형 만들기 ①",
+      "url": "http://www.aptn.co.kr/news/articleView.html?idxno=111349"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부, 수출 비관세장벽 해소 총력… 현장간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부, 수출 비관세장벽 해소 총력… 현장간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -5999,8 +6175,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -6015,8 +6191,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "pest",
@@ -6101,18 +6277,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "djtimes",
-      "domain": "djtimes.co.kr",
-      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
-      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "thepowernews",
       "domain": "thepowernews.co.kr",
       "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
       "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "djtimes",
+      "domain": "djtimes.co.kr",
+      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
+      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
     },
     {
       "section": "pest",
@@ -7014,7 +7190,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.82,
+          "score": 8.62,
           "tier": 1,
           "press": "ccnnews",
           "domain": "ccnnews.co.kr",
@@ -7154,26 +7330,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.71,
-          "tier": 1,
-          "press": "s-journal",
-          "domain": "s-journal.co.kr",
-          "title": "[푸드 브리프] 농심 오리온 오뚜기 빙그레 롯데웰푸드 동원F&B GS25 外",
-          "url": "https://www.s-journal.co.kr/news/articleView.html?idxno=39350",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 5.52,
           "tier": 1,
           "press": "viva100",
@@ -7186,6 +7342,26 @@
             "market_hits": 0,
             "strength": 2,
             "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.51,
+          "tier": 1,
+          "press": "s-journal",
+          "domain": "s-journal.co.kr",
+          "title": "[푸드 브리프] 농심 오리온 오뚜기 빙그레 롯데웰푸드 동원F&B GS25 外",
+          "url": "https://www.s-journal.co.kr/news/articleView.html?idxno=39350",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7783,26 +7959,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.36,
-          "tier": 1,
-          "press": "KOOKJE",
-          "domain": "kookje.co.kr",
-          "title": "농식품부 , “돼지고깃값 인위적 조작, 절대 용납 못 해”",
-          "url": "http://www.kookje.co.kr/news2011/asp/newsbody.asp?code=0200&key=20260313.99099004147",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.23,
           "tier": 2,
           "press": "한국농어민신문",
@@ -7818,6 +7974,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.16,
+          "tier": 1,
+          "press": "KOOKJE",
+          "domain": "kookje.co.kr",
+          "title": "농식품부 , “돼지고깃값 인위적 조작, 절대 용납 못 해”",
+          "url": "http://www.kookje.co.kr/news2011/asp/newsbody.asp?code=0200&key=20260313.99099004147",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -8856,7 +9032,7 @@
       "tail_cut": 22.46,
       "core_min": 22.46,
       "total_candidates": 8,
-      "total_selected": 3,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
@@ -8876,26 +9052,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 24.44,
-          "tier": 3,
-          "press": "정책브리핑",
-          "domain": "korea.kr",
-          "title": "[사실은 이렇습니다] 씨스트선충 공적 방제 는 시군별, 작형별 \"씨스트선...",
-          "url": "https://www.korea.kr/briefing/actuallyView.do?newsId=148960826&call_from=naver_news",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 4,
-            "press_weight": 13.5
           }
         },
         {
@@ -8996,6 +9152,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.14,
+          "tier": 1,
+          "press": "AMNEWS",
+          "domain": "amnews.co.kr",
+          "title": "봄철 '스마트팜 병해충 ' 주의해야",
+          "url": "http://www.amnews.co.kr/news/articleView.html?idxno=71474",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -9670,7 +9846,7 @@
         "start_kst": "2026-03-13T07:00:00+09:00",
         "end_kst": "2026-03-15T07:00:00+09:00"
       },
-      "base_queries_n": 26,
+      "base_queries_n": 42,
       "base_queries": [
         "과수화상병 방제",
         "탄저병 방제",
@@ -9683,21 +9859,25 @@
         "토마토뿔나방 방제",
         "병해충 예찰",
         "월동무 병해충",
-        "월동무 방제",
-        "봄무 병해충",
-        "봄무 방제",
         "배추 병해충",
-        "배추 방제",
-        "봄배추 병해충",
-        "봄배추 방제",
         "감자 병해충",
-        "감자 방제",
-        "봄감자 병해충",
-        "봄감자 방제",
         "당근 병해충",
-        "당근 방제",
-        "제주당근 병해충",
-        "제주당근 방제"
+        "양파 병해충",
+        "마늘 병해충",
+        "건고추 병해충",
+        "대파 병해충",
+        "사과 병해충",
+        "신고배 병해충",
+        "단감 병해충",
+        "포도(샤인머스캣) 병해충",
+        "감귤(만감류) 병해충",
+        "토마토 병해충",
+        "오이 병해충",
+        "풋고추 병해충",
+        "애호박(쥬키니) 병해충",
+        "가지 병해충",
+        "애호박(쥬키니) 방제",
+        "애호박 병해충"
       ],
       "api_items_top": [
         [
@@ -9745,19 +9925,19 @@
           50
         ],
         [
-          "월동무 방제",
-          50
-        ],
-        [
-          "봄무 병해충",
-          50
-        ],
-        [
-          "봄무 방제",
-          50
-        ],
-        [
           "배추 병해충",
+          50
+        ],
+        [
+          "감자 병해충",
+          50
+        ],
+        [
+          "당근 병해충",
+          50
+        ],
+        [
+          "양파 병해충",
           50
         ]
       ],
@@ -9771,52 +9951,52 @@
           2
         ],
         [
-          "배추 방제",
+          "오이 병해충",
           1
         ]
       ],
       "google_hits_top": [],
       "page1_full_queries": [
-        "감자 방제",
+        "가지 방제",
+        "가지 병해충",
+        "감귤(만감류) 병해충",
         "감자 병해충",
+        "건고추 병해충",
         "과수화상병",
         "과수화상병 방제",
         "과수화상병 약제",
         "냉해 동해 과수 피해",
-        "당근 방제",
+        "단감 병해충",
         "당근 병해충",
-        "배추 방제",
+        "대파 병해충",
+        "딸기 방제",
+        "딸기 병해충",
+        "마늘 병해충",
+        "멜론 방제",
+        "멜론 병해충",
         "배추 병해충",
         "병해충 예찰",
-        "병해충 예찰 방제",
-        "봄감자 방제",
-        "봄감자 병해충",
-        "봄무 방제",
-        "봄무 병해충",
-        "봄배추 방제",
-        "봄배추 병해충",
-        "월동 해충 방제",
-        "월동무 방제"
+        "병해충 예찰 방제"
       ],
       "recall_meta": {
         "seed_terms": [
-          "병해충",
           "대책",
+          "병해충",
           "사과",
           "배"
         ],
         "reason": [],
         "queries": [
-          "병해충",
           "대책",
+          "병해충",
           "사과",
           "배",
-          "병해충 병해충",
+          "대책 병해충",
           "과수 병해충 방제"
         ],
         "topic_seed_terms": [
-          "병해충",
           "대책",
+          "병해충",
           "사과",
           "배"
         ],
