@@ -118,7 +118,7 @@ class TestRegressions(unittest.TestCase):
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
-        self.assertIn("GH_CONTENT_REF: main", self.dev_verify_text)
+        self.assertIn("GH_CONTENT_REF: ${{ github.ref_name }}", self.dev_verify_text)
         self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)

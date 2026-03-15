@@ -117,7 +117,7 @@ jobs:
         id: rebuild
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          GH_CONTENT_REF: main
+          GH_CONTENT_REF: ${{ github.ref_name }}
           GH_CONTENT_BRANCH: codex/dev-preview
 
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
