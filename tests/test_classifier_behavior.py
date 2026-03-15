@@ -1660,6 +1660,17 @@ class TestClassifierBehavior(unittest.TestCase):
         title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
         self.assertTrue(main.is_policy_export_support_brief_context(title, "", "agrinet.co.kr", "한국농어민신문"))
 
+    def test_policy_major_issue_context_accepts_agri_issue_council_launch_story(self):
+        title = "농식품부, 농산물 유통 전문가 협의체 출범"
+        desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
+        self.assertTrue(main.is_policy_major_issue_context(title, desc, "ikpnews.net", "한국농정신문"))
+
+    def test_policy_major_issue_story_prefers_policy_over_dist(self):
+        title = "농식품부, 농산물 유통 전문가 협의체 출범"
+        desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
+        best, scores = self._best_section(title, desc, "http://www.ikpnews.net/news/articleView.html?idxno=69838")
+        self.assertEqual(best, "policy", msg=f"scores={scores}")
+
     def test_global_reassign_moves_policy_export_support_story_from_supply_to_policy(self):
         title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
         article = self._make_article(
@@ -1718,6 +1729,33 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_urls = {a.link for a in picked}
         self.assertIn(market_brief.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
         self.assertIn(official.link, picked_urls, msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_policy_selection_backfills_major_issue_story_when_underfilled(self):
+        official = self._make_article(
+            "policy",
+            "농축산물 소비자물가지수 '안정적'",
+            "농식품부가 농축산물 소비자물가지수 흐름을 설명하고 수급 관리 강화를 위한 점검과 개선 계획을 밝혔다.",
+            "http://www.amnews.co.kr/news/articleView.html?idxno=71431",
+        )
+        market_brief = self._make_article(
+            "policy",
+            "농산물 가격 대체로 안정…정부, 수급 점검 결과 발표",
+            "농식품부가 주요 농산물 수급과 가격 흐름을 점검하고 추가 대응 방안을 설명했다.",
+            "https://www.yna.co.kr/view/AKR20260309156300030?input=1195m",
+        )
+        issue = self._make_article(
+            "policy",
+            "농식품부, 농산물 유통 전문가 협의체 출범",
+            "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선을 위한 전문가 협의체를 출범했다.",
+            "http://www.ikpnews.net/news/articleView.html?idxno=69838",
+        )
+        official.score = 39.63
+        market_brief.score = 34.83
+        issue.score = 18.60
+
+        picked = main.select_top_articles([official, market_brief, issue], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(issue.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
@@ -2637,6 +2675,7 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("농산물 가격 동향", main._recall_common_queries("supply", "2026-01-12"))
         self.assertTrue(len(supply_queries) > 0)
         self.assertIn("농식품부 농산물 수급 점검", policy_queries)
+        self.assertIn("농식품부 농산물 유통 전문가 협의체", main._recall_common_queries("policy", "2026-01-05"))
         self.assertIn("도매시장 경매", dist_queries)
         self.assertIn("과수화상병 예찰", main._recall_common_queries("pest", "2026-01-05"))
         self.assertTrue(len(pest_queries) > 0)
