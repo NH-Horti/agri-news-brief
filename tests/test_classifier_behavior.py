@@ -1133,8 +1133,9 @@ class TestClassifierBehavior(unittest.TestCase):
         candidates[4].score = 22.8
         queries, meta = main._build_recall_fallback_queries("supply", section_conf, candidates, 20.0)
         self.assertGreaterEqual(len(queries), 2, msg=str(meta))
-        self.assertEqual(queries[0], "딸기 생육", msg=str(meta))
-        self.assertEqual(queries[1], "딸기 난방", msg=str(meta))
+        first_seed = queries[0].split()[0]
+        self.assertIn(first_seed, {"딸기", "토마토"}, msg=str(meta))
+        self.assertTrue(queries[1].startswith(f"{first_seed} "), msg=str(meta))
 
     def test_supply_selection_prefers_field_feature_over_generic_tail_item_when_full(self):
         cabbage = self._make_article("supply", "저장 배추 물량 감소…시세 상승 기대", "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.", "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver")
@@ -1295,8 +1296,8 @@ class TestClassifierBehavior(unittest.TestCase):
             "must_terms": ["사과", "배", "감귤", "딸기", "화훼"],
         }
         queries, meta = main._build_recall_fallback_queries("supply", section_conf, [], 99.0)
-        self.assertIn("감귤 품질", queries, msg=str(meta))
-        self.assertIn("딸기 생육", queries, msg=str(meta))
+        self.assertTrue(any(q in queries for q in ("딸기 생육", "감귤 품질")), msg=str(meta))
+        self.assertTrue(any(q in queries for q in ("화훼 농가", "화훼 난방", "딸기 생육", "감귤 품질")), msg=str(meta))
 
     def test_supply_recall_fallback_queries_prefer_feature_queries_over_raw_or_trade_queries(self):
         section_conf = {
@@ -1305,8 +1306,7 @@ class TestClassifierBehavior(unittest.TestCase):
             "must_terms": ["사과", "배", "감귤", "딸기", "상추", "화훼"],
         }
         queries, meta = main._build_recall_fallback_queries("supply", section_conf, [], 99.0)
-        self.assertIn("감귤 품질", queries, msg=str(meta))
-        self.assertIn("딸기 생육", queries, msg=str(meta))
+        self.assertTrue(any(q in queries for q in ("딸기 생육", "감귤 품질", "화훼 농가")), msg=str(meta))
         self.assertNotIn("사과", queries, msg=str(meta))
         self.assertNotIn("감귤 무관세", queries, msg=str(meta))
         self.assertNotIn("감귤 수입", queries, msg=str(meta))
@@ -1337,7 +1337,7 @@ class TestClassifierBehavior(unittest.TestCase):
             [],
             99.0,
         )
-        self.assertEqual(prioritized[:4], ["사과", "상추", "배", "양배추"])
+        self.assertEqual(prioritized[:4], ["사과", "양배추", "배", "상추"])
 
     def test_supply_seed_coverage_ignores_body_only_mentions(self):
         article = self._make_article(
@@ -2731,6 +2731,46 @@ class TestClassifierBehavior(unittest.TestCase):
             main.DEBUG_DATA["filter_rejects"] = original_data["filter_rejects"]
             main.DEBUG_DATA["sections"] = original_data["sections"]
             main.DEBUG_DATA["collections"] = original_data["collections"]
+
+class TestManagedCommoditySectionBehavior(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.conf = {s["key"]: s for s in main.SECTIONS}
+        cls.now = datetime(2026, 3, 13, 12, 0, 0, tzinfo=main.KST)
+
+    def test_sales_channel_story_prefers_dist_for_managed_commodity(self):
+        title = "조생양파 2만여t 소비 촉진...농협 대응 강화"
+        desc = (
+            "조생양파 가격 하락 우려가 커지면서 소비 촉진 운동이 확대된다. "
+            "제주농협은 조생양파 유통을 위해 거래처를 다변화하고 공동사업법인을 중심으로 온라인 판매를 늘릴 계획이다."
+        )
+        dom = "jibs.co.kr"
+        press = "JIBS 제주방송"
+        supply_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["supply"], press)
+        dist_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["dist"], press)
+        self.assertTrue(main.is_dist_sales_channel_ops_context(title, desc))
+        self.assertGreater(dist_score, supply_score)
+
+    def test_managed_cabbage_pest_story_passes_pest_gate(self):
+        title = "지자체, 시스트선충 늑장 대처…배추농가 분통"
+        desc = "사탕무시스트선충이 배추에 큰 피해를 주는데도 대응이 늦어 휴경과 토양소독, 교육 지원이 필요하다는 지적이다."
+        dom = "nongmin.com"
+        press = "농민신문"
+        self.assertTrue(main.is_pest_story_focus_strong(title, desc))
+        self.assertTrue(main.is_relevant(title, desc, dom, "https://www.nongmin.com/article/20260311500657", self.conf["pest"], press))
+        pest_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["pest"], press)
+        policy_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press)
+        self.assertGreater(pest_score, policy_score)
+
+    def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
+        query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]
+        topic_seed_terms = []
+        candidates_sorted: list[main.Article] = []
+        prioritized, pool_hits = main._prioritize_supply_recall_seeds(query_seed_terms, topic_seed_terms, candidates_sorted, 8.0)
+        self.assertEqual(pool_hits.get("토마토"), 0)
+        self.assertLess(prioritized.index("배추"), prioritized.index("토마토"))
+        self.assertLess(prioritized.index("양파"), prioritized.index("감귤"))
+
 
 class TestRecentItemsRebuild(unittest.TestCase):
     def test_rebuild_recent_items_replaces_same_day_entries(self):

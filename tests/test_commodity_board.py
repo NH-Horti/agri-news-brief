@@ -93,9 +93,12 @@ class TestCommodityBoard(unittest.TestCase):
         queries = main.build_managed_pest_recall_queries(datetime(2026, 3, 15, tzinfo=main.KST))
         self.assertIn(main._managed_commodity_pest_queries(self._item("peach"))[0], queries)
 
-    def test_managed_section_recall_queries_cover_policy_and_dist(self):
+    def test_managed_section_recall_queries_cover_supply_policy_and_dist(self):
+        supply_queries = main.build_managed_section_recall_queries("supply", None)
         policy_queries = main.build_managed_section_recall_queries("policy", None)
         dist_queries = main.build_managed_section_recall_queries("dist", None)
+        self.assertIn(main._managed_commodity_supply_queries(self._item("apple"))[0], supply_queries)
+        self.assertIn(main._managed_commodity_supply_queries(self._item("onion"))[0], supply_queries)
         self.assertIn(main._managed_commodity_policy_queries(self._item("apple"))[0], policy_queries)
         self.assertIn(main._managed_commodity_dist_queries(self._item("apple"))[0], dist_queries)
         self.assertIn(main._managed_commodity_policy_queries(self._item("cabbage"))[0], policy_queries)
@@ -135,6 +138,32 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(seasoning_group["item_total"], 5)
         self.assertEqual(seasoning_group["inactive_count"], 5)
         self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
+        self.assertEqual(len(apple["preview_articles"]), 1)
+
+    def test_board_source_builder_keeps_managed_candidates_from_raw_pool(self):
+        apple = self._item("apple")["short_label"]
+        onion = self._item("onion")["short_label"]
+        apple_article = self._make_article(
+            "supply",
+            f"{apple} 가격 강세와 출하 조절",
+            f"{apple} 물량 감소로 가격 강세가 이어지고 있다.",
+            "https://www.news1.kr/economy/food/999011",
+        )
+        onion_article = self._make_article(
+            "dist",
+            f"{onion} 소비 촉진과 공동판매 확대",
+            f"{onion} 온라인 판매와 유통채널 다변화로 판로를 넓히고 있다.",
+            "https://www.jibs.co.kr/news/replay/viewNewsReplayDetail/999011",
+        )
+        raw_by_section = {key: [] for key in self.conf}
+        raw_by_section["supply"] = [apple_article]
+        raw_by_section["dist"] = [onion_article]
+        board_source = main.build_managed_commodity_board_source_by_section(raw_by_section, per_section_cap=12)
+        ctx = main.build_managed_commodity_board_context(board_source)
+        onion_item = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "onion")
+        self.assertTrue(onion_item["active"])
+        self.assertEqual(onion_item["article_count"], 1)
+        self.assertEqual(onion_item["preview_articles"][0].title, onion_article.title)
 
     def test_managed_only_commodity_tags_are_emitted(self):
         radish = self._item("radish")["short_label"]
@@ -225,6 +254,37 @@ class TestCommodityBoard(unittest.TestCase):
         )
         self.assertIn(apple, html)
         self.assertIn(radish, html)
+
+    def test_render_daily_page_shows_multiple_story_links_per_item(self):
+        onion = self._item("onion")["short_label"]
+        first = self._make_article(
+            "dist",
+            f"{onion} 소비 촉진과 공동판매 확대",
+            f"{onion} 온라인 판매와 유통채널 다변화 기사다.",
+            "https://example.com/onion-1",
+        )
+        second = self._make_article(
+            "supply",
+            f"{onion} 가격 하락에 소비 대책 시급",
+            f"{onion} 산지 물량 부담으로 가격 하락세가 이어지고 있다.",
+            "https://example.com/onion-2",
+        )
+        by_section = {key: [] for key in self.conf}
+        board_by_section = {key: [] for key in self.conf}
+        board_by_section["dist"] = [first]
+        board_by_section["supply"] = [second]
+        html = main.render_daily_page(
+            report_date="2026-03-15",
+            start_kst=self.now,
+            end_kst=self.now,
+            by_section=by_section,
+            archive_dates_desc=["2026-03-15"],
+            site_path="https://example.com/agri-news-brief/",
+            board_source_by_section=board_by_section,
+        )
+        self.assertIn(first.title, html)
+        self.assertIn(second.title, html)
+        self.assertIn("commodityStoryList", html)
 
     def test_render_debug_report_html_uses_page_scroll_friendly_table_styles(self):
         original_debug = main.DEBUG_REPORT
