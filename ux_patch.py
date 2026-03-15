@@ -206,8 +206,10 @@ def build_archive_ux_html(
         try{{ if(ev.stopPropagation) ev.stopPropagation(); }}catch(_openErr2){{}}
       }}
       try{{
-        var opened = window.open(href, '_blank', 'noopener');
-        if(opened) return false;
+        if(window.top && window.top !== window){{
+          window.top.location.href = href;
+          return false;
+        }}
       }}catch(_openErr3){{}}
       try{{ window.location.href = href; }}catch(_openErr4){{}}
       return false;

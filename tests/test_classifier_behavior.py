@@ -2341,6 +2341,33 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         self.assertIn(other_region.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_pest_underfill_backfills_new_commodity_story(self):
+        apple = self._make_article(
+            "pest",
+            "충주시, 사과 농가 과수화상병 개화 전 방제 당부",
+            "충주시가 사과 재배 농가에 과수화상병 개화 전 방제 약제를 공급한다.",
+            "https://example.com/pest-apple",
+        )
+        pear = self._make_article(
+            "pest",
+            "나주시, 배 재배농가 과수화상병 사전 약제 방제",
+            "나주시가 배 재배 농가에 과수화상병 사전 약제 방제를 안내했다.",
+            "https://example.com/pest-pear",
+        )
+        tomato = self._make_article(
+            "pest",
+            "스마트팜 토마토뿔나방 예찰 강화...토마토 재배농가 방제 당부",
+            "토마토뿔나방 확산을 막기 위해 토마토 재배농가 대상 예찰과 방제 지도가 강화됐다.",
+            "https://example.com/pest-tomato",
+        )
+        apple.score = 29.0
+        pear.score = 21.0
+        tomato.score = 12.4
+
+        picked = main.select_top_articles([apple, pear, tomato], "pest", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(tomato.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
         story = self._make_article(
             "supply",

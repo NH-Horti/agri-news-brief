@@ -118,7 +118,8 @@ class TestRegressions(unittest.TestCase):
 
     def test_external_links_are_bound_for_cards_and_commodity_board(self):
         self.assertIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
-        self.assertIn('window.open(href, "_blank", "noopener")', self.text)
+        self.assertIn('window.top && window.top !== window', self.text)
+        self.assertIn('window.top.location.href = href', self.text)
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)

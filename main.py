@@ -9051,24 +9051,93 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                 continue
             pest_unique.append(a)
-        if len(pest_unique) < len(deduped):
-            refill_cut = max(BASE_MIN_SCORE.get("pest", 6.6), thr - 4.0)
-            for a in candidates_sorted:
-                if len(pest_unique) >= max_n:
-                    break
+
+        target = min(4, max_n)
+        if len(pest_unique) < target:
+            refill_cut = max(BASE_MIN_SCORE.get("pest", 6.6), thr - 10.5)
+
+            def _pest_region_or_fallback_key(a: Article) -> str:
+                region_key = _pest_region_key(a.title or "")
+                if region_key:
+                    return region_key
+                region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
+                return region_candidates[0] if region_candidates else ""
+
+            def _pest_diversity_keys(a: Article) -> tuple[str, ...]:
+                cached = getattr(a, "_pest_diversity_keys", None)
+                if cached is None:
+                    try:
+                        cached = tuple(managed_commodity_keys_for_article(a))
+                    except Exception:
+                        cached = ()
+                    setattr(a, "_pest_diversity_keys", cached)
+                return tuple(cached or ())
+
+            selected_regions = {_pest_region_or_fallback_key(x) for x in pest_unique if _pest_region_or_fallback_key(x)}
+            selected_commodity_keys = {key for x in pest_unique for key in _pest_diversity_keys(x)}
+
+            def _rank_pest_diversity_candidate(a: Article, allow_same_footprint: bool) -> tuple[tuple[Any, ...], str, tuple[str, ...]] | None:
                 if a in pest_unique:
-                    continue
+                    return None
                 if float(getattr(a, "score", 0.0) or 0.0) < refill_cut:
-                    continue
+                    return None
                 if any((a.canon_url or _dup_key(a)) == (b.canon_url or _dup_key(b)) for b in pest_unique):
-                    continue
+                    return None
                 if any(_is_similar_title(a.title_key, b.title_key) for b in pest_unique):
-                    continue
+                    return None
                 if any(_is_similar_story(a, b, "pest") for b in pest_unique):
-                    continue
+                    return None
                 if not _headline_gate_relaxed(a, "pest"):
-                    continue
-                pest_unique.append(a)
+                    return None
+                txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+                if not (is_pest_control_policy_context(txt_local) or is_pest_story_focus_strong(a.title or "", a.description or "")):
+                    return None
+                region_key = _pest_region_or_fallback_key(a)
+                commodity_keys = _pest_diversity_keys(a)
+                has_new_region = 1 if region_key and region_key not in selected_regions else 0
+                has_new_commodity = 1 if commodity_keys and not (set(commodity_keys) & selected_commodity_keys) else 0
+                if not allow_same_footprint and not (has_new_region or has_new_commodity):
+                    return None
+                tier = press_priority(a.press, a.domain)
+                pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+                return (
+                    (
+                        has_new_commodity,
+                        has_new_region,
+                        1 if is_pest_control_policy_context(txt_local) else 0,
+                        1 if tier >= 2 else 0,
+                        round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                        pub_sort,
+                    ),
+                    region_key,
+                    commodity_keys,
+                )
+
+            for allow_same_footprint in (False, True):
+                if len(pest_unique) >= target:
+                    break
+                ranked_refill: list[tuple[tuple[Any, ...], Article, str, tuple[str, ...]]] = []
+                for a in candidates_sorted:
+                    ranked = _rank_pest_diversity_candidate(a, allow_same_footprint)
+                    if ranked is None:
+                        continue
+                    ranked_refill.append((ranked[0], a, ranked[1], ranked[2]))
+                ranked_refill.sort(key=lambda item: item[0], reverse=True)
+                for _, a, region_key, commodity_keys in ranked_refill:
+                    if len(pest_unique) >= target:
+                        break
+                    if a in pest_unique:
+                        continue
+                    if any((a.canon_url or _dup_key(a)) == (b.canon_url or _dup_key(b)) for b in pest_unique):
+                        continue
+                    if any(_is_similar_title(a.title_key, b.title_key) for b in pest_unique):
+                        continue
+                    if any(_is_similar_story(a, b, "pest") for b in pest_unique):
+                        continue
+                    pest_unique.append(a)
+                    if region_key:
+                        selected_regions.add(region_key)
+                    selected_commodity_keys.update(commodity_keys)
         deduped = pest_unique
 
     # Debug report payload (top candidates + selection decisions)
@@ -12229,7 +12298,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             )
             if isinstance(top_article, Article):
                 story_html = (
-                    f'<a class="commodityStory" data-swipe-ignore="1" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
+            f'<a class="commodityStory" data-swipe-ignore="1" href="{esc(top_article.url)}" target="_top" rel="noopener">'
                     f'{esc(top_article.title)}</a>'
                 )
             else:
@@ -12374,7 +12443,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                   <span class=\"dot\">·</span>
                   <span class=\"topic\">{esc(a.topic)}</span>
                 </div>
-                <a class=\"btnOpen\" data-swipe-ignore=\"1\" href=\"{esc(url)}\" target=\"_blank\" rel=\"noopener\">원문 열기</a>
+              <a class=\"btnOpen\" data-swipe-ignore=\"1\" href=\"{esc(url)}\" target=\"_top\" rel=\"noopener\">원문 열기</a>
               </div>
               <div class=\"ttl\">{esc(a.title)}</div>
               <div class=\"sum\">{summary_html}</div>
@@ -12774,8 +12843,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           try {{ if (ev.stopPropagation) ev.stopPropagation(); }} catch (e2) {{}}
         }}
         try {{
-          var opened = window.open(href, "_blank", "noopener");
-          if (opened) return false;
+          if (window.top && window.top !== window) {{
+            window.top.location.href = href;
+            return false;
+          }}
         }} catch (e3) {{}}
         try {{
           window.location.href = href;
