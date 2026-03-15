@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T22:15:18+09:00",
-  "build_tag": "05a2c7f",
+  "generated_at_kst": "2026-03-15T23:08:43+09:00",
+  "build_tag": "47a4344",
   "filter_rejects": [
     {
       "section": "policy",
@@ -165,18 +165,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "CPBC",
-      "domain": "news.cpbc.co.kr",
-      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
-      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "obsnews",
       "domain": "obsnews.co.kr",
       "title": "\"공공요금 동결·신속 추경…취약계층 직접 지원 \"",
       "url": "https://www.obsnews.co.kr/news/articleView.html?idxno=1516979"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "CPBC",
+      "domain": "news.cpbc.co.kr",
+      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
+      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
     },
     {
       "section": "policy",
@@ -245,18 +245,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "국민일보",
-      "domain": "kmib.co.kr",
-      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
-      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "뉴스핌",
       "domain": "newspim.com",
       "title": "[종합] 李대통령 \"민생경제 골든타임 사수…밤새워서라도 추경 신속히\"",
       "url": "https://www.newspim.com/news/view/20260312001237"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "국민일보",
+      "domain": "kmib.co.kr",
+      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
+      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
     },
     {
       "section": "policy",
@@ -301,18 +301,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "tvchosun",
       "domain": "news.tvchosun.com",
       "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
       "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730"
     },
     {
       "section": "policy",
@@ -351,8 +351,8 @@
       "reason": "fishery_title_only",
       "press": "뉴스1",
       "domain": "news1.kr",
-      "title": "李 대통령, \" 농축수산물 할인 지원 확대\"",
-      "url": "https://www.news1.kr/photos/7794286"
+      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
+      "url": "https://www.news1.kr/photos/7794289"
     },
     {
       "section": "policy",
@@ -1205,18 +1205,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "MTN",
-      "domain": "news.mtn.co.kr",
-      "title": "롯데카드, 과징금 96억원 철퇴…\"검토 후 이의절차 진행\"",
-      "url": "https://news.mtn.co.kr/news-detail/2026031211132984477"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "newsprime",
       "domain": "newsprime.co.kr",
       "title": "개보위, 롯데카드에 과징금 96억원…\"주민번호 과도하게 수집·처리\"",
       "url": "http://www.newsprime.co.kr/news/article.html?no=726823"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "MTN",
+      "domain": "news.mtn.co.kr",
+      "title": "롯데카드, 과징금 96억원 철퇴…\"검토 후 이의절차 진행\"",
+      "url": "https://news.mtn.co.kr/news-detail/2026031211132984477"
     },
     {
       "section": "supply",
@@ -1556,19 +1556,19 @@
     },
     {
       "section": "supply",
-      "reason": "ban_keywords",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "(시론)공급구조 개선이 부동산 문제의 해법",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294001&inflow=N"
-    },
-    {
-      "section": "supply",
       "reason": "opinion_or_editorial",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "( 토마토 칼럼)미디어 구조 개편, 이제는 산업의 시간",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294038&inflow=N"
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "(시론)공급구조 개선이 부동산 문제의 해법",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294001&inflow=N"
     },
     {
       "section": "supply",
@@ -3445,6 +3445,14 @@
     {
       "section": "supply",
       "reason": "supply_macro_price_watch",
+      "press": "einfomax",
+      "domain": "news.einfomax.co.kr",
+      "title": "석유제품 매점매석시 형사처벌…정유사, 월 반출량 90% 이상 유지해야",
+      "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4403403"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
       "press": "이데일리",
       "domain": "edaily.co.kr",
       "title": "먹거리부터 관리비·통신비까지...정부, 23개 품목 특별관리",
@@ -3457,22 +3465,6 @@
       "domain": "hani.co.kr",
       "title": "돼지고기·고등어·관리비·암표 등 민생물가 23개 품목 특별관리",
       "url": "https://www.hani.co.kr/arti/economy/economy_general/1249067.html"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "einfomax",
-      "domain": "news.einfomax.co.kr",
-      "title": "석유제품 매점매석시 형사처벌…정유사, 월 반출량 90% 이상 유지해야",
-      "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4403403"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
-      "press": "헤럴드경제",
-      "domain": "biz.heraldcorp.com",
-      "title": "쌀·석유 등 23개 품목 가격 관리…정부, 민생물가 특별관리 품목 지정",
-      "url": "https://biz.heraldcorp.com/article/10693141"
     },
     {
       "section": "supply",
@@ -3492,11 +3484,11 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "경향신문",
-      "domain": "khan.co.kr",
-      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
-      "url": "https://www.khan.co.kr/article/202603121900011"
+      "reason": "supply_policy_market_brief",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "쌀·석유 등 23개 품목 가격 관리…정부, 민생물가 특별관리 품목 지정",
+      "url": "https://biz.heraldcorp.com/article/10693141"
     },
     {
       "section": "supply",
@@ -3513,6 +3505,14 @@
       "domain": "yna.co.kr",
       "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
       "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "경향신문",
+      "domain": "khan.co.kr",
+      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
+      "url": "https://www.khan.co.kr/article/202603121900011"
     },
     {
       "section": "supply",
@@ -4053,18 +4053,18 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "KSG",
-      "domain": "ksg.co.kr",
-      "title": "“호르무즈 선원교대 원활…문제 생기면 외교부와 송환 협의”",
-      "url": "https://www.ksg.co.kr/news/main_newsView.jsp?pNum=146752"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "FETV",
       "domain": "fetv.co.kr",
       "title": "[현장] 박병무 엔씨소프트 공동대표 “3대 성장축으로 지속 가능 성장 ...",
       "url": "https://www.fetv.co.kr/news/article.html?no=214875"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "KSG",
+      "domain": "ksg.co.kr",
+      "title": "“호르무즈 선원교대 원활…문제 생기면 외교부와 송환 협의”",
+      "url": "https://www.ksg.co.kr/news/main_newsView.jsp?pNum=146752"
     },
     {
       "section": "supply",
@@ -4493,18 +4493,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "livesnews",
-      "domain": "livesnews.com",
-      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
-      "url": "https://www.livesnews.com/news/article.html?no=60127"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "M-I",
       "domain": "m-i.kr",
       "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "livesnews",
+      "domain": "livesnews.com",
+      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
+      "url": "https://www.livesnews.com/news/article.html?no=60127"
     },
     {
       "section": "dist",
