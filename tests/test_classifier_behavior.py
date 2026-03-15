@@ -1615,6 +1615,17 @@ class TestClassifierBehavior(unittest.TestCase):
         press = main.normalize_press_label(main.press_name_from_url(url), url)
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
 
+    def test_extract_topic_does_not_treat_carrot_app_story_as_carrot(self):
+        title = "bhc, '당근' 포장주문 입점…\"선착순 7천원 할인\""
+        desc = "bhc가 지역 플랫폼 당근에서 포장 주문을 받기 시작했으며 할인 혜택을 제공한다."
+        topic = main.extract_topic(title, desc)
+        self.assertNotEqual(topic, "당근")
+        self.assertFalse(main.is_edible_carrot_context(f"{title} {desc}"))
+        url = "https://biz.sbs.co.kr/article_hub/20000297336?division=NAVER"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+
     def test_dist_export_field_requires_horti_anchor_for_k_food_brief(self):
         title = "KGC인삼공사 부여공장서 K-푸드 현장 간담회"
         desc = "농식품부와 업계가 홍삼 수출 비관세장벽 대응 방안을 논의했다."
@@ -1624,6 +1635,15 @@ class TestClassifierBehavior(unittest.TestCase):
         title = "농식품부, KGC인삼공사와 홍삼 수출 규제 해소 방안 논의"
         desc = "K-푸드 수출 확대를 위해 비관세 장벽 대응과 간담회를 진행했다."
         self.assertFalse(main.is_policy_export_support_brief_context(title, desc, "mk.co.kr", "매일경제"))
+
+    def test_policy_export_support_brief_accepts_official_barrier_response_story(self):
+        title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
+        desc = "농식품부가 농식품 수출 관련 비관세 장벽에 적극 대응하기 위한 간담회를 개최했다. 딸기, 배, 포도 등 주요 농산물의 수출 조직과 관계자들이 참석하였다."
+        self.assertTrue(main.is_policy_export_support_brief_context(title, desc, "agrinet.co.kr", "한국농어민신문"))
+
+    def test_policy_export_support_brief_accepts_title_only_barrier_response_story(self):
+        title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
+        self.assertTrue(main.is_policy_export_support_brief_context(title, "", "agrinet.co.kr", "한국농어민신문"))
 
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(

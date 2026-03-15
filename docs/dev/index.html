@@ -298,6 +298,7 @@
       var openDebugBtn = document.getElementById("openDebugBtn");
       var emptyStateEl = document.getElementById("emptyState");
       var frameEl = document.getElementById("previewFrame");
+      var currentBlobUrl = "";
 
       function withBust(url) {
         var joiner = url.indexOf("?") >= 0 ? "&" : "?";
@@ -319,6 +320,17 @@
         }
         openDebugBtn.href = url;
         openDebugBtn.classList.remove("hidden");
+      }
+
+      function revokePreviewBlob() {
+        if (!currentBlobUrl) {
+          return;
+        }
+        try {
+          URL.revokeObjectURL(currentBlobUrl);
+        } catch (error) {
+        }
+        currentBlobUrl = "";
       }
 
       async function loadPreview() {
@@ -353,7 +365,10 @@
           }
 
           var previewHtml = await htmlResp.text();
-          frameEl.srcdoc = previewHtml;
+          revokePreviewBlob();
+          currentBlobUrl = URL.createObjectURL(new Blob([previewHtml], { type: "text/html;charset=utf-8" }));
+          frameEl.removeAttribute("srcdoc");
+          frameEl.src = currentBlobUrl;
           frameEl.classList.remove("hidden");
           emptyStateEl.classList.add("hidden");
 
@@ -371,6 +386,10 @@
 
       reloadBtn.addEventListener("click", function () {
         loadPreview();
+      });
+
+      window.addEventListener("beforeunload", function () {
+        revokePreviewBlob();
       });
 
       loadPreview();

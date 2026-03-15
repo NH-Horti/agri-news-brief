@@ -57,6 +57,11 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("무 가격", main.SUPPLY_ITEM_MUST_TERMS)
         self.assertIn("무 가격", dict(main.MANAGED_ONLY_COMMODITY_TOPICS)["무"])
 
+    def test_program_core_commodities_feed_pest_recall_queries(self):
+        self.assertIn("양파 병해충", main.MANAGED_PEST_RECALL_QUERIES)
+        self.assertIn("사과 방제", main.MANAGED_PEST_RECALL_QUERIES)
+        self.assertIn("토마토 병해충", main.MANAGED_PEST_RECALL_QUERIES)
+
     def test_program_core_board_item_uses_registry_topic(self):
         article = self._make_article(
             "supply",

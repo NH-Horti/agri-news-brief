@@ -1329,6 +1329,30 @@ def _managed_commodity_supply_queries(item: dict[str, Any]) -> list[str]:
     return _ordered_unique_terms(out)
 
 
+def _managed_commodity_pest_queries(item: dict[str, Any]) -> list[str]:
+    out: list[str] = []
+    base_terms: list[str] = []
+
+    label = str(item.get("label") or "").strip()
+    short_label = str(item.get("short_label") or "").strip()
+    if len(label) >= 2:
+        base_terms.append(label)
+    if len(short_label) >= 2 and short_label not in base_terms:
+        base_terms.append(short_label)
+    for term in item.get("match_terms") or []:
+        term = str(term or "").strip()
+        if len(term) < 2 or term in base_terms:
+            continue
+        base_terms.append(term)
+        if len(base_terms) >= 3:
+            break
+
+    for base in base_terms[:2]:
+        out.append(f"{base} 병해충")
+        out.append(f"{base} 방제")
+    return _ordered_unique_terms(out)
+
+
 def _managed_commodity_must_terms(item: dict[str, Any]) -> list[str]:
     values: list[str] = []
     for term in item.get("match_terms") or []:
@@ -1354,6 +1378,12 @@ MANAGED_ONLY_SUPPLY_MUST_TERMS = _ordered_unique_terms(
     term
     for item in MANAGED_ONLY_COMMODITY_ITEMS
     for term in _managed_commodity_must_terms(item)
+)
+MANAGED_PEST_RECALL_QUERIES = _ordered_unique_terms(
+    query
+    for item in MANAGED_COMMODITY_CATALOG
+    if bool(item.get("program_core"))
+    for query in _managed_commodity_pest_queries(item)
 )
 MANAGED_ONLY_TOPIC_REP_BY_NAME = {
     str(item.get("label") or "").strip(): str(item.get("short_label") or item.get("label") or "").strip()
@@ -2475,6 +2505,8 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         return False
 
     key = str(item.get("key") or "").strip()
+    if key == "carrot" and "당근" in txt and not is_edible_carrot_context(txt):
+        return False
     if key == "potato" and "감자" in txt and not is_fresh_potato_context(txt):
         return False
     registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
@@ -2519,6 +2551,10 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
         sc = 0.0
         if topic == "멜론" and not is_edible_melon_context(t):
             # 멜론(음원 플랫폼) 오탐 방지
+            continue
+
+        if topic == "당근" and not is_edible_carrot_context(t):
+            # 당근(플랫폼/앱) 동음이의어 오탐 방지
             continue
 
         if topic == "감자" and not is_fresh_potato_context(t):
@@ -2769,6 +2805,30 @@ def is_fresh_potato_context(text: str) -> bool:
         return False
 
     return fresh_hit
+
+
+_CARROT_PLATFORM_MARKERS = [
+    "당근마켓", "당근 마켓", "당근앱", "당근 앱", "지역 커뮤니티", "커뮤니티 앱", "동네생활",
+    "중고거래", "포장주문", "치킨", "bhc", "할인", "쿠폰", "주문", "입점", "배달",
+]
+_CARROT_EDIBLE_MARKERS = [
+    "농산물", "채소", "원예", "산지", "농가", "재배", "수확", "출하", "반입",
+    "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매", "수급", "시세",
+    "가격", "저장", "물량", "제주당근", "햇당근", "월동당근", "당근 가격", "당근 수급",
+    "당근 재배", "당근 출하", "당근 도매가격",
+]
+
+
+def is_edible_carrot_context(text: str) -> bool:
+    """Return True only when '당근' clearly refers to fresh produce."""
+    t = (text or "").lower()
+    if "당근" not in t:
+        return False
+    edible_hit = any(w.lower() in t for w in _CARROT_EDIBLE_MARKERS)
+    platform_hit = any(w.lower() in t for w in _CARROT_PLATFORM_MARKERS)
+    if platform_hit and not edible_hit:
+        return False
+    return edible_hit
 
 
 _APPLE_APOLOGY_MARKERS = (
@@ -3790,6 +3850,10 @@ _POLICY_EXPORT_SUPPORT_TERMS = (
 _POLICY_EXPORT_SUPPORT_EXPORT_TERMS = (
     "k-푸드", "k푸드", "수출", "수출 목표", "수출 확대", "수출시장", "식품산업",
 )
+_POLICY_EXPORT_BARRIER_TERMS = (
+    "비관세장벽", "애로", "애로 해소", "수출업계", "수출조직", "간담회", "현장간담회",
+    "상시 애로", "n-데스크", "n desk", "적극 대응",
+)
 _NON_HORTI_PROCESSED_EXPORT_MARKERS = (
     "kgc", "kgc인삼공사", "정관장", "인삼공사", "홍삼", "인삼", "건강기능식품", "건기식", "건강식품",
 )
@@ -3895,23 +3959,30 @@ def is_policy_export_support_brief_context(title: str, desc: str, dom: str = "",
         return False
     if is_remote_foreign_trade_brief_context(ttl, desc or "", dom):
         return False
-    if is_policy_event_tail_context(ttl, desc or "", dom, press):
-        return False
-    if is_dist_export_field_context(ttl, desc or "", dom, press):
-        return False
     if is_non_horti_processed_export_context(ttl, desc or ""):
         return False
 
     policy_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_TERMS])
     export_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_EXPORT_TERMS])
+    barrier_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_BARRIER_TERMS])
     agri_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488", "\ub18d\uc0b0\ubb3c", "\uc2dd\ud488\uc0b0\uc5c5", "k-\ud478\ub4dc", "k\ud478\ub4dc")])
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
     dom_norm = normalize_host(dom or "")
     officialish = policy_domain_override(dom_norm, txt) or (dom_norm in POLICY_DOMAINS) or any(dom_norm.endswith("." + h) for h in POLICY_DOMAINS) or (press in ("\uc815\ucc45\ube0c\ub9ac\ud551", "\ub18d\uc2dd\ud488\ubd80"))
-    actor_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc7a5\uad00", "\uad6d\ud68c", "\uc704\uc6d0\ud68c", "\uc5c5\ubb34\uacc4\ud68d", "\uc815\ubd80", "\uad00\uacc4\ubd80\ucc98", "at", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac")])
+    actor_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc7a5\uad00", "\ucc28\uad00", "\uad6d\ud68c", "\uc704\uc6d0\ud68c", "\uc5c5\ubb34\uacc4\ud68d", "\uc815\ubd80", "\uad00\uacc4\ubd80\ucc98", "at", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac")])
     eventish_hits = count_any(txt, [w.lower() for w in ("\uc138\ubbf8\ub098", "\ud3ec\ub7fc", "\uc124\uba85\ud68c", "\uac04\ub2f4\ud68c", "\ud589\uc0ac", "\uac1c\ucd5c")])
+    actor_anchor = officialish or actor_hits >= 2 or (actor_hits >= 1 and agri_hits >= 1)
+    strong_barrier_response = actor_anchor and export_hits >= 1 and barrier_hits >= 2 and (agri_hits >= 1 or item_hits >= 1)
+
+    if strong_barrier_response:
+        return True
+    if is_policy_event_tail_context(ttl, desc or "", dom, press):
+        return False
+    if is_dist_export_field_context(ttl, desc or "", dom, press):
+        return False
     if eventish_hits >= 1 and (not officialish) and actor_hits < 2:
         return False
-    return export_hits >= 2 and policy_hits >= 2 and agri_hits >= 1 and (officialish or actor_hits >= 2)
+    return export_hits >= 2 and policy_hits >= 2 and agri_hits >= 1 and actor_anchor
 
 
 def is_dist_export_shipping_context(title: str, desc: str) -> bool:
@@ -6176,6 +6247,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 통과
     if "멜론" in text and not is_edible_melon_context(text):
         return _reject("melon_non_edible_context")
+    if "당근" in text and not is_edible_carrot_context(text):
+        return _reject("carrot_non_edible_context")
     if "감자" in text and not is_fresh_potato_context(text):
         return _reject("potato_non_fresh_context")
     if key in ("supply", "policy", "dist") and is_non_horti_processed_export_context(ttl, desc):
@@ -9998,9 +10071,13 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
     - (안전) 총 추가 호출수/섹션당 추가쿼리수가 예산 내
     """
     queries = _dedupe_queries(section_conf.get("queries") or [])
-    # pest는 pool 충분 여부와 무관하게 실행형 방제 보강 쿼리를 병합해 누락을 줄인다.
+    # pest는 pool 충분 여부와 무관하게 실행형 방제 + 품목 기반 보강 쿼리를 병합해 누락을 줄인다.
     if str(section_conf.get("key") or "") == "pest":
-        queries = _dedupe_queries(list(queries) + list(PEST_ALWAYS_ON_RECALL_QUERIES))
+        queries = _dedupe_queries(
+            list(queries)
+            + list(PEST_ALWAYS_ON_RECALL_QUERIES)
+            + list(MANAGED_PEST_RECALL_QUERIES[:16])
+        )
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
 

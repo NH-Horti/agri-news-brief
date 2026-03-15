@@ -132,7 +132,8 @@ class TestRegressions(unittest.TestCase):
     def test_dev_loader_uses_preview_branch_assets(self):
         self.assertIn("codex/dev-preview", self.dev_loader_text)
         self.assertIn("previewFrame", self.dev_loader_text)
-        self.assertIn("srcdoc", self.dev_loader_text)
+        self.assertIn("createObjectURL", self.dev_loader_text)
+        self.assertIn("revokeObjectURL", self.dev_loader_text)
         self.assertIn("raw preview", self.dev_loader_text)
         self.assertIn('"mode": "loader"', self.dev_loader_version_text)
         self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
