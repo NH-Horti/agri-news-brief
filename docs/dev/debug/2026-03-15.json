@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T13:07:38+09:00",
-  "build_tag": "b0956db",
+  "generated_at_kst": "2026-03-15T13:19:54+09:00",
+  "build_tag": "94e7794",
   "filter_rejects": [
     {
       "section": "policy",
@@ -621,18 +621,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "newsian",
-      "domain": "newsian.co.kr",
-      "title": "[한입 지식] \"재사용 가능한가\"…1·2차전지 가르는 '가역성'의 비밀",
-      "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87190"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "SBS",
       "domain": "biz.sbs.co.kr",
       "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
       "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "newsian",
+      "domain": "newsian.co.kr",
+      "title": "[한입 지식] \"재사용 가능한가\"…1·2차전지 가르는 '가역성'의 비밀",
+      "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87190"
     },
     {
       "section": "supply",
@@ -1621,18 +1621,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "노컷뉴스",
-      "domain": "nocutnews.co.kr",
-      "title": "중동 사태 여파…시설 재배 '직격탄'",
-      "url": "https://www.nocutnews.co.kr/news/6484719"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "mydaily",
       "domain": "mydaily.co.kr",
       "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
       "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "노컷뉴스",
+      "domain": "nocutnews.co.kr",
+      "title": "중동 사태 여파…시설 재배 '직격탄'",
+      "url": "https://www.nocutnews.co.kr/news/6484719"
     },
     {
       "section": "supply",
@@ -2388,7 +2388,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "joongang",
       "domain": "joongang.tv",
       "title": "[르포] 바닷바람과 고소한 튀김…궁평항 푸드트럭 가보니",
@@ -2396,7 +2396,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "topstarnews",
       "domain": "topstarnews.net",
       "title": "'극한직업' 원주중앙시장 김치만두 맛집 위치는? \"3대째 잇는 전통\"",
@@ -2404,7 +2404,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "artinsight",
       "domain": "artinsight.co.kr",
       "title": "[Opinion] 사람보다 파도가 많은 곳, 고성 바다 [여행]",
@@ -2412,7 +2412,15 @@
     },
     {
       "section": "supply",
-      "reason": "fishery_title_only",
+      "reason": "potato_non_fresh_context",
+      "press": "조선일보",
+      "domain": "topclass.chosun.com",
+      "title": "이번 주말 감튀 어때요? 감자 튀김 4대 맛집 / 바삭하고 따스하지만 부담...",
+      "url": "http://topclass.chosun.com/news/articleView.html?idxno=35975"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
       "press": "KBS",
       "domain": "news.kbs.co.kr",
       "title": "[요즘 북한은] 활어·통조림도 파는 ‘고기상점’…주민에겐 ‘그림의 ...",
@@ -2420,7 +2428,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "세계일보",
       "domain": "segye.com",
       "title": "유통가, ‘검증된 맛 협업’ 확산…불황 속 신메뉴 리스크 줄인다",
@@ -2428,7 +2436,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "뉴스1",
       "domain": "news1.kr",
       "title": "\"익숙한데 새롭게…식품업계, 불황 속 '이색 협업' 생존 전략",
@@ -2436,7 +2444,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "THE E&M, 전환사채 50억 발행 결정",
@@ -2460,7 +2468,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "DNEWS",
       "domain": "dnews.co.kr",
       "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
@@ -2468,7 +2476,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "FINOMY",
       "domain": "finomy.com",
       "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
@@ -2476,7 +2484,7 @@
     },
     {
       "section": "supply",
-      "reason": "energy_supply_offtopic",
+      "reason": "potato_non_fresh_context",
       "press": "FINOMY",
       "domain": "finomy.com",
       "title": "수소에너지·수소차·연료전지 관련주, '맑음' 아이에이·폴라리스세원...",
@@ -2484,7 +2492,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "tokenpost",
       "domain": "tokenpost.kr",
       "title": "파운드리, 지캐시 채굴 풀 출범…프라이버시 코인 기관 수요 시험대",
@@ -2508,7 +2516,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "블로터",
       "domain": "bloter.net",
       "title": "[유상증자 모니터] '결손금 보전' 뉴인텍, 주주에 손 벌려…부담 여전",
@@ -2516,7 +2524,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "무진메디, 유상증자 결정 및 자금 조달 계획 공시",
@@ -2524,7 +2532,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "아이에이치큐, i Show 채널 사업부문 물적분할해 '아이쇼미디어' 신설",
@@ -2532,7 +2540,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "tokenpost",
       "domain": "tokenpost.kr",
       "title": "국세청, 가상자산 지갑·P2P 거래까지 추적한다…2027년 과세 인프라 구...",
@@ -2540,7 +2548,7 @@
     },
     {
       "section": "supply",
-      "reason": "hard_offtopic_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "SBS",
       "domain": "biz.sbs.co.kr",
       "title": "[증시 인사이트] 국제유가 급등세…코스피 5500선도 내주며 약세",
@@ -2548,7 +2556,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "FETV",
       "domain": "fetv.co.kr",
       "title": "서울전자통신, 5대 1 주식병합…'적정 유통주식수 유지'",
@@ -2556,7 +2564,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "서울전자통신, 1주당 액면가액 100원에서 500원으로 주식병합 결정",
@@ -2564,7 +2572,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "제주반도체, 450억 규모 전환사채 발행 결정",
@@ -2572,7 +2580,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "제주반도체, 620억원 규모 신주인수권부사채 발행 결정",
@@ -2580,7 +2588,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "s-journal",
       "domain": "s-journal.co.kr",
       "title": "[푸드 브리프] 농심 오리온 오뚜기 빙그레 롯데웰푸드 동원F&B GS25 外",
@@ -2636,7 +2644,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "오마이뉴스",
       "domain": "ohmynews.com",
       "title": "도대체 다이소에 무슨 일이 생긴걸까요",
@@ -2668,7 +2676,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "potato_non_fresh_context",
       "press": "digitaltoday",
       "domain": "digitaltoday.co.kr",
       "title": "전주원파워, 유상 감자 결정…보통주 187만7393주 소각",
@@ -2684,11 +2692,19 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "ABCN",
       "domain": "abcn.kr",
       "title": "AI 기반 R&D 사업화 성공 확률",
       "url": "https://www.abcn.kr/news/articleView.html?idxno=86923"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "조선일보",
+      "domain": "topclass.chosun.com",
+      "title": "이번 주말 감튀 어때요? 감자튀김 4대 맛집 / 바삭하고 따스하지만 부담...",
+      "url": "http://topclass.chosun.com/news/articleView.html?idxno=35975"
     },
     {
       "section": "supply",
@@ -2732,7 +2748,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "potato_non_fresh_context",
       "press": "DNEWS",
       "domain": "dnews.co.kr",
       "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
@@ -4837,14 +4853,6 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "ASIAA",
-      "domain": "asiaa.co.kr",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
-      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "businesskorea",
       "domain": "businesskorea.co.kr",
       "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
@@ -4853,10 +4861,10 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "ZIKSIR",
-      "domain": "ziksir.com",
-      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
-      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
+      "press": "ASIAA",
+      "domain": "asiaa.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
+      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
     },
     {
       "section": "dist",
@@ -4865,6 +4873,14 @@
       "domain": "wowtv.co.kr",
       "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
       "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ZIKSIR",
+      "domain": "ziksir.com",
+      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
+      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
     },
     {
       "section": "dist",
@@ -5775,16 +5791,16 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
     },
     {
       "section": "pest",
@@ -6344,7 +6360,7 @@
       "threshold": 13.97,
       "tail_cut": 14.37,
       "core_min": 13.97,
-      "total_candidates": 79,
+      "total_candidates": 78,
       "total_selected": 5,
       "top": [
         {
@@ -6430,26 +6446,6 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 18.97,
-          "tier": 3,
-          "press": "조선일보",
-          "domain": "topclass.chosun.com",
-          "title": "이번 주말 감튀 어때요? 감자 튀김 4대 맛집 / 바삭하고 따스하지만 부담...",
-          "url": "http://topclass.chosun.com/news/articleView.html?idxno=35975",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
           "score": 18.54,
           "tier": 3,
           "press": "YTN",
@@ -6468,7 +6464,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 17.87,
           "tier": 3,
@@ -6476,7 +6472,7 @@
           "domain": "biz.sbs.co.kr",
           "title": "bhc, ' 당근 ' 포장주문 입점…\"선착순 7천원 할인\"",
           "url": "https://biz.sbs.co.kr/article_hub/20000297336?division=NAVER",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -7536,6 +7532,26 @@
           "domain": "kpinews.kr",
           "title": "bhc, ' 당근 '에서 포장주문 서비스 오픈",
           "url": "https://www.kpinews.kr/newsView/1065576887494382",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.27,
+          "tier": 1,
+          "press": "newswell",
+          "domain": "newswell.co.kr",
+          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+          "url": "http://www.newswell.co.kr/news/articleView.html?idxno=16699",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -9445,7 +9461,7 @@
           "화훼자조금"
         ]
       },
-      "items_total": 96,
+      "items_total": 95,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
