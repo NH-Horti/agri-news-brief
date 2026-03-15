@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="b4bed42" />
-  <meta name="agri-rendered-at-kst" content="2026-03-15T16:21:38+09:00" />
+  <meta name="agri-build" content="6c991c6" />
+  <meta name="agri-rendered-at-kst" content="2026-03-15T16:34:00+09:00" />
   <meta name="agri-dev-version-url" content="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" />
   <title>[2026-03-13 농산물 뉴스 Brief] [DEV]</title>
   <style>
@@ -191,7 +191,7 @@
     <div class="topin">
       <div>
         <h1>[2026-03-13 농산물 뉴스 Brief] [DEV]<span class="envBadge">DEV</span></h1>
-        <div class="sub">기간: 2026-03-12 07:00 ~ 2026-03-13 07:00 · 기사 15건 · 개발 버전 미리보기 · build b4bed42</div>
+        <div class="sub">기간: 2026-03-12 07:00 ~ 2026-03-13 07:00 · 기사 15건 · 개발 버전 미리보기 · build 6c991c6</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/index.html" title="날짜별 아카이브 목록">DEV 미리보기</a>
@@ -748,13 +748,13 @@
     
     </section>
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
-    <div class="footer footerMeta">* DEV build b4bed42 · 생성 2026-03-15T16:21:38+09:00</div>
+    <div class="footer footerMeta">* DEV build 6c991c6 · 생성 2026-03-15T16:34:00+09:00</div>
   </div>
 
   <script>
     (function() {
 
-      var currentBuild = "b4bed42";
+      var currentBuild = "6c991c6";
       var devVersionUrl = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json";
       function syncLatestDevBuild() {
         if (window.top && window.top !== window) return;
@@ -847,43 +847,6 @@
       activateView(resolveInitialView(), { skipHistory: true });
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
-      function openExternalLink(ev, linkEl) {
-        var link = linkEl && linkEl.getAttribute ? linkEl : null;
-        if (!link) return true;
-        var href = link.getAttribute("href") || link.href || "";
-        if (!href) return true;
-        if (ev) {
-          if ((typeof ev.button === "number" && ev.button !== 0) || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) {
-            return true;
-          }
-          try { if (ev.preventDefault) ev.preventDefault(); } catch (e) {}
-          try { if (ev.stopPropagation) ev.stopPropagation(); } catch (e2) {}
-        }
-        try {
-          if (window.open) {
-            window.open(href, "_top");
-            return false;
-          }
-        } catch (e3) {}
-        try {
-          if (window.top && window.top !== window) {
-            window.top.location.href = href;
-            return false;
-          }
-        } catch (e4) {}
-        try {
-          window.location.href = href;
-        } catch (e5) {}
-        return false;
-      }
-
-      Array.prototype.forEach.call(document.querySelectorAll(".btnOpen, .commodityStory"), function(link) {
-        try { link.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
-        link.addEventListener("click", function(ev) {
-          openExternalLink(ev, link);
-        });
-      });
-
       var navRow = document.querySelector(".navRow");
       var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
       var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
@@ -1401,7 +1364,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: b4bed42 -->
+  <!-- build: 6c991c6 -->
 
     <style>
       details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
@@ -1422,7 +1385,7 @@ try { _ensureDates(); } catch (e) {}
     <details class="dbgWrap">
       <summary>디버그 리포트 (선정/필터 로그)</summary>
       <div class='dbgLinks'><a href='https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-03-13.json' target='_blank' rel='noopener'>debug json 보기</a></div>
-      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> b4bed42</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-15T16:21:38+09:00</span></div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 6c991c6</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-15T16:34:01+09:00</span></div>
       <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: supply_context_gate(191), excluded_items(90), apple_non_edible_context(52), pest_partial_mention(46), policy_context_gate(45), must_terms_fail(41), livestock_only(33), supply_macro_price_watch(28), finance_strict_no_agri_context(25), supply_policy_market_brief(20), pest_no_agri_context(14), fishery_title_only(11)</div>
       
         <div class="dbgSec">
