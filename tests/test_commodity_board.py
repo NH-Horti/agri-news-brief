@@ -69,11 +69,13 @@ class TestCommodityBoard(unittest.TestCase):
         by_section = {key: [] for key in self.conf}
         by_section["supply"] = [apple_article]
         ctx = main.build_managed_commodity_board_context(by_section)
-        apple = next(item for item in ctx["hero_items"] if item["key"] == "apple")
+        apple = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "apple")
         self.assertTrue(apple["active"])
         self.assertEqual(apple["article_count"], 1)
         self.assertEqual(ctx["managed_total"], 33)
         self.assertEqual(ctx["program_total"], 18)
+        self.assertEqual(ctx["active_total"], 1)
+        self.assertNotIn("양배추", {item["label"] for group in ctx["groups"] for item in group["items"]})
 
     def test_render_daily_page_includes_commodity_boards(self):
         apple_article = self._make_article(
@@ -92,14 +94,14 @@ class TestCommodityBoard(unittest.TestCase):
             archive_dates_desc=["2026-03-15"],
             site_path="https://example.com/agri-news-brief/",
         )
-        self.assertIn("핵심 품목 보드", html)
-        self.assertIn("전체 관리 품목 보드", html)
-        self.assertIn("수급사업 품목 18개", html)
+        self.assertIn("품목보드", html)
+        self.assertIn("그날 기사와 연결된 품목만 류별로 보여드립니다.", html)
         self.assertIn('data-view-tab="briefing"', html)
         self.assertIn('data-view-tab="commodity"', html)
         self.assertIn("오늘 브리핑", html)
         self.assertIn("품목보드", html)
         self.assertIn("사과", html)
+        self.assertNotIn("양배추", html)
 
 
 if __name__ == "__main__":

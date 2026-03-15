@@ -11838,29 +11838,29 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     groups: list[dict[str, Any]] = []
     for group in MANAGED_COMMODITY_GROUP_SPECS:
         items = [item_state[str(spec.get("key") or "").strip()] for spec in group.get("items") or [] if str(spec.get("key") or "").strip() in item_state]
+        visible_items = [item for item in items if item.get("active")]
+        visible_items.sort(
+            key=lambda item: (
+                0 if item.get("program_core") else 1,
+                -int(item.get("core_count") or 0),
+                -int(item.get("article_count") or 0),
+                int(item.get("order") or 0),
+            )
+        )
+        if not visible_items:
+            continue
         groups.append(
             {
                 "key": str(group.get("key") or "").strip(),
                 "title": str(group.get("title") or "").strip(),
                 "color": str(group.get("color") or "#475569").strip() or "#475569",
-                "items": items,
-                "active_count": sum(1 for item in items if item.get("active")),
-                "article_count": sum(int(item.get("article_count") or 0) for item in items),
+                "items": visible_items,
+                "active_count": len(visible_items),
+                "article_count": sum(int(item.get("article_count") or 0) for item in visible_items),
             }
         )
 
-    hero_items = [item_state[str(item.get("key") or "").strip()] for group in MANAGED_COMMODITY_GROUP_SPECS for item in (group.get("items") or []) if bool(item.get("program_core"))]
-    hero_items.sort(
-        key=lambda item: (
-            0 if item.get("active") else 1,
-            -int(item.get("core_count") or 0),
-            -int(item.get("article_count") or 0),
-            int(item.get("order") or 0),
-        )
-    )
-
     return {
-        "hero_items": hero_items,
         "groups": groups,
         "managed_total": len(MANAGED_COMMODITY_CATALOG),
         "program_total": sum(1 for item in MANAGED_COMMODITY_CATALOG if item.get("program_core")),
@@ -11868,64 +11868,22 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     }
 
 
-def render_managed_commodity_hero_html(board_ctx: dict[str, Any]) -> str:
-    hero_items = list(board_ctx.get("hero_items") or [])
-    if not hero_items:
-        return ""
-
-    cards: list[str] = []
-    for item in hero_items:
-        top_article = item.get("top_article")
-        active = bool(item.get("active"))
-        item_id = f"commodity-{esc(str(item.get('key') or '').strip())}"
-        section_badges = "".join(
-            f'<span class="commoditySig" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
-            for sec_key in (item.get("section_keys") or [])
-            if sec_key
-        )
-        story_html = '<div class="commodityStory muted">오늘 노출 기사 없음</div>'
-        if isinstance(top_article, Article):
-            story_html = (
-                f'<a class="commodityStory" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
-                f'{esc(top_article.title)}</a>'
-            )
-        cards.append(
-            f"""
-            <article class="commodityHeroCard{' isActive' if active else ''}">
-              <div class="commodityHeroTop">
-                <span class="commodityBadge core">수급사업</span>
-                <span class="commodityCount">{int(item.get('article_count') or 0)}건</span>
-              </div>
-              <div class="commodityName">{esc(str(item.get('short_label') or item.get('label') or ''))}</div>
-              <div class="commodityGroupLabel">{esc(str(item.get('group_title') or ''))}</div>
-              <div class="commoditySignals">{section_badges or '<span class="commoditySig muted">대기</span>'}</div>
-              {story_html}
-              <a class="commodityJump" href="#{item_id}">상세 보기</a>
-            </article>
-            """
-        )
-
-    return f"""
-    <section class="commodityHero" aria-labelledby="commodityHeroTitle">
-      <div class="commodityHead">
-        <div>
-          <div class="kicker">품목 중심 보기</div>
-          <h2 id="commodityHeroTitle">핵심 품목 보드</h2>
-          <div class="commodityLead">수급사업 품목 {int(board_ctx.get('program_total') or 0)}개를 우선 노출하고, 오늘 기사와 연결합니다.</div>
-        </div>
-        <a class="commodityBoardCta" href="#commodity-board">전체 품목 보드 보기</a>
-      </div>
-      <div class="commodityHeroGrid">
-        {''.join(cards)}
-      </div>
-    </section>
-    """
-
-
 def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
     if not groups:
-        return ""
+        return f"""
+        <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
+          <div class="commodityHead">
+            <div>
+              <div class="kicker">품목 중심 보기</div>
+              <h2 id="commodityBoardTitle">품목보드</h2>
+              <div class="commodityLead">오늘 기사와 연결된 품목이 아직 없습니다.</div>
+            </div>
+            <div class="commodityBoardSummary">활성 품목 0개</div>
+          </div>
+          <div class="empty commodityEmpty">오늘 연결된 품목이 생기면 이 탭에서 류별로 보여드립니다.</div>
+        </section>
+        """
 
     nav_html = "".join(
         f'<a class="commodityGroupChip" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
@@ -11938,7 +11896,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
         item_cards: list[str] = []
         for item in group.get("items") or []:
             top_article = item.get("top_article")
-            badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else '<span class="commodityBadge managed">관리품목</span>'
+            badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
             signal_html = "".join(
                 f'<span class="commoditySig" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
                 for sec_key in (item.get("section_keys") or [])
@@ -11989,9 +11947,9 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
       <div class="commodityHead">
         <div>
-          <div class="kicker">전체 관리 품목</div>
-          <h2 id="commodityBoardTitle">전체 관리 품목 보드</h2>
-          <div class="commodityLead">관리 품목 {int(board_ctx.get('managed_total') or 0)}개를 류별로 모아 보고, 수급사업 품목은 더 강하게 표시합니다.</div>
+          <div class="kicker">품목 중심 보기</div>
+          <h2 id="commodityBoardTitle">품목보드</h2>
+          <div class="commodityLead">그날 기사와 연결된 품목만 류별로 보여드립니다.</div>
         </div>
         <div class="commodityBoardSummary">오늘 기사 연결 품목 {int(board_ctx.get('active_total') or 0)}개</div>
       </div>
@@ -12061,7 +12019,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         '</div>'
     )
     commodity_board_ctx = build_managed_commodity_board_context(by_section)
-    commodity_hero_html = render_managed_commodity_hero_html(commodity_board_ctx)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
 
     # ✅ (2) 섹션 렌더: 더 이상 숨김(<details>) 사용하지 않고 '전부' 노출
@@ -12238,23 +12195,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityHero, .commodityBoard{{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}}
+    .commodityBoard{{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}}
     .commodityHead{{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid rgba(229,231,235,.9)}}
     .commodityHead h2{{margin:4px 0 0;font-size:19px;letter-spacing:-0.25px}}
     .commodityLead{{margin-top:6px;color:#475569;font-size:13px;line-height:1.5}}
     .kicker{{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:800}}
-    .commodityBoardCta{{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}}
     .commodityBoardSummary{{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid var(--line);color:#475569;font-size:12px;font-weight:700;white-space:nowrap}}
-    .commodityHeroGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px 18px 18px}}
-    .commodityHeroCard{{display:flex;flex-direction:column;gap:8px;min-height:180px;padding:14px;border:1px solid #dbe4ee;border-radius:16px;background:#fff;text-decoration:none;color:inherit}}
-    .commodityHeroCard.isActive{{border-color:#93c5fd;box-shadow:0 10px 24px rgba(29,78,216,.08)}}
-    .commodityHeroTop{{display:flex;align-items:center;justify-content:space-between;gap:10px}}
     .commodityBadge{{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}}
     .commodityBadge.core{{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}}
-    .commodityBadge.managed{{background:#f8fafc;color:#475569;border:1px solid #cbd5e1}}
-    .commodityCount{{color:#475569;font-size:12px;font-weight:800}}
-    .commodityName{{font-size:18px;font-weight:900;letter-spacing:-0.25px}}
-    .commodityGroupLabel{{color:#64748b;font-size:12px}}
     .commoditySignals{{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}}
     .commoditySig{{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800}}
     .commoditySig[data-section="supply"]{{background:#ccfbf1;color:#115e59}}
@@ -12264,7 +12212,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
     .commodityStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#0f172a;font-size:13px;line-height:1.5;text-decoration:none;min-height:40px}}
     .commodityStory:hover{{text-decoration:underline}}
-    .commodityJump{{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;height:32px;padding:0 10px;border-radius:999px;background:#f8fafc;border:1px solid #cbd5e1;color:#334155;text-decoration:none;font-size:12px;font-weight:800}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
     .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
     .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
@@ -12280,6 +12227,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
     .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
     .commodityTileMeta{{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}}
+    .commodityEmpty{{padding:20px 18px 22px}}
 
     .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
           scroll-margin-top: 150px;
@@ -12331,7 +12279,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
       html{{scroll-padding-top: 170px;}}
       .sec{{scroll-margin-top: 170px;}}
-      .commodityHeroGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
@@ -12349,8 +12296,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .chip{{padding:6px 10px;font-size:12.5px}}
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
       .commodityHead{{display:block}}
-      .commodityBoardCta,.commodityBoardSummary{{margin-top:10px}}
-      .commodityHeroGrid,.commodityGrid{{grid-template-columns:1fr}}
+      .commodityBoardSummary{{margin-top:10px}}
+      .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
     }}
   </style>
@@ -12393,7 +12340,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       {sections_html}
     </section>
     <section id=\"view-commodity\" class=\"viewPane commodityPane\" data-view-pane=\"commodity\" role=\"tabpanel\" aria-hidden=\"true\">
-      {commodity_hero_html}
       {commodity_board_html}
     </section>
     <div class=\"footer\">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
