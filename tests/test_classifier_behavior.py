@@ -1651,6 +1651,20 @@ class TestClassifierBehavior(unittest.TestCase):
         title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
         self.assertTrue(main.is_policy_export_support_brief_context(title, "", "agrinet.co.kr", "한국농어민신문"))
 
+    def test_global_reassign_moves_policy_export_support_story_from_supply_to_policy(self):
+        title = '김종구 차관 "농식품 수출 비관세장벽 적극 대응"'
+        article = self._make_article(
+            "supply",
+            title,
+            "",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402575",
+        )
+        by = {"policy": [], "supply": [article], "dist": [], "pest": []}
+        moved = main._global_section_reassign(by, self.now, self.now)
+        self.assertGreaterEqual(moved, 1)
+        self.assertEqual(len(by["policy"]), 1)
+        self.assertEqual(by["policy"][0].section, "policy")
+
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(
             "policy",

@@ -6518,6 +6518,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         # - 도매/산지유통/시장 맥락(market_hits) 존재
         # - 농업/농산물 맥락(agri_ctx_hits) + 수급 신호(signal_hits) 동시 존재
         supply_ok = (horti_sc >= 1.3) or (market_hits >= 1) or (agri_ctx_hits >= 1 and signal_hits >= 1) or (supply_feature_kind is not None)
+        if is_policy_export_support_brief_context(ttl, desc, dom, press):
+            return True
         if not supply_ok:
             return _reject("supply_context_gate")
 
