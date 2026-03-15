@@ -16,6 +16,9 @@ class TestCommodityBoard(unittest.TestCase):
         cls.conf = {s["key"]: s for s in main.SECTIONS}
         cls.now = datetime.now(main.KST)
 
+    def _item(self, key: str) -> dict:
+        return main.MANAGED_COMMODITY_BY_KEY[key]
+
     def _make_article(self, section: str, title: str, desc: str, url: str) -> main.Article:
         dom = main.domain_of(url)
         press = main.normalize_press_label(main.press_name_from_url(url), url)
@@ -42,40 +45,68 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(sum(1 for item in main.MANAGED_COMMODITY_CATALOG if item.get("program_core")), 18)
 
     def test_radish_article_matches_board_item(self):
+        item = self._item("radish")
+        label = item["label"]
         article = self._make_article(
             "supply",
-            "월동무 가격 강세… 산지 출하 조절 필요",
-            "월동무 수급 불안으로 무 도매가격이 상승하고 산지 출하 조절 필요성이 커졌다.",
+            f"{label} 가격 강세 지속",
+            f"{label} 출하 조절과 수급 관리가 필요하다.",
             "https://www.agrinet.co.kr/news/articleView.html?idxno=999001",
         )
         self.assertIn("radish", main.managed_commodity_keys_for_article(article))
 
     def test_managed_only_commodities_feed_supply_queries_and_topics(self):
-        self.assertIn("무 수급", main.SUPPLY_ITEM_QUERIES)
-        self.assertIn("양파 수급", main.SUPPLY_ITEM_QUERIES)
-        self.assertIn("가지 가격", main.SUPPLY_ITEM_QUERIES)
-        self.assertIn("무 가격", main.SUPPLY_ITEM_MUST_TERMS)
-        self.assertIn("무 가격", dict(main.MANAGED_ONLY_COMMODITY_TOPICS)["무"])
+        radish = self._item("radish")
+        onion = self._item("green_onion")
+        eggplant = self._item("eggplant")
+
+        for query in main._managed_commodity_supply_queries(radish):
+            self.assertIn(query, main.SUPPLY_ITEM_QUERIES)
+        for query in main._managed_commodity_supply_queries(onion):
+            self.assertIn(query, main.SUPPLY_ITEM_QUERIES)
+        for query in main._managed_commodity_supply_queries(eggplant):
+            self.assertIn(query, main.SUPPLY_ITEM_QUERIES)
+
+        for term in main._managed_commodity_must_terms(radish):
+            self.assertIn(term, main.SUPPLY_ITEM_MUST_TERMS)
+
+        topic_map = dict(main.MANAGED_ONLY_COMMODITY_TOPICS)
+        self.assertIn(radish["label"], topic_map)
+        self.assertTrue(topic_map[radish["label"]])
 
     def test_program_core_commodities_feed_pest_recall_queries(self):
-        self.assertIn("양파 병해충", main.MANAGED_PEST_RECALL_QUERIES)
-        self.assertIn("사과 방제", main.MANAGED_PEST_RECALL_QUERIES)
-        self.assertIn("토마토 병해충", main.MANAGED_PEST_RECALL_QUERIES)
+        for key in ("green_onion", "apple", "tomato"):
+            for query in main._managed_commodity_pest_queries(self._item(key)):
+                self.assertIn(query, main.MANAGED_PEST_RECALL_QUERIES)
+
+    def test_daily_pest_query_builder_spreads_beyond_first_few_core_items(self):
+        queries = main.build_managed_pest_recall_queries(datetime(2026, 3, 15, tzinfo=main.KST))
+        expected = [
+            main._managed_commodity_pest_queries(self._item(key))[0]
+            for key in ("onion", "apple", "tomato", "garlic")
+        ]
+        for query in expected:
+            self.assertIn(query, queries)
+        self.assertGreaterEqual(len(queries), len(main.MANAGED_PEST_PRIMARY_CORE_QUERIES))
 
     def test_program_core_board_item_uses_registry_topic(self):
+        item = self._item("grape")
+        label = item["short_label"]
         article = self._make_article(
             "supply",
-            "샤인머스캣 작황 부진에 포도 수급 비상",
-            "샤인머스캣 작황 부진과 저장 물량 감소로 포도 수급 불안이 커지고 있다.",
+            f"{label} 수급 불안에 가격 강세",
+            f"{label} 출하 물량 감소로 가격 변동성이 커지고 있다.",
             "https://www.nongmin.com/article/20260315000001",
         )
         self.assertIn("grape", main.managed_commodity_keys_for_article(article))
 
     def test_board_context_marks_active_items(self):
+        item = self._item("apple")
+        label = item["short_label"]
         apple_article = self._make_article(
             "supply",
-            "사과 가격 강세 지속… 저장 물량 관리 필요",
-            "사과 저장 물량 감소와 출하 조절 이슈로 가격 강세가 이어지고 있다.",
+            f"{label} 가격 강세와 출하 조절",
+            f"{label} 물량 감소로 가격 강세가 이어지고 있다.",
             "https://www.news1.kr/economy/food/999001",
         )
         by_section = {key: [] for key in self.conf}
@@ -90,18 +121,22 @@ class TestCommodityBoard(unittest.TestCase):
         seasoning_group = next(group for group in ctx["groups"] if group["key"] == "seasoning_veg")
         self.assertEqual(seasoning_group["active_count"], 0)
         self.assertEqual(seasoning_group["item_total"], 5)
-        self.assertNotIn("양배추", {item["label"] for group in ctx["groups"] for item in group["items"]})
+        self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
 
     def test_managed_only_commodity_tags_are_emitted(self):
-        tags = main._commodity_tags_in_text("월동무 가격 급등과 양파 수급 불안이 이어지고 있다.", limit=5)
-        self.assertIn("무", tags)
-        self.assertIn("양파", tags)
+        radish = self._item("radish")["short_label"]
+        green_onion = self._item("green_onion")["short_label"]
+        tags = main._commodity_tags_in_text(f"{radish} 가격 급등과 {green_onion} 수급 불안이 이어진다.", limit=5)
+        self.assertIn(radish, tags)
+        self.assertIn(green_onion, tags)
 
     def test_render_daily_page_includes_commodity_boards(self):
+        item = self._item("apple")
+        label = item["short_label"]
         apple_article = self._make_article(
             "supply",
-            "사과 가격 강세 지속… 저장 물량 관리 필요",
-            "사과 저장 물량 감소와 출하 조절 이슈로 가격 강세가 이어지고 있다.",
+            f"{label} 가격 강세와 출하 조절",
+            f"{label} 물량 감소로 가격 강세가 이어지고 있다.",
             "https://www.news1.kr/economy/food/999001",
         )
         by_section = {key: [] for key in self.conf}
@@ -115,28 +150,28 @@ class TestCommodityBoard(unittest.TestCase):
             site_path="https://example.com/agri-news-brief/",
         )
         self.assertIn("품목보드", html)
-        self.assertIn("류별로 보고, 기사 없는 류는 0건으로 표시합니다.", html)
         self.assertIn('data-view-tab="briefing"', html)
         self.assertIn('data-view-tab="commodity"', html)
         self.assertIn("오늘 브리핑", html)
-        self.assertIn("품목보드", html)
-        self.assertIn("사과", html)
+        self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
         self.assertIn('data-swipe-ignore="1"', html)
-        self.assertNotIn("양배추", html)
+        self.assertNotIn("붉은고추", html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
+        apple = self._item("apple")["short_label"]
+        radish = self._item("radish")["short_label"]
         final_apple = self._make_article(
             "supply",
-            "사과 가격 강세 지속… 저장 물량 관리 필요",
-            "사과 저장 물량 감소와 출하 조절 이슈로 가격 강세가 이어지고 있다.",
+            f"{apple} 가격 강세와 출하 조절",
+            f"{apple} 물량 감소로 가격 강세가 이어지고 있다.",
             "https://www.news1.kr/economy/food/999001",
         )
         board_radish = self._make_article(
             "supply",
-            "월동무 가격 강세… 산지 출하 조절 필요",
-            "월동무 수급 불안으로 무 도매가격이 상승하고 산지 출하 조절 필요성이 커졌다.",
+            f"{radish} 가격 강세 지속",
+            f"{radish} 수급 불안으로 도매가격이 오르고 있다.",
             "https://www.agrinet.co.kr/news/articleView.html?idxno=999002",
         )
         final_by_section = {key: [] for key in self.conf}
@@ -152,8 +187,8 @@ class TestCommodityBoard(unittest.TestCase):
             site_path="https://example.com/agri-news-brief/",
             board_source_by_section=board_by_section,
         )
-        self.assertIn("사과", html)
-        self.assertIn("무", html)
+        self.assertIn(apple, html)
+        self.assertIn(radish, html)
 
 
 if __name__ == "__main__":

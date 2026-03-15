@@ -1385,6 +1385,44 @@ MANAGED_PEST_RECALL_QUERIES = _ordered_unique_terms(
     if bool(item.get("program_core"))
     for query in _managed_commodity_pest_queries(item)
 )
+MANAGED_PEST_PRIMARY_CORE_QUERIES = _ordered_unique_terms(
+    queries[0]
+    for item in MANAGED_COMMODITY_CATALOG
+    if bool(item.get("program_core"))
+    for queries in [_managed_commodity_pest_queries(item)]
+    if queries
+)
+MANAGED_PEST_ROTATING_QUERIES = _ordered_unique_terms(
+    query
+    for item in MANAGED_COMMODITY_CATALOG
+    for idx, query in enumerate(_managed_commodity_pest_queries(item))
+    if not (bool(item.get("program_core")) and idx == 0)
+)
+MANAGED_PEST_ROTATING_QUERY_CAP = 14
+
+
+def _rotated_query_slice(queries: list[str], seed: int, cap: int) -> list[str]:
+    if not queries or cap <= 0:
+        return []
+    if cap >= len(queries):
+        return list(queries)
+    start = seed % len(queries)
+    ordered = list(queries[start:]) + list(queries[:start])
+    return ordered[:cap]
+
+
+def build_managed_pest_recall_queries(anchor_dt: datetime | None) -> list[str]:
+    seed = 0
+    try:
+        if anchor_dt is not None:
+            seed = int(anchor_dt.date().toordinal())
+    except Exception:
+        seed = 0
+    return _ordered_unique_terms(
+        list(MANAGED_PEST_PRIMARY_CORE_QUERIES)
+        + _rotated_query_slice(list(MANAGED_PEST_ROTATING_QUERIES), seed, MANAGED_PEST_ROTATING_QUERY_CAP)
+    )
+
 MANAGED_ONLY_TOPIC_REP_BY_NAME = {
     str(item.get("label") or "").strip(): str(item.get("short_label") or item.get("label") or "").strip()
     for item in MANAGED_ONLY_COMMODITY_ITEMS
@@ -10075,10 +10113,11 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
     queries = _dedupe_queries(section_conf.get("queries") or [])
     # pest는 pool 충분 여부와 무관하게 실행형 방제 + 품목 기반 보강 쿼리를 병합해 누락을 줄인다.
     if str(section_conf.get("key") or "") == "pest":
+        managed_pest_queries = build_managed_pest_recall_queries(start_kst)
         queries = _dedupe_queries(
             list(queries)
             + list(PEST_ALWAYS_ON_RECALL_QUERIES)
-            + list(MANAGED_PEST_RECALL_QUERIES[:16])
+            + list(managed_pest_queries)
         )
     items: list[Article] = []
     _local_dedupe = DedupeIndex()  # 섹션 내부 dedupe (전역은 최종 선택 단계에서)
@@ -12722,6 +12761,35 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       activateView(resolveInitialView(), {{ skipHistory: true }});
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      function openExternalLink(ev, linkEl) {{
+        var link = linkEl && linkEl.getAttribute ? linkEl : null;
+        if (!link) return true;
+        var href = link.getAttribute("href") || link.href || "";
+        if (!href) return true;
+        if (ev) {{
+          if ((typeof ev.button === "number" && ev.button !== 0) || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) {{
+            return true;
+          }}
+          try {{ if (ev.preventDefault) ev.preventDefault(); }} catch (e) {{}}
+          try {{ if (ev.stopPropagation) ev.stopPropagation(); }} catch (e2) {{}}
+        }}
+        try {{
+          var opened = window.open(href, "_blank", "noopener");
+          if (opened) return false;
+        }} catch (e3) {{}}
+        try {{
+          window.location.href = href;
+        }} catch (e4) {{}}
+        return false;
+      }}
+
+      Array.prototype.forEach.call(document.querySelectorAll(".btnOpen, .commodityStory"), function(link) {{
+        try {{ link.setAttribute("data-swipe-ignore", "1"); }} catch (e) {{}}
+        link.addEventListener("click", function(ev) {{
+          openExternalLink(ev, link);
+        }});
+      }});
+
       var navRow = document.querySelector(".navRow");
       var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
       var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;

@@ -193,6 +193,33 @@ def build_archive_ux_html(
       }}, true);
     }}
 
+    function _openExternalLink(ev, linkEl){{
+      var link = linkEl && linkEl.getAttribute ? linkEl : null;
+      if(!link) return true;
+      var href = link.getAttribute('href') || link.href || '';
+      if(!href) return true;
+      if(ev){{
+        if((typeof ev.button === 'number' && ev.button !== 0) || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey){{
+          return true;
+        }}
+        try{{ if(ev.preventDefault) ev.preventDefault(); }}catch(_openErr){{}}
+        try{{ if(ev.stopPropagation) ev.stopPropagation(); }}catch(_openErr2){{}}
+      }}
+      try{{
+        var opened = window.open(href, '_blank', 'noopener');
+        if(opened) return false;
+      }}catch(_openErr3){{}}
+      try{{ window.location.href = href; }}catch(_openErr4){{}}
+      return false;
+    }}
+
+    Array.prototype.forEach.call(document.querySelectorAll('.btnOpen, .commodityStory'), function(link){{
+      try{{ link.setAttribute('data-swipe-ignore','1'); }}catch(_linkAttrErr){{}}
+      link.addEventListener('click', function(ev){{
+        _openExternalLink(ev, link);
+      }});
+    }});
+
     var prev = _pick('prev');
     var next = _pick('next');
     _bindNav(prev, '{PREV_BRIEF_MESSAGE}');
