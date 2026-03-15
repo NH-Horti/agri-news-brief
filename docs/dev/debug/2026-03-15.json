@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T12:11:37+09:00",
-  "build_tag": "ae01a42",
+  "generated_at_kst": "2026-03-15T13:07:38+09:00",
+  "build_tag": "b0956db",
   "filter_rejects": [
     {
       "section": "policy",
@@ -220,19 +220,19 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
-      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
-    },
-    {
-      "section": "policy",
       "reason": "policy_macro_general_economy",
       "press": "메트로신문",
       "domain": "metroseoul.co.kr",
       "title": "파주시, 비상경제대응 TF 운영",
       "url": "http://www.metroseoul.co.kr/article/20260313500107"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
+      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
     },
     {
       "section": "policy",
@@ -621,18 +621,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
-      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "newsian",
       "domain": "newsian.co.kr",
       "title": "[한입 지식] \"재사용 가능한가\"…1·2차전지 가르는 '가역성'의 비밀",
       "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87190"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
+      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
     },
     {
       "section": "supply",
@@ -812,14 +812,6 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "ISPLUS",
-      "domain": "isplus.com",
-      "title": "대만 '승부조작' 억측을 혐한 마케팅으로 이용한 韓 기업, \"대만 파트너...",
-      "url": "https://isplus.com/article/view/isp202603130096"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "goodnews1",
       "domain": "goodnews1.com",
@@ -829,18 +821,10 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "kfenews",
-      "domain": "kfenews.co.kr",
-      "title": "이영철 군수 출마 \"기회는 새롭게… 함양의 지방소멸 막겠다\"",
-      "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=655554"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "gokorea",
-      "domain": "gokorea.kr",
-      "title": "휘발유·경유 가격 하락…석유 최고 가격 제가 불러온 변화는?",
-      "url": "https://www.gokorea.kr/news/articleView.html?idxno=860382"
+      "press": "ISPLUS",
+      "domain": "isplus.com",
+      "title": "대만 '승부조작' 억측을 혐한 마케팅으로 이용한 韓 기업, \"대만 파트너...",
+      "url": "https://isplus.com/article/view/isp202603130096"
     },
     {
       "section": "supply",
@@ -1637,18 +1621,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "mydaily",
-      "domain": "mydaily.co.kr",
-      "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
-      "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "노컷뉴스",
       "domain": "nocutnews.co.kr",
       "title": "중동 사태 여파…시설 재배 '직격탄'",
       "url": "https://www.nocutnews.co.kr/news/6484719"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "mydaily",
+      "domain": "mydaily.co.kr",
+      "title": "“카페 한 잔 값이면 세 잔”…편의점, 1000원 커피로 여름 승부",
+      "url": "https://www.mydaily.co.kr/page/view/2026031317391201950"
     },
     {
       "section": "supply",
@@ -1681,30 +1665,6 @@
       "domain": "hankookilbo.com",
       "title": "홈플, '계란 한 판 7000원' 시대에 미국산 5790원에 판매",
       "url": "https://www.hankookilbo.com/news/article/A2026031309550003375?did=NA"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "동아일보",
-      "domain": "sports.donga.com",
-      "title": "“싱가포르 입맛 사로잡은 붉은 보석” 곡성군, 금실 딸기 동남아 수출...",
-      "url": "https://sports.donga.com/region/article/all/20260313/133521929/1"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "NEWSKR",
-      "domain": "newskr.kr",
-      "title": "곡성군, '금실 딸기 ' 현장 컨설팅으로 '수출 경쟁력 강화'",
-      "url": "http://www.newskr.kr/news/articleView.html?idxno=103538"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "tournews21",
-      "domain": "tournews21.com",
-      "title": "곡성군, '금실 딸기 ' 현장 컨설팅·재배기술 지도 추진",
-      "url": "https://www.tournews21.com/news/articleView.html?idxno=131557"
     },
     {
       "section": "supply",
@@ -2017,30 +1977,6 @@
       "domain": "kmib.co.kr",
       "title": "태국, K-골프에 이어 K-푸드에 반하다…리쥬란 챔피언십 K-푸드 파빌리온...",
       "url": "https://www.kmib.co.kr/article/view.asp?arcid=0029523332&code=61161511&cp=nv"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "NAEIL",
-      "domain": "naeil.com",
-      "title": "곡성군, 금실 딸기 육성 본격화",
-      "url": "https://www.naeil.com/news/read/581203"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "NEWSKR",
-      "domain": "newskr.kr",
-      "title": "곡성군, '금실 딸기' 현장 컨설팅으로 '수출 경쟁력 강화'",
-      "url": "http://www.newskr.kr/news/articleView.html?idxno=103538"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "tournews21",
-      "domain": "tournews21.com",
-      "title": "곡성군, '금실 딸기' 현장 컨설팅· 재배 기술 지도 추진",
-      "url": "https://www.tournews21.com/news/articleView.html?idxno=131557"
     },
     {
       "section": "supply",
@@ -2525,18 +2461,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "FINOMY",
-      "domain": "finomy.com",
-      "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
-      "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "DNEWS",
       "domain": "dnews.co.kr",
       "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
       "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
     },
     {
       "section": "supply",
@@ -2753,14 +2689,6 @@
       "domain": "abcn.kr",
       "title": "AI 기반 R&D 사업화 성공 확률",
       "url": "https://www.abcn.kr/news/articleView.html?idxno=86923"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "digitaltoday",
-      "domain": "digitaltoday.co.kr",
-      "title": "더코디, 50억원 규모 전환사채 발행 결정",
-      "url": "https://www.digitaltoday.co.kr/news/articleView.html?idxno=640518"
     },
     {
       "section": "supply",
@@ -3007,16 +2935,16 @@
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "양파 값 추락···중국산 수입 관리를",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
+      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
     },
     {
       "section": "supply",
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
+      "title": "양파 값 추락···중국산 수입 관리를",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
     },
     {
       "section": "supply",
@@ -3095,16 +3023,16 @@
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
+      "title": "양파 값 추락···중국산 수입 관리를",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
     },
     {
       "section": "supply",
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "양파 값 추락···중국산 수입 관리를",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
+      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
     },
     {
       "section": "supply",
@@ -4399,16 +4327,16 @@
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
     },
     {
       "section": "supply",
@@ -4641,6 +4569,726 @@
       "domain": "aflnews.co.kr",
       "title": "도드람양돈 농협 , '2025년 농축협 종합업적평가' 전국 1위 수상",
       "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316415"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kdfnews",
+      "domain": "kdfnews.com",
+      "title": "농식품부 , KGC인삼공사서 수출 간담회 … \"홍삼 브라질 규제 개선 논의\"",
+      "url": "http://www.kdfnews.com/news/articleView.html?idxno=179858"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "bizwnews",
+      "domain": "bizwnews.com",
+      "title": "KGC인삼공사 부여공장서 'K-푸드 간담회 '…\"비관세장벽 대응\"",
+      "url": "http://www.bizwnews.com/news/articleView.html?idxno=128842"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "NBNTV",
+      "domain": "nbntv.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최",
+      "url": "https://www.nbntv.co.kr/news/articleView.html?idxno=4019800"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kfenews",
+      "domain": "kfenews.co.kr",
+      "title": "[KFE 유통로그]KGC인삼공사·쿠팡이츠",
+      "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=655579"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ezyeconomy",
+      "domain": "ezyeconomy.com",
+      "title": "농식품부 , KGC인삼공사서 수출 장벽 해소 간담회 개최",
+      "url": "https://www.ezyeconomy.com/news/articleView.html?idxno=233390"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "sisacast",
+      "domain": "sisacast.kr",
+      "title": "KGC인삼공사, 농식품부 '현장 간담회 ' 개최… 내수 활성화 방안 논의",
+      "url": "http://www.sisacast.kr/news/articleView.html?idxno=93401"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=108815"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newspost",
+      "domain": "newspost.kr",
+      "title": "KGC인삼공사, '비관세 장벽 대응' 농식품부 현장 간담회 개최",
+      "url": "https://www.newspost.kr/news/articleView.html?idxno=221716"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "M-I",
+      "domain": "m-i.kr",
+      "title": "KGC인삼공사 부여공장서 K-푸드 수출 간담회 …홍삼 규제 개선 논의",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1346299"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "cnbnews",
+      "domain": "weekly.cnbnews.com",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 열어",
+      "url": "https://weekly.cnbnews.com/news/article.html?no=208607"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "updownnews",
+      "domain": "updownnews.co.kr",
+      "title": "KGC인삼공사, 부여공장서 농식품부 와 K푸드 현장 간담회 ...'비관세 장벽'...",
+      "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316530"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "socialvalue",
+      "domain": "socialvalue.kr",
+      "title": "KGC인삼공사 부여공장서 ‘K-푸드 수출 규제 대응’ 간담회 진행",
+      "url": "https://www.socialvalue.kr/news/view/1065596218386349"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "smarttimes",
+      "domain": "smarttimes.co.kr",
+      "title": "[생활] 교원 웰스ㆍ이마트ㆍKGC인삼공사ㆍ쿠팡이츠ㆍ시몬스",
+      "url": "http://www.smarttimes.co.kr/news/articleView.html?idxno=43650"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "cnbnews",
+      "domain": "cnbnews.com",
+      "title": "농식품부 , KGC인삼공사 부여공장서 K-푸드 현장 간담회 개최",
+      "url": "https://www.cnbnews.com/news/article.html?no=783369"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "lawissue",
+      "domain": "lawissue.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장 간담회 열어",
+      "url": "http://www.lawissue.co.kr/view.php?ud=202603131447217448204ead0791_12"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "whitepaper",
+      "domain": "whitepaper.co.kr",
+      "title": "KGC인삼공사, 농식품부 와 수출 규제 대응 논의",
+      "url": "http://www.whitepaper.co.kr/news/articleView.html?idxno=259465"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "KGC인삼공사 부여공장, 농림축산식품부 주최 간담회 개최",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251346"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "smartbizn",
+      "domain": "smartbizn.com",
+      "title": "KGC인삼공사, 부여공장서 수출 규제 논의···홍삼 해외시장 확대 과제...",
+      "url": "https://www.smartbizn.com/news/articleView.html?idxno=138959"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "swtvnews",
+      "domain": "swtvnews.com",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최…비관세 장벽 대응 등...",
+      "url": "https://swtvnews.com/news/newsview.php?ncode=1065586047567340"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "NAEIL",
+      "domain": "naeil.com",
+      "title": "‘K홍삼 부흥’ 민관 머리 맞댔다",
+      "url": "https://www.naeil.com/news/read/581101"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=337989"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "인삼 업계 , 홍삼 수출 경쟁력 강화 방안 머리 맞대",
+      "url": "https://www.sedaily.com/article/20018986"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "4TH",
+      "domain": "4th.kr",
+      "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
+      "url": "http://www.4th.kr/news/articleView.html?idxno=2108994"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "KGC인삼공사 부여공장서 K-푸드 현장 간담회",
+      "url": "https://biz.heraldcorp.com/article/10693703"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsquest",
+      "domain": "newsquest.co.kr",
+      "title": "정부· 업계 , '홍삼, 브라질 수출 장벽 해소' 머리 맞댔다",
+      "url": "https://www.newsquest.co.kr/news/articleView.html?idxno=263134"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ceoscoredaily",
+      "domain": "ceoscoredaily.com",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최…비관세 장벽 대응...",
+      "url": "https://www.ceoscoredaily.com/page/view/2026031310413264106"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "문화일보",
+      "domain": "munhwa.com",
+      "title": "KGC인삼공사, 농식품부 와 ‘K-푸드 수출 간담회 ’…“규제 개선으로 브...",
+      "url": "https://www.munhwa.com/article/11574307"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsian",
+      "domain": "newsian.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장 간담회 \"'비관세 장벽' 돌파구 찾는다\"",
+      "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87185"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "IMINJU",
+      "domain": "iminju.net",
+      "title": "KGC인삼공사, 부여공장서 농림축산식품부 주최 현장 간담회 진행",
+      "url": "http://www.iminju.net/news/articleView.html?idxno=160439"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kpinews",
+      "domain": "kpinews.kr",
+      "title": "농림부, KGC인삼공사에서 현장 간담회 개최",
+      "url": "https://www.kpinews.kr/newsView/1065577631464613"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "농림축산식품· 업계 , KGC인삼공사서 수출 간담회 개최",
+      "url": "https://www.g-enews.com/view.php?ud=202603131029173677740eacf404_1"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "DYNEWS",
+      "domain": "dynews.co.kr",
+      "title": "﻿정부· 업계 한자리에…KGC인삼공사 부여공장서 'K-홍삼 수출 돌파구' ...",
+      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842146"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "youthdaily",
+      "domain": "youthdaily.co.kr",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
+      "url": "https://www.youthdaily.co.kr/news/article.html?no=215321"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ASIAA",
+      "domain": "asiaa.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
+      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businesskorea",
+      "domain": "businesskorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
+      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ZIKSIR",
+      "domain": "ziksir.com",
+      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
+      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "WOWTV",
+      "domain": "wowtv.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
+      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "포인트데일리",
+      "domain": "pointdaily.co.kr",
+      "title": "농식품부 , KGC인삼공사 부여공장서 현장 간담회 개최…애로사항 청취",
+      "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=295912"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "농식품부 , KGC인삼공사서 간담회 ⋯\"비관세 장벽 대응 논의\"",
+      "url": "http://www.inews24.com/view/1948714"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsworks",
+      "domain": "newsworks.co.kr",
+      "title": "농식품부 , KGC인삼공사 부여공장서 간담회 …K-푸드 수출 확대 논의",
+      "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=833954"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "insightkorea",
+      "domain": "insightkorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 개최",
+      "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242673"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "seoulfn",
+      "domain": "seoulfn.com",
+      "title": "농식품부 -KGC인삼공사, 농식품 수출 비관세장벽 대응 간담회 진행",
+      "url": "https://www.seoulfn.com/news/articleView.html?idxno=623506"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "POINTE",
+      "domain": "pointe.co.kr",
+      "title": "K-홍삼, 브라질 신시장 연다… 정부· 업계 수출 장벽 제거 '맞손'",
+      "url": "https://www.pointe.co.kr/news/articleView.html?idxno=74942"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 현장 간담회 개최",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1346462"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kdfnews",
+      "domain": "kdfnews.com",
+      "title": "농식품부 , KGC인삼공사서 수출 간담회… \"홍삼 브라질 규제 개선 논의\"",
+      "url": "http://www.kdfnews.com/news/articleView.html?idxno=179858"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "bizwnews",
+      "domain": "bizwnews.com",
+      "title": "KGC인삼공사 부여공장서 'K-푸드 간담회'…\" 비관세장벽 대응\"",
+      "url": "http://www.bizwnews.com/news/articleView.html?idxno=128842"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "NBNTV",
+      "domain": "nbntv.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최",
+      "url": "https://www.nbntv.co.kr/news/articleView.html?idxno=4019800"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kfenews",
+      "domain": "kfenews.co.kr",
+      "title": "[KFE 유통로그]KGC인삼공사·쿠팡이츠",
+      "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=655579"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ezyeconomy",
+      "domain": "ezyeconomy.com",
+      "title": "농식품부 , KGC인삼공사서 수출 장벽 해소 간담회 개최",
+      "url": "https://www.ezyeconomy.com/news/articleView.html?idxno=233390"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "sisacast",
+      "domain": "sisacast.kr",
+      "title": "KGC인삼공사, 농식품부 '현장 간담회' 개최… 내수 활성화 방안 논의",
+      "url": "http://www.sisacast.kr/news/articleView.html?idxno=93401"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=108815"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newspost",
+      "domain": "newspost.kr",
+      "title": "KGC인삼공사, ' 비관세 장벽 대응' 농식품부 현장 간담회 개최",
+      "url": "https://www.newspost.kr/news/articleView.html?idxno=221716"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "M-I",
+      "domain": "m-i.kr",
+      "title": "KGC인삼공사 부여공장서 K-푸드 수출 간담회…홍삼 규제 개선 논의",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1346299"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "cnbnews",
+      "domain": "weekly.cnbnews.com",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 열어",
+      "url": "https://weekly.cnbnews.com/news/article.html?no=208607"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "updownnews",
+      "domain": "updownnews.co.kr",
+      "title": "KGC인삼공사, 부여공장서 농식품부 와 K푸드 현장간담회...' 비관세 장벽 '...",
+      "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316530"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "socialvalue",
+      "domain": "socialvalue.kr",
+      "title": "KGC인삼공사 부여공장서 ‘K-푸드 수출 규제 대응’ 간담회 진행",
+      "url": "https://www.socialvalue.kr/news/view/1065596218386349"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "smarttimes",
+      "domain": "smarttimes.co.kr",
+      "title": "[생활] 교원 웰스ㆍ이마트ㆍKGC인삼공사ㆍ쿠팡이츠ㆍ시몬스",
+      "url": "http://www.smarttimes.co.kr/news/articleView.html?idxno=43650"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "cnbnews",
+      "domain": "cnbnews.com",
+      "title": "농식품부 , KGC인삼공사 부여공장서 K-푸드 현장 간담회 개최",
+      "url": "https://www.cnbnews.com/news/article.html?no=783369"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "lawissue",
+      "domain": "lawissue.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장 간담회 열어",
+      "url": "http://www.lawissue.co.kr/view.php?ud=202603131447217448204ead0791_12"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "whitepaper",
+      "domain": "whitepaper.co.kr",
+      "title": "KGC인삼공사, 농식품부 와 수출 규제 대응 논의",
+      "url": "http://www.whitepaper.co.kr/news/articleView.html?idxno=259465"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "KGC인삼공사 부여공장, 농림축산식품부 주최 간담회 개최",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251346"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "smartbizn",
+      "domain": "smartbizn.com",
+      "title": "KGC인삼공사, 부여공장서 수출 규제 논의···홍삼 해외시장 확대 과제...",
+      "url": "https://www.smartbizn.com/news/articleView.html?idxno=138959"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "swtvnews",
+      "domain": "swtvnews.com",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최… 비관세 장벽 대응 등...",
+      "url": "https://swtvnews.com/news/newsview.php?ncode=1065586047567340"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "NAEIL",
+      "domain": "naeil.com",
+      "title": "‘K홍삼 부흥’ 민관 머리 맞댔다",
+      "url": "https://www.naeil.com/news/read/581101"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=337989"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "인삼업계, 홍삼 수출 경쟁력 강화 방안 머리 맞대",
+      "url": "https://www.sedaily.com/article/20018986"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "4TH",
+      "domain": "4th.kr",
+      "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
+      "url": "http://www.4th.kr/news/articleView.html?idxno=2108994"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "KGC인삼공사 부여공장서 K-푸드 현장 간담회",
+      "url": "https://biz.heraldcorp.com/article/10693703"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsquest",
+      "domain": "newsquest.co.kr",
+      "title": "정부·업계, '홍삼, 브라질 수출 장벽 해소' 머리 맞댔다",
+      "url": "https://www.newsquest.co.kr/news/articleView.html?idxno=263134"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ceoscoredaily",
+      "domain": "ceoscoredaily.com",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최… 비관세 장벽 대응...",
+      "url": "https://www.ceoscoredaily.com/page/view/2026031310413264106"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "문화일보",
+      "domain": "munhwa.com",
+      "title": "KGC인삼공사, 농식품부 와 ‘K-푸드 수출 간담회’…“규제 개선으로 브...",
+      "url": "https://www.munhwa.com/article/11574307"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "매일경제",
+      "domain": "mk.co.kr",
+      "title": "농식품부 , KGC인삼공사와 홍삼 수출 규제 해소 방안 논의",
+      "url": "https://www.mk.co.kr/article/11987314"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsian",
+      "domain": "newsian.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장간담회 \"' 비관세 장벽 ' 돌파구 찾는다\"",
+      "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87185"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "IMINJU",
+      "domain": "iminju.net",
+      "title": "KGC인삼공사, 부여공장서 농림축산식품부 주최 현장 간담회 진행",
+      "url": "http://www.iminju.net/news/articleView.html?idxno=160439"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "kpinews",
+      "domain": "kpinews.kr",
+      "title": "농림부, KGC인삼공사에서 현장 간담회 개최",
+      "url": "https://www.kpinews.kr/newsView/1065577631464613"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "농림축산식품·업계, KGC인삼공사서 수출 간담회 개최",
+      "url": "https://www.g-enews.com/view.php?ud=202603131029173677740eacf404_1"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "DYNEWS",
+      "domain": "dynews.co.kr",
+      "title": "﻿정부·업계 한자리에…KGC인삼공사 부여공장서 'K-홍삼 수출 돌파구' ...",
+      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842146"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "youthdaily",
+      "domain": "youthdaily.co.kr",
+      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
+      "url": "https://www.youthdaily.co.kr/news/article.html?no=215321"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ASIAA",
+      "domain": "asiaa.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
+      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businesskorea",
+      "domain": "businesskorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
+      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "WOWTV",
+      "domain": "wowtv.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장간담회… 비관세 대응 논의",
+      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ZIKSIR",
+      "domain": "ziksir.com",
+      "title": "농식품부 , KGC인삼공사 현장 간담회… 비관세 장벽 대응 논의",
+      "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "포인트데일리",
+      "domain": "pointdaily.co.kr",
+      "title": "농식품부 , KGC인삼공사 부여공장서 현장 간담회 개최…애로사항 청취",
+      "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=295912"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "농식품부 , KGC인삼공사서 간담회⋯\" 비관세 장벽 대응 논의\"",
+      "url": "http://www.inews24.com/view/1948714"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "newsworks",
+      "domain": "newsworks.co.kr",
+      "title": "농식품부 , KGC인삼공사 부여공장서 간담회…K-푸드 수출 확대 논의",
+      "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=833954"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "insightkorea",
+      "domain": "insightkorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 개최",
+      "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242673"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "seoulfn",
+      "domain": "seoulfn.com",
+      "title": "농식품부 -KGC인삼공사, 농식품 수출 비관세장벽 대응 간담회 진행",
+      "url": "https://www.seoulfn.com/news/articleView.html?idxno=623506"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "POINTE",
+      "domain": "pointe.co.kr",
+      "title": "K-홍삼, 브라질 신시장 연다… 정부·업계 수출 장벽 제거 '맞손'",
+      "url": "https://www.pointe.co.kr/news/articleView.html?idxno=74942"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 현장 간담회 개최",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1346462"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "widedaily",
+      "domain": "widedaily.com",
+      "title": "농식품부 , KGC인삼공사서 현장간담회 \" 비관세 장벽 대응 논의\"",
+      "url": "https://www.widedaily.com/news/articleView.html?idxno=290239"
     },
     {
       "section": "dist",
@@ -5119,8 +5767,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "pest",
@@ -5135,8 +5783,8 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -5221,18 +5869,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "thepowernews",
-      "domain": "thepowernews.co.kr",
-      "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
-      "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "djtimes",
       "domain": "djtimes.co.kr",
       "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
       "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "thepowernews",
+      "domain": "thepowernews.co.kr",
+      "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
+      "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
     },
     {
       "section": "pest",
@@ -5597,130 +6245,10 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "kdfnews",
-      "domain": "kdfnews.com",
-      "title": "농식품부 , KGC인삼공사서 수출 간담회 … \"홍삼 브라질 규제 개선 논의\"",
-      "url": "https://kdfnews.com/news/articleView.html?idxno=179858"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "ezyeconomy",
-      "domain": "ezyeconomy.com",
-      "title": "농식품부 , KGC인삼공사서 수출 장벽 해소 간담회 개최",
-      "url": "https://ezyeconomy.com/news/articleView.html?idxno=233390"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "g-enews",
-      "domain": "g-enews.com",
-      "title": "농림축산식품· 업계 , KGC인삼공사서 수출 간담회 개최",
-      "url": "https://g-enews.com/view.php?ud=202603131029173677740eacf404_1"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "seoulfn",
-      "domain": "seoulfn.com",
-      "title": "농식품부 -KGC인삼공사, 농식품 수출 비관세장벽 대응 간담회 진행",
-      "url": "https://seoulfn.com/news/articleView.html?idxno=623506"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "ASIAA",
-      "domain": "asiaa.co.kr",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
-      "url": "https://asiaa.co.kr/news/articleView.html?idxno=243247"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "문화일보",
-      "domain": "munhwa.com",
-      "title": "KGC인삼공사, 농식품부 와 ‘K-푸드 수출 간담회 ’…“규제 개선으로 브...",
-      "url": "https://munhwa.com/article/11574307"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newsworks",
-      "domain": "newsworks.co.kr",
-      "title": "농식품부 , KGC인삼공사 부여공장서 간담회 …K-푸드 수출 확대 논의",
-      "url": "https://newsworks.co.kr/news/articleView.html?idxno=833954"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "KGC인삼공사 부여공장서 K-푸드 수출 간담회 …홍삼 규제 개선 논의",
-      "url": "https://m-i.kr/news/articleView.html?idxno=1346299"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "insightkorea",
-      "domain": "insightkorea.co.kr",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 개최",
-      "url": "https://insightkorea.co.kr/news/articleView.html?idxno=242673"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "DYNEWS",
-      "domain": "dynews.co.kr",
-      "title": "﻿정부· 업계 한자리에…KGC인삼공사 부여공장서 'K-홍삼 수출 돌파구' ...",
-      "url": "https://dynews.co.kr/news/articleView.html?idxno=842146"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "bizwnews",
-      "domain": "bizwnews.com",
-      "title": "KGC인삼공사 부여공장서 'K-푸드 간담회 '…\"비관세장벽 대응\"",
-      "url": "https://bizwnews.com/news/articleView.html?idxno=128842"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "biztribune",
       "domain": "biztribune.co.kr",
       "title": "[브리프]배스킨라빈스 농심 인삼공사 동원F&B 교촌 外",
       "url": "https://biztribune.co.kr/news/articleView.html?idxno=350440"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "inews24",
-      "domain": "inews24.com",
-      "title": "농식품부 , KGC인삼공사서 간담회 ⋯\"비관세 장벽 대응 논의\"",
-      "url": "https://inews24.com/view/1948714"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "FINOMY",
-      "domain": "finomy.com",
-      "title": "KGC인삼공사 부여공장, 농림축산식품부 주최 간담회 개최",
-      "url": "https://finomy.com/news/articleView.html?idxno=251346"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "NAEIL",
-      "domain": "naeil.com",
-      "title": "‘K홍삼 부흥’ 민관 머리 맞댔다",
-      "url": "https://naeil.com/news/read/581101"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "서울경제",
-      "domain": "sedaily.com",
-      "title": "인삼 업계 , 홍삼 수출 경쟁력 강화 방안 머리 맞대",
-      "url": "https://sedaily.com/article/20018986"
     },
     {
       "section": "supply",
@@ -5737,14 +6265,6 @@
       "domain": "youngnong.co.kr",
       "title": "농관원 충북지원, 마라탕 두부 원산지 특별 단속",
       "url": "https://youngnong.co.kr/news/articleView.html?idxno=58088"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "smarttimes",
-      "domain": "smarttimes.co.kr",
-      "title": "[생활] 교원 웰스ㆍ이마트ㆍKGC인삼공사ㆍ쿠팡이츠ㆍ시몬스",
-      "url": "https://smarttimes.co.kr/news/articleView.html?idxno=43650"
     },
     {
       "section": "supply",
@@ -5805,242 +6325,10 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "헤럴드경제",
-      "domain": "biz.heraldcorp.com",
-      "title": "KGC인삼공사 부여공장서 K-푸드 현장 간담회",
-      "url": "https://biz.heraldcorp.com/article/10693703"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "socialvalue",
-      "domain": "socialvalue.kr",
-      "title": "KGC인삼공사 부여공장서 ‘K-푸드 수출 규제 대응’ 간담회 진행",
-      "url": "https://socialvalue.kr/news/view/1065596218386349"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "whitepaper",
-      "domain": "whitepaper.co.kr",
-      "title": "KGC인삼공사, 농식품부 와 수출 규제 대응 논의",
-      "url": "https://whitepaper.co.kr/news/articleView.html?idxno=259465"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "쿡앤셰프",
       "domain": "cooknchefnews.com",
       "title": "농식품부 , 수출 비관세장벽 해소 총력… 현장 간담회 개최",
       "url": "https://cooknchefnews.com/news/view/1065594608034583"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newsquest",
-      "domain": "newsquest.co.kr",
-      "title": "정부· 업계 , '홍삼, 브라질 수출 장벽 해소' 머리 맞댔다",
-      "url": "https://newsquest.co.kr/news/articleView.html?idxno=263134"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newspost",
-      "domain": "newspost.kr",
-      "title": "KGC인삼공사, '비관세 장벽 대응' 농식품부 현장 간담회 개최",
-      "url": "https://newspost.kr/news/articleView.html?idxno=221716"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "sisacast",
-      "domain": "sisacast.kr",
-      "title": "KGC인삼공사, 농식품부 '현장 간담회 ' 개최… 내수 활성화 방안 논의",
-      "url": "https://sisacast.kr/news/articleView.html?idxno=93401"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "businessplus",
-      "domain": "businessplus.kr",
-      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
-      "url": "https://businessplus.kr/news/articleView.html?idxno=108815"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "cnbnews",
-      "domain": "weekly.cnbnews.com",
-      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 열어",
-      "url": "https://weekly.cnbnews.com/news/article.html?no=208607"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "cnbnews",
-      "domain": "cnbnews.com",
-      "title": "농식품부 , KGC인삼공사 부여공장서 K-푸드 현장 간담회 개최",
-      "url": "https://cnbnews.com/news/article.html?no=783369"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "swtvnews",
-      "domain": "swtvnews.com",
-      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최…비관세 장벽 대응 등...",
-      "url": "https://swtvnews.com/news/newsview.php?ncode=1065586047567340"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "ceoscoredaily",
-      "domain": "ceoscoredaily.com",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최…비관세 장벽 대응...",
-      "url": "https://ceoscoredaily.com/page/view/2026031310413264106"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "youthdaily",
-      "domain": "youthdaily.co.kr",
-      "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
-      "url": "https://youthdaily.co.kr/news/article.html?no=215321"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "businesskorea",
-      "domain": "businesskorea.co.kr",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
-      "url": "https://businesskorea.co.kr/news/articleView.html?idxno=265115"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 현장 간담회 개최",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1346462"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "kfenews",
-      "domain": "kfenews.co.kr",
-      "title": "[KFE 유통로그]KGC인삼공사·쿠팡이츠",
-      "url": "https://kfenews.co.kr/news/articleView.html?idxno=655579"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "updownnews",
-      "domain": "updownnews.co.kr",
-      "title": "KGC인삼공사, 부여공장서 농식품부 와 K푸드 현장 간담회 ...'비관세 장벽'...",
-      "url": "https://updownnews.co.kr/news/articleView.html?idxno=316530"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "newsian",
-      "domain": "newsian.co.kr",
-      "title": "농식품부 , KGC인삼공사서 현장 간담회 \"'비관세 장벽' 돌파구 찾는다\"",
-      "url": "https://newsian.co.kr/news/articleView.html?idxno=87185"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "kpinews",
-      "domain": "kpinews.kr",
-      "title": "농림부, KGC인삼공사에서 현장 간담회 개최",
-      "url": "https://kpinews.kr/newsView/1065577631464613"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "포인트데일리",
-      "domain": "pointdaily.co.kr",
-      "title": "농식품부 , KGC인삼공사 부여공장서 현장 간담회 개최…애로사항 청취",
-      "url": "https://pointdaily.co.kr/news/articleView.html?idxno=295912"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "widedaily",
-      "domain": "widedaily.com",
-      "title": "농식품부 , KGC인삼공사서 현장간담회 \" 비관세 장벽 대응 논의\"",
-      "url": "https://widedaily.com/news/articleView.html?idxno=290239"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "smartbizn",
-      "domain": "smartbizn.com",
-      "title": "KGC인삼공사, 부여공장서 수출 규제 논의···홍삼 해외시장 확대 과제...",
-      "url": "https://smartbizn.com/news/articleView.html?idxno=138959"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "NBNTV",
-      "domain": "nbntv.co.kr",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최",
-      "url": "https://nbntv.co.kr/news/articleView.html?idxno=4019800"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "lawissue",
-      "domain": "lawissue.co.kr",
-      "title": "농식품부 , KGC인삼공사서 현장 간담회 열어",
-      "url": "https://lawissue.co.kr/view.php?ud=202603131447217448204ead0791_12"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "4TH",
-      "domain": "4th.kr",
-      "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
-      "url": "https://4th.kr/news/articleView.html?idxno=2108994"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "IMINJU",
-      "domain": "iminju.net",
-      "title": "KGC인삼공사, 부여공장서 농림축산식품부 주최 현장 간담회 진행",
-      "url": "https://iminju.net/news/articleView.html?idxno=160439"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "WOWTV",
-      "domain": "wowtv.co.kr",
-      "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
-      "url": "https://wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "ZIKSIR",
-      "domain": "ziksir.com",
-      "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
-      "url": "https://ziksir.com/news/articleView.html?idxno=126956"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "POINTE",
-      "domain": "pointe.co.kr",
-      "title": "K-홍삼, 브라질 신시장 연다… 정부· 업계 수출 장벽 제거 '맞손'",
-      "url": "https://pointe.co.kr/news/articleView.html?idxno=74942"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "greened",
-      "domain": "greened.kr",
-      "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
-      "url": "https://greened.kr/news/articleView.html?idxno=337989"
     },
     {
       "section": "supply",
@@ -6056,7 +6344,7 @@
       "threshold": 13.97,
       "tail_cut": 14.37,
       "core_min": 13.97,
-      "total_candidates": 77,
+      "total_candidates": 79,
       "total_selected": 5,
       "top": [
         {
@@ -6100,26 +6388,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
-          "score": 19.52,
-          "tier": 1,
-          "press": "farminsight",
-          "domain": "farminsight.net",
-          "title": "2026년산 저장배추 7만 3천 톤… 전년 대비 5.2% 감소",
-          "url": "https://www.farminsight.net/news/articleView.html?idxno=16109",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 2,
-            "strength": 5,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 19.42,
@@ -6137,6 +6405,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 19.32,
+          "tier": 1,
+          "press": "farminsight",
+          "domain": "farminsight.net",
+          "title": "2026년산 저장배추 7만 3천 톤… 전년 대비 5.2% 감소",
+          "url": "https://www.farminsight.net/news/articleView.html?idxno=16109",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 2,
+            "strength": 5,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -6502,6 +6790,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 8.97,
+          "tier": 1,
+          "press": "tournews21",
+          "domain": "tournews21.com",
+          "title": "곡성군, '금실 딸기 ' 현장 컨설팅·재배기술 지도 추진",
+          "url": "https://www.tournews21.com/news/articleView.html?idxno=131557",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 8.87,
           "tier": 2,
           "press": "한국농어민신문",
@@ -6597,6 +6905,26 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.97,
+          "tier": 1,
+          "press": "NEWSKR",
+          "domain": "newskr.kr",
+          "title": "곡성군, '금실 딸기 ' 현장 컨설팅으로 '수출 경쟁력 강화'",
+          "url": "http://www.newskr.kr/news/articleView.html?idxno=103538",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -6722,7 +7050,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.29,
+          "score": 5.09,
           "tier": 1,
           "press": "joongboo",
           "domain": "joongboo.com",
@@ -7062,7 +7390,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.47,
+          "score": 3.27,
           "tier": 1,
           "press": "전자신문",
           "domain": "etnews.com",
@@ -7082,7 +7410,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.47,
+          "score": 3.27,
           "tier": 1,
           "press": "globalepic",
           "domain": "globalepic.co.kr",
@@ -7094,26 +7422,6 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.37,
-          "tier": 1,
-          "press": "djtimes",
-          "domain": "djtimes.co.kr",
-          "title": "[신설상가] 유명간장게장(읍내동) 유명수 대표 \"게장 맛보고 의료기기 ...",
-          "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111217",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7184,10 +7492,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "newsclaim",
-          "domain": "newsclaim.co.kr",
-          "title": "bhc, 당근 포장주문 입점",
-          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
+          "press": "insightkorea",
+          "domain": "insightkorea.co.kr",
+          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -7204,10 +7512,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "insightkorea",
-          "domain": "insightkorea.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
+          "press": "newsclaim",
+          "domain": "newsclaim.co.kr",
+          "title": "bhc, 당근 포장주문 입점",
+          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -7238,26 +7546,6 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "newswell",
-          "domain": "newswell.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "http://www.newswell.co.kr/news/articleView.html?idxno=16699",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
         }
       ]
     },
@@ -7265,7 +7553,7 @@
       "threshold": 24.81,
       "tail_cut": 25.01,
       "core_min": 24.81,
-      "total_candidates": 69,
+      "total_candidates": 54,
       "total_selected": 3,
       "top": [
         {
@@ -7671,6 +7959,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 17.17,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "sports.donga.com",
+          "title": "“싱가포르 입맛 사로잡은 붉은 보석” 곡성군, 금실 딸기 동남아 수출...",
+          "url": "https://sports.donga.com/region/article/all/20260313/133521929/1",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 16.99,
           "tier": 1,
           "press": "startuptoday",
@@ -7746,26 +8054,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.52,
-          "tier": 3,
-          "press": "서울경제",
-          "domain": "sedaily.com",
-          "title": "인삼 업계 , 홍삼 수출 경쟁력 강화 방안 머리 맞대",
-          "url": "https://www.sedaily.com/article/20018986",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
           }
         },
         {
@@ -8091,7 +8379,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.09,
+          "score": 7.69,
           "tier": 1,
           "press": "노컷뉴스",
           "domain": "nocutnews.co.kr",
@@ -8331,132 +8619,12 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 1.35,
-          "tier": 1,
-          "press": "seoulfn",
-          "domain": "seoulfn.com",
-          "title": "농식품부 -KGC인삼공사, 농식품 수출 비관세장벽 대응 간담회 진행",
-          "url": "https://www.seoulfn.com/news/articleView.html?idxno=623506",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 1.05,
-          "tier": 1,
-          "press": "newsworks",
-          "domain": "newsworks.co.kr",
-          "title": "농식품부 , KGC인삼공사 부여공장서 간담회 …K-푸드 수출 확대 논의",
-          "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=833954",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -0.8,
-          "tier": 1,
-          "press": "insightkorea",
-          "domain": "insightkorea.co.kr",
-          "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 개최",
-          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242673",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -1.58,
-          "tier": 1,
-          "press": "smarttimes",
-          "domain": "smarttimes.co.kr",
-          "title": "[생활] 교원 웰스ㆍ이마트ㆍKGC인삼공사ㆍ쿠팡이츠ㆍ시몬스",
-          "url": "http://www.smarttimes.co.kr/news/articleView.html?idxno=43650",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": -6.6,
           "tier": 1,
-          "press": "kdfnews",
-          "domain": "kdfnews.com",
-          "title": "농식품부 , KGC인삼공사서 수출 간담회 … \"홍삼 브라질 규제 개선 논의\"",
-          "url": "http://www.kdfnews.com/news/articleView.html?idxno=179858",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -6.6,
-          "tier": 1,
-          "press": "bizwnews",
-          "domain": "bizwnews.com",
-          "title": "KGC인삼공사 부여공장서 'K-푸드 간담회 '…\"비관세장벽 대응\"",
-          "url": "http://www.bizwnews.com/news/articleView.html?idxno=128842",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -6.6,
-          "tier": 1,
-          "press": "ezyeconomy",
-          "domain": "ezyeconomy.com",
-          "title": "농식품부 , KGC인삼공사서 수출 장벽 해소 간담회 개최",
-          "url": "https://www.ezyeconomy.com/news/articleView.html?idxno=233390",
+          "press": "biztribune",
+          "domain": "biztribune.co.kr",
+          "title": "[브리프]배스킨라빈스 농심 인삼공사 동원F&B 교촌 外",
+          "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=350440",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 0.0,
@@ -8471,10 +8639,10 @@
       ]
     },
     "dist": {
-      "threshold": 8.77,
-      "tail_cut": 9.37,
-      "core_min": 8.77,
-      "total_candidates": 38,
+      "threshold": 8.32,
+      "tail_cut": 8.92,
+      "core_min": 8.32,
+      "total_candidates": 9,
       "total_selected": 5,
       "top": [
         {
@@ -8520,26 +8688,6 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 16.77,
-          "tier": 3,
-          "press": "헤럴드경제",
-          "domain": "biz.heraldcorp.com",
-          "title": "KGC인삼공사 부여공장서 K-푸드 현장 간담회",
-          "url": "https://biz.heraldcorp.com/article/10693703",
-          "reason": "",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
           "score": 16.32,
           "tier": 2,
           "press": "한국농어민신문",
@@ -8578,7 +8726,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 10.11,
           "tier": 1,
@@ -8586,52 +8734,12 @@
           "domain": "mygoyang.com",
           "title": "꽃은 피지만, 산업은 어디로 가고 있는가?",
           "url": "http://www.mygoyang.com/news/articleView.html?idxno=87924",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "signals": {
             "horti_sc": 1.0,
             "market_hits": 2,
             "strength": 2,
             "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 8.02,
-          "tier": 1,
-          "press": "socialvalue",
-          "domain": "socialvalue.kr",
-          "title": "KGC인삼공사 부여공장서 ‘K-푸드 수출 규제 대응’ 간담회 진행",
-          "url": "https://www.socialvalue.kr/news/view/1065596218386349",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 8.02,
-          "tier": 1,
-          "press": "whitepaper",
-          "domain": "whitepaper.co.kr",
-          "title": "KGC인삼공사, 농식품부 와 수출 규제 대응 논의",
-          "url": "http://www.whitepaper.co.kr/news/articleView.html?idxno=259465",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -8660,366 +8768,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.57,
-          "tier": 1,
-          "press": "newsquest",
-          "domain": "newsquest.co.kr",
-          "title": "정부· 업계 , '홍삼, 브라질 수출 장벽 해소' 머리 맞댔다",
-          "url": "https://www.newsquest.co.kr/news/articleView.html?idxno=263134",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.67,
-          "tier": 1,
-          "press": "newspost",
-          "domain": "newspost.kr",
-          "title": "KGC인삼공사, '비관세 장벽 대응' 농식품부 현장 간담회 개최",
-          "url": "https://www.newspost.kr/news/articleView.html?idxno=221716",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.12,
-          "tier": 1,
-          "press": "sisacast",
-          "domain": "sisacast.kr",
-          "title": "KGC인삼공사, 농식품부 '현장 간담회 ' 개최… 내수 활성화 방안 논의",
-          "url": "http://www.sisacast.kr/news/articleView.html?idxno=93401",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.12,
-          "tier": 1,
-          "press": "businessplus",
-          "domain": "businessplus.kr",
-          "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
-          "url": "https://www.businessplus.kr/news/articleView.html?idxno=108815",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.12,
-          "tier": 1,
-          "press": "cnbnews",
-          "domain": "weekly.cnbnews.com",
-          "title": "농림축산식품부, KGC인삼공사서 현장 간담회 열어",
-          "url": "https://weekly.cnbnews.com/news/article.html?no=208607",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.12,
-          "tier": 1,
-          "press": "cnbnews",
-          "domain": "cnbnews.com",
-          "title": "농식품부 , KGC인삼공사 부여공장서 K-푸드 현장 간담회 개최",
-          "url": "https://www.cnbnews.com/news/article.html?no=783369",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.12,
-          "tier": 1,
-          "press": "swtvnews",
-          "domain": "swtvnews.com",
-          "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최…비관세 장벽 대응 등...",
-          "url": "https://swtvnews.com/news/newsview.php?ncode=1065586047567340",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.92,
-          "tier": 1,
-          "press": "ceoscoredaily",
-          "domain": "ceoscoredaily.com",
-          "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최…비관세 장벽 대응...",
-          "url": "https://www.ceoscoredaily.com/page/view/2026031310413264106",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.92,
-          "tier": 1,
-          "press": "youthdaily",
-          "domain": "youthdaily.co.kr",
-          "title": "농림축산식품부, KGC인삼공사서 현장 간담회 개최",
-          "url": "https://www.youthdaily.co.kr/news/article.html?no=215321",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.92,
-          "tier": 1,
-          "press": "businesskorea",
-          "domain": "businesskorea.co.kr",
-          "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
-          "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.92,
-          "tier": 1,
-          "press": "데일리한국",
-          "domain": "daily.hankooki.com",
-          "title": "농림축산식품부, KGC인삼공사 부여공장서 현장 간담회 개최",
-          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1346462",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.87,
-          "tier": 1,
-          "press": "kfenews",
-          "domain": "kfenews.co.kr",
-          "title": "[KFE 유통로그]KGC인삼공사·쿠팡이츠",
-          "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=655579",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.87,
-          "tier": 1,
-          "press": "updownnews",
-          "domain": "updownnews.co.kr",
-          "title": "KGC인삼공사, 부여공장서 농식품부 와 K푸드 현장 간담회 ...'비관세 장벽'...",
-          "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316530",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.67,
-          "tier": 1,
-          "press": "newsian",
-          "domain": "newsian.co.kr",
-          "title": "농식품부 , KGC인삼공사서 현장 간담회 \"'비관세 장벽' 돌파구 찾는다\"",
-          "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87185",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.67,
-          "tier": 1,
-          "press": "kpinews",
-          "domain": "kpinews.kr",
-          "title": "농림부, KGC인삼공사에서 현장 간담회 개최",
-          "url": "https://www.kpinews.kr/newsView/1065577631464613",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.67,
-          "tier": 1,
-          "press": "포인트데일리",
-          "domain": "pointdaily.co.kr",
-          "title": "농식품부 , KGC인삼공사 부여공장서 현장 간담회 개최…애로사항 청취",
-          "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=295912",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.67,
-          "tier": 1,
-          "press": "widedaily",
-          "domain": "widedaily.com",
-          "title": "농식품부 , KGC인삼공사서 현장간담회 \" 비관세 장벽 대응 논의\"",
-          "url": "https://www.widedaily.com/news/articleView.html?idxno=290239",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.27,
-          "tier": 1,
-          "press": "smartbizn",
-          "domain": "smartbizn.com",
-          "title": "KGC인삼공사, 부여공장서 수출 규제 논의···홍삼 해외시장 확대 과제...",
-          "url": "https://www.smartbizn.com/news/articleView.html?idxno=138959",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 4.25,
           "tier": 1,
           "press": "thefairnews",
@@ -9031,166 +8779,6 @@
             "horti_sc": 1.0,
             "market_hits": 0,
             "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.12,
-          "tier": 1,
-          "press": "NBNTV",
-          "domain": "nbntv.co.kr",
-          "title": "농림축산식품부, KGC인삼공사에서 현장 간담회 개최",
-          "url": "https://www.nbntv.co.kr/news/articleView.html?idxno=4019800",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.02,
-          "tier": 1,
-          "press": "lawissue",
-          "domain": "lawissue.co.kr",
-          "title": "농식품부 , KGC인삼공사서 현장 간담회 열어",
-          "url": "http://www.lawissue.co.kr/view.php?ud=202603131447217448204ead0791_12",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.92,
-          "tier": 1,
-          "press": "4TH",
-          "domain": "4th.kr",
-          "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
-          "url": "http://www.4th.kr/news/articleView.html?idxno=2108994",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.92,
-          "tier": 1,
-          "press": "IMINJU",
-          "domain": "iminju.net",
-          "title": "KGC인삼공사, 부여공장서 농림축산식품부 주최 현장 간담회 진행",
-          "url": "http://www.iminju.net/news/articleView.html?idxno=160439",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.92,
-          "tier": 1,
-          "press": "WOWTV",
-          "domain": "wowtv.co.kr",
-          "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
-          "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.92,
-          "tier": 1,
-          "press": "ZIKSIR",
-          "domain": "ziksir.com",
-          "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
-          "url": "https://www.ziksir.com/news/articleView.html?idxno=126956",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.82,
-          "tier": 1,
-          "press": "POINTE",
-          "domain": "pointe.co.kr",
-          "title": "K-홍삼, 브라질 신시장 연다… 정부· 업계 수출 장벽 제거 '맞손'",
-          "url": "https://www.pointe.co.kr/news/articleView.html?idxno=74942",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.72,
-          "tier": 1,
-          "press": "greened",
-          "domain": "greened.kr",
-          "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
-          "url": "https://www.greened.kr/news/articleView.html?idxno=337989",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
             "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -9349,7 +8937,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.89,
+          "score": 14.49,
           "tier": 1,
           "press": "topstarnews",
           "domain": "topstarnews.net",
@@ -9656,7 +9244,7 @@
         ],
         [
           "딸기 가격",
-          16
+          19
         ],
         [
           "감자 수급",
@@ -9857,7 +9445,7 @@
           "화훼자조금"
         ]
       },
-      "items_total": 93,
+      "items_total": 96,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -9969,7 +9557,7 @@
       "window_hits_top": [
         [
           "수출업계 간담회 농식품부",
-          49
+          5
         ],
         [
           "도매시장 수급",
@@ -9998,10 +9586,6 @@
         [
           "원산지 표시 단속 농산물",
           1
-        ],
-        [
-          "비관세장벽 수출 농식품부",
-          1
         ]
       ],
       "google_hits_top": [],
@@ -10028,7 +9612,7 @@
         "부정유통 단속 농산물"
       ],
       "recall_meta": {},
-      "items_total": 61,
+      "items_total": 16,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
