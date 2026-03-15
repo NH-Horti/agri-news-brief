@@ -84,6 +84,8 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIn("addEventListener('wheel'", out)
         self.assertNotIn("_openExternalLink", out)
         self.assertNotIn("querySelectorAll('.btnOpen, .commodityStory')", out)
+        self.assertIn("if(blocked){", out)
+        self.assertIn("swipeActive = false;", out)
         self.assertIn("pointerdown", out)
         self.assertIn("pointerup", out)
         self.assertIn("mousedown", out)

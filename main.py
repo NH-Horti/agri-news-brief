@@ -13208,6 +13208,12 @@ try {{ _ensureDates(); }} catch (e) {{}}
         var point = getSwipePoint(e, "start");
         if (!point) return;
         blocked = isBlockedTarget(e ? e.target : null);
+        if (blocked) {{
+          swipeActive = false;
+          swipeTarget = null;
+          swipePointerId = null;
+          return;
+        }}
         if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {{
           setDesktopSwipeMode(true);
         }}

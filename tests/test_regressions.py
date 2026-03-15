@@ -122,6 +122,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('data-swipe-ignore="1"', self.text)
         self.assertIn('target=\\"_top\\"', self.text)
         self.assertNotIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
+        self.assertIn('if (blocked) {{', self.text)
+        self.assertIn('swipeActive = false;', self.text)
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)

@@ -323,6 +323,12 @@ def build_archive_ux_html(
       var point = _eventPoint(e, 'start');
       if(!point) return;
       blocked = isBlockedTarget(e ? e.target : null);
+      if(blocked){{
+        swipeActive = false;
+        swipeTarget = null;
+        swipePointerId = null;
+        return;
+      }}
       if(e && (e.pointerType === 'mouse' || (!e.pointerType && !e.touches))){{
         _setDesktopSwipeMode(true);
       }}
