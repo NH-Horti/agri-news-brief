@@ -1604,6 +1604,24 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         self.assertEqual(topic, "상추")
 
+    def test_extract_topic_does_not_treat_processed_potato_lifestyle_story_as_potato(self):
+        topic = main.extract_topic(
+            "주말 감튀 어떻냐…서울 미식가들 줄 세운 새 메뉴",
+            "감자튀김과 버거 조합을 소개하는 외식 트렌드 기사다.",
+        )
+        self.assertNotEqual(topic, "감자")
+        self.assertFalse(main.is_fresh_potato_context("주말 감튀 어떻냐…감자튀김과 버거 조합"))
+
+    def test_dist_export_field_requires_horti_anchor_for_k_food_brief(self):
+        title = "KGC인삼공사 부여공장서 K-푸드 현장 간담회"
+        desc = "농식품부와 업계가 홍삼 수출 비관세장벽 대응 방안을 논의했다."
+        self.assertFalse(main.is_dist_export_field_context(title, desc, "biz.heraldcorp.com", "헤럴드경제"))
+
+    def test_policy_export_support_brief_requires_horti_anchor(self):
+        title = "농식품부, KGC인삼공사와 홍삼 수출 규제 해소 방안 논의"
+        desc = "K-푸드 수출 확대를 위해 비관세 장벽 대응과 간담회를 진행했다."
+        self.assertFalse(main.is_policy_export_support_brief_context(title, desc, "mk.co.kr", "매일경제"))
+
     def test_low_tier_policy_source_does_not_take_core_over_major_sources(self):
         low = self._make_article(
             "policy",

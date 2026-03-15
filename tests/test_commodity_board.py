@@ -82,6 +82,9 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(ctx["managed_total"], 33)
         self.assertEqual(ctx["program_total"], 18)
         self.assertEqual(ctx["active_total"], 1)
+        seasoning_group = next(group for group in ctx["groups"] if group["key"] == "seasoning_veg")
+        self.assertEqual(seasoning_group["active_count"], 0)
+        self.assertEqual(seasoning_group["item_total"], 5)
         self.assertNotIn("양배추", {item["label"] for group in ctx["groups"] for item in group["items"]})
 
     def test_managed_only_commodity_tags_are_emitted(self):
@@ -107,13 +110,45 @@ class TestCommodityBoard(unittest.TestCase):
             site_path="https://example.com/agri-news-brief/",
         )
         self.assertIn("품목보드", html)
-        self.assertIn("그날 기사와 연결된 품목만 류별로 보여드립니다.", html)
+        self.assertIn("류별로 보고, 기사 없는 류는 0건으로 표시합니다.", html)
         self.assertIn('data-view-tab="briefing"', html)
         self.assertIn('data-view-tab="commodity"', html)
         self.assertIn("오늘 브리핑", html)
         self.assertIn("품목보드", html)
         self.assertIn("사과", html)
+        self.assertIn("양념채소류", html)
+        self.assertIn("활성 품목 0 / 5", html)
+        self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("양배추", html)
+
+    def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
+        final_apple = self._make_article(
+            "supply",
+            "사과 가격 강세 지속… 저장 물량 관리 필요",
+            "사과 저장 물량 감소와 출하 조절 이슈로 가격 강세가 이어지고 있다.",
+            "https://www.news1.kr/economy/food/999001",
+        )
+        board_radish = self._make_article(
+            "supply",
+            "월동무 가격 강세… 산지 출하 조절 필요",
+            "월동무 수급 불안으로 무 도매가격이 상승하고 산지 출하 조절 필요성이 커졌다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=999002",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [final_apple]
+        board_by_section = {key: [] for key in self.conf}
+        board_by_section["supply"] = [final_apple, board_radish]
+        html = main.render_daily_page(
+            report_date="2026-03-15",
+            start_kst=self.now,
+            end_kst=self.now,
+            by_section=final_by_section,
+            archive_dates_desc=["2026-03-15"],
+            site_path="https://example.com/agri-news-brief/",
+            board_source_by_section=board_by_section,
+        )
+        self.assertIn("사과", html)
+        self.assertIn("무", html)
 
 
 if __name__ == "__main__":

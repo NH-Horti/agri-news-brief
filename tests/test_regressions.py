@@ -44,6 +44,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('handleWheelSwipe(e)', self.text)
         self.assertIn('addEventListener("wheel"', self.text)
         self.assertIn('gotoByOffset(-1', self.text)
+        self.assertIn('a[href],select,input,textarea,button', self.text)
 
     def test_rebuild_helpers_exist(self):
         self.assertIn("def _compute_window_for_report_date", self.text)

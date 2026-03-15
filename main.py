@@ -1681,6 +1681,33 @@ class Article:
         return self.originallink or self.link or self.canon_url
 
 
+_LAST_COMMODITY_BOARD_SOURCE_BY_SECTION: dict[str, list["Article"]] = {}
+
+
+def _set_last_commodity_board_source(source: dict[str, list["Article"]] | None) -> None:
+    global _LAST_COMMODITY_BOARD_SOURCE_BY_SECTION
+    data: dict[str, list["Article"]] = {}
+    for sec in SECTIONS:
+        key = str(sec.get("key") or "").strip()
+        if not key:
+            continue
+        items = []
+        for article in (source or {}).get(key, []) or []:
+            if isinstance(article, Article):
+                items.append(article)
+        data[key] = items
+    _LAST_COMMODITY_BOARD_SOURCE_BY_SECTION = data
+
+
+def _get_last_commodity_board_source() -> dict[str, list["Article"]]:
+    data = _LAST_COMMODITY_BOARD_SOURCE_BY_SECTION or {}
+    return {
+        str(sec.get("key") or "").strip(): list(data.get(str(sec.get("key") or "").strip(), []) or [])
+        for sec in SECTIONS
+        if str(sec.get("key") or "").strip()
+    }
+
+
 # -----------------------------
 # Utilities
 # -----------------------------
@@ -2448,6 +2475,8 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         return False
 
     key = str(item.get("key") or "").strip()
+    if key == "potato" and "감자" in txt and not is_fresh_potato_context(txt):
+        return False
     registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
     if topic and topic in registry_topics:
         return True
@@ -2490,6 +2519,10 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
         sc = 0.0
         if topic == "멜론" and not is_edible_melon_context(t):
             # 멜론(음원 플랫폼) 오탐 방지
+            continue
+
+        if topic == "감자" and not is_fresh_potato_context(t):
+            # 감튀/감자튀김 등 가공·외식 문맥 오탐 방지
             continue
 
 
@@ -2708,10 +2741,34 @@ def is_edible_pimang_context(text: str) -> bool:
     return edible_hit
 
 
+_POTATO_PROCESSED_MARKERS = [
+    "감튀", "감자튀김", "프렌치프라이", "프렌치 프라이", "해시브라운", "웨지감자",
+    "감자칩", "포테이토칩", "패스트푸드", "햄버거", "버거킹", "맥도날드", "롯데리아",
+]
+_POTATO_FRESH_MARKERS = [
+    "농산물", "원예", "채소", "산지", "농가", "재배", "작황", "수확", "출하", "반입",
+    "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매", "수급", "시세",
+    "가격", "저장", "물량", "씨감자", "봄감자", "수미감자", "감자 수급", "감자 가격",
+    "감자 작황", "감자 재배", "감자 출하", "감자 도매가격", "검역", "통관", "수출",
+]
 
 
+def is_fresh_potato_context(text: str) -> bool:
+    """Return True only when '감자' clearly refers to fresh produce / horticulture."""
+    t = (text or "").lower()
+    if "감자" not in t:
+        return False
 
+    fresh_hit = any(w.lower() in t for w in _POTATO_FRESH_MARKERS)
+    processed_hit = any(w.lower() in t for w in _POTATO_PROCESSED_MARKERS)
+    price_pat = bool(re.search(r"감자\s*(값|가격|시세|도매가격|출하가|경락가|수급|작황|재배)", t))
+    if price_pat:
+        fresh_hit = True
 
+    if processed_hit and not fresh_hit:
+        return False
+
+    return fresh_hit
 
 
 _APPLE_APOLOGY_MARKERS = (
@@ -3733,6 +3790,18 @@ _POLICY_EXPORT_SUPPORT_TERMS = (
 _POLICY_EXPORT_SUPPORT_EXPORT_TERMS = (
     "k-푸드", "k푸드", "수출", "수출 목표", "수출 확대", "수출시장", "식품산업",
 )
+_NON_HORTI_PROCESSED_EXPORT_MARKERS = (
+    "kgc", "kgc인삼공사", "정관장", "인삼공사", "홍삼", "인삼", "건강기능식품", "건기식", "건강식품",
+)
+_NON_HORTI_PROCESSED_EXPORT_ALLOW_MARKERS = (
+    "농산물", "원예", "과수", "과일", "채소", "화훼", "청과", "산지",
+    "도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터",
+    "at", "한국농수산식품유통공사",
+    "사과", "배", "감귤", "포도", "딸기", "토마토", "오이", "파프리카", "고추",
+    "무", "배추", "양파", "마늘", "대파", "생강", "가지", "상추", "깻잎", "시금치",
+    "미나리", "당근", "브로콜리", "양배추", "감자", "고구마", "복숭아", "참외",
+    "멜론", "키위", "참다래", "국화", "장미", "백합", "카네이션",
+)
 
 
 def is_remote_foreign_trade_brief_context(title: str, desc: str, dom: str = "") -> bool:
@@ -3766,6 +3835,26 @@ def is_remote_foreign_trade_brief_context(title: str, desc: str, dom: str = "") 
     return (dom_norm == "dream.kotra.or.kr") or (foreign_hits >= 3) or foreign_shipping_like
 
 
+def is_non_horti_processed_export_context(title: str, desc: str) -> bool:
+    """Return True for processed-food export briefs with no horticulture anchor."""
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    marker_hits = count_any(txt, [w.lower() for w in _NON_HORTI_PROCESSED_EXPORT_MARKERS])
+    if marker_hits == 0:
+        return False
+    if count_any(txt, [w.lower() for w in _NON_HORTI_PROCESSED_EXPORT_ALLOW_MARKERS]) >= 1:
+        return False
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    if topic in _HORTI_TOPICS_SET and topic_sc >= 1.0:
+        return False
+    return best_horti_score(ttl, desc or "") < 1.2
+
+
 def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
     """Return True for export-field / distribution-channel stories that belong in dist."""
     ttl = title or ""
@@ -3779,24 +3868,22 @@ def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: st
         return False
     if is_policy_market_brief_context(txt, dom, press) or is_supply_stabilization_policy_context(txt, dom, press):
         return False
+    if is_non_horti_processed_export_context(ttl, desc or ""):
+        return False
 
     export_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_TERMS])
     market_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_MARKET_TERMS])
     interview_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_INTERVIEW_TERMS])
     policy_heavy_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_POLICY_HEAVY_TERMS])
-    agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "aT")])
-    org_hits = count_any(txt, [w.lower() for w in ("aT 사장", "at 사장", "한국농수산식품유통공사")])
-    horti_sc = best_horti_score(ttl, desc or "")
-    horti_title_sc = best_horti_score(ttl, "")
+    agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "aT", "한국농수산식품유통공사")])
+    org_hits = count_any(txt, [w.lower() for w in ("aT 사장", "at 사장", "한국농수산식품유통공사", "aT", "at")])
 
     if export_hits == 0 or market_hits == 0:
         return False
-    if agri_hits == 0 and org_hits == 0 and horti_sc < 1.6 and horti_title_sc < 1.2:
+    if agri_hits == 0 and org_hits == 0:
         return False
     if policy_heavy_hits >= 3 and interview_hits == 0 and market_hits < 2:
         return False
-    if org_hits >= 1 and export_hits >= 2 and market_hits >= 2:
-        return True
     return market_hits >= 2 or (market_hits >= 1 and interview_hits >= 1)
 
 
@@ -3811,6 +3898,8 @@ def is_policy_export_support_brief_context(title: str, desc: str, dom: str = "",
     if is_policy_event_tail_context(ttl, desc or "", dom, press):
         return False
     if is_dist_export_field_context(ttl, desc or "", dom, press):
+        return False
+    if is_non_horti_processed_export_context(ttl, desc or ""):
         return False
 
     policy_hits = count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_TERMS])
@@ -6087,6 +6176,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 통과
     if "멜론" in text and not is_edible_melon_context(text):
         return _reject("melon_non_edible_context")
+    if "감자" in text and not is_fresh_potato_context(text):
+        return _reject("potato_non_fresh_context")
+    if key in ("supply", "policy", "dist") and is_non_horti_processed_export_context(ttl, desc):
+        return _reject("non_horti_processed_export_context")
     # ✅ '피망' 동음이의어(게임/브랜드) 오탐 차단:
     # - 채소/농업 맥락일 때만 통과
     if "피망" in text and not is_edible_pimang_context(text):
@@ -10990,6 +11083,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     reset_extra_call_budget()
     reset_debug_report()
     raw_by_section: dict[str, list[Article]] = {}
+    board_source_by_section: dict[str, list[Article]] = {str(sec.get("key") or "").strip(): [] for sec in SECTIONS if str(sec.get("key") or "").strip()}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
     for sec in ordered:
@@ -11265,17 +11359,21 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
         pre = select_top_articles(candidates, key, buffer_n)
 
         picked: list[Article] = []
+        board_pool: list[Article] = []
         for a in pre:
             reason = _postbuild_article_reject_reason(a, key)
             if reason:
                 log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
                 continue
+            if len(board_pool) < max(MAX_PER_SECTION * 6, 36):
+                board_pool.append(a)
             if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                 picked.append(a)
                 if len(picked) >= MAX_PER_SECTION:
                     break
 
         final_by_section[key] = picked
+        board_source_by_section[key] = board_pool
         if DEBUG_SELECTION:
             top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
             log.info("[DEBUG] section=%s candidates=%d selected=%d", key, len(candidates), len(final_by_section[key]))
@@ -11330,6 +11428,7 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     if pruned_final:
         log.info("[AUDIT] pruned %d final item(s) after section assembly", pruned_final)
     _sync_debug_with_final_sections(final_by_section)
+    _set_last_commodity_board_source(board_source_by_section)
 
     return final_by_section
 
@@ -11969,14 +12068,13 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
                 int(item.get("order") or 0),
             )
         )
-        if not visible_items:
-            continue
         groups.append(
             {
                 "key": str(group.get("key") or "").strip(),
                 "title": str(group.get("title") or "").strip(),
                 "color": str(group.get("color") or "#475569").strip() or "#475569",
                 "items": visible_items,
+                "item_total": len(items),
                 "active_count": len(visible_items),
                 "article_count": sum(int(item.get("article_count") or 0) for item in visible_items),
             }
@@ -11992,21 +12090,6 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
 def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
-    if not groups:
-        return f"""
-        <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
-          <div class="commodityHead">
-            <div>
-              <div class="kicker">품목 중심 보기</div>
-              <h2 id="commodityBoardTitle">품목보드</h2>
-              <div class="commodityLead">오늘 기사와 연결된 품목이 아직 없습니다.</div>
-            </div>
-            <div class="commodityBoardSummary">활성 품목 0개</div>
-          </div>
-          <div class="empty commodityEmpty">오늘 연결된 품목이 생기면 이 탭에서 류별로 보여드립니다.</div>
-        </section>
-        """
-
     nav_html = "".join(
         f'<a class="commodityGroupChip" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
         f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
@@ -12026,7 +12109,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             )
             if isinstance(top_article, Article):
                 story_html = (
-                    f'<a class="commodityStory" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
+                    f'<a class="commodityStory" data-swipe-ignore="1" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
                     f'{esc(top_article.title)}</a>'
                 )
             else:
@@ -12048,6 +12131,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 """
             )
 
+        empty_group_html = '<div class="empty commodityGroupEmpty">오늘 연결된 품목 기사가 없습니다.</div>' if not item_cards else ""
         group_blocks.append(
             f"""
             <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock">
@@ -12056,11 +12140,12 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                   <span class="commodityGroupDot" style="background:{esc(str(group.get('color') or '#475569'))}"></span>
                   <h3>{esc(str(group.get('title') or ''))}</h3>
                 </div>
-                <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {len(group.get('items') or [])}</div>
+                <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {int(group.get('item_total') or 0)}</div>
               </div>
               <div class="commodityGrid">
                 {''.join(item_cards)}
               </div>
+              {empty_group_html}
             </section>
             """
         )
@@ -12071,7 +12156,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
         <div>
           <div class="kicker">품목 중심 보기</div>
           <h2 id="commodityBoardTitle">품목보드</h2>
-          <div class="commodityLead">그날 기사와 연결된 품목만 류별로 보여드립니다.</div>
+          <div class="commodityLead">류별로 보고, 기사 없는 류는 0건으로 표시합니다.</div>
         </div>
         <div class="commodityBoardSummary">오늘 기사 연결 품목 {int(board_ctx.get('active_total') or 0)}개</div>
       </div>
@@ -12081,7 +12166,8 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     """
 
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict[str, list[Article]],
-                      archive_dates_desc: list[str], site_path: str) -> str:
+                      archive_dates_desc: list[str], site_path: str,
+                      board_source_by_section: dict[str, list[Article]] | None = None) -> str:
     # 상단 칩 카운트 + 섹션별 중요도 정렬
     chips = []
     total = 0
@@ -12140,7 +12226,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         '</div>'
         '</div>'
     )
-    commodity_board_ctx = build_managed_commodity_board_context(by_section)
+    commodity_board_ctx = build_managed_commodity_board_context(board_source_by_section or _get_last_commodity_board_source() or by_section)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
 
     # ✅ (2) 섹션 렌더: 더 이상 숨김(<details>) 사용하지 않고 '전부' 노출
@@ -12168,7 +12254,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                   <span class=\"dot\">·</span>
                   <span class=\"topic\">{esc(a.topic)}</span>
                 </div>
-                <a class=\"btnOpen\" href=\"{esc(url)}\" target=\"_blank\" rel=\"noopener\">원문 열기</a>
+                <a class=\"btnOpen\" data-swipe-ignore=\"1\" href=\"{esc(url)}\" target=\"_blank\" rel=\"noopener\">원문 열기</a>
               </div>
               <div class=\"ttl\">{esc(a.title)}</div>
               <div class=\"sum\">{summary_html}</div>
@@ -12349,7 +12435,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
     .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
     .commodityTileMeta{{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}}
-    .commodityEmpty{{padding:20px 18px 22px}}
+.commodityEmpty{{padding:20px 18px 22px}}
+.commodityGroupEmpty{{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}}
 
     .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
           scroll-margin-top: 150px;
@@ -12616,7 +12703,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (target.closest('[data-swipe-ignore="1"]')) return true;
         // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
         if (target.closest(".topbar")) return true;
-        if (target.closest("select,input,textarea,button,[contenteditable=\\"true\\"]")) return true;
+        if (target.closest("a[href],select,input,textarea,button,[contenteditable=\\"true\\"]")) return true;
         return false;
       }}
 
