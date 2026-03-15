@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T13:50:55+09:00",
-  "build_tag": "ea81e35",
+  "generated_at_kst": "2026-03-15T13:58:59+09:00",
+  "build_tag": "a0f2b09",
   "filter_rejects": [
     {
       "section": "policy",
@@ -621,18 +621,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
-      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "newsian",
       "domain": "newsian.co.kr",
       "title": "[한입 지식] \"재사용 가능한가\"…1·2차전지 가르는 '가역성'의 비밀",
       "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87190"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
+      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
     },
     {
       "section": "supply",
@@ -2461,18 +2461,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "FINOMY",
-      "domain": "finomy.com",
-      "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
-      "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "DNEWS",
       "domain": "dnews.co.kr",
       "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
       "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
     },
     {
       "section": "supply",
@@ -3031,16 +3031,16 @@
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "양파 값 추락···중국산 수입 관리를",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
+      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
     },
     {
       "section": "supply",
       "reason": "excluded_items",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "정윤상 한농연장흥군연합회장, \"공동체가 농업 지키는 힘…함께해야 더...",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402515"
+      "title": "양파 값 추락···중국산 수입 관리를",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402572"
     },
     {
       "section": "supply",
@@ -4335,16 +4335,16 @@
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "supply",
@@ -4861,18 +4861,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "ASIAA",
-      "domain": "asiaa.co.kr",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
-      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "businesskorea",
       "domain": "businesskorea.co.kr",
       "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
       "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ASIAA",
+      "domain": "asiaa.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
+      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
     },
     {
       "section": "dist",
@@ -5261,18 +5261,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "WOWTV",
-      "domain": "wowtv.co.kr",
-      "title": "농식품부 , KGC인삼공사서 현장간담회… 비관세 대응 논의",
-      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "ZIKSIR",
       "domain": "ziksir.com",
       "title": "농식품부 , KGC인삼공사 현장 간담회… 비관세 장벽 대응 논의",
       "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "WOWTV",
+      "domain": "wowtv.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장간담회… 비관세 대응 논의",
+      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
     },
     {
       "section": "dist",
@@ -6405,32 +6405,12 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 13.97,
-      "tail_cut": 14.37,
-      "core_min": 13.97,
+      "threshold": 13.82,
+      "tail_cut": 14.22,
+      "core_min": 13.82,
       "total_candidates": 78,
       "total_selected": 5,
       "top": [
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 21.97,
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "경남도·농협경남본부, 경남 딸기 주산지 출하 앞두고 소비촉진 행사 실...",
-          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316382",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
         {
           "selected": true,
           "is_core": true,
@@ -6446,6 +6426,26 @@
             "market_hits": 1,
             "strength": 3,
             "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 21.77,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "경남도·농협경남본부, 경남 딸기 주산지 출하 앞두고 소비촉진 행사 실...",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316382",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
@@ -6700,7 +6700,7 @@
           "domain": "agrinet.co.kr",
           "title": "충주시 신품종 사과 이지플 묘목 공급 시작",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402503",
-          "reason": "below_threshold",
+          "reason": "tail_cut",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -7536,10 +7536,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "newsclaim",
-          "domain": "newsclaim.co.kr",
-          "title": "bhc, 당근 포장주문 입점",
-          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
+          "press": "insightkorea",
+          "domain": "insightkorea.co.kr",
+          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -7556,10 +7556,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "insightkorea",
-          "domain": "insightkorea.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
+          "press": "newsclaim",
+          "domain": "newsclaim.co.kr",
+          "title": "bhc, 당근 포장주문 입점",
+          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -9424,7 +9424,7 @@
         ],
         "topic_seed_terms": [
           "대책",
-          "딸기",
+          "배추",
           "사과",
           "배"
         ],
