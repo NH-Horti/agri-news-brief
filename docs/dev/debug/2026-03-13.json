@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T15:55:09+09:00",
-  "build_tag": "c3c4eec",
+  "generated_at_kst": "2026-03-15T16:25:38+09:00",
+  "build_tag": "b4bed42",
   "filter_rejects": [
     {
       "section": "policy",
@@ -165,18 +165,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "CPBC",
-      "domain": "news.cpbc.co.kr",
-      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
-      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "obsnews",
       "domain": "obsnews.co.kr",
       "title": "\"공공요금 동결·신속 추경…취약계층 직접 지원 \"",
       "url": "https://www.obsnews.co.kr/news/articleView.html?idxno=1516979"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "CPBC",
+      "domain": "news.cpbc.co.kr",
+      "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라\"",
+      "url": "https://news.cpbc.co.kr/article/1171294?division=NAVER"
     },
     {
       "section": "policy",
@@ -245,18 +245,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "국민일보",
-      "domain": "kmib.co.kr",
-      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
-      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "뉴스핌",
       "domain": "newspim.com",
       "title": "[종합] 李대통령 \"민생경제 골든타임 사수…밤새워서라도 추경 신속히\"",
       "url": "https://www.newspim.com/news/view/20260312001237"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "국민일보",
+      "domain": "kmib.co.kr",
+      "title": "이 대통령 “추경 밤을 새워서라도 신속히 하라”",
+      "url": "https://www.kmib.co.kr/article/view.asp?arcid=1773300742&code=11121600&cp=nv"
     },
     {
       "section": "policy",
@@ -317,18 +317,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적\"...",
       "url": "https://www.newsis.com/view/NISX20260312_0003546260"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
     },
     {
       "section": "policy",
@@ -348,11 +348,11 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
-      "url": "https://www.news1.kr/photos/7794289"
+      "reason": "policy_context_gate",
+      "press": "inews365",
+      "domain": "inews365.com",
+      "title": "이 대통령, 중동 전쟁 관련, 추경 편성 신속 지시",
+      "url": "https://www.inews365.com/news/article.html?no=910398"
     },
     {
       "section": "policy",
@@ -733,18 +733,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "MTN",
-      "domain": "news.mtn.co.kr",
-      "title": "롯데카드, 과징금 96억원 철퇴…\"검토 후 이의절차 진행\"",
-      "url": "https://news.mtn.co.kr/news-detail/2026031211132984477"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "newsprime",
       "domain": "newsprime.co.kr",
       "title": "개보위, 롯데카드에 과징금 96억원…\"주민번호 과도하게 수집·처리\"",
       "url": "http://www.newsprime.co.kr/news/article.html?no=726823"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "MTN",
+      "domain": "news.mtn.co.kr",
+      "title": "롯데카드, 과징금 96억원 철퇴…\"검토 후 이의절차 진행\"",
+      "url": "https://news.mtn.co.kr/news-detail/2026031211132984477"
     },
     {
       "section": "supply",
@@ -3141,18 +3141,18 @@
     {
       "section": "supply",
       "reason": "excluded_items",
-      "press": "머니투데이",
-      "domain": "mt.co.kr",
-      "title": "23개 특별관리품목 정해 '가격 모니터링'…\"과도한 시장 개입 아냐\"",
-      "url": "https://www.mt.co.kr/economy/2026/03/12/2026031213385132087"
+      "press": "아주경제",
+      "domain": "ajunews.com",
+      "title": "정부, 민생 특별관리 품목에 돼지고기·계란·고등어 등 23개 지정",
+      "url": "https://www.ajunews.com/view/20260312141858513"
     },
     {
       "section": "supply",
       "reason": "excluded_items",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "돼지고기·교복·세제까지…23개 품목 물가 특별관리",
-      "url": "https://biz.sbs.co.kr/article_hub/20000297065?division=NAVER"
+      "press": "머니투데이",
+      "domain": "mt.co.kr",
+      "title": "23개 특별관리품목 정해 '가격 모니터링'…\"과도한 시장 개입 아냐\"",
+      "url": "https://www.mt.co.kr/economy/2026/03/12/2026031213385132087"
     },
     {
       "section": "supply",
@@ -3165,10 +3165,10 @@
     {
       "section": "supply",
       "reason": "excluded_items",
-      "press": "아주경제",
-      "domain": "ajunews.com",
-      "title": "정부, 민생 특별관리 품목에 돼지고기·계란·고등어 등 23개 지정",
-      "url": "https://www.ajunews.com/view/20260312141858513"
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "돼지고기·교복·세제까지…23개 품목 물가 특별관리",
+      "url": "https://biz.sbs.co.kr/article_hub/20000297065?division=NAVER"
     },
     {
       "section": "supply",
@@ -3525,18 +3525,18 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "gndomin",
-      "domain": "gndomin.com",
-      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "newsworker",
       "domain": "newsworker.co.kr",
       "title": "신안군, 배 재배 농가 과수화상병 사전 약제방제 당부",
       "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=417334"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "gndomin",
+      "domain": "gndomin.com",
+      "title": "경남농기원, 고위험 병해충 정밀 감시체계 구축",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=468198"
     },
     {
       "section": "supply",
@@ -4173,18 +4173,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "livesnews",
-      "domain": "livesnews.com",
-      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
-      "url": "https://www.livesnews.com/news/article.html?no=60127"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "M-I",
       "domain": "m-i.kr",
       "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "livesnews",
+      "domain": "livesnews.com",
+      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
+      "url": "https://www.livesnews.com/news/article.html?no=60127"
     },
     {
       "section": "dist",
@@ -4301,18 +4301,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "livesnews",
-      "domain": "livesnews.com",
-      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
-      "url": "https://www.livesnews.com/news/article.html?no=60127"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "M-I",
       "domain": "m-i.kr",
       "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "livesnews",
+      "domain": "livesnews.com",
+      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
+      "url": "https://www.livesnews.com/news/article.html?no=60127"
     },
     {
       "section": "dist",
@@ -4625,22 +4625,6 @@
       "domain": "cnbnews.com",
       "title": "성주군, 참외 들녘별 병해충 경보 체계 운영 발대식 개최",
       "url": "https://www.cnbnews.com/news/article.html?no=783015"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "smartbizn",
-      "domain": "smartbizn.com",
-      "title": "정선군, 7억 투입 소나무재선충병 방제 나서···청정 산림 보호",
-      "url": "https://www.smartbizn.com/news/articleView.html?idxno=138698"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "성주군, ‘참외 들녘별 병해충 경보 체계' 운영 본격 돌입",
-      "url": "https://www.nongmin.com/article/20260311500241"
     },
     {
       "section": "pest",
@@ -4965,6 +4949,14 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
+      "url": "https://www.etoday.co.kr/news/view/2564743"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "K푸드 수출 막는 '비관세장벽' 현장서 푼다…농식품부, 업계 간담회 개...",
@@ -4977,14 +4969,6 @@
       "domain": "foodnews.co.kr",
       "title": "농식품부, 농식품 수출업계와 비관세장벽 대응 논의",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117642"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
-      "url": "https://www.etoday.co.kr/news/view/2564743"
     },
     {
       "section": "pest",
