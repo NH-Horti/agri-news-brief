@@ -50,6 +50,13 @@ class TestCommodityBoard(unittest.TestCase):
         )
         self.assertIn("radish", main.managed_commodity_keys_for_article(article))
 
+    def test_managed_only_commodities_feed_supply_queries_and_topics(self):
+        self.assertIn("무 수급", main.SUPPLY_ITEM_QUERIES)
+        self.assertIn("양파 수급", main.SUPPLY_ITEM_QUERIES)
+        self.assertIn("가지 가격", main.SUPPLY_ITEM_QUERIES)
+        self.assertIn("무 가격", main.SUPPLY_ITEM_MUST_TERMS)
+        self.assertIn("무 가격", dict(main.MANAGED_ONLY_COMMODITY_TOPICS)["무"])
+
     def test_program_core_board_item_uses_registry_topic(self):
         article = self._make_article(
             "supply",
@@ -76,6 +83,11 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(ctx["program_total"], 18)
         self.assertEqual(ctx["active_total"], 1)
         self.assertNotIn("양배추", {item["label"] for group in ctx["groups"] for item in group["items"]})
+
+    def test_managed_only_commodity_tags_are_emitted(self):
+        tags = main._commodity_tags_in_text("월동무 가격 급등과 양파 수급 불안이 이어지고 있다.", limit=5)
+        self.assertIn("무", tags)
+        self.assertIn("양파", tags)
 
     def test_render_daily_page_includes_commodity_boards(self):
         apple_article = self._make_article(

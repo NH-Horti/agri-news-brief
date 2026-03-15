@@ -1285,6 +1285,88 @@ MANAGED_COMMODITY_KEY_BY_REGISTRY_TOPIC = {
 }
 
 
+def _managed_only_commodity_items() -> list[dict[str, Any]]:
+    return [item for item in MANAGED_COMMODITY_CATALOG if not list(item.get("registry_topics") or [])]
+
+
+def _managed_commodity_topic_terms(item: dict[str, Any]) -> list[str]:
+    values: list[str] = []
+    label = str(item.get("label") or "").strip()
+    short_label = str(item.get("short_label") or "").strip()
+    if len(label) >= 2:
+        values.append(label)
+    if len(short_label) >= 2:
+        values.append(short_label)
+    if len(short_label) == 1:
+        values.extend([f"{short_label}값", f"{short_label} 가격", f"{short_label} 수급"])
+    values.extend(item.get("match_terms") or [])
+    values.extend(item.get("context_terms") or [])
+    return _ordered_unique_terms(values)
+
+
+def _managed_commodity_supply_queries(item: dict[str, Any]) -> list[str]:
+    out: list[str] = []
+    out.extend(_ordered_unique_terms(item.get("context_terms") or []))
+
+    base_terms: list[str] = []
+    label = str(item.get("label") or "").strip()
+    short_label = str(item.get("short_label") or "").strip()
+    if len(label) >= 2:
+        base_terms.append(label)
+    if len(short_label) >= 2 and short_label not in base_terms:
+        base_terms.append(short_label)
+    for term in item.get("match_terms") or []:
+        term = str(term or "").strip()
+        if len(term) >= 2 and term not in base_terms:
+            base_terms.append(term)
+        if len(base_terms) >= 3:
+            break
+
+    signals = ["수급", "가격", "작황"] if bool(item.get("program_core")) else ["가격", "출하"]
+    for base in base_terms[:3]:
+        for sig in signals:
+            out.append(f"{base} {sig}")
+    return _ordered_unique_terms(out)
+
+
+def _managed_commodity_must_terms(item: dict[str, Any]) -> list[str]:
+    values: list[str] = []
+    for term in item.get("match_terms") or []:
+        term = str(term or "").strip()
+        if len(term) >= 2:
+            values.append(term)
+    values.extend(item.get("context_terms") or [])
+    return _ordered_unique_terms(values)
+
+
+MANAGED_ONLY_COMMODITY_ITEMS = _managed_only_commodity_items()
+MANAGED_ONLY_COMMODITY_TOPICS = [
+    (str(item.get("label") or "").strip(), _managed_commodity_topic_terms(item))
+    for item in MANAGED_ONLY_COMMODITY_ITEMS
+    if str(item.get("label") or "").strip()
+]
+MANAGED_ONLY_SUPPLY_QUERIES = _ordered_unique_terms(
+    query
+    for item in MANAGED_ONLY_COMMODITY_ITEMS
+    for query in _managed_commodity_supply_queries(item)
+)
+MANAGED_ONLY_SUPPLY_MUST_TERMS = _ordered_unique_terms(
+    term
+    for item in MANAGED_ONLY_COMMODITY_ITEMS
+    for term in _managed_commodity_must_terms(item)
+)
+MANAGED_ONLY_TOPIC_REP_BY_NAME = {
+    str(item.get("label") or "").strip(): str(item.get("short_label") or item.get("label") or "").strip()
+    for item in MANAGED_ONLY_COMMODITY_ITEMS
+    if str(item.get("label") or "").strip()
+}
+ALL_ITEM_COMMODITY_TOPICS = list(ITEM_COMMODITY_TOPICS) + list(MANAGED_ONLY_COMMODITY_TOPICS)
+HORTI_CORE_MARKERS = _ordered_unique_terms(
+    list(HORTI_CORE_MARKERS)
+    + [term for _topic, terms in MANAGED_ONLY_COMMODITY_TOPICS for term in terms]
+)
+
+
 def _commodity_tags_in_text(text: str, limit: int = 9) -> list[str]:
     txt = (text or "").lower()
     if not txt:
@@ -1323,6 +1405,14 @@ def _commodity_tags_in_text(text: str, limit: int = 9) -> list[str]:
                 out.append(tag)
             if len(out) >= cap:
                 return out
+    for item in MANAGED_ONLY_COMMODITY_ITEMS:
+        label = str(item.get("label") or "").strip()
+        if not label or label in out:
+            continue
+        if _managed_commodity_matches_text(item, txt):
+            out.append(label)
+            if len(out) >= cap:
+                return out
     return out
 
 
@@ -1331,10 +1421,16 @@ SUPPLY_ITEM_QUERIES = _ordered_unique_terms(
     for entry in COMMODITY_REGISTRY
     for q in (entry.get("supply_queries") or [])
 )
+SUPPLY_ITEM_QUERIES = _ordered_unique_terms(
+    list(SUPPLY_ITEM_QUERIES) + list(MANAGED_ONLY_SUPPLY_QUERIES)
+)
 SUPPLY_ITEM_MUST_TERMS = _ordered_unique_terms(
     term
     for entry in COMMODITY_REGISTRY
     for term in _commodity_must_terms(entry)
+)
+SUPPLY_ITEM_MUST_TERMS = _ordered_unique_terms(
+    list(SUPPLY_ITEM_MUST_TERMS) + list(MANAGED_ONLY_SUPPLY_MUST_TERMS)
 )
 SUPPLY_CONTEXT_QUERIES = [
     "과수 묘목 품귀",
@@ -1348,11 +1444,13 @@ SUPPLY_TITLE_FOCUS_TERMS_L = [
     for term in _ordered_unique_terms(
         ["과일", "채소", "농산물", "청과", "수급", "작황", "출하", "반입", "경락"]
         + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
+        + [term for _topic, terms in MANAGED_ONLY_COMMODITY_TOPICS for term in terms]
     )
 ]
 MACRO_POLICY_KEEP_TERMS = _ordered_unique_terms(
     ["농산물", "농식품", "농식품부", "과일", "채소", "공급", "수급", "안정", "안정화"]
     + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
+    + [term for _topic, terms in MANAGED_ONLY_COMMODITY_TOPICS for term in terms]
 )
 POLICY_MARKET_BRIEF_QUERIES = [
     "농축산물 가격 동향",
@@ -1507,10 +1605,12 @@ NON_ITEM_COMMODITY_TOPICS = [
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해"]),
 ]
 COMMODITY_TOPICS = list(ITEM_COMMODITY_TOPICS) + list(NON_ITEM_COMMODITY_TOPICS)
+COMMODITY_TOPICS = list(ALL_ITEM_COMMODITY_TOPICS) + list(NON_ITEM_COMMODITY_TOPICS)
 
 # Alias for generalized topic signals & fallback query generation
 TOPICS = COMMODITY_TOPICS
 TOPIC_REP_BY_NAME_L = dict(ITEM_TOPIC_REP_BY_NAME)
+TOPIC_REP_BY_NAME_L.update(MANAGED_ONLY_TOPIC_REP_BY_NAME)
 TOPIC_REP_BY_NAME_L.update({
     name: ((terms[0] if terms else (name.split("/")[0] if name else "")).strip())
     for name, terms in NON_ITEM_COMMODITY_TOPICS
@@ -2294,7 +2394,7 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     ],
 }
 
-_HORTI_TOPICS_SET = {entry["topic"] for entry in COMMODITY_REGISTRY}
+_HORTI_TOPICS_SET = {topic for topic, _terms in ALL_ITEM_COMMODITY_TOPICS}
 
 _MANAGED_COMMODITY_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     "radish": [
@@ -6939,6 +7039,17 @@ def _collect_supply_commodity_tokens() -> set[str]:
                 term_s = str(term or "").strip()
                 if len(term_s) >= 2:
                     out.add(term_s)
+    for item in MANAGED_ONLY_COMMODITY_ITEMS:
+        label = str(item.get("label") or "").strip()
+        short_label = str(item.get("short_label") or "").strip()
+        if len(label) >= 2:
+            out.add(label)
+        if len(short_label) >= 2:
+            out.add(short_label)
+        for term in _managed_commodity_topic_terms(item):
+            term_s = str(term or "").strip()
+            if len(term_s) >= 2:
+                out.add(term_s)
     out.update({"쌀", "비축미"})
     return out
 
@@ -8846,14 +8957,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
 
 
-def _missing_supply_feature_reps(candidates_sorted: list["Article"], thr: float, max_n: int) -> list[str]:
+def _missing_supply_feature_reps(
+    candidates_sorted: list["Article"],
+    thr: float,
+    max_n: int,
+    seed_queries: list[str] | None = None,
+) -> list[str]:
     if max_n <= 0:
         return []
     pool = [a for a in candidates_sorted if float(getattr(a, "score", 0.0) or 0.0) >= float(thr or 0.0)]
     preview = select_top_articles(pool, "supply", max_n) if pool else []
+    base_seed_queries = list(seed_queries or SUPPLY_ITEM_QUERIES)
     query_reps = [
         TOPIC_REP_BY_TERM_L.get((seed or "").strip().lower(), (seed or "").strip().lower())
-        for seed in _extract_seed_terms_from_queries(SUPPLY_ITEM_QUERIES, limit=max(8, max_n * 3))
+        for seed in _extract_seed_terms_from_queries(base_seed_queries, limit=max(8, max_n * 3))
         if (seed or "").strip()
     ]
     if not query_reps:
@@ -8881,8 +8998,13 @@ def _missing_supply_feature_reps(candidates_sorted: list["Article"], thr: float,
         return []
     return [rep for rep in query_reps if rep and rep not in feature_reps]
 
-def _needs_supply_feature_refresh(candidates_sorted: list["Article"], thr: float, max_n: int) -> bool:
-    return bool(_missing_supply_feature_reps(candidates_sorted, thr, max_n))
+def _needs_supply_feature_refresh(
+    candidates_sorted: list["Article"],
+    thr: float,
+    max_n: int,
+    seed_queries: list[str] | None = None,
+) -> bool:
+    return bool(_missing_supply_feature_reps(candidates_sorted, thr, max_n, seed_queries=seed_queries))
 
 # -----------------------------
 # Optional RSS ingestion (공식/신뢰 소스 보강)
@@ -9596,7 +9718,7 @@ def _build_recall_fallback_queries(
             seed_source = list(prioritized_seeds)
         meta["pool_seed_hits"] = dict(pool_seed_hits)
         section_max_n = max(1, int(section_conf.get("max_n") or MAX_PER_SECTION or 0))
-        refresh_reps = _missing_supply_feature_reps(candidates_sorted, thr, section_max_n)
+        refresh_reps = _missing_supply_feature_reps(candidates_sorted, thr, section_max_n, seed_queries=base_queries)
         refresh_rep_set = set(refresh_reps)
         feature_refresh_seeds = [
             seed for seed in (prioritized_seeds or query_seed_terms)
@@ -10082,7 +10204,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             supply_feature_refresh = False
             if section_key == "supply":
                 try:
-                    supply_feature_refresh = _needs_supply_feature_refresh(candidates_sorted, thr, max_n)
+                    supply_feature_refresh = _needs_supply_feature_refresh(candidates_sorted, thr, max_n, seed_queries=queries)
                 except Exception:
                     supply_feature_refresh = False
 

@@ -1270,9 +1270,12 @@ class TestClassifierBehavior(unittest.TestCase):
         supply_conf = next(sec for sec in main.SECTIONS if sec["key"] == "supply")
         self.assertEqual(supply_conf["queries"], list(main.SUPPLY_ITEM_QUERIES) + list(main.SUPPLY_CONTEXT_QUERIES))
         self.assertEqual(supply_conf["must_terms"], list(main.SUPPLY_GENERAL_MUST_TERMS) + list(main.SUPPLY_ITEM_MUST_TERMS))
-        self.assertEqual(main._HORTI_TOPICS_SET, {entry["topic"] for entry in main.COMMODITY_REGISTRY})
+        self.assertTrue({entry["topic"] for entry in main.COMMODITY_REGISTRY}.issubset(main._HORTI_TOPICS_SET))
+        self.assertIn("무", main._HORTI_TOPICS_SET)
+        self.assertIn("양파", main._HORTI_TOPICS_SET)
         self.assertEqual(main.TOPIC_REP_BY_TERM_L["배"], "배")
         self.assertEqual(main.TOPIC_REP_BY_TERM_L["천혜향"], "감귤")
+        self.assertEqual(main.TOPIC_REP_BY_TERM_L["월동무"], "무")
 
     def test_registry_rep_terms_drive_seed_extraction_and_brief_tags(self):
         seeds = main._extract_seed_terms_from_queries(["배 과일 가격", "천혜향 출하", "멜론 도매가격"], limit=6)
