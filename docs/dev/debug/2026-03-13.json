@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T23:08:43+09:00",
-  "build_tag": "47a4344",
+  "generated_at_kst": "2026-03-15T23:46:06+09:00",
+  "build_tag": "b8e91f3",
   "filter_rejects": [
     {
       "section": "policy",
@@ -301,14 +301,6 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "tvchosun",
-      "domain": "news.tvchosun.com",
-      "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
-      "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "KBS",
       "domain": "news.kbs.co.kr",
       "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
@@ -317,10 +309,10 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
+      "press": "tvchosun",
+      "domain": "news.tvchosun.com",
+      "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
+      "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
     },
     {
       "section": "policy",
@@ -329,6 +321,14 @@
       "domain": "newsis.com",
       "title": "이 대통령 \"추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적\"...",
       "url": "https://www.newsis.com/view/NISX20260312_0003546260"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "newstomato",
+      "domain": "newstomato.com",
+      "title": "\"밤을 새워서라도 신속히\"…추경, 최대 '20조'",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294094&inflow=N"
     },
     {
       "section": "policy",
@@ -348,11 +348,11 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "이 대통령, 수석보좌관회의에서 ' 농축수산물 할인 확대' 언급",
-      "url": "https://www.news1.kr/photos/7794289"
+      "reason": "policy_context_gate",
+      "press": "inews365",
+      "domain": "inews365.com",
+      "title": "이 대통령, 중동 전쟁 관련, 추경 편성 신속 지시",
+      "url": "https://www.inews365.com/news/article.html?no=910398"
     },
     {
       "section": "policy",
@@ -509,18 +509,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "YTN",
-      "domain": "ytn.co.kr",
-      "title": "[현장영상+] 석유 최고 가격 제 내일 0시부터 시행",
-      "url": "https://www.ytn.co.kr/_ln/0102_202603121956478268"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "FTODAY",
       "domain": "ftoday.co.kr",
       "title": "라면·과자·빵·식용유 '릴레이 가격 인하'…李대통령 \"민생 안정에 큰...",
       "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=356377"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "YTN",
+      "domain": "ytn.co.kr",
+      "title": "[현장영상+] 석유 최고 가격 제 내일 0시부터 시행",
+      "url": "https://www.ytn.co.kr/_ln/0102_202603121956478268"
     },
     {
       "section": "policy",
@@ -813,18 +813,18 @@
     {
       "section": "policy",
       "reason": "policy_retail_sales_trend",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "11번가, '마트대전' 진행 … '제철코어' 먹거리 할인",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/12/2026031200065.html"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_retail_sales_trend",
       "press": "econovill",
       "domain": "econovill.com",
       "title": "11번가, 봄맞이 3월 '마트대전' 진행…제철 먹거리 할인",
       "url": "https://www.econovill.com/news/articleView.html?idxno=732880"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "11번가, '마트대전' 진행 … '제철코어' 먹거리 할인",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/12/2026031200065.html"
     },
     {
       "section": "policy",
@@ -3148,14 +3148,6 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "einfomax",
-      "domain": "news.einfomax.co.kr",
-      "title": "석유제품 매점매석시 형사처벌…정유사, 월 반출량 90% 이상 유지해야",
-      "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4403403"
-    },
-    {
-      "section": "supply",
       "reason": "fishery_title_only",
       "press": "한겨레",
       "domain": "hani.co.kr",
@@ -3164,11 +3156,11 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "경향신문",
-      "domain": "khan.co.kr",
-      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
-      "url": "https://www.khan.co.kr/article/202603121900011"
+      "reason": "must_terms_fail",
+      "press": "einfomax",
+      "domain": "news.einfomax.co.kr",
+      "title": "석유제품 매점매석시 형사처벌…정유사, 월 반출량 90% 이상 유지해야",
+      "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4403403"
     },
     {
       "section": "supply",
@@ -3177,6 +3169,14 @@
       "domain": "biz.sbs.co.kr",
       "title": "돼지고기·교복·세제까지…23개 품목 물가 특별관리",
       "url": "https://biz.sbs.co.kr/article_hub/20000297065?division=NAVER"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "경향신문",
+      "domain": "khan.co.kr",
+      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
+      "url": "https://www.khan.co.kr/article/202603121900011"
     },
     {
       "section": "supply",
@@ -3205,18 +3205,18 @@
     {
       "section": "supply",
       "reason": "supply_macro_price_watch",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
-      "url": "http://www.fnnews.com/news/202603121853309659"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
       "press": "서울경제",
       "domain": "sedaily.com",
       "title": "라면값 최대 14% 인하…정부, 관리비·암표 거래까지 감시",
       "url": "https://www.sedaily.com/article/20018751"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
+      "url": "http://www.fnnews.com/news/202603121853309659"
     },
     {
       "section": "supply",
@@ -3316,19 +3316,19 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
-      "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "KBS",
       "domain": "news.kbs.co.kr",
       "title": "정부, 물가 특별 관리 품목 23개 선정…“체감 물가 안정 ”",
       "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506775"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
+      "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
     },
     {
       "section": "supply",
@@ -3468,19 +3468,19 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
-      "url": "http://www.fnnews.com/news/202603121853309659"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "서울경제",
       "domain": "sedaily.com",
       "title": "라면값 최대 14% 인하…정부, 관리비·암표 거래까지 감시",
       "url": "https://www.sedaily.com/article/20018751"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
+      "url": "http://www.fnnews.com/news/202603121853309659"
     },
     {
       "section": "supply",
@@ -3492,19 +3492,19 @@
     },
     {
       "section": "supply",
-      "reason": "supply_policy_market_brief",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "정부, 물가 특별 관리 품목 23개 선정…“체감 물가 안정 ”",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506775"
-    },
-    {
-      "section": "supply",
       "reason": "supply_macro_price_watch",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
       "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
       "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "정부, 물가 특별 관리 품목 23개 선정…“체감 물가 안정 ”",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506775"
     },
     {
       "section": "supply",
@@ -4053,18 +4053,18 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "FETV",
-      "domain": "fetv.co.kr",
-      "title": "[현장] 박병무 엔씨소프트 공동대표 “3대 성장축으로 지속 가능 성장 ...",
-      "url": "https://www.fetv.co.kr/news/article.html?no=214875"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "KSG",
       "domain": "ksg.co.kr",
       "title": "“호르무즈 선원교대 원활…문제 생기면 외교부와 송환 협의”",
       "url": "https://www.ksg.co.kr/news/main_newsView.jsp?pNum=146752"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "FETV",
+      "domain": "fetv.co.kr",
+      "title": "[현장] 박병무 엔씨소프트 공동대표 “3대 성장축으로 지속 가능 성장 ...",
+      "url": "https://www.fetv.co.kr/news/article.html?no=214875"
     },
     {
       "section": "supply",
@@ -4373,18 +4373,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "livesnews",
       "domain": "livesnews.com",
       "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
       "url": "https://www.livesnews.com/news/article.html?no=60127"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "M-I",
+      "domain": "m-i.kr",
+      "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
     },
     {
       "section": "dist",
@@ -5149,14 +5149,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
-      "url": "https://www.etoday.co.kr/news/view/2564743"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "K푸드 수출 막는 '비관세장벽' 현장서 푼다…농식품부, 업계 간담회 개...",
@@ -5169,6 +5161,14 @@
       "domain": "foodnews.co.kr",
       "title": "농식품부, 농식품 수출업계와 비관세장벽 대응 논의",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117642"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
+      "url": "https://www.etoday.co.kr/news/view/2564743"
     },
     {
       "section": "pest",
