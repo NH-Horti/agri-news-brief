@@ -1605,12 +1605,15 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(topic, "상추")
 
     def test_extract_topic_does_not_treat_processed_potato_lifestyle_story_as_potato(self):
-        topic = main.extract_topic(
-            "주말 감튀 어떻냐…서울 미식가들 줄 세운 새 메뉴",
-            "감자튀김과 버거 조합을 소개하는 외식 트렌드 기사다.",
-        )
+        title = "이번 주말 감튀 어때요? 감자 튀김 4대 맛집 / 바삭하고 따스하지만 부담..."
+        desc = "감자 튀김은 저렴한 가격으로 여러 명이 나눠 먹기 간편한 음식으로 인기를 끌고 있다."
+        topic = main.extract_topic(title, desc)
         self.assertNotEqual(topic, "감자")
-        self.assertFalse(main.is_fresh_potato_context("주말 감튀 어떻냐…감자튀김과 버거 조합"))
+        self.assertFalse(main.is_fresh_potato_context(f"{title} {desc}"))
+        url = "http://topclass.chosun.com/news/articleView.html?idxno=35975"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
 
     def test_dist_export_field_requires_horti_anchor_for_k_food_brief(self):
         title = "KGC인삼공사 부여공장서 K-푸드 현장 간담회"
