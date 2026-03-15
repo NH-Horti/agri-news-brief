@@ -95,6 +95,10 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("핵심 품목 보드", html)
         self.assertIn("전체 관리 품목 보드", html)
         self.assertIn("수급사업 품목 18개", html)
+        self.assertIn('data-view-tab="briefing"', html)
+        self.assertIn('data-view-tab="commodity"', html)
+        self.assertIn("오늘 브리핑", html)
+        self.assertIn("품목보드", html)
         self.assertIn("사과", html)
 
 

@@ -109,6 +109,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("syncLatestDevBuild", self.text)
         self.assertIn("build_dev_preview_version_json", self.text)
 
+    def test_view_tabs_for_briefing_and_commodity_exist(self):
+        self.assertIn('class=\\"viewTab isActive\\" data-view-tab=\\"briefing\\"', self.text)
+        self.assertIn('class=\\"viewTab\\" data-view-tab=\\"commodity\\"', self.text)
+        self.assertIn("function activateView(viewKey, opts)", self.text)
+        self.assertIn("resolveInitialView()", self.text)
+
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
         self.assertIn("GH_CONTENT_REF: main", self.dev_verify_text)

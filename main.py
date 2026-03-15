@@ -12053,6 +12053,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
+    briefing_chipbar_html = (
+        '<div class="chipbar briefingChipbar" data-view-pane-anchor="briefing">'
+        '<div class="chipwrap">'
+        f'<div class="chips" data-swipe-ignore="1">{chips_html}</div>'
+        '</div>'
+        '</div>'
+    )
     commodity_board_ctx = build_managed_commodity_board_context(by_section)
     commodity_hero_html = render_managed_commodity_hero_html(commodity_board_ctx)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
@@ -12211,9 +12218,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       select{{width:145px; max-width:145px;}}
     }}
 
-    /* sticky chip bar */
-    .chipbar{{border-top:1px solid var(--line);}}
-    .chipwrap{{max-width:1100px;margin:0 auto;padding:8px 14px;}}
+    .viewTabs{{display:flex;gap:10px;flex-wrap:wrap;padding-top:2px}}
+    .viewTab{{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#334155;font-size:13px;font-weight:800;cursor:pointer}}
+    .viewTab.isActive{{background:#111827;color:#fff;border-color:#111827;box-shadow:var(--shadow)}}
+
+    /* briefing chip bar */
+    .chipbar{{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}}
+    .chipwrap{{max-width:1100px;margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
     .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
@@ -12221,6 +12232,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .chip:hover{{border-color:#cbd5e1}}
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
     .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
+
+    .viewPane{{display:none}}
+    .viewPane.isActive{{display:block}}
+    .briefingPane{{margin-top:14px}}
+    .commodityPane{{margin-top:14px}}
 
     .commodityHero, .commodityBoard{{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}}
     .commodityHead{{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid rgba(229,231,235,.9)}}
@@ -12364,19 +12380,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
-    </div>
-
-    <div class=\"chipbar\">
-      <div class=\"chipwrap\">
-        <div class=\"chips\" data-swipe-ignore=\"1\">{chips_html}</div>
+      <div class=\"viewTabs\" role=\"tablist\" aria-label=\"보기 전환\">
+        <button class=\"viewTab isActive\" data-view-tab=\"briefing\" type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"view-briefing\">오늘 브리핑</button>
+        <button class=\"viewTab\" data-view-tab=\"commodity\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"view-commodity\">품목보드</button>
       </div>
     </div>
   </div>
 
   <div class=\"wrap\">
-    {commodity_hero_html}
-    {sections_html}
-    {commodity_board_html}
+    <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
+      {briefing_chipbar_html}
+      {sections_html}
+    </section>
+    <section id=\"view-commodity\" class=\"viewPane commodityPane\" data-view-pane=\"commodity\" role=\"tabpanel\" aria-hidden=\"true\">
+      {commodity_hero_html}
+      {commodity_board_html}
+    </section>
     <div class=\"footer\">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
     {dev_footer_html}
   </div>
@@ -12406,6 +12425,65 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           alert(msg);
         }});
       }});
+
+      var viewTabs = Array.prototype.slice.call(document.querySelectorAll(".viewTab[data-view-tab]"));
+      var viewPanes = Array.prototype.slice.call(document.querySelectorAll(".viewPane[data-view-pane]"));
+
+      function activateView(viewKey, opts) {{
+        opts = opts || {{}};
+        viewPanes.forEach(function(pane) {{
+          var active = pane.getAttribute("data-view-pane") === viewKey;
+          pane.classList.toggle("isActive", active);
+          pane.setAttribute("aria-hidden", active ? "false" : "true");
+        }});
+        viewTabs.forEach(function(tab) {{
+          var active = tab.getAttribute("data-view-tab") === viewKey;
+          tab.classList.toggle("isActive", active);
+          tab.setAttribute("aria-selected", active ? "true" : "false");
+        }});
+
+        if (opts.skipHistory) return;
+        try {{
+          var url = new URL(window.location.href);
+          if (viewKey === "commodity") {{
+            url.searchParams.set("view", "commodity");
+            if ((url.hash || "").indexOf("#sec-") === 0) {{
+              url.hash = "";
+            }}
+          }} else {{
+            url.searchParams.delete("view");
+            if ((url.hash || "").indexOf("#commodity") === 0) {{
+              url.hash = "";
+            }}
+          }}
+          window.history.replaceState(null, "", url.toString());
+        }} catch (e) {{}}
+      }}
+
+      function resolveInitialView() {{
+        try {{
+          var hash = (window.location.hash || "").replace(/^#/, "");
+          if (hash === "commodity-board" || hash.indexOf("commodity-") === 0) return "commodity";
+          if (hash.indexOf("sec-") === 0) return "briefing";
+          var url = new URL(window.location.href);
+          var view = (url.searchParams.get("view") || "").toLowerCase();
+          if (view === "commodity" || view === "briefing") return view;
+        }} catch (e) {{}}
+        return "briefing";
+      }}
+
+      viewTabs.forEach(function(tab) {{
+        tab.setAttribute("data-swipe-ignore", "1");
+        tab.addEventListener("click", function() {{
+          activateView(tab.getAttribute("data-view-tab") || "briefing");
+        }});
+      }});
+
+      window.addEventListener("hashchange", function() {{
+        activateView(resolveInitialView(), {{ skipHistory: true }});
+      }});
+
+      activateView(resolveInitialView(), {{ skipHistory: true }});
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
       var navRow = document.querySelector(".navRow");
