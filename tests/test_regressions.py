@@ -118,10 +118,11 @@ class TestRegressions(unittest.TestCase):
 
     def test_external_links_use_plain_top_navigation(self):
         self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
-        self.assertIn('class="commodityStory"', self.text)
+        self.assertIn('class="commodityPrimaryStory"', self.text)
+        self.assertIn('class="commoditySecondaryStory"', self.text)
         self.assertIn('data-swipe-ignore="1"', self.text)
         self.assertIn('target=\\"_top\\"', self.text)
-        self.assertNotIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
+        self.assertNotIn('querySelectorAll(".btnOpen, .commodityPrimaryStory")', self.text)
         self.assertIn('if (blocked) {{', self.text)
         self.assertIn('swipeActive = false;', self.text)
 

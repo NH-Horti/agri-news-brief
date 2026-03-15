@@ -1320,35 +1320,71 @@ def _managed_commodity_topic_terms(item: dict[str, Any]) -> list[str]:
     return _ordered_unique_terms(values)
 
 
+def _managed_commodity_supply_query_buckets(item: dict[str, Any]) -> dict[str, list[str]]:
+    buckets: dict[str, list[str]] = {
+        "market": [],
+        "field": [],
+        "response": [],
+    }
+    for term in item.get("context_terms") or []:
+        term_s = str(term or "").strip()
+        if not term_s:
+            continue
+        if any(sig in term_s for sig in ("가격", "도매가격", "수급")):
+            buckets["market"].append(term_s)
+        elif any(sig in term_s for sig in ("생육", "작황", "재배", "농가", "기후")):
+            buckets["field"].append(term_s)
+        else:
+            buckets["response"].append(term_s)
+
+    for base in _managed_commodity_base_terms(item, limit=2):
+        buckets["market"].extend(
+            [
+                f"{base} 수급",
+                f"{base} 가격",
+                f"{base} 도매가격",
+            ]
+        )
+        buckets["field"].extend(
+            [
+                f"{base} 생육",
+                f"{base} 재배",
+                f"{base} 작황",
+                f"{base} 농가",
+                f"{base} 산업",
+                f"{base} 기후변화",
+            ]
+        )
+        buckets["response"].extend(
+            [
+                f"{base} 소비 대책",
+                f"{base} 소비 촉진",
+                f"{base} 가격 하락",
+                f"{base} 산지 물량",
+                f"{base} 출하",
+            ]
+        )
+        if bool(item.get("program_core")):
+            buckets["response"].extend(
+                [
+                    f"{base} 수급 안정",
+                    f"{base} 가격 안정",
+                    f"{base} 출하 조절",
+                ]
+            )
+    return {
+        key: _ordered_unique_terms(values)
+        for key, values in buckets.items()
+    }
+
+
 def _managed_commodity_supply_queries(item: dict[str, Any]) -> list[str]:
-    out: list[str] = []
-    out.extend(_ordered_unique_terms(item.get("context_terms") or []))
-
-    base_terms: list[str] = []
-    label = str(item.get("label") or "").strip()
-    short_label = str(item.get("short_label") or "").strip()
-    plain_label = re.sub(r"\s*\([^)]*\)", "", label).strip()
-    if len(short_label) >= 2:
-        base_terms.append(short_label)
-    if len(plain_label) >= 2 and plain_label not in base_terms:
-        base_terms.append(plain_label)
-    if len(label) >= 2 and label not in base_terms:
-        base_terms.append(label)
-    for term in item.get("match_terms") or []:
-        term = str(term or "").strip()
-        if len(term) >= 2 and term not in base_terms:
-            base_terms.append(term)
-        if len(base_terms) >= 3:
-            break
-
-    primary_signals = ["수급", "가격", "도매가격"] if bool(item.get("program_core")) else ["가격", "도매가격", "출하"]
-    rotating_signals = ["작황", "출하", "가격 하락", "소비 촉진", "소비 대책", "산지 물량"]
-    if bool(item.get("program_core")):
-        rotating_signals = ["수급 안정", "출하 조절"] + rotating_signals
-    for base in base_terms[:3]:
-        for sig in primary_signals + rotating_signals:
-            out.append(f"{base} {sig}")
-    return _ordered_unique_terms(out)
+    buckets = _managed_commodity_supply_query_buckets(item)
+    return _ordered_unique_terms(
+        list(buckets.get("market") or [])
+        + list(buckets.get("field") or [])
+        + list(buckets.get("response") or [])
+    )
 
 
 def _managed_commodity_pest_queries(item: dict[str, Any]) -> list[str]:
@@ -1469,13 +1505,101 @@ def _interleave_ordered_groups(*groups: Sequence[str]) -> list[str]:
     return out
 
 
+MANAGED_GROUP_RECALL_QUERY_BANK: dict[str, dict[str, list[str]]] = {
+    "supply": {
+        "root_leaf": ["노지채소 수급", "노지채소 가격", "월동채소 가격", "겨울채소 소비 대책"],
+        "seasoning_veg": ["양념채소 수급", "양념채소 가격", "양념채소 소비 대책"],
+        "fruit_flower": ["과수 수급", "과수 생육", "과수 농가", "과수 기후변화"],
+        "fruit_veg": ["시설채소 수급", "시설채소 가격", "시설채소 생육"],
+    },
+    "policy": {
+        "root_leaf": ["채소 물가 특별관리", "채소 수급 안정", "노지채소 가격 안정"],
+        "seasoning_veg": ["양념채소 물가 특별관리", "양념채소 수급 안정"],
+        "fruit_flower": ["과수 물가 특별관리", "과수 수급 안정", "과수 정책"],
+        "fruit_veg": ["시설채소 수급 안정", "시설채소 정책"],
+    },
+    "dist": {
+        "root_leaf": ["노지채소 유통", "노지채소 소비 대책", "노지채소 도매가격"],
+        "seasoning_veg": ["양념채소 유통", "양념채소 소비 촉진", "양념채소 공동판매"],
+        "fruit_flower": ["과수 유통", "과수 공동판매", "과수 온라인 유통채널"],
+        "fruit_veg": ["시설채소 유통", "시설채소 공동판매", "시설채소 온라인 유통채널"],
+    },
+}
+
+
+def _balanced_managed_catalog_items() -> list[dict[str, Any]]:
+    grouped_items: list[list[dict[str, Any]]] = []
+    for group in MANAGED_COMMODITY_GROUP_SPECS:
+        group_key = str(group.get("key") or "").strip()
+        items = [
+            item
+            for item in MANAGED_COMMODITY_CATALOG
+            if str(item.get("group_key") or "").strip() == group_key
+        ]
+        items.sort(
+            key=lambda item: (
+                0 if item.get("program_core") else 1,
+                int(item.get("item_order") or 0),
+                int(item.get("order") or 0),
+            )
+        )
+        if items:
+            grouped_items.append(items)
+    if not grouped_items:
+        return list(MANAGED_COMMODITY_CATALOG)
+
+    out: list[dict[str, Any]] = []
+    max_len = max(len(items) for items in grouped_items)
+    for idx in range(max_len):
+        for items in grouped_items:
+            if idx < len(items):
+                out.append(items[idx])
+    return out
+
+
+def _pick_rotated_item_queries(
+    queries: Sequence[str],
+    seed: int,
+    order: int,
+    count: int,
+    phase: int = 0,
+) -> list[str]:
+    normalized = _ordered_unique_terms(
+        str(query or "").strip()
+        for query in (queries or [])
+        if str(query or "").strip()
+    )
+    if not normalized or count <= 0:
+        return []
+    if count >= len(normalized):
+        return list(normalized)
+    start = (seed + (order * 5) + (phase * 7)) % len(normalized)
+    ordered = list(normalized[start:]) + list(normalized[:start])
+    return ordered[:count]
+
+
+def _managed_group_recall_queries(section_key: str, seed: int) -> list[str]:
+    bank = MANAGED_GROUP_RECALL_QUERY_BANK.get(str(section_key or "").strip(), {})
+    if not bank:
+        return []
+    out: list[str] = []
+    for idx, group in enumerate(MANAGED_COMMODITY_GROUP_SPECS):
+        group_key = str(group.get("key") or "").strip()
+        queries = bank.get(group_key) or []
+        out.extend(_pick_rotated_item_queries(queries, seed, idx + 1, 1))
+    return _ordered_unique_terms(out)
+
+
 def _managed_commodity_policy_queries(item: dict[str, Any]) -> list[str]:
     out: list[str] = []
-    for base in _managed_commodity_base_terms(item, limit=1):
+    for base in _managed_commodity_base_terms(item, limit=2):
         out.append(f"{base} 수급 안정")
         out.append(f"{base} 가격 안정")
         out.append(f"{base} 특별관리")
         out.append(f"{base} 물가 특별관리")
+        out.append(f"{base} 정책")
+        out.append(f"{base} 제도 개선")
+        out.append(f"{base} 협의체")
         out.append(f"{base} 할인지원")
         out.append(f"{base} 검역")
     return _ordered_unique_terms(out)
@@ -1483,10 +1607,13 @@ def _managed_commodity_policy_queries(item: dict[str, Any]) -> list[str]:
 
 def _managed_commodity_dist_queries(item: dict[str, Any]) -> list[str]:
     out: list[str] = []
-    for base in _managed_commodity_base_terms(item, limit=1):
+    for base in _managed_commodity_base_terms(item, limit=2):
         out.append(f"{base} 경매")
         out.append(f"{base} 공판장")
         out.append(f"{base} 산지유통")
+        out.append(f"{base} 유통현장")
+        out.append(f"{base} 도매가격")
+        out.append(f"{base} 소비 대책")
         out.append(f"{base} 공동판매")
         out.append(f"{base} 직거래")
         out.append(f"{base} 온라인 유통채널")
@@ -1548,44 +1675,46 @@ def build_managed_section_recall_queries(section_key: str, anchor_dt: datetime |
     except Exception:
         seed = 0
     section_key = str(section_key or "").strip()
-    primary_queries = _managed_section_primary_queries(section_key)
-    all_primary_queries = _managed_section_primary_queries(section_key, include_all=True)
-    rotating_queries = _managed_section_rotating_queries(section_key)
     if section_key == "pest":
+        rotating_queries = _managed_section_rotating_queries(section_key)
         return _ordered_unique_terms(
             list(MANAGED_PEST_PRIMARY_CORE_QUERIES)
             + list(MANAGED_PEST_PRIMARY_OTHER_QUERIES)
             + _rotated_query_slice(list(rotating_queries), seed, MANAGED_PEST_ROTATING_QUERY_CAP)
         )
-    if section_key in MANAGED_SECTION_PRIMARY_QUERY_CAP:
-        core_primary_queries = list(primary_queries)
-        other_primary_queries = [q for q in all_primary_queries if q not in core_primary_queries]
-        balanced_primary_queries = _interleave_ordered_groups(core_primary_queries, other_primary_queries)
-        return _ordered_unique_terms(
-            _rotated_query_slice(
-                list(balanced_primary_queries),
-                seed,
-                int(MANAGED_SECTION_PRIMARY_QUERY_CAP.get(section_key, 0) or 0),
+    items = _balanced_managed_catalog_items()
+    group_queries = _managed_group_recall_queries(section_key, seed)
+    if section_key == "supply":
+        balanced_queries: list[str] = []
+        for item in items:
+            order = int(item.get("order") or 0)
+            buckets = _managed_commodity_supply_query_buckets(item)
+            balanced_queries.extend(
+                _pick_rotated_item_queries(buckets.get("market") or [], seed, order, 1, phase=0)
             )
-            + _rotated_query_slice(
-                list(core_primary_queries),
-                (seed * 3) + 7,
-                int(MANAGED_SECTION_PRIMARY_CORE_BONUS_CAP.get(section_key, 0) or 0),
+            balanced_queries.extend(
+                _pick_rotated_item_queries(buckets.get("field") or [], seed, order, 1, phase=1)
             )
-            + _rotated_query_slice(
-                list(rotating_queries),
-                seed,
-                int(MANAGED_SECTION_ROTATING_QUERY_CAP.get(section_key, 0) or 0),
-            )
+            if item.get("program_core"):
+                balanced_queries.extend(
+                    _pick_rotated_item_queries(buckets.get("response") or [], seed, order, 1, phase=2)
+                )
+        return _ordered_unique_terms(list(group_queries) + balanced_queries)
+
+    builder = _managed_section_query_builder(section_key)
+    if builder is None:
+        return []
+
+    balanced_queries: list[str] = []
+    for item in items:
+        order = int(item.get("order") or 0)
+        balanced_queries.extend(
+            _pick_rotated_item_queries(builder(item), seed, order, 1, phase=0)
         )
-    return _ordered_unique_terms(
-        list(primary_queries)
-        + _rotated_query_slice(
-            list(rotating_queries),
-            seed,
-            int(MANAGED_SECTION_ROTATING_QUERY_CAP.get(section_key, 0) or 0),
-        )
-    )
+
+    if section_key in ("policy", "dist"):
+        return _ordered_unique_terms(list(group_queries) + balanced_queries)
+    return _ordered_unique_terms(balanced_queries)
 
 
 def build_managed_pest_recall_queries(anchor_dt: datetime | None) -> list[str]:
@@ -2666,8 +2795,10 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     # 과일 '배' (배터리/배당/배달/배기/배포 등 오탐 방지)
     "배": [
         re.compile(r"(?:^|[\s\W])배(?:값|가격|시세|수급|출하|저장|작황|재배|농가)"),
+        re.compile(r"(?:^|[\s\W])배(?:\s*(?:산업|생육|과원|개화|착과|꽃눈|휴면|생산|수확|저온|냉해|기후변화))"),
         re.compile(r"(?:^|[\s\W])배\s+과일"),
         re.compile(r"신고배"),
+        re.compile(r"나주배"),
     ],
     # '밤'(night) 오탐 방지: 알밤/밤값/밤(농산물 맥락)
     "밤": [
@@ -2930,10 +3061,31 @@ def best_topic_and_score(title: str, desc: str) -> tuple[str, float]:
 def best_horti_score(title: str, desc: str) -> float:
     scores = _topic_scores(title, desc)
     horti = [sc for t, sc in scores.items() if t in _HORTI_TOPICS_SET]
-    return max(horti) if horti else 0.0
+    best = max(horti) if horti else 0.0
+    managed_summary = _managed_commodity_match_summary(title, desc)
+    managed_count = int(managed_summary.get("count") or 0)
+    program_core_count = int(managed_summary.get("program_core_count") or 0)
+    if managed_count:
+        best = max(best, 1.0 + (0.32 * managed_count) + (0.28 * program_core_count))
+    title_managed_summary = _managed_commodity_match_summary(title, "")
+    title_managed_count = int(title_managed_summary.get("count") or 0)
+    title_program_core_count = int(title_managed_summary.get("program_core_count") or 0)
+    if title_managed_count:
+        best = max(best, 1.25 + (0.38 * title_managed_count) + (0.32 * title_program_core_count))
+    return best
 
 def extract_topic(title: str, desc: str) -> str:
     topic, _ = best_topic_and_score(title, desc)
+    if topic not in _HORTI_TOPICS_SET:
+        title_managed_summary = _managed_commodity_match_summary(title, "")
+        managed_summary = title_managed_summary if title_managed_summary.get("count") else _managed_commodity_match_summary(title, desc)
+        keys = list(managed_summary.get("keys") or [])
+        if keys:
+            item = MANAGED_COMMODITY_BY_KEY.get(str(keys[0]) or "") or {}
+            registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
+            managed_topic = registry_topics[0] if registry_topics else str(item.get("short_label") or item.get("label") or "").strip()
+            if managed_topic:
+                return managed_topic
     return topic
 
 def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
@@ -4020,6 +4172,39 @@ def is_dist_sales_channel_ops_context(title: str, desc: str) -> bool:
     )
 
 
+_DIST_FIELD_MARKET_RESPONSE_TERMS = (
+    "소비대책", "소비 대책", "소비 촉진", "현장", "유통현장", "도매가격", "가격 약세", "산지 물량", "판로", "공동 대응",
+)
+_DIST_FIELD_MARKET_RESPONSE_TITLE_TERMS = (
+    "노지채소", "겨울 노지채소", "소비대책", "소비 촉진", "현장", "도매가격", "가격 약세",
+)
+_DIST_FIELD_MARKET_RESPONSE_DISTRESS_TERMS = (
+    "약세", "하락", "침체", "부진", "재고", "물량", "가격 약세", "도매가격 약세",
+)
+_DIST_FIELD_MARKET_RESPONSE_AGRI_TERMS = (
+    "농산물", "농업", "산지", "채소", "노지채소", "겨울 노지채소", "도매가격", "유통", "농가",
+)
+
+
+def is_dist_field_market_response_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    """Return True for field-level agri market response stories that should fit dist."""
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if is_remote_foreign_trade_brief_context(ttl, desc or "", dom):
+        return False
+
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits = count_any(txt, [w.lower() for w in _DIST_FIELD_MARKET_RESPONSE_AGRI_TERMS]) + managed_count
+    response_hits = count_any(txt, [w.lower() for w in _DIST_FIELD_MARKET_RESPONSE_TERMS])
+    distress_hits = count_any(txt, [w.lower() for w in _DIST_FIELD_MARKET_RESPONSE_DISTRESS_TERMS])
+    title_hits = count_any(ttl.lower(), [w.lower() for w in _DIST_FIELD_MARKET_RESPONSE_TITLE_TERMS])
+    trade_press = ((press or "").strip() in AGRI_TRADE_PRESS) or (normalize_host(dom or "") in AGRI_TRADE_HOSTS)
+
+    return agri_hits >= 2 and response_hits >= 2 and distress_hits >= 1 and (trade_press or title_hits >= 1)
+
+
 def is_policy_event_tail_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
     """Return True for event/seminar style policy tails that should yield to stronger policy briefs."""
     ttl = title or ""
@@ -4087,6 +4272,8 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
     if is_dist_supply_management_center_context(ttl, desc or ""):
         return False
     if is_dist_sales_channel_ops_context(ttl, desc or ""):
+        return False
+    if is_dist_field_market_response_context(ttl, desc or "", dom_norm, press_norm):
         return False
     if is_policy_general_macro_tail_context(ttl, desc or "", dom_norm, press_norm):
         return False
@@ -4862,6 +5049,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     program_core_count = int(managed_summary.get("program_core_count") or 0)
     dist_supply_center = is_dist_supply_management_center_context(title, desc)
     dist_sales_channel_ops = is_dist_sales_channel_ops_context(title, desc)
+    dist_field_market_response = is_dist_field_market_response_context(title, desc)
     dist_anchor_hits = count_any(
         txt,
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "온라인 도매시장")],
@@ -4881,9 +5069,11 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 0.85
         if is_dist_export_field_context(title, desc):
             base -= 0.9
+        if dist_field_market_response:
+            base -= 0.85
         if managed_count and (is_macro_policy_issue(txt) or policy_stabilization or policy_market_brief or policy_major_issue or is_policy_export_support_brief_context(title, desc)):
-            base += min(0.42, 0.10 * managed_count)
-            base += min(0.28, 0.14 * program_core_count)
+            base += min(0.56, 0.12 * managed_count)
+            base += min(0.36, 0.16 * program_core_count)
     elif key == "dist":
         if is_dist_export_shipping_context(title, desc):
             base += 1.15
@@ -4893,6 +5083,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base += 1.1
         if dist_sales_channel_ops:
             base += 1.15
+        if dist_field_market_response:
+            base += 1.25
         dist_disruption_scope = dist_market_disruption_scope(title, desc)
         if dist_disruption_scope == "systemic":
             base += 1.9
@@ -4907,9 +5099,9 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
                 base -= 0.9
             else:
                 base += 0.25
-        if managed_count and (dist_anchor_hits >= 1 or is_dist_export_shipping_context(title, desc) or is_dist_export_field_context(title, desc)):
-            base += min(0.40, 0.10 * managed_count)
-            base += min(0.24, 0.12 * program_core_count)
+        if managed_count and (dist_anchor_hits >= 1 or is_dist_export_shipping_context(title, desc) or is_dist_export_field_context(title, desc) or dist_field_market_response):
+            base += min(0.52, 0.12 * managed_count)
+            base += min(0.32, 0.14 * program_core_count)
     elif key == "supply":
         feature_kind = supply_feature_context_kind(title, desc)
         if feature_kind == "field":
@@ -4926,6 +5118,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base -= 0.95
         if dist_sales_channel_ops:
             base -= 1.15
+        if dist_field_market_response:
+            base -= 1.15
         if is_supply_weak_tail_context(title, desc):
             base -= 1.1
         if policy_stabilization:
@@ -4937,8 +5131,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
         if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and ((not has_direct_supply_chain_signal(txt)) or policy_market_brief):
             base -= 0.6
         if managed_count:
-            base += min(0.55, 0.12 * managed_count)
-            base += min(0.36, 0.18 * program_core_count)
+            base += min(0.72, 0.15 * managed_count)
+            base += min(0.48, 0.22 * program_core_count)
     elif key == "pest":
         if is_pest_story_focus_strong(title, desc):
             base += 0.75
@@ -6611,6 +6805,39 @@ PEST_OFFTOPIC_TERMS = [
     "보건소", "질병관리청", "방역소독", "소독", "소독차", "방역차", "특별방역", "시민", "주민",
     "학교", "어린이집", "환자", "감염",
 ]
+
+
+def is_strong_horti_opinion_context(title: str, desc: str, dom: str = "", press: str = "", section_key: str = "") -> bool:
+    """Allow a narrow subset of commodity-focused analysis/opinion stories into recall."""
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt or str(section_key or "").strip() not in ("supply", "policy", "dist"):
+        return False
+    if is_remote_foreign_trade_brief_context(ttl, desc or "", dom):
+        return False
+
+    managed_summary = _managed_commodity_match_summary(ttl, desc or "")
+    managed_count = int(managed_summary.get("count") or 0)
+    horti_sc = best_horti_score(ttl, desc or "")
+    if managed_count == 0 and horti_sc < 1.6:
+        return False
+
+    analysis_hits = count_any(
+        txt,
+        [w.lower() for w in ("산업", "농가", "생육", "재배", "작황", "수급", "출하", "저장", "생산", "기후변화", "냉해", "저온", "피해", "현장", "대책")],
+    )
+    if analysis_hits < 2:
+        return False
+    if count_any(ttl.lower(), [w.lower() for w in ("인터뷰", "행사", "간담회", "세미나", "포럼", "개최")]) >= 1:
+        return False
+
+    if section_key == "policy":
+        return analysis_hits >= 3 and count_any(txt, [w.lower() for w in ("정책", "제도", "대책", "개선")]) >= 1
+    if section_key == "dist":
+        return is_dist_field_market_response_context(ttl, desc or "", dom, press)
+    return True
+
+
 def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDict, press: str) -> bool:
     """섹션별 1차 필터(관련도/노이즈 컷).
 
@@ -6701,7 +6928,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # 오피니언/사설/칼럼은 브리핑 대상에서 제외
     ttl_l = ttl.lower()
     if any(w.lower() in ttl_l for w in OPINION_BAN_TERMS):
-        return _reject("opinion_or_editorial")
+        if not is_strong_horti_opinion_context(ttl, desc, dom, press, key):
+            return _reject("opinion_or_editorial")
 
     # ✅ 사건/역사/정치성(예: 제주4.3) 인터뷰/스토리는 원예 브리핑 핵심 목적과 무관하므로 전체 섹션에서 배제
     if any(t in ttl_l for t in ("제주4.3", "제주4·3", "4.3의", "4·3")):
@@ -6984,6 +7212,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
                     dist_soft_ok = True
                 if is_dist_export_field_context(ttl, desc, dom, press):
                     dist_soft_ok = True
+                if is_dist_field_market_response_context(ttl, desc, dom, press):
+                    dist_soft_ok = True
             if key != "pest" and not ((horti_sc >= 2.0) or (horti_core_hits >= 3) or dist_soft_ok):
                 return _reject("must_terms_fail")
 
@@ -7009,6 +7239,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return _reject("supply_dist_export_shipping")
         if is_dist_export_field_context(ttl, desc, dom, press) and (not has_direct_supply_chain_signal(text)) and market_hits == 0 and title_supply_core_hits == 0:
             return _reject("supply_dist_export_field")
+        if is_dist_field_market_response_context(ttl, desc, dom, press) and (not has_direct_supply_chain_signal(text)) and market_hits == 0 and title_supply_core_hits == 0:
+            return _reject("supply_dist_field_market_response")
 
         if broad_macro_price and (not has_direct_supply_chain_signal(text)):
             title_focus_hits = count_any(ttl.lower(), SUPPLY_TITLE_FOCUS_TERMS_L)
@@ -7111,6 +7343,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         apc_ctx = has_apc_agri_context(text)
         dist_export_shipping = is_dist_export_shipping_context(ttl, desc)
         dist_export_field = is_dist_export_field_context(ttl, desc, dom, press)
+        dist_field_market_response = is_dist_field_market_response_context(ttl, desc, dom, press)
         dist_local_field_profile = is_dist_local_field_profile_context(title, desc)
         dist_local_org_tail = is_dist_local_org_tail_context(title, desc)
         if dist_local_org_tail:
@@ -7138,6 +7371,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         if dist_export_field:
             soft_hits = max(soft_hits, 1)
             hard_hits = max(hard_hits, 2)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
+        if dist_field_market_response:
+            soft_hits = max(soft_hits, 2)
+            hard_hits = max(hard_hits, 1)
             agri_anchor_hits = max(agri_anchor_hits, 1)
 
         # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
@@ -7184,6 +7421,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             if not (
                 local_org_feature
                 or is_dist_sales_channel_ops_context(title, desc)
+                or dist_field_market_response
                 or (has_infra and (agri_anchor_hits >= 1 or horti_sc >= 1.9 or apc_ctx))
                 or (horti_sc >= 2.8 and soft_hits >= 2)
             ):
@@ -7239,6 +7477,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     infra_designation = is_local_agri_infra_designation_context(title, desc)
     dist_supply_center = is_dist_supply_management_center_context(title, desc)
     dist_sales_channel_ops = is_dist_sales_channel_ops_context(title, desc)
+    dist_field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
     direct_supply_story = has_direct_supply_chain_signal(text)
     supply_feature_kind = supply_feature_context_kind(title, desc)
     supply_issue_bucket = supply_issue_context_bucket(title, desc)
@@ -7350,6 +7589,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 4.4
         if dist_sales_channel_ops:
             score -= 4.8
+        if dist_field_market_response:
+            score -= 9.0
         if is_dist_export_shipping_context(title, desc) and supply_issue_bucket != "export_recovery":
             score -= 5.0
         if dist_export_field and supply_issue_bucket != "export_recovery":
@@ -7363,8 +7604,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and ((not direct_supply_story) or policy_market_brief):
             score -= 4.2
         if managed_count:
-            score += min(1.6, 0.28 * managed_count)
-            score += min(1.8, 0.90 * program_core_count)
+            score += min(2.0, 0.34 * managed_count)
+            score += min(2.2, 1.05 * program_core_count)
     elif key == "dist":
         score += weighted_hits(text, DIST_WEIGHT_MAP)
         score += min(2.0, 0.22 * key_strength)
@@ -7395,6 +7636,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += min(1.4, 0.35 * managed_count)
             if ("연합판매사업" in text) and ("직거래" in text):
                 score += 3.2
+        if dist_field_market_response:
+            score += 8.8
+            if managed_count:
+                score += min(1.2, 0.30 * managed_count)
         elif local_org_feature:
             score += 0.6
         if is_dist_export_shipping_context(title, desc):
@@ -7411,9 +7656,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 4.8
         if infra_designation:
             score -= 3.0
-        if managed_count and (market_hits >= 1 or dist_market_ops or dist_supply_center or dist_sales_channel_ops or dist_export_field or dist_market_disruption):
-            score += min(0.9, 0.18 * managed_count)
-            score += min(0.7, 0.35 * program_core_count)
+        if managed_count and (market_hits >= 1 or dist_market_ops or dist_supply_center or dist_sales_channel_ops or dist_field_market_response or dist_export_field or dist_market_disruption):
+            score += min(1.2, 0.22 * managed_count)
+            score += min(0.9, 0.42 * program_core_count)
     elif key == "policy":
         score += weighted_hits(text, POLICY_WEIGHT_MAP)
         score += min(1.8, 0.20 * key_strength)
@@ -7429,6 +7674,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 10.0
         if dist_sales_channel_ops:
             score -= 9.0
+        if dist_field_market_response:
+            score -= 7.4
         if dist_export_field:
             score -= 5.8
         # 도매시장/농산물시장 인프라 이전 이슈는 정책보다 유통 성격이 더 강하므로 policy 감점
@@ -7455,8 +7702,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if policy_event_tail:
             score -= 8.4
         if managed_count and (macro_policy_like or policy_stabilization or policy_market_brief or policy_major_issue or policy_export_support_brief):
-            score += min(1.0, 0.18 * managed_count)
-            score += min(0.8, 0.40 * program_core_count)
+            score += min(1.2, 0.22 * managed_count)
+            score += min(1.0, 0.45 * program_core_count)
     elif key == "pest":
         score += weighted_hits(text, PEST_WEIGHT_MAP)
         score += min(1.8, 0.22 * key_strength)
@@ -8121,12 +8368,16 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         apc_ctx = has_apc_agri_context(text)
         local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
         dist_export_field = is_dist_export_field_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+        field_market_response = is_dist_field_market_response_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
         if apc_ctx:
             hard_hits += 1
         if local_org_feature:
             hard_hits = max(hard_hits, 1)
             agri_anchor_hits = max(agri_anchor_hits, 1)
         if dist_export_field:
+            hard_hits = max(hard_hits, 1)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
+        if field_market_response:
             hard_hits = max(hard_hits, 1)
             agri_anchor_hits = max(agri_anchor_hits, 1)
         if is_dist_supply_management_center_context(a.title or "", a.description or ""):
@@ -8344,6 +8595,78 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     def _dup_key(a: Article) -> str:
         return a.norm_key or a.canon_url or a.title_key
+
+    managed_key_cache: dict[str, tuple[str, ...]] = {}
+    managed_primary_cache: dict[str, str] = {}
+
+    def _managed_keys(a: Article) -> tuple[str, ...]:
+        cache_key = _dup_key(a)
+        keys = managed_key_cache.get(cache_key)
+        if keys is None:
+            keys = tuple(managed_commodity_keys_for_article(a))
+            managed_key_cache[cache_key] = keys
+        return keys
+
+    def _managed_primary_key(a: Article) -> str:
+        cache_key = _dup_key(a)
+        key = managed_primary_cache.get(cache_key)
+        if key is None:
+            keys = list(_managed_keys(a))
+            primary = ""
+            for cand in keys:
+                if bool((MANAGED_COMMODITY_BY_KEY.get(cand) or {}).get("program_core")):
+                    primary = cand
+                    break
+            if not primary and keys:
+                primary = keys[0]
+            managed_primary_cache[cache_key] = primary
+            key = primary
+        return key
+
+    pool_managed_primary_keys = {primary for primary in (_managed_primary_key(a) for a in pool) if primary}
+
+    def _managed_repeat_too_close(a: Article, selected: list[Article], score_gap_override: float | None = None) -> bool:
+        primary = _managed_primary_key(a)
+        if not primary or not selected:
+            return False
+        selected_primary_keys = {key for key in (_managed_primary_key(b) for b in selected) if key}
+        if primary not in selected_primary_keys:
+            return False
+        remaining_primaries = pool_managed_primary_keys - selected_primary_keys
+        if not remaining_primaries:
+            return False
+        same_primary = [b for b in selected if _managed_primary_key(b) == primary]
+        if not same_primary:
+            return False
+        best_same_score = max(float(getattr(b, "score", 0.0) or 0.0) for b in same_primary)
+        best_same_fit = max(section_fit_score(b.title or "", b.description or "", sec_conf) for b in same_primary)
+        score_gap = float(getattr(a, "score", 0.0) or 0.0) - best_same_score
+        fit_gap = section_fit_score(a.title or "", a.description or "", sec_conf) - best_same_fit
+        gap_need = score_gap_override
+        if gap_need is None:
+            gap_need = 1.8 if section_key == "supply" else 1.4 if section_key in ("dist", "policy") else 1.2
+        if score_gap >= gap_need:
+            return False
+        return fit_gap < 0.45
+
+    def _managed_overlap_penalty(a: Article, selected: list[Article]) -> float:
+        if not selected:
+            return 0.0
+        keys_a = set(_managed_keys(a))
+        if not keys_a:
+            return 0.0
+        primary_a = _managed_primary_key(a)
+        penalty = 0.0
+        for b in selected:
+            keys_b = set(_managed_keys(b))
+            if not keys_b:
+                continue
+            overlap = len(keys_a & keys_b)
+            if overlap == 0:
+                continue
+            same_primary = bool(primary_a and primary_a == _managed_primary_key(b))
+            penalty = max(penalty, min(1.4, (0.28 * overlap) + (0.68 if same_primary else 0.22)))
+        return penalty
 
     def _is_low_core_source(a: Article) -> bool:
         d = normalize_host(a.domain or "")
@@ -8568,6 +8891,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             market_ops = is_dist_market_ops_context(a.title or "", a.description or "", dom_local, pr_local)
             supply_center = is_dist_supply_management_center_context(a.title or "", a.description or "")
             sales_channel_ops = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
+            field_market_response = is_dist_field_market_response_context(a.title or "", a.description or "", dom_local, pr_local)
             export_shipping = is_dist_export_shipping_context(a.title or "", a.description or "")
             export_field = is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
             if _is_dist_weak_tail_story(a):
@@ -8575,6 +8899,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
             local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
             strong_local_org = local_field_profile or (local_org_feature and apc_ctx_local)
+            if field_market_response:
+                market_anchor_hits = max(market_anchor_hits, 1)
             if local_field_profile:
                 market_anchor_hits = max(market_anchor_hits, 1)
             if not (
@@ -8582,6 +8908,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 or market_ops
                 or supply_center
                 or sales_channel_ops
+                or field_market_response
                 or local_field_profile
                 or export_shipping
                 or export_field
@@ -8595,6 +8922,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 1 if market_ops else 0,
                 1 if supply_center else 0,
                 1 if sales_channel_ops else 0,
+                1 if field_market_response else 0,
                 1 if market_anchor_hits >= 2 else 0,
                 1 if local_field_profile else 0,
                 1 if strong_local_org else 0,
@@ -8731,6 +9059,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if any(_is_similar_story(a, b, section_key) for b in core):
             continue
+        if _managed_repeat_too_close(a, core):
+            continue
         # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
         if section_key == "policy" and press_priority(a.press, a.domain) == 1:
             mix_local = ((a.title or "") + " " + (a.description or "")).lower()
@@ -8808,6 +9138,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
+            if _managed_repeat_too_close(a, core, score_gap_override=1.2):
+                continue
             # policy 섹션: 로컬/저티어(1) 매체가 "핵심2"를 잠식하지 않도록 core 후보에서 제외
             if section_key == "policy" and press_priority(a.press, a.domain) == 1:
                 mix_local = ((a.title or "") + " " + (a.description or "")).lower()
@@ -8843,6 +9175,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
             if any(_is_similar_story(a, b, section_key) for b in core):
+                continue
+            if _managed_repeat_too_close(a, core, score_gap_override=1.0):
                 continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
                 continue
@@ -8881,13 +9215,19 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             text = (a.title + " " + a.description).lower()
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
             local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
+            field_market_response = is_dist_field_market_response_context(
+                a.title or "",
+                a.description or "",
+                normalize_host(a.domain or ""),
+                (a.press or "").strip(),
+            )
             strong_local_org = local_field_profile or (local_org_feature and has_apc_agri_context(text))
-            has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or strong_local_org
+            has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or strong_local_org or field_market_response
             if not has_anchor:
                 continue
             # 추가 안전장치: 농산물/원예 앵커가 약하면 '일반 물류/경제'로 보고 제외
             agri_anchor_hits = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
-            if agri_anchor_hits == 0 and best_horti_score(a.title, a.description) < 1.8 and count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")]) == 0:
+            if agri_anchor_hits == 0 and (not field_market_response) and best_horti_score(a.title, a.description) < 1.8 and count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")]) == 0:
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -8899,6 +9239,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            if _managed_repeat_too_close(a, final, score_gap_override=1.0):
                 continue
 
             if _supply_feature_topic_repeat(a, final):
@@ -8943,6 +9285,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
+            if _managed_repeat_too_close(a, final, score_gap_override=1.0):
+                continue
             if _supply_feature_topic_repeat(a, final):
                 continue
             if _is_supply_policy_like_tail_story(a):
@@ -8966,6 +9310,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
+                if _managed_repeat_too_close(a, final, score_gap_override=0.9):
+                    continue
 
                 if _supply_feature_topic_repeat(a, final):
                     continue
@@ -8982,11 +9328,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         max_sim = max(max_sim, _jaccard(tri_a, tri_b))
 
                 # penalty scale(3.0)은 점수 스케일(약 6~16)에 맞춘 보수적 기본값
-                mmr_val = float(getattr(a, "score", 0.0) or 0.0) - (MMR_DIVERSITY_LAMBDA * 3.0 * max_sim)
+                commodity_overlap_penalty = _managed_overlap_penalty(a, final)
+                mmr_val = float(getattr(a, "score", 0.0) or 0.0) - (MMR_DIVERSITY_LAMBDA * 3.0 * max_sim) - commodity_overlap_penalty
 
                 # tie-breaker: 본 점수/매체/최신 순
                 tie = (press_priority(a.press, a.domain), getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST))
-                cand = (mmr_val, float(getattr(a, "score", 0.0) or 0.0), tie)
+                cand = (mmr_val, float(getattr(a, "score", 0.0) or 0.0) - (0.35 * commodity_overlap_penalty), tie)
 
                 if best is None or best_tuple is None or cand > best_tuple:
                     best = a
@@ -9025,6 +9372,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            if _managed_repeat_too_close(a, final, score_gap_override=0.9):
                 continue
             if _supply_feature_topic_repeat(a, final):
                 continue
@@ -9128,7 +9477,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         added = 0
         max_feature_backfill = min(2, max_n - len(final))
         selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
-        relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.0, 0.0)
+        relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.8, 0.0)
         for prefer_unseen_topic in (True, False):
             if added >= max_feature_backfill or len(final) >= max_n:
                 break
@@ -9177,7 +9526,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         current_feature_count = sum(1 for x in final if is_supply_feature_article(x.title or "", x.description or ""))
         if current_feature_count < feature_target:
             selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
-            relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.0, 0.0)
+            relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.8, 0.0)
             swaps_needed = feature_target - current_feature_count
             for prefer_unseen_topic in (True, False):
                 if swaps_needed <= 0:
@@ -12878,6 +13227,8 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         payload["active"] = bool(articles)
         payload["top_article"] = articles[0] if articles else None
         payload["preview_articles"] = articles[:preview_limit]
+        payload["secondary_articles"] = articles[1:preview_limit]
+        payload["secondary_article_count"] = len(payload["secondary_articles"])
         payload["more_article_count"] = max(0, len(articles) - len(payload["preview_articles"]))
         payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles])
         if payload["active"]:
@@ -12948,26 +13299,42 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 for sec_key in (item.get("section_keys") or [])
                 if sec_key
             )
-            preview_articles = [article for article in (item.get("preview_articles") or []) if isinstance(article, Article)]
-            if preview_articles:
-                story_items: list[str] = []
-                for article in preview_articles:
-                    sec_key = str(getattr(article, "section", "") or "").strip()
-                    press_label = str(getattr(article, "press", "") or "").strip()
-                    meta_terms = [term for term in (_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key), press_label) if term]
-                    story_items.append(
-                        f"""
-                        <li class="commodityStoryItem">
-                          <a class="commodityStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">{esc(article.title)}</a>
-                          <div class="commodityStoryMeta">{esc(" · ".join(meta_terms))}</div>
-                        </li>
-                        """
+            primary_article = item.get("top_article") if isinstance(item.get("top_article"), Article) else None
+            secondary_articles = [article for article in (item.get("secondary_articles") or []) if isinstance(article, Article)]
+            if primary_article:
+                primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
+                primary_press_label = str(getattr(primary_article, "press", "") or "").strip()
+                primary_meta_terms = [
+                    term
+                    for term in (
+                        _MANAGED_COMMODITY_SECTION_LABELS.get(primary_section_key, primary_section_key),
+                        primary_press_label,
+                        fmt_dt(getattr(primary_article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)),
                     )
+                    if term
+                ]
+                secondary_links = "".join(
+                    f"""
+                    <a class="commoditySecondaryStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
+                      <span class="commoditySecondaryLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+                      <span class="commoditySecondaryText">{esc(article.title)}</span>
+                    </a>
+                    """
+                    for article in secondary_articles
+                )
                 more_count = int(item.get("more_article_count") or 0)
-                more_html = f'<div class="commodityMore">외 {more_count}건</div>' if more_count > 0 else ""
-                story_html = f'<ul class="commodityStoryList">{"".join(story_items)}</ul>{more_html}'
+                more_html = f'<span class="commodityMoreChip">+{more_count}</span>' if more_count > 0 else ""
+                story_html = f"""
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
+                    <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
+                  </div>
+                  <div class="commoditySecondaryRow">{secondary_links}{more_html}</div>
+                </div>
+                """
             else:
-                story_html = '<div class="commodityStory muted">아직 연결된 대표 기사가 없습니다.</div>'
+                story_html = '<div class="commodityStoryMuted">아직 연결된 대표 기사가 없습니다.</div>'
             item_cards.append(
                 f"""
                 <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile{' isActive' if item.get('active') else ''}">
@@ -12980,7 +13347,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                     <span>핵심 {int(item.get('core_count') or 0)}건</span>
                   </div>
                   <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
-                    {story_html}
+                  {story_html}
                 </article>
                 """
             )
@@ -13300,12 +13667,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commoditySig[data-section="dist"]{{background:#ede9fe;color:#6d28d9}}
     .commoditySig[data-section="pest"]{{background:#ffedd5;color:#b45309}}
     .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
-    .commodityStoryList{{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}}
-    .commodityStoryItem{{display:flex;flex-direction:column;gap:3px}}
-    .commodityStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#0f172a;font-size:13px;line-height:1.45;text-decoration:none}}
-    .commodityStory:hover{{text-decoration:underline}}
-    .commodityStoryMeta{{color:#64748b;font-size:11px;font-weight:700}}
-    .commodityMore{{color:#64748b;font-size:11px;font-weight:800}}
+    .commodityStoryCluster{{display:flex;flex-direction:column;gap:9px}}
+    .commodityPrimaryCard{{padding:11px 12px;border:1px solid #e2e8f0;border-radius:14px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}}
+    .commodityPrimaryStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#0f172a;font-size:13.5px;font-weight:800;line-height:1.48;text-decoration:none}}
+    .commodityPrimaryStory:hover{{text-decoration:underline}}
+    .commodityPrimaryMeta{{margin-top:6px;color:#64748b;font-size:11px;font-weight:700}}
+    .commoditySecondaryRow{{display:flex;flex-wrap:wrap;gap:7px}}
+    .commoditySecondaryStory{{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;padding:7px 9px;border-radius:12px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none;font-size:12px;line-height:1.35}}
+    .commoditySecondaryStory:hover{{border-color:#cbd5e1}}
+    .commoditySecondaryLabel{{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}}
+    .commoditySecondaryText{{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+    .commodityMoreChip{{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 10px;border-radius:12px;background:#eef2ff;color:#334155;font-size:11px;font-weight:900}}
+    .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
     .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
     .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
@@ -13316,7 +13689,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityGroupDot{{width:11px;height:11px;border-radius:999px}}
     .commodityGroupMeta{{color:#64748b;font-size:12px;font-weight:700}}
     .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
-    .commodityTile{{display:flex;flex-direction:column;gap:8px;min-height:196px;padding:14px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
+    .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
     .commodityTile.isActive{{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}}
     .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
     .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
@@ -13403,6 +13776,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityBoardSummary{{margin-top:10px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
+      .commodityGroupHead{{display:block}}
+      .commodityGroupMeta{{margin-top:6px}}
+      .commoditySecondaryStory{{width:100%}}
+      .commoditySecondaryText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}
     }}
   </style>

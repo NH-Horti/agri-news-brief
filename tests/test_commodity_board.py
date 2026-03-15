@@ -97,12 +97,25 @@ class TestCommodityBoard(unittest.TestCase):
         supply_queries = main.build_managed_section_recall_queries("supply", None)
         policy_queries = main.build_managed_section_recall_queries("policy", None)
         dist_queries = main.build_managed_section_recall_queries("dist", None)
-        self.assertIn(main._managed_commodity_supply_queries(self._item("apple"))[0], supply_queries)
-        self.assertIn(main._managed_commodity_supply_queries(self._item("onion"))[0], supply_queries)
-        self.assertIn(main._managed_commodity_policy_queries(self._item("apple"))[0], policy_queries)
-        self.assertIn(main._managed_commodity_dist_queries(self._item("apple"))[0], dist_queries)
-        self.assertIn(main._managed_commodity_policy_queries(self._item("cabbage"))[0], policy_queries)
-        self.assertIn(main._managed_commodity_dist_queries(self._item("cabbage"))[0], dist_queries)
+        apple_supply = sum(main._managed_commodity_supply_query_buckets(self._item("apple")).values(), [])
+        onion_supply = sum(main._managed_commodity_supply_query_buckets(self._item("onion")).values(), [])
+        self.assertTrue(any(query in supply_queries for query in apple_supply))
+        self.assertTrue(any(query in supply_queries for query in onion_supply))
+        self.assertTrue(any(query in policy_queries for query in main._managed_commodity_policy_queries(self._item("apple"))))
+        self.assertTrue(any(query in dist_queries for query in main._managed_commodity_dist_queries(self._item("apple"))))
+        self.assertTrue(any(query in policy_queries for query in main._managed_commodity_policy_queries(self._item("cabbage"))))
+        self.assertTrue(any(query in dist_queries for query in main._managed_commodity_dist_queries(self._item("cabbage"))))
+
+    def test_daily_managed_recall_queries_cover_every_catalog_item(self):
+        supply_queries = main.build_managed_section_recall_queries("supply", datetime(2026, 3, 13, tzinfo=main.KST))
+        policy_queries = main.build_managed_section_recall_queries("policy", datetime(2026, 3, 13, tzinfo=main.KST))
+        dist_queries = main.build_managed_section_recall_queries("dist", datetime(2026, 3, 13, tzinfo=main.KST))
+
+        for item in main.MANAGED_COMMODITY_CATALOG:
+            supply_buckets = main._managed_commodity_supply_query_buckets(item)
+            self.assertTrue(any(query in supply_queries for query in sum(supply_buckets.values(), [])), item["key"])
+            self.assertTrue(any(query in policy_queries for query in main._managed_commodity_policy_queries(item)), item["key"])
+            self.assertTrue(any(query in dist_queries for query in main._managed_commodity_dist_queries(item)), item["key"])
 
     def test_program_core_board_item_uses_registry_topic(self):
         item = self._item("grape")
@@ -139,6 +152,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(seasoning_group["inactive_count"], 5)
         self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
         self.assertEqual(len(apple["preview_articles"]), 1)
+        self.assertEqual(len(apple["secondary_articles"]), 0)
 
     def test_board_source_builder_keeps_managed_candidates_from_raw_pool(self):
         apple = self._item("apple")["short_label"]
@@ -284,7 +298,8 @@ class TestCommodityBoard(unittest.TestCase):
         )
         self.assertIn(first.title, html)
         self.assertIn(second.title, html)
-        self.assertIn("commodityStoryList", html)
+        self.assertIn("commodityPrimaryStory", html)
+        self.assertIn("commoditySecondaryRow", html)
 
     def test_render_debug_report_html_uses_page_scroll_friendly_table_styles(self):
         original_debug = main.DEBUG_REPORT

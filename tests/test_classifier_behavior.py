@@ -2738,6 +2738,30 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         cls.conf = {s["key"]: s for s in main.SECTIONS}
         cls.now = datetime(2026, 3, 13, 12, 0, 0, tzinfo=main.KST)
 
+    def _make_article(self, section: str, title: str, desc: str, url: str, press: str | None = None, score: float | None = None) -> main.Article:
+        dom = main.domain_of(url)
+        press_name = press or main.normalize_press_label(main.press_name_from_url(url), url)
+        canon = main.canonicalize_url(url)
+        title_key = main.norm_title_key(title)
+        article = main.Article(
+            section=section,
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press_name,
+            title_key=title_key,
+            canon_url=canon,
+            norm_key=main.make_norm_key(canon, press_name, title_key),
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf[section], press_name),
+        )
+        if score is not None:
+            article.score = score
+        return article
+
     def test_sales_channel_story_prefers_dist_for_managed_commodity(self):
         title = "조생양파 2만여t 소비 촉진...농협 대응 강화"
         desc = (
@@ -2761,6 +2785,83 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         pest_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["pest"], press)
         policy_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press)
         self.assertGreater(pest_score, policy_score)
+
+    def test_pear_climate_analysis_story_is_collectible_for_supply(self):
+        title = "[기고]기후변화 시대, 배 산업의 지속가능성을 묻다"
+        desc = (
+            "최근 몇 년 사이 우리 과수 농가가 체감하는 기후의 변화는 더 이상 이상기후라는 말로 설명하기 어려운 수준이다. "
+            "특히 배 산업은 기온과 강수, 일조, 휴면 조건에 민감한 대표 작목으로 재배 면적 감소와 생산량 변동성이 함께 커지고 있다."
+        )
+        dom = "ksilbo.co.kr"
+        press = "경상일보"
+        self.assertIn("pear", main._managed_commodity_match_summary(title, desc).get("keys") or [])
+        self.assertTrue(main.is_relevant(title, desc, dom, "https://www.ksilbo.co.kr/news/articleView.html?idxno=1051249", self.conf["supply"], press))
+        supply_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["supply"], press)
+        policy_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["policy"], press)
+        self.assertGreater(supply_score, policy_score)
+
+    def test_field_market_response_story_prefers_dist(self):
+        title = "맥 못추는 겨울 노지채소값···현장 “소비대책 세워야”"
+        desc = (
+            "양배추, 대파, 당근 등 겨울 노지채소의 도매가격 약세가 지속되고 있다. "
+            "생산량이 늘어난 반면 소비가 침체된 탓으로, 현장에서는 산지 물량 부담을 덜 소비대책이 필요하다고 본다."
+        )
+        dom = "agrinet.co.kr"
+        press = "한국농어민신문"
+        self.assertTrue(main.is_dist_field_market_response_context(title, desc, dom, press))
+        self.assertTrue(main.is_relevant(title, desc, dom, "https://www.agrinet.co.kr/news/articleView.html?idxno=402571", self.conf["dist"], press))
+        dist_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["dist"], press)
+        supply_score = main.compute_rank_score(title, desc, dom, self.now, self.conf["supply"], press)
+        self.assertGreater(dist_score, supply_score)
+
+    def test_non_agri_platform_and_retail_articles_remain_excluded(self):
+        samples = [
+            (
+                "충남도, 5,200억 투입 'DP 국가연구플랫폼' 청신호 [힘쎈충남 브리핑]",
+                "2033년까지 아산에 컨트롤 타워를 세우고 31개 기술 개발 과제를 추진하는 디스플레이 국가연구플랫폼 계획이다.",
+                "kukinews.com",
+                "쿠키뉴스",
+                "https://www.kukinews.com/article/view/kuk202603120069",
+            ),
+            (
+                "[네이버 쇼핑톡톡] “디저트도 오픈런”…크림, 화이트데이 맞이 기획전",
+                "한정판 거래 플랫폼 크림이 화이트데이를 맞아 인기 디저트 브랜드를 모아 기획전을 열었다.",
+                "etnews.com",
+                "전자신문",
+                "https://www.etnews.com/20260312000073",
+            ),
+        ]
+        for title, desc, dom, press, url in samples:
+            for section_key, conf in self.conf.items():
+                self.assertFalse(main.is_relevant(title, desc, dom, url, conf, press), f"{section_key} should reject {url}")
+
+    def test_supply_selection_prefers_new_managed_commodity_when_scores_are_close(self):
+        apple_a = self._make_article(
+            "supply",
+            "사과 수급 불안에 출하 조절 비상",
+            "사과 냉해 여파로 출하 물량이 줄고 가격 강세가 이어진다.",
+            "https://example.com/apple-a",
+            press="농민신문",
+            score=14.2,
+        )
+        apple_b = self._make_article(
+            "supply",
+            "사과 작황 부진에 산지 물량 감소",
+            "사과 생육 부진과 착과 불안으로 산지 물량 감소가 이어지고 있다.",
+            "https://example.com/apple-b",
+            press="농민신문",
+            score=13.9,
+        )
+        onion = self._make_article(
+            "supply",
+            "양파 생육 부진에 출하량 감소",
+            "양파 재배 농가에서 저온 피해와 작황 부진으로 출하량 감소가 이어지고 있다.",
+            "https://example.com/onion-a",
+            press="농민신문",
+            score=13.8,
+        )
+        selected = main.select_top_articles([apple_a, apple_b, onion], "supply", max_n=2)
+        self.assertEqual([article.title for article in selected], [apple_a.title, onion.title])
 
     def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
         query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]
