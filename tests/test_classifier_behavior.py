@@ -1330,6 +1330,15 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("딸기 생육", queries, msg=str(meta))
         self.assertNotIn("감귤 품질", queries, msg=str(meta))
 
+    def test_supply_prioritization_interleaves_program_core_and_other_managed_seeds(self):
+        prioritized, _ = main._prioritize_supply_recall_seeds(
+            ["사과", "상추", "배", "양배추"],
+            [],
+            [],
+            99.0,
+        )
+        self.assertEqual(prioritized[:4], ["사과", "상추", "배", "양배추"])
+
     def test_supply_seed_coverage_ignores_body_only_mentions(self):
         article = self._make_article(
             "supply",
@@ -2015,6 +2024,20 @@ class TestClassifierBehavior(unittest.TestCase):
             "보건신문",
         )
 
+    def test_normalize_press_label_maps_amnews_ikpnews_and_fntimes_hosts(self):
+        self.assertEqual(
+            main.normalize_press_label("AMNEWS", "http://www.amnews.co.kr/news/articleView.html?idxno=71433"),
+            "농축유통신문",
+        )
+        self.assertEqual(
+            main.normalize_press_label("ikpnews", "https://www.ikpnews.net/news/articleView.html?idxno=1"),
+            "한국농정신문",
+        )
+        self.assertEqual(
+            main.normalize_press_label("fntimes", "https://www.fntimes.com/html/view.php?ud=202603120001"),
+            "한국금융신문",
+        )
+
     def test_rss_pub_to_kst_parses_plain_site_timestamp(self):
         parsed = main._rss_pub_to_kst("2026-03-11 11:17:53")
         self.assertIsNotNone(parsed)
@@ -2213,6 +2236,12 @@ class TestClassifierBehavior(unittest.TestCase):
         title = "온라인도매시장 제도개선·활성화 TF 운영 논의"
         desc = "aT가 시장관리운영위원회를 열고 온라인도매시장 내실화와 이용자 신뢰 제고, 거래실적 전수조사, 제도개선 및 활성화 방안을 논의한 기사다."
         self.assertTrue(main.is_dist_market_ops_context(title, desc, "wonyesanup.co.kr", "원예산업신문"))
+
+    def test_amnews_distribution_association_story_prefers_dist(self):
+        title = "농업유통법인중앙연합회 ‘새 수장’에 배진현"
+        desc = "가락시장 6개 법인 경험을 바탕으로 회원 물량 통합관리와 산지유통 경쟁력 강화, 물류·마케팅 기능 활성화, 온라인 유통채널 진출 지원을 추진하겠다는 기사다."
+        best, scores = self._best_section(title, desc, "http://www.amnews.co.kr/news/articleView.html?idxno=71433")
+        self.assertEqual(best, "dist", msg=f"scores={scores}")
 
     def test_dist_underfill_adds_online_wholesale_ops_story(self):
         interview = self._make_article(
@@ -2611,6 +2640,24 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("도매시장 경매", dist_queries)
         self.assertIn("과수화상병 예찰", main._recall_common_queries("pest", "2026-01-05"))
         self.assertTrue(len(pest_queries) > 0)
+
+    def test_onion_and_garlic_articles_are_not_globally_excluded(self):
+        samples = [
+            (
+                "양파 가격 강세 지속",
+                "햇양파 출하량 감소와 저장 물량 조정으로 양파 수급이 빡빡해졌다는 기사다.",
+                "https://www.agrinet.co.kr/news/articleView.html?idxno=500001",
+            ),
+            (
+                "마늘 재배면적 감소에 산지 가격 상승",
+                "난지형 마늘 작황과 출하량 감소로 마늘 가격이 강세를 보인다는 기사다.",
+                "https://www.nongmin.com/article/20260315009999",
+            ),
+        ]
+        for title, desc, url in samples:
+            dom = main.domain_of(url)
+            press = main.normalize_press_label(main.press_name_from_url(url), url)
+            self.assertTrue(main.is_relevant(title, desc, dom, url, self.conf["supply"], press), msg=title)
 
     def test_web_recall_queries_follow_fallback_then_common_registry(self):
         recall_meta = {}

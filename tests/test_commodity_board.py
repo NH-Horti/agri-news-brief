@@ -89,6 +89,18 @@ class TestCommodityBoard(unittest.TestCase):
             self.assertIn(query, queries)
         self.assertGreaterEqual(len(queries), len(main.MANAGED_PEST_PRIMARY_CORE_QUERIES))
 
+    def test_daily_pest_query_builder_includes_non_core_primary_items(self):
+        queries = main.build_managed_pest_recall_queries(datetime(2026, 3, 15, tzinfo=main.KST))
+        self.assertIn(main._managed_commodity_pest_queries(self._item("peach"))[0], queries)
+
+    def test_managed_section_recall_queries_cover_policy_and_dist(self):
+        policy_queries = main.build_managed_section_recall_queries("policy", None)
+        dist_queries = main.build_managed_section_recall_queries("dist", None)
+        self.assertIn(main._managed_commodity_policy_queries(self._item("apple"))[0], policy_queries)
+        self.assertIn(main._managed_commodity_dist_queries(self._item("apple"))[0], dist_queries)
+        self.assertIn(main._managed_commodity_policy_queries(self._item("cabbage"))[0], policy_queries)
+        self.assertIn(main._managed_commodity_dist_queries(self._item("cabbage"))[0], dist_queries)
+
     def test_program_core_board_item_uses_registry_topic(self):
         item = self._item("grape")
         label = item["short_label"]
@@ -121,6 +133,7 @@ class TestCommodityBoard(unittest.TestCase):
         seasoning_group = next(group for group in ctx["groups"] if group["key"] == "seasoning_veg")
         self.assertEqual(seasoning_group["active_count"], 0)
         self.assertEqual(seasoning_group["item_total"], 5)
+        self.assertEqual(seasoning_group["inactive_count"], 5)
         self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
 
     def test_managed_only_commodity_tags_are_emitted(self):
@@ -129,6 +142,28 @@ class TestCommodityBoard(unittest.TestCase):
         tags = main._commodity_tags_in_text(f"{radish} 가격 급등과 {green_onion} 수급 불안이 이어진다.", limit=5)
         self.assertIn(radish, tags)
         self.assertIn(green_onion, tags)
+
+    def test_program_core_supply_article_scores_above_generic_supply_peer(self):
+        item = self._item("apple")
+        label = item["short_label"]
+        conf = self.conf["supply"]
+        program_core_score = main.compute_rank_score(
+            f"{label} 수급 불안에 가격 강세",
+            f"{label} 출하 조절과 물량 감소로 가격 강세가 이어지고 있다.",
+            "nongmin.com",
+            self.now,
+            conf,
+            "농민신문",
+        )
+        generic_score = main.compute_rank_score(
+            "과일 수급 불안에 가격 강세",
+            "과일 출하 조절과 물량 감소로 가격 강세가 이어지고 있다.",
+            "nongmin.com",
+            self.now,
+            conf,
+            "농민신문",
+        )
+        self.assertGreater(program_core_score, generic_score)
 
     def test_render_daily_page_includes_commodity_boards(self):
         item = self._item("apple")
@@ -149,13 +184,14 @@ class TestCommodityBoard(unittest.TestCase):
             archive_dates_desc=["2026-03-15"],
             site_path="https://example.com/agri-news-brief/",
         )
-        self.assertIn("품목보드", html)
+        self.assertIn("전체 품목 보드", html)
         self.assertIn('data-view-tab="briefing"', html)
         self.assertIn('data-view-tab="commodity"', html)
         self.assertIn("오늘 브리핑", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
+        self.assertIn("미연결 품목 5개", html)
         self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("붉은고추", html)
 
@@ -189,6 +225,34 @@ class TestCommodityBoard(unittest.TestCase):
         )
         self.assertIn(apple, html)
         self.assertIn(radish, html)
+
+    def test_render_debug_report_html_uses_page_scroll_friendly_table_styles(self):
+        original_debug = main.DEBUG_REPORT
+        original_write_json = main.DEBUG_REPORT_WRITE_JSON
+        original_data = {
+            "generated_at_kst": main.DEBUG_DATA.get("generated_at_kst"),
+            "build_tag": main.DEBUG_DATA.get("build_tag"),
+            "filter_rejects": list(main.DEBUG_DATA.get("filter_rejects", [])),
+            "sections": dict(main.DEBUG_DATA.get("sections", {})),
+        }
+        try:
+            main.DEBUG_REPORT = True
+            main.DEBUG_REPORT_WRITE_JSON = False
+            main.DEBUG_DATA["generated_at_kst"] = "2026-03-15T09:00:00+09:00"
+            main.DEBUG_DATA["build_tag"] = "test-build"
+            main.DEBUG_DATA["filter_rejects"] = []
+            main.DEBUG_DATA["sections"] = {}
+            html = main.render_debug_report_html("2026-03-15", "https://example.com/agri-news-brief/")
+        finally:
+            main.DEBUG_REPORT = original_debug
+            main.DEBUG_REPORT_WRITE_JSON = original_write_json
+            main.DEBUG_DATA["generated_at_kst"] = original_data["generated_at_kst"]
+            main.DEBUG_DATA["build_tag"] = original_data["build_tag"]
+            main.DEBUG_DATA["filter_rejects"] = original_data["filter_rejects"]
+            main.DEBUG_DATA["sections"] = original_data["sections"]
+        self.assertIn("overflow-x:auto", html)
+        self.assertIn("overflow-y:visible", html)
+        self.assertNotIn("position:sticky", html)
 
 
 if __name__ == "__main__":
