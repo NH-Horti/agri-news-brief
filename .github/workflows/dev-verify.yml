@@ -1,6 +1,8 @@
 name: agri-news-brief (dev verify rebuild)
 
 on:
+  schedule:
+    - cron: '0 22 * * *'
   workflow_dispatch:
     inputs:
       report_date:
@@ -50,7 +52,7 @@ concurrency:
 
 jobs:
   run:
-    if: github.ref_name == 'dev'
+    if: github.event_name == 'schedule' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout workflow branch
@@ -58,7 +60,7 @@ jobs:
         with:
           token: ${{ github.token }}
           persist-credentials: true
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.event_name == 'schedule' && 'dev' || github.ref_name }}
           fetch-depth: 0
 
       - name: Setup Python
@@ -76,13 +78,21 @@ jobs:
         run: |
           set -euo pipefail
 
+          if [ "${{ github.event_name }}" = 'schedule' ]; then
+            content_ref='dev'
+          else
+            content_ref='${{ github.ref_name }}'
+          fi
+
           if [ -n "${{ inputs.report_date }}" ]; then
             report_date='${{ inputs.report_date }}'
           else
             report_date="$(TZ=Asia/Seoul date +%F)"
           fi
 
-          if [ "${{ github.event_name }}" = 'workflow_dispatch' ] && [ "${{ inputs.send_kakao }}" = 'true' ]; then
+          if [ "${{ github.event_name }}" = 'schedule' ]; then
+            send_kakao='true'
+          elif [ "${{ github.event_name }}" = 'workflow_dispatch' ] && [ "${{ inputs.send_kakao }}" = 'true' ]; then
             send_kakao='true'
           else
             send_kakao='false'
@@ -98,6 +108,7 @@ jobs:
             ux_patch_days='0'
           fi
 
+          echo "content_ref=$content_ref" >> "$GITHUB_OUTPUT"
           echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
           echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
           echo "brief_view_url=$brief_view_url" >> "$GITHUB_OUTPUT"
@@ -117,7 +128,7 @@ jobs:
         id: rebuild
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          GH_CONTENT_REF: main
+          GH_CONTENT_REF: ${{ steps.vars.outputs.content_ref }}
           GH_CONTENT_BRANCH: codex/dev-preview
 
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
@@ -224,7 +235,7 @@ jobs:
           {
             echo '## Dev Verify Summary'
             echo "- Event: ${{ github.event_name }}"
-            echo "- Branch: ${{ github.ref_name }}"
+            echo "- Content ref: ${{ steps.vars.outputs.content_ref }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- Tests: ${{ steps.tests.outcome }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"

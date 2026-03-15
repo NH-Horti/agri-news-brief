@@ -44,6 +44,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('handleWheelSwipe(e)', self.text)
         self.assertIn('addEventListener("wheel"', self.text)
         self.assertIn('gotoByOffset(-1', self.text)
+        self.assertIn('a[href],select,input,textarea,button', self.text)
 
     def test_rebuild_helpers_exist(self):
         self.assertIn("def _compute_window_for_report_date", self.text)
@@ -109,9 +110,31 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("syncLatestDevBuild", self.text)
         self.assertIn("build_dev_preview_version_json", self.text)
 
+    def test_view_tabs_for_briefing_and_commodity_exist(self):
+        self.assertIn('class=\\"viewTab isActive\\" data-view-tab=\\"briefing\\"', self.text)
+        self.assertIn('class=\\"viewTab\\" data-view-tab=\\"commodity\\"', self.text)
+        self.assertIn("function activateView(viewKey, opts)", self.text)
+        self.assertIn("resolveInitialView()", self.text)
+
+    def test_external_links_use_plain_top_navigation(self):
+        self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
+        self.assertIn('class="commodityPrimaryStory"', self.text)
+        self.assertIn('class="commoditySupportStory"', self.text)
+        self.assertIn('class="commodityMoreStory"', self.text)
+        self.assertIn('data-swipe-ignore="1"', self.text)
+        self.assertIn('target=\\"_top\\"', self.text)
+        self.assertNotIn('querySelectorAll(".btnOpen, .commodityPrimaryStory")', self.text)
+        self.assertIn('if (blocked) {{', self.text)
+        self.assertIn('swipeActive = false;', self.text)
+
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
-        self.assertIn("GH_CONTENT_REF: main", self.dev_verify_text)
+        self.assertIn("cron: '0 22 * * *'", self.dev_verify_text)
+        self.assertIn("if: github.event_name == 'schedule' || github.ref_name == 'dev'", self.dev_verify_text)
+        self.assertIn("ref: ${{ github.event_name == 'schedule' && 'dev' || github.ref_name }}", self.dev_verify_text)
+        self.assertIn("GH_CONTENT_REF: ${{ steps.vars.outputs.content_ref }}", self.dev_verify_text)
+        self.assertIn("content_ref='dev'", self.dev_verify_text)
+        self.assertIn("send_kakao='true'", self.dev_verify_text)
         self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)
@@ -125,6 +148,10 @@ class TestRegressions(unittest.TestCase):
     def test_dev_loader_uses_preview_branch_assets(self):
         self.assertIn("codex/dev-preview", self.dev_loader_text)
         self.assertIn("previewFrame", self.dev_loader_text)
+        self.assertIn("requestedDate", self.dev_loader_text)
+        self.assertIn("/archive/", self.dev_loader_text)
+        self.assertIn("srcdoc", self.dev_loader_text)
+        self.assertIn("postMessage", self.dev_loader_text)
         self.assertIn("createObjectURL", self.dev_loader_text)
         self.assertIn("revokeObjectURL", self.dev_loader_text)
         self.assertIn("raw preview", self.dev_loader_text)

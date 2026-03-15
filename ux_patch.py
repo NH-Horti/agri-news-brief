@@ -227,7 +227,7 @@ def build_archive_ux_html(
       if(!target || !target.closest) return false;
       if(target.closest('[data-swipe-ignore="1"]')) return true;
       if(target.closest('.topbar')) return true;
-      if(target.closest('select,input,textarea,button,[contenteditable="true"]')) return true;
+      if(target.closest('a[href],select,input,textarea,button,[contenteditable="true"]')) return true;
       return false;
     }}
     function _eventPoint(e, phase){{
@@ -323,6 +323,12 @@ def build_archive_ux_html(
       var point = _eventPoint(e, 'start');
       if(!point) return;
       blocked = isBlockedTarget(e ? e.target : null);
+      if(blocked){{
+        swipeActive = false;
+        swipeTarget = null;
+        swipePointerId = null;
+        return;
+      }}
       if(e && (e.pointerType === 'mouse' || (!e.pointerType && !e.touches))){{
         _setDesktopSwipeMode(true);
       }}

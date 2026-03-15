@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="526e753" />
+  <meta name="agri-rendered-at-kst" content="2026-03-14T21:38:49+09:00" />
+  <meta name="agri-dev-version-url" content="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" />
+  <title>[2026-01-12 농산물 뉴스 Brief] [DEV]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
+    }
+    *{box-sizing:border-box}
+    html {
+      /* ✅ 앵커 이동 위치 보정 */
+      scroll-behavior:smooth;
+      scroll-padding-top: 150px;
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+    .navBtn.disabled{opacity:.45;cursor:pointer}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    /* sticky chip bar */
+    .chipbar{border-top:1px solid var(--line);}
+    .chipwrap{max-width:1100px;margin:0 auto;padding:8px 14px;}
+    .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .chip{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
+          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}
+    .chip:hover{border-color:#cbd5e1}
+    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chipN{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+
+    .sec{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
+          scroll-margin-top: 150px;
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      html{scroll-padding-top: 170px;}
+      .sec{scroll-margin-top: 170px;}
+    }
+    @media (max-width: 640px){
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      /* mobile chips: 2 columns so counts are always visible */
+      .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
+      .chip{width:100%;justify-content:space-between}
+      .chip{padding:6px 10px;font-size:12.5px}
+      .chipN{min-width:24px;padding:0 8px;background:#111827;color:#fff}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-01-12 농산물 뉴스 Brief] [DEV]<span class="envBadge">DEV</span></h1>
+        <div class="sub">기간: 2026-01-09 07:00 ~ 2026-01-12 07:00 · 기사 8건 · 개발 버전 미리보기 · build 526e753</div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/index.html" title="날짜별 아카이브 목록">DEV 미리보기</a>
+        <button class="navBtn disabled" data-nav="prev" type="button" data-msg="이전 브리핑이 없습니다.">◀ 이전</button>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/dev/index.html" selected>26-01-12 (DEV)</option>
+          </select>
+        </div>
+        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
+      </div>
+<div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+    </div>
+
+    <div class="chipbar">
+      <div class="chipwrap">
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">1</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">2</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">병해충 및 방제</span><span class="chipN">0</span></a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    
+            <section id="sec-supply" class="sec">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">5건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">이데일리</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/10 15:56</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="http://www.edaily.co.kr/news/newspath.asp?newsid=01886006645316408" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">유재석도 받은 &#x27;이 꽃다발&#x27;…화원협회 &quot;또 다른 상처&quot; 이유는</div>
+              <div class="sum">화원협회는 유재석이 생화 대신 레고 꽃다발을 받은 것에 대해 정부의 화훼 소비 촉진 정책이 무색하다고 비판했다. 이번 행사는 레고의 보태니컬 시리즈로 장식되어 기존 화훼 제품을 대체하였다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">NAEIL</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/09 13:08</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.naeil.com/news/read/573873" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">화훼농가 SECA 비준 앞두고 생존 호소</div>
+              <div class="sum">화훼농가가 SECA 비준에 앞서 생존을 호소하고 있으며, 수입 급증으로 국산 꽃 가격이 하락할 우려가 크다. 현재 에콰도르산 절화에 25% 관세가 부과되지만, 비준 후 12년간 세금이 면제될 예정이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">매일경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/10 14:20</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.mk.co.kr/article/11928953" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">유재석도 받은 레고 꽃다발 …화원협회 “생계 직결인데, 상처”</div>
+              <div class="sum">한국화원협회는 생화 대신 장난감 꽃다발이 사용된 것에 대해 문제를 제기하며 생계와 직결된 화훼 농가와 종사자들에게 또 다른 상처가 있다고 밝혔다. 이로 인해 업계의 불만이 증가하고 있다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">파이낸셜뉴스</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/10 15:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="http://www.fnnews.com/news/202601101124486006" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&#x27;대상&#x27; 유재석이 든 &#x27;레고 꽃다발 &#x27;에 &quot; 화훼 농가·종사자 상처&quot; 업계 반발</div>
+              <div class="sum">유재석이 받은 레고 꽃다발과 관련해 화훼 업계가 반발하고 있다. 한국화원협회는 장난감 꽃다발 사용이 화훼 농가와 종사자에게 상처를 주었다고 주장하며, 생명 있는 꽃의 가치를 강조했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">서울신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/11 06:25</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.seoul.co.kr/news/society/2026/01/11/20260111500001?wlog_tag3=naver" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">유재석 안은 ‘ 꽃다발 ’에 “상처받았다”… 정식으로 불만 제기한 화훼 ...</div>
+              <div class="sum">유재석이 생화 대신 장난감 꽃다발을 받은 것에 화훼 업계가 반발하고 있다. 한국화원협회는 이를 공식적으로 불만 제기하며 생화의 소비 촉진 필요성을 강조했다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  정책 및 주요 이슈
+                </div>
+                <div class="secCount">1건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">서울신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/12 05:03</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.seoul.co.kr/news/society/2026/01/12/20260112010005?wlog_tag3=naver" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">“장난감 꽃, 화훼 농가 생존권 위협” “생화 너무 비싸, 고물가 시대...</div>
+              <div class="sum">업계는 고물가 시대에 생화 대신 무관세 수입 꽃과 조화가 선호되고 있다고 우려를 표명했다. 국산 절화는 세금 부담이 있는 반면, 수입 꽃은 가격 부담이 덜하다는 점에서 경쟁력이 떨어지고 있다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장 (도매시장/APC/수출)
+                </div>
+                <div class="secCount">2건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">한국농어민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/09 19:57</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+                <a class="btnOpen" href="https://www.agrinet.co.kr/news/articleView.html?idxno=400377" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">[새해기획] 상호관세·과잉생산 극복 올인···&#x27;수출만이 살길&#x27; 올해도...</div>
+              <div class="sum">미국 배의 수출 작업이 진행 중이며, 농산물 산지유통센터(APC)에서는 과잉생산 극복을 위해 수출이 중요한 해로 보고 있다. 이들 지역브랜드는 최신식 자동화 시스템을 갖춰 효율적인 유통을 목표하고 있다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">01/09 18:27</span>
+                  <span class="dot">·</span>
+                  <span class="topic">화훼</span>
+                </div>
+                <a class="btnOpen" href="https://www.nongmin.com/article/20260108500539" target="_blank" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">부경원예농협, 새해 화훼 경매 시작…나쁘지 않은 가격 으로 출발</div>
+              <div class="sum">부경원예농협에서 새해 화훼 경매가 시작되어 나쁘지 않은 가격으로 출발하였다. 가격 전망이 밝은 편이라고 하며, 화훼 유통 선진화와 농가 실익 증대를 목표로 하고 있다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  병해충 및 방제
+                </div>
+                <div class="secCount">0건</div>
+              </div>
+              <div class="secBody"><div class="empty">해당사항 없음</div></div>
+            </section>
+            
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    <div class="footer footerMeta">* DEV build 526e753 · 생성 2026-03-14T21:38:49+09:00</div>
+  </div>
+
+  <script>
+    (function() {
+
+      var currentBuild = "526e753";
+      var devVersionUrl = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json";
+      function syncLatestDevBuild() {
+        if (window.top && window.top !== window) return;
+        if (!devVersionUrl || !window.fetch) return;
+        var bustUrl = devVersionUrl + (devVersionUrl.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
+        fetch(bustUrl, { cache: "no-store" }).then(function(r) { return (r && r.ok) ? r.json() : null; }).then(function(data) { if (!data || typeof data.build_tag !== "string") return; var latest = data.build_tag; if (!latest || latest === currentBuild) return; var u = new URL(window.location.href); if (u.searchParams.get("v") === latest) return; u.searchParams.set("v", latest); window.location.replace(u.toString()); }).catch(function() {});
+      }
+      syncLatestDevBuild();
+
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+          }
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
+        }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
+      }
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            window.location.href = href;
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    var href = String(window.location.href || "");
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
+    }
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = _getRootPrefix() + "archive_manifest.json";
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    window.location.href = url;
+    return;
+  }
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      window.location.href = url;
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeSuppressSelection = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeRootUserSelect = "";
+      var swipeRootWebkitUserSelect = "";
+      var swipeBodyCursor = "";
+      var wheelSwipeDx = 0;
+      var wheelSwipeDy = 0;
+      var wheelSwipeAt = 0;
+      var wheelSwipeLockUntil = 0;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        setDesktopSwipeMode(false);
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function setDesktopSwipeMode(active) {
+        var root = document.documentElement;
+        try {
+          if (active) {
+            if (swipeSuppressSelection) return;
+            swipeSuppressSelection = true;
+            swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || "") : "";
+            swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || "") : "";
+            swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || "") : "";
+            if (root && root.style) {
+              root.style.userSelect = "none";
+              root.style.webkitUserSelect = "none";
+            }
+            if (document.body && document.body.style) {
+              document.body.style.cursor = "grabbing";
+            }
+            return;
+          }
+          if (!swipeSuppressSelection) return;
+          swipeSuppressSelection = false;
+          if (root && root.style) {
+            root.style.userSelect = swipeRootUserSelect;
+            root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+          }
+          if (document.body && document.body.style) {
+            document.body.style.cursor = swipeBodyCursor;
+          }
+        } catch (_desktopSwipeErr) {}
+      }
+
+      function resetWheelSwipe() {
+        wheelSwipeDx = 0;
+        wheelSwipeDy = 0;
+        wheelSwipeAt = 0;
+      }
+
+      function handleWheelSwipe(e) {
+        if (!e || isNavigating) return;
+        if (e.ctrlKey) return;
+        if (isBlockedTarget(e.target)) return;
+        var now = Date.now();
+        if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+        if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {
+          resetWheelSwipe();
+        }
+        wheelSwipeAt = now;
+        wheelSwipeDx += Number(e.deltaX || 0);
+        wheelSwipeDy += Number(e.deltaY || 0);
+        if (Math.abs(wheelSwipeDx) < 120) return;
+        if (Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+        wheelSwipeLockUntil = now + 700;
+        try {
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        } catch (_wheelPreventErr) {}
+        var totalDx = wheelSwipeDx;
+        resetWheelSwipe();
+        if (totalDx > 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {
+          setDesktopSwipeMode(true);
+        }
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedDesktopSwipe = swipeSuppressSelection;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selection = window.getSelection ? window.getSelection() : null;
+          var selected = selection ? String(selection) : "";
+          if (startedDesktopSwipe && selection && selection.removeAllRanges) {
+            selection.removeAllRanges();
+            selected = "";
+          }
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      swipeArea.addEventListener("dragstart", function(e) {
+        if (!swipeActive && !swipeSuppressSelection) return;
+        try {
+          if (e && e.preventDefault) e.preventDefault();
+        } catch (_dragErr) {}
+      });
+
+      swipeArea.addEventListener("wheel", function(e) {
+        handleWheelSwipe(e);
+      }, { passive: false });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+        resetWheelSwipe();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
+  </script>
+  <!-- build: 526e753 -->
+
+    <style>
+      details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
+      details.dbgWrap summary { cursor:pointer; font-weight:700; }
+      .dbgMeta { margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:8px; }
+      .dbgkv { background:#f8fafc; border:1px solid var(--line); padding:6px 8px; border-radius:10px; font-size:12px; }
+      .dbgLinks a { font-size:12px; color:var(--btn); }
+      .dbgSec { margin-top:16px; }
+      .dbgSecHead { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+      .dbgTableWrap { overflow:auto; border:1px solid var(--line); border-radius:12px; margin-top:8px; }
+      table.dbgTable { width:100%; border-collapse:collapse; font-size:12px; min-width:980px; }
+      table.dbgTable th, table.dbgTable td { border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:top; }
+      table.dbgTable th { position:sticky; top:0; background:#f9fafb; z-index:1; }
+      .dbgTable .c { text-align:center; white-space:nowrap; }
+      .dbgTable .r { text-align:right; white-space:nowrap; }
+      .muted { color:var(--muted); }
+    </style>
+    <details class="dbgWrap">
+      <summary>디버그 리포트 (선정/필터 로그)</summary>
+      <div class='dbgLinks'><a href='https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-01-12.json' target='_blank' rel='noopener'>debug json 보기</a></div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 526e753</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-14T21:38:49+09:00</span></div>
+      <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: flower_novelty_noise(7), supply_context_gate(4), pest_partial_mention(2), policy_context_gate(1)</div>
+      
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>supply</b>
+            <span class="muted">candidates=35 selected=11 thr=8.5 tail=8.9 core_min=8.5</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>16.5</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>4.7</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=01886006645316408' target='_blank' rel='noopener'>유재석도 받은 &#x27;이 꽃다발&#x27;…화원협회 &quot;또 다른 상처&quot; 이유는</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.41</td><td class='c'>3</td><td>매일경제</td><td class='muted'>mk.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>headline_gate</td><td><a href='https://www.mk.co.kr/article/11928956' target='_blank' rel='noopener'>연말 시상식 레고 꽃다발, 반발 나왔다 “화훼농가에 상처”</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>16.32</td><td class='c'>3</td><td>매일경제</td><td class='muted'>mk.co.kr</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.mk.co.kr/article/11928953' target='_blank' rel='noopener'>유재석도 받은 레고 꽃다발 …화원협회 “생계 직결인데, 상처”</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>16.22</td><td class='c'>3</td><td>파이낸셜뉴스</td><td class='muted'>fnnews.com</td><td class='r'>6.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.fnnews.com/news/202601101124486006' target='_blank' rel='noopener'>&#x27;대상&#x27; 유재석이 든 &#x27;레고 꽃다발 &#x27;에 &quot; 화훼 농가·종사자 상처&quot; 업계 반발</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.16</td><td class='c'>3</td><td>매일경제</td><td class='muted'>mbn.mk.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>headline_gate</td><td><a href='http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00009&amp;news_seq_no=5167871' target='_blank' rel='noopener'>연말 시상식 등장한 &#x27;레고 꽃다발&#x27;에 화훼업계 반발</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.97</td><td class='c'>3</td><td>서울신문</td><td class='muted'>seoul.co.kr</td><td class='r'>6.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.seoul.co.kr/news/society/2026/01/11/20260111500001?wlog_tag3=naver' target='_blank' rel='noopener'>유재석 안은 ‘ 꽃다발 ’에 “상처받았다”… 정식으로 불만 제기한 화훼 ...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.91</td><td class='c'>3</td><td>국민일보</td><td class='muted'>kmib.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>headline_gate</td><td><a href='https://www.kmib.co.kr/article/view.asp?arcid=0029231097&amp;code=61121111&amp;cp=nv' target='_blank' rel='noopener'>시상식에 레고 꽃다발…화훼업계 “생계 위협” 반발</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>15.87</td><td class='c'>1</td><td>NAEIL</td><td class='muted'>naeil.com</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.naeil.com/news/read/573873' target='_blank' rel='noopener'>화훼농가 SECA 비준 앞두고 생존 호소</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.83</td><td class='c'>3</td><td>동아일보</td><td class='muted'>donga.com</td><td class='r'>3.4</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.donga.com/news/Culture/article/all/20260110/133129262/2' target='_blank' rel='noopener'>연예대상에 등장한 ‘레고 꽃다발 ’…화원협회 “상처받았다”</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.61</td><td class='c'>3</td><td>매일경제</td><td class='muted'>mbn.mk.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00009&amp;news_seq_no=5167958' target='_blank' rel='noopener'>&quot;상처받았다&quot;…유재석이 안은 &#x27;레고 꽃다발&#x27;에 화훼업계 반발</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.52</td><td class='c'>3</td><td>머니투데이</td><td class='muted'>mt.co.kr</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.mt.co.kr/society/2026/01/10/2026011012583323664' target='_blank' rel='noopener'>유재석도 받은 &#x27;레고 꽃다발 &#x27;에 &quot;상처받았다&quot; 발끈…무슨 일?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.52</td><td class='c'>3</td><td>한국경제</td><td class='muted'>hankyung.com</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>similar_title</td><td><a href='https://www.hankyung.com/article/2026011025957' target='_blank' rel='noopener'>유재석도 받은 &#x27;레고 꽃다발 &#x27;에 &quot;상처 받았다&quot; 분노…무슨 일?</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.43</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>3.4</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.ytn.co.kr/_ln/0134_202601110841497162' target='_blank' rel='noopener'>&quot;상처 받았다&quot;...&#x27;대상&#x27; 유재석 손에 들린 꽃다발 에 업계 뿔난 이유 [지...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.36</td><td class='c'>3</td><td>서울경제</td><td class='muted'>sedaily.com</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.sedaily.com/NewsView/2K79E1OTHS' target='_blank' rel='noopener'>유재석이 든 ‘레고 꽃다발’에 &quot;상처 받았다&quot;는 화훼업계…반발한 이유...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>15.03</td><td class='c'>3</td><td>중앙일보</td><td class='muted'>joongang.co.kr</td><td class='r'>3.4</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.joongang.co.kr/article/25396553' target='_blank' rel='noopener'>&quot; 장난감 꽃에 상처&quot;…연예대상 &#x27;레고 꽃다발 &#x27; 비난, 무슨 일</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>10.17</td><td class='c'>2</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.dailian.co.kr/news/view/1596675/?sc=Naver' target='_blank' rel='noopener'>&quot;유재석이 레고 꽃다발 을…상처 받았다&quot; 분노한 화원 단체</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.56</td><td class='c'>2</td><td>아주경제</td><td class='muted'>ajunews.com</td><td class='r'>2.4</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>supply_policy_like</td><td><a href='https://www.ajunews.com/view/20260110182646266' target='_blank' rel='noopener'>&quot;상처 받았다&quot;…유재석도 받은 &#x27;레고 꽃다발&#x27; 뭐길래, 화제?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>9.56</td><td class='c'>2</td><td>뉴시스</td><td class='muted'>newsis.com</td><td class='r'>2.4</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>supply_policy_like</td><td><a href='https://www.newsis.com/view/NISX20260110_0003472104' target='_blank' rel='noopener'>유재석도 받은 &#x27;레고 꽃다발&#x27;에 &quot;상처&quot;…화원 협회 뿔났다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>5.23</td><td class='c'>1</td><td>spotvnews</td><td class='muted'>spotvnews.co.kr</td><td class='r'>3.8</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.spotvnews.co.kr/news/articleView.html?idxno=792370' target='_blank' rel='noopener'>유재석·김숙이 든 &#x27; 장난감 꽃다발 &#x27;에 화훼 업계 반발 &quot;정부도 지원하는...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>4.37</td><td class='c'>1</td><td>insight</td><td class='muted'>insight.co.kr</td><td class='r'>6.1</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.insight.co.kr/news/537396' target='_blank' rel='noopener'>MBC 연예대상 &#x27;레고 꽃다발&#x27; 후폭풍... &quot;생화 농가 두 번 죽이는 처사&quot; ...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.9</td><td class='c'>1</td><td>seoulwire</td><td class='muted'>seoulwire.com</td><td class='r'>4.1</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.seoulwire.com/news/articleView.html?idxno=701026' target='_blank' rel='noopener'>생화 빠진 연말 시상식…화훼업계 &quot;소상공인 생계 직결 문제&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.8</td><td class='c'>1</td><td>노컷뉴스</td><td class='muted'>nocutnews.co.kr</td><td class='r'>4.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nocutnews.co.kr/news/6454315' target='_blank' rel='noopener'>연예대상 레고 꽃다발 에…화원업계 &quot;또 다른 상처&quot; 무슨 일?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.76</td><td class='c'>1</td><td>문화일보</td><td class='muted'>munhwa.com</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.munhwa.com/article/11559888' target='_blank' rel='noopener'>유재석이 든 ‘레고 꽃다발’에 화난 화훼업계…왜?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.45</td><td class='c'>1</td><td>topstarnews</td><td class='muted'>topstarnews.net</td><td class='r'>5.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.topstarnews.net/news/articleView.html?idxno=15930635' target='_blank' rel='noopener'>유재석, &#x27;레고 꽃다발 &#x27; 들었다가… 화훼 농가 반발 터졌다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>3.2</td><td class='c'>1</td><td>mydaily</td><td class='muted'>mydaily.co.kr</td><td class='r'>5.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.mydaily.co.kr/page/view/2026011018070662127' target='_blank' rel='noopener'>유재석이 든 &#x27;레고 꽃다발 &#x27;에 불붙은 논란… 화훼 업계 &quot;상처 줬다&quot; 공개...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.92</td><td class='c'>1</td><td>IKBC</td><td class='muted'>ikbc.co.kr</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ikbc.co.kr/article/view/kbc202601100028' target='_blank' rel='noopener'>유재석도 안은 &#x27; 장난감 꽃다발 &#x27;에 화원협회 &quot;상처 줬다&quot; 반발...왜?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.76</td><td class='c'>1</td><td>OSEN</td><td class='muted'>osen.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.osen.co.kr/article/G1112726157' target='_blank' rel='noopener'>유재석이 든 ‘레고 꽃다발’ 왜?..“화훼농가에 상처” 반발 터졌다 [O...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.67</td><td class='c'>1</td><td>STOO</td><td class='muted'>stoo.com</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.stoo.com/article.php?aid=104553844976' target='_blank' rel='noopener'>화원협회, 연예대상 &#x27;레고 꽃다발 &#x27;에 유감 &quot;또다른 상처&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.57</td><td class='c'>1</td><td>ISPLUS</td><td class='muted'>isplus.com</td><td class='r'>6.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://isplus.com/article/view/isp202601100040' target='_blank' rel='noopener'>[왓IS] 유재석 든 꽃다발 뭐길래… 화훼 업계 “상처 줬다” 반발</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.51</td><td class='c'>1</td><td>IMAEIL</td><td class='muted'>imaeil.com</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.imaeil.com/page/view/2026011012342866392' target='_blank' rel='noopener'>대상 유재석 손에 들린 레고 꽃다발?… 화훼업계 뿔났다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.45</td><td class='c'>1</td><td>MHNSE</td><td class='muted'>mhnse.com</td><td class='r'>5.1</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.mhnse.com/news/articleView.html?idxno=498919' target='_blank' rel='noopener'>시상식서 레고 꽃다발 든 유재석... 화훼 농가 &quot;상처받았다&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.21</td><td class='c'>1</td><td>FTIMES</td><td class='muted'>ftimes.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ftimes.kr/news/articleView.html?idxno=35216' target='_blank' rel='noopener'>유재석 &#x27;레고 꽃다발 &#x27; 논란.. 화훼 업계 &quot;소상공인 생존권 짓밟아&quot; 울분</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>1.87</td><td class='c'>1</td><td>NEWSEN</td><td class='muted'>newsen.com</td><td class='r'>5.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newsen.com/news_view.php?uid=202601101151102410' target='_blank' rel='noopener'>화웨농가 지적한 레고 꽃다발 에 “생계와 직결돼vs과한 참견” 갑론을박</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>1.63</td><td class='c'>1</td><td>MONEYS</td><td class='muted'>moneys.co.kr</td><td class='r'>3.4</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.moneys.co.kr/article/2026011013162220364' target='_blank' rel='noopener'>&#x27;대상&#x27; 유재석이 품은 레고 꽃다발 에 &quot;생계 직결인데, 상처&quot;… 무슨 일?</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>1.5</td><td class='c'>1</td><td>OSEN</td><td class='muted'>osen.co.kr</td><td class='r'>4.7</td><td class='r'>0</td><td class='r'>0</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.osen.co.kr/article/G1112726436' target='_blank' rel='noopener'>유재석 굿이라도 해야하나..이이경·조세호 억까에 레고 꽃다발 까지 말...</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>policy</b>
+            <span class="muted">candidates=5 selected=1 thr=21.19 tail=21.39 core_min=21.19</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>29.19</td><td class='c'>3</td><td>서울신문</td><td class='muted'>seoul.co.kr</td><td class='r'>5.1</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.seoul.co.kr/news/society/2026/01/12/20260112010005?wlog_tag3=naver' target='_blank' rel='noopener'>“장난감 꽃, 화훼 농가 생존권 위협” “생화 너무 비싸, 고물가 시대...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>7.55</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260109500614' target='_blank' rel='noopener'>‘생강’ 지역 대표 소득작목 육성 적극나서</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>7.51</td><td class='c'>1</td><td>한국일보</td><td class='muted'>hankookilbo.com</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>3</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.hankookilbo.com/News/Read/A2025122610360003646?did=NA' target='_blank' rel='noopener'>한 해 2990만 개 수하물 판독하는 145명… &quot;마약 밀반입 날로 교묘해지네...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>5.08</td><td class='c'>1</td><td>브레이크뉴스</td><td class='muted'>breaknews.com</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.breaknews.com/1175392' target='_blank' rel='noopener'>정영길 경북도의원 발의 ‘과채류 농업 육성 조례’, 매니페스토 약속대...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>5.08</td><td class='c'>1</td><td>뉴데일리경제</td><td class='muted'>tk.newdaily.co.kr</td><td class='r'>1.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://tk.newdaily.co.kr/site/data/html/2026/01/09/2026010900089.html' target='_blank' rel='noopener'>정영길 경북도의원, 발의 과채류 농업 지원 조례…매니페스토 우수상</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>dist</b>
+            <span class="muted">candidates=2 selected=2 thr=25.2 tail=25.8 core_min=25.2</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr>
+                  <th class="c">선정</th><th class="c">핵심</th><th class="r">점수</th><th class="c">Tier</th>
+                  <th>매체</th><th>도메인</th>
+                  <th class="r">품목</th><th class="r">시장</th><th class="r">강신호</th><th class="r">오프</th>
+                  <th>미선정 사유</th><th>제목</th>
+                </tr>
+              </thead>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>33.2</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>0.0</td><td class='r'>3</td><td class='r'>6</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=400377' target='_blank' rel='noopener'>[새해기획] 상호관세·과잉생산 극복 올인···&#x27;수출만이 살길&#x27; 올해도...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>32.75</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>3.7</td><td class='r'>2</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.nongmin.com/article/20260108500539' target='_blank' rel='noopener'>부경원예농협, 새해 화훼 경매 시작…나쁘지 않은 가격 으로 출발</a></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+      <div class="dbgSec">
+        <div class="dbgSecHead"><b>필터링 제외(샘플)</b><span class="muted">최대 60건 표시</span></div>
+        <div class="dbgTableWrap">
+          <table class="dbgTable">
+            <thead><tr><th class="c">섹션</th><th>사유</th><th>매체</th><th>도메인</th><th>제목</th></tr></thead>
+            <tbody><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>이투데이</td><td class='muted'>etoday.co.kr</td><td><a href='https://www.etoday.co.kr/news/view/2544257' target='_blank' rel='noopener'>[정부 주요 일정] 경제·사회부처 주간 일정 (1월 12일 ~ 1월 16일)</a></td></tr><tr><td class='c'>supply</td><td class='muted'>supply_context_gate</td><td>news2day</td><td class='muted'>news2day.co.kr</td><td><a href='https://www.news2day.co.kr/article/20260109500220' target='_blank' rel='noopener'>&quot;조례가 정책이 됐다&quot;…정영길 경북도의원 과채류 지원 입법 &#x27;매니페스...</a></td></tr><tr><td class='c'>supply</td><td class='muted'>supply_context_gate</td><td>joongangenews</td><td class='muted'>joongangenews.com</td><td><a href='https://www.joongangenews.com/news/articleView.html?idxno=484540' target='_blank' rel='noopener'>서울 도봉의 활기찬 시장과 고즈넉한 산길, 가볼 만한 곳의 매력</a></td></tr><tr><td class='c'>supply</td><td class='muted'>supply_context_gate</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td><a href='https://view.asiae.co.kr/article/2026010810223175029' target='_blank' rel='noopener'>식당서 자취 감추는 감자…&quot;가격 강세 5월까지 계속&quot;</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>노컷뉴스</td><td class='muted'>nocutnews.co.kr</td><td><a href='https://www.nocutnews.co.kr/news/6454315' target='_blank' rel='noopener'>연예대상 레고 꽃다발에…화원업계 &quot;또 다른 상처&quot; 무슨 일?</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>IKBC</td><td class='muted'>ikbc.co.kr</td><td><a href='https://www.ikbc.co.kr/article/view/kbc202601100028' target='_blank' rel='noopener'>유재석도 안은 &#x27;장난감 꽃다발&#x27;에 화원협회 &quot;상처 줬다&quot; 반발...왜?</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td><a href='https://www.dailian.co.kr/news/view/1596675/?sc=Naver' target='_blank' rel='noopener'>&quot;유재석이 레고 꽃다발을…상처 받았다&quot; 분노한 화원 단체</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>동아일보</td><td class='muted'>donga.com</td><td><a href='https://www.donga.com/news/Culture/article/all/20260110/133129262/2' target='_blank' rel='noopener'>연예대상에 등장한 ‘레고 꽃다발’…화원협회 “상처받았다”</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>중앙일보</td><td class='muted'>joongang.co.kr</td><td><a href='https://www.joongang.co.kr/article/25396553' target='_blank' rel='noopener'>&quot;장난감 꽃에 상처&quot;…연예대상 &#x27;레고 꽃다발&#x27; 비난, 무슨 일</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>매일경제</td><td class='muted'>mk.co.kr</td><td><a href='https://www.mk.co.kr/article/11928953' target='_blank' rel='noopener'>유재석도 받은 레고 꽃다발…화원협회 “생계 직결인데, 상처”</a></td></tr><tr><td class='c'>supply</td><td class='muted'>flower_novelty_noise</td><td>MONEYS</td><td class='muted'>moneys.co.kr</td><td><a href='https://www.moneys.co.kr/article/2026011013162220364' target='_blank' rel='noopener'>&#x27;대상&#x27; 유재석이 품은 레고 꽃다발에 &quot;생계 직결인데, 상처&quot;… 무슨 일?</a></td></tr><tr><td class='c'>pest</td><td class='muted'>pest_partial_mention</td><td>SBS</td><td class='muted'>news.sbs.co.kr</td><td><a href='https://news.sbs.co.kr/news/endPage.do?news_id=N1008400143&amp;plink=ORI&amp;cooper=NAVER' target='_blank' rel='noopener'>&#x27;호남의 지붕&#x27; 500m 산지마저 흔들리는 사과 재배</a></td></tr><tr><td class='c'>pest</td><td class='muted'>pest_partial_mention</td><td>연합뉴스</td><td class='muted'>yna.co.kr</td><td><a href='https://www.yna.co.kr/view/AKR20260109085700055?input=1195m' target='_blank' rel='noopener'>[내일은 못볼지도] &#x27;호남의 지붕&#x27; 500m 산지마저 흔들리는 사과 재배</a></td></tr><tr><td class='c'>supply</td><td class='muted'>supply_context_gate</td><td>농민신문</td><td class='muted'>nongmin.com</td><td><a href='https://nongmin.com/article/20260109500614' target='_blank' rel='noopener'>‘생강’ 지역 대표 소득작목 육성 적극나서</a></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    
+</body>
+</html>
