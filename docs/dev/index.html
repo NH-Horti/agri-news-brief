@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="47a4344" />
-  <meta name="agri-rendered-at-kst" content="2026-03-15T22:58:45+09:00" />
+  <meta name="agri-build" content="b8e91f3" />
+  <meta name="agri-rendered-at-kst" content="2026-03-15T23:35:56+09:00" />
   <meta name="agri-dev-version-url" content="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" />
   <title>[2026-03-13 농산물 뉴스 Brief] [DEV]</title>
   <style>
@@ -58,12 +58,33 @@
       select{width:145px; max-width:145px;}
     }
 
-    .viewTabs{display:flex;gap:10px;flex-wrap:wrap;padding-top:2px}
-    .viewTab{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#334155;font-size:13px;font-weight:800;cursor:pointer}
-    .viewTab.isActive{background:#111827;color:#fff;border-color:#111827;box-shadow:var(--shadow)}
+    .viewTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}
+    .viewTab{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:124px;padding:16px 18px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+    .viewTab:hover{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}
+    .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}
+    .viewTabEyebrow{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .viewTab.isActive .viewTabEyebrow{background:rgba(255,255,255,.16);color:#e0f2fe}
+    .viewTabTitle{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}
+    .viewTabDesc{font-size:13px;line-height:1.55;color:#475569}
+    .viewTab.isActive .viewTabDesc{color:rgba(255,255,255,.88)}
+    .viewTabStats{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .viewTabStat{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}
+    .viewTabStat strong{font-size:13px}
+    .viewTab.isActive .viewTabStat{background:rgba(255,255,255,.16);color:#fff}
+
+    .briefingHero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}
+    .briefingHeroMain{min-width:0}
+    .briefingEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .briefingHero h2{margin:10px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}
+    .briefingLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .briefingHeroStats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .briefingHeroStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .briefingHeroStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .briefingHeroStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
 
     /* briefing chip bar */
     .chipbar{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}
+    .briefingChipbar{margin-top:14px}
     .chipwrap{max-width:1100px;margin:0 auto;padding:10px 12px;}
     .chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
     .chips::-webkit-scrollbar{height:8px}
@@ -78,12 +99,16 @@
     .briefingPane{margin-top:14px}
     .commodityPane{margin-top:14px}
 
-    .commodityBoard{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}
-    .commodityHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid rgba(229,231,235,.9)}
-    .commodityHead h2{margin:4px 0 0;font-size:19px;letter-spacing:-0.25px}
-    .commodityLead{margin-top:6px;color:#475569;font-size:13px;line-height:1.5}
-    .kicker{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:800}
-    .commodityBoardSummary{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid var(--line);color:#475569;font-size:12px;font-weight:700;white-space:nowrap}
+    .commodityBoard{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}
+    .commodityHead{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:radial-gradient(circle at top right, rgba(153,246,228,.4), transparent 34%),linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#f0fdf4 100%)}
+    .commodityHeadMain{min-width:0}
+    .commodityHead h2{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}
+    .commodityLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .commodityEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commodityHeadStats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .commodityHeadStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .commodityHeadStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .commodityHeadStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
     .commodityBadge{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}
     .commodityBadge.core{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
     .commoditySignals{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
@@ -194,13 +219,22 @@
       .navRow > .navBtn:last-child{grid-column:2}
       .dateSelWrap{width:100%}
       .dateSelWrap select{width:100%;max-width:none}
+      .viewTabs{grid-template-columns:1fr}
+      .viewTab{min-height:auto;padding:15px 16px;border-radius:18px}
+      .viewTabTitle{font-size:22px}
+      .briefingHero{grid-template-columns:1fr;padding:18px}
+      .briefingHero h2{font-size:28px}
+      .briefingHeroStats{justify-content:flex-start}
+      .briefingHeroStat{flex:1 1 120px;min-height:74px;padding:12px 14px}
       /* mobile chips: 2 columns so counts are always visible */
       .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}
       .chip{width:100%;justify-content:space-between}
       .chip{padding:6px 10px;font-size:12.5px}
       .chipN{min-width:24px;padding:0 8px;background:#111827;color:#fff}
-      .commodityHead{display:block}
-      .commodityBoardSummary{margin-top:10px}
+      .commodityHead{grid-template-columns:1fr;padding:18px 18px 14px}
+      .commodityHead h2{font-size:28px}
+      .commodityHeadStats{justify-content:flex-start}
+      .commodityHeadStat{flex:1 1 120px;min-height:74px;padding:12px 14px}
       .commodityGrid{grid-template-columns:1fr}
       .commodityGroupNav{display:grid;grid-template-columns:1fr 1fr}
       .commodityGroupHead{display:block}
@@ -216,7 +250,7 @@
     <div class="topin">
       <div>
         <h1>[2026-03-13 농산물 뉴스 Brief] [DEV]<span class="envBadge">DEV</span></h1>
-        <div class="sub">기간: 2026-03-12 07:00 ~ 2026-03-13 07:00 · 기사 19건 · 개발 버전 미리보기 · build 47a4344</div>
+        <div class="sub">기간: 2026-03-12 07:00 ~ 2026-03-13 07:00 · 기사 19건 · 개발 버전 미리보기 · build b8e91f3</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/index.html" title="날짜별 아카이브 목록" target="_top">DEV 미리보기</a>
@@ -231,15 +265,56 @@
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
+
       <div class="viewTabs" role="tablist" aria-label="보기 전환">
-        <button class="viewTab isActive" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">오늘 브리핑</button>
-        <button class="viewTab" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">전체 품목 보드</button>
+        <button class="viewTab isActive" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">
+          <span class="viewTabEyebrow">핵심 요약</span>
+          <span class="viewTabTitle">오늘의 브리핑</span>
+          <span class="viewTabDesc">섹션별 핵심 기사와 바로가기를 한눈에 확인합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>4</strong>개 섹션</span>
+            <span class="viewTabStat"><strong>19</strong>건 기사</span>
+          </span>
+        </button>
+        <button class="viewTab" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">
+          <span class="viewTabEyebrow">품목 추적</span>
+          <span class="viewTabTitle">전체 품목 보드</span>
+          <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>28</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>17</strong>개 수급사업</span>
+          </span>
+        </button>
       </div>
+    
     </div>
   </div>
 
   <div class="wrap">
     <section id="view-briefing" class="viewPane briefingPane isActive" data-view-pane="briefing" role="tabpanel">
+      
+    <section class="briefingHero" aria-labelledby="briefingHeroTitle">
+      <div class="briefingHeroMain">
+        <div class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</div>
+        <h2 id="briefingHeroTitle">오늘의 브리핑</h2>
+        <div class="briefingLead">섹션별 핵심 기사를 한 번에 훑고 바로 원문으로 이동할 수 있게 정리했습니다. 아래 섹션 칩을 누르면 원하는 영역으로 즉시 이동합니다.</div>
+      </div>
+      <div class="briefingHeroStats" aria-label="브리핑 요약">
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">섹션</span>
+          <strong>4개</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">기사</span>
+          <strong>19건</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">핵심</span>
+          <strong>8건</strong>
+        </div>
+      </div>
+    </section>
+    
       <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
 <a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">4</span></a>
 <a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">5</span></a>
@@ -267,7 +342,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.hankyung.com/article/2026030632081" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[생글기자 코너] 미국산 만다린 관세 철폐와 제주 감귤 산업</div>
-              <div class="sum">제주도는 공격적 마케팅을 통한 시장 주도권 선점, 고품질 중심의 생산 체계 전환, 데이터 기반 수급 및 가격 관리 강화 등 3대 대응 전략을 내놨다. 또 제주 감귤 연합회 등 관련 단체들은 공동 성명을 내고 만다린에...</div>
+              <div class="sum">제주도는 미국산 만다린 관세 철폐에 대응해 공격적 마케팅과 고품질 생산 체계로 시장 주도권을 확보할 계획이다. 제주 감귤 연합회는 만다린과의 경쟁 강화를 위해 공동 성명을 발표했다.</div>
             </div>
             
 
@@ -284,7 +359,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260311500702" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“2026년산 저장배추, 상품성 양호…물량 평년 수준”</div>
-              <div class="sum">배추 수급 상황을 계속 점검하겠다”고 밝혔다. 또한 “전수조사 결과에 더해 향후 주간 단위로 발표할... 대아청과는 2011년 저장배추를 시작으로 저장 무 ·양배추 등을 전수조사하고 창고 반출량을 파악한 뒤 분석...</div>
+              <div class="sum">2026년산 저장배추의 상품성이 양호하며 물량은 평년 수준으로 예상된다. 대아청과는 수급 상황을 주간 단위로 발표할 계획이다.</div>
             </div>
             
 
@@ -301,7 +376,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260312072800064?input=1195m" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">사과 값 고공행진에 묘목도 &#x27;불티&#x27;…30% 이상 가격 급등</div>
-              <div class="sum">인건비 상승에 작황 부진 겹쳐 감·복숭아 묘목도 올라 사과 값이 고공행진 하면서 사과 묘목이 덩달아 귀해지고 있다. 12일 전국 최대 묘목 생산·유통지인 충북 옥천군 이원면 일대 묘목 상인들에 따르면 최근 묘목시장이...</div>
+              <div class="sum">사과 가격이 고공행진하며 묘목 가격도 30% 이상 상승했다. 인건비 증가와 작황 부진으로 감·복숭아 묘목 역시 귀해지고 있다.</div>
             </div>
             
 
@@ -318,7 +393,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.ytn.co.kr/_ln/0115_202603121048360743" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">고유가에 포도 농가 &#x27;비상&#x27;...기름보일러 가구도 걱정</div>
-              <div class="sum">농민들은 불과 한 달 전보다 면세 등유 가격 이 20% 이상 올라 주머니 사정이 녹록지 않다고 말했습니다. 이곳 대전 산내 지역에서만 현재 100여 개 농가가 포도 를 생산하고 있는데요. 올해 이곳의 포도 출하량은 500여 톤에...</div>
+              <div class="sum">고유가로 대전 지역 포도 농가들이 어려움을 겪고 있으며, 100여 농가가 포도를 생산 중이다. 올해 포도 출하량은 약 500톤으로 예상된다.</div>
             </div>
             
 
@@ -335,7 +410,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.farminsight.net/news/articleView.html?idxno=16107" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[현장진단] 공급증가와 외식업 침체 맞물려... 월동·저장 채소 &#x27;약세의...</div>
-              <div class="sum">수입 농산물 의 수요는 여전히 탄탄해 국내산 가격 회복의 걸림돌이 되고 있다. 특히 양파와 당근에서 이러한 경향이 두드러진다. 양파의 경우, 국내 저장 물량이 충분하고 품질이 급격히 하락 하는 시점으로 출하시기를...</div>
+              <div class="sum">수입 농산물 수요 증가로 국내 양파와 당근 가격 회복에 어려움이 있다. 국내 저장 양파 물량이 충분하지만 품질은 저하되고 있다.</div>
             </div>
             </div>
             </section>
@@ -363,7 +438,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71431" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">농축산물 소비자물가지수 &#x27;안정적&#x27;</div>
-              <div class="sum">박정훈 농식품부 식량정책실장은 &quot;주요 품목에 대한 수급 및 가격 동향 상시 모니터링, 비축·계약 물량 확보 등 수급 관리 강화와 함께 농축산물 의 가격 결정 구조에서 불합리한 요소를 발굴해 적극 개선해 나갈 계획...</div>
+              <div class="sum">농축산물 소비자물가지수가 안정적이다. 농식품부는 가격 결정 구조 개선을 위해 불합리한 요소를 발굴해 나갈 계획이다.</div>
             </div>
             
 
@@ -380,7 +455,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.seoul.co.kr/news/economy/2026/03/12/20260312500276?wlog_tag3=naver" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">BTS 암표부터 라면까지…정부 ‘물가 특별관리’ 23개 품목 지정</div>
-              <div class="sum">특별관리 품목은 돼지고기·계란· 마늘 ·식용유 등 먹거리 13개, 관리비·통신비 등 서비스 5개, 교복... 아울러 고등어와 쌀, 콩, 수입 과일 등 먹거리 분야에 대해서도 수급 안정과 유통 구조 개선 방안을 마련할 계획이다.</div>
+              <div class="sum">정부가 물가 특별 관리 품목 23개를 지정하였으며, 돼지고기와 계란 등 주요 먹거리가 포함된다. 또한 수급 안정 대책 강화를 위해 다양한 방안을 마련한다고 밝혔다.</div>
             </div>
             
 
@@ -397,7 +472,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202603122026025" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">돼지고기·밀가루· 관리 비…정부, 23개 품목 물가 ‘ 특별 관리 ’</div>
-              <div class="sum">‘민생물가 특별관리 품목 집중 점검 방안’을 발표했다. 우선 정부는 민생 핵심 먹거리 13개 품목 을 집중... 특히 돼지고기와 계란 등 농산물 은 물론 밀가루와 전분당 등 식품 원료 분야에서 발생하는 ‘가격 담합’에는...</div>
+              <div class="sum">정부가 민생물가 특별관리 품목을 집중 점검하기로 했다. 돼지고기와 계란 등 농산물의 가격 담합 문제를 해결하기 위한 방안도 검토 중이다.</div>
             </div>
             
 
@@ -414,7 +489,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.ktv.go.kr/content/view?content_id=749981" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">돼지고기·밀가루 담합 적발···정부 민생물가 안정 지속 [뉴스의 맥]</div>
-              <div class="sum">&quot; 김경호 앵커&gt; 농식품부 는 가공식품 가격 인하 동향을 보고했는데요. 가공식품 전반, 예를 들어 식용유나... 정부는 빵, 과자, 아이스크림 등 관리 품목에 대한 점검 과 업계 간담회를 지속하며, 불공정 거래 행위...</div>
+              <div class="sum">정부는 돼지고기와 밀가루 가격 담합을 적발하고 민생물가 안정을 위해 대책을 추진 중이다. 가공식품 가격 인하 동향도 모니터링할 예정이다.</div>
             </div>
             </div>
             </section>
@@ -459,7 +534,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69836" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">가락시장 토요일 휴업, 농산물 시세 하락 부추겼나</div>
-              <div class="sum">지난 9일 가락시장 에서 거래된 농산물 품목 중 전일(6일) 대비 가격 하락이 눈에 띄는 품목은 이전부터... 휴업 직후 지난 9일 딸기 평균 경락가 는 2kg 상자 기준(상품) 1만6436원으로 6일 평균 경락가 2만486원 대비 약 19.8...</div>
+              <div class="sum">9일 가락시장에서 농산물 시세가 하락했으며, 특히 딸기 가격이 전일 대비 약 19.8% 급락했다. 휴업이 가격 하락에 영향을 미쳤다는 분석이 나온다.</div>
             </div>
             
 
@@ -476,7 +551,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.fntimes.com/html/view.php?ud=202603121804596740dd55077bc2_18" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">농협강원본부, 2026년 강원농협 연합판매사업 직거래 평가회·활성화 워...</div>
-              <div class="sum">이날 행사에는 강원연합판매사업 참여농협 경제상무 및 실무자, 생산유통통합조직인 강원 감자 농협조공법인... 농산물 수급 안정사업 온라인도매시장 물류비 지원으로 온라인도매시장 활성화에 매진할 계획이다. 또한...</div>
+              <div class="sum">농협강원본부가 연합판매사업의 직거래 평가회 및 활성화 워크숍을 개최했다. 온라인도매시장 활성화와 물류비 지원 방안도 논의된다.</div>
             </div>
             
 
@@ -493,7 +568,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71432" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">온라인도매시장 제도개선 ‧활성화 TF 운영 논의</div>
-              <div class="sum">이에 농림축산식품부와 aT는 차관을 단장으로 하는 &#x27; 온라인도매시장 제도개선 ‧활성화 TF&#x27;를 발족하기로 하였다. TF에서는 2024년부터 2026년 2월까지 전체 거래실적에 대한 회계·법무 법인 등 외부 전문기관의 정밀 검증...</div>
+              <div class="sum">농림축산식품부와 aT는 온라인도매시장 제도개선 TF를 발족했다. TF는 거래 실적에 대한 외부 전문가 검증을 계획하고 있다.</div>
             </div>
             
 
@@ -510,7 +585,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69842" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">강원도 &#x27;농산물 광역수급관리센터&#x27; 출범</div>
-              <div class="sum">고랭지 무 등 4개며, 농협 계약재배에 참여하는 농가와 영농조합법인, 산지유통법인을 대상으로 한다. 주요 지원내용은 생육관리, 재배면적 관리, 출하 정지·장려, 산지폐기 등 &#x27;채소류 안정생산 지원&#x27;과 도매 가격 이 보전...</div>
+              <div class="sum">강원도가 &#x27;농산물 광역수급관리센터&#x27;를 통해 특정 농산물의 안정적 생산 및 유통을 지원하고 있다. 재배 면적과 출하 정지 관리도 포함된다.</div>
             </div>
             </div>
             </section>
@@ -538,7 +613,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402500" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">장수군, 과수화상병 예방 총력 대응</div>
-              <div class="sum">선정하고, 농가 가 적기에 방제를 실시할 수 있도록 &#x27;농약 티켓&#x27; 방식으로 약제를 지원하고 있다고 10일 밝혔다. 과수화상병은 사과·배 등 장미과 과수에 발생하는 세균성 병해로 잎과 꽃, 가지 가 불에 탄 것처럼 말라 죽는...</div>
+              <div class="sum">장수군은 과수화상병 예방을 위해 농약 지원 및 방제를 실시하고 있다. 이 병해는 사과와 배 등 장미과 과수에 심각한 영향을 미친다.</div>
             </div>
             
 
@@ -555,7 +630,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260312_0003545549" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">경남농업기술원 &quot;고위험 병해충 8종 발생 분포 조사&quot;</div>
-              <div class="sum">조사 대상은 과수화상병 , 가지검은마름병, 키위 궤양병, 제브라칩병, 황룡병, 귤나무이, 토마토퇴록바이러스... 즉각적인 방제 조치를 취해 경남 농업의 안정성을 확보하겠다&quot;며 &quot;농가에서도 의심 증상이 발견되면 신속히...</div>
+              <div class="sum">경남농업기술원이 고위험 병해충 8종에 대해 조사하고 있다. 농가들도 의심 증상이 발견되면 즉시 신고하도록 권장하고 있다.</div>
             </div>
             
 
@@ -572,7 +647,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.chungnamilbo.co.kr/news/articleView.html?idxno=877506" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">예산군농업기술센터, 과수화상병 사전 방제 적극 홍보</div>
-              <div class="sum">방제 력 및 화상병 약제 살포 시기 안내&#x27; 홍보물을 배부하여 농가의 예방 활동을 적극 지원할 계획이다. 한편, 예산군농업기술센터 관계자는 &quot; 과수화상병 예방을 위해 동절기 전염원을 사전에 제거하여 과수 생육기 병 ...</div>
+              <div class="sum">예산군농업기술센터가 과수화상병 예방을 위한 홍보 및 지침을 배부하여 농가를 지원할 계획이다. 동절기 전염원 제거를 강조하고 있다.</div>
             </div>
             
 
@@ -589,7 +664,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260310500414" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">청도군, ‘탄저병’ 예방 위한 특허 미생물 공급</div>
-              <div class="sum">탄저병은 복숭아와 청도반시 잎· 가지 ·과실에 발생하는 대표적인 병해로 심할 경우 낙과와 수확량 감소로... 병해 방제와 함께 생육 촉진 효과도 갖췄다. 특히 3월 생육 초기와 개화기에 활용시 뿌리 활력을 높이는...</div>
+              <div class="sum">청도군은 복숭아와 청도반시에 발생하는 탄저병 예방을 위해 특허 미생물을 공급할 예정이다. 이를 통해 병해 방제와 생육 촉진 효과를 기대하고 있다.</div>
             </div>
             
 
@@ -606,7 +681,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=316279" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">공주시농기센터, 과수화상병 차단 총력… 예방교육·약제 지원</div>
-              <div class="sum">위해 과수화상병 예방교육을 실시하고 방제 약제를 지원하는 등 선제 대응에 나섰다. 과수화상병 약제살포... 관내 과수 재배 농가를 대상으로 예방교육을 실시하고 병 발생 특성과 예방 방법, 약제 방제 요령 등을...</div>
+              <div class="sum">공주시농기센터는 과수화상병 예방교육과 약제를 지원하며 농가의 대응을 강화하고 있다. 예방 교육과 방제 요령 제공이 주요 내용이다.</div>
             </div>
             </div>
             </section>
@@ -616,12 +691,25 @@
       
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
       <div class="commodityHead">
-        <div>
-          <div class="kicker">원예수급부 전체 관리 품목</div>
+        <div class="commodityHeadMain">
+          <div class="commodityEyebrow">원예수급부 전체 관리 품목</div>
           <h2 id="commodityBoardTitle">전체 품목 보드</h2>
-          <div class="commodityLead">품목별 관련 기사 풀을 먼저 모아 보여줍니다. 오늘 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
+          <div class="commodityLead">품목별 관련 기사 풀을 먼저 넓게 모아 보여줍니다. 오늘의 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
         </div>
-        <div class="commodityBoardSummary">오늘 연결 품목 28개 · 수급사업 17개</div>
+        <div class="commodityHeadStats" aria-label="품목 보드 요약">
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">전체 관리</span>
+            <strong>33개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">오늘 연결</span>
+            <strong>28개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">수급사업 연결</span>
+            <strong>17개</strong>
+          </div>
+        </div>
       </div>
       <div class="commodityGroupNav"><a class="commodityGroupChip" href="#commodity-group-root_leaf">엽근채류<span>5</span></a><a class="commodityGroupChip" href="#commodity-group-seasoning_veg">양념채소류<span>4</span></a><a class="commodityGroupChip" href="#commodity-group-fruit_flower">과수화훼류<span>10</span></a><a class="commodityGroupChip" href="#commodity-group-fruit_veg">과채류<span>9</span></a></div>
       
@@ -2703,13 +2791,13 @@
     
     </section>
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
-    <div class="footer footerMeta">* DEV build 47a4344 · 생성 2026-03-15T22:58:45+09:00</div>
+    <div class="footer footerMeta">* DEV build b8e91f3 · 생성 2026-03-15T23:35:56+09:00</div>
   </div>
 
   <script>
     (function() {
 
-      var currentBuild = "47a4344";
+      var currentBuild = "b8e91f3";
       var devVersionUrl = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json";
       function syncLatestDevBuild() {
         if (window.top && window.top !== window) return;
@@ -3374,7 +3462,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: 47a4344 -->
+  <!-- build: b8e91f3 -->
 
     <style>
       details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
@@ -3395,8 +3483,8 @@ try { _ensureDates(); } catch (e) {}
     <details class="dbgWrap">
       <summary>디버그 리포트 (선정/필터 로그)</summary>
       <div class='dbgLinks'><a href='https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-03-13.json' target='_blank' rel='noopener'>debug json 보기</a></div>
-      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 47a4344</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-15T22:58:45+09:00</span></div>
-      <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: supply_macro_price_watch(110), must_terms_fail(69), apple_non_edible_context(62), pest_partial_mention(62), supply_policy_market_brief(60), policy_context_gate(55), finance_strict_no_agri_context(36), supply_context_gate(31), livestock_only(31), policy_retail_sales_trend(25), carrot_non_edible_context(25), fishery_title_only(24)</div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> b8e91f3</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-15T23:35:56+09:00</span></div>
+      <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: supply_macro_price_watch(110), must_terms_fail(69), apple_non_edible_context(62), pest_partial_mention(62), supply_policy_market_brief(60), policy_context_gate(56), finance_strict_no_agri_context(36), supply_context_gate(31), livestock_only(31), policy_retail_sales_trend(25), carrot_non_edible_context(25), potato_non_fresh_context(24)</div>
       
         <div class="dbgSec">
           <div class="dbgSecHead">
@@ -3483,7 +3571,7 @@ try { _ensureDates(); } catch (e) {}
         <div class="dbgTableWrap">
           <table class="dbgTable">
             <thead><tr><th class="c">섹션</th><th>사유</th><th>매체</th><th>도메인</th><th>제목</th></tr></thead>
-            <tbody><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KTV</td><td class='muted'>ktv.go.kr</td><td><a href='https://www.ktv.go.kr/content/view?content_id=749962' target='_blank' rel='noopener'>동물복지에 대한 국민 여러분의 의견을 듣고 싶습니다.</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>MHNS</td><td class='muted'>mhns.co.kr</td><td><a href='https://www.mhns.co.kr/news/articleView.html?idxno=741141' target='_blank' rel='noopener'>농림축산식품부, &#x27;고교생 맞춤 동물복지 교과서 탄생&#x27;…진로 고민 해결...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>PPSS</td><td class='muted'>ppss.kr</td><td><a href='https://www.ppss.kr/news/articleView.html?idxno=287969' target='_blank' rel='noopener'>고교 &#x27;동물복지&#x27; 교과서 첫 도입…경북자연과학고 정규수업 활용</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_dist_export_field</td><td>safetimes</td><td class='muted'>safetimes.co.kr</td><td><a href='https://www.safetimes.co.kr/news/articleView.html?idxno=240536' target='_blank' rel='noopener'>[오늘의 주요일정·12일] 10·29 이태원 참사 진상규명 청문회</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>CPBC</td><td class='muted'>news.cpbc.co.kr</td><td><a href='https://news.cpbc.co.kr/article/1171294?division=NAVER' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>bzeronews</td><td class='muted'>bzeronews.com</td><td><a href='https://www.bzeronews.com/news/articleView.html?idxno=813569' target='_blank' rel='noopener'>&#x27;중동발 위기 속 민생물가 안정 총력&#x27;… 라면·식용유 &#x27;가격 인하&#x27; 이끌...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>labortoday</td><td class='muted'>labortoday.co.kr</td><td><a href='https://www.labortoday.co.kr/news/articleView.html?idxno=233189' target='_blank' rel='noopener'>&#x27;장시간 노동&#x27; 청와대 직원들 대책 강구 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td><a href='https://www.newspim.com/news/view/20260312001237' target='_blank' rel='noopener'>[종합] 李대통령 &quot;민생경제 골든타임 사수…밤새워서라도 추경 신속히&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003546260' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라…차등지원 효율적&quot;...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/politics/president/6099577' target='_blank' rel='noopener'>李대통령 &quot;지역화폐 차등 지원하면 이중효과&quot;…선별적 소비쿠폰 시사</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_only</td><td>polinews</td><td class='muted'>polinews.co.kr</td><td><a href='https://www.polinews.co.kr/news/articleView.html?idxno=725270' target='_blank' rel='noopener'>李대통령, 중동 상황 지속에 &quot;추경할 수밖에…밤새워 최대한 신속 편성...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8507269' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>news.sbs.co.kr</td><td><a href='https://news.sbs.co.kr/news/endPage.do?news_id=N1008475437&amp;plink=ORI&amp;cooper=NAVER' target='_blank' rel='noopener'>&quot;추경 편성 신속하게…식용유·라면값 인하 감사&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>finance_strict_no_agri_context</td><td>MBC</td><td class='muted'>imnews.imbc.com</td><td><a href='https://imnews.imbc.com/replay/2026/nwtoday/article/6807074_37012.html' target='_blank' rel='noopener'>&quot;서민 삶 팍팍해지기 전에&quot;‥&#x27;추경&#x27; 긴급 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>서울신문</td><td class='muted'>seoul.co.kr</td><td><a href='https://www.seoul.co.kr/news/politics/president/2026/03/13/20260313004004?wlog_tag3=naver' target='_blank' rel='noopener'>李 “식용유·라면값 새달 인하… 추경 신속하게”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>동아일보</td><td class='muted'>donga.com</td><td><a href='https://www.donga.com/news/Politics/article/all/20260313/133520917/2' target='_blank' rel='noopener'>李 “추경 편성, 밤새워서라도 최대한 신속하게”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>강원도민일보</td><td class='muted'>kado.net</td><td><a href='https://www.kado.net/news/articleView.html?idxno=2038593' target='_blank' rel='noopener'>이 대통령 &quot;추경 편성 최대한 신속하게 해달라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0101_202603122151486402' target='_blank' rel='noopener'>&quot;골든타임 허비 안 돼...최대한 신속하게 추경 편성&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260312210352g9u' target='_blank' rel='noopener'>이 대통령 &quot;민생 골든타임 사수…밤새서라도 추경 속도&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>news.sbs.co.kr</td><td><a href='https://news.sbs.co.kr/news/endPage.do?news_id=N1008475188&amp;plink=ORI&amp;cooper=NAVER' target='_blank' rel='noopener'>&quot;추경 편성 신속하게…식용유·라면값 인하 감사&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>obsnews</td><td class='muted'>obsnews.co.kr</td><td><a href='https://www.obsnews.co.kr/news/articleView.html?idxno=1516979' target='_blank' rel='noopener'>&quot;공공요금 동결·신속 추경…취약계층 직접 지원 &quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>CPBC</td><td class='muted'>news.cpbc.co.kr</td><td><a href='https://news.cpbc.co.kr/article/1171294?division=NAVER' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>finance_strict_no_agri_context</td><td>MBC</td><td class='muted'>imnews.imbc.com</td><td><a href='https://imnews.imbc.com/replay/2026/nwdesk/article/6807001_37004.html' target='_blank' rel='noopener'>&quot;추경 편성 불가피&quot;‥이 대통령, &#x27;벚꽃 추경&#x27; 속도전 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>한겨레</td><td class='muted'>hani.co.kr</td><td><a href='https://www.hani.co.kr/arti/politics/bluehouse/1249086.html' target='_blank' rel='noopener'>이 대통령 “추경, 밤새워서라도 신속하게 편성해달라”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>bzeronews</td><td class='muted'>bzeronews.com</td><td><a href='https://www.bzeronews.com/news/articleView.html?idxno=813569' target='_blank' rel='noopener'>&#x27;중동발 위기 속 민생물가 안정 총력&#x27;… 라면·식용유 &#x27;가격 인하&#x27; 이끌...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>MBN</td><td class='muted'>mbn.co.kr</td><td><a href='http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5181371' target='_blank' rel='noopener'>이 대통령 &quot;상반기 공공요금 동결&quot;…라면값 최대 14.6% 내린다</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>labortoday</td><td class='muted'>labortoday.co.kr</td><td><a href='https://www.labortoday.co.kr/news/articleView.html?idxno=233189' target='_blank' rel='noopener'>&#x27;장시간 노동&#x27; 청와대 직원들 대책 강구 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>thepublic</td><td class='muted'>thepublic.kr</td><td><a href='https://www.thepublic.kr/news/articleView.html?idxno=297233' target='_blank' rel='noopener'>李대통 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>매일경제</td><td class='muted'>mk.co.kr</td><td><a href='https://www.mk.co.kr/article/11986688' target='_blank' rel='noopener'>경유 90원·휘발유 50원 이상 싸진다…최고가격제 13일 발효</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506800' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td><a href='https://www.newspim.com/news/view/20260312001237' target='_blank' rel='noopener'>[종합] 李대통령 &quot;민생경제 골든타임 사수…밤새워서라도 추경 신속히&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>국민일보</td><td class='muted'>kmib.co.kr</td><td><a href='https://www.kmib.co.kr/article/view.asp?arcid=1773300742&amp;code=11121600&amp;cp=nv' target='_blank' rel='noopener'>이 대통령 “추경 밤을 새워서라도 신속히 하라”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>중앙일보</td><td class='muted'>joongang.co.kr</td><td><a href='https://www.joongang.co.kr/article/25411340' target='_blank' rel='noopener'>李 &quot;추경 한두달 걸리지만, 밤새서라도 빨리&quot;…소비쿠폰 담길 듯</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>00NEWS</td><td class='muted'>00news.co.kr</td><td><a href='http://www.00news.co.kr/news/articleView.html?idxno=102535' target='_blank' rel='noopener'>李대통령, 속도감 있는 추경 편성 지시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>DOMIN</td><td class='muted'>domin.co.kr</td><td><a href='http://www.domin.co.kr/news/articleView.html?idxno=1548402' target='_blank' rel='noopener'>李 대통령 주재 수보회의, 추경 편성 신속 처리 지시...어려운 시기 공...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>biz.sbs.co.kr</td><td><a href='https://biz.sbs.co.kr/article_hub/20000297054?division=NAVER' target='_blank' rel='noopener'>李 &quot;식용유·라면 가격 인하…추경 신속하게&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0101_202603121805290951' target='_blank' rel='noopener'>&quot;골든타임 허비 안 돼...최대한 신속하게 추경 편성&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>tvchosun</td><td class='muted'>news.tvchosun.com</td><td><a href='https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html' target='_blank' rel='noopener'>李, 추경 신속 편성 지시 &quot;경제 어려울수록 취약층 타격&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>newstomato</td><td class='muted'>newstomato.com</td><td><a href='http://www.newstomato.com/ReadNews.aspx?no=1294094&amp;inflow=N' target='_blank' rel='noopener'>&quot;밤을 새워서라도 신속히&quot;…추경, 최대 &#x27;20조&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003546260' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적&quot;...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/politics/president/6099577' target='_blank' rel='noopener'>李대통령 &quot;지역화폐 차등 지원 하면 이중효과&quot;…선별적 소비쿠폰 시사</a></td></tr><tr><td class='c'>policy</td><td class='muted'>sedaily_no_agri_context</td><td>서울경제</td><td class='muted'>sedaily.com</td><td><a href='https://www.sedaily.com/article/20018679' target='_blank' rel='noopener'>李 “민생 지원 , 지역화폐로 차등 지급해야”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_title_only</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/photos/7794289' target='_blank' rel='noopener'>이 대통령, 수석보좌관회의에서 &#x27; 농축수산물 할인 확대&#x27; 언급</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>전자신문</td><td class='muted'>etnews.com</td><td><a href='https://www.etnews.com/20260313000003' target='_blank' rel='noopener'>안양시, 중동 정세 따른 경제충격 선제 대응…민생·고용 안정 총력전</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>newstown</td><td class='muted'>newstown.co.kr</td><td><a href='http://www.newstown.co.kr/news/articleView.html?idxno=696817' target='_blank' rel='noopener'>안양시, 생활물가 안정 위한 비상경제 대응체계 가동</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>viva100</td><td class='muted'>viva100.com</td><td><a href='https://www.viva100.com/article/20260312501376' target='_blank' rel='noopener'>안양시, 비상경제대응반 생활물가-유가-고용 등 종합 점검</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td><a href='https://www.dailian.co.kr/news/view/1620277/?sc=Naver' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최…경제 불확실성 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3527748' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>siminilbo</td><td class='muted'>siminilbo.co.kr</td><td><a href='https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291585803219' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최…경제 불확실성 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>ONEWS</td><td class='muted'>onews.tv</td><td><a href='https://www.onews.tv/news/articleView.html?idxno=276473' target='_blank' rel='noopener'>안양시 &#x27;중동 정세 악화&#x27; 생활물가 안정 도모 비상경제점검회의</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>PAXETV</td><td class='muted'>paxetv.com</td><td><a href='http://www.paxetv.com/news/articleView.html?idxno=264999' target='_blank' rel='noopener'>안양시, 중동 정세 따른 경제 불확실성 대응…비상경제점검회의 개최</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003545875' target='_blank' rel='noopener'>가짜 석유 단속까지…안양시, 물가 안정 총력 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>전민일보</td><td class='muted'>jeonmin.co.kr</td><td><a href='http://www.jeonmin.co.kr/news/articleView.html?idxno=435638' target='_blank' rel='noopener'>전북도, 중동 불안 속 &#x27;비상경제대응TF&#x27; 가동...유가·물가·수출·소상...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>kpenews</td><td class='muted'>kpenews.com</td><td><a href='https://kpenews.com/View.aspx?No=4001081' target='_blank' rel='noopener'>전북도, 중동 불안에 지역경제 파급 차단 총력..&#x27;비상경제대응TF&#x27; 가동</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>viva100</td><td class='muted'>viva100.com</td><td><a href='https://www.viva100.com/article/20260312500984' target='_blank' rel='noopener'>두쫀쿠 다음은 버터떡?... 급변하는 디저트 트렌드에 웃지 못하는 자영...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260312010003832' target='_blank' rel='noopener'>서천, 유가 상승 속 농가 부담 완화 위해 농업인 월급제 활용 당부</a></td></tr><tr><td class='c'>policy</td><td class='muted'>must_terms_fail_policy</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td><a href='https://view.asiae.co.kr/article/2026031116105690345' target='_blank' rel='noopener'>&quot;환율 10% 오르면 600억원 순손실&quot;…이란전 장기화 속타는 유통가</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0102_202603121956478268' target='_blank' rel='noopener'>[현장영상+] 석유 최고가격제 내일 0시부터 시행</a></td></tr><tr><td class='c'>policy</td><td class='muted'>hardblock_consumer_price_noise</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10693216' target='_blank' rel='noopener'>식용유·라면 최대 14.6% 내린다…4월부터 ‘장바구니’ 숨통</a></td></tr></tbody>
+            <tbody><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KTV</td><td class='muted'>ktv.go.kr</td><td><a href='https://www.ktv.go.kr/content/view?content_id=749962' target='_blank' rel='noopener'>동물복지에 대한 국민 여러분의 의견을 듣고 싶습니다.</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>MHNS</td><td class='muted'>mhns.co.kr</td><td><a href='https://www.mhns.co.kr/news/articleView.html?idxno=741141' target='_blank' rel='noopener'>농림축산식품부, &#x27;고교생 맞춤 동물복지 교과서 탄생&#x27;…진로 고민 해결...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>PPSS</td><td class='muted'>ppss.kr</td><td><a href='https://www.ppss.kr/news/articleView.html?idxno=287969' target='_blank' rel='noopener'>고교 &#x27;동물복지&#x27; 교과서 첫 도입…경북자연과학고 정규수업 활용</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_dist_export_field</td><td>safetimes</td><td class='muted'>safetimes.co.kr</td><td><a href='https://www.safetimes.co.kr/news/articleView.html?idxno=240536' target='_blank' rel='noopener'>[오늘의 주요일정·12일] 10·29 이태원 참사 진상규명 청문회</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>CPBC</td><td class='muted'>news.cpbc.co.kr</td><td><a href='https://news.cpbc.co.kr/article/1171294?division=NAVER' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>bzeronews</td><td class='muted'>bzeronews.com</td><td><a href='https://www.bzeronews.com/news/articleView.html?idxno=813569' target='_blank' rel='noopener'>&#x27;중동발 위기 속 민생물가 안정 총력&#x27;… 라면·식용유 &#x27;가격 인하&#x27; 이끌...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>labortoday</td><td class='muted'>labortoday.co.kr</td><td><a href='https://www.labortoday.co.kr/news/articleView.html?idxno=233189' target='_blank' rel='noopener'>&#x27;장시간 노동&#x27; 청와대 직원들 대책 강구 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td><a href='https://www.newspim.com/news/view/20260312001237' target='_blank' rel='noopener'>[종합] 李대통령 &quot;민생경제 골든타임 사수…밤새워서라도 추경 신속히&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003546260' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라…차등지원 효율적&quot;...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/politics/president/6099577' target='_blank' rel='noopener'>李대통령 &quot;지역화폐 차등 지원하면 이중효과&quot;…선별적 소비쿠폰 시사</a></td></tr><tr><td class='c'>policy</td><td class='muted'>fishery_only</td><td>polinews</td><td class='muted'>polinews.co.kr</td><td><a href='https://www.polinews.co.kr/news/articleView.html?idxno=725270' target='_blank' rel='noopener'>李대통령, 중동 상황 지속에 &quot;추경할 수밖에…밤새워 최대한 신속 편성...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8507269' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>news.sbs.co.kr</td><td><a href='https://news.sbs.co.kr/news/endPage.do?news_id=N1008475437&amp;plink=ORI&amp;cooper=NAVER' target='_blank' rel='noopener'>&quot;추경 편성 신속하게…식용유·라면값 인하 감사&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>finance_strict_no_agri_context</td><td>MBC</td><td class='muted'>imnews.imbc.com</td><td><a href='https://imnews.imbc.com/replay/2026/nwtoday/article/6807074_37012.html' target='_blank' rel='noopener'>&quot;서민 삶 팍팍해지기 전에&quot;‥&#x27;추경&#x27; 긴급 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>서울신문</td><td class='muted'>seoul.co.kr</td><td><a href='https://www.seoul.co.kr/news/politics/president/2026/03/13/20260313004004?wlog_tag3=naver' target='_blank' rel='noopener'>李 “식용유·라면값 새달 인하… 추경 신속하게”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>동아일보</td><td class='muted'>donga.com</td><td><a href='https://www.donga.com/news/Politics/article/all/20260313/133520917/2' target='_blank' rel='noopener'>李 “추경 편성, 밤새워서라도 최대한 신속하게”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>강원도민일보</td><td class='muted'>kado.net</td><td><a href='https://www.kado.net/news/articleView.html?idxno=2038593' target='_blank' rel='noopener'>이 대통령 &quot;추경 편성 최대한 신속하게 해달라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0101_202603122151486402' target='_blank' rel='noopener'>&quot;골든타임 허비 안 돼...최대한 신속하게 추경 편성&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260312210352g9u' target='_blank' rel='noopener'>이 대통령 &quot;민생 골든타임 사수…밤새서라도 추경 속도&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>news.sbs.co.kr</td><td><a href='https://news.sbs.co.kr/news/endPage.do?news_id=N1008475188&amp;plink=ORI&amp;cooper=NAVER' target='_blank' rel='noopener'>&quot;추경 편성 신속하게…식용유·라면값 인하 감사&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>obsnews</td><td class='muted'>obsnews.co.kr</td><td><a href='https://www.obsnews.co.kr/news/articleView.html?idxno=1516979' target='_blank' rel='noopener'>&quot;공공요금 동결·신속 추경…취약계층 직접 지원 &quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>CPBC</td><td class='muted'>news.cpbc.co.kr</td><td><a href='https://news.cpbc.co.kr/article/1171294?division=NAVER' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>finance_strict_no_agri_context</td><td>MBC</td><td class='muted'>imnews.imbc.com</td><td><a href='https://imnews.imbc.com/replay/2026/nwdesk/article/6807001_37004.html' target='_blank' rel='noopener'>&quot;추경 편성 불가피&quot;‥이 대통령, &#x27;벚꽃 추경&#x27; 속도전 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>한겨레</td><td class='muted'>hani.co.kr</td><td><a href='https://www.hani.co.kr/arti/politics/bluehouse/1249086.html' target='_blank' rel='noopener'>이 대통령 “추경, 밤새워서라도 신속하게 편성해달라”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>bzeronews</td><td class='muted'>bzeronews.com</td><td><a href='https://www.bzeronews.com/news/articleView.html?idxno=813569' target='_blank' rel='noopener'>&#x27;중동발 위기 속 민생물가 안정 총력&#x27;… 라면·식용유 &#x27;가격 인하&#x27; 이끌...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>MBN</td><td class='muted'>mbn.co.kr</td><td><a href='http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5181371' target='_blank' rel='noopener'>이 대통령 &quot;상반기 공공요금 동결&quot;…라면값 최대 14.6% 내린다</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>labortoday</td><td class='muted'>labortoday.co.kr</td><td><a href='https://www.labortoday.co.kr/news/articleView.html?idxno=233189' target='_blank' rel='noopener'>&#x27;장시간 노동&#x27; 청와대 직원들 대책 강구 주문</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>thepublic</td><td class='muted'>thepublic.kr</td><td><a href='https://www.thepublic.kr/news/articleView.html?idxno=297233' target='_blank' rel='noopener'>李대통 &quot;추경, 밤새서라도 최대한 빨리 편성하라&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>매일경제</td><td class='muted'>mk.co.kr</td><td><a href='https://www.mk.co.kr/article/11986688' target='_blank' rel='noopener'>경유 90원·휘발유 50원 이상 싸진다…최고가격제 13일 발효</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506800' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스핌</td><td class='muted'>newspim.com</td><td><a href='https://www.newspim.com/news/view/20260312001237' target='_blank' rel='noopener'>[종합] 李대통령 &quot;민생경제 골든타임 사수…밤새워서라도 추경 신속히&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>국민일보</td><td class='muted'>kmib.co.kr</td><td><a href='https://www.kmib.co.kr/article/view.asp?arcid=1773300742&amp;code=11121600&amp;cp=nv' target='_blank' rel='noopener'>이 대통령 “추경 밤을 새워서라도 신속히 하라”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>중앙일보</td><td class='muted'>joongang.co.kr</td><td><a href='https://www.joongang.co.kr/article/25411340' target='_blank' rel='noopener'>李 &quot;추경 한두달 걸리지만, 밤새서라도 빨리&quot;…소비쿠폰 담길 듯</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>00NEWS</td><td class='muted'>00news.co.kr</td><td><a href='http://www.00news.co.kr/news/articleView.html?idxno=102535' target='_blank' rel='noopener'>李대통령, 속도감 있는 추경 편성 지시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>DOMIN</td><td class='muted'>domin.co.kr</td><td><a href='http://www.domin.co.kr/news/articleView.html?idxno=1548402' target='_blank' rel='noopener'>李 대통령 주재 수보회의, 추경 편성 신속 처리 지시...어려운 시기 공...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>SBS</td><td class='muted'>biz.sbs.co.kr</td><td><a href='https://biz.sbs.co.kr/article_hub/20000297054?division=NAVER' target='_blank' rel='noopener'>李 &quot;식용유·라면 가격 인하…추경 신속하게&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0101_202603121805290951' target='_blank' rel='noopener'>&quot;골든타임 허비 안 돼...최대한 신속하게 추경 편성&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>KBS</td><td class='muted'>news.kbs.co.kr</td><td><a href='https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730' target='_blank' rel='noopener'>이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>tvchosun</td><td class='muted'>news.tvchosun.com</td><td><a href='https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html' target='_blank' rel='noopener'>李, 추경 신속 편성 지시 &quot;경제 어려울수록 취약층 타격&quot;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003546260' target='_blank' rel='noopener'>이 대통령 &quot;추경, 밤새서라도 최대한 빨리 편성하라…차등 지원 효율적&quot;...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>newstomato</td><td class='muted'>newstomato.com</td><td><a href='http://www.newstomato.com/ReadNews.aspx?no=1294094&amp;inflow=N' target='_blank' rel='noopener'>&quot;밤을 새워서라도 신속히&quot;…추경, 최대 &#x27;20조&#x27;</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>뉴스1</td><td class='muted'>news1.kr</td><td><a href='https://www.news1.kr/politics/president/6099577' target='_blank' rel='noopener'>李대통령 &quot;지역화폐 차등 지원 하면 이중효과&quot;…선별적 소비쿠폰 시사</a></td></tr><tr><td class='c'>policy</td><td class='muted'>sedaily_no_agri_context</td><td>서울경제</td><td class='muted'>sedaily.com</td><td><a href='https://www.sedaily.com/article/20018679' target='_blank' rel='noopener'>李 “민생 지원 , 지역화폐로 차등 지급해야”</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>inews365</td><td class='muted'>inews365.com</td><td><a href='https://www.inews365.com/news/article.html?no=910398' target='_blank' rel='noopener'>이 대통령, 중동 전쟁 관련, 추경 편성 신속 지시</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>전자신문</td><td class='muted'>etnews.com</td><td><a href='https://www.etnews.com/20260313000003' target='_blank' rel='noopener'>안양시, 중동 정세 따른 경제충격 선제 대응…민생·고용 안정 총력전</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>newstown</td><td class='muted'>newstown.co.kr</td><td><a href='http://www.newstown.co.kr/news/articleView.html?idxno=696817' target='_blank' rel='noopener'>안양시, 생활물가 안정 위한 비상경제 대응체계 가동</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>viva100</td><td class='muted'>viva100.com</td><td><a href='https://www.viva100.com/article/20260312501376' target='_blank' rel='noopener'>안양시, 비상경제대응반 생활물가-유가-고용 등 종합 점검</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td><a href='https://www.dailian.co.kr/news/view/1620277/?sc=Naver' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최…경제 불확실성 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3527748' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>siminilbo</td><td class='muted'>siminilbo.co.kr</td><td><a href='https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291585803219' target='_blank' rel='noopener'>안양시, 중동사태 관련 비상경제점검회의 개최…경제 불확실성 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>ONEWS</td><td class='muted'>onews.tv</td><td><a href='https://www.onews.tv/news/articleView.html?idxno=276473' target='_blank' rel='noopener'>안양시 &#x27;중동 정세 악화&#x27; 생활물가 안정 도모 비상경제점검회의</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>PAXETV</td><td class='muted'>paxetv.com</td><td><a href='http://www.paxetv.com/news/articleView.html?idxno=264999' target='_blank' rel='noopener'>안양시, 중동 정세 따른 경제 불확실성 대응…비상경제점검회의 개최</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>뉴시스</td><td class='muted'>newsis.com</td><td><a href='https://www.newsis.com/view/NISX20260312_0003545875' target='_blank' rel='noopener'>가짜 석유 단속까지…안양시, 물가 안정 총력 대응</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>전민일보</td><td class='muted'>jeonmin.co.kr</td><td><a href='http://www.jeonmin.co.kr/news/articleView.html?idxno=435638' target='_blank' rel='noopener'>전북도, 중동 불안 속 &#x27;비상경제대응TF&#x27; 가동...유가·물가·수출·소상...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_macro_general_economy</td><td>kpenews</td><td class='muted'>kpenews.com</td><td><a href='https://kpenews.com/View.aspx?No=4001081' target='_blank' rel='noopener'>전북도, 중동 불안에 지역경제 파급 차단 총력..&#x27;비상경제대응TF&#x27; 가동</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>viva100</td><td class='muted'>viva100.com</td><td><a href='https://www.viva100.com/article/20260312500984' target='_blank' rel='noopener'>두쫀쿠 다음은 버터떡?... 급변하는 디저트 트렌드에 웃지 못하는 자영...</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_retail_sales_trend</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260312010003832' target='_blank' rel='noopener'>서천, 유가 상승 속 농가 부담 완화 위해 농업인 월급제 활용 당부</a></td></tr><tr><td class='c'>policy</td><td class='muted'>must_terms_fail_policy</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td><a href='https://view.asiae.co.kr/article/2026031116105690345' target='_blank' rel='noopener'>&quot;환율 10% 오르면 600억원 순손실&quot;…이란전 장기화 속타는 유통가</a></td></tr><tr><td class='c'>policy</td><td class='muted'>policy_context_gate</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td><a href='https://www.ytn.co.kr/_ln/0102_202603121956478268' target='_blank' rel='noopener'>[현장영상+] 석유 최고가격제 내일 0시부터 시행</a></td></tr><tr><td class='c'>policy</td><td class='muted'>hardblock_consumer_price_noise</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td><a href='https://biz.heraldcorp.com/article/10693216' target='_blank' rel='noopener'>식용유·라면 최대 14.6% 내린다…4월부터 ‘장바구니’ 숨통</a></td></tr></tbody>
           </table>
         </div>
       </div>
