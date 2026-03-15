@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T16:38:01+09:00",
-  "build_tag": "6c991c6",
+  "generated_at_kst": "2026-03-15T16:49:58+09:00",
+  "build_tag": "dcda63b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -301,18 +301,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "tvchosun",
       "domain": "news.tvchosun.com",
       "title": "李, 추경 신속 편성 지시 \"경제 어려울수록 취약층 타격\"",
       "url": "https://news.tvchosun.com/site/data/html_dir/2026/03/12/2026031290192.html"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "이 대통령 “추경 편성 최대한 신속하게…상반기 공공요금 동결”",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506730"
     },
     {
       "section": "policy",
@@ -517,18 +517,18 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "YTN",
-      "domain": "ytn.co.kr",
-      "title": "[현장영상+] 석유 최고 가격 제 내일 0시부터 시행",
-      "url": "https://www.ytn.co.kr/_ln/0102_202603121956478268"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "FTODAY",
       "domain": "ftoday.co.kr",
       "title": "라면·과자·빵·식용유 '릴레이 가격 인하'…李대통령 \"민생 안정에 큰...",
       "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=356377"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "YTN",
+      "domain": "ytn.co.kr",
+      "title": "[현장영상+] 석유 최고 가격 제 내일 0시부터 시행",
+      "url": "https://www.ytn.co.kr/_ln/0102_202603121956478268"
     },
     {
       "section": "policy",
@@ -1457,14 +1457,6 @@
       "domain": "news.kbs.co.kr",
       "title": "[무슨일 이슈] 중동사태로 국제유가 요동…농어민·서민·산업계 부담 가...",
       "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506919"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "30년만 '유가 상한제'…중동발 악재에 '긴급처방'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294118&inflow=N"
     },
     {
       "section": "supply",
@@ -3109,14 +3101,6 @@
     {
       "section": "supply",
       "reason": "excluded_items",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
-      "url": "http://www.fnnews.com/news/202603121853309659"
-    },
-    {
-      "section": "supply",
-      "reason": "excluded_items",
       "press": "헤럴드경제",
       "domain": "biz.heraldcorp.com",
       "title": "쌀·석유 등 23개 품목 가격 관리…정부, 민생물가 특별관리 품목 지정",
@@ -3125,34 +3109,10 @@
     {
       "section": "supply",
       "reason": "excluded_items",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "정부, 물가 특별 관리 품목 23개 선정…“체감 물가 안정”",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506775"
-    },
-    {
-      "section": "supply",
-      "reason": "excluded_items",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
-      "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
-    },
-    {
-      "section": "supply",
-      "reason": "excluded_items",
-      "press": "아주경제",
-      "domain": "ajunews.com",
-      "title": "정부, 민생 특별관리 품목에 돼지고기·계란·고등어 등 23개 지정",
-      "url": "https://www.ajunews.com/view/20260312141858513"
-    },
-    {
-      "section": "supply",
-      "reason": "excluded_items",
-      "press": "경향신문",
-      "domain": "khan.co.kr",
-      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
-      "url": "https://www.khan.co.kr/article/202603121900011"
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "라면 40~100원·식용유 300~1250원 ↓… 4월부터 가공식품값 내린다 [美-...",
+      "url": "http://www.fnnews.com/news/202603121853309659"
     },
     {
       "section": "supply",
@@ -3165,10 +3125,42 @@
     {
       "section": "supply",
       "reason": "excluded_items",
+      "press": "경향신문",
+      "domain": "khan.co.kr",
+      "title": "돼지고기부터 아파트 관리비까지… 정부 ‘23개 민생 품목’ 특별관리",
+      "url": "https://www.khan.co.kr/article/202603121900011"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
       "press": "머니투데이",
       "domain": "mt.co.kr",
       "title": "23개 특별관리품목 정해 '가격 모니터링'…\"과도한 시장 개입 아냐\"",
       "url": "https://www.mt.co.kr/economy/2026/03/12/2026031213385132087"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "석유·쌀·식용유·통신비·관리비 등 23개 품목 가격 특별 관리",
+      "url": "https://www.yna.co.kr/view/AKR20260312137000002?input=1195m"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "KBS",
+      "domain": "news.kbs.co.kr",
+      "title": "정부, 물가 특별 관리 품목 23개 선정…“체감 물가 안정”",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8506775"
+    },
+    {
+      "section": "supply",
+      "reason": "excluded_items",
+      "press": "아주경제",
+      "domain": "ajunews.com",
+      "title": "정부, 민생 특별관리 품목에 돼지고기·계란·고등어 등 23개 지정",
+      "url": "https://www.ajunews.com/view/20260312141858513"
     },
     {
       "section": "supply",
@@ -4301,18 +4293,18 @@
     {
       "section": "dist",
       "reason": "livestock_only",
-      "press": "livesnews",
-      "domain": "livesnews.com",
-      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
-      "url": "https://www.livesnews.com/news/article.html?no=60127"
-    },
-    {
-      "section": "dist",
-      "reason": "livestock_only",
       "press": "M-I",
       "domain": "m-i.kr",
       "title": "도드람양돈 농협 종합업적평가 최우수상…양돈조합 경쟁력 입증",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1345621"
+    },
+    {
+      "section": "dist",
+      "reason": "livestock_only",
+      "press": "livesnews",
+      "domain": "livesnews.com",
+      "title": "도드람양돈 농협 , 농축협 종합업적평가 최우수상 수상",
+      "url": "https://www.livesnews.com/news/article.html?no=60127"
     },
     {
       "section": "dist",
@@ -4949,6 +4941,14 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
+      "url": "https://www.etoday.co.kr/news/view/2564743"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "K푸드 수출 막는 '비관세장벽' 현장서 푼다…농식품부, 업계 간담회 개...",
@@ -4961,14 +4961,6 @@
       "domain": "foodnews.co.kr",
       "title": "농식품부, 농식품 수출업계와 비관세장벽 대응 논의",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117642"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
-      "url": "https://www.etoday.co.kr/news/view/2564743"
     },
     {
       "section": "pest",
@@ -5013,14 +5005,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
-      "url": "https://www.etoday.co.kr/news/view/2564743"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "K푸드 수출 막는 '비관세장벽' 현장서 푼다…농식품부, 업계 간담회 개...",
@@ -5033,6 +5017,14 @@
       "domain": "foodnews.co.kr",
       "title": "농식품부, 농식품 수출업계와 비관세장벽 대응 논의",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117642"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출 막는 ‘비관세장벽’ 현장에서 푼다…농식품부, 수출업계 ...",
+      "url": "https://www.etoday.co.kr/news/view/2564743"
     },
     {
       "section": "pest",
