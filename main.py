@@ -13534,12 +13534,25 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     return f"""
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
       <div class="commodityHead">
-        <div>
-          <div class="kicker">원예수급부 전체 관리 품목</div>
+        <div class="commodityHeadMain">
+          <div class="commodityEyebrow">원예수급부 전체 관리 품목</div>
           <h2 id="commodityBoardTitle">전체 품목 보드</h2>
-          <div class="commodityLead">품목별 관련 기사 풀을 먼저 모아 보여줍니다. 오늘 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
+          <div class="commodityLead">품목별 관련 기사 풀을 먼저 넓게 모아 보여줍니다. 오늘의 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
         </div>
-        <div class="commodityBoardSummary">오늘 연결 품목 {int(board_ctx.get('active_total') or 0)}개 · 수급사업 {int(board_ctx.get('active_program_total') or 0)}개</div>
+        <div class="commodityHeadStats" aria-label="품목 보드 요약">
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">전체 관리</span>
+            <strong>{int(board_ctx.get('managed_total') or 0)}개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">오늘 연결</span>
+            <strong>{int(board_ctx.get('active_total') or 0)}개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">수급사업 연결</span>
+            <strong>{int(board_ctx.get('active_program_total') or 0)}개</strong>
+          </div>
+        </div>
       </div>
       <div class="commodityGroupNav">{nav_html}</div>
       {''.join(group_blocks)}
@@ -13624,6 +13637,58 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     )
     commodity_board_ctx = build_managed_commodity_board_context(board_source_by_section or _get_last_commodity_board_source() or by_section)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
+    briefing_active_sections = sum(1 for sec in SECTIONS if by_section.get(sec["key"]))
+    briefing_core_total = sum(
+        1
+        for sec in SECTIONS
+        for article in (by_section.get(sec["key"], []) or [])
+        if getattr(article, "is_core", False)
+    )
+    briefing_hero_html = f"""
+    <section class="briefingHero" aria-labelledby="briefingHeroTitle">
+      <div class="briefingHeroMain">
+        <div class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</div>
+        <h2 id="briefingHeroTitle">오늘의 브리핑</h2>
+        <div class="briefingLead">섹션별 핵심 기사를 한 번에 훑고 바로 원문으로 이동할 수 있게 정리했습니다. 아래 섹션 칩을 누르면 원하는 영역으로 즉시 이동합니다.</div>
+      </div>
+      <div class="briefingHeroStats" aria-label="브리핑 요약">
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">섹션</span>
+          <strong>{briefing_active_sections}개</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">기사</span>
+          <strong>{total}건</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">핵심</span>
+          <strong>{briefing_core_total}건</strong>
+        </div>
+      </div>
+    </section>
+    """
+    view_tabs_html = f"""
+      <div class="viewTabs" role="tablist" aria-label="보기 전환">
+        <button class="viewTab isActive" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">
+          <span class="viewTabEyebrow">핵심 요약</span>
+          <span class="viewTabTitle">오늘의 브리핑</span>
+          <span class="viewTabDesc">섹션별 핵심 기사와 바로가기를 한눈에 확인합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>{briefing_active_sections}</strong>개 섹션</span>
+            <span class="viewTabStat"><strong>{total}</strong>건 기사</span>
+          </span>
+        </button>
+        <button class="viewTab" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">
+          <span class="viewTabEyebrow">품목 추적</span>
+          <span class="viewTabTitle">전체 품목 보드</span>
+          <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>{int(commodity_board_ctx.get('active_total') or 0)}</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>{int(commodity_board_ctx.get('active_program_total') or 0)}</strong>개 수급사업</span>
+          </span>
+        </button>
+      </div>
+    """
 
     # ✅ (2) 섹션 렌더: 더 이상 숨김(<details>) 사용하지 않고 '전부' 노출
     # ✅ (2) 섹션 내 기사는 중요도 순(이미 정렬됨)
@@ -13780,12 +13845,33 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       select{{width:145px; max-width:145px;}}
     }}
 
-    .viewTabs{{display:flex;gap:10px;flex-wrap:wrap;padding-top:2px}}
-    .viewTab{{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#334155;font-size:13px;font-weight:800;cursor:pointer}}
-    .viewTab.isActive{{background:#111827;color:#fff;border-color:#111827;box-shadow:var(--shadow)}}
+    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}}
+    .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:124px;padding:16px 18px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
+    .viewTab:hover{{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}}
+    .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}}
+    .viewTabEyebrow{{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .viewTab.isActive .viewTabEyebrow{{background:rgba(255,255,255,.16);color:#e0f2fe}}
+    .viewTabTitle{{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}}
+    .viewTabDesc{{font-size:13px;line-height:1.55;color:#475569}}
+    .viewTab.isActive .viewTabDesc{{color:rgba(255,255,255,.88)}}
+    .viewTabStats{{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}}
+    .viewTabStat{{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}}
+    .viewTabStat strong{{font-size:13px}}
+    .viewTab.isActive .viewTabStat{{background:rgba(255,255,255,.16);color:#fff}}
+
+    .briefingHero{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}}
+    .briefingHeroMain{{min-width:0}}
+    .briefingEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .briefingHero h2{{margin:10px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}}
+    .briefingLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
+    .briefingHeroStats{{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
+    .briefingHeroStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
+    .briefingHeroStatLabel{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}}
+    .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
     .chipbar{{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}}
+    .briefingChipbar{{margin-top:14px}}
     .chipwrap{{max-width:1100px;margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
@@ -13800,12 +13886,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityBoard{{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}}
-    .commodityHead{{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid rgba(229,231,235,.9)}}
-    .commodityHead h2{{margin:4px 0 0;font-size:19px;letter-spacing:-0.25px}}
-    .commodityLead{{margin-top:6px;color:#475569;font-size:13px;line-height:1.5}}
-    .kicker{{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:800}}
-    .commodityBoardSummary{{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid var(--line);color:#475569;font-size:12px;font-weight:700;white-space:nowrap}}
+    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}}
+    .commodityHead{{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:radial-gradient(circle at top right, rgba(153,246,228,.4), transparent 34%),linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#f0fdf4 100%)}}
+    .commodityHeadMain{{min-width:0}}
+    .commodityHead h2{{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}}
+    .commodityLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
+    .commodityEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .commodityHeadStats{{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
+    .commodityHeadStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
+    .commodityHeadStatLabel{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}}
+    .commodityHeadStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
     .commodityBadge{{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}}
     .commodityBadge.core{{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}}
     .commoditySignals{{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}}
@@ -13916,13 +14006,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .navRow > .navBtn:last-child{{grid-column:2}}
       .dateSelWrap{{width:100%}}
       .dateSelWrap select{{width:100%;max-width:none}}
+      .viewTabs{{grid-template-columns:1fr}}
+      .viewTab{{min-height:auto;padding:15px 16px;border-radius:18px}}
+      .viewTabTitle{{font-size:22px}}
+      .briefingHero{{grid-template-columns:1fr;padding:18px}}
+      .briefingHero h2{{font-size:28px}}
+      .briefingHeroStats{{justify-content:flex-start}}
+      .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
       .chip{{padding:6px 10px;font-size:12.5px}}
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
-      .commodityHead{{display:block}}
-      .commodityBoardSummary{{margin-top:10px}}
+      .commodityHead{{grid-template-columns:1fr;padding:18px 18px 14px}}
+      .commodityHead h2{{font-size:28px}}
+      .commodityHeadStats{{justify-content:flex-start}}
+      .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
       .commodityGroupHead{{display:block}}
@@ -13958,15 +14057,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
-      <div class=\"viewTabs\" role=\"tablist\" aria-label=\"보기 전환\">
-        <button class=\"viewTab isActive\" data-view-tab=\"briefing\" type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"view-briefing\">오늘 브리핑</button>
-        <button class=\"viewTab\" data-view-tab=\"commodity\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"view-commodity\">전체 품목 보드</button>
-      </div>
+{view_tabs_html}
     </div>
   </div>
 
   <div class=\"wrap\">
     <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
+      {briefing_hero_html}
       {briefing_chipbar_html}
       {sections_html}
     </section>
