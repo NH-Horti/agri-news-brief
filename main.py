@@ -1160,6 +1160,130 @@ HORTI_CORE_MARKERS = _ordered_unique_terms(
     + [term for entry in COMMODITY_REGISTRY for term in _commodity_focus_terms(entry)]
 )
 
+COMMODITY_REGISTRY_BY_TOPIC = {
+    str(entry.get("topic") or "").strip(): entry
+    for entry in COMMODITY_REGISTRY
+    if str(entry.get("topic") or "").strip()
+}
+
+MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
+    {
+        "key": "root_leaf",
+        "title": "엽근채류",
+        "color": "#0f766e",
+        "items": [
+            {"key": "radish", "label": "무", "short_label": "무", "program_core": True, "aliases": ["월동무", "봄무", "고랭지무"], "context_terms": ["무 가격", "무 수급", "무 도매가격", "무 작황", "무 출하", "무 재배"]},
+            {"key": "napa_cabbage", "label": "배추", "short_label": "배추", "program_core": True, "aliases": ["배추", "봄배추", "김장배추"]},
+            {"key": "potato", "label": "감자", "short_label": "감자", "program_core": True, "aliases": ["감자", "봄감자", "수미감자"]},
+            {"key": "carrot", "label": "당근", "short_label": "당근", "program_core": True, "aliases": ["당근", "제주당근", "햇당근"]},
+            {"key": "cabbage", "label": "양배추", "short_label": "양배추", "program_core": False, "aliases": ["양배추"]},
+        ],
+    },
+    {
+        "key": "seasoning_veg",
+        "title": "양념채소류",
+        "color": "#b45309",
+        "items": [
+            {"key": "onion", "label": "양파", "short_label": "양파", "program_core": True, "aliases": ["양파", "햇양파"]},
+            {"key": "garlic", "label": "마늘", "short_label": "마늘", "program_core": True, "aliases": ["마늘", "깐마늘", "난지형 마늘", "한지형 마늘"]},
+            {"key": "dry_red_pepper", "label": "건고추", "short_label": "건고추", "program_core": True, "aliases": ["건고추", "건조고추", "건고추값"], "context_terms": ["건고추 가격", "건고추 수급", "건고추 작황"]},
+            {"key": "green_onion", "label": "대파", "short_label": "대파", "program_core": True, "aliases": ["대파", "쪽파"]},
+            {"key": "ginger", "label": "생강", "short_label": "생강", "program_core": False, "aliases": ["생강"]},
+        ],
+    },
+    {
+        "key": "fruit_flower",
+        "title": "과수화훼류",
+        "color": "#1d4ed8",
+        "items": [
+            {"key": "apple", "label": "사과", "short_label": "사과", "program_core": True, "registry_topics": ["사과"]},
+            {"key": "pear", "label": "배", "short_label": "배", "program_core": True, "registry_topics": ["배"]},
+            {"key": "persimmon", "label": "감/곶감", "short_label": "감", "program_core": False, "registry_topics": ["감/곶감"], "aliases": ["떫은감", "곶감", "반건시"], "context_terms": ["감 가격", "감 수급", "감 작황"]},
+            {"key": "sweet_persimmon", "label": "단감", "short_label": "단감", "program_core": True, "registry_topics": ["단감"]},
+            {"key": "peach", "label": "복숭아", "short_label": "복숭아", "program_core": False, "registry_topics": ["복숭아"]},
+            {"key": "grape", "label": "포도(샤인머스캣)", "short_label": "포도", "program_core": True, "registry_topics": ["포도"]},
+            {"key": "citrus", "label": "감귤(만감류)", "short_label": "감귤", "program_core": True, "registry_topics": ["감귤/만감"]},
+            {"key": "maesil", "label": "매실", "short_label": "매실", "program_core": False, "registry_topics": ["매실"]},
+            {"key": "citron", "label": "유자", "short_label": "유자", "program_core": False, "registry_topics": ["유자"]},
+            {"key": "kiwifruit", "label": "참다래", "short_label": "참다래", "program_core": False, "registry_topics": ["키위"], "aliases": ["참다래"]},
+            {"key": "chestnut", "label": "밤", "short_label": "밤", "program_core": False, "registry_topics": ["밤"]},
+            {"key": "flowers", "label": "화훼", "short_label": "화훼", "program_core": False, "registry_topics": ["화훼"]},
+            {"key": "plum", "label": "자두", "short_label": "자두", "program_core": False, "registry_topics": ["자두"]},
+        ],
+    },
+    {
+        "key": "fruit_veg",
+        "title": "과채류",
+        "color": "#6d28d9",
+        "items": [
+            {"key": "tomato", "label": "토마토", "short_label": "토마토", "program_core": True, "registry_topics": ["토마토"]},
+            {"key": "cucumber", "label": "오이", "short_label": "오이", "program_core": True, "registry_topics": ["오이"]},
+            {"key": "green_pepper", "label": "풋고추", "short_label": "풋고추", "program_core": True, "aliases": ["풋고추", "청양고추", "꽈리고추"], "context_terms": ["고추 가격", "고추 수급", "고추 작황"]},
+            {"key": "zucchini", "label": "애호박(쥬키니)", "short_label": "애호박", "program_core": True, "aliases": ["애호박", "쥬키니", "주키니"], "context_terms": ["애호박 가격", "애호박 수급", "쥬키니 가격"]},
+            {"key": "oriental_melon", "label": "참외", "short_label": "참외", "program_core": False, "registry_topics": ["참외"]},
+            {"key": "lettuce", "label": "상추", "short_label": "상추", "program_core": False, "registry_topics": ["상추"]},
+            {"key": "strawberry", "label": "딸기", "short_label": "딸기", "program_core": False, "registry_topics": ["딸기"]},
+            {"key": "eggplant", "label": "가지", "short_label": "가지", "program_core": True, "aliases": ["가지"], "context_terms": ["가지 가격", "가지 수급", "가지 작황", "가지 출하", "가지 재배"]},
+            {"key": "paprika", "label": "파프리카", "short_label": "파프리카", "program_core": False, "registry_topics": ["파프리카"]},
+            {"key": "muskmelon", "label": "멜론", "short_label": "멜론", "program_core": False, "registry_topics": ["멜론"]},
+        ],
+    },
+]
+
+
+def _build_managed_commodity_catalog() -> list[dict[str, Any]]:
+    catalog: list[dict[str, Any]] = []
+    order_index = 0
+    for group_order, group in enumerate(MANAGED_COMMODITY_GROUP_SPECS):
+        group_key = str(group.get("key") or "").strip()
+        group_title = str(group.get("title") or "").strip()
+        group_color = str(group.get("color") or "#475569").strip() or "#475569"
+        for item_order, spec in enumerate(group.get("items") or []):
+            order_index += 1
+            registry_topics = _ordered_unique_terms(spec.get("registry_topics") or [])
+            registry_terms: list[str] = []
+            for topic_name in registry_topics:
+                entry = COMMODITY_REGISTRY_BY_TOPIC.get(topic_name)
+                if not entry:
+                    continue
+                registry_terms.extend(
+                    _ordered_unique_terms(
+                        [entry.get("topic") or "", entry.get("display_name") or "", _commodity_rep_term(entry)]
+                        + _commodity_alias_terms(entry)
+                        + _commodity_focus_terms(entry)
+                        + _commodity_tag_terms(entry)
+                        + list(entry.get("brief_tags") or [])
+                    )
+                )
+            match_terms = _ordered_unique_terms(list(spec.get("aliases") or []) + registry_terms)
+            catalog.append(
+                {
+                    "key": str(spec.get("key") or "").strip(),
+                    "label": str(spec.get("label") or "").strip(),
+                    "short_label": str(spec.get("short_label") or spec.get("label") or "").strip(),
+                    "group_key": group_key,
+                    "group_title": group_title,
+                    "group_color": group_color,
+                    "group_order": group_order,
+                    "item_order": item_order,
+                    "order": order_index,
+                    "program_core": bool(spec.get("program_core", False)),
+                    "registry_topics": registry_topics,
+                    "match_terms": match_terms,
+                    "context_terms": _ordered_unique_terms(spec.get("context_terms") or []),
+                }
+            )
+    return catalog
+
+
+MANAGED_COMMODITY_CATALOG = _build_managed_commodity_catalog()
+MANAGED_COMMODITY_BY_KEY = {str(item.get("key") or "").strip(): item for item in MANAGED_COMMODITY_CATALOG}
+MANAGED_COMMODITY_KEY_BY_REGISTRY_TOPIC = {
+    topic: item["key"]
+    for item in MANAGED_COMMODITY_CATALOG
+    for topic in item.get("registry_topics") or []
+}
+
 
 def _commodity_tags_in_text(text: str, limit: int = 9) -> list[str]:
     txt = (text or "").lower()
@@ -2171,6 +2295,91 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
 }
 
 _HORTI_TOPICS_SET = {entry["topic"] for entry in COMMODITY_REGISTRY}
+
+_MANAGED_COMMODITY_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
+    "radish": [
+        re.compile(r"(?:^|[\s\W])무(?:값|가격|시세|수급|출하|작황|재배|농가|도매가격)"),
+        re.compile(r"월동무"),
+        re.compile(r"고랭지무"),
+    ],
+    "pear": list(_SINGLE_TERM_CONTEXT_PATTERNS["배"]),
+    "persimmon": [
+        re.compile(r"떫은감"),
+        re.compile(r"곶감"),
+        re.compile(r"반건시"),
+        re.compile(r"감말랭이"),
+        re.compile(r"(?:^|[\s\W])감(?:값|가격|시세|수급|출하|작황|재배|농가)"),
+    ],
+    "chestnut": list(_SINGLE_TERM_CONTEXT_PATTERNS["밤"]),
+    "dry_red_pepper": [
+        re.compile(r"건고추"),
+        re.compile(r"건조고추"),
+        re.compile(r"고추건조"),
+    ],
+    "green_pepper": [
+        re.compile(r"풋고추"),
+        re.compile(r"청양고추"),
+        re.compile(r"꽈리고추"),
+        re.compile(r"오이고추"),
+        re.compile(r"(?:^|[\s\W])고추(?:값|가격|시세|수급|출하|작황|재배|농가)"),
+    ],
+    "zucchini": [
+        re.compile(r"애호박"),
+        re.compile(r"쥬키니"),
+        re.compile(r"주키니"),
+    ],
+    "eggplant": [
+        re.compile(r"(?:^|[\s\W])가지(?:값|가격|시세|수급|출하|작황|재배|농가)"),
+        re.compile(r"가지\s*(농가|재배|출하|도매|경락)"),
+    ],
+}
+
+_MANAGED_COMMODITY_SECTION_LABELS = {
+    "supply": "수급",
+    "policy": "정책",
+    "dist": "유통",
+    "pest": "방제",
+}
+
+
+def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
+    txt = (text or "").lower()
+    if not txt:
+        return False
+
+    key = str(item.get("key") or "").strip()
+    registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
+    if topic and topic in registry_topics:
+        return True
+
+    for term in item.get("match_terms") or []:
+        term_l = str(term or "").strip().lower()
+        if len(term_l) >= 2 and term_l in txt:
+            return True
+
+    for term in item.get("context_terms") or []:
+        term_l = str(term or "").strip().lower()
+        if term_l and term_l in txt:
+            return True
+
+    for pattern in _MANAGED_COMMODITY_CONTEXT_PATTERNS.get(key, []):
+        if pattern.search(txt):
+            return True
+    return False
+
+
+def managed_commodity_keys_for_article(article: "Article") -> list[str]:
+    txt = f"{article.title or ''} {article.description or ''}".lower()
+    topic = str(getattr(article, "topic", "") or "").strip()
+    matched: list[str] = []
+
+    for item in MANAGED_COMMODITY_CATALOG:
+        key = str(item.get("key") or "").strip()
+        if not key or key in matched:
+            continue
+        if _managed_commodity_matches_text(item, txt, topic):
+            matched.append(key)
+    return matched
 
 def _topic_scores(title: str, desc: str) -> dict[str, float]:
     t = (title + " " + desc).lower()
@@ -11577,6 +11786,220 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
         line = ""
     return (line, tags)
 
+
+def _commodity_board_article_sort_key(a: Article) -> tuple[Any, ...]:
+    section_rank = {"supply": 4, "dist": 3, "policy": 2, "pest": 1}
+    return (
+        1 if getattr(a, "is_core", False) else 0,
+        section_rank.get(str(getattr(a, "section", "") or ""), 0),
+        float(getattr(a, "score", 0.0) or 0.0),
+        getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+    )
+
+
+def _dedupe_articles_for_commodity_board(articles: list[Article]) -> list[Article]:
+    seen: set[str] = set()
+    out: list[Article] = []
+    for article in sorted(articles, key=_commodity_board_article_sort_key, reverse=True):
+        key = article.canon_url or article.norm_key or article.title_key or article.url
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(article)
+    return out
+
+
+def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) -> dict[str, Any]:
+    item_state: dict[str, dict[str, Any]] = {
+        str(item.get("key") or "").strip(): {**item, "articles": []}
+        for item in MANAGED_COMMODITY_CATALOG
+    }
+
+    for sec in SECTIONS:
+        for article in by_section.get(sec["key"], []) or []:
+            for key in managed_commodity_keys_for_article(article):
+                payload = item_state.get(key)
+                if payload is None:
+                    continue
+                payload["articles"].append(article)
+
+    active_items = 0
+    for payload in item_state.values():
+        articles = _dedupe_articles_for_commodity_board(payload.get("articles") or [])
+        payload["articles"] = articles
+        payload["article_count"] = len(articles)
+        payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
+        payload["active"] = bool(articles)
+        payload["top_article"] = articles[0] if articles else None
+        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles])
+        if payload["active"]:
+            active_items += 1
+
+    groups: list[dict[str, Any]] = []
+    for group in MANAGED_COMMODITY_GROUP_SPECS:
+        items = [item_state[str(spec.get("key") or "").strip()] for spec in group.get("items") or [] if str(spec.get("key") or "").strip() in item_state]
+        groups.append(
+            {
+                "key": str(group.get("key") or "").strip(),
+                "title": str(group.get("title") or "").strip(),
+                "color": str(group.get("color") or "#475569").strip() or "#475569",
+                "items": items,
+                "active_count": sum(1 for item in items if item.get("active")),
+                "article_count": sum(int(item.get("article_count") or 0) for item in items),
+            }
+        )
+
+    hero_items = [item_state[str(item.get("key") or "").strip()] for group in MANAGED_COMMODITY_GROUP_SPECS for item in (group.get("items") or []) if bool(item.get("program_core"))]
+    hero_items.sort(
+        key=lambda item: (
+            0 if item.get("active") else 1,
+            -int(item.get("core_count") or 0),
+            -int(item.get("article_count") or 0),
+            int(item.get("order") or 0),
+        )
+    )
+
+    return {
+        "hero_items": hero_items,
+        "groups": groups,
+        "managed_total": len(MANAGED_COMMODITY_CATALOG),
+        "program_total": sum(1 for item in MANAGED_COMMODITY_CATALOG if item.get("program_core")),
+        "active_total": active_items,
+    }
+
+
+def render_managed_commodity_hero_html(board_ctx: dict[str, Any]) -> str:
+    hero_items = list(board_ctx.get("hero_items") or [])
+    if not hero_items:
+        return ""
+
+    cards: list[str] = []
+    for item in hero_items:
+        top_article = item.get("top_article")
+        active = bool(item.get("active"))
+        item_id = f"commodity-{esc(str(item.get('key') or '').strip())}"
+        section_badges = "".join(
+            f'<span class="commoditySig" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
+            for sec_key in (item.get("section_keys") or [])
+            if sec_key
+        )
+        story_html = '<div class="commodityStory muted">오늘 노출 기사 없음</div>'
+        if isinstance(top_article, Article):
+            story_html = (
+                f'<a class="commodityStory" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
+                f'{esc(top_article.title)}</a>'
+            )
+        cards.append(
+            f"""
+            <article class="commodityHeroCard{' isActive' if active else ''}">
+              <div class="commodityHeroTop">
+                <span class="commodityBadge core">수급사업</span>
+                <span class="commodityCount">{int(item.get('article_count') or 0)}건</span>
+              </div>
+              <div class="commodityName">{esc(str(item.get('short_label') or item.get('label') or ''))}</div>
+              <div class="commodityGroupLabel">{esc(str(item.get('group_title') or ''))}</div>
+              <div class="commoditySignals">{section_badges or '<span class="commoditySig muted">대기</span>'}</div>
+              {story_html}
+              <a class="commodityJump" href="#{item_id}">상세 보기</a>
+            </article>
+            """
+        )
+
+    return f"""
+    <section class="commodityHero" aria-labelledby="commodityHeroTitle">
+      <div class="commodityHead">
+        <div>
+          <div class="kicker">품목 중심 보기</div>
+          <h2 id="commodityHeroTitle">핵심 품목 보드</h2>
+          <div class="commodityLead">수급사업 품목 {int(board_ctx.get('program_total') or 0)}개를 우선 노출하고, 오늘 기사와 연결합니다.</div>
+        </div>
+        <a class="commodityBoardCta" href="#commodity-board">전체 품목 보드 보기</a>
+      </div>
+      <div class="commodityHeroGrid">
+        {''.join(cards)}
+      </div>
+    </section>
+    """
+
+
+def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+    groups = list(board_ctx.get("groups") or [])
+    if not groups:
+        return ""
+
+    nav_html = "".join(
+        f'<a class="commodityGroupChip" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
+        f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
+        for group in groups
+    )
+
+    group_blocks: list[str] = []
+    for group in groups:
+        item_cards: list[str] = []
+        for item in group.get("items") or []:
+            top_article = item.get("top_article")
+            badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else '<span class="commodityBadge managed">관리품목</span>'
+            signal_html = "".join(
+                f'<span class="commoditySig" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
+                for sec_key in (item.get("section_keys") or [])
+                if sec_key
+            )
+            if isinstance(top_article, Article):
+                story_html = (
+                    f'<a class="commodityStory" href="{esc(top_article.url)}" target="_blank" rel="noopener">'
+                    f'{esc(top_article.title)}</a>'
+                )
+            else:
+                story_html = '<div class="commodityStory muted">아직 연결된 대표 기사가 없습니다.</div>'
+            item_cards.append(
+                f"""
+                <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile{' isActive' if item.get('active') else ''}">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">{esc(str(item.get('label') or ''))}</div>
+                    {badge_html}
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 {int(item.get('article_count') or 0)}건</span>
+                    <span>핵심 {int(item.get('core_count') or 0)}건</span>
+                  </div>
+                  <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
+                  {story_html}
+                </article>
+                """
+            )
+
+        group_blocks.append(
+            f"""
+            <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:{esc(str(group.get('color') or '#475569'))}"></span>
+                  <h3>{esc(str(group.get('title') or ''))}</h3>
+                </div>
+                <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {len(group.get('items') or [])}</div>
+              </div>
+              <div class="commodityGrid">
+                {''.join(item_cards)}
+              </div>
+            </section>
+            """
+        )
+
+    return f"""
+    <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
+      <div class="commodityHead">
+        <div>
+          <div class="kicker">전체 관리 품목</div>
+          <h2 id="commodityBoardTitle">전체 관리 품목 보드</h2>
+          <div class="commodityLead">관리 품목 {int(board_ctx.get('managed_total') or 0)}개를 류별로 모아 보고, 수급사업 품목은 더 강하게 표시합니다.</div>
+        </div>
+        <div class="commodityBoardSummary">오늘 기사 연결 품목 {int(board_ctx.get('active_total') or 0)}개</div>
+      </div>
+      <div class="commodityGroupNav">{nav_html}</div>
+      {''.join(group_blocks)}
+    </section>
+    """
+
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict[str, list[Article]],
                       archive_dates_desc: list[str], site_path: str) -> str:
     # 상단 칩 카운트 + 섹션별 중요도 정렬
@@ -11630,6 +12053,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
+    commodity_board_ctx = build_managed_commodity_board_context(by_section)
+    commodity_hero_html = render_managed_commodity_hero_html(commodity_board_ctx)
+    commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
 
     # ✅ (2) 섹션 렌더: 더 이상 숨김(<details>) 사용하지 않고 '전부' 노출
     # ✅ (2) 섹션 내 기사는 중요도 순(이미 정렬됨)
@@ -11796,6 +12222,49 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
     .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
 
+    .commodityHero, .commodityBoard{{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:var(--shadow);overflow:hidden}}
+    .commodityHead{{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid rgba(229,231,235,.9)}}
+    .commodityHead h2{{margin:4px 0 0;font-size:19px;letter-spacing:-0.25px}}
+    .commodityLead{{margin-top:6px;color:#475569;font-size:13px;line-height:1.5}}
+    .kicker{{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:800}}
+    .commodityBoardCta{{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}}
+    .commodityBoardSummary{{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid var(--line);color:#475569;font-size:12px;font-weight:700;white-space:nowrap}}
+    .commodityHeroGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px 18px 18px}}
+    .commodityHeroCard{{display:flex;flex-direction:column;gap:8px;min-height:180px;padding:14px;border:1px solid #dbe4ee;border-radius:16px;background:#fff;text-decoration:none;color:inherit}}
+    .commodityHeroCard.isActive{{border-color:#93c5fd;box-shadow:0 10px 24px rgba(29,78,216,.08)}}
+    .commodityHeroTop{{display:flex;align-items:center;justify-content:space-between;gap:10px}}
+    .commodityBadge{{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}}
+    .commodityBadge.core{{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}}
+    .commodityBadge.managed{{background:#f8fafc;color:#475569;border:1px solid #cbd5e1}}
+    .commodityCount{{color:#475569;font-size:12px;font-weight:800}}
+    .commodityName{{font-size:18px;font-weight:900;letter-spacing:-0.25px}}
+    .commodityGroupLabel{{color:#64748b;font-size:12px}}
+    .commoditySignals{{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}}
+    .commoditySig{{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800}}
+    .commoditySig[data-section="supply"]{{background:#ccfbf1;color:#115e59}}
+    .commoditySig[data-section="policy"]{{background:#dbeafe;color:#1d4ed8}}
+    .commoditySig[data-section="dist"]{{background:#ede9fe;color:#6d28d9}}
+    .commoditySig[data-section="pest"]{{background:#ffedd5;color:#b45309}}
+    .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
+    .commodityStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#0f172a;font-size:13px;line-height:1.5;text-decoration:none;min-height:40px}}
+    .commodityStory:hover{{text-decoration:underline}}
+    .commodityJump{{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;height:32px;padding:0 10px;border-radius:999px;background:#f8fafc;border:1px solid #cbd5e1;color:#334155;text-decoration:none;font-size:12px;font-weight:800}}
+    .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
+    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
+    .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
+    .commodityGroupBlock{{padding:0 18px 18px;scroll-margin-top:170px}}
+    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 10px}}
+    .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
+    .commodityGroupTitleWrap h3{{margin:0;font-size:16px}}
+    .commodityGroupDot{{width:11px;height:11px;border-radius:999px}}
+    .commodityGroupMeta{{color:#64748b;font-size:12px;font-weight:700}}
+    .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+    .commodityTile{{display:flex;flex-direction:column;gap:8px;min-height:168px;padding:14px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
+    .commodityTile.isActive{{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}}
+    .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
+    .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
+    .commodityTileMeta{{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}}
+
     .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
           scroll-margin-top: 150px;
     }}
@@ -11846,6 +12315,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
       html{{scroll-padding-top: 170px;}}
       .sec{{scroll-margin-top: 170px;}}
+      .commodityHeroGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
       .topin{{gap:8px}}
@@ -11861,6 +12332,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .chip{{width:100%;justify-content:space-between}}
       .chip{{padding:6px 10px;font-size:12.5px}}
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
+      .commodityHead{{display:block}}
+      .commodityBoardCta,.commodityBoardSummary{{margin-top:10px}}
+      .commodityHeroGrid,.commodityGrid{{grid-template-columns:1fr}}
+      .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
     }}
   </style>
 </head>
@@ -11899,7 +12374,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   </div>
 
   <div class=\"wrap\">
+    {commodity_hero_html}
     {sections_html}
+    {commodity_board_html}
     <div class=\"footer\">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
     {dev_footer_html}
   </div>
