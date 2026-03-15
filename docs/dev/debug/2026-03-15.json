@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T13:58:59+09:00",
-  "build_tag": "a0f2b09",
+  "generated_at_kst": "2026-03-15T14:56:36+09:00",
+  "build_tag": "6f58322",
   "filter_rejects": [
     {
       "section": "policy",
@@ -220,19 +220,19 @@
     },
     {
       "section": "policy",
-      "reason": "policy_macro_general_economy",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "파주시, 비상경제대응 TF 운영",
-      "url": "http://www.metroseoul.co.kr/article/20260313500107"
-    },
-    {
-      "section": "policy",
       "reason": "policy_context_gate",
       "press": "이뉴스투데이",
       "domain": "enewstoday.co.kr",
       "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
       "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_macro_general_economy",
+      "press": "메트로신문",
+      "domain": "metroseoul.co.kr",
+      "title": "파주시, 비상경제대응 TF 운영",
+      "url": "http://www.metroseoul.co.kr/article/20260313500107"
     },
     {
       "section": "policy",
@@ -812,14 +812,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "goodnews1",
-      "domain": "goodnews1.com",
-      "title": "석유 최고 가격 제 시행 첫날… 고유가 시름 덜어낸 농민과 서민들",
-      "url": "https://www.goodnews1.com/news/articleView.html?idxno=457580"
-    },
-    {
-      "section": "supply",
       "reason": "apple_non_edible_context",
       "press": "이투데이",
       "domain": "bravo.etoday.co.kr",
@@ -1100,7 +1092,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "popcornnews",
       "domain": "popcornnews.net",
       "title": "[POP!신제품] 라부르켓, 브랜드 최초 'NEW 오 드 퍼퓸 컬렉션' 출시 外",
@@ -1324,7 +1316,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "popcornnews",
       "domain": "popcornnews.net",
       "title": "[POP!신제품] 라부르켓, 브랜드 최초 'NEW 오 드 퍼퓸 컬렉션' 출시 外",
@@ -1900,7 +1892,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "이투데이",
       "domain": "etoday.co.kr",
       "title": "황치즈칩→초코 바게트 '불티'⋯그런데 '진짜 유행' 맞아? [솔드아웃]",
@@ -2036,7 +2028,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "popcornnews",
       "domain": "popcornnews.net",
       "title": "[POP!신제품] 라부르켓, 브랜드 최초 'NEW 오 드 퍼퓸 컬렉션' 출시 外",
@@ -2461,18 +2453,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "DNEWS",
-      "domain": "dnews.co.kr",
-      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
-      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "FINOMY",
       "domain": "finomy.com",
       "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
       "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
     },
     {
       "section": "supply",
@@ -2668,31 +2660,7 @@
     },
     {
       "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "digitaltoday",
-      "domain": "digitaltoday.co.kr",
-      "title": "전주원파워, 유상 감자 결정…보통주 187만7393주 소각",
-      "url": "https://www.digitaltoday.co.kr/news/articleView.html?idxno=640585"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "theviewers",
-      "domain": "theviewers.co.kr",
-      "title": "[유통갤러리] 노브랜드 버거, ‘5K 런치타임’ 프로모션 실시 外",
-      "url": "https://theviewers.co.kr/View.aspx?No=4002430"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "ABCN",
-      "domain": "abcn.kr",
-      "title": "AI 기반 R&D 사업화 성공 확률",
-      "url": "https://www.abcn.kr/news/articleView.html?idxno=86923"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
+      "reason": "carrot_non_edible_context",
       "press": "조선일보",
       "domain": "topclass.chosun.com",
       "title": "이번 주말 감튀 어때요? 감자튀김 4대 맛집 / 바삭하고 따스하지만 부담...",
@@ -2700,7 +2668,15 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "jejusori",
+      "domain": "jejusori.net",
+      "title": "'바가지 차단' 제주들불축제 아메리카노 4000원",
+      "url": "https://www.jejusori.net/news/articleView.html?idxno=500445"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "오마이뉴스",
       "domain": "ohmynews.com",
       "title": "외부 자본에 내몰린 농촌, 마을태양광으로 자존심 되찾다",
@@ -2708,7 +2684,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "디지털타임스",
       "domain": "dt.co.kr",
       "title": "정부, 약가제도 개편 한발 물러서… 약값 인하 충격 줄이기 위해 10년 걸...",
@@ -2716,7 +2692,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "동아일보",
       "domain": "weekly.donga.com",
       "title": "포로수용소에서도 돈은 자생적으로 생긴다",
@@ -2724,7 +2700,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
       "title": "정부, 약값 인하 충격 줄인다…10년 걸친 연착륙 추진",
@@ -2732,7 +2708,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "gamechosun",
       "domain": "gamechosun.co.kr",
       "title": "아우스플루크 지구 상륙! 스타라이크 '식스타 게이트: 유니버스 x 일러...",
@@ -2740,7 +2716,7 @@
     },
     {
       "section": "supply",
-      "reason": "potato_non_fresh_context",
+      "reason": "carrot_non_edible_context",
       "press": "DNEWS",
       "domain": "dnews.co.kr",
       "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
@@ -2748,7 +2724,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "news2day",
       "domain": "news2day.co.kr",
       "title": "[N2 푸드] 배라, ‘두바이에서 온 엄마는 외계인’ AR 체험 진행...동원...",
@@ -2756,7 +2732,15 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "joongangenews",
+      "domain": "joongangenews.com",
+      "title": "bhc, 당근 포장주문 입점…4300만 이용자 기반 고객 접점 확대",
+      "url": "https://www.joongangenews.com/news/articleView.html?idxno=502295"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "kpinews",
       "domain": "kpinews.kr",
       "title": "\"상품권 보여주면 입장 가능\"…코스트코 상품권 '웃돈' 받고 판다",
@@ -2764,7 +2748,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "이투데이",
       "domain": "etoday.co.kr",
       "title": "황치즈칩→초코 바게트 '불티'⋯그런데 '진짜 유행' 맞아? [솔드아웃]",
@@ -2772,11 +2756,43 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "jejusori",
       "domain": "jejusori.net",
       "title": "'15번 유찰' 제주 화북 주상복합 55m 고도해제",
       "url": "https://www.jejusori.net/news/articleView.html?idxno=500436"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "updownnews",
+      "domain": "updownnews.co.kr",
+      "title": "bhc, 지역커뮤니티앱 당근 에 포장주문 서비스 오픈...\"수수료 부담 완화...",
+      "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316533"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "bhc, ' 당근 ' 포장주문 입점…\"선착순 7천원 할인\"",
+      "url": "https://biz.sbs.co.kr/article_hub/20000297336?division=NAVER"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "thefirstmedia",
+      "domain": "thefirstmedia.net",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195457"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "startuptoday",
+      "domain": "startuptoday.co.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+      "url": "https://www.startuptoday.co.kr/news/articleView.html?idxno=598313"
     },
     {
       "section": "supply",
@@ -2788,7 +2804,39 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "IMINJU",
+      "domain": "iminju.net",
+      "title": "bhc, ' 당근 ' 앱 포장 주문 서비스 오픈",
+      "url": "http://www.iminju.net/news/articleView.html?idxno=160498"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "100SSD",
+      "domain": "100ssd.co.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 '과 제휴…'고객접점 및 가맹점 상생'",
+      "url": "https://www.100ssd.co.kr/news/articleView.html?idxno=206944"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "cnbnews",
+      "domain": "weekly.cnbnews.com",
+      "title": "bhc, 지역 커뮤니티 앱 ‘ 당근 ’ 포장주문 서비스 오픈",
+      "url": "https://weekly.cnbnews.com/news/article.html?no=208598"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "\" 당근 앱에서도 bhc치킨 주문하세요\"",
+      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5000949"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "s-journal",
       "domain": "s-journal.co.kr",
       "title": "[푸드 브리프] 농심 오리온 오뚜기 빙그레 롯데웰푸드 동원F&B GS25 外",
@@ -2796,7 +2844,15 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "cnbnews",
+      "domain": "cnbnews.com",
+      "title": "bhc, ' 당근 ' 앱 포장주문 서비스 입점",
+      "url": "https://www.cnbnews.com/news/article.html?no=783354"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "중앙일보",
       "domain": "joongang.co.kr",
       "title": "“한국판 안두릴 만들겠다”…크래프톤, 한화에어로와 ‘피지컬 AI’ 동...",
@@ -2804,7 +2860,23 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "betanews",
+      "domain": "betanews.net",
+      "title": "bhc, 지역 커뮤니티앱 ‘ 당근 ’ 포장주문 서비스 오픈",
+      "url": "https://www.betanews.net/article/view/beta202603130084"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "bizwork",
+      "domain": "bizwork.co.kr",
+      "title": "' 당근 '에서 bhc 치킨 주문한다",
+      "url": "https://www.bizwork.co.kr/news/articleView.html?idxno=413351"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "dealsitetv",
       "domain": "news.dealsitetv.com",
       "title": "[유통24시] 롯데백화점, '더코란샵 위크' 진행 外",
@@ -2812,7 +2884,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "financialpost",
       "domain": "financialpost.co.kr",
       "title": "[오늘의 유통街] 현대백화점, 한국브리지협회와 '2026 브리지 챔피언십...",
@@ -2820,7 +2892,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "newsprime",
       "domain": "newsprime.co.kr",
       "title": "[오늘 뭐 먹지] 동원F&B·아워홈·bhc 외",
@@ -2828,7 +2900,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "popcornnews",
       "domain": "popcornnews.net",
       "title": "[POP!신제품] 라부르켓, 브랜드 최초 'NEW 오 드 퍼퓸 컬렉션' 출시 外",
@@ -2836,7 +2908,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "CINE21",
       "domain": "cine21.com",
       "title": "[포커스] 홀드백 법제화, 영화산업의 다각적 성격 검토해야",
@@ -2844,7 +2916,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "topdaily",
       "domain": "topdaily.kr",
       "title": "[TOP's Pick] [유통] 프리미엄 레스토랑 키사라∙싱카이, 봄 신메뉴 출시...",
@@ -2852,7 +2924,23 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "newsworker",
+      "domain": "newsworker.co.kr",
+      "title": "bhc, 당근 포장주문 서비스 입점 내용은?",
+      "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=417373"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "전자신문",
+      "domain": "etnews.com",
+      "title": "bhc, ' 당근 ' 포장주문 서비스 입점…지역 기반 주문 채널 확대",
+      "url": "https://www.etnews.com/20260313000141"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "greened",
       "domain": "greened.kr",
       "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
@@ -2860,7 +2948,15 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "globalepic",
+      "domain": "globalepic.co.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ‘ 당근 ’ 포장주문 서비스 오픈",
+      "url": "http://www.globalepic.co.kr/view.php?ud=20260313122238604448439a4874_29"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "4TH",
       "domain": "4th.kr",
       "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
@@ -2868,7 +2964,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "industrynews",
       "domain": "industrynews.co.kr",
       "title": "봄바람 타고 식품·유통가 '할인 마케팅' 만개…소비심리 회복 겨냥해 ...",
@@ -2876,7 +2972,95 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=108790"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "getnews",
+      "domain": "getnews.co.kr",
+      "title": "bhc, ' 당근 ' 포장주문 서비스 공식 입점",
+      "url": "https://www.getnews.co.kr/news/articleView.html?idxno=864287"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "seoulwire",
+      "domain": "seoulwire.com",
+      "title": "bhc, ' 당근 ' 포장주문 서비스 오픈… \"중개 수수료 0%\"",
+      "url": "http://www.seoulwire.com/news/articleView.html?idxno=711203"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "newsclaim",
+      "domain": "newsclaim.co.kr",
+      "title": "bhc, 당근 포장주문 입점",
+      "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "insightkorea",
+      "domain": "insightkorea.co.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+      "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "WOLYO",
+      "domain": "wolyo.co.kr",
+      "title": "' 당근 '에서 치킨 사먹자…bhc, '포장주문' 서비스 입점",
+      "url": "https://www.wolyo.co.kr/news/articleView.html?idxno=309827"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "QUEEN",
+      "domain": "queen.co.kr",
+      "title": "bhc 치킨, ' 당근 ' 포장주문 서비스 공식 입점…가맹점 상생·소비자 편의...",
+      "url": "http://www.queen.co.kr/news/articleView.html?idxno=452984"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "kpinews",
+      "domain": "kpinews.kr",
+      "title": "bhc, ' 당근 '에서 포장주문 서비스 오픈",
+      "url": "https://www.kpinews.kr/newsView/1065576887494382"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "newswell",
+      "domain": "newswell.co.kr",
+      "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+      "url": "http://www.newswell.co.kr/news/articleView.html?idxno=16699"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "newsworks",
+      "domain": "newsworks.co.kr",
+      "title": "bhc 치킨, 이제 ' 당근 '서도 포장 주문 가능해져",
+      "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=833965"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "jejusori",
+      "domain": "jejusori.net",
+      "title": "'바가지 차단' 제주 들불축제 아메리카노 4000원",
+      "url": "https://www.jejusori.net/news/articleView.html?idxno=500445"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
       "press": "jejusori",
       "domain": "jejusori.net",
       "title": "'15번 유찰' 제주 화북 주상복합 55m 고도해제",
@@ -2884,7 +3068,7 @@
     },
     {
       "section": "supply",
-      "reason": "remote_foreign_horti",
+      "reason": "carrot_non_edible_context",
       "press": "greened",
       "domain": "greened.kr",
       "title": "[유통가 레이더] 주한태국대사가 왜 이마트에... 이마트, 망고 파티로 2...",
@@ -2892,7 +3076,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "carrot_non_edible_context",
       "press": "4TH",
       "domain": "4th.kr",
       "title": "[브리핑] 롯데百, 연중 최대 행사 '더콘란샵 위크' 13일부터",
@@ -3829,14 +4013,6 @@
     {
       "section": "supply",
       "reason": "finance_strict_no_agri_context",
-      "press": "중도일보",
-      "domain": "joongdo.co.kr",
-      "title": "[카드뉴스로 읽는 오늘의 운세] 3월 14일(토요일) 춘강 구박사가 알려주...",
-      "url": "https://www.joongdo.co.kr/web/view.php?key=20260313010000505"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
       "press": "mydaily",
       "domain": "mydaily.co.kr",
       "title": "“안우진·곽빈 같은 재능, 대만은 바로 해외로…KBO는 2년 못 뛰게 하잖...",
@@ -4335,16 +4511,16 @@
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+      "title": "봄 작물과 궁합 최고···아시아종묘, 비료 4종 추천",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402527"
     },
     {
       "section": "supply",
@@ -4861,18 +5037,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "businesskorea",
-      "domain": "businesskorea.co.kr",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
-      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "ASIAA",
       "domain": "asiaa.co.kr",
       "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
       "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "businesskorea",
+      "domain": "businesskorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
+      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
     },
     {
       "section": "dist",
@@ -5245,18 +5421,18 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "ASIAA",
-      "domain": "asiaa.co.kr",
-      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
-      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "businesskorea",
       "domain": "businesskorea.co.kr",
       "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
       "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "ASIAA",
+      "domain": "asiaa.co.kr",
+      "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
+      "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=243247"
     },
     {
       "section": "dist",
@@ -5863,14 +6039,6 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "한국농어민신문",
-      "domain": "agrinet.co.kr",
       "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
     },
@@ -5881,6 +6049,14 @@
       "domain": "agrinet.co.kr",
       "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
     },
     {
       "section": "pest",
@@ -5965,18 +6141,18 @@
     {
       "section": "pest",
       "reason": "pest_no_agri_context",
-      "press": "djtimes",
-      "domain": "djtimes.co.kr",
-      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
-      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
       "press": "thepowernews",
       "domain": "thepowernews.co.kr",
       "title": "임실읍, 주요 도로변 계절꽃 식재, 쾌적한 거리환경 조성",
       "url": "https://www.thepowernews.co.kr/view.php?ud=2026031315373113503dfcd109a8_7"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "djtimes",
+      "domain": "djtimes.co.kr",
+      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
+      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
     },
     {
       "section": "pest",
@@ -6001,14 +6177,6 @@
       "domain": "pressian.com",
       "title": "“AI·로봇으로 농어업 대전환”…이강덕 경북지사 예비후보, ‘농수산...",
       "url": "https://www.pressian.com/pages/articles/2026031314590919901"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "쿠키뉴스",
-      "domain": "kukinews.com",
-      "title": "“숲이 곧 미래 먹거리”…청송군, 탄소중립부터 힐링 정원까지 숲의 가...",
-      "url": "https://www.kukinews.com/article/view/kuk202603130102"
     },
     {
       "section": "supply",
@@ -6408,7 +6576,7 @@
       "threshold": 13.82,
       "tail_cut": 14.22,
       "core_min": 13.82,
-      "total_candidates": 78,
+      "total_candidates": 52,
       "total_selected": 5,
       "top": [
         {
@@ -6512,26 +6680,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 17.87,
-          "tier": 3,
-          "press": "SBS",
-          "domain": "biz.sbs.co.kr",
-          "title": "bhc, ' 당근 ' 포장주문 입점…\"선착순 7천원 할인\"",
-          "url": "https://biz.sbs.co.kr/article_hub/20000297336?division=NAVER",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 17.04,
@@ -6552,7 +6700,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 16.72,
           "tier": 3,
@@ -6560,7 +6708,7 @@
           "domain": "yna.co.kr",
           "title": "'2026 청주 딸기 팝업 페스타' 내달 4∼5일 열려",
           "url": "https://www.yna.co.kr/view/AKR20260313039700064?input=1195m",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
@@ -7114,86 +7262,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.94,
-          "tier": 1,
-          "press": "jejusori",
-          "domain": "jejusori.net",
-          "title": "'바가지 차단' 제주들불축제 아메리카노 4000원",
-          "url": "https://www.jejusori.net/news/articleView.html?idxno=500445",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.87,
-          "tier": 1,
-          "press": "seoulwire",
-          "domain": "seoulwire.com",
-          "title": "bhc, ' 당근 ' 포장주문 서비스 오픈… \"중개 수수료 0%\"",
-          "url": "http://www.seoulwire.com/news/articleView.html?idxno=711203",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 4.27,
-          "tier": 1,
-          "press": "joongangenews",
-          "domain": "joongangenews.com",
-          "title": "bhc, 당근 포장주문 입점…4300만 이용자 기반 고객 접점 확대",
-          "url": "https://www.joongangenews.com/news/articleView.html?idxno=502295",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.72,
-          "tier": 1,
-          "press": "updownnews",
-          "domain": "updownnews.co.kr",
-          "title": "bhc, 지역커뮤니티앱 당근 에 포장주문 서비스 오픈...\"수수료 부담 완화...",
-          "url": "http://www.updownnews.co.kr/news/articleView.html?idxno=316533",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 3.52,
           "tier": 1,
           "press": "dailysmart",
@@ -7274,206 +7342,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "thefirstmedia",
-          "domain": "thefirstmedia.net",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195457",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "startuptoday",
-          "domain": "startuptoday.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.startuptoday.co.kr/news/articleView.html?idxno=598313",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "cnbnews",
-          "domain": "weekly.cnbnews.com",
-          "title": "bhc, 지역 커뮤니티 앱 ‘ 당근 ’ 포장주문 서비스 오픈",
-          "url": "https://weekly.cnbnews.com/news/article.html?no=208598",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "신아일보",
-          "domain": "shinailbo.co.kr",
-          "title": "\" 당근 앱에서도 bhc치킨 주문하세요\"",
-          "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5000949",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "cnbnews",
-          "domain": "cnbnews.com",
-          "title": "bhc, ' 당근 ' 앱 포장주문 서비스 입점",
-          "url": "https://www.cnbnews.com/news/article.html?no=783354",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "betanews",
-          "domain": "betanews.net",
-          "title": "bhc, 지역 커뮤니티앱 ‘ 당근 ’ 포장주문 서비스 오픈",
-          "url": "https://www.betanews.net/article/view/beta202603130084",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.47,
-          "tier": 1,
-          "press": "bizwork",
-          "domain": "bizwork.co.kr",
-          "title": "' 당근 '에서 bhc 치킨 주문한다",
-          "url": "https://www.bizwork.co.kr/news/articleView.html?idxno=413351",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "newsworker",
-          "domain": "newsworker.co.kr",
-          "title": "bhc, 당근 포장주문 서비스 입점 내용은?",
-          "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=417373",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "전자신문",
-          "domain": "etnews.com",
-          "title": "bhc, ' 당근 ' 포장주문 서비스 입점…지역 기반 주문 채널 확대",
-          "url": "https://www.etnews.com/20260313000141",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "globalepic",
-          "domain": "globalepic.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ‘ 당근 ’ 포장주문 서비스 오픈",
-          "url": "http://www.globalepic.co.kr/view.php?ud=20260313122238604448439a4874_29",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 3.27,
           "tier": 1,
           "press": "데일리한국",
@@ -7494,12 +7362,172 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.27,
+          "score": 3.17,
           "tier": 1,
-          "press": "businessplus",
-          "domain": "businessplus.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.businessplus.kr/news/articleView.html?idxno=108790",
+          "press": "djtimes",
+          "domain": "djtimes.co.kr",
+          "title": "[신설상가] 유명간장게장(읍내동) 유명수 대표 \"게장 맛보고 의료기기 ...",
+          "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111217",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.97,
+          "tier": 1,
+          "press": "inews24",
+          "domain": "inews24.com",
+          "title": "“달콤한 봄, 딸기 에 빠지다” 청주 딸기 팝업 페스타 열려",
+          "url": "http://www.inews24.com/view/1948725",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.72,
+          "tier": 1,
+          "press": "WOLYO",
+          "domain": "wolyo.co.kr",
+          "title": "웅진식품, 가벼운 일상 음료 '바나바 호박 팥차' 출시",
+          "url": "https://www.wolyo.co.kr/news/articleView.html?idxno=309819",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.72,
+          "tier": 1,
+          "press": "tournews21",
+          "domain": "tournews21.com",
+          "title": "청주시, 신선한 딸기 가득 '청주 딸기 팝업 페스타' 내달 개최",
+          "url": "https://www.tournews21.com/news/articleView.html?idxno=131597",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.56,
+          "tier": 1,
+          "press": "이투데이",
+          "domain": "bravo.etoday.co.kr",
+          "title": "싱싱한 생동감이 넘치는 현장, 로컬푸드",
+          "url": "https://bravo.etoday.co.kr/view/atc_view/18677",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.52,
+          "tier": 1,
+          "press": "SLIST",
+          "domain": "slist.kr",
+          "title": "웅진식품, 가벼워지는 하루 '바나바 호박 팥차' 출시",
+          "url": "https://www.slist.kr/news/articleView.html?idxno=723394",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.12,
+          "tier": 1,
+          "press": "SENTV",
+          "domain": "sentv.co.kr",
+          "title": "“차·바가지·1회용품 없다”…광양매화축제 ‘3무 축제’ 운영",
+          "url": "https://www.sentv.co.kr/article/view/sentv202603130105",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.09,
+          "tier": 1,
+          "press": "youthdaily",
+          "domain": "youthdaily.co.kr",
+          "title": "[주간 대형마트 할인템] \"장바구니에 봄 담아 가세요\"…대형마트 3社, 시...",
+          "url": "https://www.youthdaily.co.kr/news/article.html?no=215330",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.1,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.07,
+          "tier": 1,
+          "press": "브레이크뉴스",
+          "domain": "breaknews.com",
+          "title": "논산시, 딸기 안전성 검사 착수…축제 앞두고 품질관리 전면 강화",
+          "url": "http://www.breaknews.com/1191869",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -7514,18 +7542,38 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.27,
+          "score": 0.49,
           "tier": 1,
-          "press": "getnews",
-          "domain": "getnews.co.kr",
-          "title": "bhc, ' 당근 ' 포장주문 서비스 공식 입점",
-          "url": "https://www.getnews.co.kr/news/articleView.html?idxno=864287",
+          "press": "topstarnews",
+          "domain": "topstarnews.net",
+          "title": "영동 가볼 만한 곳, 포도와 와인의 고장에서 즐기는 여행",
+          "url": "https://www.topstarnews.net/news/articleView.html?idxno=16003132",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
             "strength": 1,
             "korea": 1,
+            "offtopic_pen": 2,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.08,
+          "tier": 1,
+          "press": "todayeconomic",
+          "domain": "todayeconomic.com",
+          "title": "“청년농부 감자 , 농심이 전량 구매”... 농심, 6년째 스마트 농업 생태...",
+          "url": "https://www.todayeconomic.com/news/article.html?no=29870",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7534,18 +7582,18 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.27,
+          "score": -0.91,
           "tier": 1,
-          "press": "insightkorea",
-          "domain": "insightkorea.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
+          "press": "siminilbo",
+          "domain": "siminilbo.co.kr",
+          "title": "영암군, 식목일 대봉감·배·꿀 농가 일대 백합나무 식재",
+          "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160284069776188",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
+            "strength": 0,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7554,58 +7602,18 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.27,
+          "score": -7.13,
           "tier": 1,
-          "press": "newsclaim",
-          "domain": "newsclaim.co.kr",
-          "title": "bhc, 당근 포장주문 입점",
-          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
+          "press": "노컷뉴스",
+          "domain": "nocutnews.co.kr",
+          "title": "'2026 청주 딸기 팝업 페스타' 내달 4~5일 열려",
+          "url": "https://www.nocutnews.co.kr/news/6484451",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
             "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "kpinews",
-          "domain": "kpinews.kr",
-          "title": "bhc, ' 당근 '에서 포장주문 서비스 오픈",
-          "url": "https://www.kpinews.kr/newsView/1065576887494382",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 3.27,
-          "tier": 1,
-          "press": "newswell",
-          "domain": "newswell.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "http://www.newswell.co.kr/news/articleView.html?idxno=16699",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
+            "strength": 2,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -7643,7 +7651,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.64,
+          "score": 31.44,
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
@@ -7663,7 +7671,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 29.44,
+          "score": 29.24,
           "tier": 3,
           "press": "연합뉴스",
           "domain": "yna.co.kr",
@@ -8643,7 +8651,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 1.87,
+          "score": 1.67,
           "tier": 1,
           "press": "newsroad",
           "domain": "newsroad.co.kr",
@@ -8712,7 +8720,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 38.63,
+          "score": 38.43,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
@@ -9283,10 +9291,6 @@
       ],
       "window_hits_top": [
         [
-          "당근 가격",
-          27
-        ],
-        [
           "딸기 가격",
           19
         ],
@@ -9340,6 +9344,10 @@
         ],
         [
           "감귤 무관세",
+          1
+        ],
+        [
+          "딸기 수급",
           1
         ]
       ],
@@ -9489,7 +9497,7 @@
           "화훼자조금"
         ]
       },
-      "items_total": 95,
+      "items_total": 69,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
