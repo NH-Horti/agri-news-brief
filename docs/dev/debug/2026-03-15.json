@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T13:19:54+09:00",
-  "build_tag": "94e7794",
+  "generated_at_kst": "2026-03-15T13:50:55+09:00",
+  "build_tag": "ea81e35",
   "filter_rejects": [
     {
       "section": "policy",
@@ -817,14 +817,6 @@
       "domain": "goodnews1.com",
       "title": "석유 최고 가격 제 시행 첫날… 고유가 시름 덜어낸 농민과 서민들",
       "url": "https://www.goodnews1.com/news/articleView.html?idxno=457580"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "ISPLUS",
-      "domain": "isplus.com",
-      "title": "대만 '승부조작' 억측을 혐한 마케팅으로 이용한 韓 기업, \"대만 파트너...",
-      "url": "https://isplus.com/article/view/isp202603130096"
     },
     {
       "section": "supply",
@@ -1807,16 +1799,16 @@
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
+      "title": "기름값 폭등에 친환경차 관심 급증",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "기름값 폭등에 친환경차 관심 급증",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
+      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
     },
     {
       "section": "supply",
@@ -2469,18 +2461,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "DNEWS",
-      "domain": "dnews.co.kr",
-      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
-      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "FINOMY",
       "domain": "finomy.com",
       "title": "태양광에너지 관련주, '껑충껑충' 씨엔플러·다스코·캐리·지투파워......",
       "url": "http://www.finomy.com/news/articleView.html?idxno=251380"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[오늘의식탁] 쿨피스ㆍ노브랜드버거ㆍ농심ㆍBBQㆍbhcㆍ교촌",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603130924562430055"
     },
     {
       "section": "supply",
@@ -4588,6 +4580,14 @@
     },
     {
       "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부 , 수출 비관세장벽 해소 총력… 현장 간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "dist",
       "reason": "non_horti_processed_export_context",
       "press": "kdfnews",
       "domain": "kdfnews.com",
@@ -4601,6 +4601,14 @@
       "domain": "bizwnews.com",
       "title": "KGC인삼공사 부여공장서 'K-푸드 간담회 '…\"비관세장벽 대응\"",
       "url": "http://www.bizwnews.com/news/articleView.html?idxno=128842"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "dist",
@@ -4853,14 +4861,6 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "businesskorea",
-      "domain": "businesskorea.co.kr",
-      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
-      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
-    },
-    {
-      "section": "dist",
-      "reason": "non_horti_processed_export_context",
       "press": "ASIAA",
       "domain": "asiaa.co.kr",
       "title": "농림축산식품부, KGC인삼공사 부여공장서 수출 간담회 진행",
@@ -4869,10 +4869,10 @@
     {
       "section": "dist",
       "reason": "non_horti_processed_export_context",
-      "press": "WOWTV",
-      "domain": "wowtv.co.kr",
-      "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
-      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
+      "press": "businesskorea",
+      "domain": "businesskorea.co.kr",
+      "title": "농림축산식품부, KGC인삼공사에서 현장 간담회",
+      "url": "https://www.businesskorea.co.kr/news/articleView.html?idxno=265115"
     },
     {
       "section": "dist",
@@ -4881,6 +4881,14 @@
       "domain": "ziksir.com",
       "title": "농식품부 , KGC인삼공사 현장 간담회 …비관세 장벽 대응 논의",
       "url": "https://www.ziksir.com/news/articleView.html?idxno=126956"
+    },
+    {
+      "section": "dist",
+      "reason": "non_horti_processed_export_context",
+      "press": "WOWTV",
+      "domain": "wowtv.co.kr",
+      "title": "농식품부 , KGC인삼공사서 현장 간담회 …비관세 대응 논의",
+      "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202603130250&t=NN"
     },
     {
       "section": "dist",
@@ -4940,6 +4948,14 @@
     },
     {
       "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "농식품부 , 수출 비관세장벽 해소 총력… 현장간담회 개최",
+      "url": "https://cooknchefnews.com/news/view/1065594608034583"
+    },
+    {
+      "section": "dist",
       "reason": "non_horti_processed_export_context",
       "press": "kdfnews",
       "domain": "kdfnews.com",
@@ -4953,6 +4969,14 @@
       "domain": "bizwnews.com",
       "title": "KGC인삼공사 부여공장서 'K-푸드 간담회'…\" 비관세장벽 대응\"",
       "url": "http://www.bizwnews.com/news/articleView.html?idxno=128842"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "dist",
@@ -4977,6 +5001,14 @@
       "domain": "ezyeconomy.com",
       "title": "농식품부 , KGC인삼공사서 수출 장벽 해소 간담회 개최",
       "url": "https://www.ezyeconomy.com/news/articleView.html?idxno=233390"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "biztribune",
+      "domain": "biztribune.co.kr",
+      "title": "[브리프]배스킨라빈스 농심 인삼공사 동원F&B 교촌 外",
+      "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=350440"
     },
     {
       "section": "dist",
@@ -5645,6 +5677,54 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "고양 벽제농협, 기후변화 대응 맞춤형 영농교육 실시",
+      "url": "https://www.nongmin.com/article/20260312500702"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "소문난 디지털 전문가…\"농업에 AI 접목, 농민들 쉽게 쓰게 하겠다\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402541"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "고양 벽제농협, 기후변화 대응 맞춤형 영농교육 실시",
+      "url": "https://www.nongmin.com/article/20260312500702"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "djtimes",
+      "domain": "djtimes.co.kr",
+      "title": "당진 황토 감자 파종 시작…적기 관리가 수확량 좌우",
+      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_no_agri_context",
+      "press": "djtimes",
+      "domain": "djtimes.co.kr",
+      "title": "당진 황토감자 파종 시작…적기 관리가 수확량 좌우",
+      "url": "http://www.djtimes.co.kr/news/articleView.html?idxno=111239"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
       "press": "포인트데일리",
       "domain": "pointdaily.co.kr",
       "title": "장성군, 영농부산물 파쇄 지원… 산불 예방·농가 돕기 '일석이조'",
@@ -5791,16 +5871,16 @@
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
+      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
     },
     {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
-      "title": "화학물질 완벽 차단 '농업용 방독면' 눈길",
-      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402528"
+      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575"
     },
     {
       "section": "pest",
@@ -5929,22 +6009,6 @@
       "domain": "kukinews.com",
       "title": "“숲이 곧 미래 먹거리”…청송군, 탄소중립부터 힐링 정원까지 숲의 가...",
       "url": "https://www.kukinews.com/article/view/kuk202603130102"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "kbmaeil",
-      "domain": "kbmaeil.com",
-      "title": "“산소카페 청송” 명품 산림도시로 거듭난다.",
-      "url": "https://www.kbmaeil.com/article/20260313500121"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "SIDAE",
-      "domain": "sidae.com",
-      "title": "[청송 소식] '산소카페' 명성 잇는 명품 산림도시 도약",
-      "url": "https://www.sidae.com/article/2026031312200291635"
     },
     {
       "section": "supply",
@@ -6236,14 +6300,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "한국농어민신문",
-      "domain": "agrinet.co.kr",
-      "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-      "url": "https://agrinet.co.kr/news/articleView.html?idxno=402575"
-    },
-    {
-      "section": "supply",
       "reason": "must_terms_fail",
       "press": "매일경제",
       "domain": "mk.co.kr",
@@ -6337,14 +6393,6 @@
       "domain": "aflnews.co.kr",
       "title": "농협강원본부, 연합판매사업 직거래 평가회·워크숍 개최…농산물 판매...",
       "url": "https://aflnews.co.kr/news/articleView.html?idxno=316317"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "쿡앤셰프",
-      "domain": "cooknchefnews.com",
-      "title": "농식품부 , 수출 비관세장벽 해소 총력… 현장 간담회 개최",
-      "url": "https://cooknchefnews.com/news/view/1065594608034583"
     },
     {
       "section": "supply",
@@ -7366,7 +7414,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.47,
+          "score": 3.27,
           "tier": 1,
           "press": "newsworker",
           "domain": "newsworker.co.kr",
@@ -7488,10 +7536,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "insightkorea",
-          "domain": "insightkorea.co.kr",
-          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
-          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
+          "press": "newsclaim",
+          "domain": "newsclaim.co.kr",
+          "title": "bhc, 당근 포장주문 입점",
+          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -7508,10 +7556,10 @@
           "is_core": false,
           "score": 3.27,
           "tier": 1,
-          "press": "newsclaim",
-          "domain": "newsclaim.co.kr",
-          "title": "bhc, 당근 포장주문 입점",
-          "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057807",
+          "press": "insightkorea",
+          "domain": "insightkorea.co.kr",
+          "title": "bhc, 지역 커뮤니티 앱 ' 당근 ' 포장주문 서비스 오픈",
+          "url": "https://www.insightkorea.co.kr/news/articleView.html?idxno=242705",
           "reason": "below_threshold",
           "signals": {
             "horti_sc": 1.4,
@@ -8655,11 +8703,11 @@
       ]
     },
     "dist": {
-      "threshold": 8.32,
-      "tail_cut": 8.92,
-      "core_min": 8.32,
-      "total_candidates": 9,
-      "total_selected": 5,
+      "threshold": 7.92,
+      "tail_cut": 8.52,
+      "core_min": 8.2,
+      "total_candidates": 7,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -8703,26 +8751,6 @@
         },
         {
           "selected": true,
-          "is_core": true,
-          "score": 16.32,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "김종구 차관 \"농식품 수출 비관세장벽 적극 대응\"",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402575",
-          "reason": "",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": true,
           "is_core": false,
           "score": 15.92,
           "tier": 2,
@@ -8743,7 +8771,7 @@
         },
         {
           "selected": true,
-          "is_core": false,
+          "is_core": true,
           "score": 10.11,
           "tier": 1,
           "press": "mygoyang",
@@ -8756,26 +8784,6 @@
             "market_hits": 2,
             "strength": 2,
             "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 7.97,
-          "tier": 1,
-          "press": "쿡앤셰프",
-          "domain": "cooknchefnews.com",
-          "title": "농식품부 , 수출 비관세장벽 해소 총력… 현장 간담회 개최",
-          "url": "https://cooknchefnews.com/news/view/1065594608034583",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -8847,8 +8855,8 @@
       "threshold": 22.46,
       "tail_cut": 22.46,
       "core_min": 22.46,
-      "total_candidates": 7,
-      "total_selected": 2,
+      "total_candidates": 8,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -8868,6 +8876,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 24.44,
+          "tier": 3,
+          "press": "정책브리핑",
+          "domain": "korea.kr",
+          "title": "[사실은 이렇습니다] 씨스트선충 공적 방제 는 시군별, 작형별 \"씨스트선...",
+          "url": "https://www.korea.kr/briefing/actuallyView.do?newsId=148960826&call_from=naver_news",
+          "reason": "",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 4,
+            "press_weight": 13.5
           }
         },
         {
@@ -9572,12 +9600,12 @@
       ],
       "window_hits_top": [
         [
-          "수출업계 간담회 농식품부",
-          5
-        ],
-        [
           "도매시장 수급",
           4
+        ],
+        [
+          "수출업계 간담회 농식품부",
+          3
         ],
         [
           "농산물 수출 선적",
@@ -9628,7 +9656,7 @@
         "부정유통 단속 농산물"
       ],
       "recall_meta": {},
-      "items_total": 16,
+      "items_total": 14,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -9642,7 +9670,7 @@
         "start_kst": "2026-03-13T07:00:00+09:00",
         "end_kst": "2026-03-15T07:00:00+09:00"
       },
-      "base_queries_n": 10,
+      "base_queries_n": 26,
       "base_queries": [
         "과수화상병 방제",
         "탄저병 방제",
@@ -9653,7 +9681,23 @@
         "과수화상병 약제",
         "토마토뿔나방",
         "토마토뿔나방 방제",
-        "병해충 예찰"
+        "병해충 예찰",
+        "월동무 병해충",
+        "월동무 방제",
+        "봄무 병해충",
+        "봄무 방제",
+        "배추 병해충",
+        "배추 방제",
+        "봄배추 병해충",
+        "봄배추 방제",
+        "감자 병해충",
+        "감자 방제",
+        "봄감자 병해충",
+        "봄감자 방제",
+        "당근 병해충",
+        "당근 방제",
+        "제주당근 병해충",
+        "제주당근 방제"
       ],
       "api_items_top": [
         [
@@ -9695,6 +9739,26 @@
         [
           "병해충 예찰",
           50
+        ],
+        [
+          "월동무 병해충",
+          50
+        ],
+        [
+          "월동무 방제",
+          50
+        ],
+        [
+          "봄무 병해충",
+          50
+        ],
+        [
+          "봄무 방제",
+          50
+        ],
+        [
+          "배추 병해충",
+          50
         ]
       ],
       "window_hits_top": [
@@ -9705,40 +9769,54 @@
         [
           "냉해 동해 과수 피해",
           2
+        ],
+        [
+          "배추 방제",
+          1
         ]
       ],
       "google_hits_top": [],
       "page1_full_queries": [
+        "감자 방제",
+        "감자 병해충",
         "과수화상병",
         "과수화상병 방제",
         "과수화상병 약제",
         "냉해 동해 과수 피해",
+        "당근 방제",
+        "당근 병해충",
+        "배추 방제",
+        "배추 병해충",
         "병해충 예찰",
         "병해충 예찰 방제",
+        "봄감자 방제",
+        "봄감자 병해충",
+        "봄무 방제",
+        "봄무 병해충",
+        "봄배추 방제",
+        "봄배추 병해충",
         "월동 해충 방제",
-        "탄저병 방제",
-        "토마토뿔나방",
-        "토마토뿔나방 방제"
+        "월동무 방제"
       ],
       "recall_meta": {
         "seed_terms": [
-          "대책",
           "병해충",
+          "대책",
           "사과",
           "배"
         ],
         "reason": [],
         "queries": [
-          "대책",
           "병해충",
+          "대책",
           "사과",
           "배",
-          "대책 병해충",
+          "병해충 병해충",
           "과수 병해충 방제"
         ],
         "topic_seed_terms": [
-          "대책",
           "병해충",
+          "대책",
           "사과",
           "배"
         ],
@@ -9756,7 +9834,7 @@
           "시설채소 방제"
         ]
       },
-      "items_total": 7,
+      "items_total": 8,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
