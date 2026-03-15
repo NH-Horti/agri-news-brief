@@ -111,8 +111,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("build_dev_preview_version_json", self.text)
 
     def test_view_tabs_for_briefing_and_commodity_exist(self):
-        self.assertIn('class=\\"viewTab isActive\\" data-view-tab=\\"briefing\\"', self.text)
-        self.assertIn('class=\\"viewTab\\" data-view-tab=\\"commodity\\"', self.text)
+        self.assertIn('class="viewTab isActive" data-view-tab="briefing"', self.text)
+        self.assertIn('class="viewTab" data-view-tab="commodity"', self.text)
+        self.assertIn("오늘의 브리핑", self.text)
+        self.assertIn("briefingHeroTitle", self.text)
+        self.assertIn("commodityHeadStats", self.text)
+        self.assertIn("viewTabTitle", self.text)
         self.assertIn("function activateView(viewKey, opts)", self.text)
         self.assertIn("resolveInitialView()", self.text)
 
