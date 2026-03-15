@@ -119,7 +119,8 @@ class TestRegressions(unittest.TestCase):
     def test_external_links_use_plain_top_navigation(self):
         self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
         self.assertIn('class="commodityPrimaryStory"', self.text)
-        self.assertIn('class="commoditySecondaryStory"', self.text)
+        self.assertIn('class="commoditySupportStory"', self.text)
+        self.assertIn('class="commodityMoreStory"', self.text)
         self.assertIn('data-swipe-ignore="1"', self.text)
         self.assertIn('target=\\"_top\\"', self.text)
         self.assertNotIn('querySelectorAll(".btnOpen, .commodityPrimaryStory")', self.text)
@@ -128,7 +129,12 @@ class TestRegressions(unittest.TestCase):
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
-        self.assertIn("GH_CONTENT_REF: ${{ github.ref_name }}", self.dev_verify_text)
+        self.assertIn("cron: '0 22 * * *'", self.dev_verify_text)
+        self.assertIn("if: github.event_name == 'schedule' || github.ref_name == 'dev'", self.dev_verify_text)
+        self.assertIn("ref: ${{ github.event_name == 'schedule' && 'dev' || github.ref_name }}", self.dev_verify_text)
+        self.assertIn("GH_CONTENT_REF: ${{ steps.vars.outputs.content_ref }}", self.dev_verify_text)
+        self.assertIn("content_ref='dev'", self.dev_verify_text)
+        self.assertIn("send_kakao='true'", self.dev_verify_text)
         self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
         self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)
@@ -142,6 +148,10 @@ class TestRegressions(unittest.TestCase):
     def test_dev_loader_uses_preview_branch_assets(self):
         self.assertIn("codex/dev-preview", self.dev_loader_text)
         self.assertIn("previewFrame", self.dev_loader_text)
+        self.assertIn("requestedDate", self.dev_loader_text)
+        self.assertIn("/archive/", self.dev_loader_text)
+        self.assertIn("srcdoc", self.dev_loader_text)
+        self.assertIn("postMessage", self.dev_loader_text)
         self.assertIn("createObjectURL", self.dev_loader_text)
         self.assertIn("revokeObjectURL", self.dev_loader_text)
         self.assertIn("raw preview", self.dev_loader_text)

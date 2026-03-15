@@ -6187,19 +6187,60 @@ def _dev_single_page_debug_url(report_date: str, site_path: str) -> str:
     return _dev_single_page_asset_url(f"debug/{report_date}.json", site_path)
 
 
+def _dev_single_page_archive_repo_path(report_date: str) -> str:
+    preview_path = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    head, _, _tail = preview_path.rpartition("/")
+    archive_dir = f"{head}/archive" if head else "archive"
+    return f"{archive_dir}/{report_date}.html"
+
+
+def _dev_single_page_archive_manifest_repo_path() -> str:
+    preview_path = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
+    head, _, _tail = preview_path.rpartition("/")
+    return f"{head}/archive_manifest.json" if head else "archive_manifest.json"
+
+
+def _dev_single_page_archive_manifest_url(site_path: str) -> str:
+    return _dev_single_page_asset_url("archive_manifest.json", site_path)
+
+
+def _dev_single_page_archive_url(report_date: str, site_path: str, cache_bust: bool = False) -> str:
+    base = build_site_url(site_path, DEV_SINGLE_PAGE_URL_PATH or "index.html")
+    url = base
+    report_date_s = str(report_date or "").strip()
+    if report_date_s:
+        url = f"{base}?date={quote(report_date_s)}"
+    if not cache_bust:
+        return url
+    v = re.sub(r"[^0-9A-Za-z_-]", "", str(BUILD_TAG or ""))[:24] or now_kst().strftime("%Y%m%d%H%M")
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}v={v}"
+
+
 def _assert_dev_single_page_write_path(path: str) -> None:
     """Fail fast when dev single-page mode attempts to write non-preview paths."""
     if not DEV_SINGLE_PAGE_MODE:
         return
     allowed = _normalize_repo_path(DEV_SINGLE_PAGE_PATH or "docs/dev/index.html")
-    allowed_paths = {allowed, _dev_single_page_version_repo_path()}
+    allowed_paths = {
+        allowed,
+        _dev_single_page_version_repo_path(),
+        _dev_single_page_archive_manifest_repo_path(),
+    }
     allowed_debug_dir = _dev_single_page_debug_repo_path("_marker_").rsplit("_marker_.json", 1)[0]
+    allowed_archive_dir = _dev_single_page_archive_repo_path("_marker_").rsplit("_marker_.html", 1)[0]
     target = _normalize_repo_path(path)
     if target in allowed_paths:
         return
     if allowed_debug_dir and target.startswith(allowed_debug_dir) and target.endswith(".json"):
         return
-    allowed_text = ", ".join(sorted(p for p in allowed_paths if p) + ([allowed_debug_dir + "*.json"] if allowed_debug_dir else []))
+    if allowed_archive_dir and target.startswith(allowed_archive_dir) and target.endswith(".html"):
+        return
+    allowed_text = ", ".join(
+        sorted(p for p in allowed_paths if p)
+        + ([allowed_debug_dir + "*.json"] if allowed_debug_dir else [])
+        + ([allowed_archive_dir + "*.html"] if allowed_archive_dir else [])
+    )
     raise RuntimeError(
         f"[DEV GUARD] blocked write path '{target}'. allowed paths: '{allowed_text}' (DEV_SINGLE_PAGE_MODE=true)"
     )
@@ -13180,20 +13221,87 @@ def make_section_insight(section_key: str, arts: list[Article]) -> tuple[str, li
     return (line, tags)
 
 
-def _commodity_board_article_sort_key(a: Article) -> tuple[Any, ...]:
-    section_rank = {"supply": 4, "dist": 3, "policy": 2, "pest": 1}
+_COMMODITY_BOARD_SECTION_RANK = {"supply": 4, "dist": 3, "policy": 2, "pest": 1}
+
+
+def _commodity_board_term_hits(text: str, terms: Sequence[str]) -> int:
+    txt = str(text or "").lower()
+    if not txt:
+        return 0
+    seen: set[str] = set()
+    hits = 0
+    for term in terms or []:
+        term_l = str(term or "").strip().lower()
+        if len(term_l) < 2 or term_l in seen:
+            continue
+        seen.add(term_l)
+        if term_l in txt:
+            hits += 1
+    return hits
+
+
+def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
+    item_key = str(item.get("key") or "").strip()
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    title_l = title.lower()
+    body_l = f"{title} {desc}".lower()
+    base_terms = _managed_commodity_base_terms(item, limit=6)
+    context_terms = _ordered_unique_terms(list(item.get("context_terms") or []) + list(item.get("match_terms") or []))
+    matched_keys = managed_commodity_keys_for_article(article)
+    match_count = len(matched_keys)
+    single_focus = 1 if item_key and matched_keys == [item_key] else 0
+    title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
+    title_context_hits = _commodity_board_term_hits(title_l, context_terms)
+    body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
+    body_context_hits = _commodity_board_term_hits(body_l, context_terms)
+    section_key = str(getattr(article, "section", "") or "").strip()
+    board_score = (
+        (float(getattr(article, "score", 0.0) or 0.0) * 0.35)
+        + (title_primary_hits * 42.0)
+        + (title_context_hits * 12.0)
+        + (body_primary_hits * 8.0)
+        + (body_context_hits * 3.0)
+        + (14.0 if single_focus else 0.0)
+        + (6.0 if getattr(article, "is_core", False) else 0.0)
+        + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
+        + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
+        - (max(0, match_count - 1) * 6.0)
+    )
+    return {
+        "board_score": board_score,
+        "title_primary_hits": title_primary_hits,
+        "title_context_hits": title_context_hits,
+        "body_primary_hits": body_primary_hits,
+        "body_context_hits": body_context_hits,
+        "single_focus": single_focus,
+        "match_count": match_count,
+        "section_rank": _COMMODITY_BOARD_SECTION_RANK.get(section_key, 0),
+    }
+
+
+def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
+    metrics = _commodity_board_item_article_metrics(item, article)
     return (
-        1 if getattr(a, "is_core", False) else 0,
-        section_rank.get(str(getattr(a, "section", "") or ""), 0),
-        float(getattr(a, "score", 0.0) or 0.0),
-        getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        float(metrics["board_score"]),
+        int(metrics["title_primary_hits"]),
+        int(metrics["single_focus"]),
+        int(metrics["body_primary_hits"]),
+        1 if getattr(article, "is_core", False) else 0,
+        int(metrics["section_rank"]),
+        float(getattr(article, "score", 0.0) or 0.0),
+        getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
     )
 
 
-def _dedupe_articles_for_commodity_board(articles: list[Article]) -> list[Article]:
+def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Article]) -> list[Article]:
     seen: set[str] = set()
     out: list[Article] = []
-    for article in sorted(articles, key=_commodity_board_article_sort_key, reverse=True):
+    for article in sorted(
+        articles,
+        key=lambda a: _commodity_board_item_article_sort_key(item, a),
+        reverse=True,
+    ):
         key = article.canon_url or article.norm_key or article.title_key or article.url
         if not key or key in seen:
             continue
@@ -13203,7 +13311,7 @@ def _dedupe_articles_for_commodity_board(articles: list[Article]) -> list[Articl
 
 
 def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) -> dict[str, Any]:
-    preview_limit = 3
+    secondary_preview_limit = 2
     item_state: dict[str, dict[str, Any]] = {
         str(item.get("key") or "").strip(): {**item, "articles": []}
         for item in MANAGED_COMMODITY_CATALOG
@@ -13220,16 +13328,21 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_items = 0
     active_program_items = 0
     for payload in item_state.values():
-        articles = _dedupe_articles_for_commodity_board(payload.get("articles") or [])
+        articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         payload["articles"] = articles
         payload["article_count"] = len(articles)
         payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
         payload["active"] = bool(articles)
         payload["top_article"] = articles[0] if articles else None
-        payload["preview_articles"] = articles[:preview_limit]
-        payload["secondary_articles"] = articles[1:preview_limit]
+        payload["top_article_board_score"] = (
+            float(_commodity_board_item_article_metrics(payload, articles[0]).get("board_score", 0.0))
+            if articles else 0.0
+        )
+        payload["preview_articles"] = articles[: 1 + secondary_preview_limit]
+        payload["secondary_articles"] = articles[1 : 1 + secondary_preview_limit]
         payload["secondary_article_count"] = len(payload["secondary_articles"])
-        payload["more_article_count"] = max(0, len(articles) - len(payload["preview_articles"]))
+        payload["extra_articles"] = articles[1 + secondary_preview_limit :]
+        payload["more_article_count"] = len(payload["extra_articles"])
         payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles])
         if payload["active"]:
             active_items += 1
@@ -13244,6 +13357,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         active_group_items.sort(
             key=lambda item: (
                 0 if item.get("program_core") else 1,
+                -float(item.get("top_article_board_score") or 0.0),
                 -int(item.get("core_count") or 0),
                 -int(item.get("article_count") or 0),
                 int(item.get("order") or 0),
@@ -13301,6 +13415,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             )
             primary_article = item.get("top_article") if isinstance(item.get("top_article"), Article) else None
             secondary_articles = [article for article in (item.get("secondary_articles") or []) if isinstance(article, Article)]
+            extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
             if primary_article:
                 primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
                 primary_press_label = str(getattr(primary_article, "press", "") or "").strip()
@@ -13315,22 +13430,50 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 ]
                 secondary_links = "".join(
                     f"""
-                    <a class="commoditySecondaryStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
-                      <span class="commoditySecondaryLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
-                      <span class="commoditySecondaryText">{esc(article.title)}</span>
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+                      <span class="commoditySupportText">{esc(article.title)}</span>
                     </a>
                     """
                     for article in secondary_articles
                 )
+                extra_links = "".join(
+                    f"""
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+                      <span class="commoditySupportText">{esc(article.title)}</span>
+                    </a>
+                    """
+                    for article in extra_articles
+                )
                 more_count = int(item.get("more_article_count") or 0)
-                more_html = f'<span class="commodityMoreChip">+{more_count}</span>' if more_count > 0 else ""
+                more_html = (
+                    f"""
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 {more_count}건 더 보기</summary>
+                      <div class="commodityMoreList">{extra_links}</div>
+                    </details>
+                    """
+                    if more_count > 0 else ""
+                )
+                secondary_html = (
+                    f"""
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      {secondary_links}
+                    </div>
+                    """
+                    if secondary_links else ""
+                )
                 story_html = f"""
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
                     <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
                   </div>
-                  <div class="commoditySecondaryRow">{secondary_links}{more_html}</div>
+                  {secondary_html}
+                  {more_html}
                 </div>
                 """
             else:
@@ -13417,26 +13560,41 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         chips.append((sec["key"], sec["title"], n, sec["color"]))
 
     is_dev_preview = DEV_SINGLE_PAGE_MODE
-    preview_href = build_site_url(site_path, DEV_SINGLE_PAGE_URL_PATH or "index.html") if is_dev_preview else site_path
+    preview_href = _dev_single_page_archive_url("", site_path) if is_dev_preview else site_path
 
     # prev/next: dev 미리보기는 단일 페이지이므로 운영 아카이브 링크를 만들지 않는다.
     prev_href = None
     next_href = None
-    if (not is_dev_preview) and report_date in archive_dates_desc:
+    if report_date in archive_dates_desc:
         idx = archive_dates_desc.index(report_date)
         # prev(더 과거) = idx+1
         if idx + 1 < len(archive_dates_desc):
-            prev_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx+1]}.html")
+            prev_href = (
+                _dev_single_page_archive_url(archive_dates_desc[idx + 1], site_path)
+                if is_dev_preview else
+                build_site_url(site_path, f"archive/{archive_dates_desc[idx+1]}.html")
+            )
         # next(더 최신) = idx-1
         if idx - 1 >= 0:
-            next_href = build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
+            next_href = (
+                _dev_single_page_archive_url(archive_dates_desc[idx - 1], site_path)
+                if is_dev_preview else
+                build_site_url(site_path, f"archive/{archive_dates_desc[idx-1]}.html")
+            )
 
     # 날짜 select (value도 절대경로)
     if is_dev_preview:
-        options_html = (
-            f'<option value="{esc(preview_href)}" selected>'
-            f'{esc(short_date_label(report_date))} (DEV)</option>'
-        )
+        options = []
+        for d in archive_dates_desc[:120]:
+            sel = " selected" if d == report_date else ""
+            options.append(
+                f'<option value="{esc(_dev_single_page_archive_url(d, site_path))}"{sel}>'
+                f'{esc(short_date_label(d))} ({esc(weekday_label(d))}) [DEV]</option>'
+            )
+        if not options:
+            options_html = f'<option value="{esc(preview_href)}" selected>{esc(short_date_label(report_date))} [DEV]</option>'
+        else:
+            options_html = "\n".join(options)
     else:
         options = []
         for d in archive_dates_desc[:120]:
@@ -13475,17 +13633,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         title = sec["title"]
         color = sec["color"]
         lst = by_section.get(key, [])
-        insight_line, insight_tags = make_section_insight(key, lst)
-        insight_tags_html = "".join(f'<span class="secInsightTag">{esc(tag)}</span>' for tag in insight_tags)
-        insight_html = (
-            f"""
-            <div class="secInsight">
-              <div class="secInsightLine">{esc(insight_line)}</div>
-              <div class="secInsightTags">{insight_tags_html}</div>
-            </div>
-            """
-            if insight_line or insight_tags_html else ""
-        )
 
         def render_card(a: Article, is_core: bool) -> str:
             url = a.originallink or a.link
@@ -13524,7 +13671,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 </div>
                 <div class=\"secCount\">{len(lst)}건</div>
               </div>
-              {insight_html}
               <div class=\"secBody\">{body_html}</div>
             </section>
             """
@@ -13533,6 +13679,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     sections_html = "\n".join(section_blocks)
 
     dev_version_url = _dev_single_page_version_url(site_path) if is_dev_preview else ""
+    dev_archive_manifest_url = _dev_single_page_archive_manifest_url(site_path) if is_dev_preview else ""
     dev_badge_text = " [DEV]" if DEV_SINGLE_PAGE_MODE else ""
     dev_sub_text = " · 개발 버전 미리보기" if DEV_SINGLE_PAGE_MODE else ""
     if is_dev_preview:
@@ -13563,10 +13710,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     page_title = f"[{report_date} 농산물 뉴스 Brief]{dev_badge_text}"
     period = f"{start_kst.strftime('%Y-%m-%d %H:%M')} ~ {end_kst.strftime('%Y-%m-%d %H:%M')}"
     home_href = preview_href if is_dev_preview else site_path
+    nav_target_attr = ' target="_top"' if is_dev_preview else ""
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
-            return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}">{esc(label)}</a>'
+            return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}"{nav_target_attr}>{esc(label)}</a>'
         # ✅ (3) 없는 페이지로 링크하지 않고 알림으로 처리
         return f'<button class="navBtn disabled" data-nav="{esc(nav_key)}" type="button" data-msg="{esc(empty_msg)}">{esc(label)}</button>'
 
@@ -13667,17 +13815,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commoditySig[data-section="dist"]{{background:#ede9fe;color:#6d28d9}}
     .commoditySig[data-section="pest"]{{background:#ffedd5;color:#b45309}}
     .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
-    .commodityStoryCluster{{display:flex;flex-direction:column;gap:9px}}
-    .commodityPrimaryCard{{padding:11px 12px;border:1px solid #e2e8f0;border-radius:14px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}}
-    .commodityPrimaryStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#0f172a;font-size:13.5px;font-weight:800;line-height:1.48;text-decoration:none}}
+    .commodityStoryCluster{{display:flex;flex-direction:column;gap:10px}}
+    .commodityPrimaryCard{{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}}
+    .commodityPrimaryKicker{{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}}
+    .commodityPrimaryStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}}
     .commodityPrimaryStory:hover{{text-decoration:underline}}
-    .commodityPrimaryMeta{{margin-top:6px;color:#64748b;font-size:11px;font-weight:700}}
-    .commoditySecondaryRow{{display:flex;flex-wrap:wrap;gap:7px}}
-    .commoditySecondaryStory{{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;padding:7px 9px;border-radius:12px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none;font-size:12px;line-height:1.35}}
-    .commoditySecondaryStory:hover{{border-color:#cbd5e1}}
-    .commoditySecondaryLabel{{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}}
-    .commoditySecondaryText{{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .commodityMoreChip{{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 10px;border-radius:12px;background:#eef2ff;color:#334155;font-size:11px;font-weight:900}}
+    .commodityPrimaryMeta{{margin-top:7px;color:#64748b;font-size:11px;font-weight:700}}
+    .commoditySupportList{{display:flex;flex-direction:column;gap:8px}}
+    .commoditySupportTitle{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .commoditySupportStory,.commodityMoreStory{{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:14px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none}}
+    .commoditySupportStory:hover,.commodityMoreStory:hover{{border-color:#cbd5e1}}
+    .commoditySupportLabel{{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}}
+    .commoditySupportText{{display:block;min-width:0;font-size:12px;line-height:1.5}}
+    .commodityMoreWrap{{border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc}}
+    .commodityMoreSummary{{list-style:none;cursor:pointer;padding:10px 12px;color:#334155;font-size:12px;font-weight:900}}
+    .commodityMoreSummary::-webkit-details-marker{{display:none}}
+    .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
     .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
@@ -13706,10 +13859,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           scroll-margin-top: 150px;
     }}
     .secHead{{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}}
-    .secInsight{{padding:12px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}}
-    .secInsightLine{{font-size:13px;font-weight:800;line-height:1.5;color:#0f172a}}
-    .secInsightTags{{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}}
-    .secInsightTag{{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 9px;border-radius:999px;background:#eef2ff;color:#334155;font-size:11px;font-weight:800}}
     .secTitle{{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}}
     .dotColor{{width:10px;height:10px;border-radius:999px}}
     .secCount{{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}}
@@ -13778,8 +13927,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
-      .commoditySecondaryStory{{width:100%}}
-      .commoditySecondaryText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
+      .commoditySupportStory,.commodityMoreStory{{width:100%}}
+      .commoditySupportText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}
     }}
   </style>
@@ -13792,7 +13941,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
       </div>
       <div class=\"navRow\">
-        <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\">{esc(home_label)}</a>
+        <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\"{nav_target_attr}>{esc(home_label)}</a>
         {nav_btn(prev_href, "◀ 이전", "이전 브리핑이 없습니다.", "prev")}
         <div class=\"dateSelWrap\">
           <select id=\"dateSelect\" aria-label=\"날짜 선택\">
@@ -13831,6 +13980,31 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <script>
     (function() {{
 {dev_refresh_js}
+      var isDevPreviewPage = {json.dumps(is_dev_preview)};
+      var devLoaderHref = {json.dumps(preview_href)};
+      var devArchiveManifestUrl = {json.dumps(dev_archive_manifest_url)};
+      var currentReportDate = {json.dumps(report_date)};
+
+      function currentPageHref() {{
+        try {{
+          if (window.top && window.top !== window) {{
+            return String(window.top.location.href || "");
+          }}
+        }} catch (e) {{}}
+        return String(window.location.href || "");
+      }}
+
+      function navigateToUrl(url) {{
+        if (!url) return;
+        try {{
+          if (window.top && window.top !== window) {{
+            window.top.location.href = url;
+            return;
+          }}
+        }} catch (e) {{}}
+        window.location.href = url;
+      }}
+
       var sel = document.getElementById("dateSelect");
       if (sel) {{
         sel.setAttribute("data-swipe-ignore", "1");
@@ -13987,7 +14161,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           if (href) {{
             isNavigating = true;
             showNavLoading();
-            window.location.href = href;
+            navigateToUrl(href);
             return;
           }}
         }}
@@ -14005,7 +14179,12 @@ var __rootPrefix = null;
 function _getRootPrefix() {{
   if (__rootPrefix) return __rootPrefix;
   try {{
-    var href = String(window.location.href || "");
+    if (isDevPreviewPage && devLoaderHref) {{
+      var devUrl = new URL(devLoaderHref, currentPageHref());
+      __rootPrefix = devUrl.origin + devUrl.pathname.replace(/[^/]*$/, "");
+      return __rootPrefix;
+    }}
+    var href = currentPageHref();
     var i = href.indexOf("/archive/");
     if (i >= 0) {{
       __rootPrefix = href.slice(0, i + 1);
@@ -14021,12 +14200,17 @@ function _getRootPrefix() {{
 }}
 
 function _dateToUrl(d) {{
+  if (isDevPreviewPage) {{
+    return devLoaderHref + "?date=" + encodeURIComponent(d);
+  }}
   return _getRootPrefix() + "archive/" + d + ".html";
 }}
 
 function _extractDate(s) {{
   if (!s) return "";
   var str = String(s);
+  var param = str.match(/[?&]date=(\\d{{4}}-\\d{{2}}-\\d{{2}})(?:[&#]|$)/);
+  if (param && param[1]) return param[1];
   var m = str.match(/(\\d{{4}}-\\d{{2}}-\\d{{2}})\\.html/);
   if (m && m[1]) return m[1];
   if (/^\\d{{4}}-\\d{{2}}-\\d{{2}}$/.test(str)) return str;
@@ -14034,7 +14218,7 @@ function _extractDate(s) {{
 }}
 
 function _currentDateIso() {{
-  return _extractDate(window.location.pathname) || _extractDate(window.location.href);
+  return _extractDate(currentPageHref()) || currentReportDate;
 }}
 
 function _getDatesFromSelect() {{
@@ -14069,7 +14253,7 @@ function _setSelectDates(dates) {{
 
 async function _fetchManifestDates() {{
   try {{
-    var url = _getRootPrefix() + "archive_manifest.json";
+    var url = isDevPreviewPage ? devArchiveManifestUrl : (_getRootPrefix() + "archive_manifest.json");
     var r = await fetch(url, {{ cache: "no-store" }});
     if (!r || !r.ok) return null;
     var obj = await r.json();
@@ -14124,11 +14308,18 @@ async function gotoUrlChecked(url, msg) {{
     return;
   }}
 
+  if (isDevPreviewPage) {{
+    isNavigating = true;
+    showNavLoading();
+    navigateToUrl(url);
+    return;
+  }}
+
   var ok = await _urlExists(url);
   if (ok) {{
     isNavigating = true;
     showNavLoading();
-    window.location.href = url;
+    navigateToUrl(url);
     return;
   }}
   showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
@@ -14156,13 +14347,20 @@ async function gotoByOffset(delta, msg) {{
   while (j >= 0 && j < dates.length) {{
     var d = dates[j];
     var url = _dateToUrl(d);
+    if (isDevPreviewPage) {{
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      navigateToUrl(url);
+      return;
+    }}
     // Always verify existence (manifest can be stale; Pages deploy can lag)
     var ok = await _urlExists(url);
     if (ok) {{
       if (isNavigating) return;
       isNavigating = true;
       showNavLoading();
-      window.location.href = url;
+      navigateToUrl(url);
       return;
     }}
     j += step;
@@ -15840,6 +16038,25 @@ def _list_archive_dates(repo: str, token: str) -> set[str]:
     return dset
 
 
+def _list_dev_preview_archive_dates(repo: str, token: str) -> set[str]:
+    dset: set[str] = set()
+    if not DEV_SINGLE_PAGE_MODE:
+        return dset
+    archive_dir = _dev_single_page_archive_repo_path("_marker_").rpartition("/")[0]
+    preview_ref = GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"
+    try:
+        items = github_list_dir(repo, archive_dir, token, ref=preview_ref)
+        for it in (items or []):
+            nm = it.get("name") if isinstance(it, dict) else None
+            if isinstance(nm, str) and nm.endswith(".html"):
+                dd = nm[:-5]
+                if is_iso_date_str(dd):
+                    dset.add(dd)
+    except Exception:
+        pass
+    return dset
+
+
 def _maybe_ux_patch(repo: str, token: str, base_iso: str, site_path: str) -> None:
     """Optionally apply UX patch to last UX_PATCH_DAYS pages starting at base_iso.
 
@@ -15898,6 +16115,8 @@ def build_dev_preview_version_json(report_date: str) -> str:
         payload["preview_url"] = f"{asset_base}/index.html"
         payload["version_url"] = f"{asset_base}/version.json"
         payload["debug_url"] = f"{asset_base}/debug/{report_date}.json"
+        payload["archive_manifest_url"] = f"{asset_base}/archive_manifest.json"
+        payload["archive_base_url"] = f"{asset_base}/archive"
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
 
@@ -15922,7 +16141,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
 
     # nav dates from actual archive listing
-    avail = _list_archive_dates(repo, token)
+    avail = _list_dev_preview_archive_dates(repo, token) if DEV_SINGLE_PAGE_MODE else _list_archive_dates(repo, token)
     avail.add(report_date)
     archive_dates_desc = sorted(avail, reverse=True)
 
@@ -15942,6 +16161,32 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         github_put_file(repo, preview_path, daily_html, token, f"Update dev preview {report_date}", sha=sha_preview, branch=preview_ref)
         log.info("[MAINT PUT] %s", preview_path)
 
+        archive_path = _dev_single_page_archive_repo_path(report_date)
+        _raw_archive_old, sha_archive = github_get_file(repo, archive_path, token, ref=preview_ref)
+        github_put_file(repo, archive_path, daily_html, token, f"Archive dev preview {report_date}", sha=sha_archive, branch=preview_ref)
+        log.info("[MAINT PUT] %s", archive_path)
+
+        archive_manifest = {
+            "version": 1,
+            "count": len(archive_dates_desc),
+            "latest": report_date,
+            "generated_at_kst": RENDERED_AT_KST,
+            "dates": sorted(set(sanitize_dates(list(archive_dates_desc)))),
+        }
+        archive_manifest_path = _dev_single_page_archive_manifest_repo_path()
+        archive_manifest_json = json.dumps(archive_manifest, ensure_ascii=False, indent=2) + "\n"
+        _raw_archive_manifest_old, sha_archive_manifest = github_get_file(repo, archive_manifest_path, token, ref=preview_ref)
+        github_put_file(
+            repo,
+            archive_manifest_path,
+            archive_manifest_json,
+            token,
+            f"Update dev preview archive manifest {report_date}",
+            sha=sha_archive_manifest,
+            branch=preview_ref,
+        )
+        log.info("[MAINT PUT] %s", archive_manifest_path)
+
         if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
             try:
                 DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
@@ -15956,7 +16201,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         if MAINTENANCE_SEND_KAKAO:
             try:
                 base_url = get_pages_base_url(repo).rstrip("/")
-                daily_url = build_daily_url(base_url, report_date, cache_bust=True, rel_path=DEV_SINGLE_PAGE_URL_PATH)
+                daily_url = _dev_single_page_archive_url(report_date, base_url, cache_bust=True)
                 daily_url = ensure_absolute_http_url(daily_url)
                 kakao_text = build_kakao_message(report_date, by_section)
                 if KAKAO_INCLUDE_LINK_IN_TEXT:

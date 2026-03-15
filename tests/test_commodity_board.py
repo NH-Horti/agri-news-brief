@@ -153,6 +153,33 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
         self.assertEqual(len(apple["preview_articles"]), 1)
         self.assertEqual(len(apple["secondary_articles"]), 0)
+        self.assertEqual(len(apple["extra_articles"]), 0)
+        self.assertGreaterEqual(float(apple["top_article_board_score"]), 0.0)
+
+    def test_board_context_prefers_item_specific_top_article(self):
+        item = self._item("apple")
+        label = item["short_label"]
+        generic_article = self._make_article(
+            "supply",
+            "원예 농산물 수급 점검 및 가격 동향",
+            f"{label}와 배 등 과수 품목 전반의 가격과 수급 점검 내용을 다뤘다.",
+            "https://example.com/apple-generic",
+        )
+        generic_article.score = 180.0
+        specific_article = self._make_article(
+            "dist",
+            f"{label} 공동판매 확대와 출하 조절",
+            f"{label} 산지 출하 조절과 공동판매 확대가 핵심으로 다뤄졌다.",
+            "https://example.com/apple-specific",
+        )
+        specific_article.score = 55.0
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [generic_article]
+        by_section["dist"] = [specific_article]
+        ctx = main.build_managed_commodity_board_context(by_section)
+        apple_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "apple")
+        self.assertEqual(apple_item["top_article"].title, specific_article.title)
+        self.assertGreater(apple_item["top_article_board_score"], 0.0)
 
     def test_board_source_builder_keeps_managed_candidates_from_raw_pool(self):
         apple = self._item("apple")["short_label"]
@@ -230,6 +257,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("전체 품목 보드", html)
         self.assertIn('data-view-tab="briefing"', html)
         self.assertIn('data-view-tab="commodity"', html)
+        self.assertNotIn("secInsight", html)
         self.assertIn("오늘 브리핑", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
@@ -283,10 +311,24 @@ class TestCommodityBoard(unittest.TestCase):
             f"{onion} 산지 물량 부담으로 가격 하락세가 이어지고 있다.",
             "https://example.com/onion-2",
         )
+        third = self._make_article(
+            "policy",
+            f"{onion} 수급 안정 협의체 출범",
+            f"{onion} 수급 안정을 위한 협의체 운영 방안이 논의됐다.",
+            "https://example.com/onion-3",
+        )
+        fourth = self._make_article(
+            "pest",
+            f"{onion} 생육 관리와 병해충 대응",
+            f"{onion} 생육 리스크와 병해충 대응 현황을 짚었다.",
+            "https://example.com/onion-4",
+        )
         by_section = {key: [] for key in self.conf}
         board_by_section = {key: [] for key in self.conf}
         board_by_section["dist"] = [first]
         board_by_section["supply"] = [second]
+        board_by_section["policy"] = [third]
+        board_by_section["pest"] = [fourth]
         html = main.render_daily_page(
             report_date="2026-03-15",
             start_kst=self.now,
@@ -298,8 +340,11 @@ class TestCommodityBoard(unittest.TestCase):
         )
         self.assertIn(first.title, html)
         self.assertIn(second.title, html)
+        self.assertIn(third.title, html)
+        self.assertIn(fourth.title, html)
         self.assertIn("commodityPrimaryStory", html)
-        self.assertIn("commoditySecondaryRow", html)
+        self.assertIn("commoditySupportList", html)
+        self.assertIn("commodityMoreWrap", html)
 
     def test_render_debug_report_html_uses_page_scroll_friendly_table_styles(self):
         original_debug = main.DEBUG_REPORT
