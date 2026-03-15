@@ -1626,6 +1626,12 @@ class TestClassifierBehavior(unittest.TestCase):
         press = main.normalize_press_label(main.press_name_from_url(url), url)
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
 
+    def test_postbuild_audit_drops_carrot_app_story(self):
+        title = "bhc, '당근' 포장주문 입점…\"선착순 7천원 할인\""
+        desc = "bhc가 지역 앱인 당근과 제휴해 메뉴를 할인된 가격으로 포장 주문하는 서비스를 시작했다."
+        article = self._make_article("supply", title, desc, "https://biz.sbs.co.kr/article_hub/20000297336?division=NAVER")
+        self.assertEqual(main._postbuild_article_reject_reason(article, "supply"), "carrot_non_edible_context")
+
     def test_dist_export_field_requires_horti_anchor_for_k_food_brief(self):
         title = "KGC인삼공사 부여공장서 K-푸드 현장 간담회"
         desc = "농식품부와 업계가 홍삼 수출 비관세장벽 대응 방안을 논의했다."

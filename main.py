@@ -2813,8 +2813,8 @@ _CARROT_PLATFORM_MARKERS = [
 ]
 _CARROT_EDIBLE_MARKERS = [
     "농산물", "채소", "원예", "산지", "농가", "재배", "수확", "출하", "반입",
-    "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매", "수급", "시세",
-    "가격", "저장", "물량", "제주당근", "햇당근", "월동당근", "당근 가격", "당근 수급",
+    "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매",
+    "제주당근", "햇당근", "월동당근", "당근 가격", "당근 수급", "당근 시세",
     "당근 재배", "당근 출하", "당근 도매가격",
 ]
 
@@ -11056,6 +11056,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_apple_apology_context(text):
         return "apple_apology_context"
+    if "당근" in text and not is_edible_carrot_context(text):
+        return "carrot_non_edible_context"
     if section_key in ("supply", "policy"):
         if is_flower_novelty_noise_context(a.title or "", a.description or ""):
             return "flower_novelty_noise"
