@@ -206,12 +206,18 @@ def build_archive_ux_html(
         try{{ if(ev.stopPropagation) ev.stopPropagation(); }}catch(_openErr2){{}}
       }}
       try{{
+        if(window.open){{
+          window.open(href, '_top');
+          return false;
+        }}
+      }}catch(_openErr3){{}}
+      try{{
         if(window.top && window.top !== window){{
           window.top.location.href = href;
           return false;
         }}
-      }}catch(_openErr3){{}}
-      try{{ window.location.href = href; }}catch(_openErr4){{}}
+      }}catch(_openErr4){{}}
+      try{{ window.location.href = href; }}catch(_openErr5){{}}
       return false;
     }}
 

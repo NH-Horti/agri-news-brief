@@ -118,6 +118,7 @@ class TestRegressions(unittest.TestCase):
 
     def test_external_links_are_bound_for_cards_and_commodity_board(self):
         self.assertIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
+        self.assertIn('window.open(href, "_top")', self.text)
         self.assertIn('window.top && window.top !== window', self.text)
         self.assertIn('window.top.location.href = href', self.text)
 

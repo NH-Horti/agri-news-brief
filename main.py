@@ -12843,14 +12843,20 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           try {{ if (ev.stopPropagation) ev.stopPropagation(); }} catch (e2) {{}}
         }}
         try {{
-          if (window.top && window.top !== window) {{
-            window.top.location.href = href;
+          if (window.open) {{
+            window.open(href, "_top");
             return false;
           }}
         }} catch (e3) {{}}
         try {{
-          window.location.href = href;
+          if (window.top && window.top !== window) {{
+            window.top.location.href = href;
+            return false;
+          }}
         }} catch (e4) {{}}
+        try {{
+          window.location.href = href;
+        }} catch (e5) {{}}
         return false;
       }}
 
