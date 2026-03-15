@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-15T11:11:54+09:00",
-  "build_tag": "c4c13ce",
+  "generated_at_kst": "2026-03-15T11:28:56+09:00",
+  "build_tag": "aeaad24",
   "filter_rejects": [
     {
       "section": "policy",
@@ -220,19 +220,19 @@
     },
     {
       "section": "policy",
-      "reason": "policy_macro_general_economy",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "파주시, 비상경제대응 TF 운영",
-      "url": "http://www.metroseoul.co.kr/article/20260313500107"
-    },
-    {
-      "section": "policy",
       "reason": "policy_context_gate",
       "press": "이뉴스투데이",
       "domain": "enewstoday.co.kr",
       "title": "안양시, 중동사태 관련 비상경제점검회의 개최",
       "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2405268"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_macro_general_economy",
+      "press": "메트로신문",
+      "domain": "metroseoul.co.kr",
+      "title": "파주시, 비상경제대응 TF 운영",
+      "url": "http://www.metroseoul.co.kr/article/20260313500107"
     },
     {
       "section": "policy",
@@ -621,18 +621,18 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
-      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "newsian",
       "domain": "newsian.co.kr",
       "title": "[한입 지식] \"재사용 가능한가\"…1·2차전지 가르는 '가역성'의 비밀",
       "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87190"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "사과 나무 한그루 심겠다고?…묘목 30% 급등, 품귀",
+      "url": "https://biz.sbs.co.kr/article_hub/20000296896?division=NAVER"
     },
     {
       "section": "supply",
@@ -812,19 +812,19 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "ISPLUS",
-      "domain": "isplus.com",
-      "title": "대만 '승부조작' 억측을 혐한 마케팅으로 이용한 韓 기업, \"대만 파트너...",
-      "url": "https://isplus.com/article/view/isp202603130096"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "goodnews1",
       "domain": "goodnews1.com",
       "title": "석유 최고 가격 제 시행 첫날… 고유가 시름 덜어낸 농민과 서민들",
       "url": "https://www.goodnews1.com/news/articleView.html?idxno=457580"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "ISPLUS",
+      "domain": "isplus.com",
+      "title": "대만 '승부조작' 억측을 혐한 마케팅으로 이용한 韓 기업, \"대만 파트너...",
+      "url": "https://isplus.com/article/view/isp202603130096"
     },
     {
       "section": "supply",
@@ -1855,16 +1855,16 @@
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
+      "title": "기름값 폭등에 친환경차 관심 급증",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "newstomato",
       "domain": "newstomato.com",
-      "title": "기름값 폭등에 친환경차 관심 급증",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294195&inflow=N"
+      "title": "강동구도 하락 전환…다음 순번은 동작·성동·마포",
+      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294196&inflow=N"
     },
     {
       "section": "supply",
@@ -3331,14 +3331,6 @@
       "url": "http://www.sisafocus.co.kr/news/articleView.html?idxno=357020"
     },
     {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "smartbizn",
-      "domain": "smartbizn.com",
-      "title": "청송군, 4대 산림 전략으로 '명품 산림 도시' 도약",
-      "url": "https://www.smartbizn.com/news/articleView.html?idxno=138936"
-    },
-    {
       "section": "supply",
       "reason": "livestock_only",
       "press": "헤럴드경제",
@@ -4438,7 +4430,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.92,
+          "score": 7.72,
           "tier": 1,
           "press": "NAEIL",
           "domain": "naeil.com",
@@ -4658,7 +4650,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.47,
+          "score": 3.27,
           "tier": 1,
           "press": "데일리한국",
           "domain": "daily.hankooki.com",
@@ -5247,7 +5239,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.64,
+          "score": 16.44,
           "tier": 1,
           "press": "데일리한국",
           "domain": "daily.hankooki.com",
@@ -5447,7 +5439,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.97,
+          "score": 11.77,
           "tier": 1,
           "press": "kyeonggi",
           "domain": "kyeonggi.com",
@@ -6256,7 +6248,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.77,
+          "score": 7.57,
           "tier": 1,
           "press": "newsquest",
           "domain": "newsquest.co.kr",
@@ -6396,7 +6388,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.12,
+          "score": 4.92,
           "tier": 1,
           "press": "ceoscoredaily",
           "domain": "ceoscoredaily.com",
@@ -6905,7 +6897,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.21,
+          "score": 16.01,
           "tier": 1,
           "press": "ONEWS",
           "domain": "onews.tv",
