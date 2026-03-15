@@ -116,11 +116,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("function activateView(viewKey, opts)", self.text)
         self.assertIn("resolveInitialView()", self.text)
 
-    def test_external_links_are_bound_for_cards_and_commodity_board(self):
-        self.assertIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
-        self.assertIn('window.open(href, "_top")', self.text)
-        self.assertIn('window.top && window.top !== window', self.text)
-        self.assertIn('window.top.location.href = href', self.text)
+    def test_external_links_use_plain_top_navigation(self):
+        self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
+        self.assertIn('class="commodityStory"', self.text)
+        self.assertIn('data-swipe-ignore="1"', self.text)
+        self.assertIn('target=\\"_top\\"', self.text)
+        self.assertNotIn('querySelectorAll(".btnOpen, .commodityStory")', self.text)
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)

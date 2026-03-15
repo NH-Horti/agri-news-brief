@@ -12830,43 +12830,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       activateView(resolveInitialView(), {{ skipHistory: true }});
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
-      function openExternalLink(ev, linkEl) {{
-        var link = linkEl && linkEl.getAttribute ? linkEl : null;
-        if (!link) return true;
-        var href = link.getAttribute("href") || link.href || "";
-        if (!href) return true;
-        if (ev) {{
-          if ((typeof ev.button === "number" && ev.button !== 0) || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) {{
-            return true;
-          }}
-          try {{ if (ev.preventDefault) ev.preventDefault(); }} catch (e) {{}}
-          try {{ if (ev.stopPropagation) ev.stopPropagation(); }} catch (e2) {{}}
-        }}
-        try {{
-          if (window.open) {{
-            window.open(href, "_top");
-            return false;
-          }}
-        }} catch (e3) {{}}
-        try {{
-          if (window.top && window.top !== window) {{
-            window.top.location.href = href;
-            return false;
-          }}
-        }} catch (e4) {{}}
-        try {{
-          window.location.href = href;
-        }} catch (e5) {{}}
-        return false;
-      }}
-
-      Array.prototype.forEach.call(document.querySelectorAll(".btnOpen, .commodityStory"), function(link) {{
-        try {{ link.setAttribute("data-swipe-ignore", "1"); }} catch (e) {{}}
-        link.addEventListener("click", function(ev) {{
-          openExternalLink(ev, link);
-        }});
-      }});
-
       var navRow = document.querySelector(".navRow");
       var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
       var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
