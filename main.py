@@ -13842,6 +13842,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --shadow:0 4px 12px rgba(17,24,39,.08);
       --page-max:1220px;
       --topbar-height:172px;
+      --chipbar-height:58px;
       --sticky-nav-offset:188px;
       --anchor-offset:248px;
     }}
@@ -13904,9 +13905,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
-    .chipbar{{position:sticky;top:var(--sticky-nav-offset);z-index:8;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
-    .briefingChipbar{{margin:14px 0 0}}
-    .commodityBoardNav{{margin:0 18px 20px}}
+    .chipbar{{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
+    .briefingChipbar{{margin:16px 0 0}}
+    .commodityBoardNav{{margin:18px 18px 20px}}
     .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
@@ -13915,6 +13916,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .chip:hover{{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}}
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
     .chipN{{min-width:28px;text-align:center;background:var(--chip-color, #111827);color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
+    .chipDock{{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}}
+    .chipDock.isVisible{{opacity:1;transform:translateY(0);pointer-events:auto}}
+    .chipDockInner{{max-width:var(--page-max);margin:0 auto;padding:0 20px}}
+    .chipDock .chipbar{{margin:0;box-shadow:0 18px 38px rgba(15,23,42,.14);background:rgba(248,250,252,.98)}}
+    .chipDock .briefingChipbar,
+    .chipDock .commodityBoardNav{{margin:0}}
 
     .viewPane{{display:none}}
     .viewPane.isActive{{display:block}}
@@ -14033,6 +14040,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
       .wrap{{padding:16px 16px 72px !important}}
       .topin{{padding:12px 16px}}
+      .chipDockInner{{padding:0 16px}}
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
@@ -14062,7 +14070,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
-      .commodityBoardNav{{margin:0 14px 16px}}
+      .commodityBoardNav{{margin:16px 14px 16px}}
       .commodityGroupBlock{{margin:0 14px 16px;padding:14px}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
@@ -14099,6 +14107,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       </div>
     </div>
   </div>
+  <div id=\"chipDock\" class=\"chipDock\" aria-hidden=\"true\">
+    <div id=\"chipDockInner\" class=\"chipDockInner\"></div>
+  </div>
 
   <div class=\"wrap\">
     {view_tabs_html}
@@ -14123,19 +14134,68 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var currentReportDate = {json.dumps(report_date)};
       var rootEl = document.documentElement;
       var topbarEl = document.querySelector(".topbar");
+      var chipDockEl = document.getElementById("chipDock");
+      var chipDockInnerEl = document.getElementById("chipDockInner");
+      function getActivePane() {{
+        return document.querySelector('.viewPane.isActive[data-view-pane]');
+      }}
+      function getActiveChipbar() {{
+        var pane = getActivePane();
+        if (!pane) return null;
+        return pane.querySelector('.chipbar[data-view-pane-anchor]');
+      }}
 
       function syncStickyOffsets() {{
         if (!rootEl || !topbarEl) return;
         var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
         if (!topbarHeight) return;
+        var activeChipbar = getActiveChipbar();
+        var chipbarHeight = Math.ceil(activeChipbar ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
+        rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
-        rootEl.style.setProperty("--anchor-offset", (topbarHeight + 72) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
+      }}
+
+      function syncFloatingChipbar() {{
+        if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
+        var activeChipbar = getActiveChipbar();
+        if (!activeChipbar) {{
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }}
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var dockTop = topbarHeight + 12;
+        var chipbarHeight = Math.ceil(activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0);
+        if (chipbarHeight) {{
+          rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+          rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
+        }}
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (chipDockEl.dataset.source !== sourceKey) {{
+          chipDockInnerEl.innerHTML = activeChipbar.outerHTML;
+          chipDockEl.dataset.source = sourceKey;
+        }}
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.top <= dockTop && rect.bottom > dockTop;
+        chipDockEl.classList.toggle("isVisible", shouldShow);
+        chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
       }}
 
       syncStickyOffsets();
+      syncFloatingChipbar();
       window.addEventListener("load", syncStickyOffsets);
+      window.addEventListener("load", syncFloatingChipbar);
       window.addEventListener("resize", syncStickyOffsets);
+      window.addEventListener("resize", syncFloatingChipbar);
+      window.addEventListener("scroll", syncFloatingChipbar, {{ passive: true }});
 
       function currentPageHref() {{
         try {{
@@ -14196,6 +14256,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           tab.setAttribute("aria-selected", active ? "true" : "false");
         }});
         syncStickyOffsets();
+        syncFloatingChipbar();
 
         if (opts.skipHistory) return;
         try {{
