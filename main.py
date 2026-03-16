@@ -13407,7 +13407,7 @@ def _hex_to_rgba(color: str, alpha: float) -> str:
     return f"rgba({red},{green},{blue},{max(0.0, min(alpha, 1.0)):.3f})"
 
 
-def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
     nav_terms: list[str] = []
     for group in groups:
@@ -13418,8 +13418,17 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             f'href="#commodity-group-{esc(str(group.get("key") or ""))}">'
             f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
         )
-    nav_html = "".join(nav_terms)
+    return (
+        '<div class="chipbar commodityBoardNav viewPaneNav" data-view-pane-nav="commodity">'
+        '<div class="chipwrap">'
+        f'<div class="commodityGroupNav">{"".join(nav_terms)}</div>'
+        '</div>'
+        '</div>'
+    )
 
+
+def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+    groups = list(board_ctx.get("groups") or [])
     group_blocks: list[str] = []
     for group in groups:
         group_color = str(group.get("color") or "#475569")
@@ -13574,11 +13583,6 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
           </div>
         </div>
       </div>
-      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity">
-        <div class="chipwrap">
-          <div class="commodityGroupNav">{nav_html}</div>
-        </div>
-      </div>
       {''.join(group_blocks)}
     </section>
     """
@@ -13652,15 +13656,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
-    briefing_chipbar_html = (
-        '<div class="chipbar briefingChipbar" data-view-pane-anchor="briefing">'
+    briefing_nav_html = (
+        '<div class="chipbar briefingChipbar viewPaneNav isActive" data-view-pane-nav="briefing">'
         '<div class="chipwrap">'
         f'<div class="chips" data-swipe-ignore="1">{chips_html}</div>'
         '</div>'
         '</div>'
     )
     commodity_board_ctx = build_managed_commodity_board_context(board_source_by_section or _get_last_commodity_board_source() or by_section)
+    commodity_board_nav_html = render_managed_commodity_board_nav_html(commodity_board_ctx)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
+    pane_nav_html = briefing_nav_html + commodity_board_nav_html
     briefing_active_sections = sum(1 for sec in SECTIONS if by_section.get(sec["key"]))
     briefing_core_total = sum(
         1
@@ -13846,7 +13852,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:var(--page-max) !important;margin:0 auto !important;padding:12px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
+    .wrap{{max-width:var(--page-max) !important;margin:0 auto !important;padding:18px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
     .topin{{max-width:var(--page-max);margin:0 auto;padding:12px 20px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
@@ -13873,7 +13879,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       select{{width:145px; max-width:145px;}}
     }}
 
-    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}}
+    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}}
     .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:124px;padding:16px 18px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
     .viewTab:hover{{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}}
@@ -13898,9 +13904,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
+    .paneNavStack{{display:grid;gap:10px}}
+    .viewPaneNav{{display:none}}
+    .viewPaneNav.isActive{{display:block}}
     .chipbar{{border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
-    .briefingChipbar,.commodityBoardNav{{position:sticky;z-index:8}}
-    .briefingChipbar{{top:var(--sticky-nav-offset);margin-top:14px}}
+    .briefingChipbar,.commodityBoardNav{{margin-top:2px}}
     .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
@@ -13952,7 +13960,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityMoreSummary::-webkit-details-marker{{display:none}}
     .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
-    .commodityBoardNav{{top:var(--sticky-nav-commodity-offset);margin:14px 18px 20px;border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
+    .commodityBoardNav{{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap}}
     .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);color:#0f172a;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
     .commodityGroupChip:hover{{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}}
@@ -14025,7 +14033,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      .wrap{{padding:12px 16px 72px !important}}
+      .wrap{{padding:16px 16px 72px !important}}
       .topin{{padding:12px 16px}}
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
@@ -14045,8 +14053,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .briefingHero h2{{font-size:28px}}
       .briefingHeroStats{{justify-content:flex-start}}
       .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      .briefingChipbar{{top:calc(var(--topbar-height) + 10px)}}
-      .commodityBoardNav{{top:calc(var(--topbar-height) + 22px)}}
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
@@ -14056,7 +14062,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHead h2{{font-size:28px}}
       .commodityHeadStats{{justify-content:flex-start}}
       .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      .commodityBoardNav{{margin:14px 14px 16px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
       .commodityGroupBlock{{margin:0 14px 16px;padding:14px}}
@@ -14093,14 +14098,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
-{view_tabs_html}
+      <div class=\"paneNavStack\">
+        {pane_nav_html}
+      </div>
     </div>
   </div>
 
   <div class=\"wrap\">
+    {view_tabs_html}
     <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
       {briefing_hero_html}
-      {briefing_chipbar_html}
       {sections_html}
     </section>
     <section id=\"view-commodity\" class=\"viewPane commodityPane\" data-view-pane=\"commodity\" role=\"tabpanel\" aria-hidden=\"true\">
@@ -14179,6 +14186,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       var viewTabs = Array.prototype.slice.call(document.querySelectorAll(".viewTab[data-view-tab]"));
       var viewPanes = Array.prototype.slice.call(document.querySelectorAll(".viewPane[data-view-pane]"));
+      var viewPaneNavs = Array.prototype.slice.call(document.querySelectorAll(".viewPaneNav[data-view-pane-nav]"));
 
       function activateView(viewKey, opts) {{
         opts = opts || {{}};
@@ -14192,6 +14200,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           tab.classList.toggle("isActive", active);
           tab.setAttribute("aria-selected", active ? "true" : "false");
         }});
+        viewPaneNavs.forEach(function(nav) {{
+          var active = nav.getAttribute("data-view-pane-nav") === viewKey;
+          nav.classList.toggle("isActive", active);
+          nav.setAttribute("aria-hidden", active ? "false" : "true");
+        }});
+        syncStickyOffsets();
 
         if (opts.skipHistory) return;
         try {{
