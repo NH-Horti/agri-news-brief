@@ -270,7 +270,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("commodityBoardNav", html)
         self.assertIn("syncStickyOffsets", html)
         self.assertIn("--group-chip-color", html)
-        self.assertIn("--sticky-nav-commodity-offset", html)
+        self.assertIn("--chip-color", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
@@ -278,6 +278,8 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("붉은고추", html)
         self.assertLess(html.index("commodity-group-fruit_veg"), html.index("commodity-group-fruit_flower"))
+        self.assertLess(html.index("briefingHeroTitle"), html.index('class="chipbar briefingChipbar"'))
+        self.assertLess(html.index("commodityBoardTitle"), html.index('class="chipbar commodityBoardNav"'))
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]

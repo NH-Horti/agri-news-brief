@@ -13419,7 +13419,7 @@ def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
             f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
         )
     return (
-        '<div class="chipbar commodityBoardNav viewPaneNav" data-view-pane-nav="commodity">'
+        '<div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity">'
         '<div class="chipwrap">'
         f'<div class="commodityGroupNav">{"".join(nav_terms)}</div>'
         '</div>'
@@ -13583,6 +13583,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
           </div>
         </div>
       </div>
+      {render_managed_commodity_board_nav_html(board_ctx)}
       {''.join(group_blocks)}
     </section>
     """
@@ -13650,23 +13651,23 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             options_html = "\n".join(options)
 
     def chip_html(k: str, title: str, n: int, color: str) -> str:
+        chip_soft = _hex_to_rgba(color, 0.12)
+        chip_border = _hex_to_rgba(color, 0.36)
         return (
-            f'<a class="chip" style="border-color:{color};" href="#sec-{k}">'
+            f'<a class="chip" style="--chip-color:{color};--chip-soft:{chip_soft};--chip-border:{chip_border};" href="#sec-{k}">'
             f'<span class="chipTitle">{esc(display_section_title(title))}</span><span class="chipN">{n}</span></a>'
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
     briefing_nav_html = (
-        '<div class="chipbar briefingChipbar viewPaneNav isActive" data-view-pane-nav="briefing">'
+        '<div class="chipbar briefingChipbar" data-view-pane-anchor="briefing">'
         '<div class="chipwrap">'
         f'<div class="chips" data-swipe-ignore="1">{chips_html}</div>'
         '</div>'
         '</div>'
     )
     commodity_board_ctx = build_managed_commodity_board_context(board_source_by_section or _get_last_commodity_board_source() or by_section)
-    commodity_board_nav_html = render_managed_commodity_board_nav_html(commodity_board_ctx)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
-    pane_nav_html = briefing_nav_html + commodity_board_nav_html
     briefing_active_sections = sum(1 for sec in SECTIONS if by_section.get(sec["key"]))
     briefing_core_total = sum(
         1
@@ -13842,7 +13843,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --page-max:1220px;
       --topbar-height:172px;
       --sticky-nav-offset:188px;
-      --sticky-nav-commodity-offset:206px;
       --anchor-offset:248px;
     }}
     *{{box-sizing:border-box}}
@@ -13904,26 +13904,24 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
-    .paneNavStack{{display:grid;gap:10px}}
-    .viewPaneNav{{display:none}}
-    .viewPaneNav.isActive{{display:block}}
-    .chipbar{{border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
-    .briefingChipbar,.commodityBoardNav{{margin-top:2px}}
+    .chipbar{{position:sticky;top:var(--sticky-nav-offset);z-index:8;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
+    .briefingChipbar{{margin:14px 0 0}}
+    .commodityBoardNav{{margin:0 18px 20px}}
     .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
-          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
-    .chip:hover{{border-color:#cbd5e1}}
+    .chip{{text-decoration:none;border:1px solid var(--chip-border, var(--line));padding:9px 14px;border-radius:999px;
+          background:linear-gradient(180deg,var(--chip-soft, var(--chip)) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
+    .chip:hover{{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}}
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
+    .chipN{{min-width:28px;text-align:center;background:var(--chip-color, #111827);color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
 
     .viewPane{{display:none}}
     .viewPane.isActive{{display:block}}
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}}
+    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}}
     .commodityHead{{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:linear-gradient(135deg,#ffffff 0%,#f8fafc 68%,#f0fdf4 100%);overflow:hidden;isolation:isolate}}
     .commodityHead::after{{content:"";position:absolute;inset:-24% -6% -22% 48%;background:radial-gradient(circle at 50% 46%, rgba(110,231,183,.62) 0%, rgba(125,211,252,.26) 33%, rgba(255,255,255,0) 72%);pointer-events:none;z-index:0}}
     .commodityHeadMain{{position:relative;z-index:1;min-width:0}}
@@ -13962,7 +13960,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
     .commodityBoardNav{{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap}}
-    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);color:#0f172a;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
+    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);color:#0f172a;text-decoration:none;font-size:13px;font-weight:900;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
     .commodityGroupChip:hover{{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}}
     .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:999px;background:var(--group-chip-color, #111827);color:#fff;font-size:11px}}
     .commodityGroupBlock{{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}}
@@ -14056,7 +14054,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
-      .chip{{padding:6px 10px;font-size:12.5px}}
+      .chip{{padding:8px 10px;font-size:12.5px}}
       .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
       .commodityHead{{grid-template-columns:1fr;padding:18px 18px 14px}}
       .commodityHead h2{{font-size:28px}}
@@ -14064,6 +14062,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
+      .commodityBoardNav{{margin:0 14px 16px}}
       .commodityGroupBlock{{margin:0 14px 16px;padding:14px}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
@@ -14098,9 +14097,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
-      <div class=\"paneNavStack\">
-        {pane_nav_html}
-      </div>
     </div>
   </div>
 
@@ -14108,6 +14104,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     {view_tabs_html}
     <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
       {briefing_hero_html}
+      {briefing_nav_html}
       {sections_html}
     </section>
     <section id=\"view-commodity\" class=\"viewPane commodityPane\" data-view-pane=\"commodity\" role=\"tabpanel\" aria-hidden=\"true\">
@@ -14133,7 +14130,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (!topbarHeight) return;
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
-        rootEl.style.setProperty("--sticky-nav-commodity-offset", (topbarHeight + 28) + "px");
         rootEl.style.setProperty("--anchor-offset", (topbarHeight + 72) + "px");
       }}
 
@@ -14186,7 +14182,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       var viewTabs = Array.prototype.slice.call(document.querySelectorAll(".viewTab[data-view-tab]"));
       var viewPanes = Array.prototype.slice.call(document.querySelectorAll(".viewPane[data-view-pane]"));
-      var viewPaneNavs = Array.prototype.slice.call(document.querySelectorAll(".viewPaneNav[data-view-pane-nav]"));
 
       function activateView(viewKey, opts) {{
         opts = opts || {{}};
@@ -14199,11 +14194,6 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           var active = tab.getAttribute("data-view-tab") === viewKey;
           tab.classList.toggle("isActive", active);
           tab.setAttribute("aria-selected", active ? "true" : "false");
-        }});
-        viewPaneNavs.forEach(function(nav) {{
-          var active = nav.getAttribute("data-view-pane-nav") === viewKey;
-          nav.classList.toggle("isActive", active);
-          nav.setAttribute("aria-hidden", active ? "false" : "true");
         }});
         syncStickyOffsets();
 
