@@ -1193,6 +1193,23 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
         ],
     },
     {
+        "key": "fruit_veg",
+        "title": "과채류",
+        "color": "#6d28d9",
+        "items": [
+            {"key": "tomato", "label": "토마토", "short_label": "토마토", "program_core": True, "registry_topics": ["토마토"]},
+            {"key": "cucumber", "label": "오이", "short_label": "오이", "program_core": True, "registry_topics": ["오이"]},
+            {"key": "green_pepper", "label": "풋고추", "short_label": "풋고추", "program_core": True, "aliases": ["풋고추", "청양고추", "꽈리고추"], "context_terms": ["고추 가격", "고추 수급", "고추 작황"]},
+            {"key": "zucchini", "label": "애호박(쥬키니)", "short_label": "애호박", "program_core": True, "aliases": ["애호박", "쥬키니", "주키니"], "context_terms": ["애호박 가격", "애호박 수급", "쥬키니 가격"]},
+            {"key": "oriental_melon", "label": "참외", "short_label": "참외", "program_core": False, "registry_topics": ["참외"]},
+            {"key": "lettuce", "label": "상추", "short_label": "상추", "program_core": False, "registry_topics": ["상추"]},
+            {"key": "strawberry", "label": "딸기", "short_label": "딸기", "program_core": False, "registry_topics": ["딸기"]},
+            {"key": "eggplant", "label": "가지", "short_label": "가지", "program_core": True, "aliases": ["가지"], "context_terms": ["가지 가격", "가지 수급", "가지 작황", "가지 출하", "가지 재배"]},
+            {"key": "paprika", "label": "파프리카", "short_label": "파프리카", "program_core": False, "registry_topics": ["파프리카"]},
+            {"key": "muskmelon", "label": "멜론", "short_label": "멜론", "program_core": False, "registry_topics": ["멜론"]},
+        ],
+    },
+    {
         "key": "fruit_flower",
         "title": "과수화훼류",
         "color": "#1d4ed8",
@@ -1210,23 +1227,6 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
             {"key": "chestnut", "label": "밤", "short_label": "밤", "program_core": False, "registry_topics": ["밤"]},
             {"key": "flowers", "label": "화훼", "short_label": "화훼", "program_core": False, "registry_topics": ["화훼"]},
             {"key": "plum", "label": "자두", "short_label": "자두", "program_core": False, "registry_topics": ["자두"]},
-        ],
-    },
-    {
-        "key": "fruit_veg",
-        "title": "과채류",
-        "color": "#6d28d9",
-        "items": [
-            {"key": "tomato", "label": "토마토", "short_label": "토마토", "program_core": True, "registry_topics": ["토마토"]},
-            {"key": "cucumber", "label": "오이", "short_label": "오이", "program_core": True, "registry_topics": ["오이"]},
-            {"key": "green_pepper", "label": "풋고추", "short_label": "풋고추", "program_core": True, "aliases": ["풋고추", "청양고추", "꽈리고추"], "context_terms": ["고추 가격", "고추 수급", "고추 작황"]},
-            {"key": "zucchini", "label": "애호박(쥬키니)", "short_label": "애호박", "program_core": True, "aliases": ["애호박", "쥬키니", "주키니"], "context_terms": ["애호박 가격", "애호박 수급", "쥬키니 가격"]},
-            {"key": "oriental_melon", "label": "참외", "short_label": "참외", "program_core": False, "registry_topics": ["참외"]},
-            {"key": "lettuce", "label": "상추", "short_label": "상추", "program_core": False, "registry_topics": ["상추"]},
-            {"key": "strawberry", "label": "딸기", "short_label": "딸기", "program_core": False, "registry_topics": ["딸기"]},
-            {"key": "eggplant", "label": "가지", "short_label": "가지", "program_core": True, "aliases": ["가지"], "context_terms": ["가지 가격", "가지 수급", "가지 작황", "가지 출하", "가지 재배"]},
-            {"key": "paprika", "label": "파프리카", "short_label": "파프리카", "program_core": False, "registry_topics": ["파프리카"]},
-            {"key": "muskmelon", "label": "멜론", "short_label": "멜론", "program_core": False, "registry_topics": ["멜론"]},
         ],
     },
 ]
@@ -13395,16 +13395,31 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     }
 
 
+def _hex_to_rgba(color: str, alpha: float) -> str:
+    value = str(color or "").strip().lstrip("#")
+    if len(value) == 3:
+        value = "".join(ch * 2 for ch in value)
+    if len(value) != 6 or re.fullmatch(r"[0-9a-fA-F]{6}", value) is None:
+        return f"rgba(15,23,42,{max(0.0, min(alpha, 1.0)):.3f})"
+    red = int(value[0:2], 16)
+    green = int(value[2:4], 16)
+    blue = int(value[4:6], 16)
+    return f"rgba({red},{green},{blue},{max(0.0, min(alpha, 1.0)):.3f})"
+
+
 def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
     nav_html = "".join(
-        f'<a class="commodityGroupChip" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
+        f'<a class="commodityGroupChip" data-swipe-ignore="1" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
         f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
         for group in groups
     )
 
     group_blocks: list[str] = []
     for group in groups:
+        group_color = str(group.get("color") or "#475569")
+        group_soft_bg = _hex_to_rgba(group_color, 0.07)
+        group_soft_border = _hex_to_rgba(group_color, 0.22)
         item_cards: list[str] = []
         for item in group.get("active_items") or group.get("items") or []:
             badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
@@ -13514,10 +13529,10 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
         empty_group_html = '<div class="empty commodityGroupEmpty">오늘 연결된 품목 기사가 없습니다.</div>' if not item_cards else ""
         group_blocks.append(
             f"""
-            <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock">
+            <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock" style="--commodity-group-color:{esc(group_color)};--commodity-group-soft:{esc(group_soft_bg)};--commodity-group-border:{esc(group_soft_border)};">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
-                  <span class="commodityGroupDot" style="background:{esc(str(group.get('color') or '#475569'))}"></span>
+                  <span class="commodityGroupDot" style="background:{esc(group_color)}"></span>
                   <h3>{esc(str(group.get('title') or ''))}</h3>
                 </div>
                 <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {int(group.get('item_total') or 0)} · 수급사업 {int(group.get('program_core_active') or 0)} / {int(group.get('program_core_total') or 0)}</div>
@@ -13554,7 +13569,11 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
           </div>
         </div>
       </div>
-      <div class="commodityGroupNav">{nav_html}</div>
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity">
+        <div class="chipwrap">
+          <div class="commodityGroupNav">{nav_html}</div>
+        </div>
+      </div>
       {''.join(group_blocks)}
     </section>
     """
@@ -13809,19 +13828,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --btnHover:#1e40af;
       --btnBg:#ffffff;
       --shadow:0 4px 12px rgba(17,24,39,.08);
+      --page-max:1220px;
+      --topbar-height:172px;
+      --sticky-nav-offset:188px;
+      --anchor-offset:248px;
     }}
     *{{box-sizing:border-box}}
     html {{
-      /* ✅ 앵커 이동 위치 보정 */
       scroll-behavior:smooth;
-      scroll-padding-top: 150px;
+      scroll-padding-top: var(--anchor-offset);
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
+    .wrap{{max-width:var(--page-max) !important;margin:0 auto !important;padding:12px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
-    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
+    .topin{{max-width:var(--page-max);margin:0 auto;padding:12px 20px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
     h1{{margin:0;font-size:18px;letter-spacing:-0.2px}}
     .sub{{color:var(--muted);font-size:12.5px;margin-top:4px}}
     .envBadge{{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}}
@@ -13871,8 +13893,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     /* briefing chip bar */
     .chipbar{{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}}
+    .briefingChipbar,.commodityBoardNav{{position:sticky;top:var(--sticky-nav-offset);z-index:8}}
     .briefingChipbar{{margin-top:14px}}
-    .chipwrap{{max-width:1100px;margin:0 auto;padding:10px 12px;}}
+    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
     .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
@@ -13886,7 +13909,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}}
+    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}}
     .commodityHead{{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:radial-gradient(circle at top right, rgba(153,246,228,.4), transparent 34%),linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#f0fdf4 100%)}}
     .commodityHeadMain{{min-width:0}}
     .commodityHead h2{{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}}
@@ -13922,14 +13945,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityMoreSummary::-webkit-details-marker{{display:none}}
     .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
-    .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
-    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
+    .commodityBoardNav{{margin:0 18px 18px}}
+    .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap}}
+    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:#0f172a;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}}
+    .commodityGroupChip:hover{{border-color:#cbd5e1}}
     .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
-    .commodityGroupBlock{{padding:0 18px 18px;scroll-margin-top:170px}}
-    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 10px}}
+    .commodityGroupBlock{{margin:0 18px 18px;padding:18px;border:1px solid var(--commodity-group-border, #dbe4ee);border-radius:20px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 24px)}}
+    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 12px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:14px}}
     .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
     .commodityGroupTitleWrap h3{{margin:0;font-size:16px}}
-    .commodityGroupDot{{width:11px;height:11px;border-radius:999px}}
+    .commodityGroupDot{{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}}
     .commodityGroupMeta{{color:#64748b;font-size:12px;font-weight:700}}
     .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
     .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
@@ -13946,7 +13971,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityGroupEmpty{{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}}
 
     .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
-          scroll-margin-top: 150px;
+          scroll-margin-top: calc(var(--anchor-offset) + 18px);
     }}
     .secHead{{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}}
     .secTitle{{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}}
@@ -13993,8 +14018,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      html{{scroll-padding-top: 170px;}}
-      .sec{{scroll-margin-top: 170px;}}
+      .wrap{{padding:12px 16px 72px !important}}
+      .topin{{padding:12px 16px}}
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
@@ -14013,6 +14038,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .briefingHero h2{{font-size:28px}}
       .briefingHeroStats{{justify-content:flex-start}}
       .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
+      .briefingChipbar,.commodityBoardNav{{top:calc(var(--topbar-height) + 10px)}}
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
@@ -14022,8 +14048,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHead h2{{font-size:28px}}
       .commodityHeadStats{{justify-content:flex-start}}
       .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
+      .commodityBoardNav{{margin:0 14px 14px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
+      .commodityGroupBlock{{margin:0 14px 14px;padding:14px}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
@@ -14081,6 +14109,21 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var devLoaderHref = {json.dumps(preview_href)};
       var devArchiveManifestUrl = {json.dumps(dev_archive_manifest_url)};
       var currentReportDate = {json.dumps(report_date)};
+      var rootEl = document.documentElement;
+      var topbarEl = document.querySelector(".topbar");
+
+      function syncStickyOffsets() {{
+        if (!rootEl || !topbarEl) return;
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        if (!topbarHeight) return;
+        rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
+        rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + 72) + "px");
+      }}
+
+      syncStickyOffsets();
+      window.addEventListener("load", syncStickyOffsets);
+      window.addEventListener("resize", syncStickyOffsets);
 
       function currentPageHref() {{
         try {{
