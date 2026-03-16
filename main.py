@@ -13409,11 +13409,16 @@ def _hex_to_rgba(color: str, alpha: float) -> str:
 
 def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
-    nav_html = "".join(
-        f'<a class="commodityGroupChip" data-swipe-ignore="1" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
-        f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
-        for group in groups
-    )
+    nav_terms: list[str] = []
+    for group in groups:
+        group_color = str(group.get("color") or "#475569")
+        nav_terms.append(
+            f'<a class="commodityGroupChip" data-swipe-ignore="1" '
+            f'style="--group-chip-color:{esc(group_color)};--group-chip-soft:{esc(_hex_to_rgba(group_color, 0.12))};--group-chip-border:{esc(_hex_to_rgba(group_color, 0.38))};" '
+            f'href="#commodity-group-{esc(str(group.get("key") or ""))}">'
+            f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
+        )
+    nav_html = "".join(nav_terms)
 
     group_blocks: list[str] = []
     for group in groups:
@@ -13831,6 +13836,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --page-max:1220px;
       --topbar-height:172px;
       --sticky-nav-offset:188px;
+      --sticky-nav-commodity-offset:206px;
       --anchor-offset:248px;
     }}
     *{{box-sizing:border-box}}
@@ -13892,9 +13898,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
-    .chipbar{{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}}
-    .briefingChipbar,.commodityBoardNav{{position:sticky;top:var(--sticky-nav-offset);z-index:8}}
-    .briefingChipbar{{margin-top:14px}}
+    .chipbar{{border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
+    .briefingChipbar,.commodityBoardNav{{position:sticky;z-index:8}}
+    .briefingChipbar{{top:var(--sticky-nav-offset);margin-top:14px}}
     .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
     .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
@@ -13909,13 +13915,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}}
-    .commodityHead{{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:radial-gradient(circle at top right, rgba(153,246,228,.4), transparent 34%),linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#f0fdf4 100%)}}
-    .commodityHeadMain{{min-width:0}}
+    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}}
+    .commodityHead{{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:linear-gradient(135deg,#ffffff 0%,#f8fafc 68%,#f0fdf4 100%);overflow:hidden;isolation:isolate}}
+    .commodityHead::after{{content:"";position:absolute;inset:-24% -6% -22% 48%;background:radial-gradient(circle at 50% 46%, rgba(110,231,183,.62) 0%, rgba(125,211,252,.26) 33%, rgba(255,255,255,0) 72%);pointer-events:none;z-index:0}}
+    .commodityHeadMain{{position:relative;z-index:1;min-width:0}}
     .commodityHead h2{{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}}
     .commodityLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
     .commodityEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}}
-    .commodityHeadStats{{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
+    .commodityHeadStats{{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
     .commodityHeadStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
     .commodityHeadStatLabel{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}}
     .commodityHeadStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
@@ -13945,13 +13952,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityMoreSummary::-webkit-details-marker{{display:none}}
     .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
-    .commodityBoardNav{{margin:0 18px 18px}}
+    .commodityBoardNav{{top:var(--sticky-nav-commodity-offset);margin:14px 18px 20px;border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap}}
-    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:#0f172a;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}}
-    .commodityGroupChip:hover{{border-color:#cbd5e1}}
-    .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
-    .commodityGroupBlock{{margin:0 18px 18px;padding:18px;border:1px solid var(--commodity-group-border, #dbe4ee);border-radius:20px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 24px)}}
-    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 12px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:14px}}
+    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);color:#0f172a;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
+    .commodityGroupChip:hover{{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}}
+    .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:999px;background:var(--group-chip-color, #111827);color:#fff;font-size:11px}}
+    .commodityGroupBlock{{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}}
+    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px}}
     .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
     .commodityGroupTitleWrap h3{{margin:0;font-size:16px}}
     .commodityGroupDot{{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}}
@@ -14038,7 +14045,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .briefingHero h2{{font-size:28px}}
       .briefingHeroStats{{justify-content:flex-start}}
       .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      .briefingChipbar,.commodityBoardNav{{top:calc(var(--topbar-height) + 10px)}}
+      .briefingChipbar{{top:calc(var(--topbar-height) + 10px)}}
+      .commodityBoardNav{{top:calc(var(--topbar-height) + 22px)}}
       /* mobile chips: 2 columns so counts are always visible */
       .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
       .chip{{width:100%;justify-content:space-between}}
@@ -14048,10 +14056,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHead h2{{font-size:28px}}
       .commodityHeadStats{{justify-content:flex-start}}
       .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      .commodityBoardNav{{margin:0 14px 14px}}
+      .commodityBoardNav{{margin:14px 14px 16px}}
       .commodityGrid{{grid-template-columns:1fr}}
       .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
-      .commodityGroupBlock{{margin:0 14px 14px;padding:14px}}
+      .commodityGroupBlock{{margin:0 14px 16px;padding:14px}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
@@ -14118,6 +14126,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (!topbarHeight) return;
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
+        rootEl.style.setProperty("--sticky-nav-commodity-offset", (topbarHeight + 28) + "px");
         rootEl.style.setProperty("--anchor-offset", (topbarHeight + 72) + "px");
       }}
 

@@ -119,6 +119,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("commodityBoardNav", self.text)
         self.assertIn("syncStickyOffsets", self.text)
         self.assertIn("--topbar-height", self.text)
+        self.assertIn("--sticky-nav-commodity-offset", self.text)
+        self.assertIn("--group-chip-color", self.text)
         self.assertIn("viewTabTitle", self.text)
         self.assertIn("function activateView(viewKey, opts)", self.text)
         self.assertIn("resolveInitialView()", self.text)

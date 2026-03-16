@@ -269,6 +269,8 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("commodityHeadStats", html)
         self.assertIn("commodityBoardNav", html)
         self.assertIn("syncStickyOffsets", html)
+        self.assertIn("--group-chip-color", html)
+        self.assertIn("--sticky-nav-commodity-offset", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
