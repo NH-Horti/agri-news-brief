@@ -1,0 +1,194 @@
+===== 2026-01-07 =====
+[supply] threshold=17.95 candidates=32 selected=4
+  - core                     score= 25.95 fit=2.29  origin=supply query=제주당근 도매가격 :: '오늘은 양배추가 올랐네'… 농산물 도매 가 연일 강세
+  - tail                     score= 21.79 fit=1.46  origin=supply query=화훼 경매 :: [올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...
+  - tail                     score= 21.48 fit=1.58  origin=supply query=봄배추 작황 :: aT, '기후변화대응처' 컨트롤타워 강화…기후위기 시대 농산물 수급 총...
+  - tail                     score= 21.31 fit=1.05  origin=policy query=사과 :: 美 사과 들어오면 국산 50~70% 가격에…국내농가 타격 ‘불가피’
+[policy] threshold=8.92 candidates=4 selected=2
+  - core                     score= 20.92 fit=0.3   origin=dist   query=도매시장 반입량 :: 새해 가락 시장 초매식…“농산물값 잘 받아 웃는 일 많았으면”
+  - core                     score= 18.99 fit=0.86  origin=policy query=농식품부 농산물 유통 전문가 협의체 :: 직불금 늘리고 임산부 가구 소비 지원… 친환경농업 되살린다
+[dist] threshold=8.12 candidates=3 selected=3
+  - core                     score= 14.31 fit=0.94  origin=dist   query=가락시장 경매 :: 가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”
+  - dist_anchor_backfill     score= 12.42 fit=0.68  origin=dist   query=가락시장 경매 :: 새해 새벽 가락시장 찾은 鄭 "민생 속으로"…지선 민심공략 시동
+  - cross_section_dist_backfill score= 18.52 fit=1.32  origin=supply query=쥬키니 가격 :: 한국청과, 9개 품목 '출하비용 보전'··· 올해부터, 양파·대파·감자 ...
+[pest] threshold=13.67 candidates=1 selected=1
+  - core                     score= 23.67 fit=3.35  origin=pest   query=매실 병해충 :: 순천시, 농작물 병해충 방제 및 재해 예방에 10억원 투입
+reject top: policy_context_gate=15, pest_partial_mention=10, must_terms_fail=9, apple_non_edible_context=6, fishery_title_only=5, finance_strict_no_agri_context=4, dist_soft_without_infra=4, ban_keywords=2, policy_local_minor=2, supply_context_gate=2
+
+===== 2026-01-20 =====
+[supply] threshold=7.0 candidates=24 selected=2
+  - core                     score= 24.67 fit=2.1   origin=supply query=쪽파 생육 :: 내일부터 '대한 추위'..강추위에 얼갈이배추· 쪽파 ·갈치 값 ↑
+  - tail                     score= 14.46 fit=0.95  origin=supply query=가지 도매가격 :: [대구 농업리포트 ④] “크기보다 품질, 양보다 신뢰”…절제로 지켜가...
+[policy] threshold=20.25 candidates=15 selected=4
+  - core                     score= 39.32 fit=0.78  origin=policy query=사과 물가 특별관리 :: 물가 책임관 첫 회의 매주 농축산물 수급 점검
+  - core                     score= 37.85 fit=3.25  origin=supply query=애호박 도매가격 :: 양구군, 농산물 최저 가격 지원금 4억원 농가 지급
+  - tail                     score= 28.15 fit=3.13  origin=supply query=쥬키니 가격 :: 양구군 '2025년 농산물 최저 가격 지원' 사업을 통해 4억여 원 지급
+  - tail                     score= 25.26 fit=1.04  origin=policy query=대책 :: 2026년도 전국 산불방지 종합대책
+[dist] threshold=13.37 candidates=5 selected=3
+  - dist_anchor_backfill     score=  40.5 fit=2.7   origin=supply query=깐마늘 재배 :: 창녕농협, 마늘 ·쌀 판매사업 활발…농가 실익증진
+  - core                     score= 21.37 fit=1.04  origin=dist   query=도매시장 경매 :: 대경사과원협·포항시, 사과 ‘원물출하’ 첫 경매…농가 부담 크게 줄여
+  - cross_section_dist_backfill score=  25.8 fit=1.1   origin=supply query=청양고추 도매가격 :: “농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하
+reject top: melon_non_edible_context=40, ban_keywords=15, must_terms_fail=10, opinion_or_editorial=5, apple_non_edible_context=4, dist_soft_without_infra=4, supply_context_gate=3, policy_context_gate=2, pest_partial_mention=2, carrot_non_edible_context=1
+
+===== 2026-01-23 =====
+[supply] threshold=23.41 candidates=39 selected=3
+  - tail                     score= 31.41 fit=1.23  origin=supply query=상추 도매가격 :: 익산 망성농협, 명품 꽃 상추 인기…제2의 도약 다진다
+  - core                     score= 27.82 fit=3.23  origin=supply query=단감 작황 :: 쌀값·직불금 효과에 농가소득 회복…올해 가구당 5333만원 전망
+  - supply_feature_backfill  score= 23.38 fit=2.18  origin=supply query=깐마늘 재배 :: 마늘 ·쌀 판매 활성화 힘쏟아
+[policy] threshold=7.27 candidates=4 selected=2
+  - core                     score= 17.99 fit=0.66  origin=dist   query=도매시장 반입량 :: 농축산물 온라인 거래 활성화… 유통비용 거품 낮춘다 [농어촌이 미래다...
+  - tail                     score= 13.66 fit=2.64  origin=dist   query=CA저장 과일 :: '역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치
+[dist] threshold=15.4 candidates=3 selected=2
+  - dist_underfill           score= 32.36 fit=2.19  origin=dist   query=공영도매시장 경매 :: 강서·구리 시장 휴업 가세…출하길 막힌 산지 ‘비상’
+  - core                     score=  25.0 fit=1.1   origin=dist   query=가락시장 청과 경락 :: [설 대목 과일 시장 ] 사과, 특품 적어 품위간 값차 클듯
+[pest] threshold=26.3 candidates=1 selected=1
+  - core                     score=  36.3 fit=4.47  origin=pest   query=과수 병해충 방제 :: 진안군, 과수화상병·탄저병 등 방제 약제 선정·지원 방안 논의
+reject top: dist_soft_without_infra=5, supply_macro_price_watch=4, must_terms_fail_policy=3, pest_partial_mention=3, apple_non_edible_context=2, supply_dist_export_shipping=2, dist_county_local_weak_dist_signal=2, policy_local_minor=1, sedaily_no_agri_context=1, must_terms_fail=1
+
+===== 2026-01-29 =====
+[supply] threshold=23.71 candidates=57 selected=3
+  - core                     score= 31.71 fit=2.86  origin=policy query=포도(샤인머스캣) 가격 안정 :: 포도 값 5년 만에 최저…풋고추는 강세
+  - core                     score= 28.96 fit=3.14  origin=supply query=수박 도매가격 :: “경매가 급락땐 농민에 출하비용 보전”...가락시장 도매 법인-농민단체...
+  - tail                     score= 25.31 fit=2.1   origin=supply query=제주당근 소비 촉진 :: 제주 시, ' 제주 산 당근 소비 촉진 운동' 전개…농가 지원 나서
+[policy] threshold=9.75 candidates=11 selected=3
+  - core                     score= 28.98 fit=1.83  origin=dist   query=가락시장 청과 경락 :: 가락시장 ·농민단체 ‘출하비용 보전’ 상생협약
+  - tail                     score= 17.75 fit=2.64  origin=supply query=당근 생육 :: 롯데마트, 설 앞두고 물가 안정 총력… "제주산 무 990원"
+  - policy_major_issue_backfill score= 13.23 fit=1.83  origin=dist   query=가락시장 청과 경락 :: "최소 유통비용 보전"… 가락시장 도매법인, 출하비용 보전사업 시행
+[dist] threshold=18.28 candidates=19 selected=5
+  - dist_anchor_backfill     score= 26.28 fit=1.72  origin=dist   query=가락시장 청과 경락 :: 가락시장 도매법인·농민단체, 출하비용 보전사업 업무 협약 “농민과 ...
+  - core                     score= 26.24 fit=2.26  origin=supply query=당근 생육 :: ⑧ 농산물에 ‘제값’을 붙여주는 여자…가락시장의 경매사 허은정[여자...
+  - core                     score= 21.01 fit=0.84  origin=dist   query=공판장 청과 경매 :: “직접 관리하는 프리미엄”…신세계백화점 ‘5스타’ 설선물 강화
+  - underfill                score= 10.93 fit=1.91  origin=supply query=화훼 경매 :: [유통가 레이더] 여행 상담도 AI 시대... 하나투어 '하이(H-AI)', 누적 이...
+  - underfill                score=  8.84 fit=1.25  origin=supply query=제주당근 소비 촉진 :: 제주 시, 유통처리난 당근 소비 촉진 운동 대대적 전개
+[pest] threshold=6.6 candidates=2 selected=2
+  - core                     score=  9.54 fit=2.55  origin=pest   query=상추 병해충 :: 주말까지 올겨울 '최장 한파'...시설 농가 '비상'
+  - underfill                score=  8.75 fit=3.01  origin=supply query=건조고추 생육 :: 농사포인트 - 국화, 시설물관리 철저 … 온도·습도 통해 병해충 발생 유...
+reject top: carrot_non_edible_context=65, must_terms_fail=15, dist_soft_without_infra=7, fishery_title_only=6, pest_partial_mention=6, apple_non_edible_context=4, supply_macro_price_watch=3, must_terms_fail_policy=2, remote_foreign_horti=2, finance_strict_no_agri_context=2
+
+===== 2026-02-03 =====
+[supply] threshold=20.32 candidates=43 selected=4
+  - core                     score= 28.32 fit=2.69  origin=supply query=제주 감귤 관세 :: 만감류 가격 하락세...만다린 무 관세 여파 '촉각'
+  - tail                     score= 27.46 fit=1.15  origin=supply query=제주당근 소비 촉진 :: “풍요 속 비곤” 제주 당근 가격 비상
+  - core                     score= 22.88 fit=2.41  origin=supply query=절화 가격 :: [Issue+] SECA 임박, 벼랑 끝 화훼농가
+  - supply_feature_backfill  score= 18.78 fit=1.43  origin=supply query=제주 감귤 관세 :: 오영훈 제주 지사 "수입 만다린 검역 강화해야"
+[policy] threshold=19.46 candidates=5 selected=2
+  - core                     score= 29.66 fit=3.2   origin=supply query=감자 산지 물량 :: '배·소고기·돼지고기·계란' 설 성수품 최대 40% 할인행사..16일까지
+  - tail                     score= 25.37 fit=3.81  origin=supply query=감귤 FTA :: 설 앞두고 물가는 '비상'…할인·지원금 쏟아도 소비자는 '글쎄'
+[dist] threshold=19.59 candidates=2 selected=1
+  - core                     score= 23.46 fit=1.34  origin=dist   query=과일 수출 검역 :: 美 관세 위협 이어 비관세 장벽까지… K푸드 160억달러 수출 '비상' [관...
+[pest] threshold=13.22 candidates=10 selected=3
+  - underfill                score= 20.22 fit=3.67  origin=pest   query=토마토뿔나방 :: " 토마토 농사 망치는 뿔나방 막는다"… 금산군, 방제 약제 2회 지원
+  - core                     score= 19.15 fit=3.17  origin=policy query=가지 특별관리 :: 음성군농기센터, 과수화상병 사전예방 집중 기간 운영
+  - pest_diversity_backfill  score=   8.7 fit=2.81  origin=pest   query=화훼 병해충 :: "정부는 화훼 농민을 위한 실질적인 대책 마련해야"
+reject top: supply_macro_price_watch=26, ban_keywords=21, supply_policy_market_brief=15, pest_partial_mention=11, apple_non_edible_context=8, remote_foreign_horti=6, fishery_title_only=5, must_terms_fail_policy=4, carrot_non_edible_context=4, dist_county_local_weak_dist_signal=3
+
+===== 2026-02-20 =====
+[supply] threshold=24.47 candidates=79 selected=3
+  - core                     score= 32.47 fit=1.8   origin=policy query=설 이후 과일 가격 하락 :: 오르는 사과·내리는 배값…생산량이 갈랐다
+  - core                     score= 29.41 fit=3.63  origin=supply query=감자 가격 하락 :: 가격 하락 폭 큰 양파·마늘 등에 43억 4천만 원 지원
+  - tail                     score= 26.21 fit=3.13  origin=supply query=포도 가격 하락 :: 영천시, ‘2026년 농업대학’ 포도 과정 신입생 모집
+[policy] threshold=13.26 candidates=9 selected=4
+  - core                     score= 32.91 fit=4.24  origin=policy query=성수품 가격 안정 대책 :: 설 이후 가격 하락 공식 약화…사과·배 ‘버티기’ 반복
+  - core                     score= 27.11 fit=0.96  origin=dist   query=가락시장 청과 경락 :: “농가 포장·운송비 부담 완화”…한국 청과 , 보전금 첫 지급
+  - tail                     score= 21.26 fit=1.36  origin=dist   query=도매시장 청과 경락 :: 한국 청과 , 출하비용 첫 현금 지원
+  - tail                     score= 19.86 fit=3.69  origin=policy query=물가정보 설 과일 :: 고환율·공급난 ‘이중고’…수입 먹거리 물가 인상 ‘비상’
+[dist] threshold=7.2 candidates=3 selected=2
+  - core                     score= 23.17 fit=0.78  origin=policy query=온라인 도매시장 농식품부 :: 농협개혁· 온라인도매시장 법제화 국회 통과
+  - dist_underfill           score=  7.19 fit=1.06  origin=dist   query=농산물 수출 검역 :: K-푸드 수출 1000억 달러 시대의 열쇠, '비관세장벽 4단계 대응 체계'에...
+[pest] threshold=6.6 candidates=1 selected=1
+  - core                     score=  9.24 fit=1.62  origin=policy query=농산물 특별관리 품목 :: 잔류농약 기준치 초과 농산물 '상추·깻잎' 엽채류가 최다
+reject top: fishery_title_only=16, policy_local_minor=9, supply_macro_price_watch=9, pest_partial_mention=7, must_terms_fail=6, opinion_or_editorial=5, apple_non_edible_context=5, dist_campaign_noise=5, policy_macro_general_economy=4, finance_strict_no_agri_context=4
+
+===== 2026-02-25 =====
+[supply] threshold=26.21 candidates=106 selected=5
+  - core                     score= 34.21 fit=1.15  origin=supply query=배추 작황 :: "제철 봄동 구해라" 품절 대란에 수급 총력 나선 대형마트, 왜?
+  - core                     score= 33.46 fit=3.33  origin=supply query=풋고추 수급 :: 봄동 배추 가격 70% '껑충'…비빔밥 유행에 냉해 겹쳐
+  - tail                     score= 28.99 fit=2.37  origin=supply query=양배추 도매가격 :: 강원도·강원농협, 농산물 수급안정 대책 논의
+  - tail                     score= 28.23 fit=1.63  origin=supply query=단감 가격 :: ‘싱싱하이’ 브랜드화…판매사업 적극 나서
+  - tail                     score= 27.43 fit=1.53  origin=policy query=포도 가격 안정 :: 한국 포도 협회, 품종 전환농가 삼목묘 구입비 지원
+[policy] threshold=32.72 candidates=45 selected=4
+  - core                     score= 47.97 fit=3.17  origin=supply query=양배추 도매가격 :: 강원농협, 도청과 함께 농산물 수급 안정 대책 추진
+  - tail                     score=  33.9 fit=3.29  origin=supply query=멜론 출하 :: 예산군, 2026 주요 농산물 가격안정 지원사업 신청 접수
+  - policy_major_issue_backfill score= 31.04 fit=5.66  origin=policy query=오이 물가 특별관리 :: 정부, 물가 전면전 선포...식품·외식·생활필수품 등 전방위 압박
+  - underfill                score=  30.1 fit=3.19  origin=supply query=멜론 출하 :: 예산군, '주요 농산물 가격안정' 지원사업 접수
+[dist] threshold=21.35 candidates=6 selected=3
+  - core                     score= 29.35 fit=1.54  origin=supply query=화훼 경매 :: 가정용 분화 소비 위축…경락값 ‘뚝’
+  - dist_anchor_backfill     score= 24.75 fit=2.1   origin=supply query=감귤 수급 :: AI 기반 제주시농협 스마트 APC 가동···농산물 유통 혁신 선도
+  - underfill                score= 20.53 fit=3.82  origin=supply query=배 과일 출하 :: 전북자치도, 익산도매시장 초매식 현장 행보...민생 경제 챙기기
+[pest] threshold=20.13 candidates=7 selected=4
+  - core                     score= 28.73 fit=3.19  origin=pest   query=토마토뿔나방 :: 경기농기원, ' 토마토뿔나방 방제' 지원
+  - core                     score= 25.32 fit=3.45  origin=pest   query=가지 예찰 :: 양구군, 과수화상병 선제 대응 총력
+  - underfill                score= 21.06 fit=3.57  origin=supply query=월동무 농가 :: 제주 주요 밭작물 무인항공방제 적용 품목 늘린다
+  - pest_region_backfill     score= 19.88 fit=2.83  origin=pest   query=자두 병해충 :: 경북도농업기술원, 자두 주머니병 방제 당부
+reject top: pest_partial_mention=40, must_terms_fail=18, ban_keywords=15, melon_non_edible_context=14, supply_policy_market_brief=13, policy_retail_sales_trend=8, news1_local_weak_context=7, finance_strict_no_agri_context=6, remote_foreign_horti=4, opinion_or_editorial=4
+
+===== 2026-03-09 =====
+[supply] threshold=27.76 candidates=257 selected=5
+  - tail                     score= 35.76 fit=2.1   origin=supply query=대파 수급 :: ‘ 대파 의 본산’ 진도, 풍년이 재앙이 됐다
+  - core                     score= 31.98 fit=1.73  origin=supply query=햇양파 수급 :: "국산 양파 가격 폭락 방관 말고, 생산비 보장·민간 수입 중단하라"
+  - core                     score= 31.68 fit=2.92  origin=supply query=감자 도매가격 :: 수확 앞둔 양파 가격 28% 폭락…"면적 줄었지만 가격 은 오히려 내려"
+  - tail                     score= 28.72 fit=2.42  origin=supply query=백합 가격 :: 유가 급등에 난방비도 치솟아...화훼농가 '울상'
+  - tail                     score= 28.29 fit=3.51  origin=supply query=무 출하 :: ‘한국농업생산자중앙연합회’로 명칭 변경
+[policy] threshold=32.25 candidates=84 selected=4
+  - tail                     score= 48.58 fit=6.96  origin=policy query=과일 채소 가격 동향 :: 농축산물 물가 1%대 안착, 수급 안정·할인지원에 예산 집중 투입
+  - core                     score= 40.25 fit=4.32  origin=supply query=배추 소비 촉진 :: 2월 농축산물 소비 자물가 1.4%↑…“쌀·사과 공급 안정 노력”
+  - core                     score= 39.15 fit=5.8   origin=policy query=농산물 수급 영향 제한적 :: 농축산물 소비자물가 1.4% 상승···전체 상승률 밑돌아
+  - tail                     score=  36.2 fit=6.45  origin=policy query=농산물 수급 영향 제한적 :: 지난달 축산물 물가 6% ↑...쌀도 18% 인상
+[dist] threshold=20.08 candidates=33 selected=4
+  - core                     score= 28.08 fit=1.02  origin=dist   query=APC 저온저장 :: 의성군, 2026년 노지 스마트농업 육성지구 최종 선정
+  - dist_anchor_backfill     score= 26.82 fit=0.78  origin=policy query=온라인 도매시장 농식품부 :: 농식품부 ·aT, 온라인도매시장 내실화 '총력'
+  - core                     score= 21.64 fit=1.35  origin=supply query=양파 소비 촉진 :: 인천지역 농협, 산지 양파 공동구매로 우리 농산물 팔아주기 ‘앞장’
+  - underfill                score=  9.24 fit=1.61  origin=dist   query=농산물 수출 선적 :: 농식품부 " 농산물 공급망 영향 아직 제한적...상시 모니터링 강화"
+[pest] threshold=23.47 candidates=16 selected=4
+  - core                     score= 30.47 fit=3.85  origin=pest   query=과수화상병 방제 계획 :: "사과·배꽃 피기 전 과수화상병 사전 방제 철저히"
+  - core                     score= 29.91 fit=3.29  origin=pest   query=과수화상병 방제 계획 :: 예산군, 과수화상병 확산 차단 '선제 예찰' 강화
+  - tail                     score= 26.25 fit=4.25  origin=pest   query=과수화상병 약제 공급 :: 나주시, 과수화상병 사전 예방 총력 방제, 예찰 강화
+  - pest_region_backfill     score= 21.94 fit=3.63  origin=pest   query=과수화상병 방제 계획 :: 담양군, 과수화상병 예방 총력
+reject top: supply_macro_price_watch=422, supply_policy_market_brief=203, apple_non_edible_context=128, pest_partial_mention=88, must_terms_fail=41, carrot_non_edible_context=38, policy_retail_sales_trend=34, fishery_title_only=22, dist_soft_without_infra=21, finance_strict_no_agri_context=19
+
+===== 2026-03-10 =====
+[supply] threshold=24.46 candidates=190 selected=5
+  - core                     score= 32.46 fit=1.55  origin=policy query=양파 정책 :: 김재웅 경남도의원, " 양파 가격 폭락 방지 및 수급 안정 대책 마련 촉구...
+  - core                     score= 28.41 fit=1.25  origin=supply query=무 도매가격 :: 대아청과 “2026년산 저장 배추 5.2% 줄었지만, 상품성 우수…시세 상승...
+  - tail                     score=  28.0 fit=2.44  origin=supply query=가지 도매가격 :: “딸기 안 익고 꽃은 시든다”… 기름값 폭등에 한숨 짓는 농·어민들 [...
+  - supply_feature_backfill  score= 24.41 fit=1.4   origin=supply query=감귤 수급 :: [유가 100달러] "면세유값 감당 안 돼"…전국 농민들 고유가에 '허덕'
+  - supply_feature_backfill  score= 23.95 fit=2.06  origin=supply query=포도 수급 :: [afl Interview] 안진우 한국 포도 협회 회장
+[policy] threshold=32.21 candidates=57 selected=3
+  - core                     score=  48.7 fit=5.84  origin=supply query=청양고추 재배 :: 농식품부 "축산물가격 작년보다 비싸…수입 계란 내주부터 푼다"
+  - core                     score= 40.21 fit=2.99  origin=policy query=과일류 가격 동향 :: 정부 “농축산물 가격 대체로 하락…수급 관리 강화”
+  - tail                     score= 34.53 fit=6.02  origin=policy query=과일류 가격 동향 :: 농축산물 가격 대체로 하락세…정부 "체감물가 부담 완화 총력"
+[dist] threshold=10.32 candidates=9 selected=5
+  - core                     score= 28.82 fit=0.78  origin=policy query=온라인 도매시장 농식품부 :: 농식품부 ·aT, 『 온라인도매시장 제도개선‧활성화 TF』 운영 논의
+  - core                     score= 18.32 fit=1.88  origin=dist   query=APC 저온저장 :: 이재우 제천시장 예비후보, 농산물 유통센터 공용 도매시장 전환
+  - dist_anchor_backfill     score= 17.76 fit=0.74  origin=dist   query=원예농협 산지유통 :: 맞춤형 미래전략 지역특화작목 ‘루비벨 토마토’
+  - underfill                score= 14.88 fit=1.02  origin=dist   query=APC 저온저장 :: 의성군, 노지 스마트농업 중심지로 도약
+  - dist_anchor_backfill     score= 11.74 fit=0.86  origin=dist   query=농산물 수출 선적 :: [ASIA BIZ] "해운·항공 동시 마비" 베트남 수출 길 덮친 중동 전쟁… 물...
+[pest] threshold=26.64 candidates=15 selected=4
+  - underfill                score= 33.64 fit=3.83  origin=pest   query=과수화상병 방제 계획 :: 대전농업기술센터, 과수화상병 ·토마토뿔나방 피해 예방 나서
+  - core                     score= 31.09 fit=4.03  origin=pest   query=과수화상병 방제 계획 :: 담양군, 과수화상병 예방 총력… 개화 전 농가 예찰 강화 당부
+  - core                     score= 28.17 fit=4.15  origin=pest   query=과수화상병 약제 공급 :: 당진시, 과수화상병 예방 위해 개화 전 약제 방제 당부
+  - pest_diversity_backfill  score= 17.38 fit=2.44  origin=supply query=배추 출하 :: 해남 산이농협, 자체 쇼핑몰 개설 등 경제사업 활성화에 ‘온힘’
+reject top: supply_policy_market_brief=166, must_terms_fail=44, pest_partial_mention=40, supply_macro_price_watch=35, policy_retail_sales_trend=32, fishery_title_only=30, fishery_only=29, carrot_non_edible_context=18, dist_soft_without_infra=15, apple_non_edible_context=14
+
+===== 2026-03-11 =====
+[supply] threshold=28.12 candidates=136 selected=5
+  - core                     score= 36.12 fit=0.78  origin=dist   query=원예농협 산지유통 :: “고랭지채소 가격 안정”…강원 농산물수급관리센터 가동
+  - tail                     score= 31.96 fit=0.75  origin=supply query=가지 수급 :: 농자재업계, 중동 사태 ‘촉각’…장기화땐 원료 수급 ‘타격’
+  - core                     score= 28.15 fit=3.8   origin=supply query=무 수급 :: 양파 당분간 약세…봄작형 배추· 무 재배면적 줄 듯
+  - supply_feature_backfill  score=  28.1 fit=3.06  origin=supply query=가지 출하 :: 가락·구리시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’
+  - supply_feature_backfill  score= 27.33 fit=2.47  origin=policy query=감자 검역 :: 경북도의회 "양파가격 폭락은 구조적 문제" 대책 촉구
+[policy] threshold=22.3 candidates=45 selected=3
+  - core                     score=  26.8 fit=1.25  origin=policy query=양념채소 수급 안정 :: 충남도, 전국 최대 원예·축산 시범사업 '시동'
+  - tail                     score= 26.48 fit=3.54  origin=supply query=감귤 수급 :: "이번 설은 뭐부터 사야 하나"…장바구니 물가 희비
+  - tail                     score= 25.75 fit=1.25  origin=policy query=농산물 수급 동향 :: 상주시, 2027년 국가투자예산 확보 총력…2888억원 규모 전략사업 발굴
+[dist] threshold=29.62 candidates=14 selected=4
+  - core                     score= 37.62 fit=2.97  origin=dist   query=농산물 수출 선적 :: ‘굿뜨래 싱싱딸기’ 몽골행…1t 선적
+  - dist_anchor_backfill     score= 36.49 fit=3.26  origin=dist   query=도매시장 반입량 :: 수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'
+  - underfill                score= 28.02 fit=0.78  origin=policy query=온라인 도매시장 농식품부 :: 온라인도매시장 제도 개선 나섰다
+  - underfill                score= 21.19 fit=2.46  origin=policy query=농산물 유통 전문가 협의체 :: 강원도 ' 농산물 광역수급관리센터' 전국 최초 출범
+[pest] threshold=27.53 candidates=21 selected=4
+  - core                     score= 34.53 fit=4.91  origin=policy query=사과 검역 :: 강원도 영월군, 과수화상병 예방 방제약제 공급... 사과 ·배 농가 205곳 ...
+  - core                     score= 32.81 fit=2.49  origin=pest   query=탄저병 방제 :: “농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란
+  - underfill                score= 22.45 fit=3.85  origin=pest   query=과수화상병 약제 공급 :: 무주군, 돌발 해충 월동난 예찰 실시…농작물 피해 예방 총력
+  - pest_diversity_backfill  score= 20.77 fit=4.19  origin=pest   query=탄저병 방제 :: 옥천군농업기술센터, 복숭아 재배농가 월동 병해충 방제 현장지도 강화
+reject top: pest_partial_mention=54, supply_policy_market_brief=43, must_terms_fail=36, supply_macro_price_watch=30, ban_keywords=22, must_terms_fail_policy=18, dist_soft_without_infra=18, news1_local_weak_context=17, fishery_title_only=16, apple_non_edible_context=15
