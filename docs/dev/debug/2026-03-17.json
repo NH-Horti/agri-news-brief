@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T10:08:07+09:00",
-  "build_tag": "de2e3aa",
+  "generated_at_kst": "2026-03-17T10:55:26+09:00",
+  "build_tag": "73883db",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1020,14 +1020,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "조선일보",
-      "domain": "weekly.chosun.com",
-      "title": "SNS서 뜨자 가격 도 '껑충'…두쫀쿠도 봄동도 최대 2배",
-      "url": "http://weekly.chosun.com/news/articleView.html?idxno=49687"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "MBC",
       "domain": "imnews.imbc.com",
@@ -1105,62 +1097,6 @@
       "domain": "newstomato.com",
       "title": "삼성전자·SK하이닉스 다시 주목…전쟁에도 반도체 베팅 이어진다",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294417&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "'유가 100달러·환율 1500원' 돌파…한국경제 '타격'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294396&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "전쟁 나비효과…달러예금·금통장 '쌍끌이'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294372&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "환율 초비상…17년 만에 '장중 1500원' 돌파",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294411&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "기름값 고공행진에 '주유할인' 특화카드 눈길",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294358&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "전세 '가뭄에 콩 나듯'…1년새 40% 감소",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294366&inflow=N"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "newsclaim",
-      "domain": "newsclaim.co.kr",
-      "title": "GS25 '신선한 예약'으로 신선식품 사전예약 확대",
-      "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3057992"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "newstomato",
-      "domain": "newstomato.com",
-      "title": "트럼프 전쟁이 흔든 '통화정책'…세계 중앙은행 '진퇴양난'",
-      "url": "http://www.newstomato.com/ReadNews.aspx?no=1294324&inflow=N"
     },
     {
       "section": "supply",
@@ -1821,18 +1757,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "디지털타임스",
-      "domain": "dt.co.kr",
-      "title": "[기획] ‘호르무즈 돌파’ 다급한 트럼프… 美中 정상회담 연기 카드 꺼...",
-      "url": "https://www.dt.co.kr/article/12051864"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "ibabynews",
       "domain": "ibabynews.com",
       "title": "[호텔 트렌드] 서울 남산에서 만나는 한국의 美…반얀트리 클럽 앤 스파...",
       "url": "https://www.ibabynews.com/news/articleView.html?idxno=149615"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "디지털타임스",
+      "domain": "dt.co.kr",
+      "title": "[기획] ‘호르무즈 돌파’ 다급한 트럼프… 美中 정상회담 연기 카드 꺼...",
+      "url": "https://www.dt.co.kr/article/12051864"
     },
     {
       "section": "supply",
@@ -3727,8 +3663,8 @@
       "reason": "supply_context_gate",
       "press": "thefairnews",
       "domain": "thefairnews.co.kr",
-      "title": "[전북 오늘(17일) 날씨] 출근길 영하권 '꽃샘추위'…낮엔 18도 포근, 미세...",
-      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71588"
+      "title": "[대전·세종·충남 오늘(17일) 날씨] 출근길 영하권 '서리 주의'…미세먼...",
+      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71589"
     },
     {
       "section": "supply",
@@ -3743,8 +3679,8 @@
       "reason": "supply_context_gate",
       "press": "thefairnews",
       "domain": "thefairnews.co.kr",
-      "title": "[대전·세종·충남 오늘(17일) 날씨] 출근길 영하권 '서리 주의'…미세먼...",
-      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71589"
+      "title": "[전북 오늘(17일) 날씨] 출근길 영하권 '꽃샘추위'…낮엔 18도 포근, 미세...",
+      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71588"
     },
     {
       "section": "supply",
@@ -3940,14 +3876,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_dist_export_field",
-      "press": "insight",
-      "domain": "insight.co.kr",
-      "title": "쿠팡, 올봄 3000톤 딸기 직매입... 인구감소지역으로 매입산지 늘려 지방...",
-      "url": "https://www.insight.co.kr/news/546568"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "이투데이",
       "domain": "etoday.co.kr",
@@ -4096,7 +4024,7 @@
       "press": "YTN",
       "domain": "radio.ytn.co.kr",
       "title": "\"잡았다, 물가 주범! 재고 쌓아두고” 돼지고기 왜 비싼가 현장 덮쳤더...",
-      "url": "https://radio.ytn.co.kr/program/?f=2&id=107834&s_mcd=0433&s_hcd=01"
+      "url": "https://radio.ytn.co.kr/program/?f=2&id=107840&s_mcd=0433&s_hcd=01"
     },
     {
       "section": "dist",
@@ -4104,7 +4032,7 @@
       "press": "YTN",
       "domain": "radio.ytn.co.kr",
       "title": "\"잡았다, 물가 주범! 재고 쌓아두고” 돼지고기 왜 비싼가 현장 덮쳤더...",
-      "url": "https://radio.ytn.co.kr/program/?f=2&id=107840&s_mcd=0433&s_hcd=01"
+      "url": "https://radio.ytn.co.kr/program/?f=2&id=107834&s_mcd=0433&s_hcd=01"
     },
     {
       "section": "dist",
@@ -4473,54 +4401,6 @@
       "domain": "jeollailbo.com",
       "title": "익산푸드통합지원센터, 농가 상생 직거래 장터 개최.",
       "url": "http://www.jeollailbo.com/news/articleView.html?idxno=794832"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "MTN",
-      "domain": "news.mtn.co.kr",
-      "title": "고르고, 섞고, 얼리고…한화 아이스크림 '벤슨' 직접 만들어보니 [MTN 픽...",
-      "url": "https://news.mtn.co.kr/news-detail/2026031614475197245"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "geconomy",
-      "domain": "geconomy.co.kr",
-      "title": "장흥군, 옛 교도소 ‘빠삐용Zip’ 문화거점으로…청소년 진로체험까지 ...",
-      "url": "https://www.geconomy.co.kr/news/article.html?no=317560"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "'두쫀쿠' 가고 '버터떡' 와도 말차 인기 굳건…음료업계, 신메뉴 출시",
-      "url": "https://www.newsis.com/view/NISX20260316_0003550476"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "경남농기원, 기초영농기술교육 총 4회 운영…귀농 첫걸음",
-      "url": "https://www.newsis.com/view/NISX20260317_0003550749"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "세계일보",
-      "domain": "segye.com",
-      "title": "알고리즘에 홀쭉해진 내 지갑…2% 통계 비웃는 133% ‘바이럴 물가’",
-      "url": "https://www.segye.com/newsView/20260316518992"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "포인트데일리",
-      "domain": "pointdaily.co.kr",
-      "title": "화순팜, 난 박람회서 '농특산물 장터' 연다..한우 등심 53% 파격 할인",
-      "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=296428"
     },
     {
       "section": "pest",
@@ -5683,38 +5563,6 @@
       "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1035098"
     },
     {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴데일리경제",
-      "domain": "newdaily.co.kr",
-      "title": "'좌깜 켜고 우회전' 노무현처럼 … 李 대통령, 美 호르무즈 파병 요청 결...",
-      "url": "https://www.newdaily.co.kr/site/data/html/2026/03/16/2026031600388.html"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "docdocdoc",
-      "domain": "docdocdoc.co.kr",
-      "title": "\"기소권 제한은 특혜 아냐…의료분쟁조정법 개정안 지지\"",
-      "url": "http://www.docdocdoc.co.kr/news/articleView.html?idxno=3037311"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "aitimes",
-      "domain": "aitimes.com",
-      "title": "그래멀리, 스티븐 킹·칼 세이건 등 모방 글쓰기 AI 기능으로 소송 당해",
-      "url": "https://www.aitimes.com/news/articleView.html?idxno=207923"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "gjdream",
-      "domain": "gjdream.com",
-      "title": "전국 249개 시민단체 \"무안공항 전면 재수색하라\"",
-      "url": "http://www.gjdream.com/news/articleView.html?idxno=667890"
-    },
-    {
       "section": "supply",
       "reason": "must_terms_fail",
       "press": "헤럴드경제",
@@ -6392,7 +6240,7 @@
       "threshold": 29.46,
       "tail_cut": 29.86,
       "core_min": 29.46,
-      "total_candidates": 345,
+      "total_candidates": 325,
       "total_selected": 3,
       "top": [
         {
@@ -6818,26 +6666,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.66,
-          "tier": 3,
-          "press": "헤럴드경제",
-          "domain": "biz.heraldcorp.com",
-          "title": "“포화 임박, 원전 보관 불가능” 사용후핵연료…‘한국형 처분기술’...",
-          "url": "https://biz.heraldcorp.com/article/10694974",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 18.56,
           "tier": 3,
           "press": "이데일리",
@@ -6850,6 +6678,26 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.46,
+          "tier": 3,
+          "press": "헤럴드경제",
+          "domain": "biz.heraldcorp.com",
+          "title": "“포화 임박, 원전 보관 불가능” 사용후핵연료…‘한국형 처분기술’...",
+          "url": "https://biz.heraldcorp.com/article/10694974",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
@@ -6910,26 +6758,6 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 17.81,
-          "tier": 3,
-          "press": "아시아경제",
-          "domain": "view.asiae.co.kr",
-          "title": "화순팜, 제8회 화순 난 명품박람회 연계 농특산물 판매 부스 운영",
-          "url": "https://view.asiae.co.kr/article/2026031611190129465",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 0,
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
@@ -7258,26 +7086,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.46,
-          "tier": 1,
-          "press": "한국일보",
-          "domain": "hankookilbo.com",
-          "title": "청송군 재해 대응형 미래 과원 구축 본격 추진",
-          "url": "https://www.hankookilbo.com/news/article/A2026031608150001205?did=NA",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 1,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 14.36,
           "tier": 3,
           "press": "MBC",
@@ -7293,6 +7101,26 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.26,
+          "tier": 1,
+          "press": "한국일보",
+          "domain": "hankookilbo.com",
+          "title": "청송군 재해 대응형 미래 과원 구축 본격 추진",
+          "url": "https://www.hankookilbo.com/news/article/A2026031608150001205?did=NA",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 1,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -7333,26 +7161,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 13.88,
-          "tier": 3,
-          "press": "MBN",
-          "domain": "mbn.co.kr",
-          "title": "\"당뇨약 못지않네\"…버려지던 고춧잎의 반전",
-          "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5181930",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
           }
         },
         {
@@ -7399,6 +7207,26 @@
           "selected": false,
           "is_core": false,
           "score": 13.68,
+          "tier": 3,
+          "press": "MBN",
+          "domain": "mbn.co.kr",
+          "title": "\"당뇨약 못지않네\"…버려지던 고춧잎의 반전",
+          "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5181930",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.68,
           "tier": 1,
           "press": "강원일보",
           "domain": "kwnews.co.kr",
@@ -7413,26 +7241,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 13.61,
-          "tier": 1,
-          "press": "한국농정신문",
-          "domain": "ikpnews.net",
-          "title": "농업용 면세유 급등, 대책은 언제쯤?",
-          "url": "http://www.ikpnews.net/news/articleView.html?idxno=69873",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -7594,20 +7402,60 @@
             "press_tier": 2,
             "press_weight": 3.7
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.68,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "donga.com",
+          "title": "[단독] 산불 이 휩쓴 마을, 주민 절반 터전 떠나… 지역소멸 가속화 위기",
+          "url": "https://www.donga.com/news/Society/article/all/20260316/133540470/1",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.62,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "sports.donga.com",
+          "title": "르메르디앙 서울 명동, 이 티세트 비주얼 뭐지",
+          "url": "https://sports.donga.com/life/article/all/20260316/133541334/1",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.64,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
         }
       ]
     },
     "policy": {
-      "threshold": 38.53,
-      "tail_cut": 38.73,
-      "core_min": 38.53,
-      "total_candidates": 77,
+      "threshold": 38.33,
+      "tail_cut": 38.53,
+      "core_min": 38.33,
+      "total_candidates": 78,
       "total_selected": 4,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 46.53,
+          "score": 46.33,
           "tier": 3,
           "press": "헤럴드경제",
           "domain": "biz.heraldcorp.com",
@@ -7867,7 +7715,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.74,
+          "score": 26.54,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
@@ -8167,7 +8015,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.11,
+          "score": 22.91,
           "tier": 1,
           "press": "BBSI",
           "domain": "news.bbsi.co.kr",
@@ -8627,6 +8475,26 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 12.76,
+          "tier": 1,
+          "press": "한국농정신문",
+          "domain": "ikpnews.net",
+          "title": "농업용 면세유 급등, 대책은 언제쯤?",
+          "url": "http://www.ikpnews.net/news/articleView.html?idxno=69873",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 12.16,
           "tier": 2,
           "press": "농업정보신문",
@@ -8782,26 +8650,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.29,
-          "tier": 1,
-          "press": "foodnews",
-          "domain": "foodnews.co.kr",
-          "title": "농산물 가격 하락세, 축산물은 다소 높아…계란 수입 등 공급 확대 총력",
-          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117683",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         }
       ]
@@ -9305,7 +9153,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.67,
+          "score": 7.47,
           "tier": 1,
           "press": "한국일보",
           "domain": "hankookilbo.com",
@@ -9636,19 +9484,15 @@
       "window_hits_top": [
         [
           "딸기 가격",
-          31
-        ],
-        [
-          "사과 농가",
-          22
+          24
         ],
         [
           "토마토 재배",
           20
         ],
         [
-          "딸기 재배",
-          19
+          "사과 농가",
+          20
         ],
         [
           "배추 가격",
@@ -9671,16 +9515,16 @@
           12
         ],
         [
+          "감자 재배",
+          11
+        ],
+        [
           "포도 산업",
           11
         ],
         [
-          "토마토 가격",
-          10
-        ],
-        [
-          "감자 재배",
-          10
+          "딸기 재배",
+          11
         ],
         [
           "마늘 가격",
@@ -9693,6 +9537,10 @@
         [
           "가지 농가",
           9
+        ],
+        [
+          "감귤 가격",
+          7
         ]
       ],
       "google_hits_top": [],
@@ -9928,7 +9776,7 @@
           "수박"
         ]
       },
-      "items_total": 379,
+      "items_total": 360,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
