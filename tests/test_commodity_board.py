@@ -270,7 +270,9 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("commodityBoardNav", html)
         self.assertIn("syncStickyOffsets", html)
         self.assertIn("syncFloatingChipbar", html)
+        self.assertIn("syncMobileQuickNav", html)
         self.assertIn('id="chipDock"', html)
+        self.assertIn('id="mobileQuickNav"', html)
         self.assertIn("--group-chip-color", html)
         self.assertIn("--chip-color", html)
         self.assertIn("--chipbar-height", html)
@@ -288,6 +290,8 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn(".commodityBoardNav{margin:18px 18px 20px}", html)
         self.assertIn(".chip,.commodityGroupChip{", html)
         self.assertIn(".viewTabEyebrow{display:none}", html)
+        self.assertIn(".mobileQuickNavBody .chips,", html)
+        self.assertIn("body.quickNavOpen{overflow:hidden}", html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]
