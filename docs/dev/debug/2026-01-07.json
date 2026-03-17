@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T00:35:26+09:00",
-  "build_tag": "f802b07",
+  "generated_at_kst": "2026-03-18T06:36:47+09:00",
+  "build_tag": "605740b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -165,30 +165,20 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "대구MBC",
-      "domain": "dgmbc.com",
-      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
-      "url": "https://dgmbc.com/NewsArticle/817866",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "KBS 뉴스",
-      "domain": "news.kbs.co.kr",
-      "title": "현대차 GBC ‘49층 3개동’ 확정…땅꺼짐 방지 대책은?",
-      "url": "https://news.kbs.co.kr/news/view.do?ncd=8451908",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
       "press": "경기일보",
       "domain": "kyeonggi.com",
       "title": "국도 47호선 군포 구간 ‘지하화’…광역교통개선대책 확정",
       "url": "https://www.kyeonggi.com/article/20260107580321",
+      "source_query": "대책",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "쿠키뉴스",
+      "domain": "kukinews.com",
+      "title": "주택 공급 대책 또 유휴부지?…“시장 불안 잠재우기엔 역부족”",
+      "url": "https://www.kukinews.com/article/view/kuk202601050237",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -219,16 +209,6 @@
       "domain": "khan.co.kr",
       "title": "김동연, 장동혁 사과에 “선거만 다가오면 반복되는 국힘의 사과 코스프레”",
       "url": "https://www.khan.co.kr/article/202601071236001",
-      "source_query": "사과",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_apology_context",
-      "press": "동아일보",
-      "domain": "donga.com",
-      "title": "장동혁, 계엄 사과하고 당명개정 추진…‘尹 절연’ 언급은 없어",
-      "url": "https://www.donga.com/news/Politics/article/all/20260107/133107863/2",
       "source_query": "사과",
       "source_channel": "google_news"
     },
@@ -475,30 +455,10 @@
     {
       "section": "dist",
       "reason": "market_political_visit_noise",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "새해 새벽 가락시장 찾은 鄭 \"민생 속으로\"…지선 민심공략 시동",
-      "url": "https://www.yna.co.kr/view/AKR20260107060200001",
-      "source_query": "가락시장 경매",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "dist",
-      "reason": "market_political_visit_noise",
       "press": "조선일보",
       "domain": "chosun.com",
       "title": "가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”",
       "url": "https://www.chosun.com/politics/politics_general/2026/01/07/WYREK3ZUKFHZZB4RV53EBQP7PU/",
-      "source_query": "가락시장 경매",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "dist",
-      "reason": "fishery_only",
-      "press": "콜드체인뉴스",
-      "domain": "coldchainnews.kr",
-      "title": "가락시장, 최우수 수산물 도매시장 3년 연속선정",
-      "url": "https://www.coldchainnews.kr/news/article.html?no=28164",
       "source_query": "가락시장 경매",
       "source_channel": "google_news"
     },
@@ -519,6 +479,16 @@
       "domain": "v.daum.net",
       "title": "정청래 \"국힘, 철 지난 썩은 사과라도 내란 사과는 당연\"",
       "url": "https://v.daum.net/v/20260107102841549",
+      "source_query": "가락시장 경매",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "“적토마처럼 힘차게”…농협경제지주 사업추진 결의",
+      "url": "https://www.nongmin.com/article/20260107500038",
       "source_query": "가락시장 경매",
       "source_channel": "google_news"
     },
