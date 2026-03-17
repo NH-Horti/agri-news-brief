@@ -13843,6 +13843,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --page-max:1220px;
       --topbar-height:172px;
       --chipbar-height:58px;
+      --nav-chip-height:40px;
       --sticky-nav-offset:188px;
       --anchor-offset:248px;
     }}
@@ -13880,17 +13881,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       select{{width:145px; max-width:145px;}}
     }}
 
-    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}}
-    .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:124px;padding:16px 18px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
+    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;align-items:stretch}}
+    .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;min-height:132px;padding:18px 20px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
     .viewTab:hover{{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}}
     .viewTabEyebrow{{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}}
     .viewTab.isActive .viewTabEyebrow{{background:rgba(255,255,255,.16);color:#e0f2fe}}
     .viewTabTitle{{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}}
-    .viewTabDesc{{font-size:13px;line-height:1.55;color:#475569}}
+    .viewTabDesc{{max-width:420px;font-size:13px;line-height:1.55;color:#475569}}
     .viewTab.isActive .viewTabDesc{{color:rgba(255,255,255,.88)}}
-    .viewTabStats{{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}}
-    .viewTabStat{{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}}
+    .viewTabStats{{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}}
+    .viewTabStat{{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}}
     .viewTabStat strong{{font-size:13px}}
     .viewTab.isActive .viewTabStat{{background:rgba(255,255,255,.16);color:#fff}}
 
@@ -13905,17 +13906,20 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
-    .chipbar{{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);}}
+    .chipbar{{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);overflow:hidden;}}
     .briefingChipbar{{margin:16px 0 0}}
     .commodityBoardNav{{margin:18px 18px 20px}}
-    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 12px;}}
-    .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
+    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 14px;}}
+    .chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:center;}}
+    .chips{{flex-wrap:wrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{text-decoration:none;border:1px solid var(--chip-border, var(--line));padding:9px 14px;border-radius:999px;
-          background:linear-gradient(180deg,var(--chip-soft, var(--chip)) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
+    .commodityGroupNav{{flex-wrap:wrap;}}
+    .chip,.commodityGroupChip{{text-decoration:none;border:1px solid var(--chip-border, var(--group-chip-border, var(--line)));border-radius:999px;
+          background:linear-gradient(180deg,var(--chip-soft, var(--group-chip-soft, var(--chip))) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;justify-content:center;min-width:0;min-height:var(--nav-chip-height);padding:0 16px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72);white-space:nowrap}}
     .chip:hover{{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}}
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .chipN{{min-width:28px;text-align:center;background:var(--chip-color, #111827);color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
+    .chipN,.commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;text-align:center;color:#fff;padding:0 8px;border-radius:999px;font-size:11px}}
+    .chipN{{background:var(--chip-color, #111827)}}
     .chipDock{{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}}
     .chipDock.isVisible{{opacity:1;transform:translateY(0);pointer-events:auto}}
     .chipDockInner{{max-width:var(--page-max);margin:0 auto;padding:0 20px}}
@@ -13966,10 +13970,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
     .commodityBoardNav{{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
-    .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap}}
-    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);color:#0f172a;text-decoration:none;font-size:13px;font-weight:900;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.72)}}
     .commodityGroupChip:hover{{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}}
-    .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:999px;background:var(--group-chip-color, #111827);color:#fff;font-size:11px}}
+    .commodityGroupChip{{border-color:var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);}}
+    .commodityGroupChip span{{background:var(--group-chip-color, #111827)}}
     .commodityGroupBlock{{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}}
     .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px}}
     .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
@@ -14044,6 +14047,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
+      .wrap{{padding:12px 12px 64px !important}}
       .topin{{gap:8px}}
       .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}}
       .navRow > .navBtn:first-child{{grid-column:1}}
@@ -14052,28 +14056,42 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .navRow > .navBtn:last-child{{grid-column:2}}
       .dateSelWrap{{width:100%}}
       .dateSelWrap select{{width:100%;max-width:none}}
-      .viewTabs{{grid-template-columns:1fr}}
-      .viewTab{{min-height:auto;padding:15px 16px;border-radius:18px}}
-      .viewTabTitle{{font-size:22px}}
-      .briefingHero{{grid-template-columns:1fr;padding:18px}}
-      .briefingHero h2{{font-size:28px}}
-      .briefingHeroStats{{justify-content:flex-start}}
-      .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      /* mobile chips: 2 columns so counts are always visible */
-      .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between}}
-      .chip{{padding:8px 10px;font-size:12.5px}}
-      .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
-      .commodityHead{{grid-template-columns:1fr;padding:18px 18px 14px}}
-      .commodityHead h2{{font-size:28px}}
-      .commodityHeadStats{{justify-content:flex-start}}
-      .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
+      .viewTabs{{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}}
+      .viewTab{{min-height:auto;padding:12px 14px;border-radius:16px;gap:8px;box-shadow:0 8px 18px rgba(15,23,42,.08)}}
+      .viewTabEyebrow{{display:none}}
+      .viewTabTitle{{font-size:18px;letter-spacing:-0.35px}}
+      .viewTabDesc{{display:none}}
+      .viewTabStats{{gap:6px;margin-top:0}}
+      .viewTabStat{{min-height:24px;padding:0 8px;font-size:11px}}
+      .viewTabStat strong{{font-size:12px}}
+      .briefingPane,.commodityPane{{margin-top:10px}}
+      .briefingHero{{grid-template-columns:1fr;padding:14px 14px 12px;border-radius:18px;gap:12px}}
+      .briefingEyebrow,.commodityEyebrow{{min-height:22px;padding:0 8px;font-size:10px}}
+      .briefingHero h2{{font-size:24px;letter-spacing:-0.55px}}
+      .briefingLead,.commodityLead{{margin-top:8px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+      .briefingHeroStats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}}
+      .briefingHeroStat{{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:0 6px 16px rgba(15,23,42,.06)}}
+      .briefingHeroStatLabel{{font-size:10px}}
+      .briefingHeroStat strong{{margin-top:4px;font-size:18px}}
+      .chipbar{{border-radius:14px}}
+      .chipwrap{{padding:8px 10px}}
+      .chips,.commodityGroupNav{{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}}
+      .chips::-webkit-scrollbar,.commodityGroupNav::-webkit-scrollbar{{display:none}}
+      .chip,.commodityGroupChip{{flex:0 0 auto;min-height:36px;padding:0 12px;font-size:12px}}
+      .chipN,.commodityGroupChip span{{min-width:22px;height:22px;padding:0 7px}}
+      .commodityHead{{grid-template-columns:1fr;padding:14px 14px 12px;border-bottom:none}}
+      .commodityHead h2{{font-size:24px;letter-spacing:-0.55px}}
+      .commodityHeadStats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}}
+      .commodityHeadStat{{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:0 6px 16px rgba(15,23,42,.06)}}
+      .commodityHeadStatLabel{{font-size:10px}}
+      .commodityHeadStat strong{{margin-top:4px;font-size:18px}}
+      .commodityBoard{{margin-top:10px;border-radius:18px}}
       .commodityGrid{{grid-template-columns:1fr}}
-      .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
-      .commodityBoardNav{{margin:16px 14px 16px}}
-      .commodityGroupBlock{{margin:0 14px 16px;padding:14px}}
+      .commodityBoardNav{{margin:12px 12px 14px}}
+      .commodityGroupBlock{{margin:0 12px 14px;padding:12px;border-radius:18px}}
       .commodityGroupHead{{display:block}}
       .commodityGroupMeta{{margin-top:6px}}
+      .commodityTile{{padding:12px}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
       .commoditySupportText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}

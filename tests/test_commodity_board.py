@@ -274,6 +274,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("--group-chip-color", html)
         self.assertIn("--chip-color", html)
         self.assertIn("--chipbar-height", html)
+        self.assertIn("--nav-chip-height", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
@@ -285,6 +286,8 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertLess(html.index("commodityBoardTitle"), html.index('class="chipbar commodityBoardNav"'))
         self.assertIn(".chipDock{position:fixed;", html)
         self.assertIn(".commodityBoardNav{margin:18px 18px 20px}", html)
+        self.assertIn(".chip,.commodityGroupChip{", html)
+        self.assertIn(".viewTabEyebrow{display:none}", html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]
