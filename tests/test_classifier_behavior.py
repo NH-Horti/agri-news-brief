@@ -743,6 +743,36 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertFalse(main.policy_has_horti_anchor(title, desc, dom, press))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
 
+    def test_supply_title_livestock_dominant_story_is_rejected(self):
+        title = "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기 공급 확대"
+        desc = "축산 정책과 한우고기 공급 확대를 다룬 축산 중심 기사다."
+        url = "https://example.com/supply-livestock-only"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_title_livestock_dominant_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+
+    def test_supply_training_recruitment_story_is_rejected(self):
+        title = "영천시, '2026년 농업대학' 포도 과정 신입생 모집"
+        desc = "영천시가 포도 과정 신입생을 모집하고 교육 프로그램을 운영한다는 기사다."
+        url = "https://example.com/supply-training"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_agri_training_recruitment_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+
+    def test_policy_budget_drive_story_is_rejected(self):
+        title = "상주시, 2027년 국가투자예산 확보 총력…2888억원 규모 전략사업 발굴"
+        desc = "상주시가 국가투자예산 확보와 전략사업 발굴에 총력을 기울인다는 일반 행정 기사다."
+        best, scores = self._best_section(title, desc, "https://example.com/policy-budget-drive")
+        self.assertIsNone(best, msg=f"scores={scores}")
+
+    def test_policy_forest_admin_story_is_rejected(self):
+        title = "2026년도 전국 산불방지 종합대책"
+        desc = "산림청이 전국 산불방지 종합대책을 발표한 산림 행정 기사다."
+        best, scores = self._best_section(title, desc, "https://example.com/policy-forest-admin")
+        self.assertIsNone(best, msg=f"scores={scores}")
+
     def test_local_smart_agri_zone_selection_is_not_dist_core(self):
         herald = self._make_article(
             "dist",
@@ -760,6 +790,18 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([strong, herald], "dist", 5)
         herald_picked = next((x for x in picked if x.link == herald.link), None)
         self.assertTrue(herald_picked is None or (not getattr(herald_picked, "is_core", False)), msg=str([(x.link, x.score, x.is_core) for x in picked]))
+
+    def test_dist_political_market_visit_story_is_rejected(self):
+        title = "가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”"
+        desc = "정청래 의원이 가락시장을 방문해 비상계엄과 정치 현안에 대한 발언을 내놓은 정치 기사다."
+        best, scores = self._best_section(title, desc, "https://www.mt.co.kr/politics/2026/01/01/market-visit")
+        self.assertIsNone(best, msg=f"scores={scores}")
+
+    def test_supply_price_outlook_story_prefers_supply(self):
+        title = "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락"
+        desc = "저장채소와 시설채소 가격 흐름이 엇갈리고 오이와 청양고추 시세 하락 폭이 커졌다는 품목별 수급 전망 기사다."
+        best, scores = self._best_section(title, desc, "https://example.com/supply-price-outlook")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
 
 
     def test_sedaily_price_watch_prefers_policy_over_supply(self):
@@ -893,6 +935,15 @@ class TestClassifierBehavior(unittest.TestCase):
         press = main.normalize_press_label(main.press_name_from_url(url), url)
         self.assertTrue(main.is_dist_campaign_noise_context(title, desc))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_pest_input_marketing_noise_story_is_rejected(self):
+        title = "“농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란"
+        desc = "비료 제품이 농약처럼 오인되도록 온라인에서 허위·과대광고된 사례를 다룬 입력재 기사다."
+        url = "https://example.com/pest-input-marketing"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_pest_input_marketing_noise_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["pest"], press))
 
     def test_dist_local_org_tail_catches_small_but_strong_coop_profile(self):
         title = "경제사업 활발…'작지만 강한 농협' 부상"
@@ -1114,6 +1165,34 @@ class TestClassifierBehavior(unittest.TestCase):
             "http://www.aflnews.co.kr/news/articleView.html?idxno=315910",
         )
         self.assertFalse(main._headline_gate_relaxed(interview, "supply"))
+
+    def test_supply_selection_does_not_backfill_interview_feature_story(self):
+        cabbage = self._make_article(
+            "supply",
+            "저장 배추 물량 감소…시세 상승 기대",
+            "배추 저장 물량이 줄며 도매시장 시세 상승이 예상된다.",
+            "https://www.seoul.co.kr/news/economy/2026/03/09/20260309500277?wlog_tag3=naver",
+        )
+        citrus = self._make_article(
+            "supply",
+            "제주 감귤, 수입산과 맛 블라인드 테스트 69% 압도",
+            "제주산 만감류 천혜향이 수입 만다린보다 두 배 이상 높은 소비자 선호도를 기록했다.",
+            "https://www.fnnews.com/news/202603091837432209",
+        )
+        interview = self._make_article(
+            "supply",
+            "[afl Interview] 안진우 한국 포도 협회 회장",
+            "포도 수급 조절위원회 가동과 과잉 물량 대응 계획을 설명했다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=315910",
+        )
+        cabbage.score = 25.0
+        citrus.score = 24.0
+        interview.score = 23.8
+        interview.topic = "포도"
+
+        picked = main.select_top_articles([cabbage, citrus, interview], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertNotIn(interview.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
 
     def test_supply_feature_refresh_needed_when_full_but_feature_light(self):
@@ -2587,6 +2666,19 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(len(raw["dist"]), 1, msg=str([(x.section, x.link, x.score) for x in raw["dist"]]))
         self.assertEqual(raw["dist"][0].link, url)
         self.assertEqual(raw["dist"][0].reassigned_from, "policy")
+
+    def test_global_reassign_preserves_strong_dist_market_disruption_story(self):
+        title = "가락·구리시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’"
+        desc = "수도권 도매시장 동시 휴업 여파로 딸기 산지 폐기량이 늘고 경락값이 급락한 시장 충격 기사다."
+        url = "https://example.com/dist-market-disruption-owner"
+        a = self._make_article("dist", title, desc, url)
+        raw = {"policy": [], "supply": [], "dist": [a], "pest": []}
+
+        main._global_section_reassign(raw, self.now, self.now)
+
+        self.assertEqual(len(raw["dist"]), 1, msg=str([(x.section, x.link, x.score) for x in raw["dist"]]))
+        self.assertEqual(raw["dist"][0].link, url)
+        self.assertFalse(raw["supply"], msg=str([(x.section, x.link, x.score) for x in raw["supply"]]))
 
     def test_rebalance_underfilled_dist_moves_supply_market_action_story(self):
         dist_seed = self._make_article(
