@@ -1,0 +1,49 @@
+===== 2026-01-07 =====
+[supply] threshold=17.95 selected=3
+  - core                     score= 25.95 fit=2.29  origin=supply :: '오늘은 양배추가 올랐네'… 농산물 도매 가 연일 강세
+  - tail                     score= 21.48 fit=1.58  origin=supply :: aT, '기후변화대응처' 컨트롤타워 강화…기후위기 시대 농산물 수급 총...
+  - tail                     score= 21.31 fit=1.05  origin=policy :: 美 사과 들어오면 국산 50~70% 가격에…국내농가 타격 ‘불가피’
+[policy] threshold=8.92 selected=2
+  - core                     score= 20.92 fit=0.3   origin=dist   :: 새해 가락 시장 초매식…“농산물값 잘 받아 웃는 일 많았으면”
+  - core                     score= 18.99 fit=0.86  origin=policy :: 직불금 늘리고 임산부 가구 소비 지원… 친환경농업 되살린다
+[dist] threshold=8.12 selected=2
+  - cross_section_dist_backfill score= 19.02 fit=1.32  origin=supply :: [올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...
+  - cross_section_dist_backfill score= 18.52 fit=1.32  origin=supply :: 한국청과, 9개 품목 '출하비용 보전'··· 올해부터, 양파·대파·감자 ...
+[pest] threshold=13.67 selected=1
+  - core                     score= 23.67 fit=3.35  origin=pest   :: 순천시, 농작물 병해충 방제 및 재해 예방에 10억원 투입
+
+===== 2026-02-20 =====
+[supply] threshold=26.77 selected=2
+  - core                     score= 34.77 fit=2.58  origin=policy :: 오르는 사과·내리는 배값…생산량이 갈랐다
+  - core                     score= 29.41 fit=3.63  origin=supply :: 가격 하락 폭 큰 양파·마늘 등에 43억 4천만 원 지원
+[policy] threshold=13.26 selected=3
+  - core                     score= 32.91 fit=4.24  origin=policy :: 설 이후 가격 하락 공식 약화…사과·배 ‘버티기’ 반복
+  - tail                     score= 21.26 fit=1.36  origin=dist   :: 한국 청과 , 출하비용 첫 현금 지원
+  - tail                     score= 19.86 fit=3.69  origin=policy :: 고환율·공급난 ‘이중고’…수입 먹거리 물가 인상 ‘비상’
+[dist] threshold=7.2 selected=3
+  - core                     score= 23.17 fit=0.78  origin=policy :: 농협개혁· 온라인도매시장 법제화 국회 통과
+  - dist_underfill           score=  7.19 fit=1.06  origin=dist   :: K-푸드 수출 1000억 달러 시대의 열쇠, '비관세장벽 4단계 대응 체계'에...
+  - cross_section_dist_backfill score= 19.98 fit=0.88  origin=supply :: “농가 포장·운송비 부담 완화”…한국청과, 보전금 첫 지급
+[pest] threshold=6.6 selected=1
+  - core                     score=  9.24 fit=1.62  origin=policy :: 잔류농약 기준치 초과 농산물 '상추·깻잎' 엽채류가 최다
+
+===== 2026-03-11 =====
+[supply] threshold=28.12 selected=5
+  - core                     score= 36.12 fit=0.78  origin=dist   :: “고랭지채소 가격 안정”…강원 농산물수급관리센터 가동
+  - tail                     score= 31.96 fit=0.75  origin=supply :: 농자재업계, 중동 사태 ‘촉각’…장기화땐 원료 수급 ‘타격’
+  - core                     score= 30.45 fit=4.58  origin=supply :: 양파 당분간 약세…봄작형 배추· 무 재배면적 줄 듯
+  - tail                     score= 29.62 fit=5.12  origin=supply :: 저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락
+  - supply_feature_backfill  score=  28.1 fit=3.06  origin=supply :: 가락·구리시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’
+[policy] threshold=22.3 selected=3
+  - core                     score=  26.8 fit=1.25  origin=policy :: 충남도, 전국 최대 원예·축산 시범사업 '시동'
+  - tail                     score= 26.48 fit=3.54  origin=supply :: "이번 설은 뭐부터 사야 하나"…장바구니 물가 희비
+  - policy_major_issue_backfill score= 17.53 fit=2.01  origin=supply :: 강원도 '농산물 광역 수급 관리센터' 전국 최초 출범
+[dist] threshold=29.62 selected=3
+  - core                     score= 37.62 fit=2.97  origin=dist   :: ‘굿뜨래 싱싱딸기’ 몽골행…1t 선적
+  - dist_anchor_backfill     score= 36.49 fit=3.26  origin=dist   :: 수도권 도매시장 첫 동시 휴업···출하쏠림에 과채류 가격 '휘청'
+  - underfill                score= 28.02 fit=0.78  origin=policy :: 온라인도매시장 제도 개선 나섰다
+[pest] threshold=27.53 selected=4
+  - core                     score= 34.53 fit=4.91  origin=policy :: 강원도 영월군, 과수화상병 예방 방제약제 공급... 사과 ·배 농가 205곳 ...
+  - core                     score= 32.81 fit=2.49  origin=pest   :: “농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란
+  - underfill                score= 22.45 fit=3.85  origin=pest   :: 무주군, 돌발 해충 월동난 예찰 실시…농작물 피해 예방 총력
+  - pest_diversity_backfill  score= 20.77 fit=4.19  origin=pest   :: 옥천군농업기술센터, 복숭아 재배농가 월동 병해충 방제 현장지도 강화
