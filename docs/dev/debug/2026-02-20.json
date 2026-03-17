@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T21:40:54+09:00",
-  "build_tag": "e958cd6",
+  "generated_at_kst": "2026-03-17T23:22:36+09:00",
+  "build_tag": "827e9df",
   "filter_rejects": [
     {
       "section": "policy",
@@ -204,16 +204,6 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "서울시, 부적합 농수산물 유통 사전 차단",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03683446645352160",
-      "source_query": "농산물 특별관리 품목",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "fishery_only",
       "press": "TF",
       "domain": "news.tf.co.kr",
@@ -224,11 +214,11 @@
     },
     {
       "section": "policy",
-      "reason": "news1_local_weak_context",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "\"상추·깻잎 기준치 초과 농약\"…서울시, 매일 검사해 잡는다",
-      "url": "https://www.news1.kr/local/seoul/6075809",
+      "reason": "fishery_title_only",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "서울시, 부적합 농수산물 유통 사전 차단",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03683446645352160",
       "source_query": "농산물 특별관리 품목",
       "source_channel": "naver_api"
     },
@@ -239,6 +229,16 @@
       "domain": "yna.co.kr",
       "title": "농수산물 부적합 적발 최다는 '잔류농약'…서울시, 검사 확대",
       "url": "https://www.yna.co.kr/view/AKR20260219032200004?input=1195m",
+      "source_query": "농산물 특별관리 품목",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "fishery_title_only",
+      "press": "머니투데이",
+      "domain": "mt.co.kr",
+      "title": "서울시, 부적합 농수산물 유통 사전 차단…먹거리 안전망 가동",
+      "url": "https://www.mt.co.kr/policy/2026/02/19/2026021910104337754",
       "source_query": "농산물 특별관리 품목",
       "source_channel": "naver_api"
     },
@@ -574,11 +574,91 @@
     },
     {
       "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "동아일보",
+      "domain": "sports.donga.com",
+      "title": "영천시, ‘2026년 농업대학’ 포도 과정 신입생 모집",
+      "url": "https://sports.donga.com/region/article/all/20260220/133379779/1",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "국제뉴스",
+      "domain": "gukjenews.com",
+      "title": "영천시, 농업대학 포도 과정 신입생 30명 모집",
+      "url": "https://www.gukjenews.com/news/articleView.html?idxno=3509459",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "SENTV",
+      "domain": "sentv.co.kr",
+      "title": "영천시, 농업대학 포도 과정 신입생 모집",
+      "url": "https://www.sentv.co.kr/article/view/sentv202602190238",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
       "reason": "ban_keywords",
       "press": "newsprime",
       "domain": "newsprime.co.kr",
       "title": "[영천시 소식] 장애인·노인 전동보조기기 배상책임 보험 가입 지원",
       "url": "http://www.newsprime.co.kr/news/article.html?no=724742",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "영천 농업대학 포도 과정 신입생 모집…\"샤인머스캣 대체\"",
+      "url": "https://www.newsis.com/view/NISX20260219_0003518624",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "영천시, ' 포도 신품종' 기술 전수…농업대학 신입생 모집",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1337109",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "KBSM",
+      "domain": "kbsm.net",
+      "title": "영천시, 농업대학 포도 과정 신입생 모집",
+      "url": "https://www.kbsm.net/news/view.php?idx=508958",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "DKILBO",
+      "domain": "dkilbo.com",
+      "title": "영천시, 농업대학 포도 과정 신입생 모집",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=534302",
+      "source_query": "포도 가격 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "POINTE",
+      "domain": "pointe.co.kr",
+      "title": "영천시, 농업대학 포도 과정 신입생 모집",
+      "url": "https://www.pointe.co.kr/news/articleView.html?idxno=72370",
       "source_query": "포도 가격 하락",
       "source_channel": "naver_api"
     },
@@ -634,21 +714,21 @@
     },
     {
       "section": "dist",
-      "reason": "fishery_only",
-      "press": "TF",
-      "domain": "news.tf.co.kr",
-      "title": "수산물 검사 '말라카이트그린' 추가…침출차·고춧가루도 기획 수거",
-      "url": "https://news.tf.co.kr/read/life/2293923.htm",
-      "source_query": "공영도매시장 경매",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "fishery_title_only",
       "press": "이데일리",
       "domain": "edaily.co.kr",
       "title": "서울시, 부적합 농수산물 유통 사전 차단",
       "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03683446645352160",
+      "source_query": "공영도매시장 경매",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_only",
+      "press": "TF",
+      "domain": "news.tf.co.kr",
+      "title": "수산물 검사 '말라카이트그린' 추가…침출차·고춧가루도 기획 수거",
+      "url": "https://news.tf.co.kr/read/life/2293923.htm",
       "source_query": "공영도매시장 경매",
       "source_channel": "naver_api"
     },
@@ -943,16 +1023,6 @@
       "source_channel": "naver_api"
     },
     {
-      "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "제주의소리",
-      "domain": "jejusori.net",
-      "title": "기후변화로 병해충 비상... 제주도, 신종·돌발해충 선제 대응 총력",
-      "url": "https://www.jejusori.net/news/articleView.html?idxno=443893",
-      "source_query": "병해충 예찰",
-      "source_channel": "google_news"
-    },
-    {
       "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "NAEIL",
@@ -1051,37 +1121,27 @@
       "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8488401",
       "source_query": "",
       "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "동아일보",
-      "domain": "sports.donga.com",
-      "title": "영천시, ‘2026년 농업대학’ 포도 과정 신입생 모집",
-      "url": "https://sports.donga.com/region/article/all/20260220/133379779/1",
-      "source_query": "",
-      "source_channel": ""
     }
   ],
   "sections": {
     "supply": {
-      "threshold": 24.47,
-      "tail_cut": 24.87,
-      "core_min": 24.47,
-      "total_candidates": 79,
-      "total_selected": 3,
+      "threshold": 26.77,
+      "tail_cut": 27.17,
+      "core_min": 26.77,
+      "total_candidates": 71,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 32.47,
+          "score": 34.77,
           "tier": 3,
           "press": "헤럴드경제",
           "domain": "biz.heraldcorp.com",
           "title": "오르는 사과·내리는 배값…생산량이 갈랐다",
           "url": "https://biz.heraldcorp.com/article/10678294",
           "reason": "",
-          "fit_score": 1.8,
+          "fit_score": 2.58,
           "selection_stage": "core",
           "selection_note": "",
           "origin_section": "policy",
@@ -1126,33 +1186,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 26.21,
-          "tier": 3,
-          "press": "동아일보",
-          "domain": "sports.donga.com",
-          "title": "영천시, ‘2026년 농업대학’ 포도 과정 신입생 모집",
-          "url": "https://sports.donga.com/region/article/all/20260220/133379779/1",
-          "reason": "",
-          "fit_score": 3.13,
-          "selection_stage": "tail",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "policy",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.12,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 24.95,
@@ -1161,9 +1194,9 @@
           "domain": "nongmin.com",
           "title": "“농가 포장·운송비 부담 완화”…한국청과, 보전금 첫 지급",
           "url": "https://www.nongmin.com/article/20260213500239",
-          "reason": "not_selected",
+          "reason": "postbuild_pruned",
           "fit_score": 1.95,
-          "selection_stage": "not_selected",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -1188,9 +1221,9 @@
           "domain": "nongmin.com",
           "title": "경북도농업기술원, 수출용 포도 신품종 ‘글로리스타’ 재배 지침서 발...",
           "url": "https://www.nongmin.com/article/20260219500475",
-          "reason": "tail_cut",
+          "reason": "below_threshold",
           "fit_score": 1.43,
-          "selection_stage": "tail_cut",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -1366,33 +1399,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 15.33,
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "영천 농업대학 포도 과정 신입생 모집…\"샤인머스캣 대체\"",
-          "url": "https://www.newsis.com/view/NISX20260219_0003518624",
-          "reason": "below_threshold",
-          "fit_score": 1.63,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.8,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
           }
         },
         {
@@ -2046,33 +2052,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.58,
-          "tier": 1,
-          "press": "국제뉴스",
-          "domain": "gukjenews.com",
-          "title": "영천시, 농업대학 포도 과정 신입생 30명 모집",
-          "url": "https://www.gukjenews.com/news/articleView.html?idxno=3509459",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 7.26,
           "tier": 1,
           "press": "충남일보",
@@ -2100,33 +2079,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.78,
-          "tier": 1,
-          "press": "데일리한국",
-          "domain": "daily.hankooki.com",
-          "title": "영천시, ' 포도 신품종' 기술 전수…농업대학 신입생 모집",
-          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1337109",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.51,
           "tier": 1,
           "press": "hortitimes",
@@ -2149,114 +2101,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.78,
-          "tier": 1,
-          "press": "SENTV",
-          "domain": "sentv.co.kr",
-          "title": "영천시, 농업대학 포도 과정 신입생 모집",
-          "url": "https://www.sentv.co.kr/article/view/sentv202602190238",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.78,
-          "tier": 1,
-          "press": "KBSM",
-          "domain": "kbsm.net",
-          "title": "영천시, 농업대학 포도 과정 신입생 모집",
-          "url": "https://www.kbsm.net/news/view.php?idx=508958",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.78,
-          "tier": 1,
-          "press": "DKILBO",
-          "domain": "dkilbo.com",
-          "title": "영천시, 농업대학 포도 과정 신입생 모집",
-          "url": "https://www.dkilbo.com/news/articleView.html?idxno=534302",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.78,
-          "tier": 1,
-          "press": "POINTE",
-          "domain": "pointe.co.kr",
-          "title": "영천시, 농업대학 포도 과정 신입생 모집",
-          "url": "https://www.pointe.co.kr/news/articleView.html?idxno=72370",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "포도 가격 하락",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
           }
         },
         {
@@ -2690,6 +2534,222 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.76,
+          "tier": 1,
+          "press": "국제뉴스",
+          "domain": "gukjenews.com",
+          "title": "공주시, 2026 연고 산업 육성사업 확정…\"국비 등 18억 확보'",
+          "url": "https://www.gukjenews.com/news/articleView.html?idxno=3508921",
+          "reason": "below_threshold",
+          "fit_score": 0.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.76,
+          "tier": 1,
+          "press": "goodmorningcc",
+          "domain": "goodmorningcc.com",
+          "title": "공주시, 시군구연고 산업 육성사업 선정…18억 확보",
+          "url": "https://www.goodmorningcc.com/news/articleView.html?idxno=441272",
+          "reason": "below_threshold",
+          "fit_score": 0.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.62,
+          "tier": 1,
+          "press": "m-joongang",
+          "domain": "m-joongang.com",
+          "title": "헌혈의집 오픈런도 불사하게 만드는 마성의 디저트, '두쫀쿠' 정체는",
+          "url": "https://www.m-joongang.com/news/articleView.html?idxno=402165",
+          "reason": "below_threshold",
+          "fit_score": 0.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "배 과일 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.56,
+          "tier": 1,
+          "press": "newstomato",
+          "domain": "newstomato.com",
+          "title": "(K-라오스 윈윈 ODA)(2)핵심광물·희토류 협력, 탐사부터 정제까지",
+          "url": "http://www.newstomato.com/ReadNews.aspx?no=1291718&inflow=N",
+          "reason": "below_threshold",
+          "fit_score": 0.55,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "토마토 출하 조절",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.56,
+          "tier": 1,
+          "press": "DYNEWS",
+          "domain": "dynews.co.kr",
+          "title": "공주시, 2026 시·군·구 연고 산업 육성사업 최종 선정 18억원 확보",
+          "url": "http://www.dynews.co.kr/news/articleView.html?idxno=839313",
+          "reason": "below_threshold",
+          "fit_score": 0.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.56,
+          "tier": 1,
+          "press": "M-I",
+          "domain": "m-i.kr",
+          "title": "공주시, 2026 시군구연고 산업 육성사업 최종 선정…18억원 확보",
+          "url": "https://www.m-i.kr/news/articleView.html?idxno=1338328",
+          "reason": "below_threshold",
+          "fit_score": 0.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.56,
+          "tier": 1,
+          "press": "SJSORI",
+          "domain": "sjsori.com",
+          "title": "공주시, 시군구연고 산업 육성사업 선정… 18억원 확보",
+          "url": "https://www.sjsori.com/news/articleView.html?idxno=84240",
+          "reason": "below_threshold",
+          "fit_score": 0.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.56,
+          "tier": 1,
+          "press": "job-post",
+          "domain": "job-post.co.kr",
+          "title": "공주시, '시군구연고 산업 육성사업' 선정… 공주 알밤 세계화 본격화",
+          "url": "https://www.job-post.co.kr/news/articleView.html?idxno=207773",
+          "reason": "below_threshold",
+          "fit_score": 0.73,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "알밤 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -2698,7 +2758,7 @@
       "tail_cut": 13.46,
       "core_min": 13.26,
       "total_candidates": 9,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -2728,17 +2788,17 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 27.11,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
           "title": "“농가 포장·운송비 부담 완화”…한국 청과 , 보전금 첫 지급",
           "url": "https://www.nongmin.com/article/20260213500239",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 0.96,
-          "selection_stage": "core",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -2950,7 +3010,7 @@
       "tail_cut": 15.77,
       "core_min": 8.2,
       "total_candidates": 3,
-      "total_selected": 2,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -3031,6 +3091,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 19.98,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "“농가 포장·운송비 부담 완화”…한국청과, 보전금 첫 지급",
+          "url": "https://www.nongmin.com/article/20260213500239",
+          "reason": "",
+          "fit_score": 0.88,
+          "selection_stage": "cross_section_dist_backfill",
+          "selection_note": "supply_to_dist_underfill",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "대파 도매가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.8,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
           }
         }
       ]
@@ -3455,7 +3542,7 @@
         ],
         [
           "포도 가격 하락",
-          17
+          9
         ],
         [
           "화훼자조금",
@@ -3560,9 +3647,9 @@
           "농산물 가격 동향"
         ],
         "pool_seed_hits": {
-          "사과": 2,
+          "사과": 1,
           "단감": 0,
-          "포도": 2,
+          "포도": 1,
           "유자": 0,
           "자두": 0,
           "딸기": 0,
@@ -3574,10 +3661,11 @@
           "화훼자조금": 0,
           "배추": 0,
           "양배추": 0,
-          "마늘": 2,
+          "마늘": 1,
           "대파": 0,
           "과수": 0,
           "기후변화": 0,
+          "배": 3,
           "양파": 1
         },
         "feature_refresh_seeds": [
@@ -3588,7 +3676,7 @@
           "화훼자조금"
         ],
         "topic_seed_terms": [
-          "포도",
+          "배",
           "양파",
           "사과",
           "단감"
@@ -3734,6 +3822,7 @@
           "포도",
           "고추",
           "마늘",
+          "배",
           "양파"
         ],
         "feature_focus_seeds": [
@@ -3741,7 +3830,7 @@
           "수박"
         ]
       },
-      "items_total": 78,
+      "items_total": 70,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
