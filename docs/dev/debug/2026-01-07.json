@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T23:11:05+09:00",
-  "build_tag": "4aeaa4d",
+  "generated_at_kst": "2026-03-17T23:51:42+09:00",
+  "build_tag": "a72e354",
   "filter_rejects": [
     {
       "section": "policy",
@@ -165,20 +165,10 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "대구MBC",
-      "domain": "dgmbc.com",
-      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
-      "url": "https://dgmbc.com/NewsArticle/817866",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "KBS 뉴스",
-      "domain": "news.kbs.co.kr",
-      "title": "현대차 GBC ‘49층 3개동’ 확정…땅꺼짐 방지 대책은?",
-      "url": "https://news.kbs.co.kr/news/view.do?ncd=8451908",
+      "press": "쿠키뉴스",
+      "domain": "kukinews.com",
+      "title": "주택 공급 대책 또 유휴부지?…“시장 불안 잠재우기엔 역부족”",
+      "url": "https://www.kukinews.com/article/view/kuk202601050237",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -189,6 +179,16 @@
       "domain": "kyeonggi.com",
       "title": "국도 47호선 군포 구간 ‘지하화’…광역교통개선대책 확정",
       "url": "https://www.kyeonggi.com/article/20260107580321",
+      "source_query": "대책",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "대구MBC",
+      "domain": "dgmbc.com",
+      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
+      "url": "https://dgmbc.com/NewsArticle/817866",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -431,6 +431,16 @@
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
       "source_query": "화훼 산지유통",
       "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "market_political_visit_noise",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "새해 새벽 가락시장 찾은 鄭 \"민생 속으로\"…지선 민심공략 시동",
+      "url": "https://www.yna.co.kr/view/AKR20260107060200001",
+      "source_query": "가락시장 경매",
+      "source_channel": "google_news"
     },
     {
       "section": "dist",
@@ -742,7 +752,7 @@
           "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
+          "reassigned_from": "dist",
           "source_query": "쥬키니 가격",
           "source_channel": "naver_api",
           "signals": {
@@ -796,7 +806,7 @@
           "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
+          "reassigned_from": "dist",
           "source_query": "화훼 경매",
           "source_channel": "naver_api",
           "signals": {
@@ -969,33 +979,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.66,
-          "tier": 1,
-          "press": "kyongbuk",
-          "domain": "kyongbuk.co.kr",
-          "title": "성주 참외 , 2026년 첫 출하…황금빛 농사 신호탄",
-          "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4061157",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "참외 도매가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.63,
-            "market_hits": 1,
-            "strength": 5,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
           }
         },
         {
@@ -1290,6 +1273,33 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.46,
+          "tier": 1,
+          "press": "경북일보",
+          "domain": "kyongbuk.co.kr",
+          "title": "성주참외, 2026년 첫 출하…황금빛 농사 신호탄",
+          "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4061157",
+          "reason": "below_threshold",
+          "fit_score": 0.83,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "dist",
+          "source_query": "가락시장 경매",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -1688,8 +1698,8 @@
       "threshold": 8.12,
       "tail_cut": 10.32,
       "core_min": 8.2,
-      "total_candidates": 2,
-      "total_selected": 3,
+      "total_candidates": 1,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
@@ -1716,33 +1726,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 12.42,
-          "tier": 3,
-          "press": "연합뉴스",
-          "domain": "yna.co.kr",
-          "title": "새해 새벽 가락시장 찾은 鄭 \"민생 속으로\"…지선 민심공략 시동",
-          "url": "https://www.yna.co.kr/view/AKR20260107060200001",
-          "reason": "",
-          "fit_score": 0.68,
-          "selection_stage": "core",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "가락시장 경매",
-          "source_channel": "google_news",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 1,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.3
           }
         },
         {
@@ -2599,7 +2582,7 @@
       "google_hits_top": [
         [
           "가락시장 경매",
-          2
+          1
         ]
       ],
       "page1_full_queries": [
@@ -2743,9 +2726,9 @@
           "가락시장 경매",
           "도매시장 경매"
         ],
-        "google_news_added": 2
+        "google_news_added": 1
       },
-      "items_total": 4,
+      "items_total": 3,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
