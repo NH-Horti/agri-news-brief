@@ -927,6 +927,21 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main.is_dist_macro_export_noise_context(title, desc, dom, press))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
 
+    def test_dist_export_field_rejects_macro_barrier_strategy_story(self):
+        title = "K-푸드 수출 1000억 달러 시대의 열쇠, ‘비관세장벽 4단계 대응 체계’에 있다"
+        desc = (
+            "전 세계적으로 K-푸드 열풍이 불며 한국 농식품 수출이 호황을 맞고 있다. "
+            "정부는 K-푸드 플러스 전략을 통해 신시장 개척에 박차를 가하고 있지만, "
+            "수출 현장에서는 관세보다 뚫기 힘든 벽으로 비관세장벽이 지목되고 있다. "
+            "위생, 검역, 기술 표준, ESG 같은 복잡한 비관세조치가 기업 부담으로 거론된다."
+        )
+        url = "http://www.foodnews.co.kr/news/articleView.html?idxno=117312"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_dist_export_field_context(title, desc, dom, press))
+        self.assertTrue(main.is_dist_macro_export_noise_context(title, desc, dom, press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
     def test_dist_rejects_campaign_noise_story(self):
         title = "화훼자조금 협의회 '공원묘원 조화근절' 캠페인 전국 전개"
         desc = "화훼자조금 협의회가 조화 사용 근절 캠페인을 전국적으로 전개한다고 밝혔다."

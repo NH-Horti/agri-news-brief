@@ -4748,6 +4748,10 @@ _DIST_MACRO_EXPORT_NOISE_TERMS = (
 _DIST_MACRO_LOGISTICS_NOISE_TERMS = (
     "해운", "항공", "동시 마비", "물류 마비", "중동 전쟁", "전쟁 여파", "유가 급등",
 )
+_DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS = (
+    "도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc",
+    "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래",
+)
 _DIST_MACRO_EXPORT_KEEP_TERMS = (
     "농산물", "원예", "과수", "과일", "채소", "화훼", "도매시장", "공판장", "가락시장", "산지유통",
     "산지유통센터", "apc", "공동선별", "공선출하", "선적", "컨테이너 경매", "원물", "농가", "출하",
@@ -4772,9 +4776,19 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
     )
     if macro_hits == 0:
         return False
+    title_signature_hits = count_any(
+        (ttl or "").lower(),
+        [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS],
+    )
+    title_concrete_keep_hits = count_any(
+        (ttl or "").lower(),
+        [w.lower() for w in _DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS],
+    )
+    if title_signature_hits >= 2 and title_concrete_keep_hits == 0:
+        return True
     concrete_keep_hits = count_any(
         txt,
-        [w.lower() for w in ("도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc", "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래")],
+        [w.lower() for w in _DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS],
     )
     if concrete_keep_hits >= 1:
         return False
@@ -4787,16 +4801,6 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
         (ttl or "").lower(),
         [w.lower() for w in _DIST_MACRO_LOGISTICS_NOISE_TERMS],
     )
-    title_signature_hits = count_any(
-        (ttl or "").lower(),
-        [w.lower() for w in ("비관세장벽", "수출 1000억", "1000억 달러", "160억달러", "160억 달러", "k-푸드", "k푸드")],
-    )
-    title_concrete_keep_hits = count_any(
-        (ttl or "").lower(),
-        [w.lower() for w in ("도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc", "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래")],
-    )
-    if title_signature_hits >= 2 and title_concrete_keep_hits == 0:
-        return True
     if title_macro_hits >= 1 and market_hits == 0 and agri_anchor_hits <= 2:
         return True
     return market_hits == 0 and (agri_anchor_hits <= 1 or best_horti_score(ttl, desc or "") < 2.0)
@@ -4927,6 +4931,16 @@ _DIST_EXPORT_FIELD_INTERVIEW_TERMS = (
 _DIST_EXPORT_FIELD_POLICY_HEAVY_TERMS = (
     "장관", "농식품부", "발표", "전략", "계획", "대책", "브리핑", "회의", "예산", "추진",
 )
+_DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS = (
+    "비관세장벽", "수출 1000억", "1000억 달러", "160억달러", "160억 달러", "k-푸드", "k푸드",
+)
+_DIST_EXPORT_FIELD_MACRO_POLICY_TERMS = (
+    "비관세장벽", "비관세조치", "ntb", "ntbs", "ntm", "ntms", "위생", "검역", "기술 표준", "esg", "신시장", "플러스",
+)
+_DIST_EXPORT_FIELD_RESPONSE_TERMS = (
+    "간담회", "현장간담회", "애로", "애로 해소", "애로 해결", "상시 접수", "상시접수", "사례 공유",
+    "사례", "n-데스크", "ndesk", "공장", "원스톱", "수출업계", "업계 간담회", "기업 지원",
+)
 _POLICY_EXPORT_SUPPORT_TERMS = (
     "농식품부", "장관", "전략", "정책", "발표", "브리핑", "추진", "개혁", "혁신", "ai", "유통", "식품산업",
 )
@@ -5024,10 +5038,19 @@ def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: st
     policy_heavy_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_POLICY_HEAVY_TERMS])
     agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "aT", "한국농수산식품유통공사")])
     org_hits = count_any(txt, [w.lower() for w in ("aT 사장", "at 사장", "한국농수산식품유통공사", "aT", "at")])
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    response_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_RESPONSE_TERMS])
+    title_signature_hits = count_any((ttl or "").lower(), [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS])
+    macro_barrier_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_POLICY_TERMS])
 
     if export_hits == 0 or market_hits == 0:
         return False
     if agri_hits == 0 and org_hits == 0:
+        return False
+    if title_signature_hits >= 2 and managed_count == 0 and item_hits == 0 and response_hits < 2:
+        return False
+    if macro_barrier_hits >= 4 and managed_count == 0 and item_hits == 0 and response_hits < 2:
         return False
     if policy_heavy_hits >= 3 and interview_hits == 0 and market_hits < 2:
         return False
