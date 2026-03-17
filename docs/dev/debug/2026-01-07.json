@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T20:26:46+09:00",
-  "build_tag": "e958cd6",
+  "generated_at_kst": "2026-03-17T23:11:05+09:00",
+  "build_tag": "4aeaa4d",
   "filter_rejects": [
     {
       "section": "policy",
@@ -114,16 +114,6 @@
     },
     {
       "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "newsfreezone",
-      "domain": "newsfreezone.co.kr",
-      "title": "대전시, 소상공인 살리기 '전방위 지원' 나선다",
-      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=667903",
-      "source_query": "정책브리핑 농축수산물",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "ban_keywords",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
@@ -175,10 +165,20 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "쿠키뉴스",
-      "domain": "kukinews.com",
-      "title": "주택 공급 대책 또 유휴부지?…“시장 불안 잠재우기엔 역부족”",
-      "url": "https://www.kukinews.com/article/view/kuk202601050237",
+      "press": "대구MBC",
+      "domain": "dgmbc.com",
+      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
+      "url": "https://dgmbc.com/NewsArticle/817866",
+      "source_query": "대책",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "KBS 뉴스",
+      "domain": "news.kbs.co.kr",
+      "title": "현대차 GBC ‘49층 3개동’ 확정…땅꺼짐 방지 대책은?",
+      "url": "https://news.kbs.co.kr/news/view.do?ncd=8451908",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -189,16 +189,6 @@
       "domain": "kyeonggi.com",
       "title": "국도 47호선 군포 구간 ‘지하화’…광역교통개선대책 확정",
       "url": "https://www.kyeonggi.com/article/20260107580321",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "대구MBC",
-      "domain": "dgmbc.com",
-      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
-      "url": "https://dgmbc.com/NewsArticle/817866",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -454,6 +444,16 @@
     },
     {
       "section": "dist",
+      "reason": "market_political_visit_noise",
+      "press": "조선일보",
+      "domain": "chosun.com",
+      "title": "가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”",
+      "url": "https://www.chosun.com/politics/politics_general/2026/01/07/WYREK3ZUKFHZZB4RV53EBQP7PU/",
+      "source_query": "가락시장 경매",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "dist",
       "reason": "must_terms_fail",
       "press": "경향신문",
       "domain": "khan.co.kr",
@@ -699,7 +699,7 @@
       "tail_cut": 18.35,
       "core_min": 17.95,
       "total_candidates": 32,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -731,14 +731,14 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.86,
+          "score": 25.16,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "한국청과, 9개 품목 '출하비용 보전'··· 올해부터, 양파·대파·감자 ...",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400127",
           "reason": "postbuild_pruned",
-          "fit_score": 3.58,
+          "fit_score": 4.36,
           "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
@@ -783,7 +783,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 21.79,
           "tier": 2,
@@ -791,9 +791,9 @@
           "domain": "agrinet.co.kr",
           "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 1.46,
-          "selection_stage": "tail",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -1688,30 +1688,30 @@
       "threshold": 8.12,
       "tail_cut": 10.32,
       "core_min": 8.2,
-      "total_candidates": 3,
+      "total_candidates": 2,
       "total_selected": 3,
       "top": [
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 17.72,
+          "score": 19.02,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
-          "reason": "postbuild_pruned",
-          "fit_score": 1.12,
-          "selection_stage": "postbuild_pruned",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "화훼공판장 경매",
+          "reason": "",
+          "fit_score": 1.32,
+          "selection_stage": "cross_section_dist_backfill",
+          "selection_note": "supply_to_dist_underfill",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "화훼 경매",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.92,
             "market_hits": 2,
-            "strength": 2,
+            "strength": 4,
             "korea": 4,
             "offtopic_pen": 0,
             "press_tier": 2,
@@ -1721,33 +1721,6 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 14.31,
-          "tier": 3,
-          "press": "조선일보",
-          "domain": "chosun.com",
-          "title": "가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”",
-          "url": "https://www.chosun.com/politics/politics_general/2026/01/07/WYREK3ZUKFHZZB4RV53EBQP7PU/",
-          "reason": "",
-          "fit_score": 0.94,
-          "selection_stage": "core",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "가락시장 경매",
-          "source_channel": "google_news",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
           "score": 12.42,
           "tier": 3,
           "press": "연합뉴스",
@@ -1756,7 +1729,7 @@
           "url": "https://www.yna.co.kr/view/AKR20260107060200001",
           "reason": "",
           "fit_score": 0.68,
-          "selection_stage": "dist_anchor_backfill",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -2626,7 +2599,7 @@
       "google_hits_top": [
         [
           "가락시장 경매",
-          3
+          2
         ]
       ],
       "page1_full_queries": [
@@ -2770,9 +2743,9 @@
           "가락시장 경매",
           "도매시장 경매"
         ],
-        "google_news_added": 3
+        "google_news_added": 2
       },
-      "items_total": 5,
+      "items_total": 4,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
