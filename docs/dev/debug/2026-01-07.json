@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T23:51:42+09:00",
-  "build_tag": "a72e354",
+  "generated_at_kst": "2026-03-18T00:35:26+09:00",
+  "build_tag": "f802b07",
   "filter_rejects": [
     {
       "section": "policy",
@@ -165,10 +165,20 @@
     {
       "section": "policy",
       "reason": "policy_context_gate",
-      "press": "쿠키뉴스",
-      "domain": "kukinews.com",
-      "title": "주택 공급 대책 또 유휴부지?…“시장 불안 잠재우기엔 역부족”",
-      "url": "https://www.kukinews.com/article/view/kuk202601050237",
+      "press": "대구MBC",
+      "domain": "dgmbc.com",
+      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
+      "url": "https://dgmbc.com/NewsArticle/817866",
+      "source_query": "대책",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_context_gate",
+      "press": "KBS 뉴스",
+      "domain": "news.kbs.co.kr",
+      "title": "현대차 GBC ‘49층 3개동’ 확정…땅꺼짐 방지 대책은?",
+      "url": "https://news.kbs.co.kr/news/view.do?ncd=8451908",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -179,16 +189,6 @@
       "domain": "kyeonggi.com",
       "title": "국도 47호선 군포 구간 ‘지하화’…광역교통개선대책 확정",
       "url": "https://www.kyeonggi.com/article/20260107580321",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "대구MBC",
-      "domain": "dgmbc.com",
-      "title": "[토크ON] ② 예산 쏟아도 체감은 '글쎄'···저출생 대책 실효성 더하려면?",
-      "url": "https://dgmbc.com/NewsArticle/817866",
       "source_query": "대책",
       "source_channel": "google_news"
     },
@@ -221,6 +221,36 @@
       "url": "https://www.khan.co.kr/article/202601071236001",
       "source_query": "사과",
       "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_apology_context",
+      "press": "동아일보",
+      "domain": "donga.com",
+      "title": "장동혁, 계엄 사과하고 당명개정 추진…‘尹 절연’ 언급은 없어",
+      "url": "https://www.donga.com/news/Politics/article/all/20260107/133107863/2",
+      "source_query": "사과",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
+      "source_query": "화훼 경매",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
+      "source_query": "화훼공판장 경매",
+      "source_channel": "naver_api"
     },
     {
       "section": "supply",
@@ -364,6 +394,16 @@
     },
     {
       "section": "dist",
+      "reason": "livestock_title_dominant",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
+      "source_query": "화훼공판장 경매",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
       "reason": "dist_retail_promo_no_wholesale",
       "press": "농민신문",
       "domain": "nongmin.com",
@@ -424,7 +464,7 @@
     },
     {
       "section": "dist",
-      "reason": "dist_soft_without_infra",
+      "reason": "livestock_title_dominant",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
       "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
@@ -444,21 +484,21 @@
     },
     {
       "section": "dist",
-      "reason": "fishery_only",
-      "press": "콜드체인뉴스",
-      "domain": "coldchainnews.kr",
-      "title": "가락시장, 최우수 수산물 도매시장 3년 연속선정",
-      "url": "https://www.coldchainnews.kr/news/article.html?no=28164",
-      "source_query": "가락시장 경매",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "dist",
       "reason": "market_political_visit_noise",
       "press": "조선일보",
       "domain": "chosun.com",
       "title": "가락시장 간 정청래 “국힘, ‘썩은 사과’라도 비상계엄 사과하라”",
       "url": "https://www.chosun.com/politics/politics_general/2026/01/07/WYREK3ZUKFHZZB4RV53EBQP7PU/",
+      "source_query": "가락시장 경매",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_only",
+      "press": "콜드체인뉴스",
+      "domain": "coldchainnews.kr",
+      "title": "가락시장, 최우수 수산물 도매시장 3년 연속선정",
+      "url": "https://www.coldchainnews.kr/news/article.html?no=28164",
       "source_query": "가락시장 경매",
       "source_channel": "google_news"
     },
@@ -694,6 +734,16 @@
     },
     {
       "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "농협 ‘보급형 스마트팜’ 지원 박차…‘돈 버는 농업’ 앞당긴다",
+      "url": "https://nongmin.com/article/20260105500715",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
       "reason": "must_terms_fail",
       "press": "농민신문",
       "domain": "nongmin.com",
@@ -708,8 +758,8 @@
       "threshold": 17.95,
       "tail_cut": 18.35,
       "core_min": 17.95,
-      "total_candidates": 32,
-      "total_selected": 3,
+      "total_candidates": 31,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -793,33 +843,6 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
-          "score": 21.79,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
-          "reason": "postbuild_pruned",
-          "fit_score": 1.46,
-          "selection_stage": "postbuild_pruned",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "dist",
-          "source_query": "화훼 경매",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
           "selected": true,
           "is_core": false,
           "score": 21.48,
@@ -847,7 +870,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 21.43,
           "tier": 3,
@@ -855,9 +878,9 @@
           "domain": "nongmin.com",
           "title": "농협 ‘보급형 스마트팜’ 지원 박차…‘돈 버는 농업’ 앞당긴다",
           "url": "https://www.nongmin.com/article/20260105500715",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 1.58,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "tail",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -1694,69 +1717,6 @@
         }
       ]
     },
-    "dist": {
-      "threshold": 8.12,
-      "tail_cut": 10.32,
-      "core_min": 8.2,
-      "total_candidates": 1,
-      "total_selected": 2,
-      "top": [
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 19.02,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "[올해 주요 축산정책은] '축산법' 전면 개정 주력···저렴한 한우고기...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400186",
-          "reason": "",
-          "fit_score": 1.32,
-          "selection_stage": "cross_section_dist_backfill",
-          "selection_note": "supply_to_dist_underfill",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "화훼 경매",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 18.52,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "한국청과, 9개 품목 '출하비용 보전'··· 올해부터, 양파·대파·감자 ...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=400127",
-          "reason": "",
-          "fit_score": 1.32,
-          "selection_stage": "cross_section_dist_backfill",
-          "selection_note": "supply_to_dist_underfill",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "쥬키니 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.4,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 5.7
-          }
-        }
-      ]
-    },
     "pest": {
       "threshold": 13.67,
       "tail_cut": 16.07,
@@ -2200,10 +2160,6 @@
           1
         ],
         [
-          "화훼 경매",
-          1
-        ],
-        [
           "봄배추 작황",
           1
         ],
@@ -2225,6 +2181,10 @@
         ],
         [
           "청양고추 산업",
+          1
+        ],
+        [
+          "방울토마토 수급",
           1
         ]
       ],
@@ -2294,7 +2254,7 @@
           "대파": 1,
           "과수": 0,
           "기후변화": 1,
-          "토마토": 2,
+          "감자": 1,
           "배": 3
         },
         "feature_refresh_seeds": [
@@ -2303,11 +2263,12 @@
           "자두",
           "화훼자조금",
           "양배추",
-          "기후변화"
+          "기후변화",
+          "감자"
         ],
         "topic_seed_terms": [
           "배추",
-          "토마토",
+          "감자",
           "사과",
           "배"
         ],
@@ -2452,7 +2413,7 @@
           "양배추",
           "대파",
           "기후변화",
-          "토마토",
+          "감자",
           "배"
         ],
         "feature_focus_seeds": [
@@ -2460,7 +2421,7 @@
           "화훼자조금"
         ]
       },
-      "items_total": 33,
+      "items_total": 32,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -2573,10 +2534,6 @@
         [
           "도매시장 반입량",
           1
-        ],
-        [
-          "화훼공판장 경매",
-          1
         ]
       ],
       "google_hits_top": [
@@ -2610,7 +2567,6 @@
       "recall_meta": {
         "seed_terms": [
           "대책",
-          "토마토",
           "사과",
           "배",
           "가락시장",
@@ -2620,20 +2576,20 @@
           "품목농협",
           "원예농협",
           "판로",
-          "공동구매"
+          "공동구매",
+          "직거래"
         ],
         "reason": [],
         "queries": [
           "가락시장 경매",
           "도매시장 경매",
           "대책",
-          "토마토",
           "사과",
-          "배"
+          "배",
+          "가락시장"
         ],
         "topic_seed_terms": [
           "대책",
-          "토마토",
           "사과",
           "배"
         ],
@@ -2728,7 +2684,7 @@
         ],
         "google_news_added": 1
       },
-      "items_total": 3,
+      "items_total": 2,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
