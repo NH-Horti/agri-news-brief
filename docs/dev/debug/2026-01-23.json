@@ -1,0 +1,2757 @@
+{
+  "generated_at_kst": "2026-03-17T20:50:41+09:00",
+  "build_tag": "e958cd6",
+  "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "policy_local_minor",
+      "press": "joongboo",
+      "domain": "joongboo.com",
+      "title": "동두천시, 한파 속 취약계층 보호 '온정의 손길' 이어져",
+      "url": "https://www.joongboo.com/news/articleView.html?idxno=363715075",
+      "source_query": "오이 협의체",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "오마이뉴스",
+      "domain": "ohmynews.com",
+      "title": "\"사과한다\"며 보낸 5만 원, 쿠팡은 정말 두려운 기업이다",
+      "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003200766",
+      "source_query": "사과",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "apple_non_edible_context",
+      "press": "경향신문",
+      "domain": "khan.co.kr",
+      "title": "이혜훈, ‘내란 동조’ 의혹에 “국민 받아들일 때까지 사과”",
+      "url": "https://www.khan.co.kr/article/202601231445001",
+      "source_query": "사과",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "약사공론",
+      "domain": "kpanews.co.kr",
+      "title": "산업약사 최학배 신임회장 선출…사업계획·예산안 의결",
+      "url": "https://www.kpanews.co.kr/news/articleView.html?idxno=527929",
+      "source_query": "배",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "조선일보",
+      "domain": "chosun.com",
+      "title": "[단독] 정부 통제 안 받는 태양광, 9년 새 7배 급증",
+      "url": "https://www.chosun.com/economy/industry-company/2026/01/23/42EMZCKM6ZCP3POHWJMF5OHCE4/",
+      "source_query": "배",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "[2026년 1월23일(금)] 배·양상추·감귤·버섯·미나리 경락값 분석",
+      "url": "https://www.nongmin.com/article/20260123500291",
+      "source_query": "배",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "econovill",
+      "domain": "econovill.com",
+      "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+      "url": "https://www.econovill.com/news/articleView.html?idxno=726690",
+      "source_query": "단감 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "sedaily_no_agri_context",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "의사인력 양성 토론회 열린 날…의협 \"일방적 의대증원 논의 반대\"",
+      "url": "https://www.sedaily.com/NewsView/2K7EIF25M3",
+      "source_query": "수박 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_shipping",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "연천 전곡농협, 고추 재배기술·경쟁력 제고 영농교육 실시",
+      "url": "https://www.nongmin.com/article/20260122500581",
+      "source_query": "건고추 생육",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_dist_export_shipping",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "연천 전곡농협, 고추 재배기술·경쟁력 제고 영농교육 실시",
+      "url": "https://www.nongmin.com/article/20260122500581",
+      "source_query": "건고추 농가",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "econovill",
+      "domain": "econovill.com",
+      "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+      "url": "https://www.econovill.com/news/articleView.html?idxno=726690",
+      "source_query": "상추 도매가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "newsfarm",
+      "domain": "newsfarm.co.kr",
+      "title": "기후변화 촉발 월동무 가격 반토막",
+      "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100188",
+      "source_query": "월동무 유통현장",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[ 유통 가 레이더] 요리 예능이 불러온 주방템 열풍... 롯데홈쇼핑, 단독...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=335966",
+      "source_query": "양파 온라인 유통채널",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[ 유통 가 레이더] 요리 예능이 불러온 주방템 열풍... 롯데홈쇼핑, 단독...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=335966",
+      "source_query": "생강 온라인 유통채널",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "NSPNA",
+      "domain": "nspna.com",
+      "title": "성주군, 2026 새해농업인실용교육 성료",
+      "url": "https://www.nspna.com/news/?mode=view&newsid=798983",
+      "source_query": "자두 유통현장",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_county_local_weak_dist_signal",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "영하의 추위 녹인 뜨거운 교육열…성주군 새해농업인실용교육 성료",
+      "url": "http://www.inews24.com/view/1930736",
+      "source_query": "자두 유통현장",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "연천 전곡농협, 고추 재배기술·경쟁력 제고 영농교육 실시",
+      "url": "https://www.nongmin.com/article/20260122500581",
+      "source_query": "건고추 병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "newstnt",
+      "domain": "newstnt.com",
+      "title": "연천군, 2026년 상토·맞춤형비료 지원 신청 접수",
+      "url": "http://www.newstnt.com/news/articleView.html?idxno=579092",
+      "source_query": "화훼 병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "프레시안",
+      "domain": "pressian.com",
+      "title": "연천군, 2026년 상토·맞춤형비료 지원사업 신청 접수",
+      "url": "https://www.pressian.com/pages/articles/2026012213365515334",
+      "source_query": "화훼 병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "must_terms_fail",
+      "press": "산림신문",
+      "domain": "sanlim.kr",
+      "title": "정읍국유림관리소, ‘2026년 산림재난대응단’ 12명 모집",
+      "url": "http://www.sanlim.kr/news/view.php?no=68248",
+      "source_query": "병해충 예찰",
+      "source_channel": "google_news"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "econovill",
+      "domain": "econovill.com",
+      "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+      "url": "https://econovill.com/news/articleView.html?idxno=726690",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_macro_price_watch",
+      "press": "econovill",
+      "domain": "econovill.com",
+      "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+      "url": "https://econovill.com/news/articleView.html?idxno=726690",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "전북금강일보",
+      "domain": "gkg.co.kr",
+      "title": "진안군, 과수화상병·탄저병 등 방제 약제 선정·지원 방안 논의",
+      "url": "https://gkg.co.kr/176831",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "마늘 ·쌀 판매 활성화 힘쏟아",
+      "url": "https://nongmin.com/article/20260121500636",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "쌀값·직불금 효과에 농가소득 회복…올해 가구당 5333만원 전망",
+      "url": "https://newsis.com/view/NISX20260122_0003485930",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "마늘 ·쌀 판매 활성화 힘쏟아",
+      "url": "https://nongmin.com/article/20260121500636",
+      "source_query": "",
+      "source_channel": ""
+    }
+  ],
+  "sections": {
+    "supply": {
+      "threshold": 23.41,
+      "tail_cut": 23.81,
+      "core_min": 23.41,
+      "total_candidates": 39,
+      "total_selected": 3,
+      "top": [
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 31.41,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "익산 망성농협, 명품 꽃 상추 인기…제2의 도약 다진다",
+          "url": "https://www.nongmin.com/article/20260122500008",
+          "reason": "",
+          "fit_score": 1.23,
+          "selection_stage": "tail",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "상추 도매가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 3,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 27.82,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "쌀값·직불금 효과에 농가소득 회복…올해 가구당 5333만원 전망",
+          "url": "https://www.newsis.com/view/NISX20260122_0003485930",
+          "reason": "",
+          "fit_score": 3.23,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "단감 작황",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.72,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 23.38,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "마늘 ·쌀 판매 활성화 힘쏟아",
+          "url": "https://www.nongmin.com/article/20260121500636",
+          "reason": "",
+          "fit_score": 2.18,
+          "selection_stage": "supply_feature_backfill",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "깐마늘 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 3,
+            "strength": 5,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.12,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[농업전망 2026] ‘가을무·배추’ 생산 작년보다 늘고 ‘양파·건고추’는 줄듯",
+          "url": "https://www.nongmin.com/article/20260123500614",
+          "reason": "below_threshold",
+          "fit_score": 3.25,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "수박 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 3.35,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.16,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "“딸기 수급안정·품질관리 총력”…송미령 장관, 논산 산지 점검",
+          "url": "https://www.nongmin.com/article/20260123500111",
+          "reason": "below_threshold",
+          "fit_score": 0.93,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.28,
+          "tier": 1,
+          "press": "newsfarm",
+          "domain": "newsfarm.co.kr",
+          "title": "기후변화 촉발 월동무 가격 반토막",
+          "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100188",
+          "reason": "below_threshold",
+          "fit_score": 2.48,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "월동무 도매가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.8,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.03,
+          "tier": 1,
+          "press": "시사저널",
+          "domain": "sisajournal.com",
+          "title": "[제주 24시] 제주시 레드향ㆍ의성군 사과, TV홈쇼핑 첫 공동판매⋯만다...",
+          "url": "https://www.sisajournal.com/news/articleView.html?idxno=360424",
+          "reason": "below_threshold",
+          "fit_score": 2.84,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤(만감류) 산지 물량",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 5.5,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.39,
+          "tier": 1,
+          "press": "foodnews",
+          "domain": "foodnews.co.kr",
+          "title": "전략작물 키워 '식량안보' 다지고, 한우값은 반등세",
+          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=116972",
+          "reason": "below_threshold",
+          "fit_score": 2.13,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "포도 작황",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.18,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "겨울 대표 과일 '딸기' 가격 숨 고르기…송미령 장관, 현장 점검",
+          "url": "https://www.newsis.com/view/NISX20260122_0003485994",
+          "reason": "below_threshold",
+          "fit_score": 1.41,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.92,
+          "tier": 3,
+          "press": "연합뉴스",
+          "domain": "yna.co.kr",
+          "title": "[내일은 못볼지도] 예측 불허 날씨에 입지 흔들리는 단양 어상천 수박",
+          "url": "https://www.yna.co.kr/view/AKR20260122074100064",
+          "reason": "below_threshold",
+          "fit_score": 0.58,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "수박 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.3
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.51,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "송미령 농식품부 장관, 논산 딸기 생육 현황·출하 점검",
+          "url": "https://www.newsis.com/view/NISX20260123_0003488544",
+          "reason": "below_threshold",
+          "fit_score": 0.93,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.02,
+          "tier": 1,
+          "press": "전민일보",
+          "domain": "jeonmin.co.kr",
+          "title": "정읍시, 지역특화품목 비닐하우스 설치비 지원…2월 4일까지 신청",
+          "url": "http://www.jeonmin.co.kr/news/articleView.html?idxno=432642",
+          "reason": "below_threshold",
+          "fit_score": 3.83,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.34,
+          "tier": 1,
+          "press": "newsfreezone",
+          "domain": "newsfreezone.co.kr",
+          "title": "정읍시, 특화작목 비닐하우스 지원",
+          "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=670672",
+          "reason": "below_threshold",
+          "fit_score": 4.01,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.24,
+          "tier": 1,
+          "press": "JEMIN",
+          "domain": "jemin.com",
+          "title": "\" 제주 만감류, 맛과 신선도에 자신감 가져야\"",
+          "url": "https://www.jemin.com/news/articleView.html?idxno=832704",
+          "reason": "below_threshold",
+          "fit_score": 2.72,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "제주 감귤 관세",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 6.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.77,
+          "tier": 1,
+          "press": "NEWSCJ",
+          "domain": "newscj.com",
+          "title": "정읍시, 특화작목 비닐하우스 설치 지원",
+          "url": "https://www.newscj.com/news/articleView.html?idxno=3366345",
+          "reason": "below_threshold",
+          "fit_score": 3.93,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.68,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "연천 전곡농협, 고추 재배 기술·경쟁력 제고 영농교육 실시",
+          "url": "https://www.nongmin.com/article/20260122500581",
+          "reason": "below_threshold",
+          "fit_score": 1.23,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "건고추 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.61,
+          "tier": 1,
+          "press": "DNEWS",
+          "domain": "dnews.co.kr",
+          "title": "[경남 브리핑 모음(1월22일)] 하동군, “전등부터 수도까지” 별천지빨...",
+          "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202601220018165610716",
+          "reason": "below_threshold",
+          "fit_score": 2.08,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "단감 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.12,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.62,
+          "tier": 1,
+          "press": "EROUN",
+          "domain": "eroun.net",
+          "title": "정읍시, \" 기후변화 대응하고 소득 높인다\"... 지역특화품목 비닐하우스...",
+          "url": "https://www.eroun.net/news/articleView.html?idxno=71551",
+          "reason": "below_threshold",
+          "fit_score": 3.73,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.53,
+          "tier": 1,
+          "press": "jeollailbo",
+          "domain": "jeollailbo.com",
+          "title": "정읍시, 기후변화 대응 원예시설 지원 확대",
+          "url": "http://www.jeollailbo.com/news/articleView.html?idxno=790242",
+          "reason": "below_threshold",
+          "fit_score": 3.87,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.44,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.59,
+          "tier": 1,
+          "press": "namdonews",
+          "domain": "namdonews.com",
+          "title": "광양시, 명절 맞이 농특산물 선물세트 한정 판매",
+          "url": "https://www.namdonews.com/news/articleView.html?idxno=846239",
+          "reason": "below_threshold",
+          "fit_score": 1.54,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 소비 촉진",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.56,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.22,
+          "tier": 1,
+          "press": "새전북신문",
+          "domain": "sjbnews.com",
+          "title": "정읍시, “ 기후변화 대응하고 소득 높인다” 지역특화품목 비닐하우스...",
+          "url": "http://sjbnews.com/news/news.php?number=870025",
+          "reason": "below_threshold",
+          "fit_score": 3.73,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -4.4
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.07,
+          "tier": 1,
+          "press": "jejunews",
+          "domain": "jejunews.com",
+          "title": "[사설] '대한(大寒) 추위' 기승…한파 피해 주의해야",
+          "url": "http://www.jejunews.com/news/articleView.html?idxno=2223189",
+          "reason": "below_threshold",
+          "fit_score": 2.93,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "월동무 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.72,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.76,
+          "tier": 1,
+          "press": "econovill",
+          "domain": "econovill.com",
+          "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+          "url": "https://www.econovill.com/news/articleView.html?idxno=726690",
+          "reason": "below_threshold",
+          "fit_score": 0.85,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "마늘 출하 조절",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.56,
+          "tier": 1,
+          "press": "푸드투데이",
+          "domain": "foodtoday.or.kr",
+          "title": "송미령 장관, 논산 딸기 현장 점검…겨울 출하 안정·재해 대비 강조",
+          "url": "https://www.foodtoday.or.kr/news/article.html?no=201916",
+          "reason": "below_threshold",
+          "fit_score": 0.83,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 생육",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.47,
+          "tier": 1,
+          "press": "IMINJU",
+          "domain": "iminju.net",
+          "title": "전북 정읍시 \" 기후변화 대응하고 소득 높인다\"",
+          "url": "http://www.iminju.net/news/articleView.html?idxno=155759",
+          "reason": "below_threshold",
+          "fit_score": 3.18,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 4.68,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.78,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "SB위드아그로, 지역 밀웜 농가와 순환경제 모델 구축",
+          "url": "https://www.news1.kr/industry/general-industry/6046376",
+          "reason": "below_threshold",
+          "fit_score": 0.51,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양배추 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.43,
+          "tier": 1,
+          "press": "jejumbc",
+          "domain": "jejumbc.com",
+          "title": "사흘째 한파‥폭설·강풍에 피해도 잇따라",
+          "url": "https://jejumbc.com/NewsArticle/820998",
+          "reason": "below_threshold",
+          "fit_score": 1.58,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "월동무 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.36,
+          "tier": 1,
+          "press": "JIBS",
+          "domain": "jibs.co.kr",
+          "title": "월동채소 어쩌나...\"한파 이후가 더 걱정\"",
+          "url": "https://www.jibs.co.kr/news/replay/viewNewsReplayDetail/2026012219593864938?feed=na",
+          "reason": "below_threshold",
+          "fit_score": 0.75,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "제주당근 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.03,
+          "tier": 1,
+          "press": "doctorsnews",
+          "domain": "doctorsnews.co.kr",
+          "title": "의협 \"교육 여건 어렵다…의대정원 증원 절대 반대\"",
+          "url": "http://www.doctorsnews.co.kr/news/articleView.html?idxno=163115",
+          "reason": "below_threshold",
+          "fit_score": 0.83,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "수박 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.12,
+          "tier": 1,
+          "press": "sommeliertimes",
+          "domain": "sommeliertimes.com",
+          "title": "[이대형의 우리술 이야기] 전통주를 요리하다: 셰프의 식탁에서 다시 태...",
+          "url": "https://www.sommeliertimes.com/news/articleView.html?idxno=130229",
+          "reason": "below_threshold",
+          "fit_score": 0.73,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.24,
+          "tier": 1,
+          "press": "NSPNA",
+          "domain": "nspna.com",
+          "title": "[식품· 유통 업계동향]현대는 ‘K-굿즈’·CJ는 ‘큰손 고객’ 겨냥…유...",
+          "url": "https://www.nspna.com/news/?mode=view&newsid=798967",
+          "reason": "below_threshold",
+          "fit_score": 0.55,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "dist",
+          "source_query": "양파 온라인 유통채널",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.69,
+          "tier": 1,
+          "press": "inews365",
+          "domain": "inews365.com",
+          "title": "농협청주시지부, 한파 대비 농업현장 긴급 점검 실시",
+          "url": "https://www.inews365.com/news/article.html?no=904020",
+          "reason": "below_threshold",
+          "fit_score": 0.65,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "대파 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.69,
+          "tier": 1,
+          "press": "중부매일",
+          "domain": "jbnews.com",
+          "title": "농협청주시지부, 한파 대비 농업 현장 긴급 점검",
+          "url": "https://www.jbnews.com/news/articleView.html?idxno=1497550",
+          "reason": "below_threshold",
+          "fit_score": 0.65,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "대파 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -0.94,
+          "tier": 1,
+          "press": "ccdailynews",
+          "domain": "ccdailynews.com",
+          "title": "농협청주시지부, 한파 대비 농업현장 긴급 점검",
+          "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2393399",
+          "reason": "below_threshold",
+          "fit_score": 0.65,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "대파 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -1.92,
+          "tier": 1,
+          "press": "E2NEWS",
+          "domain": "e2news.com",
+          "title": "﻿SB위드아그로, 지역 밀웜 농가와 순환경제 모델 구축...폐기물 없는 스...",
+          "url": "http://www.e2news.com/news/articleView.html?idxno=327142",
+          "reason": "below_threshold",
+          "fit_score": 0.51,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양배추 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -2.02,
+          "tier": 1,
+          "press": "siminilbo",
+          "domain": "siminilbo.co.kr",
+          "title": "강진군, 친환경 농·축산업 선도 유용 미생물 활용 교육생 모집",
+          "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160272570964905",
+          "reason": "below_threshold",
+          "fit_score": 1.43,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "대파 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -2.56,
+          "tier": 1,
+          "press": "NEWSCJ",
+          "domain": "newscj.com",
+          "title": "[2026 민심 르포] \"출구 없는 터널 같다\"… 가락·노량진 시장의 시린 새...",
+          "url": "https://www.newscj.com/news/articleView.html?idxno=3365647",
+          "reason": "below_threshold",
+          "fit_score": 1.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -7.52,
+          "tier": 1,
+          "press": "NEWSAM",
+          "domain": "newsam.co.kr",
+          "title": "폐기물 없는 스마트팜, 여주에서 시작된 순환경제",
+          "url": "https://www.newsam.co.kr/news/article.html?no=41969",
+          "reason": "below_threshold",
+          "fit_score": 0.51,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양배추 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -7.52,
+          "tier": 1,
+          "press": "EKN",
+          "domain": "ekn.kr",
+          "title": "폐기물 없는 스마트팜, 여주에서 시작된 순환경제",
+          "url": "https://www.ekn.kr/web/view.php?key=20260121023200922",
+          "reason": "below_threshold",
+          "fit_score": 0.51,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양배추 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        }
+      ]
+    },
+    "policy": {
+      "threshold": 7.27,
+      "tail_cut": 11.47,
+      "core_min": 7.8,
+      "total_candidates": 4,
+      "total_selected": 2,
+      "top": [
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.27,
+          "tier": 3,
+          "press": "연합뉴스",
+          "domain": "yna.co.kr",
+          "title": "[전국 주요 신문 톱뉴스](22일 조간)",
+          "url": "https://www.yna.co.kr/view/AKR20260122014700505?input=1195m",
+          "reason": "headline_gate",
+          "fit_score": 0.48,
+          "selection_stage": "headline_gate",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "제주 감귤 관세",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.1,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.3
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 17.99,
+          "tier": 3,
+          "press": "세계일보",
+          "domain": "segye.com",
+          "title": "농축산물 온라인 거래 활성화… 유통비용 거품 낮춘다 [농어촌이 미래다...",
+          "url": "https://www.segye.com/newsView/20260121520978",
+          "reason": "",
+          "fit_score": 0.66,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "도매시장 반입량",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 13.66,
+          "tier": 1,
+          "press": "econovill",
+          "domain": "econovill.com",
+          "title": "'역대급 한파'에 밥상물가 휘청…대형마트, 스마트팜·직매입 특단 조치",
+          "url": "https://www.econovill.com/news/articleView.html?idxno=726690",
+          "reason": "",
+          "fit_score": 2.64,
+          "selection_stage": "tail",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "CA저장 과일",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 1.57,
+          "tier": 1,
+          "press": "newspenguin",
+          "domain": "newspenguin.com",
+          "title": "[박치현의 기후과학] 지금 우리는 왜 시베리아보다 춥게 느껴질까?",
+          "url": "https://www.newspenguin.com/news/articleView.html?idxno=21086",
+          "reason": "below_threshold",
+          "fit_score": 0.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "오이 협의체",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        }
+      ]
+    },
+    "dist": {
+      "threshold": 15.4,
+      "tail_cut": 17.6,
+      "core_min": 15.4,
+      "total_candidates": 3,
+      "total_selected": 2,
+      "top": [
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 35.0,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "익산 망성농협, 명품 꽃상추 인기…제2의 도약 다진다",
+          "url": "https://www.nongmin.com/article/20260122500008",
+          "reason": "postbuild_pruned",
+          "fit_score": 1.44,
+          "selection_stage": "postbuild_pruned",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "가락시장 청과 경락",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 4,
+            "strength": 6,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 32.36,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "강서·구리 시장 휴업 가세…출하길 막힌 산지 ‘비상’",
+          "url": "https://www.nongmin.com/article/20260121500687",
+          "reason": "",
+          "fit_score": 2.19,
+          "selection_stage": "dist_underfill",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "공영도매시장 경매",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 25.0,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[설 대목 과일 시장 ] 사과, 특품 적어 품위간 값차 클듯",
+          "url": "https://www.nongmin.com/article/20260121500689",
+          "reason": "",
+          "fit_score": 1.1,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "가락시장 청과 경락",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 3,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.7
+          }
+        }
+      ]
+    },
+    "pest": {
+      "threshold": 26.3,
+      "tail_cut": 28.7,
+      "core_min": 26.3,
+      "total_candidates": 1,
+      "total_selected": 1,
+      "top": [
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 36.3,
+          "tier": 1,
+          "press": "전북금강일보",
+          "domain": "gkg.co.kr",
+          "title": "진안군, 과수화상병·탄저병 등 방제 약제 선정·지원 방안 논의",
+          "url": "https://www.gkg.co.kr/176831",
+          "reason": "",
+          "fit_score": 4.47,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "pest",
+          "reassigned_from": "policy",
+          "source_query": "과수 병해충 방제",
+          "source_channel": "google_news",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        }
+      ]
+    }
+  },
+  "collections": {
+    "policy": {
+      "effective_window": {
+        "start_kst": "2026-01-22T07:00:00+09:00",
+        "end_kst": "2026-01-23T07:00:00+09:00"
+      },
+      "base_queries_n": 69,
+      "base_queries": [
+        "농식품부 정책브리핑",
+        "농식품부 보도자료 농산물",
+        "정책브리핑 농축수산물",
+        "농축수산물 할인지원",
+        "성수품 가격 안정 대책",
+        "할당관세 과일 검역",
+        "원산지 단속 농산물",
+        "온라인 도매시장 농식품부",
+        "설 이후 과일 가격 하락",
+        "사과 배 가격 하락",
+        "성수품 물가 과일",
+        "차례상 물가 과일",
+        "소비자물가 과일 사과 배",
+        "KOSIS 소비자물가 사과 배",
+        "물가정보 설 과일",
+        "농축산물 가격 동향",
+        "농산물 가격 동향",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "농산물 수급 동향",
+        "농식품부 수급 점검",
+        "농식품부 가격 점검",
+        "농산물 가격 전반 하락",
+        "과일류 가격 전년 대비",
+        "농산물 수급 영향 제한적",
+        "정부 가용물량 과일",
+        "농식품부 농산물 유통 전문가 협의체",
+        "농산물 유통 전문가 협의체",
+        "농산물 유통 구조 개선",
+        "농산물 가격 결정 구조 개선"
+      ],
+      "api_items_top": [
+        [
+          "농식품부 정책브리핑",
+          50
+        ],
+        [
+          "농식품부 보도자료 농산물",
+          50
+        ],
+        [
+          "정책브리핑 농축수산물",
+          50
+        ],
+        [
+          "농축수산물 할인지원",
+          50
+        ],
+        [
+          "성수품 가격 안정 대책",
+          50
+        ],
+        [
+          "할당관세 과일 검역",
+          50
+        ],
+        [
+          "원산지 단속 농산물",
+          50
+        ],
+        [
+          "온라인 도매시장 농식품부",
+          50
+        ],
+        [
+          "설 이후 과일 가격 하락",
+          50
+        ],
+        [
+          "사과 배 가격 하락",
+          50
+        ],
+        [
+          "성수품 물가 과일",
+          50
+        ],
+        [
+          "차례상 물가 과일",
+          50
+        ],
+        [
+          "소비자물가 과일 사과 배",
+          50
+        ],
+        [
+          "KOSIS 소비자물가 사과 배",
+          50
+        ],
+        [
+          "물가정보 설 과일",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "오이 협의체",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "KOSIS 소비자물가 사과 배",
+        "가지 수급 안정",
+        "감/곶감 할인지원",
+        "감귤(만감류) 수급 안정",
+        "건고추 정책",
+        "과수 정책",
+        "과일 채소 가격 동향",
+        "과일류 가격 동향",
+        "과일류 가격 전년 대비",
+        "깐마늘 검역",
+        "노지채소 가격 안정",
+        "농산물 가격 결정 구조 개선",
+        "농산물 가격 동향",
+        "농산물 가격 전반 하락",
+        "농산물 수급 동향",
+        "농산물 수급 영향 제한적",
+        "농산물 유통 구조 개선",
+        "농산물 유통 전문가 협의체",
+        "농산물 최소가격 보전제",
+        "농산물 특별관리 품목"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향"
+        ],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
+        "queries": [
+          "사과",
+          "배",
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "농식품부 농산물 수급 점검"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "농식품부",
+          "대책",
+          "정책브리핑",
+          "가락시장",
+          "이후",
+          "성수품",
+          "차례상",
+          "물가정보",
+          "농축산물",
+          "동향",
+          "과일류",
+          "전반",
+          "영향",
+          "전문가",
+          "구조",
+          "결정",
+          "최소가격",
+          "특별관리"
+        ],
+        "report_date": "2026-01-23",
+        "common_queries": [
+          "농축산물 가격 동향",
+          "농산물 가격 동향",
+          "과일 채소 가격 동향",
+          "과일류 가격 동향",
+          "농산물 수급 동향",
+          "농식품부 수급 점검",
+          "농식품부 가격 점검",
+          "농산물 가격 전반 하락",
+          "과일류 가격 전년 대비",
+          "농산물 수급 영향 제한적",
+          "정부 가용물량 과일",
+          "농식품부 농산물 수급 점검",
+          "농산물 소비자물가",
+          "농산물 수급 안정 대책",
+          "농산물 가격안정 지원",
+          "농산물 최저가격 지원",
+          "농산물 가격안정 지원사업",
+          "농식품부 농산물 유통 전문가 협의체",
+          "농산물 유통 구조 개선",
+          "농산물 최소가격 보전제",
+          "온라인 도매시장 정책",
+          "농식품부 예산",
+          "채소 물가 특별관리",
+          "양념채소 수급 안정",
+          "시설채소 수급 안정",
+          "과수 물가 특별관리",
+          "월동무 협의체",
+          "햇양파 정책",
+          "토마토 특별관리",
+          "사과 할인지원",
+          "봄배추 특별관리",
+          "마늘 수급 안정",
+          "오이 할인지원",
+          "신고배 물가 특별관리",
+          "봄감자 할인지원",
+          "건고추 제도 개선",
+          "청양고추 물가 특별관리",
+          "단감 정책",
+          "당근 물가 특별관리",
+          "쪽파 가격 안정",
+          "애호박(쥬키니) 검역",
+          "포도 제도 개선",
+          "양배추 검역",
+          "생강 협의체",
+          "가지 가격 안정",
+          "감귤(만감류) 가격 안정",
+          "참외 정책",
+          "감/곶감 검역",
+          "상추 수급 안정",
+          "복숭아 수급 안정",
+          "딸기 제도 개선",
+          "매실 협의체",
+          "파프리카 협의체",
+          "유자 특별관리",
+          "머스크멜론 특별관리",
+          "참다래 할인지원",
+          "알밤 물가 특별관리",
+          "절화 검역",
+          "자두 정책"
+        ],
+        "web_queries": [
+          "사과",
+          "배"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "사과",
+          "배"
+        ],
+        "google_news_added": 0
+      },
+      "items_total": 1,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 6,
+        "budget_total": 12
+      }
+    },
+    "supply": {
+      "effective_window": {
+        "start_kst": "2026-01-22T07:00:00+09:00",
+        "end_kst": "2026-01-23T07:00:00+09:00"
+      },
+      "base_queries_n": 530,
+      "base_queries": [
+        "사과 수급",
+        "사과 가격",
+        "사과 작황",
+        "사과 저장",
+        "사과 출하",
+        "배 과일 수급",
+        "배 과일 가격",
+        "배 과일 작황",
+        "배 과일 저장",
+        "배 과일 출하",
+        "단감 수급",
+        "단감 가격",
+        "단감 작황",
+        "곶감 수급",
+        "떫은감 작황",
+        "감귤 수급",
+        "감귤 가격",
+        "감귤 작황",
+        "감귤 관세",
+        "감귤 무관세",
+        "제주 감귤 관세",
+        "만다린 관세",
+        "감귤 FTA",
+        "만감류 출하",
+        "한라봉 출하",
+        "레드향 출하",
+        "천혜향 출하",
+        "포도 수급",
+        "포도 가격",
+        "포도 작황"
+      ],
+      "api_items_top": [
+        [
+          "사과 수급",
+          50
+        ],
+        [
+          "사과 가격",
+          50
+        ],
+        [
+          "사과 작황",
+          50
+        ],
+        [
+          "사과 저장",
+          50
+        ],
+        [
+          "사과 출하",
+          50
+        ],
+        [
+          "배 과일 수급",
+          50
+        ],
+        [
+          "배 과일 가격",
+          50
+        ],
+        [
+          "배 과일 작황",
+          50
+        ],
+        [
+          "배 과일 저장",
+          50
+        ],
+        [
+          "배 과일 출하",
+          50
+        ],
+        [
+          "단감 수급",
+          50
+        ],
+        [
+          "단감 가격",
+          50
+        ],
+        [
+          "단감 작황",
+          50
+        ],
+        [
+          "곶감 수급",
+          50
+        ],
+        [
+          "떫은감 작황",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "애호박 기후변화",
+          7
+        ],
+        [
+          "양배추 생육",
+          4
+        ],
+        [
+          "대파 생육",
+          4
+        ],
+        [
+          "제주 감귤 관세",
+          2
+        ],
+        [
+          "월동무 생육",
+          2
+        ],
+        [
+          "애호박 산업",
+          2
+        ],
+        [
+          "단감 수급",
+          1
+        ],
+        [
+          "단감 작황",
+          1
+        ],
+        [
+          "포도 작황",
+          1
+        ],
+        [
+          "수박 수급",
+          1
+        ],
+        [
+          "월동무 도매가격",
+          1
+        ],
+        [
+          "제주당근 생육",
+          1
+        ],
+        [
+          "깐마늘 재배",
+          1
+        ],
+        [
+          "마늘 출하 조절",
+          1
+        ],
+        [
+          "건고추 재배",
+          1
+        ]
+      ],
+      "google_hits_top": [
+        [
+          "딸기 생육",
+          4
+        ],
+        [
+          "수박 생육",
+          2
+        ]
+      ],
+      "page1_full_queries": [
+        "가지 가격",
+        "가지 가격 안정",
+        "가지 가격 하락",
+        "가지 기후변화",
+        "가지 농가",
+        "가지 도매가격",
+        "가지 산업",
+        "가지 산지 물량",
+        "가지 생육",
+        "가지 소비 대책",
+        "가지 소비 촉진",
+        "가지 수급",
+        "가지 수급 안정",
+        "가지 작황",
+        "가지 재배",
+        "가지 출하",
+        "가지 출하 조절",
+        "감 수급",
+        "감귤 FTA",
+        "감귤 가격"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "배추",
+          "양배추",
+          "수박",
+          "마늘",
+          "딸기",
+          "고추",
+          "애호박",
+          "유자",
+          "과수",
+          "대파",
+          "파프리카",
+          "기후변화"
+        ],
+        "reason": [
+          "no_trade_signal_in_pool"
+        ],
+        "queries": [
+          "수박 생육",
+          "딸기 생육",
+          "고추 생육",
+          "유자 작황",
+          "과수 작황",
+          "농산물 가격 동향"
+        ],
+        "pool_seed_hits": {
+          "사과": 1,
+          "단감": 1,
+          "포도": 1,
+          "유자": 0,
+          "자두": 0,
+          "딸기": 0,
+          "수박": 0,
+          "애호박": 0,
+          "파프리카": 0,
+          "오이": 0,
+          "고추": 0,
+          "화훼자조금": 0,
+          "배추": 0,
+          "양배추": 0,
+          "마늘": 0,
+          "대파": 0,
+          "과수": 0,
+          "기후변화": 0,
+          "상추": 1,
+          "감귤": 1,
+          "배": 1
+        },
+        "feature_refresh_seeds": [
+          "양배추",
+          "수박",
+          "기후변화",
+          "자두",
+          "화훼자조금"
+        ],
+        "topic_seed_terms": [
+          "상추",
+          "감귤",
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "사과",
+          "단감",
+          "포도",
+          "유자",
+          "자두",
+          "딸기",
+          "수박",
+          "애호박",
+          "파프리카",
+          "오이",
+          "고추",
+          "화훼자조금",
+          "배추",
+          "양배추",
+          "마늘",
+          "대파",
+          "과수",
+          "기후변화"
+        ],
+        "report_date": "2026-01-23",
+        "common_queries": [
+          "농산물 가격 동향",
+          "농산물 수급 동향",
+          "경락값 분석",
+          "과일 가격",
+          "채소 가격",
+          "과일 수급",
+          "채소 수급",
+          "농산물 출하 동향",
+          "화훼 경매",
+          "절화 경매",
+          "꽃시장 경매",
+          "노지채소 수급",
+          "양념채소 소비 대책",
+          "시설채소 가격",
+          "과수 기후변화",
+          "봄무 수급",
+          "월동무 재배",
+          "월동무 출하",
+          "양파 가격",
+          "햇양파 작황",
+          "양파 산지 물량",
+          "토마토 도매가격",
+          "방울토마토 농가",
+          "방울토마토 출하",
+          "사과 가격",
+          "사과 기후변화",
+          "사과 가격 안정",
+          "봄배추 도매가격",
+          "배추 생육",
+          "봄배추 출하 조절",
+          "마늘 수급",
+          "마늘 재배",
+          "깐마늘 소비 대책",
+          "오이 가격",
+          "오이 작황",
+          "오이 소비 촉진",
+          "나주배 수급",
+          "신고배 산업",
+          "신고배 산지 물량",
+          "봄감자 가격",
+          "감자 기후변화",
+          "감자 출하",
+          "건조고추 도매가격",
+          "건조고추 생육",
+          "건조고추 수급 안정",
+          "고추 가격",
+          "청양고추 산업",
+          "풋고추 가격 안정",
+          "단감 가격",
+          "단감 작황",
+          "단감 수급 안정",
+          "제주당근 수급",
+          "제주당근 산업",
+          "제주당근 소비 촉진",
+          "쪽파 가격",
+          "쪽파 기후변화",
+          "대파 가격 하락",
+          "애호박(쥬키니) 가격",
+          "애호박 생육",
+          "애호박(쥬키니) 산지 물량",
+          "포도(샤인머스캣) 도매가격",
+          "포도 생육",
+          "포도 출하 조절",
+          "양배추 도매가격",
+          "양배추 농가",
+          "생강 수급",
+          "생강 산업",
+          "가지 수급",
+          "가지 생육",
+          "가지 출하 조절",
+          "감귤(만감류) 가격",
+          "감귤 기후변화",
+          "감귤(만감류) 출하",
+          "참외 가격",
+          "참외 기후변화",
+          "감/곶감 수급",
+          "떫은감 작황",
+          "상추 수급",
+          "상추 산업",
+          "복숭아 수급",
+          "복숭아 재배",
+          "딸기 도매가격",
+          "딸기 농가",
+          "매실 수급",
+          "매실 산업",
+          "파프리카 수급",
+          "파프리카 재배",
+          "유자 도매가격",
+          "유자 농가",
+          "머스크멜론 도매가격",
+          "머스크멜론 생육",
+          "참다래 가격",
+          "키위 작황",
+          "알밤 수급",
+          "알밤 재배",
+          "절화 도매가격",
+          "절화 생육",
+          "자두 가격",
+          "자두 기후변화"
+        ],
+        "prioritized_seeds": [
+          "배추",
+          "양배추",
+          "수박",
+          "마늘",
+          "딸기",
+          "고추",
+          "애호박",
+          "유자",
+          "과수",
+          "대파",
+          "파프리카",
+          "기후변화",
+          "오이",
+          "자두",
+          "화훼자조금",
+          "사과",
+          "단감",
+          "포도",
+          "상추",
+          "감귤",
+          "배"
+        ],
+        "feature_focus_seeds": [
+          "양배추",
+          "수박"
+        ],
+        "web_queries": [
+          "수박 생육",
+          "딸기 생육"
+        ],
+        "web_added": 0,
+        "google_news_queries": [
+          "수박 생육",
+          "딸기 생육"
+        ],
+        "google_news_added": 6
+      },
+      "items_total": 39,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 8,
+        "budget_total": 12
+      }
+    },
+    "dist": {
+      "effective_window": {
+        "start_kst": "2026-01-22T07:00:00+09:00",
+        "end_kst": "2026-01-23T07:00:00+09:00"
+      },
+      "base_queries_n": 85,
+      "base_queries": [
+        "가락시장 청과 경락",
+        "가락시장 경락가",
+        "도매시장 청과 경락",
+        "도매시장 반입량",
+        "도매시장 수급",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "시장도매인제 도매시장",
+        "온라인 도매시장 청과",
+        "온라인 도매시장 제도 개선",
+        "도매시장 제도 개선",
+        "품목농협 산지유통",
+        "원예농협 산지유통",
+        "농협 연합판매사업 직거래",
+        "연합판매사업 직거래",
+        "연합판매사업 직거래 활성화",
+        "품목농협 공동선별",
+        "품목농협 경제사업",
+        "원예농협 경제사업",
+        "품목농협 조합원 실익",
+        "농산물 판로 확대",
+        "농산물 공동구매",
+        "농산물 직거래 장터",
+        "농산물 유통 거점",
+        "푸드통합지원센터 직거래",
+        "원예농협 지도 구매 유통 가공",
+        "품목농협 지도 구매 유통 가공",
+        "과수 전문 품목농협",
+        "산지유통센터 준공",
+        "스마트 농산물 산지유통센터 준공"
+      ],
+      "api_items_top": [
+        [
+          "가락시장 청과 경락",
+          50
+        ],
+        [
+          "가락시장 경락가",
+          50
+        ],
+        [
+          "도매시장 청과 경락",
+          50
+        ],
+        [
+          "도매시장 반입량",
+          50
+        ],
+        [
+          "도매시장 수급",
+          50
+        ],
+        [
+          "공영도매시장 경매",
+          50
+        ],
+        [
+          "공판장 청과 경매",
+          50
+        ],
+        [
+          "시장도매인제 도매시장",
+          50
+        ],
+        [
+          "온라인 도매시장 청과",
+          50
+        ],
+        [
+          "온라인 도매시장 제도 개선",
+          50
+        ],
+        [
+          "도매시장 제도 개선",
+          50
+        ],
+        [
+          "품목농협 산지유통",
+          50
+        ],
+        [
+          "원예농협 산지유통",
+          50
+        ],
+        [
+          "농협 연합판매사업 직거래",
+          50
+        ],
+        [
+          "연합판매사업 직거래",
+          50
+        ]
+      ],
+      "window_hits_top": [
+        [
+          "가락시장 청과 경락",
+          2
+        ],
+        [
+          "도매시장 반입량",
+          1
+        ],
+        [
+          "공영도매시장 경매",
+          1
+        ],
+        [
+          "CA저장 과일",
+          1
+        ],
+        [
+          "양파 온라인 유통채널",
+          1
+        ]
+      ],
+      "google_hits_top": [],
+      "page1_full_queries": [
+        "APC 산지유통센터 준공",
+        "APC 저온저장",
+        "CA저장 과일",
+        "가락시장 경락가",
+        "가락시장 청과 경락",
+        "가지 온라인 유통채널",
+        "감귤(만감류) 유통현장",
+        "건조고추 온라인 유통채널",
+        "공영도매시장 경매",
+        "공판장 청과 경매",
+        "과수 온라인 유통채널",
+        "과수 전문 품목농협",
+        "과일 수출 검역",
+        "과일 수출 선적",
+        "광역수급관리센터 수급 관리",
+        "깐마늘 유통현장",
+        "노지채소 도매가격",
+        "농산물 공동구매",
+        "농산물 광역수급관리센터",
+        "농산물 수출 검역"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "상추",
+          "가락시장",
+          "배",
+          "단감",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "판로",
+          "공동구매",
+          "직거래"
+        ],
+        "reason": [],
+        "queries": [
+          "상추",
+          "가락시장",
+          "배",
+          "단감",
+          "apc",
+          "가락시장 경매"
+        ],
+        "topic_seed_terms": [
+          "상추",
+          "가락시장",
+          "배",
+          "단감"
+        ],
+        "query_seed_terms": [
+          "가락시장",
+          "apc",
+          "농협",
+          "연합판매사업",
+          "품목농협",
+          "원예농협",
+          "판로",
+          "공동구매",
+          "직거래",
+          "거점",
+          "푸드통합지원센터",
+          "과수",
+          "대책",
+          "수출",
+          "수출업계",
+          "광역수급관리센터",
+          "화훼",
+          "화훼자조금"
+        ],
+        "report_date": "2026-01-23",
+        "common_queries": [
+          "가락시장 경매",
+          "도매시장 경매",
+          "공판장 경매",
+          "가락시장 경락",
+          "초매식",
+          "첫 경매",
+          "경매 시작",
+          "온라인 도매시장 제도 개선",
+          "도매시장 제도 개선",
+          "품목농협 계통 유통",
+          "원예농협 계통 유통",
+          "통합마케팅 직거래",
+          "농산물 판로 확대",
+          "농산물 공동구매",
+          "농산물 직거래 장터",
+          "농산물 유통 거점",
+          "푸드통합지원센터 직거래",
+          "광역유통센터",
+          "스마트 APC",
+          "농산물 광역수급관리센터",
+          "노지채소 유통",
+          "양념채소 공동판매",
+          "시설채소 공동판매",
+          "과수 유통",
+          "월동무 도매가격",
+          "양파 물량 통합관리",
+          "방울토마토 도매가격",
+          "사과 도매가격",
+          "배추 물량 통합관리",
+          "깐마늘 도매가격",
+          "오이 물량 통합관리",
+          "신고배 물량 통합관리",
+          "봄감자 도매가격",
+          "건조고추 물량 통합관리",
+          "풋고추 도매가격",
+          "단감 물량 통합관리",
+          "제주당근 물량 통합관리",
+          "대파 도매가격",
+          "애호박 물량 통합관리",
+          "포도 물량 통합관리",
+          "양배추 도매가격",
+          "생강 물량 통합관리",
+          "가지 물량 통합관리",
+          "감귤(만감류) 도매가격",
+          "참외 도매가격",
+          "떫은감 도매가격",
+          "상추 물량 통합관리",
+          "복숭아 도매가격",
+          "딸기 도매가격",
+          "매실 물량 통합관리",
+          "파프리카 도매가격",
+          "유자 도매가격",
+          "머스크멜론 물량 통합관리",
+          "참다래 물량 통합관리",
+          "알밤 도매가격",
+          "절화 물량 통합관리",
+          "자두 도매가격"
+        ]
+      },
+      "items_total": 6,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 10,
+        "budget_total": 12
+      }
+    },
+    "pest": {
+      "effective_window": {
+        "start_kst": "2026-01-22T07:00:00+09:00",
+        "end_kst": "2026-01-23T07:00:00+09:00"
+      },
+      "base_queries_n": 66,
+      "base_queries": [
+        "과수화상병 방제",
+        "탄저병 방제",
+        "월동 해충 방제",
+        "냉해 동해 과수 피해",
+        "병해충 예찰 방제",
+        "생육 관리 저온피해",
+        "과수화상병",
+        "과수화상병 약제",
+        "과수화상병 약제 공급",
+        "과수화상병 방제 계획",
+        "토마토뿔나방",
+        "토마토뿔나방 방제",
+        "토마토뿔나방 약제 지원",
+        "토마토뿔나방 전수조사",
+        "병해충 예찰",
+        "월동무 병해충",
+        "배추 병해충",
+        "감자 병해충",
+        "당근 병해충",
+        "양파 병해충",
+        "마늘 병해충",
+        "건고추 병해충",
+        "대파 병해충",
+        "토마토 병해충",
+        "오이 병해충",
+        "풋고추 병해충",
+        "애호박 병해충",
+        "가지 병해충",
+        "사과 병해충",
+        "신고배 병해충"
+      ],
+      "api_items_top": [
+        [
+          "과수화상병 방제",
+          50
+        ],
+        [
+          "탄저병 방제",
+          50
+        ],
+        [
+          "월동 해충 방제",
+          50
+        ],
+        [
+          "냉해 동해 과수 피해",
+          50
+        ],
+        [
+          "병해충 예찰 방제",
+          50
+        ],
+        [
+          "생육 관리 저온피해",
+          50
+        ],
+        [
+          "과수화상병",
+          50
+        ],
+        [
+          "과수화상병 약제",
+          50
+        ],
+        [
+          "과수화상병 약제 공급",
+          50
+        ],
+        [
+          "과수화상병 방제 계획",
+          50
+        ],
+        [
+          "토마토뿔나방",
+          50
+        ],
+        [
+          "토마토뿔나방 방제",
+          50
+        ],
+        [
+          "토마토뿔나방 약제 지원",
+          50
+        ],
+        [
+          "토마토뿔나방 전수조사",
+          50
+        ],
+        [
+          "병해충 예찰",
+          50
+        ]
+      ],
+      "window_hits_top": [],
+      "google_hits_top": [
+        [
+          "과수 병해충 방제",
+          1
+        ]
+      ],
+      "page1_full_queries": [
+        "가지 병해충",
+        "감/곶감 병해충",
+        "감귤 병해충",
+        "감자 병해충",
+        "건고추 병해충",
+        "과수화상병",
+        "과수화상병 방제",
+        "과수화상병 방제 계획",
+        "과수화상병 약제",
+        "과수화상병 약제 공급",
+        "냉해 동해 과수 피해",
+        "단감 병해충",
+        "당근 병해충",
+        "대파 병해충",
+        "딸기 병해충",
+        "마늘 병해충",
+        "매실 병해충",
+        "멜론 병해충",
+        "배추 병해충",
+        "병해충 예찰"
+      ],
+      "recall_meta": {
+        "seed_terms": [
+          "사과",
+          "배",
+          "병해충"
+        ],
+        "reason": [],
+        "queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "사과",
+          "배",
+          "병해충",
+          "사과 병해충"
+        ],
+        "topic_seed_terms": [
+          "사과",
+          "배"
+        ],
+        "query_seed_terms": [
+          "병해충"
+        ],
+        "report_date": "2026-01-23",
+        "common_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰",
+          "검역 병해충",
+          "과수화상병 예찰",
+          "과수화상병 방제 계획",
+          "과수화상병 약제 공급",
+          "응애 방제",
+          "월동 병해충 예찰",
+          "시설채소 방제",
+          "토마토뿔나방 약제 지원",
+          "토마토뿔나방 전수조사",
+          "월동무 병해충",
+          "배추 병해충",
+          "감자 병해충",
+          "당근 병해충",
+          "양파 병해충",
+          "마늘 병해충",
+          "건고추 병해충",
+          "대파 병해충",
+          "토마토 병해충",
+          "오이 병해충",
+          "풋고추 병해충",
+          "애호박 병해충",
+          "가지 병해충",
+          "사과 병해충",
+          "신고배 병해충",
+          "단감 병해충",
+          "포도 병해충",
+          "감귤 병해충",
+          "양배추 병해충",
+          "생강 병해충",
+          "참외 병해충",
+          "상추 병해충",
+          "딸기 병해충",
+          "파프리카 병해충",
+          "멜론 병해충",
+          "감/곶감 병해충",
+          "복숭아 병해충",
+          "매실 병해충",
+          "유자 병해충",
+          "참다래 병해충",
+          "알밤 병해충",
+          "화훼 병해충",
+          "자두 병해충",
+          "풋고추 예찰",
+          "풋고추 선충",
+          "풋고추 냉해",
+          "풋고추 생육 관리",
+          "풋고추 피해",
+          "청양고추 병해충",
+          "청양고추 방제",
+          "청양고추 예찰",
+          "청양고추 선충",
+          "애호박 방제",
+          "애호박 예찰",
+          "애호박 선충",
+          "애호박 냉해",
+          "애호박 생육 관리",
+          "애호박 피해",
+          "애호박(쥬키니) 병해충",
+          "애호박(쥬키니) 방제",
+          "애호박(쥬키니) 예찰"
+        ],
+        "google_news_queries": [
+          "과수 병해충 방제",
+          "병해충 예찰"
+        ],
+        "google_news_added": 1
+      },
+      "items_total": 1,
+      "cond_paging": {
+        "enabled": false,
+        "base_pages": 1,
+        "max_pages": 1,
+        "budget_used": 12,
+        "budget_total": 12
+      }
+    }
+  }
+}
