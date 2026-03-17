@@ -1,5 +1,5 @@
 {
-  "generated_at_kst": "2026-03-18T00:56:29+09:00",
+  "generated_at_kst": "2026-03-18T06:48:27+09:00",
   "build_tag": "605740b",
   "filter_rejects": [
     {
@@ -204,21 +204,21 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_only",
-      "press": "TF",
-      "domain": "news.tf.co.kr",
-      "title": "수산물 검사 '말라카이트그린' 추가…침출차·고춧가루도 기획 수거",
-      "url": "https://news.tf.co.kr/read/life/2293923.htm",
-      "source_query": "농산물 특별관리 품목",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "fishery_title_only",
       "press": "이투데이",
       "domain": "etoday.co.kr",
       "title": "\"도매시장부터 마트까지\"⋯서울시, 부적합 농수산물 유통 사전 차단 나...",
       "url": "https://www.etoday.co.kr/news/view/2557363",
+      "source_query": "농산물 특별관리 품목",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "fishery_only",
+      "press": "TF",
+      "domain": "news.tf.co.kr",
+      "title": "수산물 검사 '말라카이트그린' 추가…침출차·고춧가루도 기획 수거",
+      "url": "https://news.tf.co.kr/read/life/2293923.htm",
       "source_query": "농산물 특별관리 품목",
       "source_channel": "naver_api"
     },
@@ -714,21 +714,21 @@
     },
     {
       "section": "dist",
-      "reason": "fishery_title_only",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "서울시, 부적합 농수산물 유통 사전 차단",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03683446645352160",
-      "source_query": "공영도매시장 경매",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "fishery_only",
       "press": "TF",
       "domain": "news.tf.co.kr",
       "title": "수산물 검사 '말라카이트그린' 추가…침출차·고춧가루도 기획 수거",
       "url": "https://news.tf.co.kr/read/life/2293923.htm",
+      "source_query": "공영도매시장 경매",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_title_only",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "서울시, 부적합 농수산물 유통 사전 차단",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03683446645352160",
       "source_query": "공영도매시장 경매",
       "source_channel": "naver_api"
     },
