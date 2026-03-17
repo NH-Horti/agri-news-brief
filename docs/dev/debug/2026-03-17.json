@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T09:24:18+09:00",
-  "build_tag": "bc49c26",
+  "generated_at_kst": "2026-03-17T10:08:07+09:00",
+  "build_tag": "de2e3aa",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1028,30 +1028,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "조선일보",
-      "domain": "biz.chosun.com",
-      "title": "SNS서 뜨면 가격 급등…두쫀쿠·봄동비빔밥 두배 이상 ‘껑충’",
-      "url": "https://biz.chosun.com/distribution/living/2026/03/16/QQAFMEM3PJDT3BX3BY5CK6EUU4/"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "“봄동 값 왜 이러지?”…‘SNS 유행’에 먹거리 물가 ‘출렁’",
-      "url": "https://www.nongmin.com/article/20260316500067"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
-      "press": "JTBC",
-      "domain": "news.jtbc.co.kr",
-      "title": "입맛 살리는 제철 봄동이 이렇게 비싸졌어? SNS 유행 타더니 가격 도 '훌...",
-      "url": "https://news.jtbc.co.kr/article/NB12289786?influxDiv=NAVER"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "MBC",
       "domain": "imnews.imbc.com",
@@ -1239,7 +1215,7 @@
       "reason": "fishery_title_only",
       "press": "skbroadband",
       "domain": "news.skbroadband.com",
-      "title": "[연합뉴스] 유가 급등에 농어업 '비상'…시설농가·어가 '직격탄'",
+      "title": "유가 급등에 농어업 '비상'…시설농가·어가 '직격탄'",
       "url": "https://news.skbroadband.com/news/articleView.html?idxno=220930"
     },
     {
@@ -1845,18 +1821,18 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "ibabynews",
-      "domain": "ibabynews.com",
-      "title": "[호텔 트렌드] 서울 남산에서 만나는 한국의 美…반얀트리 클럽 앤 스파...",
-      "url": "https://www.ibabynews.com/news/articleView.html?idxno=149615"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "디지털타임스",
       "domain": "dt.co.kr",
       "title": "[기획] ‘호르무즈 돌파’ 다급한 트럼프… 美中 정상회담 연기 카드 꺼...",
       "url": "https://www.dt.co.kr/article/12051864"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "ibabynews",
+      "domain": "ibabynews.com",
+      "title": "[호텔 트렌드] 서울 남산에서 만나는 한국의 美…반얀트리 클럽 앤 스파...",
+      "url": "https://www.ibabynews.com/news/articleView.html?idxno=149615"
     },
     {
       "section": "supply",
@@ -3759,16 +3735,16 @@
       "reason": "supply_context_gate",
       "press": "thefairnews",
       "domain": "thefairnews.co.kr",
-      "title": "[대전·세종·충남 오늘(17일) 날씨] 출근길 영하권 '서리 주의'…미세먼...",
-      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71589"
+      "title": "[광주·전남 오늘(17일) 날씨] 출근길 영하권 '깜짝 추위'…낮 18도 안팎...",
+      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71587"
     },
     {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "thefairnews",
       "domain": "thefairnews.co.kr",
-      "title": "[광주·전남 오늘(17일) 날씨] 출근길 영하권 '깜짝 추위'…낮 18도 안팎...",
-      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71587"
+      "title": "[대전·세종·충남 오늘(17일) 날씨] 출근길 영하권 '서리 주의'…미세먼...",
+      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=71589"
     },
     {
       "section": "supply",
@@ -4120,7 +4096,7 @@
       "press": "YTN",
       "domain": "radio.ytn.co.kr",
       "title": "\"잡았다, 물가 주범! 재고 쌓아두고” 돼지고기 왜 비싼가 현장 덮쳤더...",
-      "url": "https://radio.ytn.co.kr/program/?f=2&id=107840&s_mcd=0433&s_hcd=01"
+      "url": "https://radio.ytn.co.kr/program/?f=2&id=107834&s_mcd=0433&s_hcd=01"
     },
     {
       "section": "dist",
@@ -4128,7 +4104,7 @@
       "press": "YTN",
       "domain": "radio.ytn.co.kr",
       "title": "\"잡았다, 물가 주범! 재고 쌓아두고” 돼지고기 왜 비싼가 현장 덮쳤더...",
-      "url": "https://radio.ytn.co.kr/program/?f=2&id=107834&s_mcd=0433&s_hcd=01"
+      "url": "https://radio.ytn.co.kr/program/?f=2&id=107840&s_mcd=0433&s_hcd=01"
     },
     {
       "section": "dist",
@@ -4545,182 +4521,6 @@
       "domain": "pointdaily.co.kr",
       "title": "화순팜, 난 박람회서 '농특산물 장터' 연다..한우 등심 53% 파격 할인",
       "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=296428"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "강원일보",
-      "domain": "kwnews.co.kr",
-      "title": "횡성군 반려동물보호센터 새 생명 탄생 '입양가족 기다립니다'",
-      "url": "https://www.kwnews.co.kr/page/view/2026031609201663382"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "강원도민일보",
-      "domain": "kado.net",
-      "title": "\" 딸기 ·오이·포도와 함께 할 반려 가족 기다려요\"",
-      "url": "https://www.kado.net/news/articleView.html?idxno=2039118"
-    },
-    {
-      "section": "dist",
-      "reason": "remote_foreign_horti",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "지하도에 웬 딸기 농장…스마트팜으로 변한 도심 빈 공간",
-      "url": "https://www.joongang.co.kr/article/25412215"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "thefirstmedia",
-      "domain": "thefirstmedia.net",
-      "title": "에버랜드, '튤립축제' 오는 20일 개막... \"화사한 튤립에 사파리∙불꽃...",
-      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=195592"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "한국영농신문",
-      "domain": "youngnong.co.kr",
-      "title": "제주도, 자체 생산 우량 어미묘 첫 공급…철저한 육묘관리 당부",
-      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58003"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "한국영농신문",
-      "domain": "youngnong.co.kr",
-      "title": "경남농기원, 지역특화작목 품질 높이고 전문인력 키운다",
-      "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58002"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "gnmaeil",
-      "domain": "gnmaeil.com",
-      "title": "고성군, 지속 가능한 농어촌 발전 모델 만들어 경제 활력 높인다",
-      "url": "http://www.gnmaeil.com/news/articleView.html?idxno=582563"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "83타워 아래 봄이 핀다…이월드 벚꽃축제 21일 개막",
-      "url": "http://www.breaknews.com/1192303"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "ulsanpress",
-      "domain": "ulsanpress.net",
-      "title": "울산문화관광재단 ' 딸기 따러 같이 가개'",
-      "url": "https://www.ulsanpress.net/news/articleView.html?idxno=571059"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "newswhoplus",
-      "domain": "newswhoplus.com",
-      "title": "쿠팡, 인구감소지역 딸기 3000톤 매입...판로 끊긴 지방 농가 지원",
-      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=56785"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "ksmnews",
-      "domain": "ksmnews.co.kr",
-      "title": "대구 서구보건소, 새 학기 ‘성홍열’ 주의",
-      "url": "https://www.ksmnews.co.kr/news/view.php?idx=595133"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_ops_only_generic",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "“현지산보다 6배 비싼데 품절?”..동남아 부유층 홀린 ‘K 딸기 ’",
-      "url": "http://www.fnnews.com/news/202603161336221123"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "경남일보",
-      "domain": "gnnews.co.kr",
-      "title": "경남도농기원 '기초영농기술교육' 운영",
-      "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=632645"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "UJEIL",
-      "domain": "ujeil.com",
-      "title": "SNS 바이럴 음식들, 가격 2배이상 폭등",
-      "url": "http://www.ujeil.com/news/articleView.html?idxno=382591"
-    },
-    {
-      "section": "dist",
-      "reason": "ban_keywords",
-      "press": "tenasia",
-      "domain": "tenasia.co.kr",
-      "title": "혜리, 121억 건물주도 먹는 건 똑같아…입에 크림이 덕지덕지",
-      "url": "https://www.tenasia.co.kr/article/2026031637644"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_offtopic_no_agri_context",
-      "press": "inews24",
-      "domain": "inews24.com",
-      "title": "화순군, 난 명품박람회 농특산물 판매 부스 운영",
-      "url": "http://www.inews24.com/view/1949696"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "[여기는 진주] 쿠팡, 산청 등 전국 딸기 3천 톤 매입…‘농가 지원’ 외",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8509629"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "헤럴드경제",
-      "domain": "biz.heraldcorp.com",
-      "title": "“1만8900원→3만1800원으로”…두쫀쿠·봄동비빔밥, 유행따라 몸값도 ‘...",
-      "url": "https://biz.heraldcorp.com/article/10695197"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "디지털타임스",
-      "domain": "dt.co.kr",
-      "title": "\"SNS 보고 지갑 열었더니\"…반짝 유행에 가격은 곱절",
-      "url": "https://www.dt.co.kr/article/12051733"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_offtopic_no_agri_context",
-      "press": "siminsori",
-      "domain": "siminsori.com",
-      "title": "화순팜, 제8회 화순 난 명품박람회 농특산물 판매 부스 운영",
-      "url": "http://www.siminsori.com/news/articleView.html?idxno=313827"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "대통령 부부, 창원 반송시장에서 장본 것은 [이런뉴스]",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8509550"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "경인일보",
-      "domain": "kyeongin.com",
-      "title": "버려진 잎 주워다 김장… 1호 특산품 그렇게 태어났다 [우리동네 ‘스페...",
-      "url": "https://www.kyeongin.com/article/1760321"
     },
     {
       "section": "pest",
@@ -5915,38 +5715,6 @@
       "url": "http://www.gjdream.com/news/articleView.html?idxno=667890"
     },
     {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "블로터",
-      "domain": "bloter.net",
-      "title": "롯데카드, 영업정지 맞나…고객·수익 기반 '연쇄 충격' 우려",
-      "url": "https://www.bloter.net/news/articleView.html?idxno=656829"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "bizwnews",
-      "domain": "bizwnews.com",
-      "title": "토스뱅크, '엔화 환율 오류' 피해 고객에 1만원 보상",
-      "url": "http://www.bizwnews.com/news/articleView.html?idxno=129133"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "JJN",
-      "domain": "jjn.co.kr",
-      "title": "民 '결선투표제' 흥행에 머물러선 안돼",
-      "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1035124"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "joynews24",
-      "domain": "joynews24.com",
-      "title": "[퇴근길이슈] 케데헌 오스카·이휘재 녹화·나혼자산다 출판사",
-      "url": "http://www.joynews24.com/view/1949625"
-    },
-    {
       "section": "supply",
       "reason": "must_terms_fail",
       "press": "헤럴드경제",
@@ -6129,14 +5897,6 @@
       "domain": "newsworker.co.kr",
       "title": "\"꼼수할인 잡는다\"... aT, '농축산물 할인지원 부정 수급 신고센터' 개설",
       "url": "https://newsworker.co.kr/news/articleView.html?idxno=417553"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "농식품부 ·aT, 농축산물 할인지원 부정 수급 신고센터 개설",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1347216"
     },
     {
       "section": "supply",
@@ -6413,22 +6173,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "뉴스경남",
-      "domain": "newsgn.com",
-      "title": "창원특례시, 채소·화훼분야 보조사업 본격 추진",
-      "url": "https://newsgn.com/news/articleView.html?idxno=540086"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴스경남",
-      "domain": "newsgn.com",
-      "title": "창원특례시, 채소·화훼분야 보조사업 본격 추진",
-      "url": "https://newsgn.com/news/articleView.html?idxno=540086"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "농업정보신문",
       "domain": "nongup.net",
       "title": "전남농기원, 복합내병성 갖춘 토마토 접목용 대목 육성 박차",
@@ -6648,7 +6392,7 @@
       "threshold": 29.46,
       "tail_cut": 29.86,
       "core_min": 29.46,
-      "total_candidates": 353,
+      "total_candidates": 345,
       "total_selected": 3,
       "top": [
         {
@@ -7154,26 +6898,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.16,
-          "tier": 3,
-          "press": "YTN",
-          "domain": "ytn.co.kr",
-          "title": "'SNS 바이럴에...' 유행이 불러온 결과에 '깜짝' [지금이뉴스]",
-          "url": "https://www.ytn.co.kr/_ln/0134_202603161023558259",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 17.86,
           "tier": 3,
           "press": "헤럴드경제",
@@ -7314,26 +7038,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.81,
-          "tier": 3,
-          "press": "파이낸셜뉴스",
-          "domain": "fnnews.com",
-          "title": "'두쫀쿠' 유행 잇는 '버터떡', 편의점에서 만난다",
-          "url": "http://www.fnnews.com/news/202603160938061056",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 2.6,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 16.71,
           "tier": 2,
           "press": "농수축산신문",
@@ -7349,6 +7053,26 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.61,
+          "tier": 3,
+          "press": "파이낸셜뉴스",
+          "domain": "fnnews.com",
+          "title": "'두쫀쿠' 유행 잇는 '버터떡', 편의점에서 만난다",
+          "url": "http://www.fnnews.com/news/202603160938061056",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 2.6,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -7549,26 +7273,6 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.44,
-          "tier": 1,
-          "press": "뉴스경남",
-          "domain": "newsgn.com",
-          "title": "창원특례시, 채소·화훼분야 보조사업 본격 추진",
-          "url": "https://www.newsgn.com/news/articleView.html?idxno=540086",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.64,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 4.5
           }
         },
         {
@@ -7850,6 +7554,46 @@
             "press_tier": 3,
             "press_weight": 9.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.78,
+          "tier": 3,
+          "press": "헤럴드경제",
+          "domain": "biz.heraldcorp.com",
+          "title": "전라에 피 칠갑…20만원 주고 산 ‘합법적 관음증’에 도파민 폭발한다...",
+          "url": "https://biz.heraldcorp.com/article/10695297",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.77,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "'고창 미니 수박 ' 올해 첫 정식…6월부터 본격 출하",
+          "url": "https://www.newsis.com/view/NISX20260316_0003550498",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
         }
       ]
     },
@@ -7857,7 +7601,7 @@
       "threshold": 38.53,
       "tail_cut": 38.73,
       "core_min": 38.53,
-      "total_candidates": 80,
+      "total_candidates": 77,
       "total_selected": 4,
       "top": [
         {
@@ -8323,26 +8067,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.61,
-          "tier": 1,
-          "press": "데일리한국",
-          "domain": "daily.hankooki.com",
-          "title": "농식품부 ·aT, 농축산물 할인지원 부정 수급 신고센터 개설",
-          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1347216",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 24.36,
           "tier": 1,
           "press": "노컷뉴스",
@@ -8643,26 +8367,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.41,
-          "tier": 1,
-          "press": "이뉴스투데이",
-          "domain": "enewstoday.co.kr",
-          "title": "박성재 전남도의원 \" 양파 수확기 가격 폭락 막아야\" 대책 촉구",
-          "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2406412",
-          "reason": "below_threshold",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 19.26,
           "tier": 2,
           "press": "농수축산신문",
@@ -8678,6 +8382,26 @@
             "offtopic_pen": 1,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.21,
+          "tier": 1,
+          "press": "이뉴스투데이",
+          "domain": "enewstoday.co.kr",
+          "title": "박성재 전남도의원 \" 양파 수확기 가격 폭락 막아야\" 대책 촉구",
+          "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2406412",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -9059,6 +8783,26 @@
             "press_tier": 3,
             "press_weight": 9.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.29,
+          "tier": 1,
+          "press": "foodnews",
+          "domain": "foodnews.co.kr",
+          "title": "농산물 가격 하락세, 축산물은 다소 높아…계란 수입 등 공급 확대 총력",
+          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117683",
+          "reason": "below_threshold",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -9192,7 +8936,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.19,
+          "score": 4.99,
           "tier": 1,
           "press": "KSG",
           "domain": "ksg.co.kr",
@@ -9725,7 +9469,7 @@
       "window_hits_top": [
         [
           "농식품부 수급 점검",
-          38
+          37
         ],
         [
           "농축산물 가격 동향",
@@ -9780,7 +9524,7 @@
         "농식품부 농산물 유통 전문가 협의체"
       ],
       "recall_meta": {},
-      "items_total": 56,
+      "items_total": 55,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -9892,19 +9636,19 @@
       "window_hits_top": [
         [
           "딸기 가격",
-          35
+          31
         ],
         [
           "사과 농가",
           22
         ],
         [
-          "딸기 재배",
-          22
-        ],
-        [
           "토마토 재배",
           20
+        ],
+        [
+          "딸기 재배",
+          19
         ],
         [
           "배추 가격",
@@ -9927,12 +9671,12 @@
           12
         ],
         [
-          "토마토 가격",
+          "포도 산업",
           11
         ],
         [
-          "포도 산업",
-          11
+          "토마토 가격",
+          10
         ],
         [
           "감자 재배",
@@ -10184,7 +9928,7 @@
           "수박"
         ]
       },
-      "items_total": 387,
+      "items_total": 379,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -10297,10 +10041,6 @@
         [
           "농산물 수출 선적",
           5
-        ],
-        [
-          "딸기",
-          2
         ],
         [
           "원예농협 산지유통",
@@ -10447,7 +10187,7 @@
           "자두 직거래"
         ]
       },
-      "items_total": 12,
+      "items_total": 10,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
