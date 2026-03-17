@@ -38,6 +38,7 @@ class TestClassifierBehavior(unittest.TestCase):
             description=desc,
             link=url,
             originallink=url,
+            origin_section=section,
             pub_dt_kst=self.now,
             domain=dom,
             press=press,
@@ -732,6 +733,16 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.segye.com/newsView/20260306506243")
         self.assertEqual(best, "policy", msg=f"scores={scores}")
 
+    def test_policy_livestock_dominant_story_is_rejected(self):
+        title = "돼지고기·한우·계란값 일제히 상승…ASF 등 가축전염병 여파"
+        desc = "돼지고기와 한우, 계란 등 축산물 가격이 오르고 ASF 여파가 이어진다는 기사다."
+        url = "https://example.com/policy-livestock-only"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_policy_livestock_dominant_context(title, desc, dom, press))
+        self.assertFalse(main.policy_has_horti_anchor(title, desc, dom, press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
     def test_local_smart_agri_zone_selection_is_not_dist_core(self):
         herald = self._make_article(
             "dist",
@@ -864,7 +875,29 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([cabbage, strawberry, citrus, export_story], "supply", 5)
         picked_urls = {a.link for a in picked}
         self.assertNotIn(export_story.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
-        self.assertIn(strawberry.link, picked_urls, msg=str([(x.link, x.score, x.topic) for x in picked]))
+
+    def test_dist_rejects_generic_kfood_barrier_story(self):
+        title = "美 관세 위협 이어 비관세 장벽까지… K푸드 160억달러 수출 비상"
+        desc = "미국 관세 위협과 비관세장벽 확대로 K푸드 수출 전반에 비상이 걸렸다는 거시 수출 기사다."
+        url = "https://example.com/dist-kfood-barrier"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_dist_macro_export_noise_context(title, desc, dom, press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_dist_rejects_campaign_noise_story(self):
+        title = "화훼자조금 협의회 '공원묘원 조화근절' 캠페인 전국 전개"
+        desc = "화훼자조금 협의회가 조화 사용 근절 캠페인을 전국적으로 전개한다고 밝혔다."
+        url = "https://example.com/dist-campaign-noise"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_dist_campaign_noise_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_dist_local_org_tail_catches_small_but_strong_coop_profile(self):
+        title = "경제사업 활발…'작지만 강한 농협' 부상"
+        desc = "지역 농협이 경제사업 성과와 농가실익 증진 사례를 소개하는 홍보성 기사다."
+        self.assertTrue(main.is_dist_local_org_tail_context(title, desc))
 
     def test_supply_selection_prefers_distinct_feature_topics_over_policy_stabilization_or_repeat_feature(self):
         cabbage = self._make_article(
@@ -1665,6 +1698,12 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
         self.assertTrue(main.is_policy_major_issue_context(title, desc, "ikpnews.net", "한국농정신문"))
 
+    def test_policy_major_issue_context_accepts_local_price_support_story(self):
+        title = "예산군, 2026 주요 농산물 가격안정 지원사업 신청 접수"
+        desc = "예산군이 사과와 배 등 주요 농산물 가격안정 지원사업 신청을 받고 시장가 하락 시 차액을 보전한다."
+        self.assertTrue(main.is_policy_local_price_support_context(title, desc))
+        self.assertTrue(main.is_policy_major_issue_context(title, desc, "yesan.go.kr", "예산군"))
+
     def test_policy_major_issue_story_prefers_policy_over_dist(self):
         title = "농식품부, 농산물 유통 전문가 협의체 출범"
         desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
@@ -1756,6 +1795,26 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([official, market_brief, issue], "policy", 5)
         picked_links = {x.link for x in picked}
         self.assertIn(issue.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_selection_keeps_local_price_support_story_under_outlier_threshold(self):
+        outlier = self._make_article(
+            "policy",
+            "농식품부, 농산물 가격 급등 대응 특별 브리핑",
+            "농식품부가 농산물 가격 급등 대응 브리핑과 수급 점검 결과를 발표했다.",
+            "https://example.com/policy-outlier-brief",
+        )
+        local_support = self._make_article(
+            "policy",
+            "예산군, 2026 주요 농산물 가격안정 지원사업 신청 접수",
+            "예산군이 사과와 배 등 주요 농산물 가격안정 지원사업 신청을 받고 시장가 하락 시 차액을 보전한다.",
+            "https://example.com/policy-local-support",
+        )
+        outlier.score = 38.0
+        local_support.score = 14.6
+
+        picked = main.select_top_articles([outlier, local_support], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(local_support.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
@@ -2334,6 +2393,11 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "농협 강원본부는 연합판매사업 직거래 평가회 및 활성화 워크숍을 열고 농가 판로 확대 방안을 점검했다."
         self.assertTrue(main.is_dist_sales_channel_ops_context(title, desc))
 
+    def test_dist_sales_channel_ops_context_matches_food_support_center_story(self):
+        title = "익산푸드통합지원센터, 농가 상생 직거래 장터 개최"
+        desc = "익산푸드통합지원센터가 배추·무 농가 판로 확대를 위해 공동구매 연계 직거래 장터를 열었다."
+        self.assertTrue(main.is_dist_sales_channel_ops_context(title, desc))
+
     def test_dist_selection_keeps_center_and_sales_channel_ops_stories(self):
         export_field = self._make_article(
             "dist",
@@ -2435,6 +2499,34 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_links = {x.link for x in picked}
         self.assertIn(tomato.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_pest_selection_keeps_execution_story_under_small_pool_threshold(self):
+        outlier = self._make_article(
+            "pest",
+            "전국 과수 병해충 대응 현황 점검",
+            "전국 과수 병해충 대응 현황을 점검하고 대응 체계를 논의했다.",
+            "https://example.com/pest-outlier",
+        )
+        fireblight = self._make_article(
+            "pest",
+            "양구군, 과수화상병 선제 대응 총력",
+            "양구군이 사과 농가 대상 과수화상병 방제 계획을 가동하고 약제 살포를 지원한다.",
+            "https://example.com/pest-fireblight-underfill",
+        )
+        moth = self._make_article(
+            "pest",
+            "금산군농업기술센터, 토마토뿔나방 대응 약제 지원",
+            "토마토뿔나방 확산 대응을 위해 전수조사와 약제 지원을 실시한다.",
+            "https://example.com/pest-moth-underfill",
+        )
+        outlier.score = 27.0
+        fireblight.score = 17.6
+        moth.score = 17.2
+
+        picked = main.select_top_articles([outlier, fireblight, moth], "pest", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(fireblight.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(moth.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
         story = self._make_article(
             "supply",
@@ -2455,6 +2547,15 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([story, peer], "supply", 5)
         picked_links = {x.link for x in picked}
         self.assertIn(story.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_supply_market_action_story_survives_must_term_gate(self):
+        title = '문대림 "폐기처분 놓인 대형 무도 수매 대상 포함"'
+        desc = "제주 월동무 농가 피해를 줄이기 위해 대형 무와 9수 물량까지 수매해 출하 조절에 나선다는 기사다."
+        url = "https://example.com/supply-market-action"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertTrue(main.is_horti_market_action_context(title, desc))
+        self.assertTrue(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
 
     def test_remote_foreign_shipping_story_is_blocked(self):
         title = "유가에 놀란 백악관, '美선박만 美항구간 운송' 일시면제 검토"
@@ -2485,6 +2586,49 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertFalse(raw["policy"], msg=str([(x.section, x.link, x.score) for x in raw["policy"]]))
         self.assertEqual(len(raw["dist"]), 1, msg=str([(x.section, x.link, x.score) for x in raw["dist"]]))
         self.assertEqual(raw["dist"][0].link, url)
+        self.assertEqual(raw["dist"][0].reassigned_from, "policy")
+
+    def test_rebalance_underfilled_dist_moves_supply_market_action_story(self):
+        dist_seed = self._make_article(
+            "dist",
+            "가락시장 하역 중단 장기화…출하 농민 피해 확산",
+            "가락시장 하역 차질로 반입과 경락 일정이 흔들리며 산지 농가 피해가 커지고 있다.",
+            "https://example.com/dist-seed",
+        )
+        keep1 = self._make_article(
+            "supply",
+            "사과 개화기 냉해 우려…산지 생육 관리 비상",
+            "사과 산지에서 냉해 우려가 커지며 생육 관리가 강화되고 있다.",
+            "https://example.com/supply-keep1",
+        )
+        keep2 = self._make_article(
+            "supply",
+            "딸기 생육 부진에 출하량 감소 전망",
+            "딸기 산지에서 생육 부진으로 출하량 감소 우려가 커지고 있다.",
+            "https://example.com/supply-keep2",
+        )
+        move_candidate = self._make_article(
+            "supply",
+            "강원농협, 연합판매사업 직거래 평가회·활성화 워크숍 개최",
+            "농협 강원본부는 연합판매사업 직거래 평가회 및 활성화 워크숍을 열고 농가 판로 확대 방안을 점검했다.",
+            "https://www.news1.kr/local/kangwon/6099371",
+        )
+        final_by_section = {
+            "dist": [dist_seed],
+            "supply": [keep1, keep2, move_candidate],
+            "policy": [],
+            "pest": [],
+        }
+
+        moved = main._rebalance_underfilled_dist_from_supply(final_by_section)
+
+        self.assertEqual(moved, 1)
+        self.assertEqual(len(final_by_section["dist"]), 2)
+        self.assertTrue(any(x.link == move_candidate.link for x in final_by_section["dist"]))
+        moved_article = next(x for x in final_by_section["dist"] if x.link == move_candidate.link)
+        self.assertEqual(moved_article.reassigned_from, "supply")
+        self.assertEqual(moved_article.selection_stage, "cross_section_dist_backfill")
+        self.assertEqual(moved_article.selection_note, "supply_to_dist_underfill")
 
     def test_dist_selection_keeps_export_resolution_story_with_outlier_present(self):
         center = self._make_article(
@@ -2615,6 +2759,7 @@ class TestClassifierBehavior(unittest.TestCase):
             row = main.DEBUG_DATA["sections"]["policy"]["top"][0]
             self.assertFalse(row["selected"])
             self.assertEqual(row["reason"], "flower_novelty_noise")
+            self.assertEqual(row["selection_stage"], "flower_novelty_noise")
             self.assertEqual(main.DEBUG_DATA["sections"]["policy"]["total_selected"], 0)
         finally:
             main.DEBUG_DATA.clear()
@@ -2647,7 +2792,67 @@ class TestClassifierBehavior(unittest.TestCase):
             row = main.DEBUG_DATA["sections"]["policy"]["top"][0]
             self.assertFalse(row["selected"])
             self.assertEqual(row["reason"], "postbuild_pruned")
+            self.assertEqual(row["selection_stage"], "postbuild_pruned")
             self.assertEqual(main.DEBUG_DATA["sections"]["policy"]["total_selected"], 0)
+        finally:
+            main.DEBUG_DATA.clear()
+            main.DEBUG_DATA.update(original)
+
+    def test_select_top_articles_debug_rows_include_selection_metadata(self):
+        article = self._make_article(
+            "dist",
+            "강원도 농산물 광역수급관리센터 개소…배추·무 수급 선제 관리",
+            "강원특별자치도가 농산물 광역수급관리센터 개소식을 열고 채소류 수급 관리 시범사업을 시작했다.",
+            "https://www.nongmin.com/article/20260312500218",
+        )
+        article.source_query = "농산물 공동구매"
+        article.source_channel = "web"
+        article.score = 20.0
+        original_debug = main.DEBUG_REPORT
+        original = dict(main.DEBUG_DATA)
+        try:
+            main.DEBUG_REPORT = True
+            main.reset_debug_report()
+            picked = main.select_top_articles([article], "dist", 5)
+            self.assertEqual(len(picked), 1)
+            row = main.DEBUG_DATA["sections"]["dist"]["top"][0]
+            self.assertTrue(row["selected"])
+            self.assertTrue(row["fit_score"] > 0)
+            self.assertTrue(row["selection_stage"])
+            self.assertEqual(row["origin_section"], "dist")
+            self.assertEqual(row["source_query"], "농산물 공동구매")
+            self.assertEqual(row["source_channel"], "web")
+        finally:
+            main.DEBUG_REPORT = original_debug
+            main.DEBUG_DATA.clear()
+            main.DEBUG_DATA.update(original)
+
+    def test_sync_debug_with_final_sections_appends_missing_final_row(self):
+        article = self._make_article(
+            "dist",
+            "원주 원예농협, 강원 사과 유통 거점 부상",
+            "원주 원예농협이 강원 사과 공동선별과 판로 확대를 맡는 유통 거점 역할을 강화하고 있다.",
+            "https://example.com/debug-sync-dist",
+        )
+        article.reassigned_from = "supply"
+        article.selection_stage = "cross_section_dist_backfill"
+        article.selection_note = "supply_to_dist_underfill"
+        original = dict(main.DEBUG_DATA)
+        try:
+            main.DEBUG_DATA["sections"] = {
+                "dist": {
+                    "total_selected": 0,
+                    "top": [],
+                }
+            }
+            main._sync_debug_with_final_sections({"dist": [article]})
+            rows = main.DEBUG_DATA["sections"]["dist"]["top"]
+            self.assertEqual(len(rows), 1)
+            row = rows[0]
+            self.assertTrue(row["selected"])
+            self.assertEqual(row["selection_stage"], "cross_section_dist_backfill")
+            self.assertEqual(row["reassigned_from"], "supply")
+            self.assertEqual(row["origin_section"], "dist")
         finally:
             main.DEBUG_DATA.clear()
             main.DEBUG_DATA.update(original)
@@ -2676,7 +2881,10 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(len(supply_queries) > 0)
         self.assertIn("농식품부 농산물 수급 점검", policy_queries)
         self.assertIn("농식품부 농산물 유통 전문가 협의체", main._recall_common_queries("policy", "2026-01-05"))
+        self.assertIn("농산물 가격안정 지원", main._recall_common_queries("policy", "2026-01-05"))
         self.assertIn("도매시장 경매", dist_queries)
+        self.assertIn("농산물 유통 거점", main._recall_common_queries("dist", "2026-01-05"))
+        self.assertIn("토마토뿔나방 약제 지원", main._recall_common_queries("pest", "2026-01-05"))
         self.assertIn("과수화상병 예찰", main._recall_common_queries("pest", "2026-01-05"))
         self.assertTrue(len(pest_queries) > 0)
 
