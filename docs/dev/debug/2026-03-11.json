@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T00:16:16+09:00",
-  "build_tag": "a72e354",
+  "generated_at_kst": "2026-03-18T07:34:20+09:00",
+  "build_tag": "acae12e",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1350,26 +1350,6 @@
       "title": "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
       "url": "https://www.namdonews.com/news/articleView.html?idxno=846645",
       "source_query": "당근 출하 조절",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "4TH",
-      "domain": "4th.kr",
-      "title": "[브리핑] CJ올리브영, '올리브영 페스타' 월드투어 전개",
-      "url": "http://www.4th.kr/news/articleView.html?idxno=2108826",
-      "source_query": "양파 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "[Daily New유통] 신세계사이먼, 세라젬, 롯데월드 外",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/10/2026031000030.html",
-      "source_query": "양파 가격 안정",
       "source_channel": "naver_api"
     },
     {
@@ -2894,6 +2874,16 @@
     },
     {
       "section": "pest",
+      "reason": "pest_input_marketing_noise",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "“농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란",
+      "url": "https://www.nongmin.com/article/20260309500644",
+      "source_query": "탄저병 방제",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
       "reason": "pest_partial_mention",
       "press": "농축유통신문",
       "domain": "amnews.co.kr",
@@ -3465,16 +3455,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "뉴데일리경제",
-      "domain": "gj.newdaily.co.kr",
-      "title": "장성군, 농가 지원에 산불 예방까지… 영농부산물 파쇄 지원 ‘일석이조...",
-      "url": "https://gj.newdaily.co.kr/site/data/html/2026/03/09/2026030900465.html",
-      "source_query": "가지 병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "한국영농신문",
       "domain": "youngnong.co.kr",
       "title": "경북 농업의 판을 바꾼다… 인공지능 대전환 원년 선포",
@@ -3938,7 +3918,7 @@
       "threshold": 28.12,
       "tail_cut": 28.52,
       "core_min": 28.12,
-      "total_candidates": 134,
+      "total_candidates": 133,
       "total_selected": 5,
       "top": [
         {
@@ -7151,7 +7131,7 @@
       "threshold": 27.53,
       "tail_cut": 27.53,
       "core_min": 27.53,
-      "total_candidates": 21,
+      "total_candidates": 20,
       "total_selected": 4,
       "top": [
         {
@@ -7179,33 +7159,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 32.81,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "“농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란",
-          "url": "https://www.nongmin.com/article/20260309500644",
-          "reason": "",
-          "fit_score": 2.49,
-          "selection_stage": "core",
-          "selection_note": "",
-          "origin_section": "pest",
-          "reassigned_from": "",
-          "source_query": "탄저병 방제",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 10.7
           }
         },
         {
@@ -7479,7 +7432,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 18.17,
           "tier": 1,
@@ -7487,9 +7440,9 @@
           "domain": "inews365.com",
           "title": "복숭아 농사, 지금 방제 가 '승부처'…옥천 농기센터 현장지도 강화",
           "url": "https://www.inews365.com/news/article.html?no=909844",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 3.29,
-          "selection_stage": "below_threshold",
+          "selection_stage": "pest_diversity_backfill",
           "selection_note": "",
           "origin_section": "pest",
           "reassigned_from": "",
@@ -8310,7 +8263,7 @@
           "수박"
         ]
       },
-      "items_total": 157,
+      "items_total": 156,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -8613,7 +8566,7 @@
         ],
         [
           "탄저병 방제",
-          4
+          3
         ],
         [
           "과수화상병 약제",
@@ -8660,7 +8613,7 @@
         "멜론 병해충"
       ],
       "recall_meta": {},
-      "items_total": 21,
+      "items_total": 20,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
