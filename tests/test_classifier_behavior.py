@@ -1943,6 +1943,45 @@ class TestClassifierBehavior(unittest.TestCase):
         picked_links = {x.link for x in picked}
         self.assertIn(local_program.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_policy_selection_avoids_same_local_program_duplicate_and_keeps_other_footprint(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "충남도가 원예·축산 시범사업 113개를 본격 추진하며 농가 현장 확산에 나선다.",
+            "https://example.com/policy-pilot-1",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "충남도농업기술원이 원예·축산 시범사업을 본격 추진하며 현장 보급에 나선다.",
+            "https://example.com/policy-pilot-2",
+        )
+        market_brief = self._make_article(
+            "policy",
+            "과일·채소 가격 흐름 점검…정부 '체감물가 대응 지속'",
+            "정부가 과일과 채소 가격 흐름을 점검하고 체감물가 대응 계획을 설명했다.",
+            "https://example.com/policy-market-brief-2",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도 '농산물 광역 수급 관리센터' 전국 최초 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역 수급 관리센터를 출범하고 시범사업을 시작한다.",
+            "https://example.com/policy-local-program-2",
+        )
+        pilot1.score = 28.92
+        pilot2.score = 25.77
+        market_brief.score = 26.48
+        local_program.score = 17.53
+
+        picked = main.select_top_articles([pilot1, pilot2, market_brief, local_program], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(
+            int(pilot1.link in picked_links) + int(pilot2.link in picked_links),
+            1,
+            msg=str([(x.link, x.score, x.title) for x in picked]),
+        )
+        self.assertIn(local_program.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
             "dist",

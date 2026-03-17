@@ -8748,6 +8748,113 @@ def _pest_has_same_footprint(a: "Article", b: "Article") -> bool:
     return bool(set(_pest_story_footprint_tokens(a)) & set(_pest_story_footprint_tokens(b)))
 
 
+_POLICY_FOOTPRINT_KIND_TERMS: dict[str, tuple[str, ...]] = {
+    "supply_center": ("광역 수급 관리센터", "광역수급관리센터", "수급 관리센터", "수급관리센터"),
+    "pilot_program": ("시범사업", "시범 사업"),
+    "price_support": (
+        "가격안정",
+        "가격 안정",
+        "최저가격",
+        "최저 가격",
+        "최소가격",
+        "보전",
+        "보전금",
+        "차액 지원",
+        "지원사업",
+    ),
+    "discount_support": ("할인 지원", "할인지원", "할인쿠폰", "할인 쿠폰"),
+    "fruit_snack": ("과일간식", "과일 간식"),
+}
+
+
+def _normalize_policy_region_token(region: str) -> str:
+    token = str(region or "").strip()
+    if not token:
+        return ""
+    token = re.sub(r"(특별자치시|특별자치도|광역시|특별시)$", "", token)
+    token = re.sub(r"(시|군|구|도)$", "", token)
+    return token or str(region or "").strip()
+
+
+def _policy_region_or_fallback_key(a: "Article") -> str:
+    region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
+    for region in region_candidates:
+        token = _normalize_policy_region_token(region)
+        if token:
+            return token
+    attached = _ATTACHED_REGION_RX.search((a.title or "") + " " + (a.description or ""))
+    if attached:
+        return _normalize_policy_region_token(attached.group(1))
+    return ""
+
+
+def _policy_article_commodity_keys(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_policy_diversity_keys", None)
+    if cached is None:
+        try:
+            cached = tuple(managed_commodity_keys_for_article(a))
+        except Exception:
+            cached = ()
+        if not cached:
+            text = ((a.title or "") + " " + (a.description or "")).lower()
+            inferred = sorted(
+                {
+                    TOPIC_REP_BY_TERM_L.get(term, term)
+                    for term in HORTI_ITEM_TERMS_L
+                    if term in text
+                }
+            )
+            if inferred:
+                cached = tuple(inferred[:3])
+        if not cached:
+            topic = str(getattr(a, "topic", "") or "").strip()
+            if topic in _HORTI_TOPICS_SET:
+                cached = (topic,)
+        setattr(a, "_policy_diversity_keys", cached)
+    return tuple(cached or ())
+
+
+def _policy_story_kind(a: "Article") -> str:
+    cached = getattr(a, "_policy_story_kind", None)
+    if cached is None:
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+        cached = ""
+        for kind, terms in _POLICY_FOOTPRINT_KIND_TERMS.items():
+            if any(term in text for term in terms):
+                cached = kind
+                break
+        setattr(a, "_policy_story_kind", cached)
+    return str(cached or "")
+
+
+def _policy_story_footprint_tokens(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_policy_footprint_tokens", None)
+    if cached is None:
+        region_key = _policy_region_or_fallback_key(a)
+        commodity_keys = _policy_article_commodity_keys(a)
+        story_kind = _policy_story_kind(a)
+        tokens: set[str] = set()
+        if region_key and story_kind:
+            tokens.add(f"region:{region_key}|kind:{story_kind}")
+            for commodity_key in commodity_keys:
+                tokens.add(f"region:{region_key}|kind:{story_kind}|commodity:{commodity_key}")
+        elif region_key:
+            for commodity_key in commodity_keys:
+                tokens.add(f"region:{region_key}|commodity:{commodity_key}")
+            if not tokens:
+                tokens.add(f"region:{region_key}")
+        elif story_kind and commodity_keys:
+            for commodity_key in commodity_keys:
+                tokens.add(f"kind:{story_kind}|commodity:{commodity_key}")
+        cached = tuple(sorted(tokens))
+        setattr(a, "_policy_footprint_tokens", cached)
+    return tuple(cached or ())
+
+
+def _policy_has_same_footprint(a: "Article", b: "Article") -> bool:
+    return bool(set(_policy_story_footprint_tokens(a)) & set(_policy_story_footprint_tokens(b)))
+
+
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
     - 특히 pest(병해충/방제) 섹션에서 같은 지자체 방제 이슈가 여러 건 뜨는 문제를 완화.
@@ -8783,6 +8890,15 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
         rb = {_normalize_pest_region_token(x) for x in rb if _normalize_pest_region_token(x)}
         a_region_key = _pest_region_or_fallback_key(a)
         b_region_key = _pest_region_or_fallback_key(b)
+        if a_region_key:
+            ra.add(a_region_key)
+        if b_region_key:
+            rb.add(b_region_key)
+    elif section_key == "policy":
+        ra = {_normalize_policy_region_token(x) for x in ra if _normalize_policy_region_token(x)}
+        rb = {_normalize_policy_region_token(x) for x in rb if _normalize_policy_region_token(x)}
+        a_region_key = _policy_region_or_fallback_key(a)
+        b_region_key = _policy_region_or_fallback_key(b)
         if a_region_key:
             ra.add(a_region_key)
         if b_region_key:
@@ -8837,6 +8953,15 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
 
     if section_key == "policy":
         common_core = len((ta & tb) & _POLICY_CORE_TOKENS)
+        same_kind = _policy_story_kind(a) and (_policy_story_kind(a) == _policy_story_kind(b))
+        same_commodity = bool(set(_policy_article_commodity_keys(a)) & set(_policy_article_commodity_keys(b)))
+        if _policy_has_same_footprint(a, b) and (common_core >= 1 or jac >= 0.34 or jac2 >= 0.42):
+            return True
+        if same_region and same_kind:
+            if same_commodity and (common_core >= 1 or jac >= 0.34):
+                return True
+            if common_core >= 2 and jac >= 0.34:
+                return True
         if common_core >= 2 and jac >= 0.55:
             return True
 
