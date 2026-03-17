@@ -129,6 +129,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("--group-chip-color", self.text)
         self.assertIn(".chipDock{{position:fixed;", self.text)
         self.assertIn(".chip,.commodityGroupChip{{", self.text)
+        self.assertIn(".chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}}", self.text)
         self.assertIn(".viewTabEyebrow{{display:none}}", self.text)
         self.assertIn("body.quickNavOpen{{overflow:hidden}}", self.text)
         self.assertIn(".mobileQuickNavBody .chips,", self.text)

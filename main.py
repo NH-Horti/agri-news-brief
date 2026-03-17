@@ -13909,8 +13909,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .chipbar{{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);overflow:hidden;}}
     .briefingChipbar{{margin:16px 0 0}}
     .commodityBoardNav{{margin:18px 18px 20px}}
-    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 14px;}}
-    .chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:center;}}
+    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 18px;}}
+    .chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}}
     .chips{{flex-wrap:wrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
     .commodityGroupNav{{flex-wrap:wrap;}}

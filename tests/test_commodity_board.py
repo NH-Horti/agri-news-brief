@@ -289,6 +289,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn(".chipDock{position:fixed;", html)
         self.assertIn(".commodityBoardNav{margin:18px 18px 20px}", html)
         self.assertIn(".chip,.commodityGroupChip{", html)
+        self.assertIn(".chips,.commodityGroupNav{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}", html)
         self.assertIn(".viewTabEyebrow{display:none}", html)
         self.assertIn(".mobileQuickNavBody .chips,", html)
         self.assertIn("body.quickNavOpen{overflow:hidden}", html)
