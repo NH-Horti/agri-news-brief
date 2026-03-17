@@ -4338,7 +4338,7 @@ def is_policy_livestock_dominant_context(title: str, desc: str, dom: str = "", p
 
 _TITLE_LIVESTOCK_CORE_TERMS = (
     "축산물", "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "닭고기",
-    "계란", "달걀", "우유", "낙농", "양돈", "양계", "asf", "구제역", "조류인플루엔자",
+    "계란", "달걀", "우유", "낙농", "양돈", "양계", "축산법", "축산정책", "asf", "구제역", "조류인플루엔자",
 )
 _TITLE_HORTI_DIRECT_TERMS = (
     "농산물", "원예", "과수", "과일", "채소", "화훼", "청과",
@@ -4399,7 +4399,7 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
         ttl_wo_neutral = ttl_wo_neutral.replace((phrase or "").lower(), "")
         txt_wo_neutral = txt_wo_neutral.replace((phrase or "").lower(), "")
     title_livestock_hits = count_any(ttl_wo_neutral, [w.lower() for w in _TITLE_LIVESTOCK_CORE_TERMS])
-    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "계란", "달걀"))
+    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "계란", "달걀"))
     title_horti_hits = count_any(ttl, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(ttl, HORTI_ITEM_TERMS_L)
     managed_count = int(_managed_commodity_match_summary(title or "", desc or "").get("count") or 0)
     market_hits = count_any(txt_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
@@ -4482,7 +4482,7 @@ def is_dist_political_visit_context(title: str, desc: str) -> bool:
     keep_hits = count_any(txt, [w.lower() for w in _DIST_POLITICAL_VISIT_KEEP_TERMS])
     agri_hits = count_any(txt, [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼")])
     title_keep_hits = count_any(ttl, [w.lower() for w in ("가격", "수급", "경락", "경매", "반입", "출하", "하역", "운영", "제도개선", "제도 개선")])
-    return actor_hits >= 1 and politics_hits >= 1 and keep_hits < 2 and agri_hits == 0 and title_keep_hits == 0
+    return (actor_hits >= 1 or politics_hits >= 2) and politics_hits >= 1 and keep_hits < 2 and agri_hits == 0 and title_keep_hits == 0
 
 
 def is_dist_local_crop_strategy_noise_context(title: str, desc: str) -> bool:
@@ -4509,12 +4509,14 @@ def is_pest_input_marketing_noise_context(title: str, desc: str) -> bool:
     if not txt:
         return False
     marketing_hits = count_any(txt, [w.lower() for w in _PEST_INPUT_MARKETING_TERMS])
-    if marketing_hits < 3:
+    if marketing_hits < 2:
         return False
     named_pest = re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", txt) is not None
     disease_hits = count_any(txt, [w.lower() for w in ("과수화상병", "탄저병", "역병", "노균병", "흰가루병", "냉해", "동해", "병해충", "방제", "예찰")])
     action_hits = count_any(txt, [w.lower() for w in _PEST_ACTION_TERMS])
-    return (not named_pest) and disease_hits == 0 and action_hits < 2 and ("비료" in txt)
+    deceptive_hits = count_any(txt, [w.lower() for w in ("허위", "과대광고", "광고", "온라인", "표시")])
+    title_real_pest_hits = count_any((title or "").lower(), [w.lower() for w in ("과수화상병", "탄저병", "역병", "노균병", "흰가루병", "병해충", "방제", "예찰", "냉해", "동해")])
+    return (not named_pest) and disease_hits == 0 and action_hits < 2 and ("비료" in txt) and deceptive_hits >= 2 and title_real_pest_hits == 0
 
 
 def is_supply_price_outlook_context(title: str, desc: str) -> bool:
@@ -4772,6 +4774,12 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
         (ttl or "").lower(),
         [w.lower() for w in _DIST_MACRO_LOGISTICS_NOISE_TERMS],
     )
+    title_signature_hits = count_any(
+        (ttl or "").lower(),
+        [w.lower() for w in ("비관세장벽", "수출 1000억", "1000억 달러", "160억달러", "160억 달러", "k-푸드", "k푸드")],
+    )
+    if title_signature_hits >= 2 and concrete_keep_hits == 0:
+        return True
     if title_macro_hits >= 1 and market_hits == 0 and agri_anchor_hits <= 2:
         return True
     return market_hits == 0 and (agri_anchor_hits <= 1 or best_horti_score(ttl, desc or "") < 2.0)
@@ -7495,7 +7503,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("market_political_visit_noise")
     if key == "supply" and is_agri_org_rename_context(ttl, desc):
         return _reject("agri_org_admin_noise")
-    if key in ("supply", "policy") and is_title_livestock_dominant_context(ttl, desc):
+    if key in ("supply", "policy", "dist") and is_title_livestock_dominant_context(ttl, desc):
         return _reject("livestock_title_dominant")
 
 
