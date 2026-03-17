@@ -44,6 +44,12 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(len(main.MANAGED_COMMODITY_CATALOG), 33)
         self.assertEqual(sum(1 for item in main.MANAGED_COMMODITY_CATALOG if item.get("program_core")), 18)
 
+    def test_managed_commodity_group_order_places_fruit_veg_third(self):
+        self.assertEqual(
+            [str(group.get("key") or "") for group in main.MANAGED_COMMODITY_GROUP_SPECS],
+            ["root_leaf", "seasoning_veg", "fruit_veg", "fruit_flower"],
+        )
+
     def test_radish_article_matches_board_item(self):
         item = self._item("radish")
         label = item["label"]
@@ -261,12 +267,32 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("오늘의 브리핑", html)
         self.assertIn("briefingHeroTitle", html)
         self.assertIn("commodityHeadStats", html)
+        self.assertIn("commodityBoardNav", html)
+        self.assertIn("syncStickyOffsets", html)
+        self.assertIn("syncFloatingChipbar", html)
+        self.assertIn("syncMobileQuickNav", html)
+        self.assertIn('id="chipDock"', html)
+        self.assertIn('id="mobileQuickNav"', html)
+        self.assertIn("--group-chip-color", html)
+        self.assertIn("--chip-color", html)
+        self.assertIn("--chipbar-height", html)
+        self.assertIn("--nav-chip-height", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
         self.assertIn("미연결 품목 5개", html)
         self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("붉은고추", html)
+        self.assertLess(html.index("commodity-group-fruit_veg"), html.index("commodity-group-fruit_flower"))
+        self.assertLess(html.index("briefingHeroTitle"), html.index('class="chipbar briefingChipbar"'))
+        self.assertLess(html.index("commodityBoardTitle"), html.index('class="chipbar commodityBoardNav"'))
+        self.assertIn(".chipDock{position:fixed;", html)
+        self.assertIn(".commodityBoardNav{margin:18px 18px 20px}", html)
+        self.assertIn(".chip,.commodityGroupChip{", html)
+        self.assertIn(".chips,.commodityGroupNav{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}", html)
+        self.assertIn(".viewTabEyebrow{display:none}", html)
+        self.assertIn(".mobileQuickNavBody .chips,", html)
+        self.assertIn("body.quickNavOpen{overflow:hidden}", html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]

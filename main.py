@@ -1193,6 +1193,23 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
         ],
     },
     {
+        "key": "fruit_veg",
+        "title": "과채류",
+        "color": "#6d28d9",
+        "items": [
+            {"key": "tomato", "label": "토마토", "short_label": "토마토", "program_core": True, "registry_topics": ["토마토"]},
+            {"key": "cucumber", "label": "오이", "short_label": "오이", "program_core": True, "registry_topics": ["오이"]},
+            {"key": "green_pepper", "label": "풋고추", "short_label": "풋고추", "program_core": True, "aliases": ["풋고추", "청양고추", "꽈리고추"], "context_terms": ["고추 가격", "고추 수급", "고추 작황"]},
+            {"key": "zucchini", "label": "애호박(쥬키니)", "short_label": "애호박", "program_core": True, "aliases": ["애호박", "쥬키니", "주키니"], "context_terms": ["애호박 가격", "애호박 수급", "쥬키니 가격"]},
+            {"key": "oriental_melon", "label": "참외", "short_label": "참외", "program_core": False, "registry_topics": ["참외"]},
+            {"key": "lettuce", "label": "상추", "short_label": "상추", "program_core": False, "registry_topics": ["상추"]},
+            {"key": "strawberry", "label": "딸기", "short_label": "딸기", "program_core": False, "registry_topics": ["딸기"]},
+            {"key": "eggplant", "label": "가지", "short_label": "가지", "program_core": True, "aliases": ["가지"], "context_terms": ["가지 가격", "가지 수급", "가지 작황", "가지 출하", "가지 재배"]},
+            {"key": "paprika", "label": "파프리카", "short_label": "파프리카", "program_core": False, "registry_topics": ["파프리카"]},
+            {"key": "muskmelon", "label": "멜론", "short_label": "멜론", "program_core": False, "registry_topics": ["멜론"]},
+        ],
+    },
+    {
         "key": "fruit_flower",
         "title": "과수화훼류",
         "color": "#1d4ed8",
@@ -1210,23 +1227,6 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
             {"key": "chestnut", "label": "밤", "short_label": "밤", "program_core": False, "registry_topics": ["밤"]},
             {"key": "flowers", "label": "화훼", "short_label": "화훼", "program_core": False, "registry_topics": ["화훼"]},
             {"key": "plum", "label": "자두", "short_label": "자두", "program_core": False, "registry_topics": ["자두"]},
-        ],
-    },
-    {
-        "key": "fruit_veg",
-        "title": "과채류",
-        "color": "#6d28d9",
-        "items": [
-            {"key": "tomato", "label": "토마토", "short_label": "토마토", "program_core": True, "registry_topics": ["토마토"]},
-            {"key": "cucumber", "label": "오이", "short_label": "오이", "program_core": True, "registry_topics": ["오이"]},
-            {"key": "green_pepper", "label": "풋고추", "short_label": "풋고추", "program_core": True, "aliases": ["풋고추", "청양고추", "꽈리고추"], "context_terms": ["고추 가격", "고추 수급", "고추 작황"]},
-            {"key": "zucchini", "label": "애호박(쥬키니)", "short_label": "애호박", "program_core": True, "aliases": ["애호박", "쥬키니", "주키니"], "context_terms": ["애호박 가격", "애호박 수급", "쥬키니 가격"]},
-            {"key": "oriental_melon", "label": "참외", "short_label": "참외", "program_core": False, "registry_topics": ["참외"]},
-            {"key": "lettuce", "label": "상추", "short_label": "상추", "program_core": False, "registry_topics": ["상추"]},
-            {"key": "strawberry", "label": "딸기", "short_label": "딸기", "program_core": False, "registry_topics": ["딸기"]},
-            {"key": "eggplant", "label": "가지", "short_label": "가지", "program_core": True, "aliases": ["가지"], "context_terms": ["가지 가격", "가지 수급", "가지 작황", "가지 출하", "가지 재배"]},
-            {"key": "paprika", "label": "파프리카", "short_label": "파프리카", "program_core": False, "registry_topics": ["파프리카"]},
-            {"key": "muskmelon", "label": "멜론", "short_label": "멜론", "program_core": False, "registry_topics": ["멜론"]},
         ],
     },
 ]
@@ -13395,16 +13395,45 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     }
 
 
-def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+def _hex_to_rgba(color: str, alpha: float) -> str:
+    value = str(color or "").strip().lstrip("#")
+    if len(value) == 3:
+        value = "".join(ch * 2 for ch in value)
+    if len(value) != 6 or re.fullmatch(r"[0-9a-fA-F]{6}", value) is None:
+        return f"rgba(15,23,42,{max(0.0, min(alpha, 1.0)):.3f})"
+    red = int(value[0:2], 16)
+    green = int(value[2:4], 16)
+    blue = int(value[4:6], 16)
+    return f"rgba({red},{green},{blue},{max(0.0, min(alpha, 1.0)):.3f})"
+
+
+def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
-    nav_html = "".join(
-        f'<a class="commodityGroupChip" href="#commodity-group-{esc(str(group.get("key") or ""))}">'
-        f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
-        for group in groups
+    nav_terms: list[str] = []
+    for group in groups:
+        group_color = str(group.get("color") or "#475569")
+        nav_terms.append(
+            f'<a class="commodityGroupChip" data-swipe-ignore="1" '
+            f'style="--group-chip-color:{esc(group_color)};--group-chip-soft:{esc(_hex_to_rgba(group_color, 0.12))};--group-chip-border:{esc(_hex_to_rgba(group_color, 0.38))};" '
+            f'href="#commodity-group-{esc(str(group.get("key") or ""))}">'
+            f'{esc(str(group.get("title") or ""))}<span>{int(group.get("active_count") or 0)}</span></a>'
+        )
+    return (
+        '<div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity">'
+        '<div class="chipwrap">'
+        f'<div class="commodityGroupNav">{"".join(nav_terms)}</div>'
+        '</div>'
+        '</div>'
     )
 
+
+def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+    groups = list(board_ctx.get("groups") or [])
     group_blocks: list[str] = []
     for group in groups:
+        group_color = str(group.get("color") or "#475569")
+        group_soft_bg = _hex_to_rgba(group_color, 0.07)
+        group_soft_border = _hex_to_rgba(group_color, 0.22)
         item_cards: list[str] = []
         for item in group.get("active_items") or group.get("items") or []:
             badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
@@ -13514,10 +13543,10 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
         empty_group_html = '<div class="empty commodityGroupEmpty">오늘 연결된 품목 기사가 없습니다.</div>' if not item_cards else ""
         group_blocks.append(
             f"""
-            <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock">
+            <section id="commodity-group-{esc(str(group.get('key') or ''))}" class="commodityGroupBlock" style="--commodity-group-color:{esc(group_color)};--commodity-group-soft:{esc(group_soft_bg)};--commodity-group-border:{esc(group_soft_border)};">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
-                  <span class="commodityGroupDot" style="background:{esc(str(group.get('color') or '#475569'))}"></span>
+                  <span class="commodityGroupDot" style="background:{esc(group_color)}"></span>
                   <h3>{esc(str(group.get('title') or ''))}</h3>
                 </div>
                 <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {int(group.get('item_total') or 0)} · 수급사업 {int(group.get('program_core_active') or 0)} / {int(group.get('program_core_total') or 0)}</div>
@@ -13554,7 +13583,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
           </div>
         </div>
       </div>
-      <div class="commodityGroupNav">{nav_html}</div>
+      {render_managed_commodity_board_nav_html(board_ctx)}
       {''.join(group_blocks)}
     </section>
     """
@@ -13622,13 +13651,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             options_html = "\n".join(options)
 
     def chip_html(k: str, title: str, n: int, color: str) -> str:
+        chip_soft = _hex_to_rgba(color, 0.12)
+        chip_border = _hex_to_rgba(color, 0.36)
         return (
-            f'<a class="chip" style="border-color:{color};" href="#sec-{k}">'
+            f'<a class="chip" style="--chip-color:{color};--chip-soft:{chip_soft};--chip-border:{chip_border};" href="#sec-{k}">'
             f'<span class="chipTitle">{esc(display_section_title(title))}</span><span class="chipN">{n}</span></a>'
         )
 
     chips_html = "\n".join([chip_html(*c) for c in chips])
-    briefing_chipbar_html = (
+    briefing_nav_html = (
         '<div class="chipbar briefingChipbar" data-view-pane-anchor="briefing">'
         '<div class="chipwrap">'
         f'<div class="chips" data-swipe-ignore="1">{chips_html}</div>'
@@ -13809,19 +13840,24 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       --btnHover:#1e40af;
       --btnBg:#ffffff;
       --shadow:0 4px 12px rgba(17,24,39,.08);
+      --page-max:1220px;
+      --topbar-height:172px;
+      --chipbar-height:58px;
+      --nav-chip-height:40px;
+      --sticky-nav-offset:188px;
+      --anchor-offset:248px;
     }}
     *{{box-sizing:border-box}}
     html {{
-      /* ✅ 앵커 이동 위치 보정 */
       scroll-behavior:smooth;
-      scroll-padding-top: 150px;
+      scroll-padding-top: var(--anchor-offset);
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
-    .wrap{{max-width:1100px !important;margin:0 auto !important;padding:12px 14px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
+    .wrap{{max-width:var(--page-max) !important;margin:0 auto !important;padding:18px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
             border-bottom:1px solid var(--line); z-index:10;}}
-    .topin{{max-width:1100px;margin:0 auto;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
+    .topin{{max-width:var(--page-max);margin:0 auto;padding:12px 20px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}}
     h1{{margin:0;font-size:18px;letter-spacing:-0.2px}}
     .sub{{color:var(--muted);font-size:12.5px;margin-top:4px}}
     .envBadge{{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}}
@@ -13845,17 +13881,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       select{{width:145px; max-width:145px;}}
     }}
 
-    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}}
-    .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:124px;padding:16px 18px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
+    .viewTabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;align-items:stretch}}
+    .viewTab{{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;min-height:132px;padding:18px 20px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}}
     .viewTab:hover{{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}}
     .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}}
     .viewTabEyebrow{{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}}
     .viewTab.isActive .viewTabEyebrow{{background:rgba(255,255,255,.16);color:#e0f2fe}}
     .viewTabTitle{{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}}
-    .viewTabDesc{{font-size:13px;line-height:1.55;color:#475569}}
+    .viewTabDesc{{max-width:420px;font-size:13px;line-height:1.55;color:#475569}}
     .viewTab.isActive .viewTabDesc{{color:rgba(255,255,255,.88)}}
-    .viewTabStats{{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}}
-    .viewTabStat{{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}}
+    .viewTabStats{{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}}
+    .viewTabStat{{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}}
     .viewTabStat strong{{font-size:13px}}
     .viewTab.isActive .viewTabStat{{background:rgba(255,255,255,.16);color:#fff}}
 
@@ -13870,29 +13906,57 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .briefingHeroStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
 
     /* briefing chip bar */
-    .chipbar{{border:1px solid var(--line);border-radius:16px;background:#f8fafc;box-shadow:var(--shadow);}}
-    .briefingChipbar{{margin-top:14px}}
-    .chipwrap{{max-width:1100px;margin:0 auto;padding:10px 12px;}}
-    .chips{{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
+    .chipbar{{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);overflow:hidden;}}
+    .briefingChipbar{{margin:16px 0 0}}
+    .commodityBoardNav{{margin:18px 18px 20px}}
+    .chipwrap{{max-width:var(--page-max);margin:0 auto;padding:10px 18px;}}
+    .chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}}
+    .chips{{flex-wrap:wrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}}
     .chips::-webkit-scrollbar{{height:8px}}
-    .chip{{text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:999px;
-          background:var(--chip);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;min-width:0}}
-    .chip:hover{{border-color:#cbd5e1}}
+    .commodityGroupNav{{flex-wrap:wrap;}}
+    .chip,.commodityGroupChip{{text-decoration:none;border:1px solid var(--chip-border, var(--group-chip-border, var(--line)));border-radius:999px;
+          background:linear-gradient(180deg,var(--chip-soft, var(--group-chip-soft, var(--chip))) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;justify-content:center;min-width:0;min-height:var(--nav-chip-height);padding:0 16px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72);white-space:nowrap}}
+    .chip:hover{{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}}
     .chipTitle{{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-    .chipN{{min-width:28px;text-align:center;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}}
+    .chipN,.commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;text-align:center;color:#fff;padding:0 8px;border-radius:999px;font-size:11px}}
+    .chipN{{background:var(--chip-color, #111827)}}
+    .chipDock{{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}}
+    .chipDock.isVisible{{opacity:1;transform:translateY(0);pointer-events:auto}}
+    .chipDockInner{{max-width:var(--page-max);margin:0 auto;padding:0 20px}}
+    .chipDock .chipbar{{margin:0;box-shadow:0 18px 38px rgba(15,23,42,.14);background:rgba(248,250,252,.98)}}
+    .chipDock .briefingChipbar,
+    .chipDock .commodityBoardNav{{margin:0}}
+    body.quickNavOpen{{overflow:hidden}}
+    .mobileQuickNav{{display:none}}
+    .mobileQuickNavToggle{{pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .18s ease, transform .18s ease}}
+    .mobileQuickNav.isVisible .mobileQuickNavToggle{{pointer-events:auto;opacity:1;transform:translateY(0)}}
+    .mobileQuickNavSheet{{position:fixed;inset:0;display:none;z-index:14}}
+    .mobileQuickNavSheet.isOpen{{display:block}}
+    .mobileQuickNavBackdrop{{position:absolute;inset:0;border:0;background:rgba(15,23,42,.42)}}
+    .mobileQuickNavPanel{{position:absolute;left:12px;right:12px;bottom:14px;padding:16px;border:1px solid #dbe4ee;border-radius:24px;background:#ffffff;box-shadow:0 22px 56px rgba(15,23,42,.24)}}
+    .mobileQuickNavHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}}
+    .mobileQuickNavHead strong{{font-size:15px;letter-spacing:-0.2px}}
+    .mobileQuickNavClose{{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#111827;font-size:12px;font-weight:800}}
+    .mobileQuickNavBody .chipbar{{border:none;background:transparent;box-shadow:none;overflow:visible}}
+    .mobileQuickNavBody .chipwrap{{padding:0;max-width:none}}
+    .mobileQuickNavBody .chips,
+    .mobileQuickNavBody .commodityGroupNav{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}}
+    .mobileQuickNavBody .chip,
+    .mobileQuickNavBody .commodityGroupChip{{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px;font-size:13px;box-shadow:0 10px 24px rgba(15,23,42,.12)}}
 
     .viewPane{{display:none}}
     .viewPane.isActive{{display:block}}
     .briefingPane{{margin-top:14px}}
     .commodityPane{{margin-top:14px}}
 
-    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:hidden}}
-    .commodityHead{{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:radial-gradient(circle at top right, rgba(153,246,228,.4), transparent 34%),linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#f0fdf4 100%)}}
-    .commodityHeadMain{{min-width:0}}
+    .commodityBoard{{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}}
+    .commodityHead{{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:linear-gradient(135deg,#ffffff 0%,#f8fafc 68%,#f0fdf4 100%);overflow:hidden;isolation:isolate}}
+    .commodityHead::after{{content:"";position:absolute;inset:-24% -6% -22% 48%;background:radial-gradient(circle at 50% 46%, rgba(110,231,183,.62) 0%, rgba(125,211,252,.26) 33%, rgba(255,255,255,0) 72%);pointer-events:none;z-index:0}}
+    .commodityHeadMain{{position:relative;z-index:1;min-width:0}}
     .commodityHead h2{{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}}
     .commodityLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
     .commodityEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}}
-    .commodityHeadStats{{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
+    .commodityHeadStats{{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
     .commodityHeadStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
     .commodityHeadStatLabel{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}}
     .commodityHeadStat strong{{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}}
@@ -13922,14 +13986,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityMoreSummary::-webkit-details-marker{{display:none}}
     .commodityMoreList{{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}}
     .commodityStoryMuted{{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}}
-    .commodityGroupNav{{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}}
-    .commodityGroupChip{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#0f172a;text-decoration:none;font-size:12px;font-weight:800}}
-    .commodityGroupChip span{{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#111827;color:#fff;font-size:11px}}
-    .commodityGroupBlock{{padding:0 18px 18px;scroll-margin-top:170px}}
-    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 10px}}
+    .commodityBoardNav{{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}}
+    .commodityGroupChip:hover{{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}}
+    .commodityGroupChip{{border-color:var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);}}
+    .commodityGroupChip span{{background:var(--group-chip-color, #111827)}}
+    .commodityGroupBlock{{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}}
+    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px}}
     .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
     .commodityGroupTitleWrap h3{{margin:0;font-size:16px}}
-    .commodityGroupDot{{width:11px;height:11px;border-radius:999px}}
+    .commodityGroupDot{{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}}
     .commodityGroupMeta{{color:#64748b;font-size:12px;font-weight:700}}
     .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
     .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
@@ -13946,7 +14011,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityGroupEmpty{{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}}
 
     .sec{{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
-          scroll-margin-top: 150px;
+          scroll-margin-top: calc(var(--anchor-offset) + 18px);
     }}
     .secHead{{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}}
     .secTitle{{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}}
@@ -13993,11 +14058,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
     @media (max-width: 840px){{
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
-      html{{scroll-padding-top: 170px;}}
-      .sec{{scroll-margin-top: 170px;}}
+      .wrap{{padding:16px 16px 72px !important}}
+      .topin{{padding:12px 16px}}
+      .chipDockInner{{padding:0 16px}}
       .commodityGrid{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     }}
     @media (max-width: 640px){{
+      .wrap{{padding:12px 12px 64px !important}}
       .topin{{gap:8px}}
       .navRow{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}}
       .navRow > .navBtn:first-child{{grid-column:1}}
@@ -14006,26 +14073,52 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .navRow > .navBtn:last-child{{grid-column:2}}
       .dateSelWrap{{width:100%}}
       .dateSelWrap select{{width:100%;max-width:none}}
-      .viewTabs{{grid-template-columns:1fr}}
-      .viewTab{{min-height:auto;padding:15px 16px;border-radius:18px}}
-      .viewTabTitle{{font-size:22px}}
-      .briefingHero{{grid-template-columns:1fr;padding:18px}}
-      .briefingHero h2{{font-size:28px}}
-      .briefingHeroStats{{justify-content:flex-start}}
-      .briefingHeroStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
-      /* mobile chips: 2 columns so counts are always visible */
-      .chips{{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:visible}}
-      .chip{{width:100%;justify-content:space-between}}
-      .chip{{padding:6px 10px;font-size:12.5px}}
-      .chipN{{min-width:24px;padding:0 8px;background:#111827;color:#fff}}
-      .commodityHead{{grid-template-columns:1fr;padding:18px 18px 14px}}
-      .commodityHead h2{{font-size:28px}}
-      .commodityHeadStats{{justify-content:flex-start}}
-      .commodityHeadStat{{flex:1 1 120px;min-height:74px;padding:12px 14px}}
+      .viewTabs{{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:12px;padding:4px;border:1px solid #dbe4ee;border-radius:18px;background:#f8fafc}}
+      .viewTab{{min-height:auto;padding:10px 12px;border:none;border-radius:14px;gap:4px;box-shadow:none;align-items:center;justify-content:center;background:transparent}}
+      .viewTab:hover{{transform:none;box-shadow:none;border-color:transparent}}
+      .viewTab.isActive{{box-shadow:0 10px 22px rgba(29,78,216,.22)}}
+      .viewTabEyebrow{{display:none}}
+      .viewTabTitle{{width:100%;font-size:17px;letter-spacing:-0.35px;text-align:center}}
+      .viewTabDesc{{display:none}}
+      .viewTabStats{{display:none}}
+      .briefingPane,.commodityPane{{margin-top:12px}}
+      .briefingHero{{grid-template-columns:1fr;padding:0;border:none;border-radius:0;gap:10px;background:transparent;box-shadow:none}}
+      .briefingEyebrow,.commodityEyebrow{{min-height:22px;padding:0 8px;font-size:10px}}
+      .briefingHero h2{{font-size:26px;letter-spacing:-0.6px}}
+      .briefingLead,.commodityLead{{margin-top:8px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+      .briefingHeroStats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}}
+      .briefingHeroStat{{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}}
+      .briefingHeroStatLabel{{font-size:10px}}
+      .briefingHeroStat strong{{margin-top:4px;font-size:18px}}
+      .briefingChipbar{{margin:12px 0 18px}}
+      .commodityBoardNav{{margin:10px 0 16px}}
+      .chipDock{{display:none}}
+      .chipbar{{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}}
+      .chipwrap{{padding:0}}
+      .chips,.commodityGroupNav{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}}
+      .chip,.commodityGroupChip{{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;font-size:13px;border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.10)}}
+      .chipN,.commodityGroupChip span{{min-width:24px;height:24px;padding:0 7px}}
+      .mobileQuickNav{{display:block;position:fixed;right:14px;bottom:18px;z-index:13}}
+      .mobileQuickNavToggle{{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}}
+      .commodityBoard{{margin-top:8px;border:none;border-radius:0;background:transparent;box-shadow:none}}
+      .commodityHead{{grid-template-columns:1fr;padding:0;border-bottom:none;background:transparent;overflow:visible}}
+      .commodityHead::after{{display:none}}
+      .commodityHead h2{{font-size:26px;letter-spacing:-0.6px}}
+      .commodityHeadStats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}}
+      .commodityHeadStat{{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}}
+      .commodityHeadStatLabel{{font-size:10px}}
+      .commodityHeadStat strong{{margin-top:4px;font-size:18px}}
       .commodityGrid{{grid-template-columns:1fr}}
-      .commodityGroupNav{{display:grid;grid-template-columns:1fr 1fr}}
-      .commodityGroupHead{{display:block}}
+      .commodityGroupBlock{{margin:0 0 20px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}}
+      .commodityGroupHead{{display:block;padding:0 0 10px;border-bottom:none;margin-bottom:12px}}
       .commodityGroupMeta{{margin-top:6px}}
+      .commodityTile{{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
+      .commodityInactive{{padding:0;border:none;background:transparent}}
+      .commodityInactiveTitle{{margin-bottom:10px}}
+      .sec{{margin-top:18px !important;border:none;border-radius:0 !important;overflow:visible;background:transparent}}
+      .secHead{{padding:0 0 10px;background:transparent;border-bottom:none}}
+      .secBody{{padding:0}}
+      .card{{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
       .commoditySupportText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}
@@ -14057,14 +14150,32 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       <div id=\"navLoading\" class=\"navLoading\" aria-live=\"polite\" aria-atomic=\"true\">
         <span class=\"badge\">날짜 이동 중…</span>
       </div>
-{view_tabs_html}
     </div>
+  </div>
+  <div id=\"chipDock\" class=\"chipDock\" aria-hidden=\"true\">
+    <div id=\"chipDockInner\" class=\"chipDockInner\"></div>
+  </div>
+  <div id=\"mobileQuickNav\" class=\"mobileQuickNav\" aria-hidden=\"true\">
+    <button id=\"mobileQuickNavToggle\" class=\"mobileQuickNavToggle\" type=\"button\" data-swipe-ignore=\"1\">
+      <span id=\"mobileQuickNavToggleLabel\">섹션 이동</span>
+    </button>
+  </div>
+  <div id=\"mobileQuickNavSheet\" class=\"mobileQuickNavSheet\" aria-hidden=\"true\">
+    <button id=\"mobileQuickNavBackdrop\" class=\"mobileQuickNavBackdrop\" type=\"button\" aria-label=\"빠른 이동 닫기\" data-swipe-ignore=\"1\"></button>
+    <section class=\"mobileQuickNavPanel\" aria-labelledby=\"mobileQuickNavTitle\">
+      <div class=\"mobileQuickNavHead\">
+        <strong id=\"mobileQuickNavTitle\">섹션 바로가기</strong>
+        <button id=\"mobileQuickNavClose\" class=\"mobileQuickNavClose\" type=\"button\" data-swipe-ignore=\"1\">닫기</button>
+      </div>
+      <div id=\"mobileQuickNavBody\" class=\"mobileQuickNavBody\"></div>
+    </section>
   </div>
 
   <div class=\"wrap\">
+    {view_tabs_html}
     <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
       {briefing_hero_html}
-      {briefing_chipbar_html}
+      {briefing_nav_html}
       {sections_html}
     </section>
     <section id=\"view-commodity\" class=\"viewPane commodityPane\" data-view-pane=\"commodity\" role=\"tabpanel\" aria-hidden=\"true\">
@@ -14081,6 +14192,156 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var devLoaderHref = {json.dumps(preview_href)};
       var devArchiveManifestUrl = {json.dumps(dev_archive_manifest_url)};
       var currentReportDate = {json.dumps(report_date)};
+      var rootEl = document.documentElement;
+      var topbarEl = document.querySelector(".topbar");
+      var chipDockEl = document.getElementById("chipDock");
+      var chipDockInnerEl = document.getElementById("chipDockInner");
+      var mobileQuickNavEl = document.getElementById("mobileQuickNav");
+      var mobileQuickNavToggleEl = document.getElementById("mobileQuickNavToggle");
+      var mobileQuickNavToggleLabelEl = document.getElementById("mobileQuickNavToggleLabel");
+      var mobileQuickNavSheetEl = document.getElementById("mobileQuickNavSheet");
+      var mobileQuickNavBackdropEl = document.getElementById("mobileQuickNavBackdrop");
+      var mobileQuickNavCloseEl = document.getElementById("mobileQuickNavClose");
+      var mobileQuickNavBodyEl = document.getElementById("mobileQuickNavBody");
+      var mobileQuickNavTitleEl = document.getElementById("mobileQuickNavTitle");
+      function isMobileViewport() {{
+        try {{
+          return window.matchMedia("(max-width: 640px)").matches;
+        }} catch (e) {{}}
+        return window.innerWidth <= 640;
+      }}
+      function getActivePane() {{
+        return document.querySelector('.viewPane.isActive[data-view-pane]');
+      }}
+      function getActiveChipbar() {{
+        var pane = getActivePane();
+        if (!pane) return null;
+        return pane.querySelector('.chipbar[data-view-pane-anchor]');
+      }}
+      function getActiveQuickNavMeta(activeChipbar) {{
+        var anchor = activeChipbar ? (activeChipbar.getAttribute("data-view-pane-anchor") || "") : "";
+        if (anchor === "commodity") {{
+          return {{
+            toggle: "품목군 이동",
+            title: "품목군 바로가기",
+          }};
+        }}
+        return {{
+          toggle: "섹션 이동",
+          title: "섹션 바로가기",
+        }};
+      }}
+      function closeMobileQuickNavSheet() {{
+        if (mobileQuickNavSheetEl) {{
+          mobileQuickNavSheetEl.classList.remove("isOpen");
+          mobileQuickNavSheetEl.setAttribute("aria-hidden", "true");
+        }}
+        try {{
+          document.body.classList.remove("quickNavOpen");
+        }} catch (e) {{}}
+      }}
+      function openMobileQuickNavSheet() {{
+        if (!mobileQuickNavSheetEl) return;
+        mobileQuickNavSheetEl.classList.add("isOpen");
+        mobileQuickNavSheetEl.setAttribute("aria-hidden", "false");
+        try {{
+          document.body.classList.add("quickNavOpen");
+        }} catch (e) {{}}
+      }}
+
+      function syncStickyOffsets() {{
+        if (!rootEl || !topbarEl) return;
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        if (!topbarHeight) return;
+        var activeChipbar = getActiveChipbar();
+        var mobileViewport = isMobileViewport();
+        var chipbarHeight = Math.ceil(activeChipbar && !mobileViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
+        rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
+        rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+        rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (mobileViewport ? 20 : chipbarHeight + 30)) + "px");
+      }}
+
+      function syncFloatingChipbar() {{
+        if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
+        if (isMobileViewport()) {{
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }}
+        var activeChipbar = getActiveChipbar();
+        if (!activeChipbar) {{
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }}
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var dockTop = topbarHeight + 12;
+        var chipbarHeight = Math.ceil(activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0);
+        if (chipbarHeight) {{
+          rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+          rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
+        }}
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (chipDockEl.dataset.source !== sourceKey) {{
+          chipDockInnerEl.innerHTML = activeChipbar.outerHTML;
+          chipDockEl.dataset.source = sourceKey;
+        }}
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.top <= dockTop && rect.bottom > dockTop;
+        chipDockEl.classList.toggle("isVisible", shouldShow);
+        chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }}
+      function syncMobileQuickNav() {{
+        if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
+        var mobileViewport = isMobileViewport();
+        var activeChipbar = getActiveChipbar();
+        if (!mobileViewport || !activeChipbar) {{
+          mobileQuickNavEl.classList.remove("isVisible");
+          mobileQuickNavEl.setAttribute("aria-hidden", "true");
+          mobileQuickNavEl.dataset.source = "";
+          mobileQuickNavBodyEl.innerHTML = "";
+          closeMobileQuickNavSheet();
+          return;
+        }}
+        var meta = getActiveQuickNavMeta(activeChipbar);
+        if (mobileQuickNavToggleLabelEl) mobileQuickNavToggleLabelEl.textContent = meta.toggle;
+        if (mobileQuickNavTitleEl) mobileQuickNavTitleEl.textContent = meta.title;
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (mobileQuickNavEl.dataset.source !== sourceKey) {{
+          mobileQuickNavBodyEl.innerHTML = activeChipbar.outerHTML;
+          mobileQuickNavEl.dataset.source = sourceKey;
+        }}
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.bottom <= (topbarHeight + 8);
+        mobileQuickNavEl.classList.toggle("isVisible", shouldShow);
+        mobileQuickNavEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }}
+
+      syncStickyOffsets();
+      syncFloatingChipbar();
+      syncMobileQuickNav();
+      window.addEventListener("load", syncStickyOffsets);
+      window.addEventListener("load", syncFloatingChipbar);
+      window.addEventListener("load", syncMobileQuickNav);
+      window.addEventListener("resize", syncStickyOffsets);
+      window.addEventListener("resize", syncFloatingChipbar);
+      window.addEventListener("resize", syncMobileQuickNav);
+      window.addEventListener("scroll", syncFloatingChipbar, {{ passive: true }});
+      window.addEventListener("scroll", syncMobileQuickNav, {{ passive: true }});
 
       function currentPageHref() {{
         try {{
@@ -14140,6 +14401,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           tab.classList.toggle("isActive", active);
           tab.setAttribute("aria-selected", active ? "true" : "false");
         }});
+        syncStickyOffsets();
+        syncFloatingChipbar();
+        syncMobileQuickNav();
+        closeMobileQuickNavSheet();
 
         if (opts.skipHistory) return;
         try {{
@@ -14180,6 +14445,37 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       window.addEventListener("hashchange", function() {{
         activateView(resolveInitialView(), {{ skipHistory: true }});
+      }});
+
+      if (mobileQuickNavToggleEl) {{
+        mobileQuickNavToggleEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavToggleEl.addEventListener("click", function() {{
+          if (mobileQuickNavSheetEl && mobileQuickNavSheetEl.classList.contains("isOpen")) {{
+            closeMobileQuickNavSheet();
+          }} else {{
+            syncMobileQuickNav();
+            openMobileQuickNavSheet();
+          }}
+        }});
+      }}
+      if (mobileQuickNavBackdropEl) {{
+        mobileQuickNavBackdropEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavBackdropEl.addEventListener("click", closeMobileQuickNavSheet);
+      }}
+      if (mobileQuickNavCloseEl) {{
+        mobileQuickNavCloseEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavCloseEl.addEventListener("click", closeMobileQuickNavSheet);
+      }}
+      if (mobileQuickNavBodyEl) {{
+        mobileQuickNavBodyEl.addEventListener("click", function(ev) {{
+          var target = ev.target;
+          if (target && target.closest && target.closest("a")) {{
+            closeMobileQuickNavSheet();
+          }}
+        }});
+      }}
+      document.addEventListener("keydown", function(ev) {{
+        if ((ev.key || "") === "Escape") closeMobileQuickNavSheet();
       }});
 
       activateView(resolveInitialView(), {{ skipHistory: true }});

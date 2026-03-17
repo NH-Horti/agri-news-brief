@@ -213,18 +213,46 @@
     }
 
     @media (max-width: 720px) {
+      body {
+        background: #ffffff;
+      }
+
       .page {
-        padding: 16px 12px 24px;
+        max-width: none;
+        padding: 0 0 24px;
       }
 
       .hero,
       .status {
-        padding: 18px;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+        padding: 18px 14px 0;
       }
 
-      .frameWrap,
+      .status {
+        margin-top: 8px;
+        padding-top: 14px;
+      }
+
+      .frameWrap {
+        margin-top: 12px;
+        min-height: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+      }
+
       #previewFrame {
-        min-height: 560px;
+        min-height: 0;
+        height: calc(100vh - 180px);
+        border-radius: 0;
+      }
+
+      .emptyState {
+        padding: 28px 16px 40px;
       }
     }
   </style>
@@ -347,6 +375,14 @@
         }
       }
 
+      function isMobileViewport() {
+        try {
+          return window.matchMedia("(max-width: 720px)").matches;
+        } catch (error) {
+          return window.innerWidth <= 720;
+        }
+      }
+
       function resolvePreviewHtmlUrl(dateValue) {
         if (dateValue) {
           return previewBase + "/archive/" + encodeURIComponent(dateValue) + ".html";
@@ -370,7 +406,8 @@
         if (!height || !isFinite(height)) {
           return;
         }
-        frameEl.style.height = Math.max(560, Math.ceil(height) + 24) + "px";
+        var minHeight = isMobileViewport() ? 360 : 560;
+        frameEl.style.height = Math.max(minHeight, Math.ceil(height) + 24) + "px";
       }
 
       function syncFrameHeightFromDocument() {
