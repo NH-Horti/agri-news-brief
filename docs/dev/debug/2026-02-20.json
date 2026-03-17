@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T00:03:10+09:00",
-  "build_tag": "a72e354",
+  "generated_at_kst": "2026-03-18T00:56:29+09:00",
+  "build_tag": "605740b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -224,21 +224,21 @@
     },
     {
       "section": "policy",
-      "reason": "fishery_title_only",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "농수산물 부적합 적발 최다는 '잔류농약'…서울시, 검사 확대",
-      "url": "https://www.yna.co.kr/view/AKR20260219032200004?input=1195m",
+      "reason": "news1_local_weak_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "\"상추·깻잎 기준치 초과 농약\"…서울시, 매일 검사해 잡는다",
+      "url": "https://www.news1.kr/local/seoul/6075809",
       "source_query": "농산물 특별관리 품목",
       "source_channel": "naver_api"
     },
     {
       "section": "policy",
       "reason": "fishery_title_only",
-      "press": "머니투데이",
-      "domain": "mt.co.kr",
-      "title": "서울시, 부적합 농수산물 유통 사전 차단…먹거리 안전망 가동",
-      "url": "https://www.mt.co.kr/policy/2026/02/19/2026021910104337754",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "농수산물 부적합 적발 최다는 '잔류농약'…서울시, 검사 확대",
+      "url": "https://www.yna.co.kr/view/AKR20260219032200004?input=1195m",
       "source_query": "농산물 특별관리 품목",
       "source_channel": "naver_api"
     },
@@ -949,16 +949,6 @@
       "domain": "zdnet.co.kr",
       "title": "'롤의 신' 페이커, 디지털 신문명의 주역이 되다",
       "url": "https://zdnet.co.kr/view/?no=20260219131348",
-      "source_query": "가지 공동판매",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_offtopic_no_agri_context",
-      "press": "ekoreanews",
-      "domain": "ekoreanews.co.kr",
-      "title": "세미콘코리아 2026에서 살펴본 한미일 반도체 대전",
-      "url": "https://www.ekoreanews.co.kr/news/articleView.html?idxno=84592",
       "source_query": "가지 공동판매",
       "source_channel": "naver_api"
     },
