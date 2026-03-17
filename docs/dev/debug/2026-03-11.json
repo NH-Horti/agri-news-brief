@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-17T22:35:13+09:00",
-  "build_tag": "e958cd6",
+  "generated_at_kst": "2026-03-17T23:36:11+09:00",
+  "build_tag": "827e9df",
   "filter_rejects": [
     {
       "section": "policy",
@@ -60,6 +60,16 @@
       "title": "미국산이 국내산으로.. 배달 음식 원산지 '둔갑'",
       "url": "https://chmbc.co.kr/article/JoJ1ysJNZ9KzUiG",
       "source_query": "원산지 단속 농산물",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_budget_drive_noise",
+      "press": "동아일보",
+      "domain": "sports.donga.com",
+      "title": "상주시, 2027년 국가투자예산 확보 총력…2888억원 규모 전략사업 발굴",
+      "url": "https://sports.donga.com/region/article/all/20260311/133499150/1",
+      "source_query": "농산물 수급 동향",
       "source_channel": "naver_api"
     },
     {
@@ -1454,6 +1464,26 @@
     },
     {
       "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "thepublic",
+      "domain": "thepublic.kr",
+      "title": "가수 미스김, KBS1 '인간극장' 통해 농업 병행하는 일상 공개",
+      "url": "https://www.thepublic.kr/news/articleView.html?idxno=296799",
+      "source_query": "대파 재배",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "경상일보",
+      "domain": "ksilbo.co.kr",
+      "title": "가수 미스김, '인간극장' 출연… 농업 병행하는 일상 공개",
+      "url": "https://www.ksilbo.co.kr/news/articleView.html?idxno=1050959",
+      "source_query": "대파 재배",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
       "reason": "supply_dist_field_market_response",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
@@ -1644,7 +1674,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "agri_training_recruitment",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
       "title": "청양 군농업인대학, 26일까지 교육생 모집",
@@ -1684,7 +1714,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
+      "reason": "agri_training_recruitment",
       "press": "한국농어민신문",
       "domain": "agrinet.co.kr",
       "title": "청양 군농업인대학, 26일까지 교육생 모집",
@@ -3665,16 +3695,6 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "동아일보",
-      "domain": "sports.donga.com",
-      "title": "상주시, 2027년 국가투자예산 확보 총력…2888억원 규모 전략사업 발굴",
-      "url": "https://sports.donga.com/region/article/all/20260311/133499150/1",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
       "press": "weeklytoday",
       "domain": "weeklytoday.com",
       "title": "[위클리오늘] 강원도, 전국 최초 '농산물 광역 수급 관리센터' 출범",
@@ -3804,6 +3824,16 @@
     },
     {
       "section": "supply",
+      "reason": "market_political_visit_noise",
+      "press": "충남일보",
+      "domain": "chungnamilbo.co.kr",
+      "title": "김정섭 더불어민주당 공주시장 예비후보, 3차 경제분야 공약 발표",
+      "url": "https://chungnamilbo.co.kr/news/articleView.html?idxno=877116",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
       "reason": "must_terms_fail",
       "press": "춘천MBC",
       "domain": "chmbc.co.kr",
@@ -3908,7 +3938,7 @@
       "threshold": 28.12,
       "tail_cut": 28.52,
       "core_min": 28.12,
-      "total_candidates": 136,
+      "total_candidates": 134,
       "total_selected": 5,
       "top": [
         {
@@ -3968,14 +3998,14 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 28.15,
+          "score": 30.45,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "양파 당분간 약세…봄작형 배추· 무 재배면적 줄 듯",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402438",
           "reason": "",
-          "fit_score": 3.8,
+          "fit_score": 4.58,
           "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
@@ -3990,6 +4020,33 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 29.62,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락",
+          "url": "https://www.newsis.com/view/NISX20260310_0003541762",
+          "reason": "",
+          "fit_score": 5.12,
+          "selection_stage": "tail",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "상추 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.8,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -4020,7 +4077,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 27.33,
           "tier": 2,
@@ -4028,9 +4085,9 @@
           "domain": "agrinet.co.kr",
           "title": "경북도의회 \"양파가격 폭락은 구조적 문제\" 대책 촉구",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402396",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 2.47,
-          "selection_stage": "supply_feature_backfill",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "policy",
@@ -4044,33 +4101,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 5.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 27.32,
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락",
-          "url": "https://www.newsis.com/view/NISX20260310_0003541762",
-          "reason": "below_threshold",
-          "fit_score": 4.34,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "상추 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.8,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
           }
         },
         {
@@ -4130,14 +4160,14 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.26,
+          "score": 25.56,
           "tier": 1,
           "press": "전남매일",
           "domain": "jndn.com",
           "title": "저장채소 오르고 시설채소 내리고…농산물 가격 품목별 ‘희비’",
           "url": "http://www.jndn.com/article.php?aid=1773131478428511004",
           "reason": "below_threshold",
-          "fit_score": 1.84,
+          "fit_score": 2.62,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "policy",
@@ -4152,6 +4182,33 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 24.06,
+          "tier": 1,
+          "press": "보건신문",
+          "domain": "bokuennews.com",
+          "title": "농축산물 가격 전주 대비 하락",
+          "url": "http://www.bokuennews.com/news/article.html?no=274896",
+          "reason": "below_threshold",
+          "fit_score": 3.72,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "애호박 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.72,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -4238,28 +4295,28 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.76,
+          "score": 22.32,
           "tier": 1,
-          "press": "보건신문",
-          "domain": "bokuennews.com",
-          "title": "농축산물 가격 전주 대비 하락",
-          "url": "http://www.bokuennews.com/news/article.html?no=274896",
+          "press": "광주MBC",
+          "domain": "kjmbc.co.kr",
+          "title": "저장채소 오르고 시설채소 내리고…농산물 가격 '엇갈림'",
+          "url": "https://kjmbc.co.kr/NewsArticle/1508474",
           "reason": "below_threshold",
-          "fit_score": 2.94,
+          "fit_score": 3.41,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "애호박 가격",
+          "reassigned_from": "policy",
+          "source_query": "무 출하",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 3.72,
+            "horti_sc": 2.8,
             "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
+            "strength": 4,
+            "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 1,
-            "press_weight": -2.0
+            "press_weight": -3.0
           }
         },
         {
@@ -4287,33 +4344,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 20.02,
-          "tier": 1,
-          "press": "광주MBC",
-          "domain": "kjmbc.co.kr",
-          "title": "저장채소 오르고 시설채소 내리고…농산물 가격 '엇갈림'",
-          "url": "https://kjmbc.co.kr/NewsArticle/1508474",
-          "reason": "below_threshold",
-          "fit_score": 2.63,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "policy",
-          "source_query": "무 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.8,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
           }
         },
         {
@@ -4422,6 +4452,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.51,
+          "tier": 1,
+          "press": "foodnews",
+          "domain": "foodnews.co.kr",
+          "title": "'금사과' 너머의 진실…기후ㆍ고령화 파고, '전략적 경영'이 과수 농가...",
+          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117586",
+          "reason": "below_threshold",
+          "fit_score": 3.89,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "배 과일 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -4634,33 +4691,6 @@
             "horti_sc": 1.6,
             "market_hits": 0,
             "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.21,
-          "tier": 1,
-          "press": "foodnews",
-          "domain": "foodnews.co.kr",
-          "title": "'금사과' 너머의 진실…기후ㆍ고령화 파고, '전략적 경영'이 과수 농가...",
-          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=117586",
-          "reason": "below_threshold",
-          "fit_score": 3.11,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "배 과일 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 3,
             "korea": 2,
             "offtopic_pen": 1,
             "press_tier": 1,
@@ -5537,7 +5567,7 @@
       "threshold": 22.3,
       "tail_cut": 22.5,
       "core_min": 22.3,
-      "total_candidates": 45,
+      "total_candidates": 44,
       "total_selected": 3,
       "top": [
         {
@@ -5646,33 +5676,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 25.75,
-          "tier": 3,
-          "press": "동아일보",
-          "domain": "sports.donga.com",
-          "title": "상주시, 2027년 국가투자예산 확보 총력…2888억원 규모 전략사업 발굴",
-          "url": "https://sports.donga.com/region/article/all/20260311/133499150/1",
-          "reason": "",
-          "fit_score": 1.25,
-          "selection_stage": "tail",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농산물 수급 동향",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
           }
         },
         {
@@ -5865,7 +5868,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 17.53,
           "tier": 3,
@@ -5873,9 +5876,9 @@
           "domain": "fnnews.com",
           "title": "강원도 '농산물 광역 수급 관리센터' 전국 최초 출범",
           "url": "http://www.fnnews.com/news/202603100918291281",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 2.01,
-          "selection_stage": "below_threshold",
+          "selection_stage": "policy_major_issue_backfill",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -6051,6 +6054,33 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.23,
+          "tier": 1,
+          "press": "문화일보",
+          "domain": "munhwa.com",
+          "title": "강원도, 전국 최초 ‘농산물 광역수급관리센터’ 출범",
+          "url": "https://www.munhwa.com/article/11573339",
+          "reason": "below_threshold",
+          "fit_score": 2.95,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "무 도매가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -6407,33 +6437,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.68,
-          "tier": 1,
-          "press": "문화일보",
-          "domain": "munhwa.com",
-          "title": "강원도, 전국 최초 ‘농산물 광역 수급 관리센터’ 출범",
-          "url": "https://www.munhwa.com/article/11573339",
-          "reason": "below_threshold",
-          "fit_score": 2.11,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "무 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 5.24,
           "tier": 1,
           "press": "TF",
@@ -6762,7 +6765,7 @@
       "tail_cut": 30.22,
       "core_min": 29.62,
       "total_candidates": 14,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": false,
@@ -6900,7 +6903,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 21.19,
           "tier": 3,
@@ -6908,9 +6911,9 @@
           "domain": "fnnews.com",
           "title": "강원도 ' 농산물 광역수급관리센터' 전국 최초 출범",
           "url": "http://www.fnnews.com/news/202603100918291281",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 2.46,
-          "selection_stage": "underfill",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "policy",
@@ -7852,10 +7855,6 @@
           2
         ],
         [
-          "농산물 수급 동향",
-          2
-        ],
-        [
           "채소 수급 안정",
           2
         ],
@@ -7869,6 +7868,10 @@
         ],
         [
           "과일 채소 가격 동향",
+          1
+        ],
+        [
+          "농산물 수급 동향",
           1
         ],
         [
@@ -7904,7 +7907,7 @@
         "농산물 최소가격 보전제"
       ],
       "recall_meta": {},
-      "items_total": 35,
+      "items_total": 34,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -8020,7 +8023,7 @@
         ],
         [
           "무 수급",
-          12
+          11
         ],
         [
           "봄감자 생육",
@@ -8047,10 +8050,6 @@
           4
         ],
         [
-          "대파 재배",
-          4
-        ],
-        [
           "가지 수급",
           4
         ],
@@ -8060,6 +8059,10 @@
         ],
         [
           "화훼 가격",
+          3
+        ],
+        [
+          "무 도매가격",
           3
         ],
         [
@@ -8128,11 +8131,11 @@
           "포도": 0,
           "유자": 0,
           "자두": 0,
-          "딸기": 1,
+          "딸기": 2,
           "수박": 0,
           "애호박": 0,
           "파프리카": 0,
-          "오이": 2,
+          "오이": 3,
           "고추": 2,
           "화훼자조금": 0,
           "배추": 1,
@@ -8142,7 +8145,6 @@
           "과수": 0,
           "기후변화": 0,
           "양파": 4,
-          "가지": 2,
           "배": 5
         },
         "feature_refresh_seeds": [
@@ -8151,12 +8153,11 @@
           "사과",
           "기후변화",
           "자두",
-          "화훼자조금",
-          "가지"
+          "화훼자조금"
         ],
         "topic_seed_terms": [
           "양파",
-          "가지",
+          "딸기",
           "사과",
           "배"
         ],
@@ -8302,7 +8303,6 @@
           "배추",
           "마늘",
           "양파",
-          "가지",
           "배"
         ],
         "feature_focus_seeds": [
@@ -8310,7 +8310,7 @@
           "수박"
         ]
       },
-      "items_total": 159,
+      "items_total": 157,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
