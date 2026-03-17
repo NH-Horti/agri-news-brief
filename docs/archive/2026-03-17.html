@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="2a109c0" />
+  <meta name="agri-build" content="c3655ea" />
 
   <title>[2026-03-17 농산물 뉴스 Brief]</title>
   <style>
@@ -237,6 +237,14 @@
     .navRow{transition:transform .18s ease, opacity .18s ease}
     .navRow.swipeActive{transition:none}
     .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){
+      .chipDock{display:none}
+      .chips,.commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+      .chip,.commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px}
+      .chipN,.commodityGroupChip span{min-width:24px;height:24px;padding:0 7px}
+      .mobileQuickNav{display:block;position:fixed;right:14px;bottom:18px;z-index:13}
+      .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}
+    }
     @media (max-width: 840px){
       .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
       .wrap{padding:16px 16px 72px !important}
@@ -469,7 +477,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260316500243" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">원주원예농협, 강원 사과 유통 거점 부상</div>
-              <div class="sum">원주원협이 최근 강원산 사과의 유통 거점으로 부상했으며, 시세 분석 결과 농가 출하 가격이 높게 형성되었다. 농가의 가격 만족도가 상승하고 있다.</div>
+              <div class="sum">원주원협이 강원산 사과의 유통 거점으로 부상하면서 농가 출하 가격이 증가하고 있다. 이로 인해 농가의 가격 만족도가 높아지고 있는 상황이다.</div>
             </div>
             
 
@@ -486,7 +494,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=316483" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">면세유 가격 급등…농업계 &#x27;비상&#x27;, 중동 전쟁 국제 유가 불안 심화, 국내...</div>
-              <div class="sum">면세유 가격 급등으로 농업계가 비상 상황에 처했으며, 중동 전쟁으로 국제 유가가 불안정하다. 특히 참외 농가 사이에서 비료값 상승이 우려되고 있다.</div>
+              <div class="sum">중동 전쟁으로 면세유 가격이 급등하면서 농업계가 비상 상황에 직면하고 있다. 특히, 참외 농가에서는 유가와 비료 가격 상승이 수급 문제를 초래할 것으로 우려하고 있다.</div>
             </div>
             
 
@@ -503,7 +511,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260313500651" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[산지 확대경] 조생 양파 , 작황 양호하지만 가격 전망엔 ‘먹구름’</div>
-              <div class="sum">조생 양파의 작황은 양호하나 가격 전망은 밝지 않으며, 도매가격이 1㎏당 1000원 이상이어야 지속 가능한 농사가 가능하다고 전했다. 후속 출하의 가격 불안정성도 우려된다.</div>
+              <div class="sum">조생 양파 가격이 약세를 보이고 있으며, 중만생종 시세에 부정적 영향을 미칠 가능성이 높다. 양파 농사는 도매 가격이 1㎏ 기준으로 1000원 이상이어야 지속 가능하다는 판단이다.</div>
             </div>
             </div>
             </section>
@@ -531,7 +539,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://biz.heraldcorp.com/article/10694952" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“꼼수할인 잡는다” 농축산물 할인지원 부정수급 신고센터 개설</div>
-              <div class="sum">농림축산식품부는 농축산물 할인지원 사업의 부정수급 신고센터를 개설하였다. 해당 사업은 가격 상승 품목과 대체 소비 품목을 지원하며 동향을 점검하고 있다.</div>
+              <div class="sum">농림축산식품부가 농축산물 할인지원 부정수급 신고센터를 개설해 할인지원사업의 적법성을 강화하고 있다. 해당 사업은 국산 신선 농축산물의 가격 상승 품목과 대체 소비 품목에 지원된다.</div>
             </div>
             
 
@@ -548,7 +556,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://imnews.imbc.com/news/2026/econo/article/6807849_36932.html" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">축산물 가격 다소 높아‥정부, 축산물 수급 관리·방역 강화</div>
-              <div class="sum">정부는 축산물 수급 관리와 방역 강화에 나섰으며, 채소류 가격 대부분이 낮거나 비슷한 수준인 반면, 축산물 가격은 다소 높은 상황이다.</div>
+              <div class="sum">정부는 최근 축산물 가격 상승 상황을 점검하며 수급 관리와 방역 강화에 나섰다. 채소류는 대체로 지난해보다 낮은 가격을 보이지만, 축산물 가격은 여전히 높은 수준을 유지하고 있다.</div>
             </div>
             
 
@@ -565,7 +573,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.mt.co.kr/economy/2026/03/16/2026031617205995957" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">돼지고기·한우·계란값 일제히 상승…ASF 등 가축전염병 여파</div>
-              <div class="sum">돼지고기, 한우, 계란 가격이 모두 상승했으며, ASF와 같은 가축전염병의 여파가 주요 원인으로 작용하고 있다. 농림축산식품부는 수급 동향 점검을 실시했다.</div>
+              <div class="sum">돼지고기, 한우, 계란 가격이 일제히 상승하고 있으며, 이는 가축전염병의 영향으로 보인다. 농림축산식품부는 주요 농축산물의 수급과 가격 동향 점검 회의를 열었다.</div>
             </div>
             
 
@@ -582,7 +590,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260316_0003550513" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">채소값 하락했지만 축산물은 여전히…정부 &quot; 가격 철저히 관리&quot;</div>
-              <div class="sum">채소 가격은 하락했지만, 축산물 가격은 여전히 높은 상태로 정부는 가격 관리를 강화하겠다고 밝혔다. 농식품부는 주요 농축산물 수급 동향을 점검하였다.</div>
+              <div class="sum">채소 가격은 하락세를 보이나 축산물 가격은 여전히 높은 수준으로 정부는 이를 철저히 관리하기로 했다. 수급상황 점검회의에서 주요 농축산물의 가격 동향이 확인됐다.</div>
             </div>
             </div>
             </section>
@@ -610,7 +618,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=316471" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">[Issue+] 딸기 수출 역대 최고, 현황과 과제는</div>
-              <div class="sum">딸기 수출이 역대 최고치를 기록했지만, 태국의 신선 과일 시장은 대부분 자급자족 상태이다. 수출을 위해서는 검역 단지 지정이 필수적이다.</div>
+              <div class="sum">딸기 수출이 역대 최고치를 기록하고 있으며, 이는 태국 시장 등 외부 수요에 기인한다. 수출 확대에는 검역 단지 지정 등 국가간 협정이 필요하다는 의견이 제기됐다.</div>
             </div>
             
 
@@ -627,7 +635,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.cnbnews.com/news/article.html?no=783674" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">진주키위, 올해 첫 일본 수출 선적 …2.6톤 물량</div>
-              <div class="sum">진주시는 올해 처음으로 2.6톤의 진주키위를 일본으로 수출하였고, 지역 농산물 판로 개척을 위한 다양한 마케팅 활동을 계속하고 있다.</div>
+              <div class="sum">진주시는 올해 첫 일본으로의 진주키위 수출을 진행하며, 다양한 판촉 활동을 통해 농산물 판로를 개척하고 있다. 지난해 베트남 수출 성과에 이어 새로운 시장을 확보하고 있다.</div>
             </div>
             </div>
             </section>
@@ -655,7 +663,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3530224" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">강원도 인제군, 검역병해충 예방 약제 배부 추진</div>
-              <div class="sum">강원도 인제군은 과수화상병과 토마토뿔나방 방제를 위한 약제를 농가에 지원하여 병해충 발생을 예방하고 안정적인 농산물 생산을 확보할 계획이다.</div>
+              <div class="sum">강원도 인제군이 과수화상병 및 토마토뿔나방 방제를 위한 약제를 농가에 배부할 예정이다. 이 작업은 농산물 생산 기반을 안정시키기 위한 조치이다.</div>
             </div>
             
 
@@ -672,7 +680,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402600" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">장미 병해충 증상부터 방제까지 한눈에···경기도농기원 농약 안전사...</div>
-              <div class="sum">경기도농기원은 장미의 주요 병해충 증상과 방제를 담은 안전사 책자를 배포하여 초보 농업인도 쉽게 이해할 수 있도록 하고 있다.</div>
+              <div class="sum">경기도농기원은 화훼 농가를 위한 병해충 피해 증상과 방제 방법을 담은 자료를 제공하고 있다. 초보 농업인도 쉽게 이해할 수 있도록 사진 자료를 포함하고 있다.</div>
             </div>
             
 
@@ -689,7 +697,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260316_0003550064" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">진안군, 사과 재배 146농가에 과수화상병 방제 약 지원</div>
-              <div class="sum">진안군은 관내 사과 재배 146농가에 과수화상병 방제 약제를 공급하고 있으며, 법정 전염병으로 감염 시 심각한 피해를 줄 수 있다.</div>
+              <div class="sum">진안군은 사과 재배 농가 146곳에 과수화상병 방제 약제를 지원할 계획이다. 이 바이러스는 사과나무에 치명적인 영향을 미칠 수 있는 법정 전염병이다.</div>
             </div>
             
 
@@ -706,7 +714,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.siminsori.com/news/articleView.html?idxno=313880" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">나주시, 배나무 동계 병해충 적기 방제 당부</div>
-              <div class="sum">나주시는 과수화상병 예방을 위해 배나무 동계 병해충 적기 방제를당부하고 있으며, 적절한 방제 시점에 살포가 필요하다고 전했다.</div>
+              <div class="sum">나주시가 배나무 동계 병해충 방제를 당부하며 특별 방제 계획을 세웠다. 이 약제는 과수화상병 예방을 위한 중요한 조치로, 적기에 사용해야 함이 강조되고 있다.</div>
             </div>
             </div>
             </section>
@@ -992,7 +1000,7 @@
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://news.bbsi.co.kr/news/articleView.html?idxno=4072400" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportLabel">정책</span>
                       <span class="commoditySupportText">채소값 내렸지만 축산물은 부담…농식품부, 방역·수입 확대</span>
                     </a>
                     
@@ -1390,7 +1398,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 15건</span>
+                    <span>기사 16건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span></div>
@@ -1419,7 +1427,7 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 12건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 13건 더 보기</summary>
                       <div class="commodityMoreList">
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ekn.kr/web/view.php?key=20260316024078072" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
@@ -1429,6 +1437,11 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.gnnews.co.kr/news/articleView.html?idxno=632609" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">동남해농협, 조합원 실익 중심 &#x27;균형 경영&#x27;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.eroun.net/news/articleView.html?idxno=75651" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">의성군, 통합 농업기계 지원사업 본격 추진…31억 투입해 농번기 기계화...</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dkilbo.com/news/articleView.html?idxno=537290" target="_top" rel="noopener">
@@ -2617,11 +2630,15 @@
       var mobileQuickNavCloseEl = document.getElementById("mobileQuickNavClose");
       var mobileQuickNavBodyEl = document.getElementById("mobileQuickNavBody");
       var mobileQuickNavTitleEl = document.getElementById("mobileQuickNavTitle");
-      function isMobileViewport() {
+      function isCompactViewport() {
         try {
-          return window.matchMedia("(max-width: 640px)").matches;
+          return window.matchMedia("(max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse), (max-width: 640px)").matches;
         } catch (e) {}
-        return window.innerWidth <= 640;
+        var coarsePointer = false;
+        try {
+          coarsePointer = !!(navigator && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 0);
+        } catch (e) {}
+        return window.innerWidth <= (coarsePointer ? 900 : 640);
       }
       function getActivePane() {
         return document.querySelector('.viewPane.isActive[data-view-pane]');
@@ -2667,17 +2684,17 @@
         var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
         if (!topbarHeight) return;
         var activeChipbar = getActiveChipbar();
-        var mobileViewport = isMobileViewport();
-        var chipbarHeight = Math.ceil(activeChipbar && !mobileViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
+        var compactViewport = isCompactViewport();
+        var chipbarHeight = Math.ceil(activeChipbar && !compactViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
         rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
-        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (mobileViewport ? 20 : chipbarHeight + 30)) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : chipbarHeight + 30)) + "px");
       }
 
       function syncFloatingChipbar() {
         if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
-        if (isMobileViewport()) {
+        if (isCompactViewport()) {
           chipDockEl.classList.remove("isVisible");
           chipDockEl.setAttribute("aria-hidden", "true");
           chipDockEl.dataset.source = "";
@@ -2709,13 +2726,13 @@
           chipDockEl.dataset.source = sourceKey;
         }
         var rect = activeChipbar.getBoundingClientRect();
-        var shouldShow = rect.top <= dockTop && rect.bottom > dockTop;
+        var shouldShow = rect.top < dockTop && rect.bottom <= dockTop;
         chipDockEl.classList.toggle("isVisible", shouldShow);
         chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
       }
       function syncMobileQuickNav() {
         if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
-        var mobileViewport = isMobileViewport();
+        var mobileViewport = isCompactViewport();
         var activeChipbar = getActiveChipbar();
         if (!mobileViewport || !activeChipbar) {
           mobileQuickNavEl.classList.remove("isVisible");
@@ -3441,7 +3458,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: 2a109c0 -->
+  <!-- build: c3655ea -->
 
 </body>
 </html>
