@@ -290,9 +290,13 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn(".commodityBoardNav{margin:18px 18px 20px}", html)
         self.assertIn(".chip,.commodityGroupChip{", html)
         self.assertIn(".chips,.commodityGroupNav{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}", html)
+        self.assertIn("@media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){", html)
         self.assertIn(".viewTabEyebrow{display:none}", html)
         self.assertIn(".mobileQuickNavBody .chips,", html)
         self.assertIn("body.quickNavOpen{overflow:hidden}", html)
+        self.assertIn("function isCompactViewport()", html)
+        self.assertIn("window.innerWidth <= (coarsePointer ? 900 : 640)", html)
+        self.assertIn("rect.top < dockTop && rect.bottom <= dockTop", html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]

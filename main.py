@@ -14056,6 +14056,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .navRow{{transition:transform .18s ease, opacity .18s ease}}
     .navRow.swipeActive{{transition:none}}
     .navRow.swipeSettling{{transition:transform .18s ease, opacity .18s ease}}
+    @media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){{
+      .chipDock{{display:none}}
+      .chips,.commodityGroupNav{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}}
+      .chip,.commodityGroupChip{{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px}}
+      .chipN,.commodityGroupChip span{{min-width:24px;height:24px;padding:0 7px}}
+      .mobileQuickNav{{display:block;position:fixed;right:14px;bottom:18px;z-index:13}}
+      .mobileQuickNavToggle{{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}}
+    }}
     @media (max-width: 840px){{
       .topbar{{background:rgba(255,255,255,0.98);backdrop-filter:none}}
       .wrap{{padding:16px 16px 72px !important}}
@@ -14204,11 +14212,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var mobileQuickNavCloseEl = document.getElementById("mobileQuickNavClose");
       var mobileQuickNavBodyEl = document.getElementById("mobileQuickNavBody");
       var mobileQuickNavTitleEl = document.getElementById("mobileQuickNavTitle");
-      function isMobileViewport() {{
+      function isCompactViewport() {{
         try {{
-          return window.matchMedia("(max-width: 640px)").matches;
+          return window.matchMedia("(max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse), (max-width: 640px)").matches;
         }} catch (e) {{}}
-        return window.innerWidth <= 640;
+        var coarsePointer = false;
+        try {{
+          coarsePointer = !!(navigator && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 0);
+        }} catch (e) {{}}
+        return window.innerWidth <= (coarsePointer ? 900 : 640);
       }}
       function getActivePane() {{
         return document.querySelector('.viewPane.isActive[data-view-pane]');
@@ -14254,17 +14266,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
         if (!topbarHeight) return;
         var activeChipbar = getActiveChipbar();
-        var mobileViewport = isMobileViewport();
-        var chipbarHeight = Math.ceil(activeChipbar && !mobileViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
+        var compactViewport = isCompactViewport();
+        var chipbarHeight = Math.ceil(activeChipbar && !compactViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
         rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
-        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (mobileViewport ? 20 : chipbarHeight + 30)) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : chipbarHeight + 30)) + "px");
       }}
 
       function syncFloatingChipbar() {{
         if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
-        if (isMobileViewport()) {{
+        if (isCompactViewport()) {{
           chipDockEl.classList.remove("isVisible");
           chipDockEl.setAttribute("aria-hidden", "true");
           chipDockEl.dataset.source = "";
@@ -14296,13 +14308,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           chipDockEl.dataset.source = sourceKey;
         }}
         var rect = activeChipbar.getBoundingClientRect();
-        var shouldShow = rect.top <= dockTop && rect.bottom > dockTop;
+        var shouldShow = rect.top < dockTop && rect.bottom <= dockTop;
         chipDockEl.classList.toggle("isVisible", shouldShow);
         chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
       }}
       function syncMobileQuickNav() {{
         if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
-        var mobileViewport = isMobileViewport();
+        var mobileViewport = isCompactViewport();
         var activeChipbar = getActiveChipbar();
         if (!mobileViewport || !activeChipbar) {{
           mobileQuickNavEl.classList.remove("isVisible");

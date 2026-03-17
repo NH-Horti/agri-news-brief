@@ -130,12 +130,16 @@ class TestRegressions(unittest.TestCase):
         self.assertIn(".chipDock{{position:fixed;", self.text)
         self.assertIn(".chip,.commodityGroupChip{{", self.text)
         self.assertIn(".chips,.commodityGroupNav{{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}}", self.text)
+        self.assertIn("@media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){{", self.text)
         self.assertIn(".viewTabEyebrow{{display:none}}", self.text)
         self.assertIn("body.quickNavOpen{{overflow:hidden}}", self.text)
         self.assertIn(".mobileQuickNavBody .chips,", self.text)
         self.assertIn("viewTabTitle", self.text)
         self.assertIn("function activateView(viewKey, opts)", self.text)
         self.assertIn("resolveInitialView()", self.text)
+        self.assertIn("function isCompactViewport() {{", self.text)
+        self.assertIn("window.innerWidth <= (coarsePointer ? 900 : 640)", self.text)
+        self.assertIn("rect.top < dockTop && rect.bottom <= dockTop", self.text)
 
     def test_external_links_use_plain_top_navigation(self):
         self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
