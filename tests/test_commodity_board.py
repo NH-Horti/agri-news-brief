@@ -297,6 +297,10 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("function isCompactViewport()", html)
         self.assertIn("window.innerWidth <= (coarsePointer ? 900 : 640)", html)
         self.assertIn("rect.top < dockTop && rect.bottom <= dockTop", html)
+        self.assertIn('toggle: "품목군 이동"', html)
+        self.assertIn('title: "품목군 바로가기"', html)
+        self.assertIn('toggle: "섹션 이동"', html)
+        self.assertIn('title: "섹션 바로가기"', html)
 
     def test_render_daily_page_can_use_wider_board_source_than_final_sections(self):
         apple = self._item("apple")["short_label"]

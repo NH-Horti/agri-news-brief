@@ -140,6 +140,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("function isCompactViewport() {{", self.text)
         self.assertIn("window.innerWidth <= (coarsePointer ? 900 : 640)", self.text)
         self.assertIn("rect.top < dockTop && rect.bottom <= dockTop", self.text)
+        self.assertIn('toggle: "품목군 이동"', self.text)
+        self.assertIn('title: "품목군 바로가기"', self.text)
+        self.assertIn('toggle: "섹션 이동"', self.text)
+        self.assertIn('title: "섹션 바로가기"', self.text)
 
     def test_external_links_use_plain_top_navigation(self):
         self.assertIn('class=\\"btnOpen\\" data-swipe-ignore=\\"1\\"', self.text)
