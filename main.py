@@ -1616,7 +1616,12 @@ def _managed_commodity_policy_queries(item: dict[str, Any]) -> list[str]:
         out.append(f"{base} 수급 안정")
         out.append(f"{base} 가격 안정")
         out.append(f"{base} 가격안정 지원사업")
+        out.append(f"{base} 가격안정 대책")
         out.append(f"{base} 최저 가격 지원")
+        out.append(f"{base} 가격 폭락 방지")
+        out.append(f"{base} 수급 안정 대책")
+        out.append(f"{base} 건의안")
+        out.append(f"{base} 건의안 발의")
         out.append(f"{base} 특별관리")
         out.append(f"{base} 물가 특별관리")
         out.append(f"{base} 정책")
@@ -1640,8 +1645,14 @@ def _managed_commodity_dist_queries(item: dict[str, Any]) -> list[str]:
         out.append(f"{base} 소비 대책")
         out.append(f"{base} 공동판매")
         out.append(f"{base} 직거래")
+        out.append(f"{base} 통합마케팅")
         out.append(f"{base} 온라인 유통채널")
+        out.append(f"{base} 온라인도매시장 거래")
+        out.append(f"{base} 출하비용 보전")
         out.append(f"{base} 물량 통합관리")
+        out.append(f"{base} 수출 선적")
+        out.append(f"{base} 선적식")
+        out.append(f"{base} 수출 지원 허브")
     return _ordered_unique_terms(out)
 
 
@@ -1864,6 +1875,13 @@ POLICY_MAJOR_ISSUE_QUERIES = [
     "주요 농산물 가격안정 지원사업",
     "농산물 가격안정 지원사업",
     "농산물 최저 가격 지원사업",
+    "농산물 가격 폭락 방지 대책",
+    "농산물 수급 안정 대책",
+    "농산물 수급 안정 건의안",
+    "농산물 가격안정 건의안",
+    "농업용 면세유 대책",
+    "농업용 면세유 가격 대책",
+    "농산물 생산비 지원 대책",
     "농산물 특별관리 품목",
     "농산물 광역 수급 관리센터",
     "농산물 광역수급관리센터",
@@ -1939,8 +1957,6 @@ SECTIONS: list[SectionConfig] = [
             "APC 산지유통센터 준공",
             "APC 저온저장",
             "CA저장 과일",
-            "원산지 표시 단속 농산물",
-            "부정유통 단속 농산물",
             "농산물 수출 검역",
             "과일 수출 검역",
             "통관 과일 검역",
@@ -1948,11 +1964,15 @@ SECTIONS: list[SectionConfig] = [
             "비관세장벽 수출 농식품부",
             "농산물 수출 선적",
             "과일 수출 선적",
+            "농산물 선적식",
+            "농산물 온라인도매시장 거래",
+            "농산물 출하비용 보전",
+            "농산물 수출 지원 허브",
+            "통합마케팅 출하",
             "농산물 광역수급관리센터",
             "광역수급관리센터 수급 관리",
             "화훼공판장 경매",
             "절화 경매",
-            "화훼자조금",
         ],
         "must_terms": [
             "가락시장",
@@ -1983,13 +2003,9 @@ SECTIONS: list[SectionConfig] = [
             "수출길",
             "검역",
             "통관",
-            "원산지",
-            "부정유통",
-            "단속",
             "화훼",
             "절화",
             "화훼공판장",
-            "자조금",
         ],
     },
     {
@@ -4505,10 +4521,12 @@ def is_dist_political_visit_context(title: str, desc: str) -> bool:
 def is_dist_local_crop_strategy_noise_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
-    if not txt or _LOCAL_REGION_IN_TITLE_RX.search(ttl) is None:
+    if not txt:
         return False
     strategy_hits = count_any(txt, [w.lower() for w in _DIST_LOCAL_CROP_STRATEGY_TERMS])
     if strategy_hits == 0:
+        return False
+    if _LOCAL_REGION_IN_TITLE_RX.search(ttl) is None and strategy_hits < 2:
         return False
     if is_dist_market_ops_context(title, desc) or is_dist_supply_management_center_context(title, desc) or is_dist_sales_channel_ops_context(title, desc):
         return False
@@ -4818,6 +4836,10 @@ _DIST_MACRO_EXPORT_KEEP_TERMS = (
 _DIST_CAMPAIGN_NOISE_TERMS = (
     "캠페인", "선포식", "발대식", "협의회", "공원묘원", "조화근절",
 )
+_DIST_CONSUMER_TAIL_TERMS = (
+    "샐러드", "급식", "군급식", "군대", "장병", "식단", "메뉴", "뷔페",
+    "디저트", "외식", "카페", "브런치", "레시피", "밀키트",
+)
 
 
 def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -4879,6 +4901,26 @@ def is_dist_campaign_noise_context(title: str, desc: str) -> bool:
         return False
     market_hits = count_any(txt, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "선적", "출하")])
     return market_hits == 0
+
+
+def is_dist_consumer_tail_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if is_retail_promo_context(txt) or is_fruit_foodservice_event_context(txt) or is_flower_consumer_trend_context(txt):
+        return True
+    if is_dist_market_ops_context(title, desc, "", "") or is_dist_supply_management_center_context(title, desc) or is_dist_sales_channel_ops_context(title, desc):
+        return False
+    if is_dist_market_disruption_context(title, desc) or is_dist_export_shipping_context(title, desc):
+        return False
+    market_hits = count_any(
+        txt,
+        [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "직거래", "선적", "통관", "검역")],
+    ) + (1 if has_apc_agri_context(txt) else 0)
+    consumer_hits = count_any(txt, [w.lower() for w in _DIST_CONSUMER_TAIL_TERMS])
+    title_consumer_hits = count_any((ttl or "").lower(), [w.lower() for w in _DIST_CONSUMER_TAIL_TERMS])
+    return market_hits == 0 and (consumer_hits >= 2 or title_consumer_hits >= 1)
 
 
 def is_dist_export_support_hub_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -7556,6 +7598,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return _reject("dist_city_notice_event")
         if is_policy_export_support_brief_context(ttl, desc, dom, press):
             return _reject("dist_policy_export_support_brief")
+        if is_dist_consumer_tail_context(ttl, desc):
+            return _reject("dist_consumer_tail")
 
         # 농산물시장 이전/현대화/재배치는 유통·현장 핵심 이슈로 우선 허용
         if ("농산물" in text and "시장" in text) and any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소")):
@@ -9616,8 +9660,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     tier_count = {1: 0, 2: 0, 3: 0}
     wire_count = 0  # 통신/온라인 서비스 과대표집 방지
     # 더 보수적으로(사용자 피드백: 지방지/인터넷 비중 과다)
-    tier1_cap = 1
-    tier2_cap = 2 if section_key in ("supply", "policy") else 3
+    base_tier2_cap = 2 if section_key in ("supply", "policy") else 3
+    small_pool = len(pool) <= max(max_n + 1, 6)
+    thin_pool = len(pool) <= max(max_n * 2, 8)
+    tier1_cap = 1 + (1 if small_pool and section_key in ("policy", "dist", "pest") else 0)
+    tier2_cap = base_tier2_cap + (1 if thin_pool else 0)
 
     def _source_ok_local(a: Article) -> bool:
         nonlocal wire_count
@@ -9889,6 +9936,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             or is_local_agri_infra_designation_context(a.title or "", a.description or "")
             or is_dist_local_crop_strategy_noise_context(a.title or "", a.description or "")
             or is_dist_local_org_tail_context(a.title or "", a.description or "")
+            or is_dist_consumer_tail_context(a.title or "", a.description or "")
             or is_dist_macro_export_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
             or is_dist_campaign_noise_context(a.title or "", a.description or "")
         )
@@ -10024,7 +10072,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 or export_support_hub
                 or strong_local_org
                 or market_anchor_hits >= 2
-                or fit_sc >= 1.4
+                or (fit_sc >= 1.6 and market_anchor_hits >= 1)
             ):
                 return None
             return (
@@ -11302,8 +11350,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         return "policy_event_tail"
                     if not _is_policy_tail_candidate(a):
                         return "policy_tail_gate"
-                if section_key == "dist" and _is_dist_weak_tail_story(a):
-                    return "dist_local_org_profile"
+                if section_key == "dist":
+                    if is_dist_consumer_tail_context(a.title or "", a.description or ""):
+                        return "dist_consumer_tail"
+                    if is_dist_local_crop_strategy_noise_context(a.title or "", a.description or ""):
+                        return "dist_local_crop_strategy"
+                    if is_dist_macro_export_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+                        return "dist_macro_export_noise"
+                    if _is_dist_weak_tail_story(a):
+                        return "dist_local_org_profile"
                 if any(_is_similar_title(a.title_key, b.title_key) for b in selected_final):
                     return "similar_title"
                 if any(_is_similar_story(a, b, section_key) for b in selected_final):
@@ -11349,6 +11404,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 "total_candidates": len(candidates),
                 "total_selected": len(selected_final),
                 "top": top_rows,
+                "coverage_ledger": _build_seed_coverage_ledger(
+                    section_key,
+                    list(
+                        dict.fromkeys(
+                            [str(getattr(a, "source_query", "") or "").strip() for a in candidates_sorted if str(getattr(a, "source_query", "") or "").strip()]
+                            + list(sec_conf.get("queries") or [])
+                        )
+                    ),
+                    candidates_sorted,
+                    selected_articles=selected_final,
+                ),
             }
             dbg_set_section(section_key, payload)
         except Exception:
@@ -12020,6 +12086,124 @@ def _prioritize_supply_recall_seeds(
     return prioritized, pool_seed_hits
 
 
+def _article_matches_coverage_seed(article: "Article", seed: str, section_key: str = "") -> bool:
+    if not isinstance(article, Article):
+        return False
+    seed_l = (seed or "").strip().lower()
+    if not seed_l:
+        return False
+    if section_key == "supply":
+        return _article_matches_seed_term(article, seed)
+
+    rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+    topic_name = (getattr(article, "topic", "") or "").strip()
+    topic_rep = (TOPIC_REP_BY_NAME_L.get(topic_name) or topic_name).strip().lower()
+    title = getattr(article, "title", "") or ""
+    desc = getattr(article, "description", "") or ""
+    title_l = title.lower()
+    text_l = f"{title} {desc}".lower()
+    terms = [term for term in _topic_terms_for_seed(seed) if term]
+    title_hits = sum(1 for term in terms if term in title_l)
+    text_hits = sum(1 for term in terms if term in text_l)
+    managed_count = int(_managed_commodity_match_summary(title, desc, topic_name).get("count") or 0)
+
+    if topic_rep == rep:
+        return True
+    if title_hits >= 1:
+        return True
+    if text_hits == 0:
+        return False
+
+    if section_key == "policy":
+        policy_hits = count_any(
+            text_l,
+            [w.lower() for w in ("정책", "대책", "지원", "보전", "브리핑", "수급", "건의안", "촉구", "제도", "관리센터")],
+        )
+        return policy_hits >= 1 or managed_count >= 1 or best_horti_score(title, desc) >= 1.2
+    if section_key == "dist":
+        dist_hits = count_any(
+            text_l,
+            [w.lower() for w in ("도매시장", "공판장", "가락시장", "경락", "경매", "반입", "산지유통", "선적", "검역", "통관", "직거래", "판로", "유통")],
+        ) + (1 if has_apc_agri_context(text_l) else 0)
+        return dist_hits >= 1 or managed_count >= 1
+    if section_key == "pest":
+        pest_hits = count_any(
+            text_l,
+            [w.lower() for w in ("방제", "병해충", "약제", "예찰", "과수화상병", "탄저병", "냉해", "동해", "저온피해")],
+        )
+        return pest_hits >= 1 or managed_count >= 1
+    return text_hits >= 1
+
+
+def _coverage_seed_terms_for_section(
+    section_key: str,
+    queries: Sequence[str] | None,
+    recall_meta: JsonDict | None = None,
+    limit: int = 12,
+) -> list[str]:
+    out: list[str] = []
+    max_limit = max(1, int(limit or 1))
+    if isinstance(recall_meta, dict):
+        for key in ("feature_focus_seeds", "prioritized_seeds", "seed_terms", "topic_seed_terms", "query_seed_terms"):
+            for seed in list(recall_meta.get(key) or []):
+                seed_s = str(seed or "").strip()
+                if seed_s and seed_s not in out:
+                    out.append(seed_s)
+                if len(out) >= max_limit:
+                    return out
+    seed_limit = max(max_limit * 2, 12)
+    for seed in _extract_seed_terms_from_queries(list(queries or []), limit=seed_limit):
+        seed_s = str(seed or "").strip()
+        if seed_s and seed_s not in out:
+            out.append(seed_s)
+        if len(out) >= max_limit:
+            break
+    return out[:max_limit]
+
+
+def _build_seed_coverage_ledger(
+    section_key: str,
+    queries: Sequence[str] | None,
+    articles: Sequence["Article"] | None,
+    recall_meta: JsonDict | None = None,
+    selected_articles: Sequence["Article"] | None = None,
+    limit: int = 12,
+) -> list[JsonDict]:
+    seeds = _coverage_seed_terms_for_section(section_key, queries, recall_meta, limit=limit)
+    if not seeds:
+        return []
+
+    rows: list[JsonDict] = []
+    article_list = [a for a in list(articles or []) if isinstance(a, Article)]
+    selected_list = [a for a in list(selected_articles or []) if isinstance(a, Article)]
+    for seed in seeds:
+        seed_l = (seed or "").strip().lower()
+        rep = TOPIC_REP_BY_TERM_L.get(seed_l, seed_l)
+        item_hits = 0
+        selected_hits = 0
+        sample_title = ""
+        for art in article_list:
+            if not _article_matches_coverage_seed(art, seed, section_key):
+                continue
+            item_hits += 1
+            if not sample_title:
+                sample_title = (art.title or "")[:100]
+        for art in selected_list:
+            if _article_matches_coverage_seed(art, seed, section_key):
+                selected_hits += 1
+        rows.append(
+            {
+                "seed": str(seed or ""),
+                "rep": str(rep or ""),
+                "hits": int(item_hits),
+                "selected_hits": int(selected_hits),
+                "missing": bool(item_hits == 0),
+                "sample_title": sample_title,
+            }
+        )
+    return rows
+
+
 def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:
     _ = report_date
     common: list[str] = []
@@ -12121,6 +12305,12 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "농산물 최저가격 지원",
             "농산물 가격안정 지원사업",
             "주요 농산물 가격안정 지원사업",
+            "농산물 가격 폭락 방지 대책",
+            "농산물 수급 안정 건의안",
+            "농산물 가격안정 건의안",
+            "농산물 생산비 지원 대책",
+            "농업용 면세유 대책",
+            "농업용 면세유 가격 대책",
             "농식품부 농산물 유통 전문가 협의체",
             "농산물 유통 구조 개선",
             "농산물 최소가격 보전제",
@@ -12153,6 +12343,11 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "광역유통센터",
             "스마트 APC",
             "농산물 광역수급관리센터",
+            "농산물 온라인도매시장 거래",
+            "농산물 출하비용 보전",
+            "농산물 통합마케팅 출하",
+            "농산물 선적식",
+            "농산물 수출 지원 허브",
         ]
     elif section_key == "pest":
         common = [
@@ -12977,6 +13172,12 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 "page1_full_queries": sorted(list(page1_full_queries))[:20],
                 "recall_meta": recall_meta if isinstance(recall_meta, dict) else {},
                 "items_total": int(len(items)),
+                "seed_coverage": _build_seed_coverage_ledger(
+                    section_key,
+                    queries,
+                    items,
+                    recall_meta=recall_meta if isinstance(recall_meta, dict) else None,
+                ),
                 "cond_paging": {
                     "enabled": bool(COND_PAGING_ENABLED),
                     "base_pages": int(COND_PAGING_BASE_PAGES),
