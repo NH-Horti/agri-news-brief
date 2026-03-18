@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T09:43:37+09:00",
-  "build_tag": "7679455",
+  "generated_at_kst": "2026-03-18T10:30:57+09:00",
+  "build_tag": "4696de1",
   "filter_rejects": [
     {
       "section": "policy",
@@ -4118,7 +4118,7 @@
       "threshold": 28.12,
       "tail_cut": 28.52,
       "core_min": 28.12,
-      "total_candidates": 133,
+      "total_candidates": 132,
       "total_selected": 5,
       "top": [
         {
@@ -5042,33 +5042,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.48,
-          "tier": 3,
-          "press": "세계일보",
-          "domain": "segye.com",
-          "title": "한·일 최초 과일맛 담았다…해태제과, ‘포키 극세 멜론 ’ 선봬",
-          "url": "https://www.segye.com/newsView/20260310504933",
-          "reason": "below_threshold",
-          "fit_score": 1.41,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "멜론 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.63,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 12.17,
           "tier": 1,
           "press": "newsjeju",
@@ -5740,6 +5713,33 @@
             "press_tier": 2,
             "press_weight": 4.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 7.26,
+          "tier": 1,
+          "press": "newstomato",
+          "domain": "newstomato.com",
+          "title": "중동 긴장 속 '183명 선원'…\"하선 대비 귀국대책 준비\"",
+          "url": "http://www.newstomato.com/ReadNews.aspx?no=1293841&inflow=N",
+          "reason": "below_threshold",
+          "fit_score": 0.75,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "토마토 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -5747,7 +5747,7 @@
       "threshold": 22.3,
       "tail_cut": 22.5,
       "core_min": 22.3,
-      "total_candidates": 43,
+      "total_candidates": 42,
       "total_selected": 3,
       "top": [
         {
@@ -5805,7 +5805,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 26.48,
           "tier": 1,
@@ -5813,9 +5813,9 @@
           "domain": "namdonews.com",
           "title": "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
           "url": "https://www.namdonews.com/news/articleView.html?idxno=846645",
-          "reason": "",
+          "reason": "policy_tail_gate",
           "fit_score": 3.54,
-          "selection_stage": "tail",
+          "selection_stage": "policy_tail_gate",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -5832,7 +5832,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 26.16,
           "tier": 1,
@@ -5840,9 +5840,9 @@
           "domain": "gnnews.co.kr",
           "title": "농축산물 수급 동향 점검… 가격 대체로 전주 대비 하락",
           "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=632204",
-          "reason": "source_cap",
+          "reason": "",
           "fit_score": 2.89,
-          "selection_stage": "source_cap",
+          "selection_stage": "tail",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -5937,33 +5937,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 21.98,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "유가 폭등에 농촌 비상",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402445",
-          "reason": "below_threshold",
-          "fit_score": 1.58,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "화훼 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 5.7
           }
         },
         {
@@ -8176,7 +8149,7 @@
       "window_hits_top": [
         [
           "멜론 재배",
-          19
+          18
         ],
         [
           "무 수급",
@@ -8469,7 +8442,7 @@
           "수박"
         ]
       },
-      "items_total": 154,
+      "items_total": 152,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
