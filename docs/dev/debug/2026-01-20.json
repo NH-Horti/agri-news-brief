@@ -1,7 +1,17 @@
 {
-  "generated_at_kst": "2026-03-17T20:38:26+09:00",
-  "build_tag": "e958cd6",
+  "generated_at_kst": "2026-03-18T14:15:50+09:00",
+  "build_tag": "49159c5",
   "filter_rejects": [
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "greened",
+      "domain": "greened.kr",
+      "title": "[유통가 레이더] \"고객 삶 속으로 더\"... 스타필드 빌리지 운정 찾은 정...",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=335762",
+      "source_query": "건조고추 가격 안정",
+      "source_channel": "naver_api"
+    },
     {
       "section": "policy",
       "reason": "policy_context_gate",
@@ -11,66 +21,6 @@
       "url": "http://www.biztribune.co.kr/news/articleView.html?idxno=347542",
       "source_query": "유자 할인지원",
       "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_context_gate",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "'준강남'이 진짜 강남을 넘었다…10∙15 대책 석달 '규제의 역설'",
-      "url": "https://www.joongang.co.kr/article/25398660",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "ban_keywords",
-      "press": "양산신문",
-      "domain": "yangsanilbo.com",
-      "title": "[부동산현장] 이재명 정부 '부동산 공급대책'에 대한 지방 우려",
-      "url": "https://www.yangsanilbo.com/news/articleView.html?idxno=122307",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "opinion_or_editorial",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "[사설] 주택 공급 대책보다 ‘세금 인상’ 얘기 먼저 꺼낸 청와대",
-      "url": "https://www.chosun.com/opinion/editorial/2026/01/20/UVDCWYIFH5AHHHGBV5KAEOUGMU/",
-      "source_query": "대책",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "한동훈 “당원께 걱정 끼쳐 송구” 사과",
-      "url": "https://www.chosun.com/politics/assembly/2026/01/19/FTVQLLOADNFVNEOUQ52W3G2Z3I/",
-      "source_query": "사과",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "한겨레",
-      "domain": "hani.co.kr",
-      "title": "한동훈은 이상한 사과, 장동혁은 아직도 단식중…국힘 내분, 어디로",
-      "url": "https://www.hani.co.kr/arti/politics/politics_general/1240382.html",
-      "source_query": "사과",
-      "source_channel": "google_news"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "\"금귤·금사과·금D램\"…12월 생산자물가 넉달째 상승",
-      "url": "https://www.joongang.co.kr/article/25398918",
-      "source_query": "사과",
-      "source_channel": "google_news"
     },
     {
       "section": "supply",
@@ -684,43 +634,23 @@
     },
     {
       "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "jeollailbo",
-      "domain": "jeollailbo.com",
-      "title": "치솟는 물가-금리, 서민 경제 위태롭다",
-      "url": "http://www.jeollailbo.com/news/articleView.html?idxno=789951",
-      "source_query": "오이 소비 대책",
+      "reason": "dist_policy_export_support_brief",
+      "press": "쿡앤셰프",
+      "domain": "cooknchefnews.com",
+      "title": "K-푸드 수출 지원 7,070억 원, 정책 자금 투입의 구조와 전망",
+      "url": "https://cooknchefnews.com/news/view/1065592562257003",
+      "source_query": "농산물 수출 지원 허브",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "dist_soft_without_infra",
-      "press": "jeollailbo",
-      "domain": "jeollailbo.com",
-      "title": "치솟는 물가-금리, 서민 경제 위태롭다",
-      "url": "http://www.jeollailbo.com/news/articleView.html?idxno=789951",
-      "source_query": "단감 소비 대책",
+      "press": "DNEWS",
+      "domain": "dnews.co.kr",
+      "title": "[유통딜리버리] 롯데마트ㆍ세븐일레븐ㆍ에이블리ㆍG마켓ㆍ무신사ㆍ신세...",
+      "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202601191542502690287",
+      "source_query": "사과 물량 통합관리",
       "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "jeollailbo",
-      "domain": "jeollailbo.com",
-      "title": "치솟는 물가-금리, 서민 경제 위태롭다",
-      "url": "http://www.jeollailbo.com/news/articleView.html?idxno=789951",
-      "source_query": "상추 소비 대책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "한국경제",
-      "domain": "hankyung.com",
-      "title": "롯데건설, 서울 송파구 가락극동아파트 재건축 새해 마수걸이 수주",
-      "url": "https://www.hankyung.com/article/202601199617i",
-      "source_query": "가락시장 경매",
-      "source_channel": "google_news"
     },
     {
       "section": "pest",
@@ -844,11 +774,51 @@
     },
     {
       "section": "supply",
+      "reason": "supply_policy_market_brief",
+      "press": "jeollailbo",
+      "domain": "jeollailbo.com",
+      "title": "치솟는 물가-금리, 서민 경제 위태롭다",
+      "url": "https://jeollailbo.com/news/articleView.html?idxno=789951",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
       "reason": "must_terms_fail",
       "press": "보건신문",
       "domain": "bokuennews.com",
       "title": "홍문표 aT 사장, K-Food 경쟁력 강화 당부",
       "url": "https://bokuennews.com/news/article.html?no=272513",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "koreareport",
+      "domain": "koreareport.co.kr",
+      "title": "순천시, 2026년 새해농업인 실용교육 실시",
+      "url": "https://koreareport.co.kr/news/articleView.html?idxno=42841",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "koreareport",
+      "domain": "koreareport.co.kr",
+      "title": "순천시, 2026년 새해농업인 실용교육 실시",
+      "url": "https://koreareport.co.kr/news/articleView.html?idxno=42841",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "IDSN",
+      "domain": "idsn.co.kr",
+      "title": "농식품부, 2026년 K-푸드 수출지원 사업 설명회 개최",
+      "url": "https://idsn.co.kr/news/view/1065589213679800",
       "source_query": "",
       "source_channel": ""
     },
@@ -873,6 +843,186 @@
       "source_channel": ""
     },
     {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "올 7070억원 쏟아붓는다…‘K-푸드 수출지원 사업’ 설명회",
+      "url": "https://nongmin.com/article/20260119500333",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "SBS",
+      "domain": "news.sbs.co.kr",
+      "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 개최",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008409466&plink=ORI&cooper=NAVER",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "SBS",
+      "domain": "biz.sbs.co.kr",
+      "title": "농식품부, '7천억 규모' K-푸드 수출지원 설명회 23일 개최",
+      "url": "https://biz.sbs.co.kr/article_hub/20000285813?division=NAVER",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "헤럴드경제",
+      "domain": "biz.heraldcorp.com",
+      "title": "농식품부, 오는 23일 ‘7000억 규모’ K-푸드 수출지원 사업 설명회",
+      "url": "https://biz.heraldcorp.com/article/10658324",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 23일 개최",
+      "url": "https://yna.co.kr/view/AKR20260119024300030?input=1195m",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "아주경제",
+      "domain": "ajunews.com",
+      "title": "K-푸드 수출 160억불 정조준…정부, 지원 사업 설명회 개최",
+      "url": "https://ajunews.com/view/20260119102254896",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "'K-푸드 수출 날개단다' 정부, 전년比 900억 늘어난 7070억 지원",
+      "url": "https://newsis.com/view/NISX20260119_0003481279",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "올해 K-푸드 수출지원 에 7070억 투입…23일 지원 사업 설명회",
+      "url": "https://news1.kr/economy/trend/6043048",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "tvchosun",
+      "domain": "news.tvchosun.com",
+      "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 개최",
+      "url": "https://news.tvchosun.com/site/data/html_dir/2026/01/19/2026011990254.html",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "foodnews",
+      "domain": "foodnews.co.kr",
+      "title": "농식품부, 23일 K-푸드 수출지원 사업 설명회",
+      "url": "https://foodnews.co.kr/news/articleView.html?idxno=116897",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "newscammp",
+      "domain": "newscammp.co.kr",
+      "title": "농식품부, 7천억 규모 K-푸드 수출지원 설명회 개최…글로벌 진출 본격...",
+      "url": "https://newscammp.co.kr/news/articleView.html?idxno=5535",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "K-푸드 수출지원 7070억원…현장 집행 속도전",
+      "url": "https://dailian.co.kr/news/view/1599720/?sc=Naver",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "QUEEN",
+      "domain": "queen.co.kr",
+      "title": "농식품부, 7070억 원 규모 '2026년 K-푸드 수출 지원 사업' 추진… 설명회...",
+      "url": "https://queen.co.kr/news/articleView.html?idxno=449762",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "한국영농신문",
+      "domain": "youngnong.co.kr",
+      "title": "2026년 K-푸드 수출지원 사업 설명회 개최",
+      "url": "https://youngnong.co.kr/news/articleView.html?idxno=57052",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "mediapen",
+      "domain": "mediapen.com",
+      "title": "올해 K-푸드 수출지원 , 역대 최대 7070억원 규모…23일 설명회",
+      "url": "https://mediapen.com/news/view/1075178",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "K-푸드 수출지원 7070억 원 ‘역대 최대’…전 과정 패키지 가동",
+      "url": "https://etoday.co.kr/news/view/2546761",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "IMAEIL",
+      "domain": "imaeil.com",
+      "title": "농식품부, 올해 K-푸드 수출지원 7,070억원 투입…글로벌 진출 본격화",
+      "url": "https://imaeil.com/page/view/2026011909563218942",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "koreareport",
+      "domain": "koreareport.co.kr",
+      "title": "순천시, 2026년 새해농업인 실용교육 실시",
+      "url": "https://koreareport.co.kr/news/articleView.html?idxno=42841",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "dist",
       "reason": "dist_context_gate",
       "press": "YTN",
@@ -881,37 +1031,27 @@
       "url": "https://radio.ytn.co.kr/program/?f=2&id=106952&s_mcd=0206&s_hcd=15",
       "source_query": "",
       "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "yeongnam",
-      "domain": "yeongnam.com",
-      "title": "[대구 농업리포트 ④] “크기보다 품질, 양보다 신뢰”…절제로 지켜가...",
-      "url": "https://yeongnam.com/web/view.php?key=20260119021540563",
-      "source_query": "",
-      "source_channel": ""
     }
   ],
   "sections": {
     "supply": {
-      "threshold": 7.0,
-      "tail_cut": 7.0,
-      "core_min": 7.8,
-      "total_candidates": 24,
+      "threshold": 22.19,
+      "tail_cut": 22.59,
+      "core_min": 22.19,
+      "total_candidates": 25,
       "total_selected": 2,
       "top": [
         {
           "selected": false,
           "is_core": false,
-          "score": 27.89,
+          "score": 30.19,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
           "title": "“농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하",
           "url": "https://www.nongmin.com/article/20260119500314",
           "reason": "postbuild_pruned",
-          "fit_score": 2.08,
+          "fit_score": 2.86,
           "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
@@ -956,7 +1096,61 @@
           }
         },
         {
+          "selected": false,
+          "is_core": false,
+          "score": 21.46,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "donga.com",
+          "title": "단양 썰매, 영동 곶감 … 겨울축제 가볼까",
+          "url": "https://www.donga.com/news/Society/article/all/20260119/133187704/2",
+          "reason": "below_threshold",
+          "fit_score": 1.03,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "dist",
+          "source_query": "감/곶감 공동판매",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
           "selected": true,
+          "is_core": false,
+          "score": 19.86,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "donga.com",
+          "title": "한겨울 맹추위 날릴 겨울재미 맛보러 단양-영동에 놀러오세요",
+          "url": "https://www.donga.com/news/Society/article/all/20260119/133183558/1",
+          "reason": "",
+          "fit_score": 0.63,
+          "selection_stage": "underfill",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "dist",
+          "source_query": "감/곶감 공동판매",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
           "is_core": false,
           "score": 14.46,
           "tier": 1,
@@ -964,9 +1158,9 @@
           "domain": "yeongnam.com",
           "title": "[대구 농업리포트 ④] “크기보다 품질, 양보다 신뢰”…절제로 지켜가...",
           "url": "https://www.yeongnam.com/web/view.php?key=20260119021540563",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 0.95,
-          "selection_stage": "tail",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -991,9 +1185,9 @@
           "domain": "geconomy.co.kr",
           "title": "나주시, 농생명 산업으로 농업 판 바꾼다… 브랜드·수출·정주까지 한...",
           "url": "https://www.geconomy.co.kr/news/article.html?no=314283",
-          "reason": "source_cap",
+          "reason": "below_threshold",
           "fit_score": 1.95,
-          "selection_stage": "source_cap",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -1004,33 +1198,6 @@
             "market_hits": 0,
             "strength": 2,
             "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 6.46,
-          "tier": 1,
-          "press": "미디어경북",
-          "domain": "mediagb.kr",
-          "title": "포항시, 사과 ‘원물출하` 첫 경매 실시…농가 부담 확 줄인다",
-          "url": "http://www.mediagb.kr/news/view.php?idx=36918",
-          "reason": "below_threshold",
-          "fit_score": 1.15,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "dist",
-          "source_query": "도매시장 경매",
-          "source_channel": "google_news",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 2,
-            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -1549,13 +1716,111 @@
             "press_weight": -2.0
           }
         }
+      ],
+      "coverage_ledger": [
+        {
+          "seed": "풋고추",
+          "rep": "풋고추",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "나주시, 농생명 산업으로 농업 판 바꾼다… 브랜드·수출·정주까지 한..."
+        },
+        {
+          "seed": "곶감",
+          "rep": "곶감",
+          "hits": 3,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "단양 썰매, 영동 곶감 … 겨울축제 가볼까"
+        },
+        {
+          "seed": "가지",
+          "rep": "가지",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "[대구 농업리포트 ④] “크기보다 품질, 양보다 신뢰”…절제로 지켜가..."
+        },
+        {
+          "seed": "키위",
+          "rep": "키위",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "애호박",
+          "rep": "애호박",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "배",
+          "rep": "배",
+          "hits": 1,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "내일부터 '대한 추위'..강추위에 얼갈이배추· 쪽파 ·갈치 값 ↑"
+        },
+        {
+          "seed": "단감",
+          "rep": "단감",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "포도",
+          "rep": "포도",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "알밤",
+          "rep": "알밤",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "복숭아",
+          "rep": "복숭아",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "딸기",
+          "rep": "딸기",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "나주시, 농생명 산업으로 농업 판 바꾼다… 브랜드·수출·정주까지 한..."
+        },
+        {
+          "seed": "수박",
+          "rep": "수박",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
       ]
     },
     "policy": {
-      "threshold": 20.25,
-      "tail_cut": 20.45,
-      "core_min": 20.25,
-      "total_candidates": 15,
+      "threshold": 31.32,
+      "tail_cut": 31.52,
+      "core_min": 31.32,
+      "total_candidates": 20,
       "total_selected": 4,
       "top": [
         {
@@ -1573,7 +1838,7 @@
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
-          "source_query": "사과 물가 특별관리",
+          "source_query": "채소 물가 특별관리",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 0.0,
@@ -1615,25 +1880,25 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.25,
+          "score": 34.9,
           "tier": 1,
           "press": "강원도민일보",
           "domain": "kado.net",
-          "title": "양구군 농산물 최저 가격 지원금 4억원 지급",
+          "title": "양구군 농산물 최저가격 지원 금 4억원 지급",
           "url": "https://www.kado.net/news/articleView.html?idxno=2029094",
           "reason": "similar_title",
           "fit_score": 3.13,
           "selection_stage": "similar_title",
           "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "쥬키니 가격",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농산물 최저 가격 지원사업",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 3.0,
             "market_hits": 0,
             "strength": 2,
-            "korea": 1,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
@@ -1648,9 +1913,9 @@
           "domain": "kwnews.co.kr",
           "title": "양구군 농산물 최저 가격 지원금 4억원 지급",
           "url": "https://www.kwnews.co.kr/page/view/2026011910305226878",
-          "reason": "similar_title",
+          "reason": "below_threshold",
           "fit_score": 3.13,
-          "selection_stage": "similar_title",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1677,7 +1942,7 @@
           "url": "http://www.lawissue.co.kr/view.php?ud=202601190921542670edd30pn2gj_12",
           "reason": "",
           "fit_score": 3.13,
-          "selection_stage": "tail",
+          "selection_stage": "underfill",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1696,28 +1961,55 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 25.26,
-          "tier": 3,
-          "press": "대한민국 정책브리핑",
-          "domain": "korea.kr",
-          "title": "2026년도 전국 산불방지 종합대책",
-          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156740261",
+          "score": 26.86,
+          "tier": 1,
+          "press": "데일리한국",
+          "domain": "daily.hankooki.com",
+          "title": "세종시, 원예농가 안정 적 생산·경영부담완화 지원",
+          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1324394",
           "reason": "",
-          "fit_score": 1.04,
-          "selection_stage": "tail",
+          "fit_score": 3.09,
+          "selection_stage": "policy_major_issue_backfill",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
-          "source_query": "대책",
-          "source_channel": "google_news",
+          "source_query": "시설채소 가격안정 지원사업",
+          "source_channel": "naver_api",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
-            "strength": 1,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 26.27,
+          "tier": 1,
+          "press": "jeollailbo",
+          "domain": "jeollailbo.com",
+          "title": "치솟는 물가-금리, 서민 경제 위태롭다",
+          "url": "http://www.jeollailbo.com/news/articleView.html?idxno=789951",
+          "reason": "below_threshold",
+          "fit_score": 4.72,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "오이 가격안정 대책",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.92,
+            "market_hits": 0,
+            "strength": 3,
             "korea": 2,
             "offtopic_pen": 0,
-            "press_tier": 4,
-            "press_weight": 13.5
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -1729,9 +2021,9 @@
           "domain": "shinailbo.co.kr",
           "title": "양구군, 농산물 최저 가격 지원금 약 4억 원 지급",
           "url": "http://www.shinailbo.co.kr/news/articleView.html?idxno=2179611",
-          "reason": "similar_title",
+          "reason": "below_threshold",
           "fit_score": 3.13,
-          "selection_stage": "similar_title",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1756,9 +2048,9 @@
           "domain": "kukinews.com",
           "title": "양구군, 농산물 최저 가격 지원…9개 품목 4억원",
           "url": "https://www.kukinews.com/article/view/kuk202601190088",
-          "reason": "similar_story",
+          "reason": "below_threshold",
           "fit_score": 3.13,
-          "selection_stage": "similar_story",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1783,9 +2075,9 @@
           "domain": "jeonmae.co.kr",
           "title": "양구군, 농산물 최저 가격 지원금 약 4억 원 지급",
           "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1222658",
-          "reason": "similar_title",
+          "reason": "below_threshold",
           "fit_score": 3.13,
-          "selection_stage": "similar_title",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1810,9 +2102,9 @@
           "domain": "cfnews.kr",
           "title": "양구군, 농산물 최저 가격 지원금 약 4억 원 지급",
           "url": "http://www.cfnews.kr/news.aspx/104465",
-          "reason": "similar_title",
+          "reason": "below_threshold",
           "fit_score": 3.13,
-          "selection_stage": "similar_title",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -1912,28 +2204,55 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 0.82,
+          "score": -3.89,
           "tier": 1,
-          "press": "DGMBC",
-          "domain": "dgmbc.com",
-          "title": "[토크ON] ① 외국인 노동자 100만 시대···'고용허가제' 그늘은?",
-          "url": "https://dgmbc.com/NewsArticle/820150",
+          "press": "weeklytoday",
+          "domain": "weeklytoday.com",
+          "title": "[위클리오늘] 속초시, 2026년 농업인 지원 위한 다양한 사업 추진",
+          "url": "http://www.weeklytoday.com/news/articleView.html?idxno=752753",
           "reason": "below_threshold",
-          "fit_score": 0.18,
+          "fit_score": 2.03,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 출하비용 보전",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -4.03,
+          "tier": 1,
+          "press": "koreareport",
+          "domain": "koreareport.co.kr",
+          "title": "순천시, 2026년 새해농업인 실용교육 실시",
+          "url": "http://www.koreareport.co.kr/news/articleView.html?idxno=42841",
+          "reason": "below_threshold",
+          "fit_score": 0.28,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
-          "source_query": "상추 제도 개선",
+          "source_query": "매실 정책",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.32,
+            "horti_sc": 2.24,
             "market_hits": 0,
-            "strength": 0,
+            "strength": 1,
             "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
-            "press_weight": -3.0
+            "press_weight": -2.0
           }
         },
         {
@@ -1962,14 +2281,193 @@
             "press_tier": 1,
             "press_weight": -2.0
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -5.19,
+          "tier": 1,
+          "press": "jeonmae",
+          "domain": "jeonmae.co.kr",
+          "title": "속초시, 농업인 지원사업 확대 추진",
+          "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1222838",
+          "reason": "below_threshold",
+          "fit_score": 2.03,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 출하비용 보전",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -7.39,
+          "tier": 1,
+          "press": "스포츠서울",
+          "domain": "sportsseoul.com",
+          "title": "속초시, 2026년 농업인 지원 위한 다양한 사업 추진",
+          "url": "https://www.sportsseoul.com/news/read/1579263",
+          "reason": "below_threshold",
+          "fit_score": 2.03,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 출하비용 보전",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -9.38,
+          "tier": 1,
+          "press": "BBSI",
+          "domain": "news.bbsi.co.kr",
+          "title": "속초시, 2026년 농업인 지원 위한 다양한 사업 추진",
+          "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4062673",
+          "reason": "below_threshold",
+          "fit_score": 1.83,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 출하비용 보전",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        }
+      ],
+      "coverage_ledger": [
+        {
+          "seed": "물가",
+          "rep": "물가",
+          "hits": 3,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "물가 책임관 첫 회의 매주 농축산물 수급 점검"
+        },
+        {
+          "seed": "최저",
+          "rep": "최저",
+          "hits": 8,
+          "selected_hits": 2,
+          "missing": false,
+          "sample_title": "양구군, 농산물 최저 가격 지원금 4억원 농가 지급"
+        },
+        {
+          "seed": "시설채소",
+          "rep": "시설채소",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "병해충",
+          "rep": "병해충",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "양념채소",
+          "rep": "양념채소",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "출하비용",
+          "rep": "출하비용",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "가지",
+          "rep": "가지",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "정선군, 1~2월 ‘농업 지원 집중 신청 기간’ 운영…'전담 창구 가동'"
+        },
+        {
+          "seed": "농식품부",
+          "rep": "농식품부",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "정책브리핑",
+          "rep": "정책브리핑",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "차례상",
+          "rep": "차례상",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
         }
       ]
     },
     "dist": {
-      "threshold": 13.37,
-      "tail_cut": 13.97,
-      "core_min": 13.37,
-      "total_candidates": 5,
+      "threshold": 8.92,
+      "tail_cut": 11.12,
+      "core_min": 8.92,
+      "total_candidates": 19,
       "total_selected": 3,
       "top": [
         {
@@ -2000,27 +2498,27 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
-          "score": 21.37,
+          "selected": false,
+          "is_core": false,
+          "score": 32.77,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
-          "title": "대경사과원협·포항시, 사과 ‘원물출하’ 첫 경매…농가 부담 크게 줄여",
-          "url": "https://www.nongmin.com/article/20260119500197",
-          "reason": "",
-          "fit_score": 1.04,
-          "selection_stage": "core",
+          "title": "올 7070억원 쏟아붓는다…‘K-푸드 수출지원 사업’ 설명회",
+          "url": "https://www.nongmin.com/article/20260119500333",
+          "reason": "dist_local_org_profile",
+          "fit_score": 2.93,
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
-          "source_query": "도매시장 경매",
-          "source_channel": "google_news",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 2,
-            "korea": 2,
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.7
@@ -2029,24 +2527,348 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.77,
-          "tier": 1,
-          "press": "메트로신문",
-          "domain": "metroseoul.co.kr",
-          "title": "포항시, 사과 원물출하 첫 경매…농가 판로 확대 기대",
-          "url": "http://www.metroseoul.co.kr/article/20260118500283",
-          "reason": "below_threshold",
-          "fit_score": 1.04,
-          "selection_stage": "below_threshold",
+          "score": 31.52,
+          "tier": 3,
+          "press": "SBS",
+          "domain": "news.sbs.co.kr",
+          "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 개최",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008409466&plink=ORI&cooper=NAVER",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
-          "source_query": "도매시장 경매",
-          "source_channel": "google_news",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 31.52,
+          "tier": 3,
+          "press": "SBS",
+          "domain": "biz.sbs.co.kr",
+          "title": "농식품부, '7천억 규모' K-푸드 수출지원 설명회 23일 개최",
+          "url": "https://biz.sbs.co.kr/article_hub/20000285813?division=NAVER",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 31.12,
+          "tier": 3,
+          "press": "헤럴드경제",
+          "domain": "biz.heraldcorp.com",
+          "title": "농식품부, 오는 23일 ‘7000억 규모’ K-푸드 수출지원 사업 설명회",
+          "url": "https://biz.heraldcorp.com/article/10658324",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 28.72,
+          "tier": 3,
+          "press": "연합뉴스",
+          "domain": "yna.co.kr",
+          "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 23일 개최",
+          "url": "https://www.yna.co.kr/view/AKR20260119024300030?input=1195m",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 10.3
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 28.62,
+          "tier": 2,
+          "press": "아주경제",
+          "domain": "ajunews.com",
+          "title": "K-푸드 수출 160억불 정조준…정부, 지원 사업 설명회 개최",
+          "url": "https://www.ajunews.com/view/20260119102254896",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 23.92,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "'K-푸드 수출 날개단다' 정부, 전년比 900억 늘어난 7070억 지원",
+          "url": "https://www.newsis.com/view/NISX20260119_0003481279",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 23.62,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "올해 K-푸드 수출지원 에 7070억 투입…23일 지원 사업 설명회",
+          "url": "https://www.news1.kr/economy/trend/6043048",
+          "reason": "dist_local_org_profile",
+          "fit_score": 2.93,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.72,
+          "tier": 1,
+          "press": "tvchosun",
+          "domain": "news.tvchosun.com",
+          "title": "농식품부, 7천억 규모 K-푸드 수출지원 사업 설명회 개최",
+          "url": "https://news.tvchosun.com/site/data/html_dir/2026/01/19/2026011990254.html",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.72,
+          "tier": 1,
+          "press": "foodnews",
+          "domain": "foodnews.co.kr",
+          "title": "농식품부, 23일 K-푸드 수출지원 사업 설명회",
+          "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=116897",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.72,
+          "tier": 1,
+          "press": "newscammp",
+          "domain": "newscammp.co.kr",
+          "title": "농식품부, 7천억 규모 K-푸드 수출지원 설명회 개최…글로벌 진출 본격...",
+          "url": "https://www.newscammp.co.kr/news/articleView.html?idxno=5535",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 18.52,
+          "tier": 2,
+          "press": "데일리안",
+          "domain": "dailian.co.kr",
+          "title": "K-푸드 수출지원 7070억원…현장 집행 속도전",
+          "url": "https://www.dailian.co.kr/news/view/1599720/?sc=Naver",
+          "reason": "",
+          "fit_score": 1.83,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
             "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.97,
+          "tier": 1,
+          "press": "QUEEN",
+          "domain": "queen.co.kr",
+          "title": "농식품부, 7070억 원 규모 '2026년 K-푸드 수출 지원 사업' 추진… 설명회...",
+          "url": "http://www.queen.co.kr/news/articleView.html?idxno=449762",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.92,
+          "tier": 1,
+          "press": "한국영농신문",
+          "domain": "youngnong.co.kr",
+          "title": "2026년 K-푸드 수출지원 사업 설명회 개최",
+          "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=57052",
+          "reason": "dist_local_org_profile",
+          "fit_score": 2.93,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
             "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -2056,24 +2878,51 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.97,
+          "score": 17.92,
           "tier": 1,
-          "press": "쿠키뉴스",
-          "domain": "kukinews.com",
-          "title": "합천 사과, 설 앞두고 전국 최고가 경매 ‘기염’",
-          "url": "https://www.kukinews.com/article/view/kuk202601190244",
-          "reason": "below_threshold",
-          "fit_score": 0.94,
-          "selection_stage": "below_threshold",
+          "press": "mediapen",
+          "domain": "mediapen.com",
+          "title": "올해 K-푸드 수출지원 , 역대 최대 7070억원 규모…23일 설명회",
+          "url": "https://www.mediapen.com/news/view/1075178",
+          "reason": "dist_local_org_profile",
+          "fit_score": 2.93,
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
-          "source_query": "도매시장 경매",
-          "source_channel": "google_news",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 1,
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.67,
+          "tier": 1,
+          "press": "이투데이",
+          "domain": "etoday.co.kr",
+          "title": "K-푸드 수출지원 7070억 원 ‘역대 최대’…전 과정 패키지 가동",
+          "url": "https://www.etoday.co.kr/news/view/2546761",
+          "reason": "dist_local_org_profile",
+          "fit_score": 2.93,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
             "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -2083,28 +2932,55 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.72,
+          "score": 17.47,
           "tier": 1,
-          "press": "브레이크뉴스",
-          "domain": "breaknews.com",
-          "title": "합천 사과연구회 전국 최고가 경매 기록",
-          "url": "http://www.breaknews.com/1177848",
-          "reason": "below_threshold",
-          "fit_score": 0.94,
-          "selection_stage": "below_threshold",
+          "press": "IMAEIL",
+          "domain": "imaeil.com",
+          "title": "농식품부, 올해 K-푸드 수출지원 7,070억원 투입…글로벌 진출 본격화",
+          "url": "https://www.imaeil.com/page/view/2026011909563218942",
+          "reason": "dist_local_org_profile",
+          "fit_score": 3.03,
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
-          "source_query": "도매시장 경매",
-          "source_channel": "google_news",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 1,
-            "korea": 0,
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
-            "press_weight": -2.0
+            "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.57,
+          "tier": 1,
+          "press": "IDSN",
+          "domain": "idsn.co.kr",
+          "title": "농식품부, 2026년 K-푸드 수출지원 사업 설명회 개최",
+          "url": "https://idsn.co.kr/news/view/1065589213679800",
+          "reason": "dist_local_org_profile",
+          "fit_score": 1.88,
+          "selection_stage": "dist_local_org_profile",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "policy",
+          "source_query": "농산물 수출 지원 허브",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -2117,7 +2993,7 @@
           "title": "“농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하",
           "url": "https://www.nongmin.com/article/20260119500314",
           "reason": "",
-          "fit_score": 1.1,
+          "fit_score": 0.48,
           "selection_stage": "cross_section_dist_backfill",
           "selection_note": "supply_to_dist_underfill",
           "origin_section": "supply",
@@ -2134,6 +3010,104 @@
             "press_weight": 10.7
           }
         }
+      ],
+      "coverage_ledger": [
+        {
+          "seed": "마늘",
+          "rep": "마늘",
+          "hits": 1,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "창녕농협, 마늘 ·쌀 판매사업 활발…농가 실익증진"
+        },
+        {
+          "seed": "수출",
+          "rep": "수출",
+          "hits": 18,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "올 7070억원 쏟아붓는다…‘K-푸드 수출지원 사업’ 설명회"
+        },
+        {
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "apc",
+          "rep": "apc",
+          "hits": 17,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "창녕농협, 마늘 ·쌀 판매사업 활발…농가 실익증진"
+        },
+        {
+          "seed": "농협",
+          "rep": "농협",
+          "hits": 1,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "창녕농협, 마늘 ·쌀 판매사업 활발…농가 실익증진"
+        },
+        {
+          "seed": "연합판매사업",
+          "rep": "연합판매사업",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "품목농협",
+          "rep": "품목농협",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "원예농협",
+          "rep": "원예농협",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "판로",
+          "rep": "판로",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "공동구매",
+          "rep": "공동구매",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "직거래",
+          "rep": "직거래",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "거점",
+          "rep": "거점",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
       ]
     }
   },
@@ -2143,7 +3117,7 @@
         "start_kst": "2026-01-19T07:00:00+09:00",
         "end_kst": "2026-01-20T07:00:00+09:00"
       },
-      "base_queries_n": 69,
+      "base_queries_n": 83,
       "base_queries": [
         "농식품부 정책브리핑",
         "농식품부 보도자료 농산물",
@@ -2240,94 +3214,102 @@
       ],
       "window_hits_top": [
         [
+          "농산물 최저 가격 지원사업",
+          1
+        ],
+        [
+          "채소 물가 특별관리",
+          1
+        ],
+        [
           "양념채소 수급 안정",
           1
         ],
         [
-          "사과 물가 특별관리",
+          "시설채소 가격안정 지원사업",
           1
         ],
         [
-          "상추 제도 개선",
+          "오이 가격안정 대책",
           1
-        ]
-      ],
-      "google_hits_top": [
+        ],
         [
-          "대책",
+          "매실 정책",
           1
         ]
       ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "KOSIS 소비자물가 사과 배",
-        "가지 협의체",
-        "감/곶감 정책",
-        "감귤 협의체",
-        "건고추 가격 안정",
-        "과수 정책",
+        "가지 시범사업",
+        "감귤 수급 안정 대책",
+        "건조고추 가격 안정",
         "과일 채소 가격 동향",
         "과일류 가격 동향",
         "과일류 가격 전년 대비",
-        "깐마늘 제도 개선",
-        "나주배 검역",
-        "노지채소 가격 안정",
         "농산물 가격 결정 구조 개선",
         "농산물 가격 동향",
         "농산물 가격 전반 하락",
+        "농산물 가격 폭락 방지 대책",
+        "농산물 가격안정 건의안",
+        "농산물 가격안정 지원사업",
+        "농산물 광역 수급 관리센터",
+        "농산물 광역수급관리센터",
+        "농산물 생산비 지원 대책",
+        "농산물 수급 관리센터",
         "농산물 수급 동향",
-        "농산물 수급 영향 제한적",
-        "농산물 유통 구조 개선",
-        "농산물 유통 전문가 협의체",
-        "농산물 최소가격 보전제"
+        "농산물 수급 안정 건의안",
+        "농산물 수급 안정 대책"
       ],
       "recall_meta": {
         "seed_terms": [
           "대책",
+          "토마토",
           "사과",
           "배",
           "농식품부",
           "정책브리핑",
           "가락시장",
-          "이후",
           "성수품",
-          "차례상",
           "물가정보",
-          "농축산물",
-          "동향"
+          "동향",
+          "과일류",
+          "영향"
         ],
         "reason": [],
         "queries": [
           "대책",
+          "토마토",
           "사과",
           "배",
           "농식품부",
-          "정책브리핑",
           "농식품부 농산물 수급 점검"
         ],
         "topic_seed_terms": [
           "대책",
+          "토마토",
           "사과",
           "배"
         ],
         "query_seed_terms": [
           "농식품부",
-          "대책",
           "정책브리핑",
           "가락시장",
-          "이후",
+          "사과",
           "성수품",
-          "차례상",
           "물가정보",
-          "농축산물",
           "동향",
           "과일류",
-          "전반",
           "영향",
-          "전문가",
+          "정부",
           "구조",
           "결정",
-          "최소가격",
-          "특별관리"
+          "주요",
+          "최저",
+          "안정",
+          "광역",
+          "광역수급관리센터",
+          "원예"
         ],
         "report_date": "2026-01-20",
         "common_queries": [
@@ -2348,61 +3330,160 @@
           "농산물 가격안정 지원",
           "농산물 최저가격 지원",
           "농산물 가격안정 지원사업",
+          "주요 농산물 가격안정 지원사업",
+          "농산물 가격 폭락 방지 대책",
+          "농산물 수급 안정 건의안",
+          "농산물 가격안정 건의안",
+          "농산물 생산비 지원 대책",
+          "농업용 면세유 대책",
+          "농업용 면세유 가격 대책",
           "농식품부 농산물 유통 전문가 협의체",
           "농산물 유통 구조 개선",
           "농산물 최소가격 보전제",
+          "농산물 광역 수급 관리센터",
+          "농산물 광역수급관리센터",
+          "농산물 수급 관리센터",
+          "원예 시범사업",
           "온라인 도매시장 정책",
           "농식품부 예산",
-          "채소 물가 특별관리",
-          "양념채소 물가 특별관리",
-          "시설채소 정책",
-          "과수 물가 특별관리",
-          "월동무 물가 특별관리",
-          "햇양파 가격 안정",
+          "채소 수급 안정",
+          "양념채소 가격안정 지원사업",
+          "시설채소 시범사업",
+          "과수 수급 안정",
+          "봄무 가격안정 대책",
+          "양파 물가 특별관리",
           "방울토마토 검역",
-          "사과 정책",
-          "배추 검역",
-          "깐마늘 협의체",
-          "오이 정책",
-          "신고배 수급 안정",
-          "봄감자 정책",
-          "건고추 특별관리",
-          "청양고추 수급 안정",
-          "단감 가격 안정",
+          "사과 협의체",
+          "봄배추 건의안 발의",
+          "마늘 시범사업",
+          "오이 최저 가격 지원",
+          "나주배 수급 안정",
+          "봄감자 협의체",
+          "건조고추 가격안정 지원사업",
+          "풋고추 특별관리",
+          "단감 물가 특별관리",
           "당근 수급 안정",
-          "대파 할인지원",
-          "애호박(쥬키니) 제도 개선",
-          "포도 특별관리",
-          "양배추 제도 개선",
-          "생강 물가 특별관리",
+          "쪽파 건의안",
+          "애호박 수급 관리센터",
+          "포도 가격안정 지원사업",
+          "양배추 가격 폭락 방지",
+          "생강 제도 개선",
           "가지 할인지원",
-          "감귤 할인지원",
+          "감귤 건의안",
           "참외 가격 안정",
-          "감/곶감 제도 개선",
-          "상추 협의체",
-          "복숭아 협의체",
-          "딸기 특별관리",
-          "매실 물가 특별관리",
-          "파프리카 물가 특별관리",
+          "떫은감 가격 폭락 방지",
+          "상추 수급 안정 대책",
+          "복숭아 시범사업",
+          "딸기 정책",
+          "매실 제도 개선",
+          "파프리카 가격안정 대책",
           "유자 검역",
-          "멜론 검역",
-          "참다래 정책",
-          "알밤 수급 안정",
-          "절화 제도 개선",
+          "멜론 건의안 발의",
+          "키위 최저 가격 지원",
+          "알밤 특별관리",
+          "절화 수급 관리센터",
           "자두 가격 안정"
-        ],
-        "web_queries": [
-          "대책",
-          "사과"
-        ],
-        "web_added": 0,
-        "google_news_queries": [
-          "대책",
-          "사과"
-        ],
-        "google_news_added": 1
+        ]
       },
-      "items_total": 4,
+      "items_total": 6,
+      "seed_coverage": [
+        {
+          "seed": "대책",
+          "rep": "대책",
+          "hits": 6,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "물가 책임관 첫 회의 매주 농축산물 수급 점검"
+        },
+        {
+          "seed": "토마토",
+          "rep": "토마토",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "양구군 농산물 최저가격 지원 금 4억원 지급"
+        },
+        {
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "배",
+          "rep": "배",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "순천시, 2026년 새해농업인 실용교육 실시"
+        },
+        {
+          "seed": "농식품부",
+          "rep": "농식품부",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "정책브리핑",
+          "rep": "정책브리핑",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "성수품",
+          "rep": "성수품",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "물가정보",
+          "rep": "물가정보",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "동향",
+          "rep": "동향",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "과일류",
+          "rep": "과일류",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "영향",
+          "rep": "영향",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
+      ],
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -2808,6 +3889,104 @@
         ]
       },
       "items_total": 33,
+      "seed_coverage": [
+        {
+          "seed": "양배추",
+          "rep": "양배추",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "수박",
+          "rep": "수박",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "마늘",
+          "rep": "마늘",
+          "hits": 3,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "창녕농협, 마늘 ·쌀 판매사업 활발…농가 실익증진"
+        },
+        {
+          "seed": "애호박",
+          "rep": "애호박",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "딸기",
+          "rep": "딸기",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "나주시, 농생명 산업으로 농업 판 바꾼다… 브랜드·수출·정주까지 한..."
+        },
+        {
+          "seed": "과수",
+          "rep": "과수",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "유자",
+          "rep": "유자",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "기후변화",
+          "rep": "기후변화",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "오이",
+          "rep": "오이",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "파프리카",
+          "rep": "파프리카",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "단감",
+          "rep": "단감",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
+      ],
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -2821,7 +4000,7 @@
         "start_kst": "2026-01-19T07:00:00+09:00",
         "end_kst": "2026-01-20T07:00:00+09:00"
       },
-      "base_queries_n": 85,
+      "base_queries_n": 87,
       "base_queries": [
         "가락시장 청과 경락",
         "가락시장 경락가",
@@ -2918,29 +4097,40 @@
       ],
       "window_hits_top": [
         [
+          "농산물 수출 지원 허브",
+          18
+        ],
+        [
+          "농산물 출하비용 보전",
+          4
+        ],
+        [
+          "감/곶감 공동판매",
+          2
+        ],
+        [
           "과일 수출 검역",
           1
         ],
         [
-          "깐마늘 경매",
+          "깐마늘 공동판매",
+          1
+        ],
+        [
+          "청양고추 도매가격",
           1
         ]
       ],
-      "google_hits_top": [
-        [
-          "도매시장 경매",
-          5
-        ]
-      ],
+      "google_hits_top": [],
       "page1_full_queries": [
         "APC 산지유통센터 준공",
         "APC 저온저장",
         "CA저장 과일",
         "가락시장 경락가",
         "가락시장 청과 경락",
-        "가지 소비 대책",
-        "감귤(만감류) 경매",
-        "건조고추 소비 대책",
+        "가지 수출 선적",
+        "감/곶감 공동판매",
+        "감자 산지유통",
         "공영도매시장 경매",
         "공판장 청과 경매",
         "과수 온라인 유통채널",
@@ -2948,138 +4138,117 @@
         "과일 수출 검역",
         "과일 수출 선적",
         "광역수급관리센터 수급 관리",
-        "깐마늘 경매",
+        "깐마늘 공동판매",
         "노지채소 도매가격",
         "농산물 공동구매",
         "농산물 광역수급관리센터",
-        "농산물 수출 검역"
+        "농산물 선적식"
       ],
-      "recall_meta": {
-        "seed_terms": [
-          "마늘",
-          "사과",
-          "배",
-          "가락시장",
-          "apc",
-          "농협",
-          "연합판매사업",
-          "품목농협",
-          "원예농협",
-          "판로",
-          "공동구매",
-          "직거래"
-        ],
-        "reason": [],
-        "queries": [
-          "가락시장 경매",
-          "도매시장 경매",
-          "마늘",
-          "사과",
-          "배",
-          "가락시장"
-        ],
-        "topic_seed_terms": [
-          "마늘",
-          "사과",
-          "배"
-        ],
-        "query_seed_terms": [
-          "가락시장",
-          "apc",
-          "농협",
-          "연합판매사업",
-          "품목농협",
-          "원예농협",
-          "판로",
-          "공동구매",
-          "직거래",
-          "거점",
-          "푸드통합지원센터",
-          "과수",
-          "대책",
-          "수출",
-          "수출업계",
-          "광역수급관리센터",
-          "화훼",
-          "화훼자조금"
-        ],
-        "report_date": "2026-01-20",
-        "common_queries": [
-          "가락시장 경매",
-          "도매시장 경매",
-          "공판장 경매",
-          "가락시장 경락",
-          "초매식",
-          "첫 경매",
-          "경매 시작",
-          "온라인 도매시장 제도 개선",
-          "도매시장 제도 개선",
-          "품목농협 계통 유통",
-          "원예농협 계통 유통",
-          "통합마케팅 직거래",
-          "농산물 판로 확대",
-          "농산물 공동구매",
-          "농산물 직거래 장터",
-          "농산물 유통 거점",
-          "푸드통합지원센터 직거래",
-          "광역유통센터",
-          "스마트 APC",
-          "농산물 광역수급관리센터",
-          "노지채소 유통",
-          "양념채소 공동판매",
-          "시설채소 공동판매",
-          "과수 유통",
-          "월동무 공판장",
-          "양파 공동판매",
-          "방울토마토 공판장",
-          "사과 공판장",
-          "배추 공동판매",
-          "깐마늘 공판장",
-          "오이 공동판매",
-          "신고배 공동판매",
-          "봄감자 공판장",
-          "건조고추 공동판매",
-          "풋고추 공판장",
-          "단감 공동판매",
-          "제주당근 공동판매",
-          "대파 공판장",
-          "애호박 공동판매",
-          "포도 공동판매",
-          "양배추 공판장",
-          "생강 공동판매",
-          "가지 공동판매",
-          "감귤(만감류) 공판장",
-          "참외 공판장",
-          "떫은감 공판장",
-          "상추 공동판매",
-          "복숭아 공판장",
-          "딸기 공판장",
-          "매실 공동판매",
-          "파프리카 공판장",
-          "유자 공판장",
-          "머스크멜론 공동판매",
-          "참다래 공동판매",
-          "알밤 공판장",
-          "절화 공동판매",
-          "자두 공판장"
-        ],
-        "web_queries": [
-          "가락시장 경매",
-          "도매시장 경매"
-        ],
-        "web_added": 0,
-        "google_news_queries": [
-          "가락시장 경매",
-          "도매시장 경매"
-        ],
-        "google_news_added": 5
-      },
-      "items_total": 7,
+      "recall_meta": {},
+      "items_total": 27,
+      "seed_coverage": [
+        {
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 3,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "“농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하"
+        },
+        {
+          "seed": "농협",
+          "rep": "농협",
+          "hits": 2,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "“농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하"
+        },
+        {
+          "seed": "원예농협",
+          "rep": "원예농협",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "공동구매",
+          "rep": "공동구매",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "거점",
+          "rep": "거점",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "수출",
+          "rep": "수출",
+          "hits": 19,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "올 7070억원 쏟아붓는다…‘K-푸드 수출지원 사업’ 설명회"
+        },
+        {
+          "seed": "선적식",
+          "rep": "선적식",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "출하비용",
+          "rep": "출하비용",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "화훼",
+          "rep": "화훼",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "양념채소",
+          "rep": "양념채소",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "무",
+          "rep": "무",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "“농협이 개발·유통”…대파 신품종‘ 한가위’ 도매 시장 첫 출하"
+        },
+        {
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
+      ],
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
         "max_pages": 1,
-        "budget_used": 10,
+        "budget_used": 8,
         "budget_total": 12
       }
     },
@@ -3308,11 +4477,109 @@
         "google_news_added": 0
       },
       "items_total": 1,
+      "seed_coverage": [
+        {
+          "seed": "대책",
+          "rep": "대책",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "한파 위기경보 '주의' 격상… 정부 비상대응 속 고령층·농가 피해 우려..."
+        },
+        {
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "배",
+          "rep": "배",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "병해충",
+          "rep": "병해충",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "한파 위기경보 '주의' 격상… 정부 비상대응 속 고령층·농가 피해 우려..."
+        },
+        {
+          "seed": "토마토뿔나방",
+          "rep": "토마토뿔나방",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "배추",
+          "rep": "배추",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "감자",
+          "rep": "감자",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "양파",
+          "rep": "양파",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "마늘",
+          "rep": "마늘",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "대파",
+          "rep": "대파",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "토마토",
+          "rep": "토마토",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "풋고추",
+          "rep": "풋고추",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        }
+      ],
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
         "max_pages": 1,
-        "budget_used": 12,
+        "budget_used": 10,
         "budget_total": 12
       }
     }
