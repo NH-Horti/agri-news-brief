@@ -200,7 +200,26 @@ Fresh regenerated reports surfaced a tighter set of residual errors:
 
 - `policy` still underfills more than other sections in the regenerated sample. More recall expansion is still likely needed around local government market-structure policy and actionable regional programs.
 - `supply` still has borderline threshold misses on compact market outlook stories; another pass can tune the margin between feature tails and direct outlook summaries.
-- A full second 10-day rerun after the latest second-pass code changes is still pending. This pass validated the classifier locally and used the regenerated reports for diagnosis, but did not yet regenerate all 10 dates again on top of the new patch.
+- `pest` can still surface near-duplicate local execution stories when the pool is shallow, so the next pass should tighten same-story diversity on regional pest coverage.
+- A full second 10-day rerun after the very latest macro-export follow-up patch is still optional. The final pass below reran the two dates that contained the active residual errors and confirmed the fixes on live debug output.
+
+## Final Representative Rerun Verification
+
+After the final follow-up patch (`acae12e`, `Tighten macro export dist filtering`), representative dates with active residual errors were regenerated again on GitHub Actions:
+
+- `2026-02-20`: [run 23218703861](https://github.com/NH-Horti/agri-news-brief/actions/runs/23218703861)
+  - `build_tag=acae12e`
+  - removed false-positive `K-푸드 수출 1000억 달러 시대의 열쇠, '비관세장벽 4단계 대응 체계'에 있다`
+  - `dist` kept only the operational stories:
+    - `농협개혁· 온라인도매시장 법제화 국회 통과`
+    - `“농가 포장·운송비 부담 완화”…한국청과, 보전금 첫 지급`
+- `2026-03-11`: [run 23219138903](https://github.com/NH-Horti/agri-news-brief/actions/runs/23219138903)
+  - `build_tag=acae12e`
+  - removed false-positive `“농약인 줄”…‘비료’ 온라인 허위·과대광고에 농가 혼란`
+  - `pest` kept only execution-style stories such as:
+    - `과수화상병 예방 방제약제 공급`
+    - `돌발 해충 월동난 예찰 실시`
+    - `복숭아 재배농가 월동 병해충 방제 현장지도 강화`
 
 ## Validation
 

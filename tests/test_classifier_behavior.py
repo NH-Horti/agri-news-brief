@@ -927,6 +927,21 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main.is_dist_macro_export_noise_context(title, desc, dom, press))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
 
+    def test_dist_export_field_rejects_macro_barrier_strategy_story(self):
+        title = "K-푸드 수출 1000억 달러 시대의 열쇠, ‘비관세장벽 4단계 대응 체계’에 있다"
+        desc = (
+            "전 세계적으로 K-푸드 열풍이 불며 한국 농식품 수출이 호황을 맞고 있다. "
+            "정부는 K-푸드 플러스 전략을 통해 신시장 개척에 박차를 가하고 있지만, "
+            "수출 현장에서는 관세보다 뚫기 힘든 벽으로 비관세장벽이 지목되고 있다. "
+            "위생, 검역, 기술 표준, ESG 같은 복잡한 비관세조치가 기업 부담으로 거론된다."
+        )
+        url = "http://www.foodnews.co.kr/news/articleView.html?idxno=117312"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_dist_export_field_context(title, desc, dom, press))
+        self.assertTrue(main.is_dist_macro_export_noise_context(title, desc, dom, press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
     def test_dist_rejects_campaign_noise_story(self):
         title = "화훼자조금 협의회 '공원묘원 조화근절' 캠페인 전국 전개"
         desc = "화훼자조금 협의회가 조화 사용 근절 캠페인을 전국적으로 전개한다고 밝혔다."
@@ -1783,6 +1798,19 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main.is_policy_local_price_support_context(title, desc))
         self.assertTrue(main.is_policy_major_issue_context(title, desc, "yesan.go.kr", "예산군"))
 
+    def test_policy_major_issue_context_accepts_local_supply_management_program_story(self):
+        title = "강원도 '농산물 광역 수급 관리센터' 전국 최초 출범"
+        desc = "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역 수급 관리센터를 출범하고 시범사업을 시작한다."
+        self.assertTrue(main.is_local_agri_policy_program_context(f"{title} {desc}".lower()))
+        self.assertTrue(main.is_policy_major_issue_context(title, desc, "gw.go.kr", "강원도"))
+
+    def test_policy_major_issue_context_accepts_price_collapse_petition_story(self):
+        title = '김재웅 경남도의원 "양파 가격 폭락 방지·수급 안정 대책 촉구"'
+        desc = "경남도의회가 양파 가격 폭락 방지와 수급 안정을 위한 대정부 건의안 발의를 촉구했다."
+        self.assertTrue(main.is_policy_price_collapse_issue_context(title, desc))
+        self.assertTrue(main.policy_has_horti_anchor(title, desc, "gndomin.com", "경남도민일보"))
+        self.assertTrue(main.is_policy_major_issue_context(title, desc, "gndomin.com", "경남도민일보"))
+
     def test_policy_major_issue_story_prefers_policy_over_dist(self):
         title = "농식품부, 농산물 유통 전문가 협의체 출범"
         desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
@@ -1894,6 +1922,160 @@ class TestClassifierBehavior(unittest.TestCase):
         picked = main.select_top_articles([outlier, local_support], "policy", 5)
         picked_links = {x.link for x in picked}
         self.assertIn(local_support.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_selection_backfills_local_program_story_when_underfilled(self):
+        official = self._make_article(
+            "policy",
+            "농산물 소비자물가 안정세 유지…정부, 수급 관리 강화",
+            "정부가 농산물 소비자물가 흐름과 수급 점검 결과를 설명했다.",
+            "https://example.com/policy-official-brief",
+        )
+        market_brief = self._make_article(
+            "policy",
+            "과일·채소 가격 흐름 점검…정부 '체감물가 대응 지속'",
+            "과일과 채소 가격 흐름을 점검하며 추가 대응 계획을 설명했다.",
+            "https://example.com/policy-market-brief",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도 '농산물 광역 수급 관리센터' 전국 최초 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역 수급 관리센터를 출범하고 시범사업을 시작한다.",
+            "https://example.com/policy-local-program",
+        )
+        official.score = 37.8
+        market_brief.score = 31.2
+        local_program.score = 15.2
+
+        picked = main.select_top_articles([official, market_brief, local_program], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(local_program.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_selection_avoids_same_local_program_duplicate_and_keeps_other_footprint(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "충남도가 원예·축산 시범사업 113개를 본격 추진하며 농가 현장 확산에 나선다.",
+            "https://example.com/policy-pilot-1",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "충남도농업기술원이 원예·축산 시범사업을 본격 추진하며 현장 보급에 나선다.",
+            "https://example.com/policy-pilot-2",
+        )
+        market_brief = self._make_article(
+            "policy",
+            "과일·채소 가격 흐름 점검…정부 '체감물가 대응 지속'",
+            "정부가 과일과 채소 가격 흐름을 점검하고 체감물가 대응 계획을 설명했다.",
+            "https://example.com/policy-market-brief-2",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도 '농산물 광역 수급 관리센터' 전국 최초 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역 수급 관리센터를 출범하고 시범사업을 시작한다.",
+            "https://example.com/policy-local-program-2",
+        )
+        pilot1.score = 28.92
+        pilot2.score = 25.77
+        market_brief.score = 26.48
+        local_program.score = 17.53
+
+        picked = main.select_top_articles([pilot1, pilot2, market_brief, local_program], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(
+            int(pilot1.link in picked_links) + int(pilot2.link in picked_links),
+            1,
+            msg=str([(x.link, x.score, x.title) for x in picked]),
+        )
+        self.assertIn(local_program.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_duplicate_footprint_handles_province_alias_and_attached_region(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "",
+            "https://example.com/policy-pilot-title-1",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "",
+            "https://example.com/policy-pilot-title-2",
+        )
+
+        region1 = main._policy_region_or_fallback_key(pilot1)
+        region2 = main._policy_region_or_fallback_key(pilot2)
+        self.assertTrue(region1, msg=(region1, region2))
+        self.assertEqual(region1, region2, msg=(region1, region2))
+        self.assertTrue(main._near_duplicate_title(pilot1, pilot2, "policy"))
+
+    def test_policy_selection_blocks_weak_consumer_tail_when_major_issue_backfill_exists(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "충남도가 원예·축산 시범사업 113개를 본격 추진하며 농가 현장 확산에 나선다.",
+            "https://example.com/policy-pilot-core",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "충남도농업기술원이 원예·축산 시범사업을 본격 추진하며 현장 보급에 나선다.",
+            "https://example.com/policy-pilot-dup",
+        )
+        consumer_tail = self._make_article(
+            "policy",
+            "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
+            "사과와 배, 채소 가격이 엇갈리며 설 장바구니 물가 희비가 나타났다는 소비 기사다.",
+            "https://example.com/policy-consumer-tail",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도, 전국 최초 농산물 광역수급관리센터 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역수급관리센터를 출범했다.",
+            "https://example.com/policy-local-program-3",
+        )
+        pilot1.score = 28.92
+        pilot2.score = 25.77
+        consumer_tail.score = 26.48
+        local_program.score = 13.23
+
+        picked = main.select_top_articles([pilot1, pilot2, consumer_tail, local_program], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertNotIn(consumer_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_selection_keeps_price_collapse_petition_story_ahead_of_consumer_tail(self):
+        core = self._make_article(
+            "policy",
+            "농식품부, 농산물 유통 전문가 협의체 출범",
+            "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선 과제를 점검하기 위한 전문가 협의체를 출범했다.",
+            "https://example.com/policy-core-major-issue",
+        )
+        consumer_tail = self._make_article(
+            "policy",
+            "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
+            "사과와 배, 채소 가격이 엇갈리며 설 장바구니 물가 희비가 나타났다는 소비 기사다.",
+            "https://example.com/policy-consumer-tail-2",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도, 전국 최초 농산물 광역수급관리센터 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역수급관리센터를 출범했다.",
+            "https://example.com/policy-local-program-4",
+        )
+        onion_issue = self._make_article(
+            "policy",
+            '김재웅 경남도의원 "양파 가격 폭락 방지·수급 안정 대책 촉구"',
+            "경남도의회가 양파 가격 폭락 방지와 수급 안정을 위한 대정부 건의안 발의를 촉구했다.",
+            "https://example.com/policy-onion-price-collapse",
+        )
+        core.score = 29.8
+        consumer_tail.score = 26.48
+        local_program.score = 13.23
+
+        picked = main.select_top_articles([core, consumer_tail, local_program, onion_issue], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(onion_issue.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertNotIn(consumer_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
@@ -2606,6 +2788,44 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(fireblight.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertIn(moth.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_pest_selection_avoids_same_region_same_commodity_duplicate_backfill(self):
+        fireblight = self._make_article(
+            "pest",
+            "영월군, 과수화상병 예방 방제 약제 공급",
+            "영월군이 사과·배 농가 대상 과수화상병 예방 약제를 공급하고 예찰을 강화한다.",
+            "https://example.com/pest-fireblight-yeongwol",
+        )
+        winter_pest = self._make_article(
+            "pest",
+            "무주군, 돌발 해충 월동난 예찰 실시",
+            "무주군이 돌발 해충 월동난 예찰을 실시하고 농작물 피해 예방에 나선다.",
+            "https://example.com/pest-winter-muju",
+        )
+        peach1 = self._make_article(
+            "pest",
+            "옥천군농업기술센터, 복숭아 재배농가 월동 병해충 방제 현장지도 강화",
+            "옥천군이 복숭아 재배농가를 대상으로 월동 병해충 방제 현장지도를 강화한다.",
+            "https://example.com/pest-peach-okcheon-1",
+        )
+        peach2 = self._make_article(
+            "pest",
+            "복숭아 농사, 지금 방제가 '승부처'…옥천 농기센터 현장지도 강화",
+            "옥천군농업기술센터가 복숭아 재배농가 월동 병해충 방제 현장지도를 강화했다.",
+            "https://example.com/pest-peach-okcheon-2",
+        )
+        fireblight.score = 34.5
+        winter_pest.score = 22.4
+        peach1.score = 20.8
+        peach2.score = 18.2
+
+        picked = main.select_top_articles([fireblight, winter_pest, peach1, peach2], "pest", 5)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(
+            int(peach1.link in picked_links) + int(peach2.link in picked_links),
+            1,
+            msg=str([(x.link, x.score, x.title) for x in picked]),
+        )
+
     def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
         story = self._make_article(
             "supply",
@@ -2974,6 +3194,8 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("농식품부 농산물 수급 점검", policy_queries)
         self.assertIn("농식품부 농산물 유통 전문가 협의체", main._recall_common_queries("policy", "2026-01-05"))
         self.assertIn("농산물 가격안정 지원", main._recall_common_queries("policy", "2026-01-05"))
+        self.assertIn("주요 농산물 가격안정 지원사업", main._recall_common_queries("policy", "2026-01-05"))
+        self.assertIn("농산물 광역 수급 관리센터", main._recall_common_queries("policy", "2026-01-05"))
         self.assertIn("도매시장 경매", dist_queries)
         self.assertIn("농산물 유통 거점", main._recall_common_queries("dist", "2026-01-05"))
         self.assertIn("토마토뿔나방 약제 지원", main._recall_common_queries("pest", "2026-01-05"))

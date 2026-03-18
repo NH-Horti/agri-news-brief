@@ -1533,10 +1533,10 @@ MANAGED_GROUP_RECALL_QUERY_BANK: dict[str, dict[str, list[str]]] = {
         "fruit_veg": ["시설채소 수급", "시설채소 가격", "시설채소 생육"],
     },
     "policy": {
-        "root_leaf": ["채소 물가 특별관리", "채소 수급 안정", "노지채소 가격 안정"],
-        "seasoning_veg": ["양념채소 물가 특별관리", "양념채소 수급 안정"],
-        "fruit_flower": ["과수 물가 특별관리", "과수 수급 안정", "과수 정책"],
-        "fruit_veg": ["시설채소 수급 안정", "시설채소 정책"],
+        "root_leaf": ["채소 물가 특별관리", "채소 수급 안정", "노지채소 가격 안정", "채소 가격안정 지원사업", "채소 수급 관리센터"],
+        "seasoning_veg": ["양념채소 물가 특별관리", "양념채소 수급 안정", "양념채소 가격안정 지원사업"],
+        "fruit_flower": ["과수 물가 특별관리", "과수 수급 안정", "과수 정책", "과수 가격안정 지원사업", "과수 시범사업"],
+        "fruit_veg": ["시설채소 수급 안정", "시설채소 정책", "시설채소 가격안정 지원사업", "시설채소 시범사업"],
     },
     "dist": {
         "root_leaf": ["노지채소 유통", "노지채소 소비 대책", "노지채소 도매가격"],
@@ -1615,11 +1615,15 @@ def _managed_commodity_policy_queries(item: dict[str, Any]) -> list[str]:
     for base in _managed_commodity_base_terms(item, limit=2):
         out.append(f"{base} 수급 안정")
         out.append(f"{base} 가격 안정")
+        out.append(f"{base} 가격안정 지원사업")
+        out.append(f"{base} 최저 가격 지원")
         out.append(f"{base} 특별관리")
         out.append(f"{base} 물가 특별관리")
         out.append(f"{base} 정책")
         out.append(f"{base} 제도 개선")
         out.append(f"{base} 협의체")
+        out.append(f"{base} 수급 관리센터")
+        out.append(f"{base} 시범사업")
         out.append(f"{base} 할인지원")
         out.append(f"{base} 검역")
     return _ordered_unique_terms(out)
@@ -1857,7 +1861,14 @@ POLICY_MAJOR_ISSUE_QUERIES = [
     "농산물 유통 구조 개선",
     "농산물 가격 결정 구조 개선",
     "농산물 최소가격 보전제",
+    "주요 농산물 가격안정 지원사업",
+    "농산물 가격안정 지원사업",
+    "농산물 최저 가격 지원사업",
     "농산물 특별관리 품목",
+    "농산물 광역 수급 관리센터",
+    "농산물 광역수급관리센터",
+    "농산물 수급 관리센터",
+    "원예 시범사업",
 ]
 
 # -----------------------------
@@ -2703,14 +2714,8 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
                     return False
 
     if section_key == "pest":
-        a_region = _pest_region_key(at)
-        if not a_region:
-            a_regions = sorted(_region_set(a_txt))
-            a_region = a_regions[0] if a_regions else ""
-        b_region = _pest_region_key(bt)
-        if not b_region:
-            b_regions = sorted(_region_set(b_txt))
-            b_region = b_regions[0] if b_regions else ""
+        a_region = _pest_region_or_fallback_key(a)
+        b_region = _pest_region_or_fallback_key(b)
         if a_region and b_region and a_region != b_region:
             if is_pest_control_policy_context(a_txt) and is_pest_control_policy_context(b_txt):
                 return False
@@ -4274,6 +4279,7 @@ def _policy_horti_anchor_stats(title: str, desc: str, dom: str = "", press: str 
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    price_collapse_issue = is_policy_price_collapse_issue_context(ttl, desc or "")
     direct_anchor_hits = count_any(txt, [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS])
     title_anchor_hits = count_any((ttl or "").lower(), [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS])
     market_hits = count_any(
@@ -4300,6 +4306,7 @@ def _policy_horti_anchor_stats(title: str, desc: str, dom: str = "", press: str 
         managed_count >= 1
         or direct_anchor_hits >= 1
         or market_hits >= 1
+        or price_collapse_issue
         or ("\ub18d\ucd95\uc0b0\ubb3c" in txt and mixed_keep_hits >= 2)
         or (livestock_hits == 0 and horti_sc >= 1.8)
     )
@@ -4611,15 +4618,65 @@ _POLICY_MAJOR_ISSUE_TERMS = (
     "제도 개선", "제도개선", "구조 개선", "구조개선", "유통 구조 개선", "가격 결정 구조",
     "최소가격", "최소가격 보전제", "보전제", "가격안정제",
     "개선 계획", "개선안", "개편안", "도입", "제안", "촉구", "대응 방안",
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "수급 안정 대책", "수급안정 대책", "대책 촉구", "대책 마련",
+    "건의안", "건의안 발의", "대정부 건의안",
     "관리 강화", "모니터링", "물가지수", "소비자물가지수", "실태조사",
 )
 _POLICY_MAJOR_ISSUE_TITLE_TERMS = (
     "협의체", "위원회", "출범", "특별관리", "최소가격", "보전제",
     "제도 개선", "제도개선", "구조 개선", "구조개선", "가격 결정 구조",
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "대책 촉구", "건의안", "건의안 발의",
 )
 _POLICY_MAJOR_ISSUE_PROPOSAL_TERMS = (
     "제안", "촉구", "도입", "법안", "개정안", "최소가격", "보전제", "가격안정제", "특별관리",
+    "건의안", "건의안 발의", "대정부 건의안", "결의안", "대책 촉구", "대책 마련",
 )
+
+_POLICY_PRICE_COLLAPSE_TERMS = (
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "가격 급락", "가격급락", "가격 하락", "가격하락", "수급 안정",
+)
+_POLICY_PRICE_COLLAPSE_TITLE_TERMS = (
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "수급 안정", "수급안정",
+)
+_POLICY_PRICE_COLLAPSE_ACTION_TERMS = (
+    "대책 촉구", "대책 마련", "마련 촉구", "촉구", "건의안", "건의안 발의",
+    "대정부 건의안", "건의", "요구", "발의",
+)
+_POLICY_PRICE_COLLAPSE_ACTOR_TERMS = (
+    "국회", "국회의원", "의원", "도의원", "시의원", "군의원", "구의원",
+    "농민", "농민들", "농가", "농가들", "생산자", "생산자들", "재배농가",
+    "연합회", "협회", "대정부", "정부",
+)
+
+
+def is_policy_price_collapse_issue_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits = count_any(txt, [w.lower() for w in _POLICY_MAJOR_ISSUE_AGRI_TERMS]) + managed_count
+    title_item_hits = count_any((ttl or "").lower(), [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS])
+    if managed_count == 0 and agri_hits == 0 and title_item_hits == 0:
+        return False
+
+    price_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_TERMS])
+    title_price_hits = count_any((ttl or "").lower(), [w.lower() for w in _POLICY_PRICE_COLLAPSE_TITLE_TERMS])
+    action_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_ACTION_TERMS])
+    actor_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_ACTOR_TERMS])
+    if re.search(r"(?:^|[\s\"'“”‘’])(?:[가-힣]{2,20})(?:국회의원|도의원|시의원|군의원|구의원|의원)", ttl):
+        actor_hits += 1
+    policy_hits = count_any(txt, [w.lower() for w in ("정부", "대정부", "국회", "농식품부", "농림축산식품부")])
+    return (
+        (price_hits >= 2 or (price_hits >= 1 and title_price_hits >= 1))
+        and action_hits >= 1
+        and (actor_hits >= 1 or policy_hits >= 1 or managed_count >= 1 or title_item_hits >= 1)
+    )
 
 
 def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -4662,6 +4719,8 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
     if is_policy_local_price_support_context(ttl, desc or ""):
         return True
     if is_local_agri_policy_program_context(txt):
+        return True
+    if is_policy_price_collapse_issue_context(ttl, desc or ""):
         return True
 
     managed_summary = _managed_commodity_match_summary(ttl, desc or "")
@@ -4748,6 +4807,10 @@ _DIST_MACRO_EXPORT_NOISE_TERMS = (
 _DIST_MACRO_LOGISTICS_NOISE_TERMS = (
     "해운", "항공", "동시 마비", "물류 마비", "중동 전쟁", "전쟁 여파", "유가 급등",
 )
+_DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS = (
+    "도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc",
+    "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래",
+)
 _DIST_MACRO_EXPORT_KEEP_TERMS = (
     "농산물", "원예", "과수", "과일", "채소", "화훼", "도매시장", "공판장", "가락시장", "산지유통",
     "산지유통센터", "apc", "공동선별", "공선출하", "선적", "컨테이너 경매", "원물", "농가", "출하",
@@ -4772,9 +4835,19 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
     )
     if macro_hits == 0:
         return False
+    title_signature_hits = count_any(
+        (ttl or "").lower(),
+        [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS],
+    )
+    title_concrete_keep_hits = count_any(
+        (ttl or "").lower(),
+        [w.lower() for w in _DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS],
+    )
+    if title_signature_hits >= 2 and title_concrete_keep_hits == 0:
+        return True
     concrete_keep_hits = count_any(
         txt,
-        [w.lower() for w in ("도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc", "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래")],
+        [w.lower() for w in _DIST_MACRO_EXPORT_CONCRETE_KEEP_TERMS],
     )
     if concrete_keep_hits >= 1:
         return False
@@ -4787,16 +4860,6 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
         (ttl or "").lower(),
         [w.lower() for w in _DIST_MACRO_LOGISTICS_NOISE_TERMS],
     )
-    title_signature_hits = count_any(
-        (ttl or "").lower(),
-        [w.lower() for w in ("비관세장벽", "수출 1000억", "1000억 달러", "160억달러", "160억 달러", "k-푸드", "k푸드")],
-    )
-    title_concrete_keep_hits = count_any(
-        (ttl or "").lower(),
-        [w.lower() for w in ("도매시장", "공판장", "가락시장", "온라인 도매시장", "산지유통", "산지유통센터", "apc", "공동선별", "공선출하", "선적", "검역", "통관", "원산지", "반입", "경락", "경매", "연합판매사업", "직거래")],
-    )
-    if title_signature_hits >= 2 and title_concrete_keep_hits == 0:
-        return True
     if title_macro_hits >= 1 and market_hits == 0 and agri_anchor_hits <= 2:
         return True
     return market_hits == 0 and (agri_anchor_hits <= 1 or best_horti_score(ttl, desc or "") < 2.0)
@@ -4927,6 +4990,16 @@ _DIST_EXPORT_FIELD_INTERVIEW_TERMS = (
 _DIST_EXPORT_FIELD_POLICY_HEAVY_TERMS = (
     "장관", "농식품부", "발표", "전략", "계획", "대책", "브리핑", "회의", "예산", "추진",
 )
+_DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS = (
+    "비관세장벽", "수출 1000억", "1000억 달러", "160억달러", "160억 달러", "k-푸드", "k푸드",
+)
+_DIST_EXPORT_FIELD_MACRO_POLICY_TERMS = (
+    "비관세장벽", "비관세조치", "ntb", "ntbs", "ntm", "ntms", "위생", "검역", "기술 표준", "esg", "신시장", "플러스",
+)
+_DIST_EXPORT_FIELD_RESPONSE_TERMS = (
+    "간담회", "현장간담회", "애로", "애로 해소", "애로 해결", "상시 접수", "상시접수", "사례 공유",
+    "사례", "n-데스크", "ndesk", "공장", "원스톱", "수출업계", "업계 간담회", "기업 지원",
+)
 _POLICY_EXPORT_SUPPORT_TERMS = (
     "농식품부", "장관", "전략", "정책", "발표", "브리핑", "추진", "개혁", "혁신", "ai", "유통", "식품산업",
 )
@@ -5024,10 +5097,19 @@ def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: st
     policy_heavy_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_POLICY_HEAVY_TERMS])
     agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "aT", "한국농수산식품유통공사")])
     org_hits = count_any(txt, [w.lower() for w in ("aT 사장", "at 사장", "한국농수산식품유통공사", "aT", "at")])
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    response_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_RESPONSE_TERMS])
+    title_signature_hits = count_any((ttl or "").lower(), [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS])
+    macro_barrier_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_POLICY_TERMS])
 
     if export_hits == 0 or market_hits == 0:
         return False
     if agri_hits == 0 and org_hits == 0:
+        return False
+    if title_signature_hits >= 2 and managed_count == 0 and item_hits == 0 and response_hits < 2:
+        return False
+    if macro_barrier_hits >= 4 and managed_count == 0 and item_hits == 0 and response_hits < 2:
         return False
     if policy_heavy_hits >= 3 and interview_hits == 0 and market_hits < 2:
         return False
@@ -8080,6 +8162,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_stabilization = is_supply_stabilization_policy_context(text, dom, press)
     policy_market_brief = is_policy_market_brief_context(text, dom, press)
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
+    policy_price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
     policy_general_macro_tail = is_policy_general_macro_tail_context(title, desc, dom, press)
     policy_event_tail = is_policy_event_tail_context(title, desc, dom, press)
     dist_export_field = is_dist_export_field_context(title, desc, dom, press)
@@ -8285,6 +8368,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if policy_major_issue:
             score += 5.8
             score += 0.9 * count_any(title_l, [t.lower() for t in _POLICY_MAJOR_ISSUE_TITLE_TERMS])
+        if policy_price_collapse_issue:
+            score += 2.8
         if dist_market_disruption:
             score -= 7.0
         if dist_market_ops:
@@ -8527,7 +8612,11 @@ _PROVINCE_NAMES = [
     "서울특별시","부산광역시","대구광역시","인천광역시","광주광역시","대전광역시","울산광역시","세종특별자치시",
     "경기도","강원특별자치도","충청북도","충청남도","전라북도","전라남도","경상북도","경상남도","제주특별자치도",
 ]
-_PROVINCE_RX = re.compile("|".join(map(re.escape, _PROVINCE_NAMES)))
+_PROVINCE_ALIAS_NAMES = [
+    "서울시","부산시","대구시","인천시","광주시","대전시","울산시","세종시",
+    "강원도","강원자치도","충북도","충남도","전북도","전남도","경북도","경남도","제주도",
+]
+_PROVINCE_RX = re.compile("|".join(map(re.escape, sorted(set(_PROVINCE_NAMES + _PROVINCE_ALIAS_NAMES), key=len, reverse=True))))
 
 # 시/군/구/읍/면 단위는 오탐이 많아 '도'는 제외하고, 단어 경계에 가깝게만 매칭
 _CITY_COUNTY_RX = re.compile(r"(?:(?<=\s)|^)([가-힣]{2,})(시|군|구|읍|면)(?=\s|$|[\]\[\)\(\.,·!\?\"'“”‘’:/-])")
@@ -8561,6 +8650,7 @@ def _region_set(s: str) -> set[str]:
 
     return out
 _BARE_REGION_RX = re.compile(r"([가-힣]{2,6})(?=(?:\s*)?(?:농업기술센터|농기센터|군청|시청|구청|농업기술원|농업기술과))")
+_ATTACHED_REGION_RX = re.compile(r"([가-힣]{2,16}(?:군|시|구|도))(?=(?:농업기술센터|농기센터|농업기술원|농업기술과|농기원|이|가|은|는|에서|에|와|과|,))")
 
 _PEST_CORE_TOKENS = {
     "병해충","방제","예찰","과수화상병","탄저병","냉해","동해","월동","약제","농약","살포","방역"
@@ -8605,6 +8695,9 @@ def _pest_region_key(title: str) -> str:
     - 없으면 첫 지역 토큰(도 등) 사용
     """
     t = title or ""
+    attached = _ATTACHED_REGION_RX.search(t)
+    if attached:
+        return attached.group(1)
     ms = list(_REGION_RX.finditer(t))
     if not ms:
         # 군/시/구가 명시되지 않지만 "장수 농업기술센터"처럼 자주 등장하는 패턴 보완
@@ -8619,6 +8712,209 @@ def _pest_region_key(title: str) -> str:
             return r
     # 2) 군/시/구가 없으면 첫 토큰(도/광역시 등)
     return ms[0].group(0)
+
+
+_PEST_FOOTPRINT_DISEASE_TERMS: dict[str, tuple[str, ...]] = {
+    "fireblight": ("과수화상병",),
+    "tomato_moth": ("토마토뿔나방",),
+    "anthracnose": ("탄저병",),
+    "winter_pest": ("월동해충", "월동 해충", "돌발 해충", "돌발해충"),
+    "general_pest": ("병해충",),
+}
+
+
+def _normalize_pest_region_token(region: str) -> str:
+    token = str(region or "").strip()
+    if not token:
+        return ""
+    token = re.sub(r"(특별자치시|특별자치도|광역시|특별시)$", "", token)
+    token = re.sub(r"(시|군|구|도)$", "", token)
+    return token or str(region or "").strip()
+
+
+def _pest_region_or_fallback_key(a: "Article") -> str:
+    region_key = _pest_region_key(a.title or "")
+    if region_key:
+        return _normalize_pest_region_token(region_key)
+    attached = _ATTACHED_REGION_RX.search((a.title or "") + " " + (a.description or ""))
+    if attached:
+        return _normalize_pest_region_token(attached.group(1))
+    region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
+    return _normalize_pest_region_token(region_candidates[0]) if region_candidates else ""
+
+
+def _pest_article_commodity_keys(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_pest_diversity_keys", None)
+    if cached is None:
+        try:
+            cached = tuple(managed_commodity_keys_for_article(a))
+        except Exception:
+            cached = ()
+        if not cached:
+            text = ((a.title or "") + " " + (a.description or "")).lower()
+            inferred = sorted(
+                {
+                    TOPIC_REP_BY_TERM_L.get(term, term)
+                    for term in HORTI_ITEM_TERMS_L
+                    if term in text
+                }
+            )
+            if inferred:
+                cached = tuple(inferred[:3])
+        if not cached:
+            topic = str(getattr(a, "topic", "") or "").strip()
+            if topic in _HORTI_TOPICS_SET:
+                cached = (topic,)
+        setattr(a, "_pest_diversity_keys", cached)
+    return tuple(cached or ())
+
+
+def _pest_article_disease_keys(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_pest_disease_keys", None)
+    if cached is None:
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+        cached = tuple(
+            key
+            for key, terms in _PEST_FOOTPRINT_DISEASE_TERMS.items()
+            if any(term in text for term in terms)
+        )
+        setattr(a, "_pest_disease_keys", cached)
+    return tuple(cached or ())
+
+
+def _pest_story_footprint_tokens(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_pest_footprint_tokens", None)
+    if cached is None:
+        region_key = _pest_region_or_fallback_key(a)
+        commodity_keys = _pest_article_commodity_keys(a)
+        disease_keys = _pest_article_disease_keys(a)
+        tokens: set[str] = set()
+        if region_key:
+            for key in commodity_keys:
+                tokens.add(f"region:{region_key}|commodity:{key}")
+            for key in disease_keys:
+                tokens.add(f"region:{region_key}|disease:{key}")
+            if not tokens:
+                tokens.add(f"region:{region_key}")
+        elif commodity_keys and disease_keys:
+            for commodity_key in commodity_keys:
+                for disease_key in disease_keys:
+                    tokens.add(f"commodity:{commodity_key}|disease:{disease_key}")
+        cached = tuple(sorted(tokens))
+        setattr(a, "_pest_footprint_tokens", cached)
+    return tuple(cached or ())
+
+
+def _pest_has_same_footprint(a: "Article", b: "Article") -> bool:
+    return bool(set(_pest_story_footprint_tokens(a)) & set(_pest_story_footprint_tokens(b)))
+
+
+_POLICY_FOOTPRINT_KIND_TERMS: dict[str, tuple[str, ...]] = {
+    "supply_center": ("광역 수급 관리센터", "광역수급관리센터", "수급 관리센터", "수급관리센터"),
+    "pilot_program": ("시범사업", "시범 사업"),
+    "price_support": (
+        "가격안정",
+        "가격 안정",
+        "최저가격",
+        "최저 가격",
+        "최소가격",
+        "보전",
+        "보전금",
+        "차액 지원",
+        "지원사업",
+    ),
+    "discount_support": ("할인 지원", "할인지원", "할인쿠폰", "할인 쿠폰"),
+    "fruit_snack": ("과일간식", "과일 간식"),
+}
+
+
+def _normalize_policy_region_token(region: str) -> str:
+    token = str(region or "").strip()
+    if not token:
+        return ""
+    token = re.sub(r"(특별자치시|특별자치도|광역시|특별시)$", "", token)
+    token = re.sub(r"(시|군|구|도)$", "", token)
+    return token or str(region or "").strip()
+
+
+def _policy_region_or_fallback_key(a: "Article") -> str:
+    region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
+    for region in region_candidates:
+        token = _normalize_policy_region_token(region)
+        if token:
+            return token
+    attached = _ATTACHED_REGION_RX.search((a.title or "") + " " + (a.description or ""))
+    if attached:
+        return _normalize_policy_region_token(attached.group(1))
+    return ""
+
+
+def _policy_article_commodity_keys(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_policy_diversity_keys", None)
+    if cached is None:
+        try:
+            cached = tuple(managed_commodity_keys_for_article(a))
+        except Exception:
+            cached = ()
+        if not cached:
+            text = ((a.title or "") + " " + (a.description or "")).lower()
+            inferred = sorted(
+                {
+                    TOPIC_REP_BY_TERM_L.get(term, term)
+                    for term in HORTI_ITEM_TERMS_L
+                    if term in text
+                }
+            )
+            if inferred:
+                cached = tuple(inferred[:3])
+        if not cached:
+            topic = str(getattr(a, "topic", "") or "").strip()
+            if topic in _HORTI_TOPICS_SET:
+                cached = (topic,)
+        setattr(a, "_policy_diversity_keys", cached)
+    return tuple(cached or ())
+
+
+def _policy_story_kind(a: "Article") -> str:
+    cached = getattr(a, "_policy_story_kind", None)
+    if cached is None:
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+        cached = ""
+        for kind, terms in _POLICY_FOOTPRINT_KIND_TERMS.items():
+            if any(term in text for term in terms):
+                cached = kind
+                break
+        setattr(a, "_policy_story_kind", cached)
+    return str(cached or "")
+
+
+def _policy_story_footprint_tokens(a: "Article") -> tuple[str, ...]:
+    cached = getattr(a, "_policy_footprint_tokens", None)
+    if cached is None:
+        region_key = _policy_region_or_fallback_key(a)
+        commodity_keys = _policy_article_commodity_keys(a)
+        story_kind = _policy_story_kind(a)
+        tokens: set[str] = set()
+        if region_key and story_kind:
+            tokens.add(f"region:{region_key}|kind:{story_kind}")
+            for commodity_key in commodity_keys:
+                tokens.add(f"region:{region_key}|kind:{story_kind}|commodity:{commodity_key}")
+        elif region_key:
+            for commodity_key in commodity_keys:
+                tokens.add(f"region:{region_key}|commodity:{commodity_key}")
+            if not tokens:
+                tokens.add(f"region:{region_key}")
+        elif story_kind and commodity_keys:
+            for commodity_key in commodity_keys:
+                tokens.add(f"kind:{story_kind}|commodity:{commodity_key}")
+        cached = tuple(sorted(tokens))
+        setattr(a, "_policy_footprint_tokens", cached)
+    return tuple(cached or ())
+
+
+def _policy_has_same_footprint(a: "Article", b: "Article") -> bool:
+    return bool(set(_policy_story_footprint_tokens(a)) & set(_policy_story_footprint_tokens(b)))
+
 
 def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     """URL이 달라도 '사실상 같은 이슈'로 보이는 제목 중복을 억제한다.
@@ -8651,10 +8947,19 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
     ra = _region_set((a.title or "") + " " + (a.description or ""))
     rb = _region_set((b.title or "") + " " + (b.description or ""))
     if section_key == "pest":
-        ra = set(ra)
-        rb = set(rb)
-        a_region_key = _pest_region_key(a.title or "")
-        b_region_key = _pest_region_key(b.title or "")
+        ra = {_normalize_pest_region_token(x) for x in ra if _normalize_pest_region_token(x)}
+        rb = {_normalize_pest_region_token(x) for x in rb if _normalize_pest_region_token(x)}
+        a_region_key = _pest_region_or_fallback_key(a)
+        b_region_key = _pest_region_or_fallback_key(b)
+        if a_region_key:
+            ra.add(a_region_key)
+        if b_region_key:
+            rb.add(b_region_key)
+    elif section_key == "policy":
+        ra = {_normalize_policy_region_token(x) for x in ra if _normalize_policy_region_token(x)}
+        rb = {_normalize_policy_region_token(x) for x in rb if _normalize_policy_region_token(x)}
+        a_region_key = _policy_region_or_fallback_key(a)
+        b_region_key = _policy_region_or_fallback_key(b)
         if a_region_key:
             ra.add(a_region_key)
         if b_region_key:
@@ -8669,10 +8974,15 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
             term in a_text and term in b_text
             for term in ("과수화상병", "탄저병", "냉해", "동해", "토마토뿔나방", "월동해충")
         )
+        same_commodity = bool(set(_pest_article_commodity_keys(a)) & set(_pest_article_commodity_keys(b)))
         pest_action_terms = [w.lower() for w in ("사전 방제", "사전방제", "방제", "예찰", "약제", "무상 공급", "무상공급", "예방교육", "확산 차단")]
         a_action_hits = count_any(a_text, pest_action_terms)
         b_action_hits = count_any(b_text, pest_action_terms)
         if same_region and same_disease and a_action_hits >= 1 and b_action_hits >= 1:
+            return True
+        if same_region and same_commodity and a_action_hits >= 1 and b_action_hits >= 1:
+            return True
+        if _pest_has_same_footprint(a, b) and a_action_hits >= 1 and b_action_hits >= 1:
             return True
         # 같은 지자체 + 방제/병해충 키워드가 충분히 겹치면(기사만 다르고 내용이 같은 경우가 많음)
         if same_region and common_core >= 2 and jac >= 0.45:
@@ -8704,6 +9014,15 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
 
     if section_key == "policy":
         common_core = len((ta & tb) & _POLICY_CORE_TOKENS)
+        same_kind = _policy_story_kind(a) and (_policy_story_kind(a) == _policy_story_kind(b))
+        same_commodity = bool(set(_policy_article_commodity_keys(a)) & set(_policy_article_commodity_keys(b)))
+        if _policy_has_same_footprint(a, b) and (common_core >= 1 or jac >= 0.34 or jac2 >= 0.42):
+            return True
+        if same_region and same_kind:
+            if same_commodity and (common_core >= 1 or jac >= 0.34):
+                return True
+            if common_core >= 2 and jac >= 0.34:
+                return True
         if common_core >= 2 and jac >= 0.55:
             return True
 
@@ -9731,8 +10050,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
             announcement = is_policy_announcement_issue(txt_local, dom_local, pr_local)
             macro = is_macro_policy_issue(txt_local)
+            major_issue = is_policy_major_issue_context(a.title or "", a.description or "", dom_local, pr_local)
             export_support_brief = is_policy_export_support_brief_context(a.title or "", a.description or "", dom_local, pr_local)
             local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+            price_collapse_issue = is_policy_price_collapse_issue_context(a.title or "", a.description or "")
+            local_program = is_local_agri_policy_program_context(txt_local)
             policy_anchor_stats = _policy_horti_anchor_stats(a.title or "", a.description or "", dom_local, pr_local)
             if policy_anchor_stats.get("livestock_dominant"):
                 return None
@@ -9740,21 +10062,24 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 return None
             if is_retail_sales_trend_context(txt_local):
                 return None
-            if not (market_brief or stabilization or announcement or macro or export_support_brief or local_price_support):
+            if not (market_brief or stabilization or announcement or macro or major_issue or export_support_brief or local_price_support or local_program):
                 return None
             if (not export_support_brief) and (not policy_anchor_stats.get("anchor_ok")):
                 return None
-            if tier < 2 and (not officialish) and (not export_support_brief) and (not local_price_support):
+            if tier < 2 and (not officialish) and (not export_support_brief) and (not local_price_support) and (not local_program) and (not major_issue):
                 return None
-            if fit_sc < 1.2 and (not officialish) and (not market_brief) and (not export_support_brief) and (not local_price_support):
+            if fit_sc < 1.2 and (not officialish) and (not market_brief) and (not export_support_brief) and (not local_price_support) and (not local_program) and (not major_issue):
                 return None
             return (
                 1 if officialish else 0,
+                1 if local_price_support else 0,
+                1 if price_collapse_issue else 0,
+                1 if local_program else 0,
+                1 if major_issue else 0,
                 1 if export_support_brief else 0,
                 1 if market_brief else 0,
                 1 if stabilization else 0,
                 1 if announcement else 0,
-                1 if local_price_support else 0,
                 1 if macro else 0,
                 1 if tier >= 2 else 0,
                 round(fit_sc, 3),
@@ -9771,6 +10096,49 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 pub_sort,
             )
         return None
+
+    def _is_policy_tail_candidate(a: Article) -> bool:
+        if section_key != "policy":
+            return True
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        if _is_policy_weak_tail_story(a):
+            return False
+        if is_retail_sales_trend_context(txt_local):
+            return False
+        market_brief = is_policy_market_brief_context(txt_local, dom_local, pr_local)
+        stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
+        announcement = is_policy_announcement_issue(txt_local, dom_local, pr_local)
+        major_issue = is_policy_major_issue_context(a.title or "", a.description or "", dom_local, pr_local)
+        export_support_brief = is_policy_export_support_brief_context(a.title or "", a.description or "", dom_local, pr_local)
+        local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+        local_program = is_local_agri_policy_program_context(txt_local)
+        policy_anchor_stats = _policy_horti_anchor_stats(a.title or "", a.description or "", dom_local, pr_local)
+        if policy_anchor_stats.get("livestock_dominant"):
+            return False
+        if not (
+            market_brief
+            or stabilization
+            or announcement
+            or major_issue
+            or export_support_brief
+            or local_price_support
+            or local_program
+        ):
+            return False
+        if (not export_support_brief) and (not policy_anchor_stats.get("anchor_ok")):
+            return False
+        if press_priority(a.press, a.domain) < 2 and not (
+            _is_policy_official(a)
+            or market_brief
+            or local_price_support
+            or local_program
+            or major_issue
+            or export_support_brief
+        ):
+            return False
+        return True
 
     def _is_strong_underfill_candidate(a: Article) -> bool:
         return _underfill_candidate_rank(a) is not None
@@ -10077,6 +10445,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
+            if section_key == "policy" and not _is_policy_tail_candidate(a):
+                continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
                 continue
@@ -10115,6 +10485,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
                 if _managed_repeat_too_close(a, final, score_gap_override=0.9):
+                    continue
+                if section_key == "policy" and not _is_policy_tail_candidate(a):
                     continue
 
                 if _supply_feature_topic_repeat(a, final):
@@ -10164,6 +10536,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
+            if section_key == "policy" and not _is_policy_tail_candidate(a):
                 continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
@@ -10614,9 +10988,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
             tier = press_priority(a.press, a.domain)
+            local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+            price_collapse_issue = is_policy_price_collapse_issue_context(a.title or "", a.description or "")
+            local_program = is_local_agri_policy_program_context(((a.title or "") + " " + (a.description or "")).lower())
             pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
             ranked_policy_issue_tail.append((
                 (
+                    1 if local_price_support else 0,
+                    1 if price_collapse_issue else 0,
+                    1 if local_program else 0,
                     1 if _is_policy_official(a) else 0,
                     1 if tier >= 2 else 0,
                     round(fit_sc, 3),
@@ -10703,7 +11083,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         relax_cut = max(BASE_MIN_SCORE.get("pest", 6.6), thr - 3.2)
         tier1_cap_relax = max(tier1_cap, 3)
         tier2_cap_relax = max(tier2_cap, 4)
-        selected_regions = {_pest_region_key(x.title or "") for x in final if _pest_region_key(x.title or "")}
+        selected_regions = {_pest_region_or_fallback_key(x) for x in final if _pest_region_or_fallback_key(x)}
+        selected_footprints = {token for x in final for token in _pest_story_footprint_tokens(x)}
 
         def _source_ok_pest_region(a: Article) -> bool:
             t = press_priority(a.press, a.domain)
@@ -10731,11 +11112,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             txt_local = ((a.title or "") + " " + (a.description or "")).lower()
             if not (is_pest_control_policy_context(txt_local) or is_pest_story_focus_strong(a.title or "", a.description or "")):
                 continue
-            region_key = _pest_region_key(a.title or "")
-            if not region_key:
-                region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
-                region_key = region_candidates[0] if region_candidates else ""
+            region_key = _pest_region_or_fallback_key(a)
             if not region_key or region_key in selected_regions:
+                continue
+            footprint_tokens = set(_pest_story_footprint_tokens(a))
+            if footprint_tokens and (footprint_tokens & selected_footprints):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
@@ -10747,6 +11128,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _mark_used(a)
             _source_take(a)
             selected_regions.add(region_key)
+            selected_footprints.update(footprint_tokens)
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
     deduped: list[Article] = []
@@ -10759,36 +11141,25 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     if section_key == "pest":
         pest_unique: list[Article] = []
+        selected_footprints: set[str] = set()
         for a in deduped:
+            footprint_tokens = set(_pest_story_footprint_tokens(a))
+            if footprint_tokens and (footprint_tokens & selected_footprints):
+                continue
             if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                 continue
             pest_unique.append(a)
+            selected_footprints.update(footprint_tokens)
 
         target = min(4, max_n)
         if len(pest_unique) < target:
             refill_cut = max(BASE_MIN_SCORE.get("pest", 6.6), thr - 10.5)
 
-            def _pest_region_or_fallback_key(a: Article) -> str:
-                region_key = _pest_region_key(a.title or "")
-                if region_key:
-                    return region_key
-                region_candidates = sorted(_region_set((a.title or "") + " " + (a.description or "")))
-                return region_candidates[0] if region_candidates else ""
-
-            def _pest_diversity_keys(a: Article) -> tuple[str, ...]:
-                cached = getattr(a, "_pest_diversity_keys", None)
-                if cached is None:
-                    try:
-                        cached = tuple(managed_commodity_keys_for_article(a))
-                    except Exception:
-                        cached = ()
-                    setattr(a, "_pest_diversity_keys", cached)
-                return tuple(cached or ())
-
             selected_regions = {_pest_region_or_fallback_key(x) for x in pest_unique if _pest_region_or_fallback_key(x)}
-            selected_commodity_keys = {key for x in pest_unique for key in _pest_diversity_keys(x)}
+            selected_commodity_keys = {key for x in pest_unique for key in _pest_article_commodity_keys(x)}
+            selected_footprints = {token for x in pest_unique for token in _pest_story_footprint_tokens(x)}
 
-            def _rank_pest_diversity_candidate(a: Article, allow_same_footprint: bool) -> tuple[tuple[Any, ...], str, tuple[str, ...]] | None:
+            def _rank_pest_diversity_candidate(a: Article, allow_same_footprint: bool) -> tuple[tuple[Any, ...], str, tuple[str, ...], tuple[str, ...]] | None:
                 if a in pest_unique:
                     return None
                 if float(getattr(a, "score", 0.0) or 0.0) < refill_cut:
@@ -10805,15 +11176,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if not (is_pest_control_policy_context(txt_local) or is_pest_story_focus_strong(a.title or "", a.description or "")):
                     return None
                 region_key = _pest_region_or_fallback_key(a)
-                commodity_keys = _pest_diversity_keys(a)
+                commodity_keys = _pest_article_commodity_keys(a)
+                footprint_tokens = _pest_story_footprint_tokens(a)
                 has_new_region = 1 if region_key and region_key not in selected_regions else 0
                 has_new_commodity = 1 if commodity_keys and not (set(commodity_keys) & selected_commodity_keys) else 0
-                if not allow_same_footprint and not (has_new_region or has_new_commodity):
+                has_new_footprint = 1 if footprint_tokens and not (set(footprint_tokens) & selected_footprints) else 0
+                if footprint_tokens and (set(footprint_tokens) & selected_footprints):
+                    return None
+                if not allow_same_footprint and not (has_new_region or has_new_commodity or has_new_footprint):
                     return None
                 tier = press_priority(a.press, a.domain)
                 pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
                 return (
                     (
+                        has_new_footprint,
                         has_new_commodity,
                         has_new_region,
                         1 if is_pest_control_policy_context(txt_local) else 0,
@@ -10823,19 +11199,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     ),
                     region_key,
                     commodity_keys,
+                    footprint_tokens,
                 )
 
             for allow_same_footprint in (False, True):
                 if len(pest_unique) >= target:
                     break
-                ranked_refill: list[tuple[tuple[Any, ...], Article, str, tuple[str, ...]]] = []
+                ranked_refill: list[tuple[tuple[Any, ...], Article, str, tuple[str, ...], tuple[str, ...]]] = []
                 for a in candidates_sorted:
                     ranked = _rank_pest_diversity_candidate(a, allow_same_footprint)
                     if ranked is None:
                         continue
-                    ranked_refill.append((ranked[0], a, ranked[1], ranked[2]))
+                    ranked_refill.append((ranked[0], a, ranked[1], ranked[2], ranked[3]))
                 ranked_refill.sort(key=lambda item: item[0], reverse=True)
-                for _, a, region_key, commodity_keys in ranked_refill:
+                for _, a, region_key, commodity_keys, footprint_tokens in ranked_refill:
                     if len(pest_unique) >= target:
                         break
                     if a in pest_unique:
@@ -10846,11 +11223,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                         continue
+                    if footprint_tokens and (set(footprint_tokens) & selected_footprints):
+                        continue
                     _record_selection(a, "pest_diversity_backfill")
                     pest_unique.append(a)
                     if region_key:
                         selected_regions.add(region_key)
                     selected_commodity_keys.update(commodity_keys)
+                    selected_footprints.update(footprint_tokens)
         deduped = pest_unique
 
     forced_final_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
@@ -10920,6 +11300,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         return "policy_macro_general_economy"
                     if is_policy_event_tail_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                         return "policy_event_tail"
+                    if not _is_policy_tail_candidate(a):
+                        return "policy_tail_gate"
                 if section_key == "dist" and _is_dist_weak_tail_story(a):
                     return "dist_local_org_profile"
                 if any(_is_similar_title(a.title_key, b.title_key) for b in selected_final):
@@ -11738,9 +12120,14 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "농산물 가격안정 지원",
             "농산물 최저가격 지원",
             "농산물 가격안정 지원사업",
+            "주요 농산물 가격안정 지원사업",
             "농식품부 농산물 유통 전문가 협의체",
             "농산물 유통 구조 개선",
             "농산물 최소가격 보전제",
+            "농산물 광역 수급 관리센터",
+            "농산물 광역수급관리센터",
+            "농산물 수급 관리센터",
+            "원예 시범사업",
             "온라인 도매시장 정책",
             "농식품부 예산",
         ]
