@@ -1982,6 +1982,26 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         self.assertIn(local_program.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_policy_duplicate_footprint_handles_province_alias_and_attached_region(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "",
+            "https://example.com/policy-pilot-title-1",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "",
+            "https://example.com/policy-pilot-title-2",
+        )
+
+        region1 = main._policy_region_or_fallback_key(pilot1)
+        region2 = main._policy_region_or_fallback_key(pilot2)
+        self.assertTrue(region1, msg=(region1, region2))
+        self.assertEqual(region1, region2, msg=(region1, region2))
+        self.assertTrue(main._near_duplicate_title(pilot1, pilot2, "policy"))
+
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
             "dist",
