@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T08:50:27+09:00",
-  "build_tag": "6c527cb",
+  "generated_at_kst": "2026-03-18T09:11:46+09:00",
+  "build_tag": "5a95372",
   "filter_rejects": [
     {
       "section": "policy",
@@ -5757,7 +5757,7 @@
       "threshold": 22.3,
       "tail_cut": 22.5,
       "core_min": 22.3,
-      "total_candidates": 44,
+      "total_candidates": 43,
       "total_selected": 3,
       "top": [
         {
@@ -6325,33 +6325,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 12.9,
-          "tier": 1,
-          "press": "경남도민일보",
-          "domain": "idomin.com",
-          "title": "경남도, 중동전쟁 파장 에너지·물가 위기에 '민생안정 특별대책'",
-          "url": "https://www.idomin.com/news/articleView.html?idxno=2000888",
-          "reason": "below_threshold",
-          "fit_score": 3.12,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "화훼 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 4.5
           }
         },
         {
@@ -8252,10 +8225,6 @@
           3
         ],
         [
-          "화훼 가격",
-          3
-        ],
-        [
           "무 도매가격",
           3
         ],
@@ -8270,6 +8239,10 @@
         [
           "참외 농가",
           3
+        ],
+        [
+          "감귤 무관세",
+          2
         ]
       ],
       "google_hits_top": [],
@@ -8506,7 +8479,7 @@
           "수박"
         ]
       },
-      "items_total": 155,
+      "items_total": 154,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
