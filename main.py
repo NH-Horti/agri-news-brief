@@ -10038,6 +10038,49 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             )
         return None
 
+    def _is_policy_tail_candidate(a: Article) -> bool:
+        if section_key != "policy":
+            return True
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        if _is_policy_weak_tail_story(a):
+            return False
+        if is_retail_sales_trend_context(txt_local):
+            return False
+        market_brief = is_policy_market_brief_context(txt_local, dom_local, pr_local)
+        stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
+        announcement = is_policy_announcement_issue(txt_local, dom_local, pr_local)
+        major_issue = is_policy_major_issue_context(a.title or "", a.description or "", dom_local, pr_local)
+        export_support_brief = is_policy_export_support_brief_context(a.title or "", a.description or "", dom_local, pr_local)
+        local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+        local_program = is_local_agri_policy_program_context(txt_local)
+        policy_anchor_stats = _policy_horti_anchor_stats(a.title or "", a.description or "", dom_local, pr_local)
+        if policy_anchor_stats.get("livestock_dominant"):
+            return False
+        if not (
+            market_brief
+            or stabilization
+            or announcement
+            or major_issue
+            or export_support_brief
+            or local_price_support
+            or local_program
+        ):
+            return False
+        if (not export_support_brief) and (not policy_anchor_stats.get("anchor_ok")):
+            return False
+        if press_priority(a.press, a.domain) < 2 and not (
+            _is_policy_official(a)
+            or market_brief
+            or local_price_support
+            or local_program
+            or major_issue
+            or export_support_brief
+        ):
+            return False
+        return True
+
     def _is_strong_underfill_candidate(a: Article) -> bool:
         return _underfill_candidate_rank(a) is not None
 
@@ -10343,6 +10386,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
+            if section_key == "policy" and not _is_policy_tail_candidate(a):
+                continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
                 continue
@@ -10381,6 +10426,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
                 if _managed_repeat_too_close(a, final, score_gap_override=0.9):
+                    continue
+                if section_key == "policy" and not _is_policy_tail_candidate(a):
                     continue
 
                 if _supply_feature_topic_repeat(a, final):
@@ -10430,6 +10477,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
+            if section_key == "policy" and not _is_policy_tail_candidate(a):
                 continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
             if a.score < tail_cut:
@@ -11190,6 +11239,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         return "policy_macro_general_economy"
                     if is_policy_event_tail_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                         return "policy_event_tail"
+                    if not _is_policy_tail_candidate(a):
+                        return "policy_tail_gate"
                 if section_key == "dist" and _is_dist_weak_tail_story(a):
                     return "dist_local_org_profile"
                 if any(_is_similar_title(a.title_key, b.title_key) for b in selected_final):

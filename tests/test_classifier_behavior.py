@@ -2002,6 +2002,40 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(region1, region2, msg=(region1, region2))
         self.assertTrue(main._near_duplicate_title(pilot1, pilot2, "policy"))
 
+    def test_policy_selection_blocks_weak_consumer_tail_when_major_issue_backfill_exists(self):
+        pilot1 = self._make_article(
+            "policy",
+            "충남도, 전국 최대 원예·축산 시범사업 '시동'",
+            "충남도가 원예·축산 시범사업 113개를 본격 추진하며 농가 현장 확산에 나선다.",
+            "https://example.com/policy-pilot-core",
+        )
+        pilot2 = self._make_article(
+            "policy",
+            "충남도농기원, 전국 최대 규모 원예·축산 시범사업 본격 추진",
+            "충남도농업기술원이 원예·축산 시범사업을 본격 추진하며 현장 보급에 나선다.",
+            "https://example.com/policy-pilot-dup",
+        )
+        consumer_tail = self._make_article(
+            "policy",
+            "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
+            "사과와 배, 채소 가격이 엇갈리며 설 장바구니 물가 희비가 나타났다는 소비 기사다.",
+            "https://example.com/policy-consumer-tail",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도, 전국 최초 농산물 광역수급관리센터 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역수급관리센터를 출범했다.",
+            "https://example.com/policy-local-program-3",
+        )
+        pilot1.score = 28.92
+        pilot2.score = 25.77
+        consumer_tail.score = 26.48
+        local_program.score = 13.23
+
+        picked = main.select_top_articles([pilot1, pilot2, consumer_tail, local_program], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertNotIn(consumer_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_local_coop_feature_does_not_fill_dist_tail(self):
         local = self._make_article(
             "dist",
