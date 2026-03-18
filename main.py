@@ -257,18 +257,19 @@ COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_FALLBACK_QUE
 
 # pest 섹션은 실행형 병해충 기사를 놓치지 않기 위해 보강 쿼리를 항상 병합한다(하드코딩 URL 아님)
 PEST_ALWAYS_ON_RECALL_QUERIES = [
-    "과수화상병", "과수화상병 방제", "과수화상병 약제",
-    "과수화상병 약제 공급", "과수화상병 방제 계획",
-    "토마토뿔나방", "토마토뿔나방 방제", "토마토뿔나방 약제 지원", "토마토뿔나방 전수조사", "병해충 예찰",
+    "과수화상병 방제", "과수화상병 약제 공급", "과수화상병 정밀예찰", "과수화상병 전수조사",
+    "토마토뿔나방 방제", "토마토뿔나방 약제 지원", "토마토뿔나방 전수조사",
+    "월동 병해충 방제", "병해충 현장지도", "병해충 예찰",
+    "과수화상병", "과수화상병 약제", "과수화상병 방제 계획", "토마토뿔나방",
 ]
 # pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
 # always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
 PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
-PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "3") or 3)
+PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP", "4") or 4)
 PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
 # news API 미색인/지연에 대비해 pest는 web 검색(webkr)도 소량 보강한다.
 PEST_WEB_RECALL_ENABLED = os.getenv("PEST_WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
-PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "2") or 2)
+PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "3") or 3)
 PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
 WEB_RECALL_ENABLED = os.getenv("WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 WEB_RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("WEB_RECALL_QUERY_CAP_PER_SECTION", "2") or 2)
@@ -1413,11 +1414,16 @@ def _managed_commodity_pest_queries(item: dict[str, Any]) -> list[str]:
         out.append(f"{base} 병해충")
         out.append(f"{base} 방제")
         out.append(f"{base} 예찰")
+        out.append(f"{base} 약제 공급")
+        out.append(f"{base} 정밀예찰")
         out.append(f"{base} 선충")
         if idx == 0:
             out.append(f"{base} 냉해")
             out.append(f"{base} 생육 관리")
             out.append(f"{base} 피해")
+            out.append(f"{base} 무상 공급")
+            out.append(f"{base} 전수조사")
+            out.append(f"{base} 현장지도")
     return _ordered_unique_terms(out)
 
 
@@ -4032,6 +4038,14 @@ _SUPPLY_WEAK_TAIL_VISIT_TERMS = (
 _SUPPLY_WEAK_TAIL_OFFICIAL_TERMS = (
     "원장", "시장", "군수", "구청장", "도지사", "지사", "청장", "본부장", "센터장",
 )
+_SUPPLY_TOURISM_EVENT_TERMS = (
+    "축제", "축제장", "관광", "여행", "나들이", "투어", "맛보러", "놀러오세요",
+    "가볼까", "체험", "명소", "방문객", "먹거리", "겨울재미",
+)
+_SUPPLY_TOURISM_KEEP_TERMS = (
+    "가격", "시세", "수급", "작황", "생육", "출하", "물량", "반입", "경락", "경매",
+    "재고", "저장", "냉해", "저온", "피해", "농가", "산지", "도매시장", "공판장",
+)
 _SUPPLY_PROMO_FEATURE_SEASON_TERMS = (
     "제철", "출하 시기", "출하시기", "출하 집중", "집중되는", "수확", "봄으로 넘어가는 시기", "주요 출하 시기",
 )
@@ -4068,6 +4082,32 @@ def is_supply_org_promo_feature_context(title: str, desc: str) -> bool:
         return False
 
     return promo_hits >= 2 and (season_hits >= 1 or has_direct_supply_chain_signal(txt) or title_item_hits >= 1)
+
+
+def is_supply_tourism_event_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if has_direct_supply_chain_signal(txt):
+        return False
+    if is_supply_price_outlook_context(title, desc):
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+
+    tourism_hits = count_any(txt, [w.lower() for w in _SUPPLY_TOURISM_EVENT_TERMS])
+    title_tourism_hits = count_any((ttl or "").lower(), [w.lower() for w in _SUPPLY_TOURISM_EVENT_TERMS])
+    if tourism_hits == 0 and title_tourism_hits == 0:
+        return False
+
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_TOURISM_KEEP_TERMS])
+    horti_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    if horti_hits == 0 and managed_count == 0 and best_horti_score(title, desc) < 1.8:
+        return False
+
+    return keep_hits == 0 and (title_tourism_hits >= 1 or tourism_hits >= 2)
 
 
 def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
@@ -4968,6 +5008,8 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
         return True
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return False
+    if is_supply_tourism_event_context(title, desc):
+        return True
     if is_supply_org_promo_feature_context(title, desc):
         return False
 
@@ -5471,6 +5513,8 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     if is_agri_training_recruitment_context(title, desc):
         return None
     if is_agri_org_rename_context(title, desc):
+        return None
+    if is_supply_tourism_event_context(title, desc):
         return None
 
     horti_sc = best_horti_score(ttl, desc or "")
@@ -9058,13 +9102,20 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
 
     if section_key == "policy":
         common_core = len((ta & tb) & _POLICY_CORE_TOKENS)
-        same_kind = _policy_story_kind(a) and (_policy_story_kind(a) == _policy_story_kind(b))
-        same_commodity = bool(set(_policy_article_commodity_keys(a)) & set(_policy_article_commodity_keys(b)))
+        story_kind_a = _policy_story_kind(a)
+        story_kind_b = _policy_story_kind(b)
+        same_kind = story_kind_a and (story_kind_a == story_kind_b)
+        commodity_keys_a = set(_policy_article_commodity_keys(a))
+        commodity_keys_b = set(_policy_article_commodity_keys(b))
+        same_commodity = bool(commodity_keys_a & commodity_keys_b)
         if _policy_has_same_footprint(a, b) and (common_core >= 1 or jac >= 0.34 or jac2 >= 0.42):
             return True
         if same_region and same_kind:
             if same_commodity and (common_core >= 1 or jac >= 0.34):
                 return True
+            if (not commodity_keys_a) and (not commodity_keys_b) and story_kind_a in {"price_support", "pilot_program", "supply_center"}:
+                if common_core >= 1 or jac >= 0.22 or jac2 >= 0.28:
+                    return True
             if common_core >= 2 and jac >= 0.34:
                 return True
         if common_core >= 2 and jac >= 0.55:
@@ -11335,6 +11386,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         return "supply_policy_like"
                     if _is_supply_dist_like_tail_story(a):
                         return "supply_dist_like"
+                    if is_supply_tourism_event_context(a.title or "", a.description or ""):
+                        return "supply_tourism_event"
                     if _is_supply_low_value_macro_brief(a):
                         return "supply_macro_brief"
                     if _is_supply_weak_tail_story(a):
@@ -11729,7 +11782,7 @@ _RECALL_SIGNALS_BY_SECTION = {
     "supply": ["\ubb34\uad00\uc138", "\uc218\uc785", "\uad00\uc138", "FTA", "\ud560\ub2f9\uad00\uc138", "\ubb18\ubaa9", "\ud488\uadc0", "\uc0b0\ubd88", "\uae30\ud6c4\ubcc0\ud654"],
     "policy": list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + ["\ub300\ucc45", "\uc9c0\uc6d0", "\ud560\ub2f9\uad00\uc138", "\uac80\uc5ed", "\uad00\uc138", "\ubb34\uad00\uc138", "\uc218\uc785"],
     "dist": ["\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc81c\ub3c4 \uac1c\uc120", "\uc0b0\uc9c0\uc720\ud1b5", "\uacf5\ub3d9\uc120\ubcc4", "\ud488\ubaa9\ub18d\ud611", "\uc6d0\uc608\ub18d\ud611", "\uc6d0\uc0b0\uc9c0", "\ub2e8\uc18d", "\uac80\uc5ed", "\ud1b5\uad00", "\uc218\ucd9c", "\uc120\uc801", "\ud310\ub85c", "\ubb3c\ub958", "\uc870\ud569\uc6d0 \uc2e4\uc775", "\uac00\uacf5", "\uad6c\ub9e4", "\uc9c0\ub3c4\uc0ac\uc5c5", "\uc9c0\uc5ed\uacbd\uc81c"],
-    "pest": ["\ubcd1\ud574\ucda9", "\ubc29\uc81c", "\uc608\ucc30", "\uac80\uc5ed"],
+    "pest": ["\ubcd1\ud574\ucda9", "\ubc29\uc81c", "\uc608\ucc30", "\uac80\uc5ed", "\uc57d\uc81c \uacf5\uae09", "\ubb34\uc0c1 \uacf5\uae09", "\uc815\ubc00\uc608\ucc30", "\uc804\uc218\uc870\uc0ac", "\ud604\uc7a5\uc9c0\ub3c4", "\uc6d4\ub3d9"],
 }
 
 def _extract_seed_terms_from_queries(queries: list[str], limit: int = 6) -> list[str]:
@@ -12357,11 +12410,15 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "과수화상병 예찰",
             "과수화상병 방제 계획",
             "과수화상병 약제 공급",
+            "과수화상병 정밀예찰",
+            "과수화상병 무상 공급",
             "응애 방제",
             "월동 병해충 예찰",
+            "월동 병해충 방제",
             "시설채소 방제",
             "토마토뿔나방 약제 지원",
             "토마토뿔나방 전수조사",
+            "병해충 현장지도",
         ]
     managed_common = build_managed_section_recall_queries(section_key, _managed_recall_anchor_dt(report_date))
     if managed_common:
@@ -12500,7 +12557,7 @@ def _build_recall_fallback_queries(
     common_queries = _recall_common_queries(section_key, report_date)
     meta["common_queries"] = list(common_queries)
     if section_key != "supply" and ((not candidates_sorted) or len(candidates_sorted) < 3):
-        starter_cap = 2 if section_key in ("policy", "dist", "pest") else 1
+        starter_cap = 3 if section_key == "pest" else 2 if section_key in ("policy", "dist") else 1
         for q in common_queries[:starter_cap]:
             _add_query(q)
 
@@ -12554,6 +12611,7 @@ def _build_recall_fallback_queries(
             if section_key == "policy" and not has_trade:
                 sigs = list(POLICY_MARKET_BRIEF_RECALL_SIGNALS) + sigs
             added_for_term = 0
+            signal_cap = 3 if section_key == "pest" else 2
             for sig in sigs:
                 if len(out) >= RECALL_QUERY_CAP_PER_SECTION:
                     break
@@ -12564,7 +12622,7 @@ def _build_recall_fallback_queries(
                     continue
                 out.append(q)
                 added_for_term += 1
-                if added_for_term >= 2:
+                if added_for_term >= signal_cap:
                     break
 
     if len(out) < RECALL_QUERY_CAP_PER_SECTION:

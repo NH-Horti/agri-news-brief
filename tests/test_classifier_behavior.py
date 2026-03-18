@@ -3395,6 +3395,70 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         self.assertLess(prioritized.index("배추"), prioritized.index("토마토"))
         self.assertLess(prioritized.index("양파"), prioritized.index("감귤"))
 
+    def test_supply_tourism_event_story_is_treated_as_weak_tail(self):
+        anchor = self._make_article(
+            "supply",
+            "사과 냉해 우려에 산지 출하 비상",
+            "사과 산지에서 냉해 우려가 커지며 출하 물량과 생육 관리에 비상이 걸렸다.",
+            "https://example.com/supply-anchor-cold",
+        )
+        tourism = self._make_article(
+            "supply",
+            "한겨울 맹추위 날릴 겨울재미 맛보러 단양-영동에 놀러오세요",
+            "곶감과 겨울축제를 즐기러 단양과 영동을 찾으라는 관광형 소개 기사다.",
+            "https://example.com/supply-tourism-gotgam",
+        )
+        anchor.score = 31.2
+        tourism.score = 24.8
+
+        self.assertTrue(main.is_supply_tourism_event_context(tourism.title, tourism.description))
+        self.assertTrue(main.is_supply_weak_tail_context(tourism.title, tourism.description))
+
+        picked = main.select_top_articles([anchor, tourism], "supply", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(anchor.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertNotIn(tourism.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_price_support_duplicates_are_treated_as_same_story(self):
+        article_a = self._make_article(
+            "policy",
+            "양구군, 농산물 최저 가격 지원금 4억원 농가 지급",
+            "양구군이 농산물 최저 가격 지원금을 지급해 농가 경영 부담을 덜어준다는 기사다.",
+            "https://example.com/policy-yanggu-a",
+        )
+        article_b = self._make_article(
+            "policy",
+            "양구군 '2025년 농산물 최저 가격 지원' 사업을 통해 4억여 원 지급",
+            "양구군이 농산물 최저 가격 지원 사업으로 4억여 원을 지급했다는 기사다.",
+            "https://example.com/policy-yanggu-b",
+        )
+        other = self._make_article(
+            "policy",
+            "세종시, 원예농가 안정적 생산·경영부담완화 지원",
+            "세종시가 원예농가 경영부담 완화 지원 대책을 추진한다.",
+            "https://example.com/policy-sejong-support",
+        )
+        article_a.score = 34.0
+        article_b.score = 33.5
+        other.score = 29.0
+
+        self.assertTrue(main._policy_has_same_footprint(article_a, article_b))
+        self.assertTrue(main._is_similar_story(article_a, article_b, "policy"))
+
+        picked = main.select_top_articles([article_a, article_b, other], "policy", 5)
+        yanggu_picks = [x for x in picked if "양구군" in x.title]
+        self.assertEqual(len(yanggu_picks), 1, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_pest_recall_queries_expand_execution_terms(self):
+        common = main._recall_common_queries("pest", "2026-01-05")
+        self.assertIn("월동 병해충 방제", common)
+        self.assertIn("병해충 현장지도", common)
+
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("label"))
+        queries = main._managed_commodity_pest_queries(item)
+        self.assertTrue(any(query.endswith("약제 공급") for query in queries), msg=str(queries))
+        self.assertTrue(any(query.endswith("정밀예찰") for query in queries), msg=str(queries))
+
 
 class TestRecentItemsRebuild(unittest.TestCase):
     @classmethod
