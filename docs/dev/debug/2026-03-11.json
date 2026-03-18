@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T09:11:46+09:00",
-  "build_tag": "5a95372",
+  "generated_at_kst": "2026-03-18T09:43:37+09:00",
+  "build_tag": "7679455",
   "filter_rejects": [
     {
       "section": "policy",
@@ -2549,16 +2549,6 @@
       "domain": "wsobi.com",
       "title": "농협 , MZ 장병 맞춤형 군 급식 본격 공급",
       "url": "http://www.wsobi.com/news/articleView.html?idxno=306602",
-      "source_query": "품목농협 산지유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "스포츠서울",
-      "domain": "sportsseoul.com",
-      "title": "[강원자치도]전국 최초 ‘농산물 광역수급관리센터’ 출범",
-      "url": "https://www.sportsseoul.com/news/read/1592278",
       "source_query": "품목농협 산지유통",
       "source_channel": "naver_api"
     },
@@ -5869,17 +5859,17 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 25.77,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
           "title": "충남도농기원, 전국 최대 규모 원예 ·축산 시범사업 본격 추진",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316104",
-          "reason": "",
+          "reason": "similar_story",
           "fit_score": 1.33,
-          "selection_stage": "core",
+          "selection_stage": "similar_story",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -6301,7 +6291,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 13.23,
           "tier": 1,
@@ -6309,9 +6299,9 @@
           "domain": "munhwa.com",
           "title": "강원도, 전국 최초 ‘농산물 광역수급관리센터’ 출범",
           "url": "https://www.munhwa.com/article/11573339",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 2.95,
-          "selection_stage": "below_threshold",
+          "selection_stage": "policy_major_issue_backfill",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
