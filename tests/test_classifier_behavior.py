@@ -1804,6 +1804,13 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertTrue(main.is_local_agri_policy_program_context(f"{title} {desc}".lower()))
         self.assertTrue(main.is_policy_major_issue_context(title, desc, "gw.go.kr", "강원도"))
 
+    def test_policy_major_issue_context_accepts_price_collapse_petition_story(self):
+        title = '김재웅 경남도의원 "양파 가격 폭락 방지·수급 안정 대책 촉구"'
+        desc = "경남도의회가 양파 가격 폭락 방지와 수급 안정을 위한 대정부 건의안 발의를 촉구했다."
+        self.assertTrue(main.is_policy_price_collapse_issue_context(title, desc))
+        self.assertTrue(main.policy_has_horti_anchor(title, desc, "gndomin.com", "경남도민일보"))
+        self.assertTrue(main.is_policy_major_issue_context(title, desc, "gndomin.com", "경남도민일보"))
+
     def test_policy_major_issue_story_prefers_policy_over_dist(self):
         title = "농식품부, 농산물 유통 전문가 협의체 출범"
         desc = "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선, 산지유통 혁신 과제를 점검하기 위한 전문가 협의체를 출범했다."
@@ -2034,6 +2041,40 @@ class TestClassifierBehavior(unittest.TestCase):
 
         picked = main.select_top_articles([pilot1, pilot2, consumer_tail, local_program], "policy", 5)
         picked_links = {x.link for x in picked}
+        self.assertNotIn(consumer_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+
+    def test_policy_selection_keeps_price_collapse_petition_story_ahead_of_consumer_tail(self):
+        core = self._make_article(
+            "policy",
+            "농식품부, 농산물 유통 전문가 협의체 출범",
+            "농식품부가 농산물 유통 구조 개선과 가격 결정 구조 개선 과제를 점검하기 위한 전문가 협의체를 출범했다.",
+            "https://example.com/policy-core-major-issue",
+        )
+        consumer_tail = self._make_article(
+            "policy",
+            "\"이번 설은 뭐부터 사야 하나\"…장바구니 물가 희비",
+            "사과와 배, 채소 가격이 엇갈리며 설 장바구니 물가 희비가 나타났다는 소비 기사다.",
+            "https://example.com/policy-consumer-tail-2",
+        )
+        local_program = self._make_article(
+            "policy",
+            "강원도, 전국 최초 농산물 광역수급관리센터 출범",
+            "강원도가 배추·무 등 채소류 수급 안정을 위해 농산물 광역수급관리센터를 출범했다.",
+            "https://example.com/policy-local-program-4",
+        )
+        onion_issue = self._make_article(
+            "policy",
+            '김재웅 경남도의원 "양파 가격 폭락 방지·수급 안정 대책 촉구"',
+            "경남도의회가 양파 가격 폭락 방지와 수급 안정을 위한 대정부 건의안 발의를 촉구했다.",
+            "https://example.com/policy-onion-price-collapse",
+        )
+        core.score = 29.8
+        consumer_tail.score = 26.48
+        local_program.score = 13.23
+
+        picked = main.select_top_articles([core, consumer_tail, local_program, onion_issue], "policy", 5)
+        picked_links = {x.link for x in picked}
+        self.assertIn(onion_issue.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertNotIn(consumer_tail.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_local_coop_feature_does_not_fill_dist_tail(self):

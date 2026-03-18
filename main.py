@@ -4279,6 +4279,7 @@ def _policy_horti_anchor_stats(title: str, desc: str, dom: str = "", press: str 
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    price_collapse_issue = is_policy_price_collapse_issue_context(ttl, desc or "")
     direct_anchor_hits = count_any(txt, [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS])
     title_anchor_hits = count_any((ttl or "").lower(), [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS])
     market_hits = count_any(
@@ -4305,6 +4306,7 @@ def _policy_horti_anchor_stats(title: str, desc: str, dom: str = "", press: str 
         managed_count >= 1
         or direct_anchor_hits >= 1
         or market_hits >= 1
+        or price_collapse_issue
         or ("\ub18d\ucd95\uc0b0\ubb3c" in txt and mixed_keep_hits >= 2)
         or (livestock_hits == 0 and horti_sc >= 1.8)
     )
@@ -4616,15 +4618,65 @@ _POLICY_MAJOR_ISSUE_TERMS = (
     "제도 개선", "제도개선", "구조 개선", "구조개선", "유통 구조 개선", "가격 결정 구조",
     "최소가격", "최소가격 보전제", "보전제", "가격안정제",
     "개선 계획", "개선안", "개편안", "도입", "제안", "촉구", "대응 방안",
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "수급 안정 대책", "수급안정 대책", "대책 촉구", "대책 마련",
+    "건의안", "건의안 발의", "대정부 건의안",
     "관리 강화", "모니터링", "물가지수", "소비자물가지수", "실태조사",
 )
 _POLICY_MAJOR_ISSUE_TITLE_TERMS = (
     "협의체", "위원회", "출범", "특별관리", "최소가격", "보전제",
     "제도 개선", "제도개선", "구조 개선", "구조개선", "가격 결정 구조",
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "대책 촉구", "건의안", "건의안 발의",
 )
 _POLICY_MAJOR_ISSUE_PROPOSAL_TERMS = (
     "제안", "촉구", "도입", "법안", "개정안", "최소가격", "보전제", "가격안정제", "특별관리",
+    "건의안", "건의안 발의", "대정부 건의안", "결의안", "대책 촉구", "대책 마련",
 )
+
+_POLICY_PRICE_COLLAPSE_TERMS = (
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "가격 급락", "가격급락", "가격 하락", "가격하락", "수급 안정",
+)
+_POLICY_PRICE_COLLAPSE_TITLE_TERMS = (
+    "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
+    "수급 안정", "수급안정",
+)
+_POLICY_PRICE_COLLAPSE_ACTION_TERMS = (
+    "대책 촉구", "대책 마련", "마련 촉구", "촉구", "건의안", "건의안 발의",
+    "대정부 건의안", "건의", "요구", "발의",
+)
+_POLICY_PRICE_COLLAPSE_ACTOR_TERMS = (
+    "국회", "국회의원", "의원", "도의원", "시의원", "군의원", "구의원",
+    "농민", "농민들", "농가", "농가들", "생산자", "생산자들", "재배농가",
+    "연합회", "협회", "대정부", "정부",
+)
+
+
+def is_policy_price_collapse_issue_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits = count_any(txt, [w.lower() for w in _POLICY_MAJOR_ISSUE_AGRI_TERMS]) + managed_count
+    title_item_hits = count_any((ttl or "").lower(), [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS])
+    if managed_count == 0 and agri_hits == 0 and title_item_hits == 0:
+        return False
+
+    price_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_TERMS])
+    title_price_hits = count_any((ttl or "").lower(), [w.lower() for w in _POLICY_PRICE_COLLAPSE_TITLE_TERMS])
+    action_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_ACTION_TERMS])
+    actor_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_COLLAPSE_ACTOR_TERMS])
+    if re.search(r"(?:^|[\s\"'“”‘’])(?:[가-힣]{2,20})(?:국회의원|도의원|시의원|군의원|구의원|의원)", ttl):
+        actor_hits += 1
+    policy_hits = count_any(txt, [w.lower() for w in ("정부", "대정부", "국회", "농식품부", "농림축산식품부")])
+    return (
+        (price_hits >= 2 or (price_hits >= 1 and title_price_hits >= 1))
+        and action_hits >= 1
+        and (actor_hits >= 1 or policy_hits >= 1 or managed_count >= 1 or title_item_hits >= 1)
+    )
 
 
 def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -4667,6 +4719,8 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
     if is_policy_local_price_support_context(ttl, desc or ""):
         return True
     if is_local_agri_policy_program_context(txt):
+        return True
+    if is_policy_price_collapse_issue_context(ttl, desc or ""):
         return True
 
     managed_summary = _managed_commodity_match_summary(ttl, desc or "")
@@ -8108,6 +8162,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_stabilization = is_supply_stabilization_policy_context(text, dom, press)
     policy_market_brief = is_policy_market_brief_context(text, dom, press)
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
+    policy_price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
     policy_general_macro_tail = is_policy_general_macro_tail_context(title, desc, dom, press)
     policy_event_tail = is_policy_event_tail_context(title, desc, dom, press)
     dist_export_field = is_dist_export_field_context(title, desc, dom, press)
@@ -8313,6 +8368,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if policy_major_issue:
             score += 5.8
             score += 0.9 * count_any(title_l, [t.lower() for t in _POLICY_MAJOR_ISSUE_TITLE_TERMS])
+        if policy_price_collapse_issue:
+            score += 2.8
         if dist_market_disruption:
             score -= 7.0
         if dist_market_ops:
@@ -9996,6 +10053,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             major_issue = is_policy_major_issue_context(a.title or "", a.description or "", dom_local, pr_local)
             export_support_brief = is_policy_export_support_brief_context(a.title or "", a.description or "", dom_local, pr_local)
             local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+            price_collapse_issue = is_policy_price_collapse_issue_context(a.title or "", a.description or "")
             local_program = is_local_agri_policy_program_context(txt_local)
             policy_anchor_stats = _policy_horti_anchor_stats(a.title or "", a.description or "", dom_local, pr_local)
             if policy_anchor_stats.get("livestock_dominant"):
@@ -10015,6 +10073,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return (
                 1 if officialish else 0,
                 1 if local_price_support else 0,
+                1 if price_collapse_issue else 0,
                 1 if local_program else 0,
                 1 if major_issue else 0,
                 1 if export_support_brief else 0,
@@ -10930,11 +10989,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
             tier = press_priority(a.press, a.domain)
             local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
+            price_collapse_issue = is_policy_price_collapse_issue_context(a.title or "", a.description or "")
             local_program = is_local_agri_policy_program_context(((a.title or "") + " " + (a.description or "")).lower())
             pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
             ranked_policy_issue_tail.append((
                 (
                     1 if local_price_support else 0,
+                    1 if price_collapse_issue else 0,
                     1 if local_program else 0,
                     1 if _is_policy_official(a) else 0,
                     1 if tier >= 2 else 0,
