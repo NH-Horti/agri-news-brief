@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
 import sys
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -3396,6 +3397,33 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
 
 
 class TestRecentItemsRebuild(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.conf = {s["key"]: s for s in main.SECTIONS}
+        cls.now = datetime.now(main.KST)
+
+    def _make_article(self, section: str, title: str, desc: str, url: str):
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        canon = main.canonicalize_url(url)
+        title_key = main.norm_title_key(title)
+        return main.Article(
+            section=section,
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            origin_section=section,
+            pub_dt_kst=self.now,
+            domain=dom,
+            press=press,
+            norm_key=main.make_norm_key(canon, press, title_key),
+            title_key=title_key,
+            canon_url=canon,
+            topic=main.extract_topic(title, desc),
+            score=main.compute_rank_score(title, desc, dom, self.now, self.conf[section], press),
+        )
+
     def test_rebuild_recent_items_replaces_same_day_entries(self):
         base_day = datetime(2026, 3, 3, tzinfo=main.KST).date()
         report_date = "2026-03-03"
@@ -3439,6 +3467,117 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertFalse(any(it.get("date") == report_date for it in rebuilt))
         self.assertTrue(any(it.get("canon") == "https://keep.example.com/c" for it in rebuilt))
+
+    def test_dist_consumer_tail_story_is_rejected(self):
+        title = "군대에서도 샐러드 즐긴다…토마토 메뉴 확대"
+        desc = "장병 식단에 샐러드와 토마토 메뉴를 늘리고 브런치형 식단을 확대했다는 소비형 기사다."
+        url = "https://example.com/dist-consumer-tail"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+
+        self.assertTrue(main.is_dist_consumer_tail_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_dist_local_crop_strategy_story_without_region_is_rejected(self):
+        title = "맞춤형 미래전략 지역특화작목 ‘루비벨 토마토’ 육성"
+        desc = "지역특화작목 미래전략과 품목 육성지구 로드맵을 소개하는 기사다."
+        url = "https://example.com/dist-crop-strategy"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+
+        self.assertTrue(main.is_dist_local_crop_strategy_noise_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_policy_small_pool_relaxes_source_cap_for_tier2_articles(self):
+        articles = [
+            self._make_article(
+                "policy",
+                "Policy alpha",
+                "Alpha",
+                "https://www.chungnam.go.kr/news/price-onion",
+            ),
+            self._make_article(
+                "policy",
+                "Policy beta",
+                "Beta",
+                "https://www.chungnam.go.kr/news/fuel-garlic",
+            ),
+            self._make_article(
+                "policy",
+                "Policy gamma",
+                "Gamma",
+                "https://www.chungnam.go.kr/news/cabbage-policy",
+            ),
+        ]
+        for idx, article in enumerate(articles):
+            article.score = 26.0 - idx
+
+        self.assertTrue(all(main.press_priority(a.press, a.domain) == 2 for a in articles))
+
+        with mock.patch.object(main, "_headline_gate_relaxed", return_value=True), \
+             mock.patch.object(main, "section_fit_score", return_value=2.0), \
+             mock.patch.object(main, "is_policy_major_issue_context", return_value=True), \
+             mock.patch.object(main, "_policy_horti_anchor_stats", return_value={"anchor_ok": True, "livestock_dominant": False}), \
+             mock.patch.object(main, "is_policy_general_macro_tail_context", return_value=False), \
+             mock.patch.object(main, "is_policy_event_tail_context", return_value=False), \
+             mock.patch.object(main, "is_title_livestock_dominant_context", return_value=False), \
+             mock.patch.object(main, "is_policy_forest_admin_noise_context", return_value=False), \
+             mock.patch.object(main, "is_policy_budget_drive_noise_context", return_value=False), \
+             mock.patch.object(main, "is_retail_sales_trend_context", return_value=False), \
+             mock.patch.object(main, "is_policy_market_brief_context", return_value=False), \
+             mock.patch.object(main, "is_supply_stabilization_policy_context", return_value=False), \
+             mock.patch.object(main, "is_policy_export_support_brief_context", return_value=False), \
+             mock.patch.object(main, "is_policy_local_price_support_context", return_value=False), \
+             mock.patch.object(main, "is_local_agri_policy_program_context", return_value=False):
+            picked = main.select_top_articles(articles, "policy", 3)
+
+        self.assertEqual(len(picked), 3, msg=str([(x.link, x.score, x.press, x.domain) for x in picked]))
+
+    def test_seed_coverage_ledger_tracks_hits_and_missing_seeds(self):
+        article = self._make_article(
+            "policy",
+            "양파 가격 폭락 방지 대책 촉구",
+            "양파 가격 폭락 방지 대책과 수급안정 대책 마련을 촉구하는 기사다.",
+            "https://example.com/policy-onion-collapse",
+        )
+
+        ledger = main._build_seed_coverage_ledger(
+            "policy",
+            ["양파 가격 폭락 방지", "배추 수급 안정 대책"],
+            [article],
+            selected_articles=[article],
+        )
+
+        by_seed = {row["seed"]: row for row in ledger}
+        self.assertIn("양파", by_seed)
+        self.assertIn("배추", by_seed)
+        self.assertEqual(by_seed["양파"]["hits"], 1)
+        self.assertEqual(by_seed["양파"]["selected_hits"], 1)
+        self.assertTrue(by_seed["배추"]["missing"])
+
+    def test_select_top_articles_debug_payload_includes_coverage_ledger(self):
+        article = self._make_article(
+            "policy",
+            "양파 가격 폭락 방지 대책 촉구",
+            "양파 가격 폭락 방지 대책과 수급안정 대책 마련을 촉구하는 기사다.",
+            "https://example.com/policy-debug-ledger",
+        )
+        article.source_query = "양파 가격 폭락 방지"
+        article.score = 24.0
+        original_debug = main.DEBUG_REPORT
+        original = dict(main.DEBUG_DATA)
+        try:
+            main.DEBUG_REPORT = True
+            main.reset_debug_report()
+            picked = main.select_top_articles([article], "policy", 3)
+            self.assertEqual(len(picked), 1)
+            payload = main.DEBUG_DATA["sections"]["policy"]
+            self.assertIn("coverage_ledger", payload)
+            self.assertTrue(any(row.get("selected_hits", 0) >= 1 for row in payload["coverage_ledger"]))
+        finally:
+            main.DEBUG_REPORT = original_debug
+            main.DEBUG_DATA.clear()
+            main.DEBUG_DATA.update(original)
 
 if __name__ == "__main__":
     unittest.main()
