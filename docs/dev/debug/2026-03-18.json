@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-18T09:31:00+09:00",
-  "build_tag": "7679455",
+  "generated_at_kst": "2026-03-18T10:18:43+09:00",
+  "build_tag": "4696de1",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1055,46 +1055,6 @@
     {
       "section": "policy",
       "reason": "policy_retail_sales_trend",
-      "press": "CCDN",
-      "domain": "ccdn.co.kr",
-      "title": "'강남 한복판서 충주 사과 ·한우 맛본다'…압구정역 '충주씨샵' 2호점 오...",
-      "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1068233",
-      "source_query": "사과 정책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "한겨레",
-      "domain": "hani.co.kr",
-      "title": "주가조작 이후, 언론 신뢰 회복의 길 [미디어 전망대]",
-      "url": "https://www.hani.co.kr/arti/society/media/1249791.html",
-      "source_query": "사과 정책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "국제뉴스",
-      "domain": "gukjenews.com",
-      "title": "[인터뷰] 장지화 성남시장 예비후보 \"시민 지키는 울타리 정치\"…독자 ...",
-      "url": "https://www.gukjenews.com/news/articleView.html?idxno=3531775",
-      "source_query": "사과 정책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "apple_non_edible_context",
-      "press": "DKILBO",
-      "domain": "dkilbo.com",
-      "title": "초등생 학폭 피해 5.1%…언어폭력 비중 40% 넘어",
-      "url": "https://www.dkilbo.com/news/articleView.html?idxno=537448",
-      "source_query": "사과 정책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "policy_retail_sales_trend",
       "press": "biztribune",
       "domain": "biztribune.co.kr",
       "title": "[브리프]롯데백화점 현대백화점 쿠팡 우아한형제들 킴스클럽 롯데월드...",
@@ -1185,20 +1145,20 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "inews24",
-      "domain": "inews24.com",
-      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
-      "url": "http://www.inews24.com/view/1950173",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
+      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
       "source_query": "사과 수급",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
-      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
+      "url": "http://www.inews24.com/view/1950173",
       "source_query": "사과 수급",
       "source_channel": "naver_api"
     },
@@ -1399,86 +1359,6 @@
       "domain": "cooknchefnews.com",
       "title": "다시 늘어난 집밥…롯데웰푸드 ‘요리킥 만능양념’ 2종 등장",
       "url": "https://cooknchefnews.com/news/view/1065595066145170",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "YTN",
-      "domain": "ytn.co.kr",
-      "title": "'이제 돈 더 써야'...무료배송 기준 바꾸는 쿠팡에 반응 싸늘 [지금이뉴...",
-      "url": "https://www.ytn.co.kr/_ln/0134_202603171350004063",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "skbroadband",
-      "domain": "news.skbroadband.com",
-      "title": "[주간알뜰장보기] '쪽파·애호박' 지금이 구매 타이밍! (3월3주)",
-      "url": "https://news.skbroadband.com/news/articleView.html?idxno=220997",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "한국일보",
-      "domain": "hankookilbo.com",
-      "title": "쿠팡 \"1만9800원 이상 최종 결제해야 무료 배송\"… 소비자에 부담 전가?",
-      "url": "https://www.hankookilbo.com/news/article/A2026031709190000175?did=NA",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "theasian",
-      "domain": "kor.theasian.asia",
-      "title": "[아시아라운드업 20260317] 이스라엘, 레바논 지상전 본격화…피란민 10...",
-      "url": "http://kor.theasian.asia/archives/402735",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "asiatime",
-      "domain": "asiatime.co.kr",
-      "title": "[17일 인천 중구] ‘개별주택 가격 열람·의견제출 기간’ 운영 등",
-      "url": "https://www.asiatime.co.kr/article/20260317500119",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "newsian",
-      "domain": "newsian.co.kr",
-      "title": "[편집인칼럼] '석유값 통제' 부활… 이재명 대통령 눈 가린 산업통상부",
-      "url": "http://www.newsian.co.kr/news/articleView.html?idxno=87311",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "news2day",
-      "domain": "news2day.co.kr",
-      "title": "최유철, 의성 농업 ‘미래 산업화’ 4대 공약 제시",
-      "url": "https://www.news2day.co.kr/article/20260317500111",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "economytalk",
-      "domain": "economytalk.kr",
-      "title": "[종합]\"소휘 효소, 키토선생, 푸드루트, 소휘, 블루투스\" 등 3월 17일 캐...",
-      "url": "http://www.economytalk.kr/news/articleView.html?idxno=419113",
       "source_query": "사과 가격",
       "source_channel": "naver_api"
     },
@@ -2385,20 +2265,20 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
-      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
+      "url": "http://www.inews24.com/view/1950173",
       "source_query": "수박 수급",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "inews24",
-      "domain": "inews24.com",
-      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
-      "url": "http://www.inews24.com/view/1950173",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
+      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
       "source_query": "수박 수급",
       "source_channel": "naver_api"
     },
@@ -3685,26 +3565,6 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "SENTV",
-      "domain": "sentv.co.kr",
-      "title": "동성제약, 정상화 청사진 공개…무 감자 M&A·채권 100% 변제로 승부수",
-      "url": "https://www.sentv.co.kr/article/view/sentv202603170028",
-      "source_query": "감자 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "catchnews",
-      "domain": "catchnews.kr",
-      "title": "3월 16일 주식시장 주요공시",
-      "url": "https://www.catchnews.kr/news/articleView.html?idxno=121684",
-      "source_query": "감자 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "YTN",
       "domain": "radio.ytn.co.kr",
       "title": "[잠시만요] 씨앗도서관장 박영재\"토종 씨앗 보존하러 전국 누벼\"",
@@ -4085,20 +3945,20 @@
     {
       "section": "supply",
       "reason": "carrot_non_edible_context",
-      "press": "tournews21",
-      "domain": "tournews21.com",
-      "title": "제주시, ' 당근 전쟁, 흙밭요리사' 유튜브 최고 조회수 달성",
-      "url": "https://www.tournews21.com/news/articleView.html?idxno=131821",
+      "press": "BBSI",
+      "domain": "news.bbsi.co.kr",
+      "title": "\"이거 공무원이 만들었다고?\"…제주시, 유튜브 조회수 26만 '대박'",
+      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4072580",
       "source_query": "당근 소비 촉진",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "carrot_non_edible_context",
-      "press": "BBSI",
-      "domain": "news.bbsi.co.kr",
-      "title": "\"이거 공무원이 만들었다고?\"…제주시, 유튜브 조회수 26만 '대박'",
-      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4072580",
+      "press": "tournews21",
+      "domain": "tournews21.com",
+      "title": "제주시, ' 당근 전쟁, 흙밭요리사' 유튜브 최고 조회수 달성",
+      "url": "https://www.tournews21.com/news/articleView.html?idxno=131821",
       "source_query": "당근 소비 촉진",
       "source_channel": "naver_api"
     },
@@ -4425,20 +4285,20 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
-      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
+      "press": "inews24",
+      "domain": "inews24.com",
+      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
+      "url": "http://www.inews24.com/view/1950173",
       "source_query": "양파 작황",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "inews24",
-      "domain": "inews24.com",
-      "title": "\"신선도 그대로\"⋯롯데마트, '기체 제어' 저장 사과 본격 출하",
-      "url": "http://www.inews24.com/view/1950173",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "\"이상기후 뚫고 신선도 유지\" 롯데마트, '기체제어' 저장 사과 600t 출하",
+      "url": "https://www.newsis.com/view/NISX20260317_0003552292",
       "source_query": "양파 작황",
       "source_channel": "naver_api"
     },
@@ -6114,36 +5974,6 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "EKN",
-      "domain": "ekn.kr",
-      "title": "AI·메타버스부터 공동영농까지…경북도·경북교육청 미래 산업 ·지역활...",
-      "url": "https://www.ekn.kr/web/view.php?key=20260317026578381",
-      "source_query": "사과 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "지디넷코리아",
-      "domain": "zdnet.co.kr",
-      "title": "[영상] \"얇은 감자칩도 안 부순다\"…초정밀 로봇 손 등장",
-      "url": "https://zdnet.co.kr/view/?no=20260317102518",
-      "source_query": "사과 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "news2day",
-      "domain": "news2day.co.kr",
-      "title": "최유철, 의성 농업 ‘미래 산업 화’ 4대 공약 제시",
-      "url": "https://www.news2day.co.kr/article/20260317500111",
-      "source_query": "사과 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "supply_policy_market_brief",
       "press": "weeklytoday",
       "domain": "weeklytoday.com",
@@ -6864,56 +6694,6 @@
     },
     {
       "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "뉴데일리경제",
-      "domain": "gj.newdaily.co.kr",
-      "title": "함평군 청년농업인, 일본서 미래 농산업 모델 발굴 나서",
-      "url": "https://gj.newdaily.co.kr/site/data/html/2026/03/17/2026031700345.html",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "fishery_only",
-      "press": "CCDN",
-      "domain": "ccdn.co.kr",
-      "title": "충남 공주시, 서울 가락동 농·수산물 도매시장서 지역 농산물 홍보",
-      "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1068027",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "IDAEGU",
-      "domain": "idaegu.com",
-      "title": "경북형 공동영농 소득 배당 1년 만에 3곳에서 10곳으로 확대 …고령농 소...",
-      "url": "https://www.idaegu.com/news/articleView.html?idxno=658758",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "신아일보",
-      "domain": "shinailbo.co.kr",
-      "title": "예천군, 농가형 농산물 가공시설 '로앤팜' 준공",
-      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5002036",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "강원일보",
-      "domain": "kwnews.co.kr",
-      "title": "철원군 온라인 쇼핑몰 '철원몰' 봄맞이 특별할인 기획전",
-      "url": "https://www.kwnews.co.kr/page/view/2026031714530528162",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_context_gate",
       "press": "경향신문",
       "domain": "sports.khan.co.kr",
@@ -7145,20 +6925,20 @@
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "bntnews",
-      "domain": "bntnews.co.kr",
-      "title": "최수호, ‘6시 내고향’ 함평 홍보",
-      "url": "https://www.bntnews.co.kr/article/view/bnt202603170030",
+      "press": "starnewskorea",
+      "domain": "starnewskorea.com",
+      "title": "\"완판 영광\" 최수호, 뒤집개 들고 '만능 일꾼' 등극",
+      "url": "https://www.starnewskorea.com/star/2026/03/17/2026031707340916800",
       "source_query": "농산물 직거래 장터",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "starnewskorea",
-      "domain": "starnewskorea.com",
-      "title": "\"완판 영광\" 최수호, 뒤집개 들고 '만능 일꾼' 등극",
-      "url": "https://www.starnewskorea.com/star/2026/03/17/2026031707340916800",
+      "press": "bntnews",
+      "domain": "bntnews.co.kr",
+      "title": "최수호, ‘6시 내고향’ 함평 홍보",
+      "url": "https://www.bntnews.co.kr/article/view/bnt202603170030",
       "source_query": "농산물 직거래 장터",
       "source_channel": "naver_api"
     },
@@ -8125,20 +7905,20 @@
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "DYNEWS",
-      "domain": "dynews.co.kr",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842588",
+      "press": "중도일보",
+      "domain": "joongdo.co.kr",
+      "title": "충주시, 서울 압구정역에 '충주씨샵' 2호점 개장",
+      "url": "https://www.joongdo.co.kr/web/view.php?key=20260317010005436",
       "source_query": "사과 직거래",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "중도일보",
-      "domain": "joongdo.co.kr",
-      "title": "충주시, 서울 압구정역에 '충주씨샵' 2호점 개장",
-      "url": "https://www.joongdo.co.kr/web/view.php?key=20260317010005436",
+      "press": "DYNEWS",
+      "domain": "dynews.co.kr",
+      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
+      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842588",
       "source_query": "사과 직거래",
       "source_channel": "naver_api"
     },
@@ -8554,21 +8334,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "newswhoplus",
-      "domain": "newswhoplus.com",
-      "title": "쿠팡, 제주 만감류 20톤 매입해 제주 농가 부담 완화",
-      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=56909",
-      "source_query": "딸기 직거래",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_context_gate",
       "press": "getnews",
       "domain": "getnews.co.kr",
       "title": "밀양 삼랑진 딸기 시배지 축제 21일 개최",
       "url": "https://www.getnews.co.kr/news/articleView.html?idxno=864789",
+      "source_query": "딸기 직거래",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "newswhoplus",
+      "domain": "newswhoplus.com",
+      "title": "쿠팡, 제주 만감류 20톤 매입해 제주 농가 부담 완화",
+      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=56909",
       "source_query": "딸기 직거래",
       "source_channel": "naver_api"
     },
@@ -8624,21 +8404,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "중부매일",
-      "domain": "jbnews.com",
-      "title": "'제1회 달콤상생 딸기 페스티벌' 청주 문화제조창서 개최",
-      "url": "https://www.jbnews.com/news/articleView.html?idxno=1500545",
-      "source_query": "딸기 직거래",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_soft_without_infra",
       "press": "siminilbo",
       "domain": "siminilbo.co.kr",
       "title": "쿠팡, 한라봉 등 국산 만감류 20톤 매입으로 제주 농가 지원",
       "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160290264722141",
+      "source_query": "딸기 직거래",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "중부매일",
+      "domain": "jbnews.com",
+      "title": "'제1회 달콤상생 딸기 페스티벌' 청주 문화제조창서 개최",
+      "url": "https://www.jbnews.com/news/articleView.html?idxno=1500545",
       "source_query": "딸기 직거래",
       "source_channel": "naver_api"
     },
@@ -9677,8 +9457,8 @@
       "reason": "apple_non_edible_context",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
-      "title": "[경북산불 1년] ① '산불 동선' 다시 따라가 보니…봄 왔지만, 여전히 잿...",
-      "url": "https://www.yna.co.kr/view/AKR20260317059500053?input=1195m",
+      "title": "[경북산불 1년] ③ \"다시 심어도 5년\"… 피해 농민·소상공인 삶이 무너졌...",
+      "url": "https://www.yna.co.kr/view/AKR20260316023600053?input=1195m",
       "source_query": "사과 피해",
       "source_channel": "naver_api"
     },
@@ -9687,8 +9467,8 @@
       "reason": "apple_non_edible_context",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
-      "title": "[경북산불 1년] ③ \"다시 심어도 5년\"… 피해 농민·소상공인 삶이 무너졌...",
-      "url": "https://www.yna.co.kr/view/AKR20260316023600053?input=1195m",
+      "title": "[경북산불 1년] ① '산불 동선' 다시 따라가 보니…봄 왔지만, 여전히 잿...",
+      "url": "https://www.yna.co.kr/view/AKR20260317059500053?input=1195m",
       "source_query": "사과 피해",
       "source_channel": "naver_api"
     },
@@ -9784,21 +9564,21 @@
     },
     {
       "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "DYNEWS",
-      "domain": "dynews.co.kr",
-      "title": "현장에서/ 과수묘목 기술 개발로 과수 농가 '신바람'",
-      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842700",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
       "reason": "apple_non_edible_context",
       "press": "DYNEWS",
       "domain": "dynews.co.kr",
       "title": "김영환 충북지사 \"어떤 경우라도 출마\"",
       "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842695",
+      "source_query": "사과 피해",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "DYNEWS",
+      "domain": "dynews.co.kr",
+      "title": "현장에서/ 과수묘목 기술 개발로 과수 농가 '신바람'",
+      "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842700",
       "source_query": "사과 피해",
       "source_channel": "naver_api"
     },
@@ -9874,21 +9654,21 @@
     },
     {
       "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "DKILBO",
-      "domain": "dkilbo.com",
-      "title": "초등생 학폭 피해 5.1%…언어폭력 비중 40% 넘어",
-      "url": "https://www.dkilbo.com/news/articleView.html?idxno=537448",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
       "reason": "hardblock_jeju43_any_section",
       "press": "jejunews",
       "domain": "jejunews.com",
       "title": "제주4.3 당시 불교계 피해 \"추모 기념공간 조성해야\"",
       "url": "http://www.jejunews.com/news/articleView.html?idxno=2224120",
+      "source_query": "사과 피해",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "DKILBO",
+      "domain": "dkilbo.com",
+      "title": "초등생 학폭 피해 5.1%…언어폭력 비중 40% 넘어",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=537448",
       "source_query": "사과 피해",
       "source_channel": "naver_api"
     },
@@ -9985,16 +9765,6 @@
     {
       "section": "pest",
       "reason": "apple_non_edible_context",
-      "press": "MIL",
-      "domain": "kookbang.dema.mil.kr",
-      "title": "뜨거운 사랑의 선율 식기도 전에 차가운 바다에 가라앉은 짧은 生",
-      "url": "https://kookbang.dema.mil.kr/newsWeb/20260318/1/ATCE_CTGR_0020010030/view.do",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
       "press": "lawtalknews",
       "domain": "lawtalknews.co.kr",
       "title": "\"사회악\" 댓글 한 줄, 1년 만에 경찰서행…모욕죄일까",
@@ -10004,51 +9774,11 @@
     },
     {
       "section": "pest",
-      "reason": "apple_apology_context",
-      "press": "lawtalknews",
-      "domain": "lawtalknews.co.kr",
-      "title": "NCT 재민 팬 선물 가로챈 이마트 직원, 90만원 무단 인출에 ‘업무상 횡...",
-      "url": "https://lawtalknews.co.kr/article/1Y9S0VCNORH2",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
       "reason": "apple_non_edible_context",
-      "press": "tenasia",
-      "domain": "tenasia.co.kr",
-      "title": "김동현, 과거 학교폭력 아픔 고백…\"툭툭 건드려 운동하기 시작\" ('짠한...",
-      "url": "https://www.tenasia.co.kr/article/2026031756004",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴스경남",
-      "domain": "newsgn.com",
-      "title": "초등학생 5% \"학교폭력 당했다\"…여전히 피해 심각",
-      "url": "https://www.newsgn.com/news/articleView.html?idxno=540575",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "GGILBO",
-      "domain": "ggilbo.com",
-      "title": "초등학생 5.1% 학교폭력 경험…언어폭력 횡행",
-      "url": "https://www.ggilbo.com/news/articleView.html?idxno=1147234",
-      "source_query": "사과 피해",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "NTODAY",
-      "domain": "ntoday.co.kr",
-      "title": "초등생 학폭 피해 5% '최고 수준'…대응 기조 바꾼 교육부",
-      "url": "https://www.ntoday.co.kr/news/articleView.html?idxno=125965",
+      "press": "MIL",
+      "domain": "kookbang.dema.mil.kr",
+      "title": "뜨거운 사랑의 선율 식기도 전에 차가운 바다에 가라앉은 짧은 生",
+      "url": "https://kookbang.dema.mil.kr/newsWeb/20260318/1/ATCE_CTGR_0020010030/view.do",
       "source_query": "사과 피해",
       "source_channel": "naver_api"
     },
@@ -10345,20 +10075,20 @@
     {
       "section": "supply",
       "reason": "supply_policy_market_brief",
-      "press": "보건신문",
-      "domain": "bokuennews.com",
-      "title": "농식품부, 도축장 방역관리 강화",
-      "url": "https://bokuennews.com/news/article.html?no=275251",
+      "press": "NEWSAM",
+      "domain": "newsam.co.kr",
+      "title": "전주대비 농산물 은 대체로 큰 폭의 하락세,",
+      "url": "https://newsam.co.kr/news/article.html?no=42349",
       "source_query": "",
       "source_channel": ""
     },
     {
       "section": "supply",
       "reason": "supply_policy_market_brief",
-      "press": "NEWSAM",
-      "domain": "newsam.co.kr",
-      "title": "전주대비 농산물 은 대체로 큰 폭의 하락세,",
-      "url": "https://newsam.co.kr/news/article.html?no=42349",
+      "press": "보건신문",
+      "domain": "bokuennews.com",
+      "title": "농식품부, 도축장 방역관리 강화",
+      "url": "https://bokuennews.com/news/article.html?no=275251",
       "source_query": "",
       "source_channel": ""
     },
@@ -10485,20 +10215,20 @@
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
-      "title": "[AI의 글로벌 포커스] 트럼프의 방중 연기, 이란전쟁과 무역협상 사이 ...",
-      "url": "https://newspim.com/news/view/20260317000243",
+      "press": "dongponews",
+      "domain": "dongponews.net",
+      "title": "유통업자만 배불리는 '농축산물 부정할인' 강력 단속한다",
+      "url": "https://dongponews.net/news/articleView.html?idxno=56845",
       "source_query": "",
       "source_channel": ""
     },
     {
       "section": "supply",
       "reason": "must_terms_fail",
-      "press": "dongponews",
-      "domain": "dongponews.net",
-      "title": "유통업자만 배불리는 '농축산물 부정할인' 강력 단속한다",
-      "url": "https://dongponews.net/news/articleView.html?idxno=56845",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[AI의 글로벌 포커스] 트럼프의 방중 연기, 이란전쟁과 무역협상 사이 ...",
+      "url": "https://newspim.com/news/view/20260317000243",
       "source_query": "",
       "source_channel": ""
     },
@@ -10783,72 +10513,72 @@
       "source_channel": ""
     },
     {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "서산시 농기센터, 우수농산물관리제도 기본 교육 전개",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=316639",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "서산시 농기센터, 우수농산물관리제도 기본 교육 전개",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=316639",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "newsfreezone",
+      "domain": "newsfreezone.co.kr",
+      "title": "창원특례시, 채소∙화훼분야 보조사업 본격 추진",
+      "url": "https://newsfreezone.co.kr/news/articleView.html?idxno=680040",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "newsfreezone",
+      "domain": "newsfreezone.co.kr",
+      "title": "창원특례시, 채소∙화훼분야 보조사업 본격 추진",
+      "url": "https://newsfreezone.co.kr/news/articleView.html?idxno=680040",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "asiatime",
+      "domain": "asiatime.co.kr",
+      "title": "[17일 평택시] 국제유가 변동 대응 시설원예 농가 현장 점검 등",
+      "url": "https://asiatime.co.kr/article/20260317500241",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "asiatime",
+      "domain": "asiatime.co.kr",
+      "title": "[17일 평택시] 국제유가 변동 대응 시설원예 농가 현장 점검 등",
+      "url": "https://asiatime.co.kr/article/20260317500241",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "policy",
       "reason": "policy_retail_sales_trend",
       "press": "globale",
       "domain": "globale.co.kr",
       "title": "쿠팡, 수입 과일 밀린 제주 농가 구원… 만감류 20톤 선제 매입",
       "url": "https://globale.co.kr/news/articleView.html?idxno=37082",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "서산시 농기센터, 우수농산물관리제도 기본 교육 전개",
-      "url": "https://aflnews.co.kr/news/articleView.html?idxno=316639",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "서산시 농기센터, 우수농산물관리제도 기본 교육 전개",
-      "url": "https://aflnews.co.kr/news/articleView.html?idxno=316639",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "newsfreezone",
-      "domain": "newsfreezone.co.kr",
-      "title": "창원특례시, 채소∙화훼분야 보조사업 본격 추진",
-      "url": "https://newsfreezone.co.kr/news/articleView.html?idxno=680040",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "newsfreezone",
-      "domain": "newsfreezone.co.kr",
-      "title": "창원특례시, 채소∙화훼분야 보조사업 본격 추진",
-      "url": "https://newsfreezone.co.kr/news/articleView.html?idxno=680040",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "asiatime",
-      "domain": "asiatime.co.kr",
-      "title": "[17일 평택시] 국제유가 변동 대응 시설원예 농가 현장 점검 등",
-      "url": "https://asiatime.co.kr/article/20260317500241",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "asiatime",
-      "domain": "asiatime.co.kr",
-      "title": "[17일 평택시] 국제유가 변동 대응 시설원예 농가 현장 점검 등",
-      "url": "https://asiatime.co.kr/article/20260317500241",
       "source_query": "",
       "source_channel": ""
     },
@@ -10883,6 +10613,86 @@
       "source_channel": ""
     },
     {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 정식 개장",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2407218",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 정식 개장",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2407218",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "ccreview",
+      "domain": "ccreview.co.kr",
+      "title": "충주시, 압구정역 직매장 '충주씨샵' 2호점 개장",
+      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344595",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "ccreview",
+      "domain": "ccreview.co.kr",
+      "title": "충주시, 압구정역 직매장 '충주씨샵' 2호점 개장",
+      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344595",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "cctimes",
+      "domain": "cctimes.kr",
+      "title": "충주시 서울 압구정역에 로컬푸드직매장 2호점 개장",
+      "url": "https://cctimes.kr/news/articleView.html?idxno=896811",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "cctimes",
+      "domain": "cctimes.kr",
+      "title": "충주시 서울 압구정역에 로컬푸드직매장 2호점 개장",
+      "url": "https://cctimes.kr/news/articleView.html?idxno=896811",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "국제뉴스",
+      "domain": "gukjenews.com",
+      "title": "충주시, 서울 압구정역 로컬푸드 직매장 '충주씨샵' 2호점 개장",
+      "url": "https://gukjenews.com/news/articleView.html?idxno=3531524",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "국제뉴스",
+      "domain": "gukjenews.com",
+      "title": "충주시, 서울 압구정역 로컬푸드 직매장 '충주씨샵' 2호점 개장",
+      "url": "https://gukjenews.com/news/articleView.html?idxno=3531524",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "dist",
       "reason": "dist_retail_promo_no_wholesale",
       "press": "inews24",
@@ -10895,86 +10705,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 정식 개장",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2407218",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 정식 개장",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2407218",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "ccreview",
-      "domain": "ccreview.co.kr",
-      "title": "충주시, 압구정역 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344595",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "ccreview",
-      "domain": "ccreview.co.kr",
-      "title": "충주시, 압구정역 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://ccreview.co.kr/news/articleView.html?idxno=344595",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "cctimes",
-      "domain": "cctimes.kr",
-      "title": "충주시 서울 압구정역에 로컬푸드직매장 2호점 개장",
-      "url": "https://cctimes.kr/news/articleView.html?idxno=896811",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "cctimes",
-      "domain": "cctimes.kr",
-      "title": "충주시 서울 압구정역에 로컬푸드직매장 2호점 개장",
-      "url": "https://cctimes.kr/news/articleView.html?idxno=896811",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "국제뉴스",
-      "domain": "gukjenews.com",
-      "title": "충주시, 서울 압구정역 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://gukjenews.com/news/articleView.html?idxno=3531524",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "국제뉴스",
-      "domain": "gukjenews.com",
-      "title": "충주시, 서울 압구정역 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://gukjenews.com/news/articleView.html?idxno=3531524",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "CCDN",
       "domain": "ccdn.co.kr",
       "title": "'강남 한복판서 충주 사과 ·한우 맛본다'…압구정역 '충주씨샵' 2호점 오...",
@@ -11009,46 +10739,6 @@
       "domain": "inews365.com",
       "title": "충주 사과 ·한우, 이제 서울 압구정에서 산다",
       "url": "https://inews365.com/news/article.html?no=910911",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "DYNEWS",
-      "domain": "dynews.co.kr",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://dynews.co.kr/news/articleView.html?idxno=842588",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "DYNEWS",
-      "domain": "dynews.co.kr",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://dynews.co.kr/news/articleView.html?idxno=842588",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "GGILBO",
-      "domain": "ggilbo.com",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://ggilbo.com/news/articleView.html?idxno=1147049",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "GGILBO",
-      "domain": "ggilbo.com",
-      "title": "충주시, 서울 압구정역에 로컬푸드 직매장 '충주씨샵' 2호점 개장",
-      "url": "https://ggilbo.com/news/articleView.html?idxno=1147049",
       "source_query": "",
       "source_channel": ""
     },
@@ -11464,16 +11154,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "한국영농신문",
-      "domain": "youngnong.co.kr",
-      "title": "정남진장흥 '새청무 쌀', GS리테일 대규모 납품 개시… 연간 2,500톤 공급",
-      "url": "https://youngnong.co.kr/news/articleView.html?idxno=58123",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
       "reason": "supply_dist_export_field",
       "press": "nongaek",
       "domain": "nongaek.com",
@@ -11584,16 +11264,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "PPSS",
-      "domain": "ppss.kr",
-      "title": "충주시, 압구정역에 '충주씨샵' 2호점 개장",
-      "url": "https://ppss.kr/news/articleView.html?idxno=288495",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
       "reason": "must_terms_fail",
       "press": "중도일보",
       "domain": "joongdo.co.kr",
@@ -11628,7 +11298,7 @@
       "threshold": 24.78,
       "tail_cut": 25.18,
       "core_min": 24.78,
-      "total_candidates": 501,
+      "total_candidates": 495,
       "total_selected": 5,
       "top": [
         {
@@ -11904,33 +11574,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.24,
-          "tier": 3,
-          "press": "한국경제",
-          "domain": "hankyung.com",
-          "title": "쿠팡, 제주 농가 돕는다…\"만감류 20t 매입·최대 30% 할인\"",
-          "url": "https://www.hankyung.com/article/202603175858g",
-          "reason": "topic_repeat",
-          "fit_score": 1.72,
-          "selection_stage": "topic_repeat",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감귤 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 5.9,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 26.16,
           "tier": 1,
           "press": "kpenews",
@@ -11953,6 +11596,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 26.04,
+          "tier": 3,
+          "press": "한국경제",
+          "domain": "hankyung.com",
+          "title": "쿠팡, 제주 농가 돕는다…\"만감류 20t 매입·최대 30% 할인\"",
+          "url": "https://www.hankyung.com/article/202603175858g",
+          "reason": "topic_repeat",
+          "fit_score": 1.72,
+          "selection_stage": "topic_repeat",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 5.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -11985,7 +11655,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.01,
+          "score": 25.81,
           "tier": 1,
           "press": "seoultimes",
           "domain": "seoultimes.news",
@@ -12174,7 +11844,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.86,
+          "score": 23.66,
           "tier": 1,
           "press": "thefairnews",
           "domain": "thefairnews.co.kr",
@@ -12201,7 +11871,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.81,
+          "score": 23.61,
           "tier": 2,
           "press": "데일리안",
           "domain": "dailian.co.kr",
@@ -12390,33 +12060,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.9,
-          "tier": 1,
-          "press": "newscape",
-          "domain": "newscape.co.kr",
-          "title": "쿠팡, 제주 만감류 할인 행사 진행…농가 상생 지원",
-          "url": "http://www.newscape.co.kr/news/articleView.html?idxno=120963",
-          "reason": "below_threshold",
-          "fit_score": 2.56,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "만감류 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 4.9,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 21.84,
           "tier": 2,
           "press": "뉴스1",
@@ -12471,28 +12114,28 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.27,
-          "tier": 3,
-          "press": "머니투데이",
-          "domain": "mt.co.kr",
-          "title": "쿠팡, 한라봉 등 국산 만감류 20톤 매입으로 제주 농가 지원",
-          "url": "https://www.mt.co.kr/living/2026/03/17/2026031709050162876",
+          "score": 21.7,
+          "tier": 1,
+          "press": "newscape",
+          "domain": "newscape.co.kr",
+          "title": "쿠팡, 제주 만감류 할인 행사 진행…농가 상생 지원",
+          "url": "http://www.newscape.co.kr/news/articleView.html?idxno=120963",
           "reason": "below_threshold",
-          "fit_score": 1.34,
+          "fit_score": 2.56,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
-          "source_query": "감귤 소비 촉진",
+          "source_query": "만감류 출하",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 6.3,
+            "horti_sc": 4.9,
             "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
+            "strength": 4,
+            "korea": 2,
             "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -12520,6 +12163,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.07,
+          "tier": 3,
+          "press": "머니투데이",
+          "domain": "mt.co.kr",
+          "title": "쿠팡, 한라봉 등 국산 만감류 20톤 매입으로 제주 농가 지원",
+          "url": "https://www.mt.co.kr/living/2026/03/17/2026031709050162876",
+          "reason": "below_threshold",
+          "fit_score": 1.34,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 소비 촉진",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 6.3,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -12634,33 +12304,6 @@
           "selected": false,
           "is_core": false,
           "score": 20.39,
-          "tier": 3,
-          "press": "서울경제",
-          "domain": "sedaily.com",
-          "title": "쿠팡, 제주 감귤 20톤 사들였다…농가 구하기 나서",
-          "url": "https://www.sedaily.com/article/20020257",
-          "reason": "below_threshold",
-          "fit_score": 0.87,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감귤 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 5.5,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 20.39,
           "tier": 1,
           "press": "koreaittimes",
           "domain": "koreaittimes.com",
@@ -12682,6 +12325,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.19,
+          "tier": 3,
+          "press": "서울경제",
+          "domain": "sedaily.com",
+          "title": "쿠팡, 제주 감귤 20톤 사들였다…농가 구하기 나서",
+          "url": "https://www.sedaily.com/article/20020257",
+          "reason": "below_threshold",
+          "fit_score": 0.87,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 5.5,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -12822,33 +12492,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.34,
-          "tier": 1,
-          "press": "joongangenews",
-          "domain": "joongangenews.com",
-          "title": "쿠팡, 제주 농가 살리기 나섰다…만감류 20톤 매입·최대 30% 할인",
-          "url": "https://www.joongangenews.com/news/articleView.html?idxno=502969",
-          "reason": "below_threshold",
-          "fit_score": 2.37,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감귤 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 5.9,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 19.33,
           "tier": 3,
           "press": "아시아경제",
@@ -12930,7 +12573,34 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.21,
+          "score": 19.14,
+          "tier": 1,
+          "press": "joongangenews",
+          "domain": "joongangenews.com",
+          "title": "쿠팡, 제주 농가 살리기 나섰다…만감류 20톤 매입·최대 30% 할인",
+          "url": "https://www.joongangenews.com/news/articleView.html?idxno=502969",
+          "reason": "below_threshold",
+          "fit_score": 2.37,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 5.9,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.01,
           "tier": 3,
           "press": "매일경제",
           "domain": "mk.co.kr",
@@ -13011,33 +12681,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.96,
-          "tier": 1,
-          "press": "news2day",
-          "domain": "news2day.co.kr",
-          "title": "쿠팡, 제주 만감류 20톤 매입…‘제주 농가 상생 기획전’ 실시",
-          "url": "https://www.news2day.co.kr/article/20260317500068",
-          "reason": "below_threshold",
-          "fit_score": 2.45,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "만감류 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 7.9,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 18.86,
           "tier": 1,
           "press": "경남일보",
@@ -13060,6 +12703,33 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 4.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.76,
+          "tier": 1,
+          "press": "news2day",
+          "domain": "news2day.co.kr",
+          "title": "쿠팡, 제주 만감류 20톤 매입…‘제주 농가 상생 기획전’ 실시",
+          "url": "https://www.news2day.co.kr/article/20260317500068",
+          "reason": "below_threshold",
+          "fit_score": 2.45,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "만감류 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 7.9,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -13200,33 +12870,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.46,
-          "tier": 1,
-          "press": "데일리한국",
-          "domain": "daily.hankooki.com",
-          "title": "쿠팡, 한라봉 등 국산 만감류 20톤 매입으로 제주 농가 지원",
-          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1347710",
-          "reason": "below_threshold",
-          "fit_score": 3.4,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "만감류 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 8.3,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 18.31,
           "tier": 3,
           "press": "머니투데이",
@@ -13250,6 +12893,33 @@
             "press_tier": 3,
             "press_weight": 9.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.29,
+          "tier": 1,
+          "press": "dailysmart",
+          "domain": "dailysmart.co.kr",
+          "title": "쿠팡, 제주 만감류 20톤 선매입…한라봉·천혜향 할인전으로 농가 지원",
+          "url": "http://www.dailysmart.co.kr/news/articleView.html?idxno=121200",
+          "reason": "below_threshold",
+          "fit_score": 3.8,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "만감류 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 8.7,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
         }
       ]
     },
@@ -13257,7 +12927,7 @@
       "threshold": 35.34,
       "tail_cut": 35.54,
       "core_min": 35.34,
-      "total_candidates": 113,
+      "total_candidates": 112,
       "total_selected": 4,
       "top": [
         {
@@ -13560,7 +13230,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.11,
+          "score": 27.91,
           "tier": 1,
           "press": "goodmorningcc",
           "domain": "goodmorningcc.com",
@@ -13857,7 +13527,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.36,
+          "score": 24.16,
           "tier": 1,
           "press": "국제뉴스",
           "domain": "gukjenews.com",
@@ -13884,7 +13554,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.36,
+          "score": 24.16,
           "tier": 1,
           "press": "메트로신문",
           "domain": "metroseoul.co.kr",
@@ -14073,33 +13743,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.86,
-          "tier": 1,
-          "press": "보건신문",
-          "domain": "bokuennews.com",
-          "title": "농식품부, 도축장 방역관리 강화",
-          "url": "http://www.bokuennews.com/news/article.html?no=275251",
-          "reason": "below_threshold",
-          "fit_score": 1.99,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "과일 채소 가격 동향",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.66,
           "tier": 1,
           "press": "NEWSAM",
@@ -14122,6 +13765,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.66,
+          "tier": 1,
+          "press": "보건신문",
+          "domain": "bokuennews.com",
+          "title": "농식품부, 도축장 방역관리 강화",
+          "url": "http://www.bokuennews.com/news/article.html?no=275251",
+          "reason": "below_threshold",
+          "fit_score": 1.99,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "과일 채소 가격 동향",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -14886,7 +14556,7 @@
       "threshold": 26.59,
       "tail_cut": 27.19,
       "core_min": 26.59,
-      "total_candidates": 56,
+      "total_candidates": 53,
       "total_selected": 4,
       "top": [
         {
@@ -14973,7 +14643,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 26.51,
+          "score": 26.31,
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
@@ -15054,7 +14724,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.81,
+          "score": 19.61,
           "tier": 2,
           "press": "데일리안",
           "domain": "dailian.co.kr",
@@ -15162,33 +14832,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.18,
-          "tier": 1,
-          "press": "중도일보",
-          "domain": "joongdo.co.kr",
-          "title": "공주시, 가락시장서 ‘공주 오이 ’ 세일즈… 판로 확대 총력",
-          "url": "https://www.joongdo.co.kr/web/view.php?key=20260317010005499",
-          "reason": "below_threshold",
-          "fit_score": 2.47,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "오이 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 2,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 14.11,
           "tier": 1,
           "press": "beyondpost",
@@ -15255,7 +14898,7 @@
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
+          "source_query": "감귤 직거래",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 6.3,
@@ -15405,7 +15048,34 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.11,
+          "score": 13.98,
+          "tier": 1,
+          "press": "중도일보",
+          "domain": "joongdo.co.kr",
+          "title": "공주시, 가락시장서 ‘공주 오이 ’ 세일즈… 판로 확대 총력",
+          "url": "https://www.joongdo.co.kr/web/view.php?key=20260317010005499",
+          "reason": "below_threshold",
+          "fit_score": 2.47,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "오이 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.91,
           "tier": 1,
           "press": "inews24",
           "domain": "inews24.com",
@@ -15729,34 +15399,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.13,
-          "tier": 1,
-          "press": "kyongbuk",
-          "domain": "kyongbuk.co.kr",
-          "title": "봉화 스마트팜 겨울 쪽파 첫 출하…청년농 '소득 다변화' 본격화",
-          "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067110",
-          "reason": "below_threshold",
-          "fit_score": 1.97,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 3,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 8.21,
+          "score": 8.01,
           "tier": 1,
           "press": "seoultimes",
           "domain": "seoultimes.news",
@@ -15855,33 +15498,6 @@
             "horti_sc": 0.0,
             "market_hits": 0,
             "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 6.62,
-          "tier": 1,
-          "press": "한국영농신문",
-          "domain": "youngnong.co.kr",
-          "title": "정남진장흥 '새청무 쌀', GS리테일 대규모 납품 개시… 연간 2,500톤 공급",
-          "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=58123",
-          "reason": "below_threshold",
-          "fit_score": 1.33,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
             "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 1,
@@ -16269,33 +15885,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -3.68,
-          "tier": 1,
-          "press": "PPSS",
-          "domain": "ppss.kr",
-          "title": "충주시, 압구정역에 '충주씨샵' 2호점 개장",
-          "url": "https://www.ppss.kr/news/articleView.html?idxno=288495",
-          "reason": "below_threshold",
-          "fit_score": 1.23,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": -4.15,
           "tier": 1,
           "press": "중도일보",
@@ -16404,16 +15993,16 @@
       ]
     },
     "pest": {
-      "threshold": 16.95,
-      "tail_cut": 16.95,
-      "core_min": 16.95,
+      "threshold": 16.75,
+      "tail_cut": 16.75,
+      "core_min": 16.75,
       "total_candidates": 28,
       "total_selected": 5,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 23.95,
+          "score": 23.75,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
@@ -16635,9 +16224,9 @@
           "domain": "cctimes.kr",
           "title": "단양군 고추· 마늘 ·수박 농가 병해충 방제 약제 공급",
           "url": "http://www.cctimes.kr/news/articleView.html?idxno=896787",
-          "reason": "below_threshold",
+          "reason": "similar_title",
           "fit_score": 4.17,
-          "selection_stage": "below_threshold",
+          "selection_stage": "similar_title",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -16662,9 +16251,9 @@
           "domain": "dailian.co.kr",
           "title": "농진청, 배추 반쪽시들음병 복합방제 2년 연속 효과 확인",
           "url": "https://www.dailian.co.kr/news/view/1621634/?sc=Naver",
-          "reason": "below_threshold",
+          "reason": "source_cap",
           "fit_score": 3.09,
-          "selection_stage": "below_threshold",
+          "selection_stage": "source_cap",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -17468,11 +17057,11 @@
       "window_hits_top": [
         [
           "쪽파 재배",
-          45
+          43
         ],
         [
           "감자 재배",
-          34
+          36
         ],
         [
           "만감류 출하",
@@ -17480,7 +17069,7 @@
         ],
         [
           "토마토 가격",
-          32
+          31
         ],
         [
           "감귤 가격",
@@ -17489,10 +17078,6 @@
         [
           "가지 가격",
           22
-        ],
-        [
-          "사과 출하",
-          21
         ],
         [
           "방울토마토 가격",
@@ -17515,6 +17100,10 @@
           16
         ],
         [
+          "사과 출하",
+          14
+        ],
+        [
           "양배추 가격",
           13
         ],
@@ -17523,7 +17112,7 @@
           10
         ],
         [
-          "가지 재배",
+          "마늘 가격",
           10
         ]
       ],
@@ -17761,7 +17350,7 @@
           "자두"
         ]
       },
-      "items_total": 544,
+      "items_total": 536,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
@@ -17872,16 +17461,16 @@
       ],
       "window_hits_top": [
         [
-          "농산물 판로 확대",
-          19
+          "감귤 직거래",
+          17
         ],
         [
-          "감귤 직거래",
-          16
+          "농산물 판로 확대",
+          15
         ],
         [
           "쪽파 직거래",
-          9
+          10
         ],
         [
           "양파 산지유통",
@@ -17956,7 +17545,7 @@
         "농산물 광역수급관리센터"
       ],
       "recall_meta": {},
-      "items_total": 87,
+      "items_total": 85,
       "cond_paging": {
         "enabled": false,
         "base_pages": 1,
