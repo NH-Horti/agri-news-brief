@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-20T00:42:20+09:00",
-  "build_tag": "6ae5018",
+  "generated_at_kst": "2026-03-20T01:00:21+09:00",
+  "build_tag": "1182b45",
   "filter_rejects": [
     {
       "section": "policy",
@@ -1615,20 +1615,20 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "日 고시엔 준우승 학교 야구부원, 여학생 신체 촬영·공유 혐의로 법원...",
-      "url": "https://www.newsis.com/view/NISX20260318_0003553496",
+      "press": "hansbiz",
+      "domain": "hansbiz.co.kr",
+      "title": "롯데마트, '기체제어' 저장 사과 본격 출하",
+      "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=825287",
       "source_query": "사과 저장",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "hansbiz",
-      "domain": "hansbiz.co.kr",
-      "title": "롯데마트, '기체제어' 저장 사과 본격 출하",
-      "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=825287",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "日 고시엔 준우승 학교 야구부원, 여학생 신체 촬영·공유 혐의로 법원...",
+      "url": "https://www.newsis.com/view/NISX20260318_0003553496",
       "source_query": "사과 저장",
       "source_channel": "naver_api"
     },
@@ -3185,16 +3185,6 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "businessplus",
-      "domain": "businessplus.kr",
-      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
-      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
-      "source_query": "감자 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
       "press": "ONEWS",
       "domain": "onews.tv",
       "title": "이마트 초저가 PB브랜드 '5K PRICE' 가전·생활용품으로 라인업 확대",
@@ -3205,10 +3195,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "worktoday",
-      "domain": "worktoday.co.kr",
-      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
-      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -3219,6 +3209,16 @@
       "domain": "finomy.com",
       "title": "이마트 '5K PRICE' 신규 상품 127종 선보여",
       "url": "http://www.finomy.com/news/articleView.html?idxno=251642",
+      "source_query": "감자 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "worktoday",
+      "domain": "worktoday.co.kr",
+      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
+      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -5054,16 +5054,6 @@
     },
     {
       "section": "supply",
-      "reason": "ban_keywords",
-      "press": "시사저널",
-      "domain": "sisajournal.com",
-      "title": "[화성 24시] 화성시, 중증질환 치료 '지역 내 의료 완결 시대' 선언",
-      "url": "https://www.sisajournal.com/news/articleView.html?idxno=366215",
-      "source_query": "가지 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "finance_strict_no_agri_context",
       "press": "SBS",
       "domain": "biz.sbs.co.kr",
@@ -5095,20 +5085,20 @@
     {
       "section": "supply",
       "reason": "finance_strict_no_agri_context",
-      "press": "g-enews",
-      "domain": "g-enews.com",
-      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
-      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
+      "press": "이데일리",
+      "domain": "edaily.co.kr",
+      "title": "\"코스피 2차 충격 올 수도\" 경고…유가보다 무서운 것은 '이것'",
+      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03109446645384632",
       "source_query": "가지 수급",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "finance_strict_no_agri_context",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "\"코스피 2차 충격 올 수도\" 경고…유가보다 무서운 것은 '이것'",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=03109446645384632",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
       "source_query": "가지 수급",
       "source_channel": "naver_api"
     },
@@ -5130,16 +5120,6 @@
       "title": "황간농협, 농가 주부모임과 일손돕기 및 나눔행사",
       "url": "http://www.dynews.co.kr/news/articleView.html?idxno=842827",
       "source_query": "가지 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_strict_no_agri_context",
-      "press": "SBS",
-      "domain": "biz.sbs.co.kr",
-      "title": "40% 폭등한 유가에 비축유 '만지작'·UAE 긴급 수혈",
-      "url": "https://biz.sbs.co.kr/article_hub/20000298406?division=NAVER",
-      "source_query": "가지 산업",
       "source_channel": "naver_api"
     },
     {
@@ -6875,20 +6855,10 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "한국일보",
-      "domain": "hankookilbo.com",
-      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
-      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
-      "source_query": "수출업계 간담회 농식품부",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_policy_export_support_brief",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
-      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
+      "url": "http://www.fnnews.com/news/202603180925506726",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -6905,10 +6875,20 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
-      "url": "http://www.fnnews.com/news/202603180925506726",
+      "press": "한국일보",
+      "domain": "hankookilbo.com",
+      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
+      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
+      "source_query": "수출업계 간담회 농식품부",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
+      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -10552,8 +10532,8 @@
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
-          "title": "양파 값 폭락에 농민들 집결",
-          "url": "https://www.news1.kr/photos/7803641",
+          "title": "양파 값 보장 외치는 농민들",
+          "url": "https://www.news1.kr/photos/7803635",
           "reason": "below_threshold",
           "fit_score": 1.35,
           "selection_stage": "below_threshold",
@@ -10633,8 +10613,8 @@
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
-          "title": "양파 값 보장 외치는 농민들",
-          "url": "https://www.news1.kr/photos/7803635",
+          "title": "양파 값 폭락에 농민들 집결",
+          "url": "https://www.news1.kr/photos/7803641",
           "reason": "below_threshold",
           "fit_score": 1.35,
           "selection_stage": "below_threshold",
