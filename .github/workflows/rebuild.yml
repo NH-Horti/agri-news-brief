@@ -116,6 +116,7 @@ jobs:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
@@ -142,6 +143,26 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Resolve Kakao status
+        if: always()
+        id: kakao_status
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          actual='not_requested'
+          if [ '${{ steps.vars.outputs.send_kakao }}' = 'true' ]; then
+            actual='not_attempted'
+            if [ -f "$RUNNER_TEMP/kakao-status.txt" ]; then
+              actual="$(tr -d '\r\n' < "$RUNNER_TEMP/kakao-status.txt")"
+              if [ -z "$actual" ]; then
+                actual='not_attempted'
+              fi
+            fi
+          fi
+
+          echo "actual=$actual" >> "$GITHUB_OUTPUT"
 
       - name: Verify rebuilt production archive content
         id: verify_archive
@@ -199,7 +220,8 @@ jobs:
             echo "- Tests: ${{ steps.tests.outcome }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
-            echo "- Kakao sent: ${{ steps.vars.outputs.send_kakao }}"
+            echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
+            echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
             echo "- Debug JSON: https://nh-horti.github.io/agri-news-brief/debug/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -16,7 +16,7 @@ on:
       send_kakao:
         description: 'Send Kakao message when rebuild is triggered'
         required: false
-        default: false
+        default: true
         type: boolean
       ux_patch_days:
         description: 'Patch recent archives after rebuild (0 = off)'
@@ -159,6 +159,6 @@ jobs:
             echo "- Main after: ${{ steps.promote.outputs.after_sha }}"
             echo "- Trigger rebuild: ${{ steps.vars.outputs.trigger_rebuild }}"
             echo "- Rebuild report date: ${{ steps.vars.outputs.report_date }}"
-            echo "- Rebuild Kakao: ${{ steps.vars.outputs.send_kakao }}"
+            echo "- Rebuild Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Stable dev preview: https://nh-horti.github.io/agri-news-brief/dev/"
           } >> "$GITHUB_STEP_SUMMARY"

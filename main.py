@@ -637,6 +637,7 @@ OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
 KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
+KAKAO_STATUS_FILE = os.getenv("KAKAO_STATUS_FILE", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
 MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
@@ -17608,6 +17609,27 @@ def _log_kakao_fail_open(exc: Exception) -> None:
     log.error("[KAKAO] send failed but continue (fail-open): %s", exc)
 
 
+def _write_kakao_send_status(status: str) -> None:
+    path = (KAKAO_STATUS_FILE or "").strip()
+    if not path:
+        return
+    status_text = (status or "unknown").strip() or "unknown"
+    try:
+        parent = os.path.dirname(path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(status_text + "\n")
+    except Exception as exc:
+        log.warning("[WARN] failed to write Kakao status file: %s", exc)
+
+
+def _kakao_send_status_for_exception(exc: Exception) -> str:
+    if isinstance(exc, KakaoNonRetryableError):
+        return "failed_non_retryable"
+    return "failed"
+
+
 def kakao_refresh_access_token() -> str:
     if not KAKAO_REST_API_KEY or not KAKAO_REFRESH_TOKEN:
         raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN not set")
@@ -18382,8 +18404,10 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
                     kakao_text = kakao_text + "\n" + daily_url
                 log_kakao_link(daily_url)
                 kakao_send_to_me(kakao_text, daily_url)
+                _write_kakao_send_status("success")
                 log.info("[OK] Kakao message sent (maintenance rebuild_date, single-page). URL=%s", daily_url)
             except Exception as e:
+                _write_kakao_send_status(_kakao_send_status_for_exception(e))
                 if KAKAO_FAIL_OPEN:
                     _log_kakao_fail_open(e)
                 else:
@@ -18461,8 +18485,10 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
                 kakao_text = kakao_text + "\n" + daily_url
             log_kakao_link(daily_url)
             kakao_send_to_me(kakao_text, daily_url)
+            _write_kakao_send_status("success")
             log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
         except Exception as e:
+            _write_kakao_send_status(_kakao_send_status_for_exception(e))
             if KAKAO_FAIL_OPEN:
                 _log_kakao_fail_open(e)
             else:
@@ -18537,6 +18563,7 @@ def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site
 
 def main() -> None:
     log.info("[BUILD] %s", BUILD_TAG)
+    _write_kakao_send_status("not_attempted")
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
     if not GH_TOKEN:
@@ -18918,8 +18945,10 @@ def main() -> None:
     log_kakao_link(daily_url)
     try:
         kakao_send_to_me(kakao_text, daily_url)
+        _write_kakao_send_status("success")
         log.info("[OK] Kakao message sent. URL=%s", daily_url)
     except Exception as e:
+        _write_kakao_send_status(_kakao_send_status_for_exception(e))
         if KAKAO_FAIL_OPEN:
             _log_kakao_fail_open(e)
         else:

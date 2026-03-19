@@ -77,6 +77,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration", self.text)
         self.assertIn("execute_orchestration(ctx, handlers)", self.text)
 
+    def test_kakao_status_tracking_exists(self):
+        self.assertIn('KAKAO_STATUS_FILE = os.getenv("KAKAO_STATUS_FILE", "").strip()', self.text)
+        self.assertIn("def _write_kakao_send_status", self.text)
+        self.assertIn('_write_kakao_send_status("not_attempted")', self.text)
+
     def test_main_uses_ux_patch_module_builder(self):
         self.assertIn("from ux_patch import build_archive_ux_html", self.text)
         self.assertIn("html_new = build_archive_ux_html(", self.text)
@@ -173,6 +178,15 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("name: agri-news-brief (promote dev to main)", self.promote_text)
         self.assertIn("git merge --ff-only origin/dev", self.promote_text)
         self.assertIn("actions/workflows/rebuild.yml/dispatches", self.promote_text)
+        self.assertIn("default: true", self.promote_text)
+        self.assertIn('echo "- Rebuild Kakao requested: ${{ steps.vars.outputs.send_kakao }}"', self.promote_text)
+
+    def test_rebuild_and_dev_verify_report_actual_kakao_status(self):
+        self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.rebuild_text)
+        self.assertIn("id: kakao_status", self.rebuild_text)
+        self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.rebuild_text)
+        self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.dev_verify_text)
+        self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.dev_verify_text)
 
     def test_dev_loader_uses_preview_branch_assets(self):
         self.assertIn("codex/dev-preview", self.dev_loader_text)

@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -52,6 +53,17 @@ class _DummyLogger:
 
 
 class TestKakaoRuntimeBehavior(unittest.TestCase):
+    def test_write_kakao_send_status_writes_status_file(self):
+        old_path = main.KAKAO_STATUS_FILE
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                status_path = Path(tmpdir) / "kakao-status.txt"
+                main.KAKAO_STATUS_FILE = str(status_path)
+                main._write_kakao_send_status("success")
+                self.assertEqual(status_path.read_text(encoding="utf-8").strip(), "success")
+        finally:
+            main.KAKAO_STATUS_FILE = old_path
+
     def test_kakao_refresh_access_token_invalid_client_is_non_retryable(self):
         old_key = main.KAKAO_REST_API_KEY
         old_refresh = main.KAKAO_REFRESH_TOKEN
