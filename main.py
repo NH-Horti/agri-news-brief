@@ -2157,8 +2157,8 @@ def build_managed_commodity_board_source_by_section(
     out: dict[str, list["Article"]] = {}
     for sec in SECTIONS:
         section_key = str(sec.get("key") or "").strip()
-        picked: list[Article] = []
-        seen_keys: set[str] = set()
+        eligible_articles: list[Article] = []
+        distinct_sources: set[str] = set()
         for article in sorted(by_section.get(section_key, []) or [], key=_sort_key_major_first, reverse=True):
             if not isinstance(article, Article):
                 continue
@@ -2166,11 +2166,31 @@ def build_managed_commodity_board_source_by_section(
                 continue
             if _postbuild_article_reject_reason(article, section_key):
                 continue
+            eligible_articles.append(article)
+            source_key = article_source_bucket_key(article)
+            if source_key:
+                distinct_sources.add(source_key)
+
+        per_source_cap = cap
+        if len(distinct_sources) >= 6:
+            per_source_cap = 2
+        elif len(distinct_sources) >= 3:
+            per_source_cap = 3
+
+        picked: list[Article] = []
+        seen_keys: set[str] = set()
+        source_counts: dict[str, int] = {}
+        for article in eligible_articles:
             dedupe_key = article.canon_url or article.norm_key or article.title_key or article.url
             if not dedupe_key or dedupe_key in seen_keys:
                 continue
+            source_key = article_source_bucket_key(article)
+            if source_key and per_source_cap < cap and source_counts.get(source_key, 0) >= per_source_cap:
+                continue
             seen_keys.add(dedupe_key)
             picked.append(article)
+            if source_key:
+                source_counts[source_key] = source_counts.get(source_key, 0) + 1
             if len(picked) >= cap:
                 break
         out[section_key] = picked
@@ -6662,6 +6682,22 @@ BROADCAST_PRESS = {
 # 통신/온라인 뉴스 서비스(기사량이 많아 과대표집되기 쉬움): '가점'이 아니라 품질/이슈로 평가
 WIRE_SERVICES = {"뉴스1", "뉴시스", "뉴스핌"}
 
+
+def source_bucket_key(press: str, domain: str) -> str:
+    normalized_press = re.sub(r"\s+", " ", str(press or "").strip()).lower()
+    if normalized_press:
+        return f"press:{normalized_press}"
+    normalized_domain = normalize_host(str(domain or ""))
+    normalized_domain = (normalized_domain or "").strip().lower()
+    return f"domain:{normalized_domain}" if normalized_domain else ""
+
+
+def article_source_bucket_key(article: "Article") -> str:
+    return source_bucket_key(
+        str(getattr(article, "press", "") or ""),
+        str(getattr(article, "domain", "") or ""),
+    )
+
 # 농업 전문/현장 매체(원예·유통 실무에서 참고 가치가 높음) — 너무 과도하게 밀어주진 않되, '하단 고착'을 방지
 AGRI_TRADE_PRESS = {"농민신문", "농수축산신문", "농업정보신문", "팜&마켓", "한국농어민신문"}
 AGRI_TRADE_HOSTS = {"afnews.co.kr", "agrinet.co.kr", "farmnmarket.com", "nongmin.com"}
@@ -9751,6 +9787,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
+    source_bucket_count: dict[str, int] = {}
     wire_count = 0  # 통신/온라인 서비스 과대표집 방지
     # 더 보수적으로(사용자 피드백: 지방지/인터넷 비중 과다)
     base_tier2_cap = 2 if section_key in ("supply", "policy") else 3
@@ -9758,19 +9795,24 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     thin_pool = len(pool) <= max(max_n * 2, 8)
     tier1_cap = 1 + (1 if small_pool and section_key in ("policy", "dist", "pest") else 0)
     tier2_cap = base_tier2_cap + (1 if thin_pool else 0)
-
-    def _source_ok_local(a: Article) -> bool:
+    def _source_ok_with_caps(a: Article, tier1_limit: int, tier2_limit: int, same_source_limit: int) -> bool:
         nonlocal wire_count
         # dist에서 통신/온라인 서비스는 상단을 잠식하기 쉬워 1건만 허용
         if section_key == "dist" and (a.press or "").strip() in WIRE_SERVICES:
             if wire_count >= 1:
                 return False
         t = press_priority(a.press, a.domain)
-        if t == 1:
-            return tier_count[1] < tier1_cap
-        if t == 2:
-            return tier_count[2] < tier2_cap
+        if t == 1 and tier_count[1] >= tier1_limit:
+            return False
+        if t == 2 and tier_count[2] >= tier2_limit:
+            return False
+        source_key = article_source_bucket_key(a)
+        if source_key and source_bucket_count.get(source_key, 0) >= same_source_limit:
+            return False
         return True
+
+    def _source_ok_local(a: Article) -> bool:
+        return _source_ok_with_caps(a, tier1_cap, tier2_cap, source_cap)
 
     def _source_take(a: Article) -> None:
         nonlocal wire_count
@@ -9779,6 +9821,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         t = press_priority(a.press, a.domain)
         if t in tier_count:
             tier_count[t] += 1
+        source_key = article_source_bucket_key(a)
+        if source_key:
+            source_bucket_count[source_key] = source_bucket_count.get(source_key, 0) + 1
 
     # 코어 후보: 임계치 + 코어 최소점(더 엄격)
     core_min_by_section = {
@@ -10284,6 +10329,45 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _is_strong_underfill_candidate(a: Article) -> bool:
         return _underfill_candidate_rank(a) is not None
 
+    def _counts_as_viable_source_option(a: Article) -> bool:
+        if not _headline_gate_relaxed(a, section_key):
+            return False
+        if section_key == "supply":
+            return not (
+                _is_supply_policy_like_tail_story(a)
+                or _is_supply_dist_like_tail_story(a)
+                or _is_supply_weak_tail_story(a)
+            )
+        if section_key == "dist":
+            return not _is_dist_weak_tail_story(a)
+        if section_key == "policy":
+            return not (_is_policy_weak_tail_story(a) or _is_policy_noncore_only_story(a))
+        if section_key == "pest":
+            txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+            return is_pest_control_policy_context(txt_local) or is_pest_story_focus_strong(a.title or "", a.description or "")
+        return True
+
+    source_cap_pool = [a for a in pool if _counts_as_viable_source_option(a)]
+    if not source_cap_pool:
+        source_cap_pool = list(pool)
+    distinct_source_count = len({article_source_bucket_key(article) for article in source_cap_pool if article_source_bucket_key(article)})
+
+    def _base_source_cap() -> int:
+        if distinct_source_count <= 1:
+            return max_n
+        if section_key == "pest":
+            if distinct_source_count >= max(max_n, 4):
+                return 1
+            return 2
+        if distinct_source_count >= max_n:
+            return 1
+        if distinct_source_count >= max(2, max_n - 1):
+            return 2
+        return max_n
+
+    source_cap = _base_source_cap()
+    source_cap_relax = max(source_cap, 2 if distinct_source_count >= 2 else max_n)
+
     # 1) 엄격 코어 2개
     if section_key == "dist":
         for a in pool:
@@ -10719,12 +10803,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         tier2_cap_relax = max(tier2_cap, 4)
 
         def _source_ok_relaxed(a: Article) -> bool:
-            t = press_priority(a.press, a.domain)
-            if t == 1:
-                return tier_count[1] < tier1_cap_relax
-            if t == 2:
-                return tier_count[2] < tier2_cap_relax
-            return True
+            return _source_ok_with_caps(a, tier1_cap_relax, tier2_cap_relax, source_cap_relax)
 
         for a in candidates_sorted:
             if need <= 0 or len(final) >= max_n:
@@ -10974,12 +11053,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return cut
 
         def _source_ok_underfill(a: Article) -> bool:
-            t = press_priority(a.press, a.domain)
-            if t == 1:
-                return tier_count[1] < tier1_cap_relax
-            if t == 2:
-                return tier_count[2] < tier2_cap_relax
-            return True
+            return _source_ok_with_caps(a, tier1_cap_relax, tier2_cap_relax, source_cap_relax)
 
         ranked_underfill: list[tuple[tuple[Any, ...], Article]] = []
         for a in candidates_sorted:
@@ -11228,12 +11302,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         selected_footprints = {token for x in final for token in _pest_story_footprint_tokens(x)}
 
         def _source_ok_pest_region(a: Article) -> bool:
-            t = press_priority(a.press, a.domain)
-            if t == 1:
-                return tier_count[1] < tier1_cap_relax
-            if t == 2:
-                return tier_count[2] < tier2_cap_relax
-            return True
+            return _source_ok_with_caps(a, tier1_cap_relax, tier2_cap_relax, source_cap_relax)
 
         for a in candidates_sorted:
             if len(final) >= target or len(final) >= max_n:
@@ -15070,7 +15139,7 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
 
 def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Article]) -> list[Article]:
     seen: set[str] = set()
-    out: list[Article] = []
+    ranked: list[Article] = []
     for article in sorted(
         articles,
         key=lambda a: _commodity_board_item_article_sort_key(item, a),
@@ -15080,7 +15149,29 @@ def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Ar
         if not key or key in seen:
             continue
         seen.add(key)
-        out.append(article)
+        ranked.append(article)
+    if len(ranked) <= 2:
+        return ranked
+
+    out = [ranked[0]]
+    remaining = ranked[1:]
+    source_counts: dict[str, int] = {}
+    first_source = article_source_bucket_key(ranked[0])
+    if first_source:
+        source_counts[first_source] = 1
+
+    while remaining:
+        pick_idx = 0
+        for idx, article in enumerate(remaining):
+            source_key = article_source_bucket_key(article)
+            if source_key and source_counts.get(source_key, 0) == 0:
+                pick_idx = idx
+                break
+        picked = remaining.pop(pick_idx)
+        source_key = article_source_bucket_key(picked)
+        if source_key:
+            source_counts[source_key] = source_counts.get(source_key, 0) + 1
+        out.append(picked)
     return out
 
 
@@ -15325,7 +15416,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 </div>
                 <div class="commodityGroupMeta">활성 품목 {int(group.get('active_count') or 0)} / {int(group.get('item_total') or 0)} · 수급사업 {int(group.get('program_core_active') or 0)} / {int(group.get('program_core_total') or 0)}</div>
               </div>
-              <div class="commodityGrid">
+              <div class="commodityGrid{' isSingle' if len(item_cards) == 1 else ' isDuo' if len(item_cards) == 2 else ''}">
                 {''.join(item_cards)}
               </div>
               {inactive_html}
@@ -15743,18 +15834,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commoditySig[data-section="dist"]{{background:#ede9fe;color:#6d28d9}}
     .commoditySig[data-section="pest"]{{background:#ffedd5;color:#b45309}}
     .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
-    .commodityStoryCluster{{display:flex;flex-direction:column;gap:10px}}
-    .commodityPrimaryCard{{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}}
+    .commodityStoryCluster{{display:flex;flex-direction:column;gap:10px;height:100%}}
+    .commodityPrimaryCard{{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);min-height:124px}}
     .commodityPrimaryKicker{{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}}
     .commodityPrimaryStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}}
     .commodityPrimaryStory:hover{{text-decoration:underline}}
     .commodityPrimaryMeta{{margin-top:7px;color:#64748b;font-size:11px;font-weight:700}}
     .commoditySupportList{{display:flex;flex-direction:column;gap:8px}}
     .commoditySupportTitle{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.02em}}
-    .commoditySupportStory,.commodityMoreStory{{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:14px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none}}
+    .commoditySupportStory,.commodityMoreStory{{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:14px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none;min-width:0}}
     .commoditySupportStory:hover,.commodityMoreStory:hover{{border-color:#cbd5e1}}
     .commoditySupportLabel{{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}}
-    .commoditySupportText{{display:block;min-width:0;font-size:12px;line-height:1.5}}
+    .commoditySupportText{{display:-webkit-box;min-width:0;font-size:12px;line-height:1.5;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}
     .commodityMoreWrap{{border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc}}
     .commodityMoreSummary{{list-style:none;cursor:pointer;padding:10px 12px;color:#334155;font-size:12px;font-weight:900}}
     .commodityMoreSummary::-webkit-details-marker{{display:none}}
@@ -15765,13 +15856,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityGroupChip{{border-color:var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);}}
     .commodityGroupChip span{{background:var(--group-chip-color, #111827)}}
     .commodityGroupBlock{{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}}
-    .commodityGroupHead{{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px}}
+    .commodityGroupHead{{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px;flex-wrap:wrap}}
     .commodityGroupTitleWrap{{display:flex;align-items:center;gap:10px}}
     .commodityGroupTitleWrap h3{{margin:0;font-size:16px}}
     .commodityGroupDot{{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}}
-    .commodityGroupMeta{{color:#64748b;font-size:12px;font-weight:700}}
-    .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
-    .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}}
+    .commodityGroupMeta{{margin-left:auto;color:#64748b;font-size:12px;font-weight:700}}
+    .commodityGrid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}}
+    .commodityGrid.isSingle{{grid-template-columns:minmax(280px,520px)}}
+    .commodityGrid.isDuo{{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff;min-height:100%}}
     .commodityTile.isActive{{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}}
     .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
     .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
@@ -15890,7 +15983,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHeadStat{{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}}
       .commodityHeadStatLabel{{font-size:10px}}
       .commodityHeadStat strong{{margin-top:4px;font-size:18px}}
-      .commodityGrid{{grid-template-columns:1fr}}
+      .commodityGrid,.commodityGrid.isSingle,.commodityGrid.isDuo{{grid-template-columns:1fr}}
       .commodityGroupBlock{{margin:0 0 20px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}}
       .commodityGroupHead{{display:block;padding:0 0 10px;border-bottom:none;margin-bottom:12px}}
       .commodityGroupMeta{{margin-top:6px}}

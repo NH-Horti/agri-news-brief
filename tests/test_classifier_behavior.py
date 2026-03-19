@@ -3597,6 +3597,37 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertEqual(len(picked), 3, msg=str([(x.link, x.score, x.press, x.domain) for x in picked]))
 
+    def test_policy_selection_prefers_source_diversity_when_pool_is_healthy(self):
+        articles = [
+            self._make_article("policy", "Onion issue alpha", "Alpha", "https://www.chungnam.go.kr/news/onion-alpha"),
+            self._make_article("policy", "Onion issue beta", "Beta", "https://www.chungnam.go.kr/news/onion-beta"),
+            self._make_article("policy", "Onion issue gamma", "Gamma", "https://www.chungnam.go.kr/news/onion-gamma"),
+            self._make_article("policy", "Onion issue delta", "Delta", "https://www.gyeongnam.go.kr/news/onion-delta"),
+            self._make_article("policy", "Onion issue epsilon", "Epsilon", "https://www.jeonnam.go.kr/news/onion-epsilon"),
+        ]
+        for idx, article in enumerate(articles):
+            article.score = 26.0 - (idx * 0.1)
+
+        with mock.patch.object(main, "_headline_gate_relaxed", return_value=True), \
+             mock.patch.object(main, "section_fit_score", return_value=2.0), \
+             mock.patch.object(main, "is_policy_major_issue_context", return_value=True), \
+             mock.patch.object(main, "_policy_horti_anchor_stats", return_value={"anchor_ok": True, "livestock_dominant": False}), \
+             mock.patch.object(main, "is_policy_general_macro_tail_context", return_value=False), \
+             mock.patch.object(main, "is_policy_event_tail_context", return_value=False), \
+             mock.patch.object(main, "is_title_livestock_dominant_context", return_value=False), \
+             mock.patch.object(main, "is_policy_forest_admin_noise_context", return_value=False), \
+             mock.patch.object(main, "is_policy_budget_drive_noise_context", return_value=False), \
+             mock.patch.object(main, "is_retail_sales_trend_context", return_value=False), \
+             mock.patch.object(main, "is_policy_market_brief_context", return_value=False), \
+             mock.patch.object(main, "is_supply_stabilization_policy_context", return_value=False), \
+             mock.patch.object(main, "is_policy_export_support_brief_context", return_value=False), \
+             mock.patch.object(main, "is_policy_local_price_support_context", return_value=False), \
+             mock.patch.object(main, "is_local_agri_policy_program_context", return_value=False):
+            picked = main.select_top_articles(articles, "policy", 3)
+
+        picked_sources = [main.article_source_bucket_key(article) for article in picked]
+        self.assertEqual(len(set(picked_sources)), len(picked), msg=str([(x.link, x.score, x.press, x.domain) for x in picked]))
+
     def test_seed_coverage_ledger_tracks_hits_and_missing_seeds(self):
         article = self._make_article(
             "policy",

@@ -32,6 +32,14 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: Resolve run variables
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_date="$(TZ=Asia/Seoul date +%F)"
+          echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
+
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
@@ -49,6 +57,7 @@ jobs:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
@@ -71,3 +80,33 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Resolve Kakao status
+        if: always()
+        id: kakao_status
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          actual='not_attempted'
+          if [ -f "$RUNNER_TEMP/kakao-status.txt" ]; then
+            actual="$(tr -d '\r\n' < "$RUNNER_TEMP/kakao-status.txt")"
+            if [ -z "$actual" ]; then
+              actual='not_attempted'
+            fi
+          fi
+
+          echo "actual=$actual" >> "$GITHUB_OUTPUT"
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Daily Summary'
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Report date: ${{ steps.vars.outputs.report_date }}"
+            echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
+            echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
+            echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
+          } >> "$GITHUB_STEP_SUMMARY"

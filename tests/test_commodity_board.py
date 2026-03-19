@@ -212,6 +212,41 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(onion_item["article_count"], 1)
         self.assertEqual(onion_item["preview_articles"][0].title, onion_article.title)
 
+    def test_board_context_prefers_different_press_in_secondary_preview_when_available(self):
+        apple = self._item("apple")["short_label"]
+        primary = self._make_article(
+            "supply",
+            f"{apple} 가격 강세와 출하 조절",
+            f"{apple} 물량 감소로 가격 강세가 이어지고 있다.",
+            "https://www.wonyesanup.co.kr/news/articleView.html?idxno=900001",
+        )
+        secondary_same_press = self._make_article(
+            "dist",
+            f"{apple} 공동판매 확대",
+            f"{apple} 공동판매 확대와 산지 유통 개선이 진행 중이다.",
+            "https://www.wonyesanup.co.kr/news/articleView.html?idxno=900002",
+        )
+        secondary_other_press = self._make_article(
+            "policy",
+            f"{apple} 수급 안정 대책 점검",
+            f"{apple} 수급 안정과 가격 대응 방안을 점검했다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=900003",
+        )
+        primary.score = 180.0
+        secondary_same_press.score = 120.0
+        secondary_other_press.score = 118.0
+
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [primary]
+        by_section["dist"] = [secondary_same_press]
+        by_section["policy"] = [secondary_other_press]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        apple_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "apple")
+
+        self.assertEqual(apple_item["top_article"].title, primary.title)
+        self.assertEqual(apple_item["secondary_articles"][0].title, secondary_other_press.title)
+
     def test_managed_only_commodity_tags_are_emitted(self):
         radish = self._item("radish")["short_label"]
         green_onion = self._item("green_onion")["short_label"]
