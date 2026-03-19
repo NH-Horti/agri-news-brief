@@ -42,12 +42,13 @@ class _DummySession:
 class _DummyLogger:
     def __init__(self):
         self.warn_count = 0
+        self.error_count = 0
 
     def warning(self, *args, **kwargs):
         self.warn_count += 1
 
     def error(self, *args, **kwargs):
-        pass
+        self.error_count += 1
 
 
 class TestCollectorModule(unittest.TestCase):
@@ -92,6 +93,39 @@ class TestCollectorModule(unittest.TestCase):
         self.assertEqual(len(out.get("items", [])), 1)
         self.assertEqual(sleeps, [1.0])
         self.assertGreaterEqual(logger.warn_count, 1)
+
+    def test_naver_news_search_auth_error_fails_without_retry(self):
+        cfg = collector.NaverClientConfig(client_id="id", client_secret="sec", max_retries=4, backoff_max_sec=3.0)
+        session = _DummySession(
+            [
+                _DummyResponse(401, {"items": [], "errorCode": "024", "errorMessage": "Authentication failed"}),
+                _DummyResponse(200, {"items": [{"title": "should-not-run"}]}),
+            ]
+        )
+        logger = _DummyLogger()
+        sleeps = []
+        http_errors = []
+
+        old_sleep = collector.time.sleep
+        try:
+            collector.time.sleep = lambda sec: sleeps.append(sec)
+            with self.assertRaisesRegex(RuntimeError, "NAVER auth failed"):
+                collector.naver_news_search(
+                    cfg=cfg,
+                    query="q",
+                    session_factory=lambda: session,
+                    throttle_fn=lambda: None,
+                    logger=logger,
+                    log_http_error=lambda *args: http_errors.append(args),
+                )
+        finally:
+            collector.time.sleep = old_sleep
+
+        self.assertEqual(sleeps, [])
+        self.assertEqual(len(http_errors), 1)
+        self.assertEqual(len(session.responses), 1)
+        self.assertEqual(logger.warn_count, 0)
+        self.assertEqual(logger.error_count, 0)
 
     def test_naver_news_search_paged_merges_and_stops(self):
         cfg = collector.NaverClientConfig(client_id="id", client_secret="sec")

@@ -21,6 +21,10 @@ class NaverClientConfig:
     backoff_max_sec: float = 12.0
 
 
+class NaverNonRetryableError(RuntimeError):
+    pass
+
+
 def _require_creds(cfg: NaverClientConfig) -> None:
     if not cfg.client_id or not cfg.client_secret:
         metric_inc("collector.credentials_missing")
@@ -90,10 +94,24 @@ def _naver_search(
             if not r.ok:
                 metric_inc("collector.http_error", endpoint=endpoint, status=str(r.status_code))
                 log_http_error(f"{log_prefix} ERROR", r)
+                err_code = str(data.get("errorCode", "") or "").strip()
+                if r.status_code in (401, 403) or err_code == "024":
+                    metric_inc(
+                        "collector.auth_error",
+                        endpoint=endpoint,
+                        status=str(r.status_code),
+                        code=err_code or "unknown",
+                    )
+                    msg = data.get("errorMessage") or data.get("message") or f"HTTP {r.status_code}"
+                    raise NaverNonRetryableError(
+                        f"NAVER auth failed ({r.status_code}, code={err_code or 'unknown'}): {msg}"
+                    )
                 r.raise_for_status()
 
             return {"items": []}
 
+        except NaverNonRetryableError:
+            raise
         except Exception as e:
             last_err = e
             metric_inc("collector.retry", endpoint=endpoint, reason="exception")

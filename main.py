@@ -17575,6 +17575,39 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
 # -----------------------------
 # Kakao API
 # -----------------------------
+class KakaoNonRetryableError(RuntimeError):
+    pass
+
+
+def _kakao_error_details(r: Any) -> tuple[str, str, str]:
+    try:
+        data = r.json()
+    except Exception:
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    err = str(data.get("error") or "").strip()
+    desc = str(data.get("error_description") or data.get("msg") or data.get("message") or "").strip()
+    code = str(data.get("error_code") or data.get("code") or "").strip()
+    return err, desc, code
+
+
+def _raise_kakao_non_retryable_if_needed(r: Any, context: str) -> None:
+    err, desc, code = _kakao_error_details(r)
+    if err in {"invalid_client", "invalid_grant", "insufficient_scope", "access_denied"}:
+        detail = desc or f"HTTP {getattr(r, 'status_code', '?')}"
+        if code:
+            detail = f"{detail} (code={code})"
+        raise KakaoNonRetryableError(f"{context}: {err}: {detail}")
+
+
+def _log_kakao_fail_open(exc: Exception) -> None:
+    if isinstance(exc, KakaoNonRetryableError):
+        log.warning("[KAKAO] skipped due to non-retryable auth/config issue (fail-open): %s", exc)
+        return
+    log.error("[KAKAO] send failed but continue (fail-open): %s", exc)
+
+
 def kakao_refresh_access_token() -> str:
     if not KAKAO_REST_API_KEY or not KAKAO_REFRESH_TOKEN:
         raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN not set")
@@ -17590,6 +17623,7 @@ def kakao_refresh_access_token() -> str:
 
     r = http_session().post(url, data=data, timeout=30)
     if not r.ok:
+        _raise_kakao_non_retryable_if_needed(r, "Kakao token refresh failed")
         _log_http_error("[KAKAO TOKEN ERROR]", r)
         r.raise_for_status()
     j = r.json()
@@ -17639,6 +17673,7 @@ def kakao_send_to_me(text: str, web_url: str) -> None:
             return
 
         if r.status_code in (401, 403):
+            _raise_kakao_non_retryable_if_needed(r, "Kakao send auth failed")
             _log_http_error("[KAKAO SEND AUTH ERROR]", r)
             access_token = kakao_refresh_access_token()
             continue
@@ -17649,10 +17684,12 @@ def kakao_send_to_me(text: str, web_url: str) -> None:
             time.sleep(backoff)
             continue
 
+        _raise_kakao_non_retryable_if_needed(r, "Kakao send failed")
         _log_http_error("[KAKAO SEND ERROR]", r)
         r.raise_for_status()
 
     if last_resp is not None:
+        _raise_kakao_non_retryable_if_needed(last_resp, "Kakao send failed")
         _log_http_error("[KAKAO SEND ERROR]", last_resp)
         last_resp.raise_for_status()
     if last_exc is not None:
@@ -18348,7 +18385,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
                 log.info("[OK] Kakao message sent (maintenance rebuild_date, single-page). URL=%s", daily_url)
             except Exception as e:
                 if KAKAO_FAIL_OPEN:
-                    log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+                    _log_kakao_fail_open(e)
                 else:
                     raise
         return
@@ -18427,7 +18464,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
             log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
         except Exception as e:
             if KAKAO_FAIL_OPEN:
-                log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+                _log_kakao_fail_open(e)
             else:
                 raise
 
@@ -18884,7 +18921,7 @@ def main() -> None:
         log.info("[OK] Kakao message sent. URL=%s", daily_url)
     except Exception as e:
         if KAKAO_FAIL_OPEN:
-            log.error("[KAKAO] send failed but continue (fail-open): %s", e)
+            _log_kakao_fail_open(e)
         else:
             raise
 
