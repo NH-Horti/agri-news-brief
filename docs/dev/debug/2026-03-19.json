@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-19T23:14:45+09:00",
-  "build_tag": "f533078",
+  "generated_at_kst": "2026-03-20T00:42:20+09:00",
+  "build_tag": "6ae5018",
   "filter_rejects": [
     {
       "section": "policy",
@@ -919,6 +919,16 @@
       "domain": "economytalk.kr",
       "title": "[종합]\"소휘 애사비구미,팬마음 투표,소휘 효소, 키토선생\" 등 3월 18일 ...",
       "url": "http://www.economytalk.kr/news/articleView.html?idxno=419161",
+      "source_query": "가지 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
       "source_query": "가지 가격 안정",
       "source_channel": "naver_api"
     },
@@ -3075,20 +3085,20 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "catchnews",
-      "domain": "catchnews.kr",
-      "title": "3월 17일 주식시장 주요공시",
-      "url": "https://www.catchnews.kr/news/articleView.html?idxno=121738",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "\"동성제약 회생은 이해관계자 '납득' 필요…정당성이 판단 기준 돼야\"",
+      "url": "https://view.asiae.co.kr/article/2026031808450354024",
       "source_query": "감자 산업",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "\"동성제약 회생은 이해관계자 '납득' 필요…정당성이 판단 기준 돼야\"",
-      "url": "https://view.asiae.co.kr/article/2026031808450354024",
+      "press": "catchnews",
+      "domain": "catchnews.kr",
+      "title": "3월 17일 주식시장 주요공시",
+      "url": "https://www.catchnews.kr/news/articleView.html?idxno=121738",
       "source_query": "감자 산업",
       "source_channel": "naver_api"
     },
@@ -3175,20 +3185,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "worktoday",
-      "domain": "worktoday.co.kr",
-      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
-      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
-      "source_query": "감자 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "FINOMY",
-      "domain": "finomy.com",
-      "title": "이마트 '5K PRICE' 신규 상품 127종 선보여",
-      "url": "http://www.finomy.com/news/articleView.html?idxno=251642",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -3205,10 +3205,20 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "businessplus",
-      "domain": "businessplus.kr",
-      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
-      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
+      "press": "worktoday",
+      "domain": "worktoday.co.kr",
+      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
+      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
+      "source_query": "감자 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "이마트 '5K PRICE' 신규 상품 127종 선보여",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251642",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -3785,20 +3795,20 @@
     {
       "section": "supply",
       "reason": "supply_dist_export_shipping",
-      "press": "newsdream",
-      "domain": "newsdream.kr",
-      "title": "호반프라퍼티, 달코미 양배추 소비촉진 지원…농촌 상생협력 강화",
-      "url": "http://www.newsdream.kr/news/articleView.html?idxno=109677",
+      "press": "public25",
+      "domain": "public25.com",
+      "title": "\"농촌 상생협력 두텁게\"... 호반프라퍼티, 달코미 양배추 소비촉진 지원",
+      "url": "https://www.public25.com/news/articleView.html?idxno=42108",
       "source_query": "양배추 가격 하락",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "supply_dist_export_shipping",
-      "press": "public25",
-      "domain": "public25.com",
-      "title": "\"농촌 상생협력 두텁게\"... 호반프라퍼티, 달코미 양배추 소비촉진 지원",
-      "url": "https://www.public25.com/news/articleView.html?idxno=42108",
+      "press": "newsdream",
+      "domain": "newsdream.kr",
+      "title": "호반프라퍼티, 달코미 양배추 소비촉진 지원…농촌 상생협력 강화",
+      "url": "http://www.newsdream.kr/news/articleView.html?idxno=109677",
       "source_query": "양배추 가격 하락",
       "source_channel": "naver_api"
     },
@@ -5085,6 +5095,16 @@
     {
       "section": "supply",
       "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
+      "source_query": "가지 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
       "press": "이데일리",
       "domain": "edaily.co.kr",
       "title": "\"코스피 2차 충격 올 수도\" 경고…유가보다 무서운 것은 '이것'",
@@ -5124,6 +5144,36 @@
     },
     {
       "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "woodkorea",
+      "domain": "woodkorea.co.kr",
+      "title": "대송창호, 기후 환경과 건축환경 대응위한 '120 가지 한국형 창호 시방도...",
+      "url": "https://www.woodkorea.co.kr/news/articleView.html?idxno=88650",
+      "source_query": "가지 기후변화",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
+      "source_query": "가지 출하",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "YTN",
+      "domain": "science.ytn.co.kr",
+      "title": "[다시보기] 3월 18일 (수) 오후 사이언스 투데이",
+      "url": "https://science.ytn.co.kr/program/view.php?mcd=0082&hcd=0023&key=202603181605088373",
+      "source_query": "가지 소비 대책",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
       "reason": "finance_strict_no_agri_context",
       "press": "KBS",
       "domain": "news.kbs.co.kr",
@@ -5139,6 +5189,16 @@
       "domain": "imaeil.com",
       "title": "\"또 개미만 당하지\"…급등주 담긴 'KoAct 코스닥 액티브', 시장 변동성만...",
       "url": "https://www.imaeil.com/page/view/2026031810110355135",
+      "source_query": "가지 수급 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
       "source_query": "가지 수급 안정",
       "source_channel": "naver_api"
     },
@@ -5229,6 +5289,16 @@
       "domain": "economytalk.kr",
       "title": "[종합]\"소휘 애사비구미,팬마음 투표,소휘 효소, 키토선생\" 등 3월 18일 ...",
       "url": "http://www.economytalk.kr/news/articleView.html?idxno=419161",
+      "source_query": "가지 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_strict_no_agri_context",
+      "press": "g-enews",
+      "domain": "g-enews.com",
+      "title": "KB증권 \"SK하이닉스, 메모리 공급 부족 장기화.. 기업 가지 재평가\"",
+      "url": "https://www.g-enews.com/view.php?ud=20260318082243177444093b5d4e_1",
       "source_query": "가지 가격 안정",
       "source_channel": "naver_api"
     },
@@ -6237,16 +6307,6 @@
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
-      "source_query": "품목농협 경제사업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
       "title": "울산원예 농협 , 농협 종합업적평가 전국 1위 '최우수상' 쾌거",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64023",
       "source_query": "품목농협 경제사업",
@@ -6275,21 +6335,21 @@
     {
       "section": "dist",
       "reason": "must_terms_fail",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "청주 현도 농협 ·청주시, 2억2000만원 상당 농업자재 지원",
-      "url": "https://www.nongmin.com/article/20260317500304",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
       "source_query": "품목농협 경제사업",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
-      "source_query": "원예농협 경제사업",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "청주 현도 농협 ·청주시, 2억2000만원 상당 농업자재 지원",
+      "url": "https://www.nongmin.com/article/20260317500304",
+      "source_query": "품목농협 경제사업",
       "source_channel": "naver_api"
     },
     {
@@ -6319,6 +6379,16 @@
       "domain": "wonyesanup.co.kr",
       "title": "구본권(아산 원예농협 조합장) - \"농가 소득향상과 삶의 질 향상이 농협 ...",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64048",
+      "source_query": "원예농협 경제사업",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
       "source_query": "원예농협 경제사업",
       "source_channel": "naver_api"
     },
@@ -6805,10 +6875,20 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
-      "url": "http://www.fnnews.com/news/202603180925506726",
+      "press": "한국일보",
+      "domain": "hankookilbo.com",
+      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
+      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
+      "source_query": "수출업계 간담회 농식품부",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
+      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -6825,20 +6905,10 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "한국일보",
-      "domain": "hankookilbo.com",
-      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
-      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
-      "source_query": "수출업계 간담회 농식품부",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_policy_export_support_brief",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
-      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
+      "url": "http://www.fnnews.com/news/202603180925506726",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -10148,7 +10218,7 @@
       "threshold": 23.66,
       "tail_cut": 24.06,
       "core_min": 23.66,
-      "total_candidates": 319,
+      "total_candidates": 315,
       "total_selected": 5,
       "top": [
         {
@@ -10289,7 +10359,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 27.36,
+          "score": 27.16,
           "tier": 3,
           "press": "국민일보",
           "domain": "kmib.co.kr",
@@ -10482,33 +10552,6 @@
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
-          "title": "양파 값 보장 외치는 농민들",
-          "url": "https://www.news1.kr/photos/7803635",
-          "reason": "below_threshold",
-          "fit_score": 1.35,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 23.26,
-          "tier": 2,
-          "press": "뉴스1",
-          "domain": "news1.kr",
           "title": "양파 값 폭락에 농민들 집결",
           "url": "https://www.news1.kr/photos/7803641",
           "reason": "below_threshold",
@@ -10565,6 +10608,33 @@
           "domain": "news1.kr",
           "title": "양파 값 보장 촉구하는 농민들",
           "url": "https://www.news1.kr/photos/7803639",
+          "reason": "below_threshold",
+          "fit_score": 1.35,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 23.26,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "양파 값 보장 외치는 농민들",
+          "url": "https://www.news1.kr/photos/7803635",
           "reason": "below_threshold",
           "fit_score": 1.35,
           "selection_stage": "below_threshold",
@@ -11573,7 +11643,7 @@
           "source_query": "가지 가격",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
+            "horti_sc": 1.6,
             "market_hits": 0,
             "strength": 1,
             "korea": 1,
@@ -14444,7 +14514,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 22.41,
+          "score": 22.21,
           "tier": 3,
           "press": "YTN",
           "domain": "ytn.co.kr",
@@ -14579,7 +14649,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.76,
+          "score": 14.56,
           "tier": 1,
           "press": "강원도민일보",
           "domain": "kado.net",
@@ -14714,14 +14784,14 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.12,
+          "score": 11.33,
           "tier": 3,
           "press": "동아일보",
           "domain": "sports.donga.com",
           "title": "장성군 “사과·배 화상병 예방…지금 시작하세요”",
           "url": "https://sports.donga.com/region/article/all/20260318/133554545/1",
           "reason": "below_threshold",
-          "fit_score": 2.42,
+          "fit_score": 2.14,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "pest",
@@ -14729,7 +14799,7 @@
           "source_query": "과수화상병",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 2.2,
+            "horti_sc": 1.95,
             "market_hits": 0,
             "strength": 2,
             "korea": 2,
@@ -15053,10 +15123,6 @@
           3
         ],
         [
-          "가지 가격 안정",
-          3
-        ],
-        [
           "원산지 단속 농산물",
           2
         ],
@@ -15066,6 +15132,10 @@
         ],
         [
           "농산물 수급 관리센터",
+          2
+        ],
+        [
+          "가지 가격 안정",
           2
         ],
         [
@@ -15121,7 +15191,7 @@
         "농산물 수급 안정 대책"
       ],
       "recall_meta": {},
-      "items_total": 51,
+      "items_total": 50,
       "seed_coverage": [
         {
           "seed": "농식품부",
@@ -15190,7 +15260,7 @@
         {
           "seed": "안정",
           "rep": "안정",
-          "hits": 16,
+          "hits": 15,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "춘천시, 중동發 경제 불안 대응 ‘민생경제상황실’ 가동"
@@ -15347,7 +15417,7 @@
         ],
         [
           "가지 가격",
-          13
+          12
         ],
         [
           "가지 재배",
@@ -15414,7 +15484,7 @@
         "감귤 가격"
       ],
       "recall_meta": {},
-      "items_total": 362,
+      "items_total": 358,
       "seed_coverage": [
         {
           "seed": "사과",
