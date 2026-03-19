@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-19T07:48:54+09:00",
-  "build_tag": "a966817",
+  "generated_at_kst": "2026-03-19T09:08:29+09:00",
+  "build_tag": "bebf0d4",
   "filter_rejects": [
     {
       "section": "policy",
@@ -164,21 +164,21 @@
     },
     {
       "section": "policy",
-      "reason": "policy_dist_export_field",
-      "press": "신아일보",
-      "domain": "shinailbo.co.kr",
-      "title": "'중동 쇼크' 농식품부 , 피해 수출기업 자금 우선 배정",
-      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5002254",
-      "source_query": "농식품부 가격 점검",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "policy_macro_general_economy",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "중동 리스크에 K-푸드 수출도 '비상'…정부, 긴급 지원 확대",
       "url": "https://www.newsis.com/view/NISX20260318_0003553005",
+      "source_query": "농식품부 가격 점검",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_dist_export_field",
+      "press": "신아일보",
+      "domain": "shinailbo.co.kr",
+      "title": "'중동 쇼크' 농식품부 , 피해 수출기업 자금 우선 배정",
+      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5002254",
       "source_query": "농식품부 가격 점검",
       "source_channel": "naver_api"
     },
@@ -1755,16 +1755,6 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "mstoday",
-      "domain": "mstoday.co.kr",
-      "title": "\"죄송합니다\" 대신 \"HBM4E\"… 삼성전자 주총, '천조 기업'의 귀환",
-      "url": "https://www.mstoday.co.kr/news/articleView.html?idxno=100871",
-      "source_query": "사과 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "cnbnews",
       "domain": "cnbnews.com",
       "title": "롯데마트, ‘기체제어’ 저장 기술 활용한 사과 본격 출하",
@@ -2015,16 +2005,6 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "kpenews",
-      "domain": "kpenews.com",
-      "title": "“이상기후 수급 불안에 대응”..롯데마트, 기체제어 저장 사과 본격 출...",
-      "url": "https://kpenews.com/View.aspx?No=4007722",
-      "source_query": "사과 저장",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
       "press": "biztribune",
       "domain": "biztribune.co.kr",
       "title": "[브리프]쿠팡 우아한형제들 롯데마트 홈플러스 CJ온스타일 外",
@@ -2254,16 +2234,6 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "롯데마트, '기체제어' 저장 사과 본격 출하",
-      "url": "https://www.yna.co.kr/view/PYH20260318011100013?input=1196m",
-      "source_query": "사과 출하",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "supply_macro_price_watch",
       "press": "kyongbuk",
       "domain": "kyongbuk.co.kr",
@@ -2425,20 +2395,20 @@
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "대형마트 ‘초저가 할인’ 본격화…이마트·롯데마트, 장바구니 부담 낮...",
-      "url": "https://www.etoday.co.kr/news/view/2566865",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "롯데마트, '메가통큰' 창립 행사 진행…\"장바구니 부담 완화\"",
+      "url": "https://www.news1.kr/industry/distribution/6105927",
       "source_query": "딸기 가격",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "apple_non_edible_context",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "롯데마트, '메가통큰' 창립 행사 진행…\"장바구니 부담 완화\"",
-      "url": "https://www.news1.kr/industry/distribution/6105927",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "대형마트 ‘초저가 할인’ 본격화…이마트·롯데마트, 장바구니 부담 낮...",
+      "url": "https://www.etoday.co.kr/news/view/2566865",
       "source_query": "딸기 가격",
       "source_channel": "naver_api"
     },
@@ -2509,16 +2479,6 @@
       "domain": "view.asiae.co.kr",
       "title": "논산 딸기 축제 26일 개막…전국 발길 쏠린다",
       "url": "https://view.asiae.co.kr/article/2026031810125307415",
-      "source_query": "딸기 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "melon_non_edible_context",
-      "press": "ceoscoredaily",
-      "domain": "ceoscoredaily.com",
-      "title": "빙그레, 해태아이스 합병·해외 공략 ‘투트랙’…성장 돌파구 찾는다",
-      "url": "https://www.ceoscoredaily.com/page/view/2026031715344799865",
       "source_query": "딸기 가격",
       "source_channel": "naver_api"
     },
@@ -2644,21 +2604,21 @@
     },
     {
       "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "4TH",
-      "domain": "4th.kr",
-      "title": "[유통소식] 롯데마트, '기체제어' 저장 사과 본격 출하",
-      "url": "http://www.4th.kr/news/articleView.html?idxno=2109196",
-      "source_query": "토마토 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "newstomato",
       "domain": "newstomato.com",
       "title": "[IB 토마토 ]해외 사모대출 유동성 우려…삼성·한투 상품에 번지나",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1294652&inflow=N",
+      "source_query": "토마토 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "4TH",
+      "domain": "4th.kr",
+      "title": "[유통소식] 롯데마트, '기체제어' 저장 사과 본격 출하",
+      "url": "http://www.4th.kr/news/articleView.html?idxno=2109196",
       "source_query": "토마토 가격",
       "source_channel": "naver_api"
     },
@@ -3465,10 +3425,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "전자신문",
-      "domain": "etnews.com",
-      "title": "이마트, '5K PRICE' 353종 확대…소형가전까지 초저가 전략 강화",
-      "url": "https://www.etnews.com/20260318000457",
+      "press": "지디넷코리아",
+      "domain": "zdnet.co.kr",
+      "title": "초저가 청소기·다리미…이마트 5K PRICE 라인업 확대",
+      "url": "https://zdnet.co.kr/view/?no=20260318163647",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -3485,10 +3445,70 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "지디넷코리아",
-      "domain": "zdnet.co.kr",
-      "title": "초저가 청소기·다리미…이마트 5K PRICE 라인업 확대",
-      "url": "https://zdnet.co.kr/view/?no=20260318163647",
+      "press": "전자신문",
+      "domain": "etnews.com",
+      "title": "이마트, '5K PRICE' 353종 확대…소형가전까지 초저가 전략 강화",
+      "url": "https://www.etnews.com/20260318000457",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "econonews",
+      "domain": "econonews.co.kr",
+      "title": "이마트 초저가 PB '5K PRICE', 353종으로 라인업 확대",
+      "url": "http://www.econonews.co.kr/news/articleView.html?idxno=431544",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "다이소 vs 이마트 … 초저가 생활가전 경쟁 불붙었다",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/18/2026031800359.html",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "worktoday",
+      "domain": "worktoday.co.kr",
+      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
+      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "이마트 '5K PRICE', 353종으로 라인업 확장…\"초저가 제품 확대\"",
+      "url": "https://www.news1.kr/industry/distribution/6105919",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "소형가전도 저렴하게 이마트에서…'5K 프라이스' 127종 추가",
+      "url": "https://www.newsis.com/view/NISX20260318_0003554107",
+      "source_query": "감자 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "potato_non_fresh_context",
+      "press": "businessplus",
+      "domain": "businessplus.kr",
+      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
+      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -3525,60 +3545,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "businessplus",
-      "domain": "businessplus.kr",
-      "title": "이마트 '5K PRICE', 353종으로 라인업 확대",
-      "url": "https://www.businessplus.kr/news/articleView.html?idxno=109075",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "worktoday",
-      "domain": "worktoday.co.kr",
-      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
-      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "econonews",
-      "domain": "econonews.co.kr",
-      "title": "이마트 초저가 PB '5K PRICE', 353종으로 라인업 확대",
-      "url": "http://www.econonews.co.kr/news/articleView.html?idxno=431544",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "다이소 vs 이마트 … 초저가 생활가전 경쟁 불붙었다",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/18/2026031800359.html",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "이마트 '5K PRICE', 353종으로 라인업 확장…\"초저가 제품 확대\"",
-      "url": "https://www.news1.kr/industry/distribution/6105919",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "소형가전도 저렴하게 이마트에서…'5K 프라이스' 127종 추가",
-      "url": "https://www.newsis.com/view/NISX20260318_0003554107",
+      "press": "FINOMY",
+      "domain": "finomy.com",
+      "title": "이마트 '5K PRICE' 신규 상품 127종 선보여",
+      "url": "http://www.finomy.com/news/articleView.html?idxno=251642",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -3589,16 +3559,6 @@
       "domain": "kdfnews.com",
       "title": "이마트, '5K PRICE' 353종 확대… \"5천원 초저가 전략 확장\"",
       "url": "http://www.kdfnews.com/news/articleView.html?idxno=180281",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "FINOMY",
-      "domain": "finomy.com",
-      "title": "이마트 '5K PRICE' 신규 상품 127종 선보여",
-      "url": "http://www.finomy.com/news/articleView.html?idxno=251642",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -3975,20 +3935,20 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "\"동성제약 회생은 이해관계자 '납득' 필요…정당성이 판단 기준 돼야\"",
-      "url": "https://view.asiae.co.kr/article/2026031808450354024",
+      "press": "catchnews",
+      "domain": "catchnews.kr",
+      "title": "3월 17일 주식시장 주요공시",
+      "url": "https://www.catchnews.kr/news/articleView.html?idxno=121738",
       "source_query": "감자 산업",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "catchnews",
-      "domain": "catchnews.kr",
-      "title": "3월 17일 주식시장 주요공시",
-      "url": "https://www.catchnews.kr/news/articleView.html?idxno=121738",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "\"동성제약 회생은 이해관계자 '납득' 필요…정당성이 판단 기준 돼야\"",
+      "url": "https://view.asiae.co.kr/article/2026031808450354024",
       "source_query": "감자 산업",
       "source_channel": "naver_api"
     },
@@ -4075,10 +4035,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "ONEWS",
-      "domain": "onews.tv",
-      "title": "이마트 초저가 PB브랜드 '5K PRICE' 가전·생활용품으로 라인업 확대",
-      "url": "https://www.onews.tv/news/articleView.html?idxno=276899",
+      "press": "worktoday",
+      "domain": "worktoday.co.kr",
+      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
+      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -4095,10 +4055,10 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "worktoday",
-      "domain": "worktoday.co.kr",
-      "title": "이마트 초저가 '5K PRICE', 353종으로 라인업 확대 ....가전·생활용품까...",
-      "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82673",
+      "press": "ONEWS",
+      "domain": "onews.tv",
+      "title": "이마트 초저가 PB브랜드 '5K PRICE' 가전·생활용품으로 라인업 확대",
+      "url": "https://www.onews.tv/news/articleView.html?idxno=276899",
       "source_query": "감자 가격 안정",
       "source_channel": "naver_api"
     },
@@ -4695,20 +4655,20 @@
     {
       "section": "supply",
       "reason": "supply_dist_export_shipping",
-      "press": "public25",
-      "domain": "public25.com",
-      "title": "\"농촌 상생협력 두텁게\"... 호반프라퍼티, 달코미 양배추 소비촉진 지원",
-      "url": "https://www.public25.com/news/articleView.html?idxno=42108",
+      "press": "newsdream",
+      "domain": "newsdream.kr",
+      "title": "호반프라퍼티, 달코미 양배추 소비촉진 지원…농촌 상생협력 강화",
+      "url": "http://www.newsdream.kr/news/articleView.html?idxno=109677",
       "source_query": "양배추 가격 하락",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "supply_dist_export_shipping",
-      "press": "newsdream",
-      "domain": "newsdream.kr",
-      "title": "호반프라퍼티, 달코미 양배추 소비촉진 지원…농촌 상생협력 강화",
-      "url": "http://www.newsdream.kr/news/articleView.html?idxno=109677",
+      "press": "public25",
+      "domain": "public25.com",
+      "title": "\"농촌 상생협력 두텁게\"... 호반프라퍼티, 달코미 양배추 소비촉진 지원",
+      "url": "https://www.public25.com/news/articleView.html?idxno=42108",
       "source_query": "양배추 가격 하락",
       "source_channel": "naver_api"
     },
@@ -7387,26 +7347,6 @@
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "구본권(아산원예 농협 조합장) - \"농가 소득향상과 삶의 질 향상이 농협 ...",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64048",
-      "source_query": "품목농협 경제사업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
-      "source_query": "품목농협 경제사업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
       "title": "울산원예 농협 , 농협 종합업적평가 전국 1위 '최우수상' 쾌거",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64023",
       "source_query": "품목농협 경제사업",
@@ -7419,6 +7359,26 @@
       "domain": "wonyesanup.co.kr",
       "title": "원예인 新農直說 - 원예 농협 , '규모' 넘어 '구조' 혁신으로 농가 소득 돌...",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64071",
+      "source_query": "품목농협 경제사업",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "구본권(아산원예 농협 조합장) - \"농가 소득향상과 삶의 질 향상이 농협 ...",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64048",
+      "source_query": "품목농협 경제사업",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "AI 시대에 맞는 농협 사업 펼쳐야",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64046",
       "source_query": "품목농협 경제사업",
       "source_channel": "naver_api"
     },
@@ -7564,21 +7524,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "[afl 인터뷰] 이홍준 세종일자리경제진흥원장",
-      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316781",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "opinion_or_editorial",
       "press": "경인일보",
       "domain": "kyeongin.com",
       "title": "[기고] 인천 농업 융복합+, 글로벌 브랜드 도약과 과제",
       "url": "https://www.kyeongin.com/article/1760464",
+      "source_query": "농산물 판로 확대",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "[afl 인터뷰] 이홍준 세종일자리경제진흥원장",
+      "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=316781",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -7694,21 +7654,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "EBN",
-      "domain": "ebn.co.kr",
-      "title": "호반프라퍼티, '달코미 양배추' 1만통 풀었다…가격 방어· 판로 확장 '투...",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1702724",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_consumer_tail",
       "press": "hidomin",
       "domain": "hidomin.com",
       "title": "의성 학교급식 지원사업 추진",
       "url": "http://www.hidomin.com/news/articleView.html?idxno=612803",
+      "source_query": "농산물 판로 확대",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_context_gate",
+      "press": "EBN",
+      "domain": "ebn.co.kr",
+      "title": "호반프라퍼티, '달코미 양배추' 1만통 풀었다…가격 방어· 판로 확장 '투...",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1702724",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -7795,16 +7755,6 @@
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "thepublic",
-      "domain": "thepublic.kr",
-      "title": "호반프라퍼티, 달코미 양배추 소비 촉진 지원…농촌 상생협력 강화",
-      "url": "https://www.thepublic.kr/news/articleView.html?idxno=297859",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
       "press": "ccdailynews",
       "domain": "ccdailynews.com",
       "title": "서산시, 농특산물 정례 직거래장터 개장",
@@ -7815,10 +7765,10 @@
     {
       "section": "dist",
       "reason": "dist_context_gate",
-      "press": "newsworker",
-      "domain": "newsworker.co.kr",
-      "title": "해남의 봄, '인재육성' 희망의 씨앗을 심는다",
-      "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=418007",
+      "press": "thepublic",
+      "domain": "thepublic.kr",
+      "title": "호반프라퍼티, 달코미 양배추 소비 촉진 지원…농촌 상생협력 강화",
+      "url": "https://www.thepublic.kr/news/articleView.html?idxno=297859",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -8295,10 +8245,20 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
-      "url": "http://www.fnnews.com/news/202603180925506726",
+      "press": "한국일보",
+      "domain": "hankookilbo.com",
+      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
+      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
+      "source_query": "수출업계 간담회 농식품부",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_policy_export_support_brief",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
+      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -8315,20 +8275,10 @@
     {
       "section": "dist",
       "reason": "dist_policy_export_support_brief",
-      "press": "한국일보",
-      "domain": "hankookilbo.com",
-      "title": "중동 사태로 K푸드 수출 도 비상… 정부는 물류비 지원 나서",
-      "url": "https://www.hankookilbo.com/news/article/A2026031815160004088?did=NA",
-      "source_query": "수출업계 간담회 농식품부",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_policy_export_support_brief",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "중동 변수 커진 K-푸드 수출 … 농식품부 , 업계 대응 점검",
-      "url": "https://www.dailian.co.kr/news/view/1622220/?sc=Naver",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "중동 변수에 K푸드 수출 흔들…정부 긴급 지원 확대",
+      "url": "http://www.fnnews.com/news/202603180925506726",
       "source_query": "수출업계 간담회 농식품부",
       "source_channel": "naver_api"
     },
@@ -10847,8 +10797,8 @@
       "reason": "must_terms_fail",
       "press": "FSNEWS",
       "domain": "fsnews.co.kr",
-      "title": "[제427호 레시피] 아욱다슬기된장국",
-      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60357",
+      "title": "[제427호 레시피] 주꾸미참나물샐러드",
+      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60358",
       "source_query": "마늘",
       "source_channel": "naver_api"
     },
@@ -10857,8 +10807,8 @@
       "reason": "must_terms_fail",
       "press": "FSNEWS",
       "domain": "fsnews.co.kr",
-      "title": "[제427호 레시피] 주꾸미참나물샐러드",
-      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60358",
+      "title": "[제427호 레시피] 아욱다슬기된장국",
+      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60357",
       "source_query": "마늘",
       "source_channel": "naver_api"
     },
@@ -10889,186 +10839,6 @@
       "domain": "ttlnews.com",
       "title": "[주목, 이 상품] 교촌, 락앤락, KT&G",
       "url": "http://www.ttlnews.com/news/articleView.html?idxno=3090079",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "gndomin",
-      "domain": "gndomin.com",
-      "title": "사천시 2026년 농산물소득조사 추진",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=469011",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "이투데이",
-      "domain": "enter.etoday.co.kr",
-      "title": "'오늘N' 남해 멸치쌈밥 맛집 할매식당",
-      "url": "https://enter.etoday.co.kr/news/view/294736",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "농진청, 전국 도 농업기술원장과 봄철 영농 협력 강화",
-      "url": "https://www.dailian.co.kr/news/view/1622520/?sc=Naver",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "\"다이어트, 이제 지쳤다\"…자극적인 맛에 꽂힌 日, 헬스시장 넘었다",
-      "url": "https://view.asiae.co.kr/article/2026031817233284652",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "newsworks",
-      "domain": "newsworks.co.kr",
-      "title": "[가보니] 주방 없는 '식당' 온다…CJ프레시웨이 '미래형 급식' 주목",
-      "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=834532",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "potato_non_fresh_context",
-      "press": "enetnews",
-      "domain": "enetnews.co.kr",
-      "title": "창립 35주년 '교촌치킨', 농심 손잡고 '시그니처 위크' 진행",
-      "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=47918",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "segyebiz",
-      "domain": "segyebiz.com",
-      "title": "매드포갈릭, SKT ‘T day’ 진행…40% 할인 쿠폰 제공",
-      "url": "http://www.segyebiz.com/newsView/20260318517691",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "potato_non_fresh_context",
-      "press": "thevaluenews",
-      "domain": "thevaluenews.co.kr",
-      "title": "[유통 레이더] 아워홈·풀무원·교촌, 국내 대표 식품 브랜드의 오감만...",
-      "url": "http://www.thevaluenews.co.kr/news/view.php?idx=197499",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "bntnews",
-      "domain": "bntnews.co.kr",
-      "title": "'오늘N' 할매 멸치 쌈밥",
-      "url": "https://www.bntnews.co.kr/article/view/bnt202603180100",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "joongangenews",
-      "domain": "joongangenews.com",
-      "title": "단양 가볼 만한 곳, 하늘과 강을 오가는 짜릿한 봄의 여정",
-      "url": "https://www.joongangenews.com/news/articleView.html?idxno=503699",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "SBS",
-      "domain": "news.sbs.co.kr",
-      "title": "건강보다는 맛·쾌락…일 흔드는 '배덕의 맛' 보상 소비 열풍",
-      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008482627&plink=ORI&cooper=NAVER",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "weeklytrade",
-      "domain": "weeklytrade.co.kr",
-      "title": "식품 '길티소비'를 아시나요... 일본서 건강보다는 맛·쾌락 추구",
-      "url": "https://weeklytrade.co.kr/news/view.html?section=1&category=136&item=&no=98955",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_weak_signal",
-      "press": "headlinejeju",
-      "domain": "headlinejeju.co.kr",
-      "title": "원성현 제주도의원 구좌.우도 예비후보 \"필수농자재지원 조례 제정할 것...",
-      "url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=588906",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "문화일보",
-      "domain": "munhwa.com",
-      "title": "日, ‘배덕한 음식’ 열풍… 일탈형 ‘길티 소비’로 스트레스 해소",
-      "url": "https://www.munhwa.com/article/11575559",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "stardailynews",
-      "domain": "stardailynews.co.kr",
-      "title": "'오늘N' 남해군 할매식당, 50년 내공 담긴 멸치 쌈밥",
-      "url": "https://www.stardailynews.co.kr/news/articleView.html?idxno=528000",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "potato_non_fresh_context",
-      "press": "M-I",
-      "domain": "m-i.kr",
-      "title": "교촌치킨, '포테토칩 교촌간장치킨맛' 증정 프로모션 '시그니처 위크' ...",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1355096",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "합천군, 산업형 농업 전환 본격화",
-      "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2407651",
-      "source_query": "마늘",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "ban_keywords",
-      "press": "pennmike",
-      "domain": "pennmike.com",
-      "title": "창녕농협, 지난 해 관내 농작물재해보험 78억원 지원 최다 면적 전국 1위",
-      "url": "https://www.pennmike.com/news/articleView.html?idxno=116969",
       "source_query": "마늘",
       "source_channel": "naver_api"
     },
@@ -11130,456 +10900,6 @@
       "title": "美국토안보장관 후보자 \"ICE 운영, 더 나은 접근법 있다 믿어\"",
       "url": "https://www.yna.co.kr/view/AKR20260319015600071?input=1195m",
       "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "bizwnews",
-      "domain": "bizwnews.com",
-      "title": "롯데마트, '기체제어' 저장 기술로 재배한 사과 본격 출하…\"이상기후 ...",
-      "url": "http://www.bizwnews.com/news/articleView.html?idxno=129504",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "economytalk",
-      "domain": "economytalk.kr",
-      "title": "[캐시워크 돈버는퀴즈 종합]\"리얼마이즈,소휘 애사비구미, 키토선생\" 등...",
-      "url": "http://www.economytalk.kr/news/articleView.html?idxno=419212",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "작년 보완 약속했지만 또 참사…스토킹 보호 체계 도마에",
-      "url": "https://www.yna.co.kr/view/AKR20260318156700060?input=1195m",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "medipana",
-      "domain": "medipana.com",
-      "title": "의료분쟁조정법 통과에도‥필수의료 사법리스크 '해법은 진행형'",
-      "url": "https://www.medipana.com/news/articleView.html?idxno=408429",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "[현장에서]'여권의 입' 김어준을 둘러싼 민주당 균열",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=02082806645384960",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "롯데마트, 창립 28주년 '메가통큰'…\"한우·대게 반값\"",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=02043446645384960",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_apology_context",
-      "press": "YAKUP",
-      "domain": "yakup.com",
-      "title": "\"필수의료 형사리스크 완화 첫발…'개인책임→사회분담' 전환 필요성 부...",
-      "url": "https://www.yakup.com/news/index.html?mode=view&cat=11&nid=324815",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "롯데마트, 2주간 창립 28주년 기념 ‘메가통큰’ 행사 연다",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/18/2026031800370.html",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "NEWSCJ",
-      "domain": "newscj.com",
-      "title": "[천지일보 여론조사] 공소취소 거래설에… \"특검 도입\" 28.7% \"검찰 수사...",
-      "url": "https://www.newscj.com/news/articleView.html?idxno=3385877",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "조선일보",
-      "domain": "realty.chosun.com",
-      "title": "\"금융사고 제로\" 선언 강태영 농협은행장, 임원 내부통제 면죄부?",
-      "url": "https://realty.chosun.com/site/data/html_dir/2026/03/18/2026031803577.html",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_apology_context",
-      "press": "xportsnews",
-      "domain": "xportsnews.com",
-      "title": "특이함 깨달은 영철, 통곡하다 돌연 미소…데프콘 \"상철한테 사과 해야\"...",
-      "url": "https://www.xportsnews.com/article/2124725",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_apology_context",
-      "press": "BOSA",
-      "domain": "bosa.co.kr",
-      "title": "복지위 통과 의료분쟁조정법 개정안 두고 '충돌'…의료계 \"분쟁 부추긴...",
-      "url": "https://www.bosa.co.kr/news/articleView.html?idxno=3000980",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_apology_context",
-      "press": "BOSA",
-      "domain": "bosa.co.kr",
-      "title": "법조계 \"의료분쟁조정법 '중과실' 정의 신중해야\"",
-      "url": "https://www.bosa.co.kr/news/articleView.html?idxno=3000982",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "롯데마트, '메가통큰' 창립 행사 진행…\"장바구니 부담 완화\"",
-      "url": "https://www.news1.kr/industry/distribution/6105927",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "대형마트 ‘초저가 할인’ 본격화…이마트·롯데마트, 장바구니 부담 낮...",
-      "url": "https://www.etoday.co.kr/news/view/2566865",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "'1년에 단 두번'…롯데마트, 2주간 '메가통큰' 할인",
-      "url": "https://www.newsis.com/view/NISX20260318_0003554243",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "경향신문",
-      "domain": "khan.co.kr",
-      "title": "정청래 ‘김어준 출연’에 강득구는 ‘보이콧 선언’…친청계는 단골, ...",
-      "url": "https://www.khan.co.kr/article/202603190600071",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "롯데마트, 창립 28주년 '메가통큰' 할인행사…한우·치킨 반값",
-      "url": "https://view.asiae.co.kr/article/2026031817032505011",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "매일경제",
-      "domain": "mk.co.kr",
-      "title": "“죄송합니다, 죄송합니다!” 김혜성 동료 로하스가 약쟁이? 오보낸 美...",
-      "url": "https://www.mk.co.kr/article/11991977",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "뉴스1",
-      "domain": "news1.kr",
-      "title": "\"사형 구형되면 뭐해, 딸은 돌아오지 않는데\"…틱토커 윤지아 유족의 절...",
-      "url": "https://www.news1.kr/local/gyeonggi/6106137",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "서울경제",
-      "domain": "sedaily.com",
-      "title": "머스크 회사서 줄퇴사 ‘우르르’...“ 사과 드린다, 제발 지원 좀” 무슨...",
-      "url": "https://www.sedaily.com/article/20021227",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "노컷뉴스",
-      "domain": "nocutnews.co.kr",
-      "title": "행동하는 황현진의 용기…이청아 \"바로 '아너'가 말하고자 한 것\"[EN:터뷰...",
-      "url": "https://www.nocutnews.co.kr/news/6487253",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "국힘 9표 필요한데…개헌 낙관하는 우원식, 그의 믿는 구석",
-      "url": "https://www.joongang.co.kr/article/25412929",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "“쿠팡도 우리 가격 못 따라 옵니다” 한국에서 가장 싼 쇼핑몰 만든 청...",
-      "url": "https://www.chosun.com/economy/startup_story/2026/03/04/4Z2VMSRNPFCNZE4LNAEVFKNFU4/",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "조선일보",
-      "domain": "chosun.com",
-      "title": "“못생긴 건 죄가 아니에요” 못난이 농산물 80만명에 420만kg 팔았다",
-      "url": "https://www.chosun.com/economy/startup_story/2026/03/19/B7O7DXKDWNHTHP3RUNHT47B2OM/",
-      "source_query": "사과",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "finance_strict_no_agri_context",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "STX엔진, K군함 황금기에 매출 1兆 시대연다",
-      "url": "http://www.fnnews.com/news/202603160742263937",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "maniareport",
-      "domain": "maniareport.com",
-      "title": "양의지 연봉 42억원? 그래봤자 오타니 보름치...KBO vs MLB 평균 연봉 40...",
-      "url": "http://www.maniareport.com/view.php?ud=20260319065501840391b55a0d56_19",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "news2day",
-      "domain": "news2day.co.kr",
-      "title": "[컬처핏 A+(60)] 롯데웰푸드, 칸쵸 네이밍 '분투기'로 도전형 인재상 제...",
-      "url": "https://www.news2day.co.kr/article/20260318500184",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "xportsnews",
-      "domain": "xportsnews.com",
-      "title": "'미쓰홍' 조한결 \"권력 생긴 느낌, 신기해\"…'여의도 해적단' 사이트까...",
-      "url": "https://www.xportsnews.com/article/2124197",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "goodnews1",
-      "domain": "goodnews1.com",
-      "title": "'금값 된 쌀'에 떡·공깃밥 가격 줄인상…외식업계 원가 부담 비상",
-      "url": "https://www.goodnews1.com/news/articleView.html?idxno=457771",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "국민일보",
-      "domain": "kmib.co.kr",
-      "title": "“대한민국은 이재명, 화성은 정명근”",
-      "url": "https://www.kmib.co.kr/article/view.asp?arcid=0029549031&code=61122013&cp=nv",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "한국경제",
-      "domain": "hankyung.com",
-      "title": "美 정부 \"유가 조치 이틀 내 발표\"…석유업계와 회동 예정",
-      "url": "https://www.hankyung.com/article/202603191059i",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "MBC",
-      "domain": "imnews.imbc.com",
-      "title": "[와글와글] \" 배 고파, 사랑해\" 직접 표현하는 돼지 화제",
-      "url": "https://imnews.imbc.com/replay/2026/nwtoday/article/6808585_37012.html",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "쿠바 전력망 29시간 만에 복구…고립 속 국제 구호물자도 도착",
-      "url": "https://www.yna.co.kr/view/AKR20260319017800087?input=1195m",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "finance_strict_no_agri_context",
-      "press": "coinreaders",
-      "domain": "coinreaders.com",
-      "title": "8거래일 유출 끝낸 엑스알피 현물 ETF...승부처는 3월 27일",
-      "url": "http://coinreaders.com/224733",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "SBS",
-      "domain": "news.sbs.co.kr",
-      "title": "쌀값, 최대 26% 치솟아…\"송미령 장관 쌀 정책 오락가락\"",
-      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008483155&plink=ORI&cooper=NAVER",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "MBC",
-      "domain": "imnews.imbc.com",
-      "title": "[전국 톡톡] 사천 항공MRO 산단 준공‥\"우주항공 복합도시\"",
-      "url": "https://imnews.imbc.com/replay/2026/nwtoday/article/6808579_37012.html",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "finance_strict_no_agri_context",
-      "press": "연합뉴스TV",
-      "domain": "yonhapnewstv.co.kr",
-      "title": "마이크론, 사상 최대 분기 매출…전년동기 대비 3 배 ↑",
-      "url": "http://www.yonhapnewstv.co.kr/AKR20260319063223SLj",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "finance_strict_no_agri_context",
-      "press": "이데일리",
-      "domain": "edaily.co.kr",
-      "title": "'반도체 실적 풍향계' 마이크론 실적 3 배 로 급증",
-      "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=02266486645384960",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "sportschosun",
-      "domain": "sportschosun.com",
-      "title": "'문원♥' 신지, 5월 결혼 앞두고 다이어트 대성공..\"음식 대신 물, 야식...",
-      "url": "https://www.sportschosun.com/entertainment/2026-03-19/202603180100125940008705",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "현대글로비스, 보스턴다이내믹스 투자 늘렸다…몸값 24 배 ↑",
-      "url": "http://www.fnnews.com/news/202603190624583008",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "consumernews",
-      "domain": "consumernews.co.kr",
-      "title": "[소비자분쟁 The50 ⑪] 냉장고 도어 플라스틱 조각 하나 떨어졌는데 통...",
-      "url": "http://www.consumernews.co.kr/news/articleView.html?idxno=752136",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "◇내일의 경기(20일)",
-      "url": "https://www.yna.co.kr/view/AKR20260317169952007?input=1195m",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "finance_strict_no_agri_context",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "◇오늘의 경기(19일)",
-      "url": "https://www.yna.co.kr/view/AKR20260317169951007?input=1195m",
-      "source_query": "배",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "must_terms_fail",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "쌀값, 최대 26% 치솟아…\"송미령 장관 쌀정책 오락가락\"",
-      "url": "https://www.yna.co.kr/view/AKR20260318184800030?input=1195m",
-      "source_query": "배",
       "source_channel": "naver_api"
     },
     {
@@ -11664,21 +10984,21 @@
     },
     {
       "section": "pest",
-      "reason": "opinion_or_editorial",
-      "press": "한국경제",
-      "domain": "hankyung.com",
-      "title": "[한경에세이] 농산물 4차 방정식",
-      "url": "https://www.hankyung.com/article/2026031803881",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
       "reason": "pest_partial_mention",
       "press": "강원일보",
       "domain": "kwnews.co.kr",
       "title": "올해 나무 40만 그루 심는 춘천…\"희망의 나무 받아가세요\"",
       "url": "https://www.kwnews.co.kr/page/view/2026031814534788289",
+      "source_query": "병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
+      "reason": "opinion_or_editorial",
+      "press": "한국경제",
+      "domain": "hankyung.com",
+      "title": "[한경에세이] 농산물 4차 방정식",
+      "url": "https://www.hankyung.com/article/2026031803881",
       "source_query": "병해충",
       "source_channel": "naver_api"
     },
@@ -12009,86 +11329,6 @@
       "domain": "pressian.com",
       "title": "무주군, 벼 재배 1㏊당 55㎏ 상당의 ‘왕우렁이 종패’ 지원",
       "url": "https://www.pressian.com/pages/articles/2026031815361257207",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "jeonmae",
-      "domain": "jeonmae.co.kr",
-      "title": "광주시, 최고품질 쌀 재배단지 조성 본격화",
-      "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1239845",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "siminilbo",
-      "domain": "siminilbo.co.kr",
-      "title": "산청군, 농지 토양ㆍ퇴비 부숙도 등 무료 진단",
-      "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160289830759721",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "진일보",
-      "domain": "jnilbo.com",
-      "title": "광주시, 광산구에 최고품질 쌀 생산단지 조성",
-      "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000026839",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "광주광역시, 광산구에 최고 명품쌀 생산단지 조성...브랜드화 추진",
-      "url": "http://www.fnnews.com/news/202603181531068463",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴데일리경제",
-      "domain": "gj.newdaily.co.kr",
-      "title": "광주시, 광산구에 최고명품쌀 생산단지 만든다",
-      "url": "https://gj.newdaily.co.kr/site/data/html/2026/03/18/2026031800304.html",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "광주시, 광산구에 최고명품쌀 생산단지 만든다",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1348550",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "viva100",
-      "domain": "viva100.com",
-      "title": "광주쌀 ‘명품화’ 시동…최고품질 재배단지 조성",
-      "url": "https://www.viva100.com/article/20260318501159",
-      "source_query": "병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "세계일보",
-      "domain": "segye.com",
-      "title": "산불 아픔 딛고…의성 고운사, 피해목 복원 자재로 활용",
-      "url": "https://www.segye.com/newsView/20260318512940",
       "source_query": "병해충",
       "source_channel": "naver_api"
     },
@@ -13291,33 +12531,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 37.71,
-          "tier": 3,
-          "press": "머니투데이",
-          "domain": "mt.co.kr",
-          "title": "산소 농도까지 맞췄다...롯데마트 '기체제어' 사과 600톤 출하",
-          "url": "https://www.mt.co.kr/living/2026/03/18/2026031814015664149",
-          "reason": "similar_story",
-          "fit_score": 1.45,
-          "selection_stage": "similar_story",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 5,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 31.86,
           "tier": 1,
           "press": "newsclaim",
@@ -13345,7 +12558,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.66,
+          "score": 30.46,
           "tier": 3,
           "press": "조선일보",
           "domain": "biz.chosun.com",
@@ -13426,7 +12639,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 27.76,
+          "score": 27.36,
           "tier": 3,
           "press": "국민일보",
           "domain": "kmib.co.kr",
@@ -13448,33 +12661,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 26.51,
-          "tier": 2,
-          "press": "뉴스핌",
-          "domain": "newspim.com",
-          "title": "롯데마트, '기체제어' 저장 사과 본격 출하...20% 물량 확대",
-          "url": "https://www.newspim.com/news/view/20260318000154",
-          "reason": "not_selected",
-          "fit_score": 1.45,
-          "selection_stage": "not_selected",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
           }
         },
         {
@@ -13507,7 +12693,34 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.16,
+          "score": 26.31,
+          "tier": 2,
+          "press": "뉴스핌",
+          "domain": "newspim.com",
+          "title": "롯데마트, '기체제어' 저장 사과 본격 출하...20% 물량 확대",
+          "url": "https://www.newspim.com/news/view/20260318000154",
+          "reason": "not_selected",
+          "fit_score": 1.45,
+          "selection_stage": "not_selected",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 25.96,
           "tier": 3,
           "press": "한국경제",
           "domain": "hankyung.com",
@@ -13588,15 +12801,15 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.29,
+          "score": 24.09,
           "tier": 1,
           "press": "kpenews",
           "domain": "kpenews.com",
           "title": "“이상기후 수급 불안에 대응”..롯데마트, 기체제어 저장사과 본격 출...",
           "url": "https://kpenews.com/View.aspx?No=4007722",
-          "reason": "source_cap",
+          "reason": "tail_cut",
           "fit_score": 2.86,
-          "selection_stage": "source_cap",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13673,33 +12886,6 @@
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
-          "title": "양파 값 보장 외치는 농민들",
-          "url": "https://www.news1.kr/photos/7803635",
-          "reason": "below_threshold",
-          "fit_score": 1.35,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 23.46,
-          "tier": 2,
-          "press": "뉴스1",
-          "domain": "news1.kr",
           "title": "청와대 앞 양파 농민들",
           "url": "https://www.news1.kr/photos/7803638",
           "reason": "below_threshold",
@@ -13729,6 +12915,33 @@
           "domain": "news1.kr",
           "title": "양파 값 보장 촉구하는 농민들",
           "url": "https://www.news1.kr/photos/7803639",
+          "reason": "below_threshold",
+          "fit_score": 1.35,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 23.46,
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "양파 값 보장 외치는 농민들",
+          "url": "https://www.news1.kr/photos/7803635",
           "reason": "below_threshold",
           "fit_score": 1.35,
           "selection_stage": "below_threshold",
@@ -13850,6 +13063,33 @@
             "market_hits": 0,
             "strength": 2,
             "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.96,
+          "tier": 3,
+          "press": "머니투데이",
+          "domain": "mt.co.kr",
+          "title": "산소 농도까지 맞췄다...롯데마트 '기체제어' 사과 600톤 출하",
+          "url": "https://www.mt.co.kr/living/2026/03/18/2026031814015664149",
+          "reason": "below_threshold",
+          "fit_score": 1.25,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 저장",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 9.5
@@ -13993,39 +13233,12 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.79,
-          "tier": 3,
-          "press": "헤럴드경제",
-          "domain": "biz.heraldcorp.com",
-          "title": "롯데마트, ‘기체 제어’ 사과 출하…“신선도가 장점”",
-          "url": "https://biz.heraldcorp.com/article/10696671",
-          "reason": "below_threshold",
-          "fit_score": 1.78,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 저장",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 9.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 21.71,
           "tier": 3,
           "press": "연합뉴스",
           "domain": "yna.co.kr",
           "title": "' 양파 가격 농민이 결정'",
-          "url": "https://www.yna.co.kr/view/PYH20260318115500013?input=1196m",
+          "url": "https://www.yna.co.kr/view/PYH20260318116100013?input=1196m",
           "reason": "below_threshold",
           "fit_score": 1.05,
           "selection_stage": "below_threshold",
@@ -14069,6 +13282,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.59,
+          "tier": 3,
+          "press": "헤럴드경제",
+          "domain": "biz.heraldcorp.com",
+          "title": "롯데마트, ‘기체 제어’ 사과 출하…“신선도가 장점”",
+          "url": "https://biz.heraldcorp.com/article/10696671",
+          "reason": "below_threshold",
+          "fit_score": 1.78,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 저장",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 9.5
           }
         },
         {
@@ -14668,60 +13908,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.26,
-          "tier": 1,
-          "press": "theviewers",
-          "domain": "theviewers.co.kr",
-          "title": "롯데마트, ‘기체제어’ 저장 사과 본격 출하…'이상기후 뚫고 신선도 ...",
-          "url": "https://theviewers.co.kr/View.aspx?No=4007727",
-          "reason": "below_threshold",
-          "fit_score": 1.45,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 18.26,
-          "tier": 1,
-          "press": "pinpointnews",
-          "domain": "pinpointnews.co.kr",
-          "title": "\"이상기후 뚫고 신선도 유지\"…롯데마트, '기체제어' 저장 사과 출하",
-          "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=437639",
-          "reason": "below_threshold",
-          "fit_score": 1.45,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 작황",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 18.16,
           "tier": 3,
           "press": "헤럴드경제",
@@ -14771,6 +13957,60 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 10.3
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.06,
+          "tier": 1,
+          "press": "theviewers",
+          "domain": "theviewers.co.kr",
+          "title": "롯데마트, ‘기체제어’ 저장 사과 본격 출하…'이상기후 뚫고 신선도 ...",
+          "url": "https://theviewers.co.kr/View.aspx?No=4007727",
+          "reason": "below_threshold",
+          "fit_score": 1.45,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 작황",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.06,
+          "tier": 1,
+          "press": "pinpointnews",
+          "domain": "pinpointnews.co.kr",
+          "title": "\"이상기후 뚫고 신선도 유지\"…롯데마트, '기체제어' 저장 사과 출하",
+          "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=437639",
+          "reason": "below_threshold",
+          "fit_score": 1.45,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 작황",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
           }
         },
         {
@@ -15126,7 +14366,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 33.26,
+          "score": 33.06,
           "tier": 3,
           "press": "KBS",
           "domain": "news.kbs.co.kr",
@@ -15261,7 +14501,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.64,
+          "score": 26.44,
           "tier": 2,
           "press": "아주경제",
           "domain": "ajunews.com",
@@ -15882,7 +15122,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.76,
+          "score": 14.56,
           "tier": 2,
           "press": "뉴스1",
           "domain": "news1.kr",
@@ -15909,7 +15149,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.42,
+          "score": 14.22,
           "tier": 1,
           "press": "news2day",
           "domain": "news2day.co.kr",
@@ -16206,33 +15446,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.61,
-          "tier": 1,
-          "press": "WSOBI",
-          "domain": "wsobi.com",
-          "title": "농협주유소 \"유류가격 안정 위한 메기 역할 할 것\"",
-          "url": "http://www.wsobi.com/news/articleView.html?idxno=307397",
-          "reason": "below_threshold",
-          "fit_score": 1.24,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농업용 면세유 대책",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -3.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 10.53,
           "tier": 1,
           "press": "viva100",
@@ -16282,6 +15495,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.41,
+          "tier": 1,
+          "press": "WSOBI",
+          "domain": "wsobi.com",
+          "title": "농협주유소 \"유류가격 안정 위한 메기 역할 할 것\"",
+          "url": "http://www.wsobi.com/news/articleView.html?idxno=307397",
+          "reason": "below_threshold",
+          "fit_score": 1.24,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농업용 면세유 대책",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -3.0
           }
         },
         {
@@ -16449,7 +15689,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.21,
+          "score": 6.01,
           "tier": 1,
           "press": "메트로신문",
           "domain": "metroseoul.co.kr",
@@ -16880,33 +16120,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.39,
-          "tier": 1,
-          "press": "이투데이",
-          "domain": "etoday.co.kr",
-          "title": "키위 수출 단지 시범사업...제주도 500t 수출",
-          "url": "https://www.etoday.co.kr/news/view/2566450",
-          "reason": "source_cap",
-          "fit_score": 1.06,
-          "selection_stage": "source_cap",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 수출 검역",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.63,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.0
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 12.28,
           "tier": 1,
           "press": "원예산업신문",
@@ -16926,6 +16139,33 @@
             "market_hits": 4,
             "strength": 5,
             "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.0
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.19,
+          "tier": 1,
+          "press": "이투데이",
+          "domain": "etoday.co.kr",
+          "title": "키위 수출 단지 시범사업...제주도 500t 수출",
+          "url": "https://www.etoday.co.kr/news/view/2566450",
+          "reason": "source_cap",
+          "fit_score": 1.06,
+          "selection_stage": "source_cap",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 수출 검역",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.0
@@ -17339,7 +16579,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.44,
+          "score": 4.24,
           "tier": 1,
           "press": "bzeronews",
           "domain": "bzeronews.com",
@@ -17743,7 +16983,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 22.81,
+          "score": 22.41,
           "tier": 3,
           "press": "YTN",
           "domain": "ytn.co.kr",
@@ -17878,7 +17118,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.16,
+          "score": 14.76,
           "tier": 1,
           "press": "강원도민일보",
           "domain": "kado.net",
@@ -18634,11 +17874,11 @@
         ],
         [
           "사과 수급",
-          33
+          32
         ],
         [
           "딸기 가격",
-          29
+          28
         ],
         [
           "가지 산업",
@@ -18669,11 +17909,11 @@
           12
         ],
         [
-          "포도 가격",
-          11
+          "딸기 농가",
+          12
         ],
         [
-          "딸기 농가",
+          "포도 가격",
           11
         ],
         [
@@ -18681,12 +17921,12 @@
           10
         ],
         [
-          "사과 가격",
+          "양파 수급",
           9
         ],
         [
-          "양파 수급",
-          9
+          "사과 가격",
+          8
         ]
       ],
       "google_hits_top": [],
