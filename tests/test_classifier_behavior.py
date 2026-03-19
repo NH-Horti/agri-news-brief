@@ -3643,5 +3643,21 @@ class TestRecentItemsRebuild(unittest.TestCase):
             main.DEBUG_DATA.clear()
             main.DEBUG_DATA.update(original)
 
+    def test_extract_topic_does_not_treat_go_phrase_story_as_eggplant(self):
+        title = '유류할증료 3배에 "가지 말까"...중동 하늘길도 답답'
+        desc = '유류할증료 3배 급등에 "가지 말까"라는 반응이 커지며 중동 하늘길 수요가 위축되고 있다.'
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
+    def test_extract_topic_does_not_treat_branch_story_as_eggplant(self):
+        title = "평택시, 과수화상병 예방 교육 진행"
+        desc = "사과, 배나무의 잎, 가지, 꽃, 열매 등에 화상 증상이 나타나는 과수화상병 예방 약제를 공급한다."
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
 if __name__ == "__main__":
     unittest.main()

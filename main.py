@@ -2944,6 +2944,8 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         return False
     if key == "potato" and "감자" in txt and not is_fresh_potato_context(txt):
         return False
+    if key == "eggplant" and "가지" in txt and not is_edible_eggplant_context(txt):
+        return False
     registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
     if topic and topic in registry_topics:
         return True
@@ -3036,6 +3038,8 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
 
     for topic, words in COMMODITY_TOPICS:
         sc = 0.0
+        if topic == "가지" and not is_edible_eggplant_context(t):
+            continue
         if topic == "멜론" and not is_edible_melon_context(t):
             # 멜론(음원 플랫폼) 오탐 방지
             continue
@@ -3335,6 +3339,43 @@ def is_edible_carrot_context(text: str) -> bool:
     edible_hit = any(w.lower() in t for w in _CARROT_EDIBLE_MARKERS)
     platform_hit = any(w.lower() in t for w in _CARROT_PLATFORM_MARKERS)
     if platform_hit and not edible_hit:
+        return False
+    return edible_hit
+
+
+_EGGPLANT_NON_EDIBLE_MARKERS = [
+    "가지말", "가지 말", "가지마",
+    "한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "몇 가지", "여러 가지",
+    "한가지", "두가지", "세가지", "네가지", "다섯가지", "몇가지", "여러가지",
+    "나뭇가지", "곁가지", "잔가지", "가지치기", "가지 끝", "가지끝",
+]
+_EGGPLANT_EDIBLE_MARKERS = [
+    "농산물", "채소", "과채", "원예", "산지", "생산", "생육", "재배", "농가", "시설", "하우스",
+    "도매시장", "공판장", "경매", "수급", "출하", "출하량", "작황", "시세", "가격", "도매", "유통", "병해충",
+    "가지 가격", "가지 수급", "가지 시세", "가지 출하", "가지 출하량", "가지 작황", "가지 생육",
+    "가지 재배", "가지 농가", "가지 도매", "가지 경매", "가지 유통", "가지 병해충",
+    "시설가지", "노지가지", "가지 품목", "가지 산지", "가지 생산",
+]
+_EGGPLANT_NON_EDIBLE_RX = re.compile(
+    r"가지\s*말(?:까|고|라|자|라고)?|"
+    r"(?:한|두|세|네|다섯|몇|여러)\s*가지|"
+    r"(?:잎|줄기)\s*[·,/]\s*가지|"
+    r"가지\s*[·,/]\s*(?:꽃|열매)|"
+    r"(?:사과|배|과수|나무).{0,12}(?:잎|줄기|가지|꽃|열매)"
+)
+
+
+def is_edible_eggplant_context(text: str) -> bool:
+    """Return True only when '가지' clearly refers to the vegetable crop."""
+    t = (text or "").lower()
+    if "가지" not in t:
+        return False
+    edible_hit = any(w.lower() in t for w in _EGGPLANT_EDIBLE_MARKERS)
+    non_edible_hit = any(w.lower() in t for w in _EGGPLANT_NON_EDIBLE_MARKERS) or (_EGGPLANT_NON_EDIBLE_RX.search(t) is not None)
+    price_pat = bool(re.search(r"가지\s*(가격|시세|수급|출하(?:량)?|작황|생육|재배|농가|도매|경매|유통|병해충|품목)", t))
+    if price_pat:
+        edible_hit = True
+    if non_edible_hit and not edible_hit:
         return False
     return edible_hit
 

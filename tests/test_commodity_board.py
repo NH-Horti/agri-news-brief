@@ -411,5 +411,18 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertNotIn("position:sticky", html)
 
 
+    def test_eggplant_homonym_stories_are_not_tagged_to_managed_board(self):
+        travel_text = (
+            '유류할증료 3배에 "가지 말까"...중동 하늘길도 답답 '
+            '유류할증료 3배 급등에 "가지 말까"라는 반응이 커지며 중동 하늘길 수요가 위축되고 있다.'
+        )
+        branch_text = (
+            "평택시, 과수화상병 예방 교육 진행 "
+            "사과, 배나무의 잎, 가지, 꽃, 열매 등에 화상 증상이 나타나는 과수화상병 예방 약제를 공급한다."
+        )
+
+        self.assertNotIn("eggplant", main.managed_commodity_keys_for_text(travel_text, None))
+        self.assertNotIn("eggplant", main.managed_commodity_keys_for_text(branch_text, None))
+
 if __name__ == "__main__":
     unittest.main()
