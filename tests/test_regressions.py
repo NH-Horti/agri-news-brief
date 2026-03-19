@@ -8,6 +8,7 @@ DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "promote-dev.yml"
+SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
 DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
 DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
 
@@ -20,6 +21,7 @@ class TestRegressions(unittest.TestCase):
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
         cls.promote_text = PROMOTE_WORKFLOW.read_text(encoding="utf-8")
+        cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
         cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
         cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
 
@@ -187,6 +189,13 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.rebuild_text)
         self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.dev_verify_text)
         self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.dev_verify_text)
+
+    def test_secrets_check_workflow_exists(self):
+        self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)
+        self.assertIn("Validate Naver and Kakao secrets", self.secrets_check_text)
+        self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
+        self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
+        self.assertIn('append_summary("- Kakao: success (token refresh)")', self.secrets_check_text)
 
     def test_dev_loader_uses_preview_branch_assets(self):
         self.assertIn("codex/dev-preview", self.dev_loader_text)
