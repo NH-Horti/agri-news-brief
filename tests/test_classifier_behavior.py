@@ -2543,6 +2543,37 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.press_name_from_url("https://cooknchefnews.com/news/view/1065603268596477"), "쿡앤셰프")
         self.assertEqual(main.press_name_from_url("https://www.jnilbo.com/news/articleView.html?idxno=1"), "진일보")
         self.assertEqual(main.press_name_from_url("http://www.breaknews.com/123"), "브레이크뉴스")
+        self.assertEqual(main.press_name_from_url("https://www.dkilbo.com/news/articleView.html?idxno=1"), "대경일보")
+        self.assertEqual(main.press_name_from_url("https://www.kenews.co.kr/news/articleView.html?idxno=1"), "한국농촌경제신문")
+        self.assertEqual(main.press_name_from_url("https://www.mhj21.com/33473"), "문화저널21")
+        self.assertEqual(main.press_name_from_url("https://www.newscj.com/news/articleView.html?idxno=1"), "천지일보")
+        self.assertEqual(main.press_name_from_url("https://www.paxetv.com/news/articleView.html?idxno=1"), "팍스경제TV")
+        self.assertEqual(main.press_name_from_url("https://www.sentv.co.kr/news/view/1"), "서울경제TV")
+        self.assertEqual(main.press_name_from_url("https://news.tf.co.kr/read/economy/1.htm"), "더팩트")
+        self.assertEqual(main.press_name_from_url("https://www.headlinejeju.co.kr/news/articleView.html?idxno=1"), "헤드라인제주")
+        self.assertEqual(main.press_name_from_url("https://www.namdonews.com/news/articleView.html?idxno=1"), "남도일보")
+        self.assertEqual(main.press_name_from_url("https://news.tvchosun.com/site/data/html_dir/2026/03/19/1.html"), "TV조선")
+        self.assertEqual(main.press_name_from_url("https://www.foodnews.co.kr/news/articleView.html?idxno=1"), "식품음료신문")
+        self.assertEqual(main.press_name_from_url("https://www.cctimes.kr/news/articleView.html?idxno=1"), "충청타임즈")
+        self.assertEqual(main.press_name_from_url("https://www.daejonilbo.com/news/articleView.html?idxno=1"), "대전일보")
+        self.assertEqual(main.press_name_from_url("https://www.siminilbo.co.kr/news/newsview.php?ncode=1"), "시민일보")
+        self.assertEqual(main.press_name_from_url("https://www.viva100.com/main/view.php?key=1"), "브릿지경제")
+        self.assertEqual(main.press_name_from_url("https://www.kfenews.co.kr/news/articleView.html?idxno=1"), "한국농식품유통신문")
+        self.assertEqual(main.press_name_from_url("https://www.nongaek.com/news/articleView.html?idxno=1"), "농객")
+
+    def test_normalize_press_label_maps_raw_english_aliases(self):
+        self.assertEqual(main.normalize_press_label("headlinejeju", "https://www.headlinejeju.co.kr/news/articleView.html?idxno=1"), "헤드라인제주")
+        self.assertEqual(main.normalize_press_label("tvchosun", "https://news.tvchosun.com/site/data/html_dir/2026/03/19/1.html"), "TV조선")
+        self.assertEqual(main.normalize_press_label("kfenews", "https://www.kfenews.co.kr/news/articleView.html?idxno=1"), "한국농식품유통신문")
+        self.assertEqual(main.normalize_press_label("ksmnews", "https://www.ksmnews.co.kr/news/articleView.html?idxno=1"), "경상매일신문")
+
+    def test_normalize_press_label_maps_additional_ascii_brand_aliases(self):
+        self.assertEqual(main.normalize_press_label("kpenews", "https://kpenews.com/View.aspx?No=4010217"), "한국정경신문")
+        self.assertEqual(main.normalize_press_label("mediapen", "https://www.mediapen.com/news/view/1087903"), "미디어펜")
+        self.assertEqual(main.normalize_press_label("businessplus", "https://www.businessplus.kr/news/articleView.html?idxno=109157"), "비즈니스플러스")
+        self.assertEqual(main.normalize_press_label("newstree", "https://www.newstree.kr/newsView/ntr202603190013"), "뉴스트리")
+        self.assertEqual(main.normalize_press_label("danbinews", "https://www.danbinews.com/news/articleView.html?idxno=32644"), "단비뉴스")
+        self.assertEqual(main.normalize_press_label("ibabynews", "https://www.ibabynews.com/news/articleView.html?idxno=149752"), "베이비뉴스")
 
     def test_policy_export_support_brief_excludes_generic_seminar_story(self):
         title = "글로벌 농식품 규정 변화 대응 세미나 개최"
@@ -3689,6 +3720,173 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertFalse(main.is_edible_eggplant_context(text))
         self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
+    def test_extract_topic_does_not_treat_pruning_story_as_eggplant(self):
+        title = "사과 과원 가지치기 작업 본격화"
+        desc = "과원 전정과 가지치기 작업이 본격화되며 냉해 대비 관리가 진행되고 있다."
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
+    def test_extract_topic_does_not_treat_generic_phrase_as_eggplant(self):
+        title = "농가 현장에 한 가지 과제 더 남았다"
+        desc = "일반적인 과제 설명으로 품목 가지와는 무관한 문장이다."
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
+    def test_extract_topic_does_not_promote_processed_food_story_to_peach(self):
+        title = "아이스크림·과자도 가격 내린다…롯데웰푸드·빙그레 등 최대 13.4% 인하"
+        desc = "복숭아맛 아이스크림과 스낵 등 가공식품 가격 인하 소식을 정리한 소비 기사다."
+
+        self.assertNotEqual(main.extract_topic(title, desc), "복숭아")
+        focus = main._managed_commodity_focus_summary(title, desc)
+        self.assertNotIn("peach", focus["keys"])
+
+    def test_normalize_press_label_maps_gnmaeil_kbsm_and_kyongbuk_hosts(self):
+        self.assertEqual(
+            main.normalize_press_label("gnmaeil", "http://www.gnmaeil.com/news/articleView.html?idxno=582798"),
+            "경남매일",
+        )
+        self.assertEqual(
+            main.normalize_press_label("KBSM", "https://www.kbsm.net/news/view.php?idx=512388"),
+            "경북신문",
+        )
+        self.assertEqual(
+            main.normalize_press_label("kyongbuk", "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067478"),
+            "경북일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("R", "https://www.andongmbc.co.kr/news/article.html?no=154321"),
+            "안동MBC",
+        )
+        self.assertEqual(
+            main.normalize_press_label("ccdailynews", "https://www.ccdailynews.com/news/articleView.html?idxno=2404280"),
+            "충청일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("topstarnews", "https://www.topstarnews.net/news/articleView.html?idxno=123456"),
+            "톱스타뉴스",
+        )
+        self.assertEqual(
+            main.normalize_press_label("newstomato", "https://www.newstomato.com/ReadNews.aspx?no=1260237"),
+            "뉴스토마토",
+        )
+        self.assertEqual(
+            main.normalize_press_label("newstnt", "https://www.newstnt.com/news/articleView.html?idxno=500496"),
+            "뉴스티앤티",
+        )
+        self.assertEqual(
+            main.normalize_press_label("NEWSKR", "https://www.newskr.kr/news/articleView.html?idxno=49069"),
+            "한국농어촌방송",
+        )
+        self.assertEqual(
+            main.normalize_press_label("NEWSAM", "https://newsam.co.kr/news/articleView.html?idxno=12345"),
+            "농기자재신문",
+        )
+        self.assertEqual(
+            main.normalize_press_label("GGILBO", "https://www.ggilbo.com/news/articleView.html?idxno=12345"),
+            "금강일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("DYNEWS", "https://www.dynews.co.kr/news/articleView.html?idxno=12345"),
+            "동양일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("CCDN", "https://www.ccdn.co.kr/news/articleView.html?idxno=12345"),
+            "충청매일",
+        )
+
+    def test_supply_core_prefers_strong_managed_focus_articles_over_generic_macro_when_available(self):
+        apple = self._make_article(
+            "supply",
+            "사과 저장 물량 감소…가락시장 도매가격 강세",
+            "사과 저장 물량 감소와 출하 조절 여파로 가락시장 도매가격 강세가 이어지고 있다.",
+            "https://www.nongmin.com/article/20260320000101",
+        )
+        onion = self._make_article(
+            "supply",
+            "양파 산지 출하 조절…공판장 반입 관리 총력",
+            "양파 산지 출하 조절과 공판장 반입 관리로 수급 안정 대응에 나선 현장 기사다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=402999",
+        )
+        macro = self._make_article(
+            "supply",
+            "농업경영비 이중압박…추경에 에너지·농자재 지원 확실히",
+            "시설채소와 과수 농가 전반의 난방비와 농자재 부담 완화를 촉구하는 거시 기사다.",
+            "https://www.example.com/supply-macro-energy",
+        )
+        apple.score = 15.2
+        onion.score = 14.8
+        macro.score = max(apple.score, onion.score) + 1.8
+
+        picked = main.select_top_articles([macro, apple, onion], "supply", 2)
+        picked_titles = [article.title for article in picked]
+
+        self.assertEqual(len(picked), 2, msg=str([(article.title, article.score, article.is_core) for article in picked]))
+        self.assertIn(apple.title, picked_titles)
+        self.assertIn(onion.title, picked_titles)
+        self.assertNotIn(macro.title, picked_titles)
+        self.assertTrue(all(article.is_core for article in picked))
+
+    def test_supply_core_demotes_training_story_when_issue_alternatives_exist(self):
+        training = self._make_article(
+            "supply",
+            "화천농협, 양파 공선출하회 총회·재배기술교육 펼쳐",
+            "양파 재배 농가를 대상으로 공선출하회 총회와 재배기술교육을 진행했다.",
+            "https://example.com/onion-training-core",
+        )
+        onion_issue = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
+            "https://example.com/onion-issue-core",
+        )
+        apple_issue = self._make_article(
+            "supply",
+            "사과 저장 물량 감소…가락시장 도매가격 강세",
+            "사과 저장 물량 감소와 출하 조절 여파로 가락시장 도매가격 강세가 이어지고 있다.",
+            "https://example.com/apple-issue-core",
+        )
+        training.score = max(onion_issue.score, apple_issue.score) + 3.0
+
+        picked = main.select_top_articles([training, onion_issue, apple_issue], "supply", 2)
+        picked_titles = [article.title for article in picked]
+        core_titles = [article.title for article in picked if getattr(article, "is_core", False)]
+
+        self.assertIn(onion_issue.title, picked_titles)
+        self.assertIn(apple_issue.title, picked_titles)
+        self.assertNotIn(training.title, core_titles)
+
+    def test_supply_selection_skips_promo_sale_story_when_issue_articles_exist(self):
+        promo = self._make_article(
+            "supply",
+            "대아청과 '달코미 양배추' 1만 통 할인판매 추진",
+            "양배추 소비 촉진을 위해 할인판매 행사를 추진한다는 판촉 기사다.",
+            "https://example.com/cabbage-promo-sale",
+        )
+        onion_issue = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
+            "https://example.com/onion-issue-promo-guard",
+        )
+        apple_issue = self._make_article(
+            "supply",
+            "사과 저장 물량 감소…가락시장 도매가격 강세",
+            "사과 저장 물량 감소와 출하 조절 여파로 가락시장 도매가격 강세가 이어지고 있다.",
+            "https://example.com/apple-issue-promo-guard",
+        )
+        promo.score = max(onion_issue.score, apple_issue.score) + 4.0
+
+        picked = main.select_top_articles([promo, onion_issue, apple_issue], "supply", 3)
+        picked_titles = [article.title for article in picked]
+
+        self.assertIn(onion_issue.title, picked_titles)
+        self.assertIn(apple_issue.title, picked_titles)
+        self.assertNotIn(promo.title, picked_titles)
 
 if __name__ == "__main__":
     unittest.main()

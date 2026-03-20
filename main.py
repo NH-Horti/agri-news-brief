@@ -17,6 +17,7 @@ agri-news-brief main.py (production)
 
 import os
 import re
+import unicodedata
 
 def _strip_swipe_hint_blocks(html: str) -> str:
     """Remove the swipe hint ('좌우 스와이프로 날짜 이동') from HTML."""
@@ -2162,7 +2163,7 @@ def build_managed_commodity_board_source_by_section(
         for article in sorted(by_section.get(section_key, []) or [], key=_sort_key_major_first, reverse=True):
             if not isinstance(article, Article):
                 continue
-            if not managed_commodity_keys_for_article(article):
+            if not managed_commodity_board_keys_for_article(article):
                 continue
             if _postbuild_article_reject_reason(article, section_key):
                 continue
@@ -2953,6 +2954,89 @@ _MANAGED_COMMODITY_SECTION_LABELS = {
     "pest": "리스크",
 }
 
+_MANAGED_COMMODITY_FOCUS_AGRI_TERMS = tuple(
+    term.lower()
+    for term in (
+        "농산물", "원예", "과수", "과채", "채소", "과일", "화훼", "청과",
+        "농가", "산지", "재배", "작황", "생산", "생육", "수확", "출하", "출하량",
+        "병해충", "방제", "검역", "통관", "수출", "수입",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_MARKET_TERMS = tuple(
+    term.lower()
+    for term in (
+        "가락시장", "도매시장", "공영도매시장", "공판장", "경락", "경매", "반입",
+        "산지유통", "산지유통센터", "apc", "선별", "공동선별", "공선출하",
+        "저장", "저온저장", "저장고", "물량", "재고",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_ISSUE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "가격", "값", "시세", "수급", "출하", "작황", "생육", "재배", "도매가격",
+        "경락가", "하락", "상승", "급등", "급락", "약세", "강세", "부족", "과잉",
+        "불안", "안정", "피해", "확산", "회복",
+    )
+)
+_MANAGED_COMMODITY_PROCESSED_NOISE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "과자", "아이스크림", "빙과", "디저트", "음료", "주스", "와인", "맥주",
+        "칩", "감자칩", "포테이토칩", "소스", "잼", "젤리", "스낵", "케이크",
+        "메뉴", "레시피", "맛", "풍미", "향",
+    )
+)
+_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "축제", "관광", "행사", "프로모션", "급식예산", "급식 예산", "학생", "복지",
+        "마을", "영화", "감독", "초대장", "공연", "전시", "학교", "레트로",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_MATCH_MIN = 2.4
+_MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
+_MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS = (
+    "교육", "기술교육", "총회", "설명회", "간담회", "워크숍", "세미나",
+    "행사", "축제", "판촉", "특판", "할인판매", "할인 행사", "홍보",
+    "기념식", "발대식", "출범식",
+)
+_MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS = (
+    "교육", "기술교육", "재배기술", "재배 기술", "컨설팅", "현장 컨설팅",
+    "총회", "설명회", "워크숍", "세미나", "아카데미", "개강", "모집",
+    "기술지도", "당부", "요령", "방법", "재배 시기", "재배시기",
+    "파종", "정식", "심기", "수경 재배", "수경재배", "싹 자르기", "싹자르기",
+)
+_MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS = (
+    "인터뷰", "대담", "대표", "회장", "사장", "농부의 길", "스토리", "사람들",
+)
+_MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
+    "가격", "값", "시세", "수급", "출하", "반입", "경락", "경매", "저장", "재고",
+    "폭락", "급락", "강세", "약세", "불안", "위기", "비상", "부담", "생산비", "난방비",
+    "감소", "증가", "과잉", "부족", "산업", "무너질라", "모니터링",
+)
+
+
+def _nfkc_lower(text: str) -> str:
+    return unicodedata.normalize("NFKC", str(text or "")).lower()
+
+
+def _compact_match_text(text: str) -> str:
+    normalized = _nfkc_lower(text)
+    if not normalized:
+        return ""
+    return re.sub(r"[\s\-_~·ㆍ.,:;!?/\\'\"“”‘’()\[\]{}<>|]+", "", normalized)
+
+
+def _contains_compact_marker(text: str, markers: Sequence[str]) -> bool:
+    compact_text = _compact_match_text(text)
+    if not compact_text:
+        return False
+    for marker in markers:
+        compact_marker = _compact_match_text(marker)
+        if compact_marker and compact_marker in compact_text:
+            return True
+    return False
+
 
 def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
     txt = (text or "").lower()
@@ -2966,9 +3050,6 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         return False
     if key == "eggplant" and "가지" in txt and not is_edible_eggplant_context(txt):
         return False
-    registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
-    if topic and topic in registry_topics:
-        return True
 
     for term in item.get("match_terms") or []:
         term_l = str(term or "").strip().lower()
@@ -2988,6 +3069,518 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         if pattern.search(txt):
             return True
     return False
+
+
+def _managed_commodity_focus_metrics(
+    item: dict[str, Any],
+    title: str,
+    desc: str,
+    topic: str = "",
+) -> dict[str, Any]:
+    key = str(item.get("key") or "").strip()
+    title_l = _nfkc_lower(title or "")
+    desc_l = _nfkc_lower(desc or "")
+    text_l = f"{title_l} {desc_l}".strip()
+    compact_title_l = _compact_match_text(title or "")
+    compact_text_l = _compact_match_text(f"{title or ''} {desc or ''}")
+    empty = {
+        "focus_score": 0.0,
+        "title_primary_hits": 0,
+        "title_context_hits": 0,
+        "body_primary_hits": 0,
+        "body_context_hits": 0,
+        "pattern_hits": 0,
+        "agri_anchor_hits": 0,
+        "market_anchor_hits": 0,
+        "issue_anchor_hits": 0,
+        "consumer_noise_hits": 0,
+        "matched": False,
+        "topic_hit": False,
+    }
+    if not text_l or not key:
+        return empty
+
+    if key == "carrot" and "당근" in text_l and not is_edible_carrot_context(text_l):
+        return empty
+    if key == "potato" and "감자" in text_l and not is_fresh_potato_context(text_l):
+        return empty
+    if key == "eggplant" and "가지" in text_l and not is_edible_eggplant_context(text_l):
+        return empty
+    if key == "napa_cabbage" and "양배추" in text_l and re.search(r"(?<!양)배추", text_l) is None:
+        return empty
+    if key == "tomato" and "토마토" in text_l and not is_edible_tomato_context(text_l):
+        return empty
+    if key == "muskmelon" and "멜론" in text_l and not is_edible_melon_context(text_l):
+        return empty
+    if key == "apple" and "사과" in text_l and not is_edible_apple_context(text_l):
+        return empty
+
+    base_terms = _managed_commodity_base_terms(item, limit=6)
+    context_terms = _ordered_unique_terms(item.get("context_terms") or [])
+    registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
+    topic_hit = bool(topic and topic in registry_topics)
+
+    title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
+    title_context_hits = _commodity_board_term_hits(title_l, context_terms)
+    body_primary_hits = _commodity_board_term_hits(text_l, base_terms)
+    body_context_hits = _commodity_board_term_hits(text_l, context_terms)
+    pattern_hits = sum(1 for pattern in _MANAGED_COMMODITY_CONTEXT_PATTERNS.get(key, []) if pattern.search(text_l))
+    agri_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_AGRI_TERMS))
+    market_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_MARKET_TERMS))
+    issue_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_ISSUE_TERMS))
+    processed_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_PROCESSED_NOISE_TERMS))
+    lifestyle_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS))
+    consumer_noise_hits = processed_noise_hits + lifestyle_noise_hits
+
+    if key == "potato" and (
+        count_any(title_l, list(_POTATO_PROCESSED_MARKERS)) >= 1
+        or _contains_compact_marker(compact_title_l, list(_POTATO_PROCESSED_MARKERS))
+    ):
+        return empty
+    if key == "eggplant" and (
+        any(marker.lower() in title_l for marker in _EGGPLANT_NON_EDIBLE_MARKERS)
+        or (_EGGPLANT_NON_EDIBLE_RX.search(title_l) is not None)
+        or _contains_compact_marker(compact_title_l, list(_EGGPLANT_NON_EDIBLE_MARKERS))
+    ):
+        return empty
+    if key == "tomato" and not is_edible_tomato_context(text_l):
+        return empty
+    if (
+        title_primary_hits == 0
+        and title_context_hits == 0
+        and pattern_hits == 0
+        and market_anchor_hits == 0
+        and (
+            processed_noise_hits >= 1
+            or lifestyle_noise_hits >= 1
+            or is_general_consumer_price_noise(text_l)
+            or is_fruit_foodservice_event_context(text_l)
+        )
+    ):
+        return empty
+
+    score = (
+        (title_primary_hits * 3.2)
+        + (title_context_hits * 2.4)
+        + (body_primary_hits * 1.4)
+        + (body_context_hits * 0.9)
+        + (pattern_hits * 2.6)
+        + min(1.4, 0.22 * agri_anchor_hits)
+        + min(1.8, 0.34 * market_anchor_hits)
+        + min(1.6, 0.24 * issue_anchor_hits)
+        + (0.5 if topic_hit and (title_primary_hits or body_primary_hits or pattern_hits) else 0.0)
+    )
+
+    if (
+        title_primary_hits == 0
+        and title_context_hits == 0
+        and pattern_hits == 0
+        and body_primary_hits <= 1
+        and body_context_hits == 0
+        and agri_anchor_hits == 0
+        and market_anchor_hits == 0
+        and issue_anchor_hits == 0
+    ):
+        score -= 2.8
+
+    if processed_noise_hits and market_anchor_hits == 0 and issue_anchor_hits <= 1:
+        score -= min(4.2, 1.35 * processed_noise_hits)
+    if lifestyle_noise_hits and market_anchor_hits == 0 and issue_anchor_hits <= 1:
+        score -= min(4.2, 1.15 * lifestyle_noise_hits)
+
+    if is_fastfood_price_context(text_l) and market_anchor_hits == 0:
+        score -= 3.2
+    if is_general_consumer_price_noise(text_l) and market_anchor_hits == 0:
+        score -= 2.6
+    if is_fruit_foodservice_event_context(text_l) and market_anchor_hits == 0:
+        score -= 3.0
+    if is_flower_novelty_noise_context(title, desc) and market_anchor_hits == 0:
+        score -= 3.0
+    if is_macro_trade_noise_context(text_l) and market_anchor_hits == 0 and agri_anchor_hits <= 1:
+        score -= 2.6
+
+    direct_focus_hits = title_primary_hits + title_context_hits + pattern_hits
+    exact_or_context_hits = direct_focus_hits + body_primary_hits + body_context_hits
+    matched = bool(score >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN and exact_or_context_hits > 0)
+    if direct_focus_hits == 0 and market_anchor_hits == 0 and issue_anchor_hits == 0 and agri_anchor_hits < 2:
+        matched = False
+    if direct_focus_hits == 0 and market_anchor_hits == 0 and agri_anchor_hits == 0:
+        matched = False
+    if processed_noise_hits and direct_focus_hits == 0 and market_anchor_hits == 0:
+        matched = False
+    if key == "potato" and _contains_compact_marker(compact_text_l, list(_POTATO_PROCESSED_MARKERS)):
+        matched = False
+    if key == "eggplant" and _contains_compact_marker(compact_text_l, list(_EGGPLANT_NON_EDIBLE_MARKERS)):
+        matched = False
+
+    return {
+        "focus_score": round(float(score), 4),
+        "title_primary_hits": title_primary_hits,
+        "title_context_hits": title_context_hits,
+        "body_primary_hits": body_primary_hits,
+        "body_context_hits": body_context_hits,
+        "pattern_hits": pattern_hits,
+        "agri_anchor_hits": agri_anchor_hits,
+        "market_anchor_hits": market_anchor_hits,
+        "issue_anchor_hits": issue_anchor_hits,
+        "consumer_noise_hits": consumer_noise_hits,
+        "matched": matched,
+        "topic_hit": topic_hit,
+    }
+
+
+def _managed_commodity_focus_summary(title: str, desc: str, topic: str = "") -> dict[str, Any]:
+    matches: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
+    for item in MANAGED_COMMODITY_CATALOG:
+        key = str(item.get("key") or "").strip()
+        if not key:
+            continue
+        metrics = _managed_commodity_focus_metrics(item, title, desc, topic)
+        if not metrics.get("matched"):
+            continue
+        matches.append((key, item, metrics))
+
+    matches.sort(
+        key=lambda entry: (
+            float(entry[2].get("focus_score") or 0.0),
+            1 if entry[1].get("program_core") else 0,
+            -int(entry[1].get("order") or 0),
+        ),
+        reverse=True,
+    )
+    keys = [entry[0] for entry in matches]
+    focus_by_key = {
+        entry[0]: float(entry[2].get("focus_score") or 0.0)
+        for entry in matches
+    }
+    strong_keys = [
+        entry[0]
+        for entry in matches
+        if float(entry[2].get("focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ]
+    program_core_keys = [entry[0] for entry in matches if bool(entry[1].get("program_core"))]
+    program_core_strong_keys = [
+        entry[0]
+        for entry in matches
+        if bool(entry[1].get("program_core"))
+        and float(entry[2].get("focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ]
+    max_focus_score = max(focus_by_key.values()) if focus_by_key else 0.0
+    return {
+        "keys": keys,
+        "count": len(keys),
+        "focus_by_key": focus_by_key,
+        "strong_keys": strong_keys,
+        "strong_count": len(strong_keys),
+        "program_core_keys": program_core_keys,
+        "program_core_count": len(program_core_keys),
+        "program_core_strong_keys": program_core_strong_keys,
+        "program_core_strong_count": len(program_core_strong_keys),
+        "max_focus_score": float(max_focus_score),
+    }
+
+
+def _managed_commodity_focus_summary_for_article(article: "Article") -> dict[str, Any]:
+    cached = getattr(article, "_managed_focus_summary", None)
+    if isinstance(cached, dict):
+        return cached
+    summary = _managed_commodity_focus_summary(
+        getattr(article, "title", "") or "",
+        getattr(article, "description", "") or "",
+        getattr(article, "topic", "") or "",
+    )
+    setattr(article, "_managed_focus_summary", summary)
+    return summary
+
+
+def managed_commodity_focus_keys_for_text(
+    title: str,
+    desc: str,
+    topic: str = "",
+    max_keys: int | None = None,
+) -> list[str]:
+    summary = _managed_commodity_focus_summary(title, desc, topic)
+    keys = list(summary.get("keys") or [])
+    if not keys:
+        return []
+    if max_keys is None or max_keys <= 0 or len(keys) <= 1:
+        return keys if max_keys is None else keys[:max_keys]
+    focus_by_key = dict(summary.get("focus_by_key") or {})
+    lead_key = keys[0]
+    lead_score = float(focus_by_key.get(lead_key) or 0.0)
+    selected = [lead_key]
+    for key in keys[1:]:
+        if len(selected) >= max_keys:
+            break
+        focus_score = float(focus_by_key.get(key) or 0.0)
+        if focus_score >= max(_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.9, lead_score - 0.9):
+            selected.append(key)
+    return selected
+
+
+def managed_commodity_focus_keys_for_article(
+    article: "Article",
+    max_keys: int | None = None,
+) -> list[str]:
+    summary = _managed_commodity_focus_summary_for_article(article)
+    keys = list(summary.get("keys") or [])
+    if not keys:
+        return []
+    if max_keys is None or max_keys <= 0 or len(keys) <= 1:
+        return keys if max_keys is None else keys[:max_keys]
+    focus_by_key = dict(summary.get("focus_by_key") or {})
+    lead_key = keys[0]
+    lead_score = float(focus_by_key.get(lead_key) or 0.0)
+    selected = [lead_key]
+    for key in keys[1:]:
+        if len(selected) >= max_keys:
+            break
+        focus_score = float(focus_by_key.get(key) or 0.0)
+        if focus_score >= max(_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.9, lead_score - 0.9):
+            selected.append(key)
+    return selected
+
+
+def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Article") -> dict[str, Any]:
+    metrics = dict(
+        _managed_commodity_focus_metrics(
+            item,
+            getattr(article, "title", "") or "",
+            getattr(article, "description", "") or "",
+            getattr(article, "topic", "") or "",
+        )
+    )
+    metrics["board_eligible"] = False
+    metrics["board_penalty"] = 0.0
+    if not metrics.get("matched"):
+        return metrics
+
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    text = f"{title} {desc}".strip()
+    text_l = _nfkc_lower(text)
+    title_l = _nfkc_lower(title)
+    key = str(item.get("key") or "").strip()
+    title_focus_hits = int(metrics.get("title_primary_hits") or 0) + int(metrics.get("title_context_hits") or 0) + int(metrics.get("pattern_hits") or 0)
+    body_focus_hits = int(metrics.get("body_primary_hits") or 0) + int(metrics.get("body_context_hits") or 0)
+    agri_anchor_hits = int(metrics.get("agri_anchor_hits") or 0)
+    market_anchor_hits = int(metrics.get("market_anchor_hits") or 0)
+    issue_anchor_hits = int(metrics.get("issue_anchor_hits") or 0)
+    focus_score = float(metrics.get("focus_score") or 0.0)
+
+    if key == "potato" and not is_fresh_potato_context(text_l):
+        return metrics
+    if key == "eggplant" and not is_edible_eggplant_context(text_l):
+        return metrics
+    if key == "napa_cabbage" and "양배추" in text_l and re.search(r"(?<!양)배추", text_l) is None:
+        return metrics
+    if key == "tomato" and not is_edible_tomato_context(text_l):
+        return metrics
+    if key == "tomato" and any(marker in title_l for marker in ("[ib 토마토", "ib 토마토", "뉴스토마토", "newstomato")):
+        return metrics
+    if key in _FRUIT_TREE_COMMODITY_KEYS and is_fruit_blossom_tourism_context(title, desc):
+        return metrics
+
+    if title_focus_hits == 0:
+        return metrics
+
+    if is_general_consumer_price_noise(text_l) and title_focus_hits == 0:
+        return metrics
+    if is_fastfood_price_context(text_l):
+        return metrics
+    if is_macro_trade_noise_context(text_l) and title_focus_hits == 0 and market_anchor_hits == 0:
+        return metrics
+    if is_retail_promo_context(text_l) and title_focus_hits == 0 and market_anchor_hits == 0:
+        return metrics
+
+    board_penalty = 0.0
+    if is_local_agri_org_feature_context(title, desc) and market_anchor_hits == 0 and focus_score < (_MANAGED_COMMODITY_FOCUS_STRONG_MIN + 1.0):
+        board_penalty += 12.0
+    if any(term in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS) and market_anchor_hits == 0:
+        board_penalty += 6.0
+    if is_retail_promo_context(text_l):
+        board_penalty += 8.0
+    if str(getattr(article, "section", "") or "").strip() == "supply" and is_supply_tourism_event_context(title, desc):
+        board_penalty += 10.0
+
+    metrics["board_eligible"] = True
+    metrics["board_penalty"] = round(float(board_penalty), 3)
+    return metrics
+
+
+def _managed_commodity_board_focus_metrics_for_article(article: "Article", item: dict[str, Any]) -> dict[str, Any]:
+    key = str(item.get("key") or "").strip()
+    cache = getattr(article, "_managed_board_focus_metrics", None)
+    if not isinstance(cache, dict):
+        cache = {}
+    cached = cache.get(key)
+    if isinstance(cached, dict):
+        return cached
+    metrics = _managed_commodity_board_focus_metrics(item, article)
+    cache[key] = metrics
+    setattr(article, "_managed_board_focus_metrics", cache)
+    return metrics
+
+
+def _managed_article_significance_metrics(
+    article: "Article",
+    *,
+    program_core: bool = False,
+    focus_metrics: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    title_l = _nfkc_lower(title)
+    text_l = _nfkc_lower(f"{title} {desc}".strip())
+    dom = normalize_host(getattr(article, "domain", "") or "")
+    press = str(getattr(article, "press", "") or "").strip()
+    issue_bucket = supply_issue_context_bucket(title, desc)
+    feature_kind = supply_feature_context_kind(title, desc)
+    market_response = is_dist_field_market_response_context(title, desc, dom, press)
+    direct_supply = has_direct_supply_chain_signal(text_l)
+    supply_tourism = is_supply_tourism_event_context(title, desc)
+    fruit_blossom_tourism = is_fruit_blossom_tourism_context(title, desc)
+    market_anchor_hits = int((focus_metrics or {}).get("market_anchor_hits") or 0)
+    issue_anchor_hits = int((focus_metrics or {}).get("issue_anchor_hits") or 0)
+    focus_score = float((focus_metrics or {}).get("focus_score") or 0.0)
+    issue_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS])
+    training_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS])
+    profile_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS])
+    consumer_noise_hits = count_any(
+        text_l,
+        [
+            w.lower()
+            for w in (
+                "관광",
+                "여행",
+                "나들이",
+                "축제",
+                "포토존",
+                "인생샷",
+                "맛집",
+                "드라이브",
+                "고택",
+                "메타세쿼이아",
+                "꽃길",
+                "꽃 필 무렵",
+                "최고의 시간",
+            )
+        ],
+    )
+    story_bonus = 0.0
+    story_penalty = 0.0
+
+    if issue_bucket == "commodity_issue":
+        story_bonus += 34.0
+    elif issue_bucket == "farm_action":
+        story_bonus += 28.0
+    elif issue_bucket == "export_recovery":
+        story_bonus += 24.0
+    elif feature_kind == "field":
+        story_bonus += 12.0
+    elif feature_kind == "quality":
+        story_bonus += 8.0
+    elif feature_kind == "issue":
+        story_bonus += 10.0
+
+    if market_response:
+        story_bonus += 12.0
+    if direct_supply:
+        story_bonus += 7.0
+    story_bonus += min(12.0, issue_title_hits * 2.6)
+    if market_anchor_hits >= 1:
+        story_bonus += min(6.0, market_anchor_hits * 2.0)
+    if issue_anchor_hits >= 2:
+        story_bonus += min(6.0, issue_anchor_hits * 1.2)
+    if program_core and (issue_bucket or feature_kind == "field" or feature_kind == "quality"):
+        story_bonus += 4.0
+
+    if is_supply_weak_tail_context(title, desc):
+        story_penalty += 14.0
+    if is_local_agri_org_feature_context(title, desc):
+        story_penalty += 20.0
+    if is_supply_org_promo_feature_context(title, desc):
+        story_penalty += 18.0
+    if training_title_hits >= 1 and issue_bucket is None and (not market_response) and market_anchor_hits == 0:
+        story_penalty += 22.0
+    if (
+        profile_title_hits >= 1
+        and issue_bucket is None
+        and feature_kind is None
+        and (not market_response)
+        and market_anchor_hits == 0
+        and issue_title_hits == 0
+    ):
+        story_penalty += 24.0
+    if (
+        any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS)
+        and issue_title_hits == 0
+        and market_anchor_hits == 0
+        and issue_anchor_hits <= 1
+    ):
+        story_penalty += 12.0
+    if (
+        focus_score < _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+        and issue_bucket is None
+        and feature_kind is None
+        and (not market_response)
+        and issue_title_hits == 0
+        and market_anchor_hits == 0
+    ):
+        story_penalty += 8.0
+    if (
+        feature_kind == "field"
+        and issue_bucket is None
+        and (not direct_supply)
+        and (not market_response)
+        and issue_title_hits == 0
+        and market_anchor_hits == 0
+    ):
+        story_penalty += 10.0
+    if supply_tourism:
+        story_penalty += 18.0
+    if fruit_blossom_tourism:
+        story_penalty += 26.0
+    if consumer_noise_hits >= 2 and issue_bucket is None and (not direct_supply) and (not market_response):
+        story_penalty += 16.0
+
+    return {
+        "issue_bucket": issue_bucket or "",
+        "feature_kind": feature_kind or "",
+        "market_response": bool(market_response),
+        "direct_supply": bool(direct_supply),
+        "supply_tourism": bool(supply_tourism),
+        "fruit_blossom_tourism": bool(fruit_blossom_tourism),
+        "market_anchor_hits": int(market_anchor_hits),
+        "issue_anchor_hits": int(issue_anchor_hits),
+        "issue_title_hits": int(issue_title_hits),
+        "training_title_hits": int(training_title_hits),
+        "profile_title_hits": int(profile_title_hits),
+        "consumer_noise_hits": int(consumer_noise_hits),
+        "story_bonus": round(float(story_bonus), 3),
+        "story_penalty": round(float(story_penalty), 3),
+        "priority_score": round(float(story_bonus - story_penalty), 3),
+    }
+
+
+def managed_commodity_board_keys_for_article(
+    article: "Article",
+    max_keys: int | None = None,
+) -> list[str]:
+    keys = list(managed_commodity_focus_keys_for_article(article))
+    if not keys:
+        return []
+    selected: list[str] = []
+    for key in keys:
+        item = MANAGED_COMMODITY_BY_KEY.get(key)
+        if item is None:
+            continue
+        metrics = _managed_commodity_board_focus_metrics_for_article(article, item)
+        if metrics.get("board_eligible"):
+            selected.append(key)
+    if max_keys is None or max_keys <= 0:
+        return selected
+    return selected[:max_keys]
 
 
 def managed_commodity_keys_for_text(title: str, desc: str, topic: str = "") -> list[str]:
@@ -3055,6 +3648,7 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
     t = (title + " " + desc).lower()
     tl = (title or "").lower()
     scores: dict[str, float] = {}
+    managed_focus_item_cache: dict[str, dict[str, Any] | None] = {}
 
     for topic, words in COMMODITY_TOPICS:
         sc = 0.0
@@ -3084,6 +3678,15 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
         if topic == "사과" and any(x in t for x in ("의사과학", "의사과학자", "의사과학원", "의사공학", "의과학", "의과학원")):
             # '의사과학자/의사과학원' 등은 '사과(apple)'가 아니라 의료/학문 용어(부분문자열) 오탐
             continue
+
+        managed_item = managed_focus_item_cache.get(topic)
+        if topic not in managed_focus_item_cache:
+            managed_item = _managed_commodity_item_for_seed(topic)
+            managed_focus_item_cache[topic] = managed_item
+        if managed_item:
+            focus_metrics = _managed_commodity_focus_metrics(managed_item, title, desc, topic)
+            if not focus_metrics.get("matched"):
+                continue
 
 
         # 기본(2글자 이상 키워드): 부분문자열 매칭
@@ -3161,10 +3764,10 @@ def best_horti_score(title: str, desc: str) -> float:
 def extract_topic(title: str, desc: str) -> str:
     topic, _ = best_topic_and_score(title, desc)
     if topic not in _HORTI_TOPICS_SET:
-        title_managed_summary = _managed_commodity_match_summary(title, "")
-        managed_summary = title_managed_summary if title_managed_summary.get("count") else _managed_commodity_match_summary(title, desc)
-        keys = list(managed_summary.get("keys") or [])
-        if keys:
+        title_focus_summary = _managed_commodity_focus_summary(title, "", "")
+        focus_summary = title_focus_summary if title_focus_summary.get("count") else _managed_commodity_focus_summary(title, desc, "")
+        keys = list(focus_summary.get("strong_keys") or focus_summary.get("keys") or [])
+        if keys and float(focus_summary.get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
             item = MANAGED_COMMODITY_BY_KEY.get(str(keys[0]) or "") or {}
             registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
             managed_topic = registry_topics[0] if registry_topics else str(item.get("short_label") or item.get("label") or "").strip()
@@ -3363,6 +3966,33 @@ def is_edible_carrot_context(text: str) -> bool:
     return edible_hit
 
 
+_TOMATO_BRAND_NOISE_MARKERS = (
+    "[ib 토마토]", "ib 토마토", "뉴스토마토", "newstomato", "tomato tv", "토마토tv",
+    "증시", "주가", "랠리", "장세", "실적", "차입금", "반도건설",
+)
+_TOMATO_EDIBLE_MARKERS = (
+    "농산물", "채소", "과채", "원예", "시설", "하우스", "산지", "농가", "재배", "생육",
+    "수확", "출하", "반입", "작황", "수급", "가격", "시세", "도매", "도매가격", "도매시장",
+    "공판장", "경락", "경매", "방울토마토", "대추방울토마토", "토마토 가격", "토마토 수급",
+    "토마토 작황", "토마토 출하", "토마토 재배", "토마토 농가", "토마토뿔나방",
+)
+
+
+def is_edible_tomato_context(text: str) -> bool:
+    """Return True only when '토마토' clearly refers to the crop or pest context."""
+    t = _nfkc_lower(text or "")
+    if "토마토" not in t:
+        return False
+    edible_hit = any(w.lower() in t for w in _TOMATO_EDIBLE_MARKERS)
+    brand_noise_hit = any(w.lower() in t for w in _TOMATO_BRAND_NOISE_MARKERS)
+    price_pat = bool(re.search(r"토마토\s*(가격|시세|수급|출하(?:량)?|작황|생육|재배|농가|도매|경매|병해충)", t))
+    if price_pat or "토마토뿔나방" in t:
+        edible_hit = True
+    if brand_noise_hit and not edible_hit:
+        return False
+    return edible_hit
+
+
 _EGGPLANT_NON_EDIBLE_MARKERS = [
     "가지말", "가지 말", "가지마",
     "한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "몇 가지", "여러 가지",
@@ -3393,9 +4023,16 @@ def is_edible_eggplant_context(text: str) -> bool:
     edible_hit = any(w.lower() in t for w in _EGGPLANT_EDIBLE_MARKERS)
     non_edible_hit = any(w.lower() in t for w in _EGGPLANT_NON_EDIBLE_MARKERS) or (_EGGPLANT_NON_EDIBLE_RX.search(t) is not None)
     price_pat = bool(re.search(r"가지\s*(가격|시세|수급|출하(?:량)?|작황|생육|재배|농가|도매|경매|유통|병해충|품목)", t))
-    if price_pat:
+    explicit_crop_pat = bool(
+        re.search(
+            r"(?:시설|노지)?가지\s*(재배|농가|출하(?:량)?|생산|작황|생육|수급|가격|시세|도매|경매|유통|병해충|품목)",
+            t,
+        )
+    )
+    strong_edible_hit = price_pat or explicit_crop_pat or any(marker in t for marker in ("시설가지", "노지가지", "가지 품목", "가지 산지", "가지 생산"))
+    if strong_edible_hit:
         edible_hit = True
-    if non_edible_hit and not edible_hit:
+    if non_edible_hit and not strong_edible_hit:
         return False
     return edible_hit
 
@@ -5478,6 +6115,23 @@ _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
 _SUPPLY_FEATURE_ISSUE_RECOVERY_TERMS = (
     "\ud68c\ubcf5", "\ubc18\ub4f1", "\uc815\uc0c1\ud654", "\uac00\uaca9 \ud68c\ubcf5", "\uc2dc\uc138 \ud68c\ubcf5", "\uc81c\uac12", "\ud68c\ubcf5\uc138",
 )
+_FRUIT_TREE_COMMODITY_KEYS = {
+    "apple", "pear", "persimmon", "sweet_persimmon", "peach", "grape", "citrus", "maesil", "citron", "kiwifruit", "plum",
+}
+_FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS = (
+    "배꽃", "사과꽃", "복사꽃", "복숭아꽃", "자두꽃", "매화", "매실꽃", "꽃길", "개화",
+)
+_FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS = (
+    "관광", "여행", "나들이", "명소", "포토존", "인생샷", "드라이브", "최고의 시간",
+    "꽃 필 무렵", "꽃필무렵", "고즈넉", "메타세쿼이아", "힐링",
+)
+_FRUIT_BLOSSOM_TOURISM_STRONG_KEEP_TERMS = (
+    "가격", "수급", "작황", "출하", "경락", "경매", "도매시장", "공판장", "물량",
+    "반입", "저장", "재고", "착과", "냉해", "저온", "피해", "생산비",
+)
+_FRUIT_BLOSSOM_TOURISM_WEAK_KEEP_TERMS = (
+    "재배", "과원", "꽃눈", "생산", "생산량", "농가", "산지",
+)
 _SUPPLY_FEATURE_ISSUE_FARM_TERMS = (
     "\ub18d\uac00", "\uc0b0\uc9c0", "\uc8fc\uc0b0\uc9c0", "\uc0dd\uc0b0\uc790", "\uc7ac\ubc30\ub18d\uac00", "\uacfc\uc6d0", "\uc2dc\uc124", "\uc0dd\uc0b0\ube44", "\ub09c\ubc29\ube44", "\uba74\uc138\uc720",
 )
@@ -5494,6 +6148,8 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt or is_fruit_foodservice_event_context(txt):
+        return None
+    if is_fruit_blossom_tourism_context(title, desc):
         return None
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return None
@@ -5571,6 +6227,8 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt or is_fruit_foodservice_event_context(txt):
+        return None
+    if is_fruit_blossom_tourism_context(title, desc):
         return None
     if is_agri_training_recruitment_context(title, desc):
         return None
@@ -5685,6 +6343,30 @@ def is_fruit_foodservice_event_context(text: str) -> bool:
     # '딸기' 등 과일 키워드가 함께 있을 때만 활성화(일반 외식 기사 오탐 방지)
     fruit_hit = any(k in t for k in ("딸기", "과일", "생딸기", "딸기 디저트"))
     return fruit_hit and (brand_hit or marker_hit)
+
+
+def is_fruit_blossom_tourism_context(title: str, desc: str) -> bool:
+    t = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    flower_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS])
+    if flower_hits == 0:
+        return False
+    travel_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS])
+    if travel_hits == 0:
+        return False
+    strong_keep_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_STRONG_KEEP_TERMS])
+    weak_keep_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_WEAK_KEEP_TERMS])
+    if strong_keep_hits >= 1:
+        return False
+    if (
+        weak_keep_hits >= 2
+        and (
+            count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS]) >= 1
+            or count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_ACTION_TERMS]) >= 1
+            or count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS]) >= 1
+        )
+    ):
+        return False
+    return True
 
 def is_remote_foreign_horti(text: str) -> bool:
     """해외 원예/화훼 업계(특히 특정 국가 내 시장/관세 이슈) 기사 중,
@@ -6380,12 +7062,30 @@ PRESS_HOST_MAP = {
     "www.knnews.co.kr": "경남신문",
     "gnnews.co.kr": "경남일보",
     "www.gnnews.co.kr": "경남일보",
+    "gnmaeil.com": "경남매일",
+    "www.gnmaeil.com": "경남매일",
     "ksilbo.co.kr": "경상일보",
     "www.ksilbo.co.kr": "경상일보",
     "shinailbo.co.kr": "신아일보",
     "www.shinailbo.co.kr": "신아일보",
     "yonhapnewstv.co.kr": "연합뉴스TV",
     "www.yonhapnewstv.co.kr": "연합뉴스TV",
+    "kbsm.net": "경북신문",
+    "www.kbsm.net": "경북신문",
+    "kyongbuk.co.kr": "경북일보",
+    "www.kyongbuk.co.kr": "경북일보",
+    "andongmbc.co.kr": "안동MBC",
+    "www.andongmbc.co.kr": "안동MBC",
+    "dgmbc.com": "대구MBC",
+    "www.dgmbc.com": "대구MBC",
+    "ccdailynews.com": "충청일보",
+    "www.ccdailynews.com": "충청일보",
+    "topstarnews.net": "톱스타뉴스",
+    "www.topstarnews.net": "톱스타뉴스",
+    "newstomato.com": "뉴스토마토",
+    "www.newstomato.com": "뉴스토마토",
+    "newstnt.com": "뉴스티앤티",
+    "www.newstnt.com": "뉴스티앤티",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -6439,6 +7139,95 @@ PRESS_HOST_MAP = {
     "www.aflnews.co.kr": "농수축산신문",
     "nongup.net": "농업정보신문",
     "www.nongup.net": "농업정보신문",
+    "newskr.kr": "한국농어촌방송",
+    "www.newskr.kr": "한국농어촌방송",
+    "newsam.co.kr": "농기자재신문",
+    "www.newsam.co.kr": "농기자재신문",
+    "ggilbo.com": "금강일보",
+    "www.ggilbo.com": "금강일보",
+    "dynews.co.kr": "동양일보",
+    "www.dynews.co.kr": "동양일보",
+    "ccdn.co.kr": "충청매일",
+    "www.ccdn.co.kr": "충청매일",
+    "dkilbo.com": "대경일보",
+    "www.dkilbo.com": "대경일보",
+    "kenews.co.kr": "한국농촌경제신문",
+    "www.kenews.co.kr": "한국농촌경제신문",
+    "mhj21.com": "문화저널21",
+    "www.mhj21.com": "문화저널21",
+    "newscj.com": "천지일보",
+    "www.newscj.com": "천지일보",
+    "paxetv.com": "팍스경제TV",
+    "www.paxetv.com": "팍스경제TV",
+    "sentv.co.kr": "서울경제TV",
+    "www.sentv.co.kr": "서울경제TV",
+    "news.tf.co.kr": "더팩트",
+    "tf.co.kr": "더팩트",
+    "www.tf.co.kr": "더팩트",
+    "headlinejeju.co.kr": "헤드라인제주",
+    "www.headlinejeju.co.kr": "헤드라인제주",
+    "namdonews.com": "남도일보",
+    "www.namdonews.com": "남도일보",
+    "news.tvchosun.com": "TV조선",
+    "tvchosun.com": "TV조선",
+    "foodnews.co.kr": "식품음료신문",
+    "www.foodnews.co.kr": "식품음료신문",
+    "cctimes.kr": "충청타임즈",
+    "www.cctimes.kr": "충청타임즈",
+    "daejonilbo.com": "대전일보",
+    "www.daejonilbo.com": "대전일보",
+    "siminilbo.co.kr": "시민일보",
+    "www.siminilbo.co.kr": "시민일보",
+    "viva100.com": "브릿지경제",
+    "www.viva100.com": "브릿지경제",
+    "cnbnews.com": "CNB뉴스",
+    "www.cnbnews.com": "CNB뉴스",
+    "economist.co.kr": "이코노미스트",
+    "www.economist.co.kr": "이코노미스트",
+    "aitimes.com": "AI타임스",
+    "www.aitimes.com": "AI타임스",
+    "safetimes.co.kr": "세이프타임즈",
+    "www.safetimes.co.kr": "세이프타임즈",
+    "news2day.co.kr": "뉴스투데이",
+    "www.news2day.co.kr": "뉴스투데이",
+    "newsfreezone.co.kr": "뉴스프리존",
+    "www.newsfreezone.co.kr": "뉴스프리존",
+    "newsroad.co.kr": "뉴스로드",
+    "www.newsroad.co.kr": "뉴스로드",
+    "straightnews.co.kr": "스트레이트뉴스",
+    "www.straightnews.co.kr": "스트레이트뉴스",
+    "job-post.co.kr": "잡포스트",
+    "www.job-post.co.kr": "잡포스트",
+    "kdfnews.com": "한국면세뉴스",
+    "www.kdfnews.com": "한국면세뉴스",
+    "kfenews.co.kr": "한국농식품유통신문",
+    "www.kfenews.co.kr": "한국농식품유통신문",
+    "nongaek.com": "농객",
+    "www.nongaek.com": "농객",
+    "pennmike.com": "펜앤마이크",
+    "www.pennmike.com": "펜앤마이크",
+    "skyedaily.com": "스카이데일리",
+    "www.skyedaily.com": "스카이데일리",
+    "weeklytrade.co.kr": "주간무역",
+    "www.weeklytrade.co.kr": "주간무역",
+    "ksmnews.co.kr": "경상매일신문",
+    "www.ksmnews.co.kr": "경상매일신문",
+    "jeonmae.co.kr": "전국매일신문",
+    "www.jeonmae.co.kr": "전국매일신문",
+    "hansbiz.co.kr": "한스경제",
+    "www.hansbiz.co.kr": "한스경제",
+    "kpenews.com": "한국정경신문",
+    "www.kpenews.com": "한국정경신문",
+    "mediapen.com": "미디어펜",
+    "www.mediapen.com": "미디어펜",
+    "businessplus.kr": "비즈니스플러스",
+    "www.businessplus.kr": "비즈니스플러스",
+    "newstree.kr": "뉴스트리",
+    "www.newstree.kr": "뉴스트리",
+    "danbinews.com": "단비뉴스",
+    "www.danbinews.com": "단비뉴스",
+    "ibabynews.com": "베이비뉴스",
+    "www.ibabynews.com": "베이비뉴스",
 }
 
 ABBR_MAP = {
@@ -6499,9 +7288,63 @@ ABBR_MAP = {
     "jndn": "전남매일",
     "knnews": "경남신문",
     "gnnews": "경남일보",
+    "gnmaeil": "경남매일",
     "ksilbo": "경상일보",
     "shinailbo": "신아일보",
     "yonhapnewstv": "연합뉴스TV",
+    "kbsm": "경북신문",
+    "kyongbuk": "경북일보",
+    "andongmbc": "안동MBC",
+    "dgmbc": "대구MBC",
+    "ccdailynews": "충청일보",
+    "topstarnews": "톱스타뉴스",
+    "newstomato": "뉴스토마토",
+    "newstnt": "뉴스티앤티",
+    "newskr": "한국농어촌방송",
+    "newsam": "농기자재신문",
+    "ggilbo": "금강일보",
+    "dynews": "동양일보",
+    "ccdn": "충청매일",
+    "dkilbo": "대경일보",
+    "kenews": "한국농촌경제신문",
+    "mhj21": "문화저널21",
+    "newscj": "천지일보",
+    "paxetv": "팍스경제TV",
+    "sentv": "서울경제TV",
+    "tf": "더팩트",
+    "headlinejeju": "헤드라인제주",
+    "namdonews": "남도일보",
+    "tvchosun": "TV조선",
+    "foodnews": "식품음료신문",
+    "cctimes": "충청타임즈",
+    "daejonilbo": "대전일보",
+    "siminilbo": "시민일보",
+    "viva100": "브릿지경제",
+    "cnbnews": "CNB뉴스",
+    "economist": "이코노미스트",
+    "aitimes": "AI타임스",
+    "safetimes": "세이프타임즈",
+    "news2day": "뉴스투데이",
+    "newsfreezone": "뉴스프리존",
+    "newsroad": "뉴스로드",
+    "straightnews": "스트레이트뉴스",
+    "job-post": "잡포스트",
+    "jobpost": "잡포스트",
+    "kdfnews": "한국면세뉴스",
+    "kfenews": "한국농식품유통신문",
+    "nongaek": "농객",
+    "pennmike": "펜앤마이크",
+    "skyedaily": "스카이데일리",
+    "weeklytrade": "주간무역",
+    "ksmnews": "경상매일신문",
+    "jeonmae": "전국매일신문",
+    "hansbiz": "한스경제",
+    "kpenews": "한국정경신문",
+    "mediapen": "미디어펜",
+    "businessplus": "비즈니스플러스",
+    "newstree": "뉴스트리",
+    "danbinews": "단비뉴스",
+    "ibabynews": "베이비뉴스",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -6556,6 +7399,33 @@ def normalize_press_label(press: str, url: str = "") -> str:
         "amnews": "\ub18d\ucd95\uc720\ud1b5\uc2e0\ubb38",
         "ikpnews": "\ud55c\uad6d\ub18d\uc815\uc2e0\ubb38",
         "fntimes": "\ud55c\uad6d\uae08\uc735\uc2e0\ubb38",
+        "headlinejeju": "\ud5e4\ub4dc\ub77c\uc778\uc81c\uc8fc",
+        "namdonews": "\ub0a8\ub3c4\uc77c\ubcf4",
+        "tvchosun": "TV\uc870\uc120",
+        "foodnews": "\uc2dd\ud488\uc74c\ub8cc\uc2e0\ubb38",
+        "cctimes": "\ucda9\uccad\ud0c0\uc784\uc988",
+        "daejonilbo": "\ub300\uc804\uc77c\ubcf4",
+        "siminilbo": "\uc2dc\ubbfc\uc77c\ubcf4",
+        "viva100": "\ube0c\ub9bf\uc9c0\uacbd\uc81c",
+        "cnbnews": "CNB\ub274\uc2a4",
+        "economist": "\uc774\ucf54\ub178\ubbf8\uc2a4\ud2b8",
+        "aitimes": "AI\ud0c0\uc784\uc2a4",
+        "safetimes": "\uc138\uc774\ud504\ud0c0\uc784\uc988",
+        "news2day": "\ub274\uc2a4\ud22c\ub370\uc774",
+        "newsfreezone": "\ub274\uc2a4\ud504\ub9ac\uc874",
+        "newsroad": "\ub274\uc2a4\ub85c\ub4dc",
+        "straightnews": "\uc2a4\ud2b8\ub808\uc774\ud2b8\ub274\uc2a4",
+        "job-post": "\uc7a1\ud3ec\uc2a4\ud2b8",
+        "jobpost": "\uc7a1\ud3ec\uc2a4\ud2b8",
+        "kdfnews": "\ud55c\uad6d\uba74\uc138\ub274\uc2a4",
+        "kfenews": "\ud55c\uad6d\ub18d\uc2dd\ud488\uc720\ud1b5\uc2e0\ubb38",
+        "nongaek": "\ub18d\uac1d",
+        "pennmike": "\ud39c\uc564\ub9c8\uc774\ud06c",
+        "skyedaily": "\uc2a4\uce74\uc774\ub370\uc77c\ub9ac",
+        "weeklytrade": "\uc8fc\uac04\ubb34\uc5ed",
+        "ksmnews": "\uacbd\uc0c1\ub9e4\uc77c\uc2e0\ubb38",
+        "jeonmae": "\uc804\uad6d\ub9e4\uc77c\uc2e0\ubb38",
+        "hansbiz": "\ud55c\uc2a4\uacbd\uc81c",
     }
     if p_compact in alias:
         return alias[p_compact]
@@ -6642,6 +7512,8 @@ def press_priority(press: str, domain: str) -> int:
     if d.endswith(".go.kr") or d.endswith(".re.kr") or d in ALLOWED_GO_KR:
         return 2
     if p and ("방송" in p and p not in TOP_TIER_PRESS):
+        return 2
+    if re.search(r"(KBS|MBC|SBS)$", p) and p not in TOP_TIER_PRESS:
         return 2
 
     # UGC/커뮤니티성
@@ -6752,6 +7624,8 @@ def press_tier(press: str, domain: str) -> int:
     if p in MID_TIER_PRESS:
         return 2
     if p and ('방송' in p and p not in MAJOR_PRESS):
+        return 2
+    if re.search(r"(KBS|MBC|SBS)$", p) and p not in MAJOR_PRESS:
         return 2
     if any(h in p for h in MID_PRESS_HINTS):
         return 2
@@ -7689,6 +8563,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("remote_foreign_trade_brief")
     if key in ("supply", "policy") and is_flower_novelty_noise_context(ttl, desc):
         return _reject("flower_novelty_noise")
+    if key in ("supply", "dist") and is_supply_tourism_event_context(ttl, desc):
+        return _reject("supply_tourism_event")
+    if key in ("supply", "dist") and is_fruit_blossom_tourism_context(ttl, desc):
+        return _reject("fruit_blossom_tourism")
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
@@ -8336,6 +9214,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
+    managed_focus_summary = _managed_commodity_focus_summary(title, desc)
+    managed_focus_max = float(managed_focus_summary.get("max_focus_score") or 0.0)
+    managed_focus_strong_count = int(managed_focus_summary.get("strong_count") or 0)
+    managed_focus_program_core_count = int(managed_focus_summary.get("program_core_strong_count") or 0)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -8391,6 +9273,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+        if managed_focus_max >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+            score += min(2.6, 0.42 * managed_focus_max)
+        elif managed_focus_max >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
+            score += min(1.1, 0.24 * managed_focus_max)
+        if managed_focus_program_core_count:
+            score += min(0.9, 0.32 * managed_focus_program_core_count)
+        if managed_count >= 2 and managed_focus_strong_count == 0 and not has_direct_supply_chain_signal(text):
+            score -= min(1.6, 0.42 * managed_count)
         if is_supply_price_outlook_context(title, desc):
             score += 2.3
         if supply_feature_kind == "issue":
@@ -9886,6 +10776,99 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return key
 
     pool_managed_primary_keys = {primary for primary in (_managed_primary_key(a) for a in pool) if primary}
+    managed_focus_cache: dict[str, dict[str, Any]] = {}
+    supply_priority_cache: dict[str, float] = {}
+    supply_board_bridge_boosts: dict[str, float] = {}
+
+    def _managed_focus_summary_local(a: Article) -> dict[str, Any]:
+        cache_key = _dup_key(a)
+        summary = managed_focus_cache.get(cache_key)
+        if summary is None:
+            summary = _managed_commodity_focus_summary_for_article(a)
+            managed_focus_cache[cache_key] = summary
+        return summary
+
+    def _is_supply_low_signal_feature_story(a: Article) -> bool:
+        if section_key != "supply":
+            return False
+        title = str(getattr(a, "title", "") or "")
+        desc = str(getattr(a, "description", "") or "")
+        text_l = _nfkc_lower(f"{title} {desc}".strip())
+        dom = normalize_host(getattr(a, "domain", "") or "")
+        press = str(getattr(a, "press", "") or "").strip()
+        issue_bucket = supply_issue_context_bucket(title, desc)
+        field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
+        direct_supply = has_direct_supply_chain_signal(text_l)
+        training_title_hits = count_any(
+            _nfkc_lower(title),
+            [w.lower() for w in _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS],
+        )
+        if is_supply_org_promo_feature_context(title, desc) and issue_bucket != "commodity_issue" and not field_market_response:
+            return True
+        if (
+            is_local_agri_org_feature_context(title, desc)
+            and not issue_bucket
+            and not direct_supply
+            and not field_market_response
+        ):
+            return True
+        if training_title_hits >= 1 and not issue_bucket and not direct_supply and not field_market_response:
+            return True
+        return False
+
+    def _supply_core_priority_score(a: Article) -> float:
+        cache_key = _dup_key(a)
+        cached = supply_priority_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        primary_key = _managed_primary_key(a)
+        item = MANAGED_COMMODITY_BY_KEY.get(primary_key or "") or {}
+        focus_metrics = (
+            _managed_commodity_focus_metrics(
+                item,
+                a.title or "",
+                a.description or "",
+                a.topic or "",
+            )
+            if primary_key and item
+            else {}
+        )
+        story_metrics = _managed_article_significance_metrics(
+            a,
+            program_core=bool(item.get("program_core")),
+            focus_metrics=focus_metrics,
+        )
+        focus_summary = _managed_focus_summary_local(a)
+        max_focus = float(focus_summary.get("max_focus_score") or 0.0)
+        priority = float(story_metrics.get("priority_score") or 0.0)
+        if bool(item.get("program_core")) and max_focus >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+            priority += 8.0
+        elif bool(item.get("program_core")) and max_focus >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
+            priority += 3.0
+        priority += float(supply_board_bridge_boosts.get(cache_key) or 0.0)
+        supply_priority_cache[cache_key] = priority
+        return priority
+
+    def _core_iteration_pool(items: list[Article]) -> list[Article]:
+        if section_key != "supply":
+            return items
+        return sorted(
+            items,
+            key=lambda a: (
+                float(supply_board_bridge_boosts.get(_dup_key(a)) or 0.0),
+                _supply_core_priority_score(a),
+                float(getattr(a, "score", 0.0) or 0.0),
+                section_fit_score(a.title or "", a.description or "", sec_conf),
+                getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+            ),
+            reverse=True,
+        )
+
+    strong_supply_focus_pool_count = sum(
+        1
+        for a in pool
+        if float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ) if section_key == "supply" else 0
 
     def _managed_repeat_too_close(a: Article, selected: list[Article], score_gap_override: float | None = None) -> bool:
         primary = _managed_primary_key(a)
@@ -10337,6 +11320,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 _is_supply_policy_like_tail_story(a)
                 or _is_supply_dist_like_tail_story(a)
                 or _is_supply_weak_tail_story(a)
+                or _is_supply_low_signal_feature_story(a)
             )
         if section_key == "dist":
             return not _is_dist_weak_tail_story(a)
@@ -10346,6 +11330,54 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             txt_local = ((a.title or "") + " " + (a.description or "")).lower()
             return is_pest_control_policy_context(txt_local) or is_pest_story_focus_strong(a.title or "", a.description or "")
         return True
+
+    if section_key == "supply":
+        for item in MANAGED_COMMODITY_CATALOG:
+            if not bool(item.get("program_core")):
+                continue
+            best_article: Article | None = None
+            best_sort: tuple[Any, ...] | None = None
+            best_metrics: dict[str, Any] | None = None
+            for article in pool:
+                metrics = _commodity_board_item_article_metrics(item, article)
+                if not bool(metrics.get("board_eligible")):
+                    continue
+                focus_score = float(metrics.get("focus_score") or 0.0)
+                story_priority = float(metrics.get("story_priority") or 0.0)
+                if focus_score < _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
+                    continue
+                if story_priority <= 0.0 and float(metrics.get("board_score") or 0.0) < 78.0:
+                    continue
+                if _is_supply_policy_like_tail_story(article):
+                    continue
+                if _is_supply_dist_like_tail_story(article):
+                    continue
+                if _is_supply_weak_tail_story(article):
+                    continue
+                if _is_supply_low_signal_feature_story(article):
+                    continue
+                candidate_sort = (
+                    float(metrics.get("board_score") or 0.0),
+                    story_priority,
+                    focus_score,
+                    float(getattr(article, "score", 0.0) or 0.0),
+                    getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+                )
+                if best_sort is None or candidate_sort > best_sort:
+                    best_article = article
+                    best_sort = candidate_sort
+                    best_metrics = metrics
+            if best_article is None or best_metrics is None:
+                continue
+            cache_key = _dup_key(best_article)
+            boost = 10.0 + min(18.0, float(best_metrics.get("board_score") or 0.0) / 10.0)
+            if float(best_metrics.get("story_priority") or 0.0) >= 18.0:
+                boost += 4.0
+            elif float(best_metrics.get("story_priority") or 0.0) >= 10.0:
+                boost += 2.0
+            prev = float(supply_board_bridge_boosts.get(cache_key) or 0.0)
+            if boost > prev:
+                supply_board_bridge_boosts[cache_key] = round(boost, 3)
 
     source_cap_pool = [a for a in pool if _counts_as_viable_source_option(a)]
     if not source_cap_pool:
@@ -10390,7 +11422,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             core.append(a)
             _mark_used(a)
             _source_take(a)
-    for a in pool:
+    for a in _core_iteration_pool(pool):
         if len(core) >= 2:
             break
         if a.score < core_min:
@@ -10416,6 +11448,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             mix = (a.title + " " + a.description).lower()
             dom = normalize_host(a.domain or "")
             pr = (a.press or "").strip()
+            focus_summary_local = _managed_focus_summary_local(a)
+            focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
             try:
                 _h = best_horti_score(a.title or "", a.description or "")
             except Exception:
@@ -10440,9 +11474,16 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_supply_weak_tail_story(a):
                 continue
+            if _is_supply_low_signal_feature_story(a):
+                continue
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
             if (a.topic or "").strip() == "정책":
                 continue
+            if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and (not has_direct_supply_chain_signal(mix)) and _h < 2.2:
+                continue
+            if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+                if (not has_direct_supply_chain_signal(mix)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.8):
+                    continue
         fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
         if fit_sc_core < core_fit_min and a.score < (core_min + 1.8):
             continue
@@ -10460,7 +11501,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
                 continue
         if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-            continue
+            if not (
+                section_key == "supply"
+                and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+            ):
+                continue
 
         if not _source_ok_local(a):
             continue
@@ -10475,7 +11520,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 2) 코어 부족 시: 약간 완화(여전히 임계치 이상 + 중복 제거) — 하지만 억지 채움 금지
     if len(core) < 2:
-        for a in pool:
+        for a in _core_iteration_pool(pool):
             if len(core) >= 2:
                 break
             # dist 완화 선발 임계값: APC 인프라/시설 기사(준공/가동/선별/저온저장 등)는 소폭 완화
@@ -10506,6 +11551,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "supply":
                 dom = normalize_host(a.domain or "")
                 pr = (a.press or "").strip()
+                focus_summary_local = _managed_focus_summary_local(a)
+                focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
                 if is_supply_stabilization_policy_context(text, dom, pr):
                     continue
                 if is_policy_market_brief_context(text, dom, pr):
@@ -10516,8 +11563,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if _is_supply_weak_tail_story(a):
                     continue
+                if _is_supply_low_signal_feature_story(a):
+                    continue
                 if (a.topic or "").strip() == "정책":
                     continue
+                if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and (not has_direct_supply_chain_signal(text)) and best_horti_score(a.title or "", a.description or "") < 2.0:
+                    continue
+                if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+                    if (not has_direct_supply_chain_signal(text)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.6):
+                        continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
             market_anchor_hits = count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")])
@@ -10540,7 +11594,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
                     continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-                continue
+                if not (
+                    section_key == "supply"
+                    and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+                ):
+                    continue
 
             if not _source_ok_local(a):
                 continue
@@ -10574,7 +11632,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _managed_repeat_too_close(a, core, score_gap_override=1.0):
                 continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-                continue
+                if not (
+                    section_key == "supply"
+                    and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+                ):
+                    continue
             if not _source_ok_local(a):
                 continue
             a.is_core = True
@@ -10694,6 +11756,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_supply_weak_tail_story(a):
                 continue
+            if _is_supply_low_signal_feature_story(a):
+                continue
             eligible.append(a)
 
         while len(final) < max_n and eligible:
@@ -10721,6 +11785,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if _is_supply_dist_like_tail_story(a):
                     continue
                 if _is_supply_weak_tail_story(a):
+                    continue
+                if _is_supply_low_signal_feature_story(a):
                     continue
                 tri_a = _mmr_tri(a)
                 max_sim = 0.0
@@ -10786,6 +11852,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _is_supply_dist_like_tail_story(a):
                 continue
             if _is_supply_weak_tail_story(a):
+                continue
+            if _is_supply_low_signal_feature_story(a):
                 continue
             _record_selection(a, "tail")
             final.append(a)
@@ -10912,6 +11980,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if _is_supply_weak_tail_story(a):
                     continue
+                if _is_supply_low_signal_feature_story(a):
+                    continue
                 if not _headline_gate_relaxed(a, section_key):
                     continue
                 if not _source_ok_local(a):
@@ -10961,6 +12031,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     if _is_supply_dist_like_tail_story(a):
                         continue
                     if _is_supply_weak_tail_story(a):
+                        continue
+                    if _is_supply_low_signal_feature_story(a):
                         continue
                     if not _headline_gate_relaxed(a, section_key):
                         continue
@@ -11462,6 +12534,28 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         non_forced_selected = [a for a in deduped if (a.canon_url or _dup_key(a)) not in forced_keys]
         deduped = forced_selected + non_forced_selected
 
+    if section_key == "supply":
+        core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
+        if core_count < min(2, len(deduped)):
+            for a in _core_iteration_pool(list(deduped)):
+                if core_count >= 2:
+                    break
+                if getattr(a, "is_core", False):
+                    continue
+                a.is_core = True
+                _record_selection(a, "core_promote")
+                core_count += 1
+        deduped = sorted(
+            deduped,
+            key=lambda a: (
+                1 if getattr(a, "is_core", False) else 0,
+                _supply_core_priority_score(a),
+                float(getattr(a, "score", 0.0) or 0.0),
+                getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+            ),
+            reverse=True,
+        )
+
     # Debug report payload (top candidates + selection decisions)
     if DEBUG_REPORT:
         try:
@@ -11957,11 +13051,12 @@ _QUERY_TOKEN_STOPWORDS = {
     "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
     "동향", "이슈", "대책", "지원", "검역", "유통", "현장", "방제", "병해충",
     "수입", "수입산", "무관세", "관세", "fta", "통관", "할당관세",
+    "재배", "생산", "관리", "기술", "교육", "현장점검",
 }
 
 def _query_tokens(q: str) -> list[str]:
     """쿼리에서 의미 있는 토큰만 추출(스팸성 광역 쿼리 정밀도 보정용)."""
-    toks = re.findall(r"[0-9a-z가-힣]{2,}", (q or "").lower())
+    toks = re.findall(r"[0-9a-z\u3131-\u318e\uac00-\ud7a3]{2,}", _nfkc_lower(q))
     out: list[str] = []
     for t in toks:
         if t in _QUERY_TOKEN_STOPWORDS:
@@ -11976,10 +13071,15 @@ def _query_article_match_ok(q: str, title: str, desc: str, section_key: str) -> 
     - 광역/보강 쿼리에서 발생하는 오탐을 줄이기 위해, 의미 토큰이 기사 텍스트에 최소 1개 이상 포함되는지 확인.
     - 다만 policy 섹션은 공공기관 브리핑이 제목/본문 표현이 변형되는 경우가 있어 완화 기준 적용.
     """
+    query_managed_keys = set(_managed_commodity_match_summary(q or "", "").get("keys") or [])
+    if query_managed_keys and section_key in {"supply", "dist", "pest"}:
+        article_managed_keys = set(_managed_commodity_match_summary(title or "", desc or "").get("keys") or [])
+        if not article_managed_keys or article_managed_keys.isdisjoint(query_managed_keys):
+            return False
     toks = _query_tokens(q)
     if not toks:
         return True
-    txt = f"{title or ''} {desc or ''}".lower()
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
     hit = sum(1 for t in toks if t in txt)
     if section_key == "policy":
         return hit >= 1
@@ -14483,6 +15583,12 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     pruned_final = _audit_final_sections(final_by_section)
     if pruned_final:
         log.info("[AUDIT] pruned %d final item(s) after section assembly", pruned_final)
+    try:
+        promoted_supply = _normalize_supply_section_from_board(final_by_section, board_source_by_section)
+        if promoted_supply:
+            log.info("[REBALANCE] promoted %d program-core board story(s) into final supply", promoted_supply)
+    except Exception as e:
+        log.warning("[WARN] supply board normalization failed: %s", e)
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
 
@@ -15091,43 +16197,225 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     body_l = f"{title} {desc}".lower()
     base_terms = _managed_commodity_base_terms(item, limit=6)
     context_terms = _ordered_unique_terms(list(item.get("context_terms") or []) + list(item.get("match_terms") or []))
-    matched_keys = managed_commodity_keys_for_article(article)
+    focus_summary = _managed_commodity_focus_summary_for_article(article)
+    focus_by_key = dict(focus_summary.get("focus_by_key") or {})
+    matched_keys = list(focus_summary.get("keys") or [])
+    board_metrics = _managed_commodity_board_focus_metrics_for_article(article, item)
+    focus_score = float(focus_by_key.get(item_key) or 0.0)
     match_count = len(matched_keys)
     single_focus = 1 if item_key and matched_keys == [item_key] else 0
+    primary_focus = 1 if item_key and matched_keys and matched_keys[0] == item_key else 0
+    strong_focus = 1 if focus_score >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0
     title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
     section_key = str(getattr(article, "section", "") or "").strip()
+    board_penalty = float(board_metrics.get("board_penalty") or 0.0)
+    board_eligible = bool(board_metrics.get("board_eligible"))
+    story_metrics = _managed_article_significance_metrics(
+        article,
+        program_core=bool(item.get("program_core")),
+        focus_metrics=board_metrics,
+    )
+    story_priority = float(story_metrics.get("priority_score") or 0.0)
     board_score = (
-        (float(getattr(article, "score", 0.0) or 0.0) * 0.35)
-        + (title_primary_hits * 42.0)
-        + (title_context_hits * 12.0)
-        + (body_primary_hits * 8.0)
-        + (body_context_hits * 3.0)
-        + (14.0 if single_focus else 0.0)
+        (focus_score * 24.0)
+        + (float(getattr(article, "score", 0.0) or 0.0) * 0.28)
+        + (title_primary_hits * 18.0)
+        + (title_context_hits * 8.0)
+        + (body_primary_hits * 6.0)
+        + (body_context_hits * 2.5)
+        + (16.0 if primary_focus else 0.0)
+        + (12.0 if single_focus else 0.0)
+        + (10.0 if strong_focus else 0.0)
         + (6.0 if getattr(article, "is_core", False) else 0.0)
         + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
         + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
-        - (max(0, match_count - 1) * 6.0)
+        + story_priority
+        - (max(0, match_count - 1) * 8.0)
+        - board_penalty
     )
+    if not board_eligible:
+        board_score -= 120.0
+        focus_score = 0.0
     return {
         "board_score": board_score,
+        "focus_score": focus_score,
         "title_primary_hits": title_primary_hits,
         "title_context_hits": title_context_hits,
         "body_primary_hits": body_primary_hits,
         "body_context_hits": body_context_hits,
+        "primary_focus": primary_focus,
+        "strong_focus": strong_focus,
         "single_focus": single_focus,
         "match_count": match_count,
         "section_rank": _COMMODITY_BOARD_SECTION_RANK.get(section_key, 0),
+        "board_eligible": board_eligible,
+        "board_penalty": board_penalty,
+        "story_priority": story_priority,
+        "story_bonus": float(story_metrics.get("story_bonus") or 0.0),
+        "story_penalty": float(story_metrics.get("story_penalty") or 0.0),
+        "issue_bucket": str(story_metrics.get("issue_bucket") or ""),
+        "feature_kind": str(story_metrics.get("feature_kind") or ""),
+        "market_response": bool(story_metrics.get("market_response")),
+        "direct_supply": bool(story_metrics.get("direct_supply")),
+        "market_anchor_hits": int(story_metrics.get("market_anchor_hits") or 0),
+        "issue_anchor_hits": int(story_metrics.get("issue_anchor_hits") or 0),
+        "issue_title_hits": int(story_metrics.get("issue_title_hits") or 0),
+        "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
+        "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
+        "consumer_noise_hits": int(story_metrics.get("consumer_noise_hits") or 0),
+        "supply_tourism": bool(story_metrics.get("supply_tourism")),
+        "fruit_blossom_tourism": bool(story_metrics.get("fruit_blossom_tourism")),
     }
 
 
+def _commodity_board_item_article_representative_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
+    metrics = dict(_commodity_board_item_article_metrics(item, article))
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    title_l = _nfkc_lower(title)
+    issue_bucket = str(metrics.get("issue_bucket") or "")
+    feature_kind = str(metrics.get("feature_kind") or "")
+    direct_supply = bool(metrics.get("direct_supply"))
+    market_response = bool(metrics.get("market_response"))
+    market_anchor_hits = int(metrics.get("market_anchor_hits") or 0)
+    issue_anchor_hits = int(metrics.get("issue_anchor_hits") or 0)
+    issue_title_hits = int(metrics.get("issue_title_hits") or 0)
+    training_title_hits = int(metrics.get("training_title_hits") or 0)
+    profile_title_hits = int(metrics.get("profile_title_hits") or 0)
+    board_eligible = bool(metrics.get("board_eligible"))
+    strong_focus = bool(metrics.get("strong_focus"))
+    primary_focus = bool(metrics.get("primary_focus"))
+    board_score = float(metrics.get("board_score") or 0.0)
+    story_priority = float(metrics.get("story_priority") or 0.0)
+    consumer_noise_hits = int(metrics.get("consumer_noise_hits") or 0)
+    fruit_blossom_tourism = bool(metrics.get("fruit_blossom_tourism"))
+    allow_core_issue = bool(issue_bucket) or market_response
+    weak_training = training_title_hits >= 1 and not allow_core_issue
+    weak_profile = profile_title_hits >= 1 and not allow_core_issue
+    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not allow_core_issue
+    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not allow_core_issue
+    weak_event = (
+        any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS)
+        and not allow_core_issue
+        and feature_kind != "quality"
+    )
+    weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not allow_core_issue) and (not direct_supply)
+    weak_tourism = bool(metrics.get("supply_tourism")) and not allow_core_issue
+    weak_blossom_tourism = fruit_blossom_tourism and not allow_core_issue
+
+    representative_rank = -1
+    if not board_eligible:
+        representative_rank = -1
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism:
+        representative_rank = 0
+    elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
+        representative_rank = 4
+    elif direct_supply or market_response:
+        representative_rank = 3
+    elif issue_title_hits >= 1 and strong_focus and story_priority >= 8.0:
+        representative_rank = 3
+    elif feature_kind in ("field", "quality") and strong_focus and story_priority >= 4.0:
+        representative_rank = 2
+    elif strong_focus and primary_focus and board_score >= 88.0:
+        representative_rank = 1
+    else:
+        representative_rank = 0
+
+    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5)
+    if weak_training:
+        representative_score -= 26.0
+    if weak_profile:
+        representative_score -= 28.0
+    if weak_org_feature:
+        representative_score -= 18.0
+    if weak_org_promo:
+        representative_score -= 16.0
+    if weak_event:
+        representative_score -= 10.0
+    if weak_consumer_lifestyle:
+        representative_score -= 18.0
+    if weak_tourism:
+        representative_score -= 20.0
+    if weak_blossom_tourism:
+        representative_score -= 24.0
+
+    metrics.update(
+        {
+            "representative_rank": int(representative_rank),
+            "representative_score": round(float(representative_score), 3),
+            "representative_eligible": bool(representative_rank >= 1),
+            "weak_training_story": bool(weak_training),
+            "weak_profile_story": bool(weak_profile),
+            "weak_org_feature_story": bool(weak_org_feature),
+            "weak_org_promo_story": bool(weak_org_promo),
+            "weak_event_story": bool(weak_event),
+            "weak_consumer_lifestyle_story": bool(weak_consumer_lifestyle),
+            "weak_tourism_story": bool(weak_tourism),
+            "weak_blossom_tourism_story": bool(weak_blossom_tourism),
+        }
+    )
+    return metrics
+
+
+def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
+    return 3 if bool(item.get("program_core")) else 2
+
+
+def _commodity_board_article_is_active_candidate(
+    item: dict[str, Any],
+    article: Article,
+    metrics: dict[str, Any] | None = None,
+) -> bool:
+    article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
+    if not bool(article_metrics.get("board_eligible")):
+        return False
+    if int(article_metrics.get("representative_rank", -1)) < _commodity_board_active_min_rank(item):
+        return False
+    if bool(item.get("program_core")):
+        if not (
+            str(article_metrics.get("issue_bucket") or "")
+            or bool(article_metrics.get("direct_supply"))
+            or bool(article_metrics.get("market_response"))
+            or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+            or int(article_metrics.get("market_anchor_hits") or 0) >= 1
+        ):
+            return False
+    return True
+
+
+def _commodity_board_article_is_supply_bridge_candidate(
+    item: dict[str, Any],
+    article: Article,
+    metrics: dict[str, Any] | None = None,
+) -> bool:
+    article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
+    if not _commodity_board_article_is_active_candidate(item, article, article_metrics):
+        return False
+    if int(article_metrics.get("representative_rank", -1)) < 3:
+        return False
+    return bool(
+        str(article_metrics.get("issue_bucket") or "")
+        or bool(article_metrics.get("direct_supply"))
+        or bool(article_metrics.get("market_response"))
+        or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+        or int(article_metrics.get("market_anchor_hits") or 0) >= 1
+    )
+
+
 def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
-    metrics = _commodity_board_item_article_metrics(item, article)
+    metrics = _commodity_board_item_article_representative_metrics(item, article)
     return (
+        int(metrics.get("representative_rank", -1)),
+        float(metrics.get("representative_score", 0.0)),
         float(metrics["board_score"]),
+        float(metrics.get("story_priority", 0.0)),
+        float(metrics["focus_score"]),
         int(metrics["title_primary_hits"]),
+        int(metrics["primary_focus"]),
+        int(metrics["strong_focus"]),
         int(metrics["single_focus"]),
         int(metrics["body_primary_hits"]),
         1 if getattr(article, "is_core", False) else 0,
@@ -15135,6 +16423,276 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
         float(getattr(article, "score", 0.0) or 0.0),
         getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
     )
+
+
+def _article_selection_identity(article: Article) -> str:
+    return (
+        str(getattr(article, "canon_url", "") or "")
+        or str(getattr(article, "norm_key", "") or "")
+        or str(getattr(article, "title_key", "") or "")
+        or str(getattr(article, "originallink", "") or getattr(article, "link", "") or "")
+    )
+
+
+def _best_program_core_board_metrics_for_article(article: Article) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    candidate_keys = managed_commodity_board_keys_for_article(article, max_keys=3)
+    best_item: dict[str, Any] | None = None
+    best_metrics: dict[str, Any] | None = None
+    best_sort: tuple[Any, ...] | None = None
+    for key in candidate_keys:
+        item = MANAGED_COMMODITY_BY_KEY.get(str(key) or "")
+        if not item or not bool(item.get("program_core")):
+            continue
+        metrics = _commodity_board_item_article_representative_metrics(item, article)
+        cand = (
+            int(metrics.get("representative_rank", -1)),
+            float(metrics.get("representative_score", 0.0)),
+            float(metrics.get("board_score", 0.0)),
+            float(metrics.get("story_priority", 0.0)),
+            float(metrics.get("focus_score", 0.0)),
+        )
+        if best_sort is None or cand > best_sort:
+            best_item = item
+            best_metrics = metrics
+            best_sort = cand
+    if best_item is None or best_metrics is None:
+        return None
+    return best_item, best_metrics
+
+
+def _final_supply_article_sort_key(article: Article) -> tuple[Any, ...]:
+    best = _best_program_core_board_metrics_for_article(article)
+    if best is not None:
+        _, metrics = best
+        return (
+            int(metrics.get("representative_rank", -1)),
+            float(metrics.get("representative_score", 0.0)),
+            float(metrics.get("board_score", 0.0)),
+            float(metrics.get("story_priority", 0.0)),
+            1 if str(getattr(article, "section", "") or "").strip() == "supply" else 0,
+            float(getattr(article, "score", 0.0) or 0.0),
+            getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        )
+    return (
+        0,
+        0.0,
+        0.0,
+        0.0,
+        1 if str(getattr(article, "section", "") or "").strip() == "supply" else 0,
+        float(getattr(article, "score", 0.0) or 0.0),
+        getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+    )
+
+
+def _program_core_board_supply_candidates(board_source_by_section: dict[str, list[Article]]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for item in MANAGED_COMMODITY_CATALOG:
+        if not bool(item.get("program_core")):
+            continue
+        best_article: Article | None = None
+        best_metrics: dict[str, Any] | None = None
+        best_sort: tuple[Any, ...] | None = None
+        for section_key in ("supply", "dist"):
+            for article in board_source_by_section.get(section_key, []) or []:
+                if not isinstance(article, Article):
+                    continue
+                metrics = _commodity_board_item_article_representative_metrics(item, article)
+                if not _commodity_board_article_is_supply_bridge_candidate(item, article, metrics):
+                    continue
+                representative_rank = int(metrics.get("representative_rank", -1))
+                cand = (
+                    representative_rank,
+                    float(metrics.get("representative_score", 0.0)),
+                    float(metrics.get("board_score", 0.0)),
+                    float(metrics.get("story_priority", 0.0)),
+                    1 if section_key == "supply" else 0,
+                    float(getattr(article, "score", 0.0) or 0.0),
+                    getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+                )
+                if best_sort is None or cand > best_sort:
+                    best_article = article
+                    best_metrics = metrics
+                    best_sort = cand
+        if best_article is None or best_metrics is None or best_sort is None:
+            continue
+        records.append(
+            {
+                "item_key": str(item.get("key") or ""),
+                "item_label": str(item.get("label") or ""),
+                "article": best_article,
+                "metrics": best_metrics,
+                "sort_key": best_sort,
+            }
+        )
+    records.sort(key=lambda rec: rec.get("sort_key") or (), reverse=True)
+    return records
+
+
+def _normalize_supply_section_from_board(
+    final_by_section: dict[str, list[Article]],
+    board_source_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    selected_other_keys = {
+        _article_selection_identity(article)
+        for section_key, items in (final_by_section or {}).items()
+        if str(section_key) not in {"supply", "dist"}
+        for article in (items or [])
+        if isinstance(article, Article)
+    }
+    current_supply_keys = {_article_selection_identity(article) for article in supply_items if _article_selection_identity(article)}
+    inserted = 0
+    promoted_other_keys: set[str] = set()
+    winners = _program_core_board_supply_candidates(board_source_by_section)
+
+    for min_rank in (2,):
+        for record in winners:
+            article = record.get("article")
+            metrics = record.get("metrics") or {}
+            if not isinstance(article, Article):
+                continue
+            if int(metrics.get("representative_rank", -1)) < min_rank:
+                continue
+            article_key = _article_selection_identity(article)
+            if not article_key:
+                continue
+            if article_key in current_supply_keys:
+                continue
+            if article_key in selected_other_keys:
+                continue
+            if len(supply_items) < max_n:
+                supply_items.append(article)
+                inserted += 1
+            else:
+                victim_idx = min(
+                    range(len(supply_items)),
+                    key=lambda idx: _final_supply_article_sort_key(supply_items[idx]),
+                )
+                victim = supply_items[victim_idx]
+                if record.get("sort_key") and record.get("sort_key") <= _final_supply_article_sort_key(victim):
+                    continue
+                supply_items[victim_idx] = article
+                inserted += 1
+            if getattr(article, "section", "") != "supply":
+                prev_section = str(getattr(article, "section", "") or "")
+                if not getattr(article, "origin_section", ""):
+                    article.origin_section = prev_section
+                if prev_section:
+                    article.reassigned_from = prev_section
+                article.section = "supply"
+                if prev_section and prev_section != "supply":
+                    promoted_other_keys.add(article_key)
+            article.is_core = False
+            article.selection_stage = "supply_board_bridge"
+            article.selection_note = str(record.get("item_key") or "")
+            current_supply_keys.add(article_key)
+            if inserted >= 2:
+                break
+        if inserted >= 2:
+            break
+
+    ranked_supply = sorted(
+        [article for article in supply_items if isinstance(article, Article)],
+        key=_final_supply_article_sort_key,
+        reverse=True,
+    )
+    deduped_supply: list[Article] = []
+    seen_supply_keys: set[str] = set()
+    for article in ranked_supply:
+        article_key = _article_selection_identity(article)
+        if article_key and article_key in seen_supply_keys:
+            continue
+        if article_key:
+            seen_supply_keys.add(article_key)
+        deduped_supply.append(article)
+        if len(deduped_supply) >= max_n:
+            break
+
+    ranked_metrics: list[tuple[Article, dict[str, Any] | None]] = []
+    for article in deduped_supply:
+        article.is_core = False
+        best = _best_program_core_board_metrics_for_article(article)
+        ranked_metrics.append((article, best[1] if best is not None else None))
+
+    supply_by_key = {
+        _article_selection_identity(article): article
+        for article in deduped_supply
+        if _article_selection_identity(article)
+    }
+    core_target = min(2, len(deduped_supply))
+    core_candidates: list[Article] = []
+
+    for record in winners:
+        article = record.get("article")
+        metrics = record.get("metrics") or {}
+        if not isinstance(article, Article):
+            continue
+        if int(metrics.get("representative_rank", -1)) < 3:
+            continue
+        selected_article = supply_by_key.get(_article_selection_identity(article))
+        if selected_article is None or selected_article in core_candidates:
+            continue
+        core_candidates.append(selected_article)
+        if len(core_candidates) >= core_target:
+            break
+
+    for article, metrics in ranked_metrics:
+        if article in core_candidates:
+            continue
+        if isinstance(metrics, dict) and int(metrics.get("representative_rank", -1)) >= 2:
+            core_candidates.append(article)
+            if len(core_candidates) >= core_target:
+                break
+    if len(core_candidates) < core_target:
+        for article, metrics in ranked_metrics:
+            if article in core_candidates:
+                continue
+            weak_story = bool(
+                isinstance(metrics, dict)
+                and (
+                    metrics.get("weak_training_story")
+                    or metrics.get("weak_profile_story")
+                    or metrics.get("weak_event_story")
+                    or metrics.get("weak_consumer_lifestyle_story")
+                    or metrics.get("weak_tourism_story")
+                    or metrics.get("weak_blossom_tourism_story")
+                    or metrics.get("weak_org_feature_story")
+                    or metrics.get("weak_org_promo_story")
+                )
+            )
+            if weak_story:
+                continue
+            core_candidates.append(article)
+            if len(core_candidates) >= core_target:
+                break
+
+    for article in core_candidates[:core_target]:
+        article.is_core = True
+        if not str(getattr(article, "selection_stage", "") or "").startswith("core"):
+            article.selection_stage = "core_final"
+    final_by_section["supply"] = sorted(
+        deduped_supply,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            *_final_supply_article_sort_key(article),
+        ),
+        reverse=True,
+    )
+    if promoted_other_keys:
+        for section_key, items in list((final_by_section or {}).items()):
+            if str(section_key) == "supply":
+                continue
+            final_by_section[section_key] = [
+                article
+                for article in (items or [])
+                if not isinstance(article, Article) or _article_selection_identity(article) not in promoted_other_keys
+            ]
+    return inserted
 
 
 def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Article]) -> list[Article]:
@@ -15184,7 +16742,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     for sec in SECTIONS:
         for article in by_section.get(sec["key"], []) or []:
-            for key in managed_commodity_keys_for_article(article):
+            for key in managed_commodity_board_keys_for_article(article, max_keys=2):
                 payload = item_state.get(key)
                 if payload is None:
                     continue
@@ -15194,21 +16752,35 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_program_items = 0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
+        qualified_articles = [
+            article
+            for article in articles
+            if _commodity_board_article_is_active_candidate(
+                payload,
+                article,
+                _commodity_board_item_article_representative_metrics(payload, article),
+            )
+        ]
         payload["articles"] = articles
         payload["article_count"] = len(articles)
         payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
-        payload["active"] = bool(articles)
-        payload["top_article"] = articles[0] if articles else None
+        payload["qualified_article_count"] = len(qualified_articles)
+        payload["active"] = bool(qualified_articles)
+        payload["top_article"] = qualified_articles[0] if qualified_articles else None
         payload["top_article_board_score"] = (
-            float(_commodity_board_item_article_metrics(payload, articles[0]).get("board_score", 0.0))
-            if articles else 0.0
+            float(_commodity_board_item_article_metrics(payload, qualified_articles[0]).get("board_score", 0.0))
+            if qualified_articles else 0.0
         )
-        payload["preview_articles"] = articles[: 1 + secondary_preview_limit]
-        payload["secondary_articles"] = articles[1 : 1 + secondary_preview_limit]
+        payload["top_article_representative_score"] = (
+            float(_commodity_board_item_article_representative_metrics(payload, qualified_articles[0]).get("representative_score", 0.0))
+            if qualified_articles else 0.0
+        )
+        payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
+        payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
         payload["secondary_article_count"] = len(payload["secondary_articles"])
-        payload["extra_articles"] = articles[1 + secondary_preview_limit :]
+        payload["extra_articles"] = qualified_articles[1 + secondary_preview_limit :]
         payload["more_article_count"] = len(payload["extra_articles"])
-        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles])
+        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
         if payload["active"]:
             active_items += 1
             if payload.get("program_core"):
@@ -15222,6 +16794,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         active_group_items.sort(
             key=lambda item: (
                 0 if item.get("program_core") else 1,
+                -float(item.get("top_article_representative_score") or 0.0),
                 -float(item.get("top_article_board_score") or 0.0),
                 -int(item.get("core_count") or 0),
                 -int(item.get("article_count") or 0),

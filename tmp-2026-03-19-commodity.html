@@ -1,0 +1,1842 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="b6a504e" />
+
+  <title>[2026-03-19 ?띿궛臾??댁뒪 Brief]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
+      --page-max:1220px;
+      --topbar-height:172px;
+      --chipbar-height:58px;
+      --nav-chip-height:40px;
+      --sticky-nav-offset:188px;
+      --anchor-offset:248px;
+    }
+    *{box-sizing:border-box}
+    html {
+      scroll-behavior:smooth;
+      scroll-padding-top: var(--anchor-offset);
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:var(--page-max) !important;margin:0 auto !important;padding:18px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:var(--page-max);margin:0 auto;padding:12px 20px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+    .navBtn.disabled{opacity:.45;cursor:pointer}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    .viewTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;align-items:stretch}
+    .viewTab{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;min-height:132px;padding:18px 20px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+    .viewTab:hover{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}
+    .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}
+    .viewTabEyebrow{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .viewTab.isActive .viewTabEyebrow{background:rgba(255,255,255,.16);color:#e0f2fe}
+    .viewTabTitle{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}
+    .viewTabDesc{max-width:420px;font-size:13px;line-height:1.55;color:#475569}
+    .viewTab.isActive .viewTabDesc{color:rgba(255,255,255,.88)}
+    .viewTabStats{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}
+    .viewTabStat{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}
+    .viewTabStat strong{font-size:13px}
+    .viewTab.isActive .viewTabStat{background:rgba(255,255,255,.16);color:#fff}
+
+    .briefingHero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}
+    .briefingHeroMain{min-width:0}
+    .briefingEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .briefingHero h2{margin:10px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}
+    .briefingLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .briefingHeroStats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .briefingHeroStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .briefingHeroStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .briefingHeroStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
+
+    /* briefing chip bar */
+    .chipbar{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);overflow:hidden;}
+    .briefingChipbar{margin:16px 0 0}
+    .commodityBoardNav{margin:18px 18px 20px}
+    .chipwrap{max-width:var(--page-max);margin:0 auto;padding:10px 18px;}
+    .chips,.commodityGroupNav{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}
+    .chips{flex-wrap:wrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .commodityGroupNav{flex-wrap:wrap;}
+    .chip,.commodityGroupChip{text-decoration:none;border:1px solid var(--chip-border, var(--group-chip-border, var(--line)));border-radius:999px;
+          background:linear-gradient(180deg,var(--chip-soft, var(--group-chip-soft, var(--chip))) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;justify-content:center;min-width:0;min-height:var(--nav-chip-height);padding:0 16px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72);white-space:nowrap}
+    .chip:hover{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}
+    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chipN,.commodityGroupChip span{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;text-align:center;color:#fff;padding:0 8px;border-radius:999px;font-size:11px}
+    .chipN{background:var(--chip-color, #111827)}
+    .chipDock{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}
+    .chipDock.isVisible{opacity:1;transform:translateY(0);pointer-events:auto}
+    .chipDockInner{max-width:var(--page-max);margin:0 auto;padding:0 20px}
+    .chipDock .chipbar{margin:0;box-shadow:0 18px 38px rgba(15,23,42,.14);background:rgba(248,250,252,.98)}
+    .chipDock .briefingChipbar,
+    .chipDock .commodityBoardNav{margin:0}
+    body.quickNavOpen{overflow:hidden}
+    .mobileQuickNav{display:none}
+    .mobileQuickNavToggle{pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .18s ease, transform .18s ease}
+    .mobileQuickNav.isVisible .mobileQuickNavToggle{pointer-events:auto;opacity:1;transform:translateY(0)}
+    .mobileQuickNavSheet{position:fixed;inset:0;display:none;z-index:14}
+    .mobileQuickNavSheet.isOpen{display:block}
+    .mobileQuickNavBackdrop{position:absolute;inset:0;border:0;background:rgba(15,23,42,.42)}
+    .mobileQuickNavPanel{position:absolute;left:12px;right:12px;bottom:14px;padding:16px;border:1px solid #dbe4ee;border-radius:24px;background:#ffffff;box-shadow:0 22px 56px rgba(15,23,42,.24)}
+    .mobileQuickNavHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .mobileQuickNavHead strong{font-size:15px;letter-spacing:-0.2px}
+    .mobileQuickNavClose{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#111827;font-size:12px;font-weight:800}
+    .mobileQuickNavBody .chipbar{border:none;background:transparent;box-shadow:none;overflow:visible}
+    .mobileQuickNavBody .chipwrap{padding:0;max-width:none}
+    .mobileQuickNavBody .chips,
+    .mobileQuickNavBody .commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+    .mobileQuickNavBody .chip,
+    .mobileQuickNavBody .commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px;font-size:13px;box-shadow:0 10px 24px rgba(15,23,42,.12)}
+
+    .viewPane{display:none}
+    .viewPane.isActive{display:block}
+    .briefingPane{margin-top:14px}
+    .commodityPane{margin-top:14px}
+
+    .commodityBoard{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}
+    .commodityHead{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:linear-gradient(135deg,#ffffff 0%,#f8fafc 68%,#f0fdf4 100%);overflow:hidden;isolation:isolate}
+    .commodityHead::after{content:"";position:absolute;inset:-24% -6% -22% 48%;background:radial-gradient(circle at 50% 46%, rgba(110,231,183,.62) 0%, rgba(125,211,252,.26) 33%, rgba(255,255,255,0) 72%);pointer-events:none;z-index:0}
+    .commodityHeadMain{position:relative;z-index:1;min-width:0}
+    .commodityHead h2{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}
+    .commodityLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .commodityEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commodityHeadStats{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .commodityHeadStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .commodityHeadStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .commodityHeadStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
+    .commodityBadge{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}
+    .commodityBadge.core{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
+    .commoditySignals{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
+    .commoditySig{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800}
+    .commoditySig[data-section="supply"]{background:#ccfbf1;color:#115e59}
+    .commoditySig[data-section="policy"]{background:#dbeafe;color:#1d4ed8}
+    .commoditySig[data-section="dist"]{background:#ede9fe;color:#6d28d9}
+    .commoditySig[data-section="pest"]{background:#ffedd5;color:#b45309}
+    .commoditySig.muted{background:#f8fafc;color:#94a3b8}
+    .commodityStoryCluster{display:flex;flex-direction:column;gap:10px}
+    .commodityPrimaryCard{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%)}
+    .commodityPrimaryKicker{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}
+    .commodityPrimaryStory{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}
+    .commodityPrimaryStory:hover{text-decoration:underline}
+    .commodityPrimaryMeta{margin-top:7px;color:#64748b;font-size:11px;font-weight:700}
+    .commoditySupportList{display:flex;flex-direction:column;gap:8px}
+    .commoditySupportTitle{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commoditySupportStory,.commodityMoreStory{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:14px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none}
+    .commoditySupportStory:hover,.commodityMoreStory:hover{border-color:#cbd5e1}
+    .commoditySupportLabel{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}
+    .commoditySupportText{display:block;min-width:0;font-size:12px;line-height:1.5}
+    .commodityMoreWrap{border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc}
+    .commodityMoreSummary{list-style:none;cursor:pointer;padding:10px 12px;color:#334155;font-size:12px;font-weight:900}
+    .commodityMoreSummary::-webkit-details-marker{display:none}
+    .commodityMoreList{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
+    .commodityStoryMuted{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}
+    .commodityBoardNav{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}
+    .commodityGroupChip:hover{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}
+    .commodityGroupChip{border-color:var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);}
+    .commodityGroupChip span{background:var(--group-chip-color, #111827)}
+    .commodityGroupBlock{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}
+    .commodityGroupHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px}
+    .commodityGroupTitleWrap{display:flex;align-items:center;gap:10px}
+    .commodityGroupTitleWrap h3{margin:0;font-size:16px}
+    .commodityGroupDot{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}
+    .commodityGroupMeta{color:#64748b;font-size:12px;font-weight:700}
+    .commodityGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .commodityTile{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff}
+    .commodityTile.isActive{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}
+    .commodityTileTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .commodityTileName{font-size:16px;font-weight:900;line-height:1.35}
+    .commodityTileMeta{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}
+    .commodityInactive{margin-top:12px;padding:12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc}
+    .commodityInactiveTitle{color:#64748b;font-size:12px;font-weight:800;margin-bottom:8px}
+    .commodityMiniGrid{display:flex;flex-wrap:wrap;gap:8px}
+    .commodityMiniChip{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #dbe4ee;background:#fff;color:#475569;font-size:12px;font-weight:700}
+    .commodityMiniChip.isCore{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}
+    .commodityEmpty{padding:20px 18px 22px}
+    .commodityGroupEmpty{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}
+
+    .sec{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
+          scroll-margin-top: calc(var(--anchor-offset) + 18px);
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){
+      .chipDock{display:none}
+      .chips,.commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+      .chip,.commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px}
+      .chipN,.commodityGroupChip span{min-width:24px;height:24px;padding:0 7px}
+      .mobileQuickNav{display:block;position:fixed;right:14px;bottom:18px;z-index:13}
+      .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}
+    }
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      .wrap{padding:16px 16px 72px !important}
+      .topin{padding:12px 16px}
+      .chipDockInner{padding:0 16px}
+      .commodityGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width: 640px){
+      .wrap{padding:12px 12px 64px !important}
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      .viewTabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:12px;padding:4px;border:1px solid #dbe4ee;border-radius:18px;background:#f8fafc}
+      .viewTab{min-height:auto;padding:10px 12px;border:none;border-radius:14px;gap:4px;box-shadow:none;align-items:center;justify-content:center;background:transparent}
+      .viewTab:hover{transform:none;box-shadow:none;border-color:transparent}
+      .viewTab.isActive{box-shadow:0 10px 22px rgba(29,78,216,.22)}
+      .viewTabEyebrow{display:none}
+      .viewTabTitle{width:100%;font-size:17px;letter-spacing:-0.35px;text-align:center}
+      .viewTabDesc{display:none}
+      .viewTabStats{display:none}
+      .briefingPane,.commodityPane{margin-top:12px}
+      .briefingHero{grid-template-columns:1fr;padding:0;border:none;border-radius:0;gap:10px;background:transparent;box-shadow:none}
+      .briefingEyebrow,.commodityEyebrow{min-height:22px;padding:0 8px;font-size:10px}
+      .briefingHero h2{font-size:26px;letter-spacing:-0.6px}
+      .briefingLead,.commodityLead{margin-top:8px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      .briefingHeroStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}
+      .briefingHeroStat{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}
+      .briefingHeroStatLabel{font-size:10px}
+      .briefingHeroStat strong{margin-top:4px;font-size:18px}
+      .briefingChipbar{margin:12px 0 18px}
+      .commodityBoardNav{margin:10px 0 16px}
+      .chipDock{display:none}
+      .chipbar{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+      .chipwrap{padding:0}
+      .chips,.commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+      .chip,.commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;font-size:13px;border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.10)}
+      .chipN,.commodityGroupChip span{min-width:24px;height:24px;padding:0 7px}
+      .mobileQuickNav{display:block;position:fixed;right:14px;bottom:18px;z-index:13}
+      .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}
+      .commodityBoard{margin-top:8px;border:none;border-radius:0;background:transparent;box-shadow:none}
+      .commodityHead{grid-template-columns:1fr;padding:0;border-bottom:none;background:transparent;overflow:visible}
+      .commodityHead::after{display:none}
+      .commodityHead h2{font-size:26px;letter-spacing:-0.6px}
+      .commodityHeadStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}
+      .commodityHeadStat{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}
+      .commodityHeadStatLabel{font-size:10px}
+      .commodityHeadStat strong{margin-top:4px;font-size:18px}
+      .commodityGrid{grid-template-columns:1fr}
+      .commodityGroupBlock{margin:0 0 20px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}
+      .commodityGroupHead{display:block;padding:0 0 10px;border-bottom:none;margin-bottom:12px}
+      .commodityGroupMeta{margin-top:6px}
+      .commodityTile{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}
+      .commodityInactive{padding:0;border:none;background:transparent}
+      .commodityInactiveTitle{margin-bottom:10px}
+      .sec{margin-top:18px !important;border:none;border-radius:0 !important;overflow:visible;background:transparent}
+      .secHead{padding:0 0 10px;background:transparent;border-bottom:none}
+      .secBody{padding:0}
+      .card{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}
+      .commoditySupportStory,.commodityMoreStory{width:100%}
+      .commoditySupportText{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+      .commodityMiniGrid{gap:6px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-03-19 ?띿궛臾??댁뒪 Brief]</h1>
+        <div class="sub">湲곌컙: 2026-03-18 07:00 ~ 2026-03-19 07:00 쨌 湲곗궗 8嫄?/div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="?좎쭨蹂??꾩뭅?대툕 紐⑸줉">?꾩뭅?대툕</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-18.html">? ?댁쟾</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="?좎쭨 ?좏깮">
+            <option value="/agri-news-brief/archive/2026-03-19.html" selected>26-03-19 (紐?</option>
+<option value="/agri-news-brief/archive/2026-03-18.html">26-03-18 (??</option>
+<option value="/agri-news-brief/archive/2026-03-17.html">26-03-17 (??</option>
+<option value="/agri-news-brief/archive/2026-03-16.html">26-03-16 (??</option>
+<option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (湲?</option>
+<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (紐?</option>
+<option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (??</option>
+<option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (??</option>
+<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (??</option>
+<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (湲?</option>
+<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (紐?</option>
+<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (??</option>
+<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (??</option>
+<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (湲?</option>
+<option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (紐?</option>
+<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (??</option>
+<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (??</option>
+<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (??</option>
+<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (湲?</option>
+<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (紐?</option>
+<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (湲?</option>
+<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (紐?</option>
+<option value="/agri-news-brief/archive/2026-02-11.html">26-02-11 (??</option>
+<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (??</option>
+<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (??</option>
+<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (湲?</option>
+<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (紐?</option>
+<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (??</option>
+<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (??</option>
+<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (??</option>
+<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (湲?</option>
+<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (紐?</option>
+<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (??</option>
+<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (??</option>
+<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (??</option>
+<option value="/agri-news-brief/archive/2026-01-23.html">26-01-23 (湲?</option>
+<option value="/agri-news-brief/archive/2026-01-22.html">26-01-22 (紐?</option>
+<option value="/agri-news-brief/archive/2026-01-21.html">26-01-21 (??</option>
+<option value="/agri-news-brief/archive/2026-01-20.html">26-01-20 (??</option>
+<option value="/agri-news-brief/archive/2026-01-19.html">26-01-19 (??</option>
+<option value="/agri-news-brief/archive/2026-01-16.html">26-01-16 (湲?</option>
+<option value="/agri-news-brief/archive/2026-01-15.html">26-01-15 (紐?</option>
+<option value="/agri-news-brief/archive/2026-01-14.html">26-01-14 (??</option>
+<option value="/agri-news-brief/archive/2026-01-13.html">26-01-13 (??</option>
+<option value="/agri-news-brief/archive/2026-01-12.html">26-01-12 (??</option>
+<option value="/agri-news-brief/archive/2026-01-09.html">26-01-09 (湲?</option>
+<option value="/agri-news-brief/archive/2026-01-08.html">26-01-08 (紐?</option>
+<option value="/agri-news-brief/archive/2026-01-07.html">26-01-07 (??</option>
+<option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (??</option>
+<option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (??</option>
+<option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (湲?</option>
+          </select>
+        </div>
+        <button class="navBtn disabled" data-nav="next" type="button" data-msg="?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎.">?ㅼ쓬 ??/button>
+      </div>
+<div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">?좎쭨 ?대룞 以묅?/span>
+      </div>
+    </div>
+  </div>
+  <div id="chipDock" class="chipDock" aria-hidden="true">
+    <div id="chipDockInner" class="chipDockInner"></div>
+  </div>
+  <div id="mobileQuickNav" class="mobileQuickNav" aria-hidden="true">
+    <button id="mobileQuickNavToggle" class="mobileQuickNavToggle" type="button" data-swipe-ignore="1">
+      <span id="mobileQuickNavToggleLabel">?뱀뀡 ?대룞</span>
+    </button>
+  </div>
+  <div id="mobileQuickNavSheet" class="mobileQuickNavSheet" aria-hidden="true">
+    <button id="mobileQuickNavBackdrop" class="mobileQuickNavBackdrop" type="button" aria-label="鍮좊Ⅸ ?대룞 ?リ린" data-swipe-ignore="1"></button>
+    <section class="mobileQuickNavPanel" aria-labelledby="mobileQuickNavTitle">
+      <div class="mobileQuickNavHead">
+        <strong id="mobileQuickNavTitle">?뱀뀡 諛붾줈媛湲?/strong>
+        <button id="mobileQuickNavClose" class="mobileQuickNavClose" type="button" data-swipe-ignore="1">?リ린</button>
+      </div>
+      <div id="mobileQuickNavBody" class="mobileQuickNavBody"></div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    
+      <div class="viewTabs" role="tablist" aria-label="蹂닿린 ?꾪솚">
+        <button class="viewTab" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">
+          <span class="viewTabEyebrow">?듭떖 ?붿빟</span>
+          <span class="viewTabTitle">?ㅻ뒛??釉뚮━??/span>
+          <span class="viewTabDesc">?뱀뀡蹂??듭떖 湲곗궗? 諛붾줈媛湲곕? ?쒕늿???뺤씤?⑸땲??</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>3</strong>媛??뱀뀡</span>
+            <span class="viewTabStat"><strong>8</strong>嫄?湲곗궗</span>
+          </span>
+        </button>
+        <button class="viewTab isActive" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">
+          <span class="viewTabEyebrow">?덈ぉ 異붿쟻</span>
+          <span class="viewTabTitle">?꾩껜 ?덈ぉ 蹂대뱶</span>
+          <span class="viewTabDesc">?덈ぉ蹂?愿??湲곗궗 ?怨?????댁뒋瑜?諛붾줈 ?뚯븙?⑸땲??</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>9</strong>媛??곌껐 ?덈ぉ</span>
+            <span class="viewTabStat"><strong>8</strong>媛??섍툒?ъ뾽</span>
+          </span>
+        </button>
+      </div>
+    
+    <section id="view-briefing" class="viewPane briefingPane" data-view-pane="briefing" role="tabpanel">
+      
+    <section class="briefingHero" aria-labelledby="briefingHeroTitle">
+      <div class="briefingHeroMain">
+        <div class="briefingEyebrow">?ㅻ뒛 瑗??뺤씤???듭떖 湲곗궗</div>
+        <h2 id="briefingHeroTitle">?ㅻ뒛??釉뚮━??/h2>
+        <div class="briefingLead">?뱀뀡蹂??듭떖 湲곗궗瑜???踰덉뿉 ?묎퀬 諛붾줈 ?먮Ц?쇰줈 ?대룞?????덇쾶 ?뺣━?덉뒿?덈떎. ?꾨옒 ?뱀뀡 移⑹쓣 ?꾨Ⅴ硫??먰븯???곸뿭?쇰줈 利됱떆 ?대룞?⑸땲??</div>
+      </div>
+      <div class="briefingHeroStats" aria-label="釉뚮━???붿빟">
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">?뱀뀡</span>
+          <strong>3媛?/strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">湲곗궗</span>
+          <strong>8嫄?/strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">?듭떖</span>
+          <strong>4嫄?/strong>
+        </div>
+      </div>
+    </section>
+    
+      <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="--chip-color:#0f766e;--chip-soft:rgba(15,118,110,0.120);--chip-border:rgba(15,118,110,0.360);" href="#sec-supply"><span class="chipTitle">?덈ぉ 諛??섍툒 ?숉뼢</span><span class="chipN">2</span></a>
+<a class="chip" style="--chip-color:#1d4ed8;--chip-soft:rgba(29,78,216,0.120);--chip-border:rgba(29,78,216,0.360);" href="#sec-policy"><span class="chipTitle">?뺤콉 諛?二쇱슂 ?댁뒋</span><span class="chipN">4</span></a>
+<a class="chip" style="--chip-color:#6d28d9;--chip-soft:rgba(109,40,217,0.120);--chip-border:rgba(109,40,217,0.360);" href="#sec-dist"><span class="chipTitle">?좏넻 諛??꾩옣</span><span class="chipN">2</span></a>
+<a class="chip" style="--chip-color:#b45309;--chip-soft:rgba(180,83,9,0.120);--chip-border:rgba(180,83,9,0.360);" href="#sec-pest"><span class="chipTitle">?앹쑁 由ъ뒪??諛?諛⑹젣</span><span class="chipN">0</span></a></div></div></div>
+      
+            <section id="sec-supply" class="sec">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  ?덈ぉ 諛??섍툒 ?숉뼢
+                </div>
+                <div class="secCount">2嫄?/div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">?듭떖</span>
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 11:09</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">蹂묓빐異?/span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64050" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">?꾨궓?띻린?? 臾댄솕怨?遊꾩쿋 異쒗븯</div>
+              <div class="sum">?꾨궓??吏??듅???뚮뱷?묐ぉ??臾댄솕怨쇨? 寃⑥슱 ?쒗뙆瑜??닿꺼?닿퀬 ?섑솗???ㅼ뼱媛붾떎.?꾨씪?⑤룄?띿뾽湲곗닠???먯옣 源?됰?)? 吏??듅?붿옉紐??곌뎄怨쇱젣濡?異붿쭊 以묒씤 ?섏떆??臾댄솕怨??섑솗湲??곗옣 湲곗닠媛쒕컻?숈쓣 ?듯빐 3?붿뿉??臾댄솕怨쇰? ?섑솗쨌異쒗븯?섍퀬 ?덈떎怨?諛앺삍???꾨궓??????뱁솕怨쇱닔??臾댄솕怨쇰뒗 蹂댄넻 7?붾????섑솗?쒕떎. 洹몃윭???щ쫫泥좎뿉???곸삩?먯꽌 ?댄? ?뺣룄留?吏?섎룄 ?쎄쾶 臾쇰윭???좎꽑???좎?媛 ?대젮???좏넻???대젮????덈떎. ?먰븳 ?щ쫫怨?媛?꾩뿉 異쒗븯媛 吏묒쨷?섎㈃??媛寃?蹂?숈꽦??而??덉젙?곸씤 ?띻??뚮뱷 ?뺣낫?먮룄 ?쒓퀎媛 ?덉뿀???댁뿉 ?꾨궓?띿뾽湲곗닠?먯? ?쒖꽕?щ같 湲곕컲?먯꽌 ?앹쑁?섍꼍</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 11:08</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">留덈뒛</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64049" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">遊꾩쿋 留덈뒛 ?앹쑁 ?ш컻, ?묒닔遺?愿由?泥좎?</div>
+              <div class="sum">寃쎌긽遺곷룄?띿뾽湲곗닠?먯? ?붾룞 ??留덈뒛 珥덇린 ?앹쑁??以묒슂?섎떎硫? 留덈뒛 ?щ같 ?띻???泥좎????묒닔遺?愿由щ? ?밸??덈떎.湲곗긽泥??꾨쭩???곕Ⅴ硫??ы빐 3~4?붿? ?됰뀈蹂대떎 湲곗삩???믨퀬 媛뺤닔?됱? ?곸쓣 寃껋쑝濡??덉긽??遊꾩쿋 嫄댁“???좎뵪???鍮꾪븳 ?섎텇 愿由ш? 以묒슂??寃껋쑝濡?蹂댁씤?? ?뱁엳, 3?붿? 留덈뒛 ?앹쑁???ㅼ떆 ?쒕컻?댁????쒓린濡????쒓린???섎텇??遺議깊븯硫?怨좎궗?섍굅???섎웾??媛먯냼?????덈떎. 怨좊옉 愿?섎굹 ?ㅽ봽留곹겢???깆쓣 ?쒖슜??臾쇱쓣 怨듦툒?섍퀬, ?숈떆??怨쇱뒿?쇰줈 ?명빐 肉뚮━ ?앹쑁????대릺吏 ?딅룄濡?諛곗닔 ?곹깭???④퍡 ?먭??댁빞 ?쒕떎.?? 媛묒옉?ㅻ윭??遊꾩쿋 媛뺤슦???鍮?/div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  ?뺤콉 諛?二쇱슂 ?댁뒋
+                </div>
+                <div class="secCount">4嫄?/div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">?듭떖</span>
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 11:33</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">留덈뒛</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64073" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">?띿궛臾?媛寃??泥대줈 ?????섎씫??/div>
+              <div class="sum">理쒓렐?ㅼ뼱 ?띿궛臾?媛寃⑹씠 ?泥대줈 ?섎씫?섍퀬 ?덈뒗 寃껋쑝濡??섑??щ떎.?띾┝異뺤궛?앺뭹遺(?κ? ?〓?????吏??16???뺣??몄쥌泥?궗?먯꽌 諛뺤젙???앸웾?뺤콉?ㅼ옣 二쇱옱濡???李??섍툒?곹솴 ?먭??뚯쓽瑜?媛쒖턀, ?덈ぉ蹂??섍툒 諛?媛寃??숉뼢???먭??섍퀬 ??묐갑?덉쓣 ?쇱쓽?덈떎. ?대궇 ?먭? 寃곌낵, 梨꾩냼瑜섎뒗 ?遺遺??덈ぉ???꾨뀈?鍮???? ?섏??닿굅???꾩＜?鍮?2.26~3.4) 媛寃⑹씠 ????쑝濡??섎씫??寃껋쑝濡?議곗궗?먮떎. ?ㅻ쭔, 源먮쭏?섏? ?뺣?鍮꾩텞臾쇰웾 ??뺤쑀?듭뾽泥??좎씤怨듦툒(2.2~2.28)??醫낅즺?⑥뿉 ?곕씪 媛寃⑹씠 ?곸듅?섏??쇰굹 ??뺣쭏???먯껜 ?좎씤?됱궗媛 ?쒖옉?섎㈃??3.12~) 媛寃⑹? ??/div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 10:57</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">?뺤콉</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64039" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">?쒕냽異뺤궛臾?瑗쇱닔 ?좎씤 ?〓뒗?ㅲ?/div>
+              <div class="sum">?쒓뎅?띿닔?곗떇?덉쑀?듦났??aT, ?ъ옣 ?띾Ц?????띿텞?곕Ъ ?좎씤吏?먯궗?낆쓽 遺?뺤닔湲?諛⑹?瑜??듯븳 ?ъ뾽 ?댁쁺 ?щ챸?깆쓣 ?쒓퀬?섍린 ?꾪빐 ?섎냽異뺤궛臾??좎씤吏??遺?뺤닔湲??좉퀬?쇳꽣?숇? aT ?덊럹?댁???吏??16?쇰????댁쁺?섍퀬 ?덈떎.?띿텞?곕Ъ ?좎씤吏?먯궗?낆? 援?궛 ?좎꽑 ?띿텞?곕Ъ 以?媛寃⑹씠 ?곸듅???덈ぉ 諛??泥??뚮퉬 ?덈ぉ, 紐낆젅쨌源?μ쿋 ??二쇱슂?쒓린??援щℓ媛 利앷??섎뒗 ?덈ぉ ???띿떇?덈?媛 吏?뺥븯???덈ぉ???뚮퉬?먭? 援щℓ??????20~30% ?좎씤??媛寃⑹쑝濡??쒓났?섎뒗 ?ъ뾽?대떎. ?ы빐 1?붾???援????臾쇨? 遺?댁쓣 寃쎄컧?섍퀬 ?띿텞?곕Ъ??吏??媛?ν븳 ?뚮퉬 湲곕컲???뺣낫?섍린</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 10:53</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">?묓뙆</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64034" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">?쒓뎅???묓뙆 ?앹궛援ъ“ 泥댁쭏 媛쒖꽑 ?꾩슂??/div>
+              <div class="sum">援?궛 ?묓뙆 媛寃⑹씠 ?섏엯??蹂대떎 ??쾶 ?뺤꽦?섎뒗 湲고쁽?곸씠 ?섑??섍퀬 ?덈뒗 媛?대뜲 援?궛 ?묓뙆???앹궛援ъ“??洹쇰낯?곸씤 泥댁쭏 媛쒖꽑???대쨪?몄빞 ?쒕떎??吏?곸씠 ?믨쾶 ?쇨퀬 ?덈떎.援?쉶 ?띾┝異뺤궛?앺뭹?댁뼇?섏궛?꾩썝???붾텋?대?二쇰떦 ?쒖궪???섏썝(?곸븫쨌臾댁븞쨌?좎븞)? 吏??11???대┛ ?섎냽由쇱텞?곗떇?덈? ???낅Т蹂닿퀬?숈뿉??援?궛 ?묓뙆 媛寃???쟾 ?꾩긽怨?愿?⑦븯???뺣???援ъ“???梨?遺?щ? 吏덊??섍퀬 ?梨?留덈젴??媛뺣젰??珥됯뎄?덈떎.???섏썝? ?쒖??쒗빐 11?붾?????4媛쒖썡媛??섏엯???묓뙆 媛寃⑹씠 援?궛 媛寃⑹쓣 ?욎?瑜대뒗 湲고쁽?곸씠 吏?띾릺怨??덈떎?앸ŉ, ?쒖턀洹쇱뿉??援?궛 ?묓뙆 ??訝???媛寃?/div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 11:00</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">?좊쭏??/span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64041" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">?띿쭊泥? ?섏삩??臾댁씤 ?띿옉??濡쒕큸 蹂닿툒 ?뺣????꾩옣 ?먭?</div>
+              <div class="sum">?띿큿吏꾪씎泥?援?┰?띿뾽怨쇳븰?먯? ?띿뾽 ?앹궛 ?몃젰 媛먯냼? 怨좊졊?붾줈 ?명븳 ?몃룞??遺議깆쓣 洹밸났?섍린 ?꾪빐 ?⑥떎 ?섍꼍??理쒖쟻?붾맂 濡쒕큸??媛쒕컻?섍퀬, ?꾩옣 ?ㅼ쬆 ?곌뎄濡??깅뒫 媛쒖꽑 ???띻???蹂닿툒?섍퀬 ?덈떎.?댁? 愿?? 援?┰?띿뾽怨쇳븰???깆젣???먯옣??吏??12??諛⑹젣쨌?대컲 濡쒕큸???쒕쾾 ?댁쁺 以묒씤 ?꾨턿?밸퀎?먯튂???듭궛???좊쭏???쒖꽕?щ같 ?띻?瑜?李얠븘 濡쒕큸 ?댁슜 ?ㅽ깭瑜?吏곸젒 ?뺤씤?덈떎. ?먰븳, 濡쒕큸 ?꾩엯?쇰줈 ?명븳 ?몄쓽?깃낵 媛쒖꽑 ?ы빆 ???꾩옣 ?섍껄??泥?랬?덈떎.???먯옣? ?쒕갑??濡쒕큸? ?몃젰 ?묒뾽 ?鍮??묒뾽?쒓컙 40% 媛먯냼, 諛⑹젣 ?④낵 15% ?댁긽 ?μ긽?섎뒗 ???④낵媛</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  ?좏넻 諛??꾩옣 (?꾨ℓ?쒖옣/APC/?섏텧)
+                </div>
+                <div class="secCount">2嫄?/div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">?듭떖</span>
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 10:56</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">?뺤콉</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64037" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">媛?쎌떆??(???щ쭩?섎닎留덉폆, 吏??냽媛 ?곸깮 諛??몄옱 ?≪꽦 ?꾪븳 ?ν븰湲??꾨떖</div>
+              <div class="sum">媛?쎌떆?????怨듭씡踰뺤씤 (???щ쭩?섎닎留덉폆(?댁궗??沅뚯옣????吏???띻?? ?곸깮?섎ŉ ?몄옱 ?≪꽦???꾪븳 ?곕쑜???숉뻾???댁뼱媛怨??덈떎.(???щ쭩?섎닎留덉폆? ?쒖슱 媛?쎌떆?μ쓽 5媛?泥?낵?꾨ℓ?쒖옣踰뺤씤(?쒖슱泥?낵, 以묒븰泥?낵, ?숉솕泥?낵, ?쒓뎅泥?낵, ??꾩껌怨?쨌?랁삊媛?쎄났?먯옣怨??④퍡 吏??10??吏???띻? ?먮? 珥?12紐낆뿉寃??ν븰湲?1,200留뚯썝???꾨떖?섎뒗 ?됱궗瑜?媛議뚮떎.?대쾲 ?됱궗??寃쎄린 移⑥껜? ?뱁엳 ?곕텋, ??뿼, 吏묒쨷?몄슦???쇳빐濡?寃쎌쁺 ?낇솕???대젮???寃り퀬 ?덈뒗 吏???띻????앺솢 ?덉젙??吏?먰븯怨? ?대젮???섍꼍 ?띿뿉?쒕룄 ?깆떎???숈뾽???꾪븯??吏???띻? ?먮?</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">?듭떖</span>
+                  <span class="press">?먯삁?곗뾽?좊Ц</span>
+                  <span class="dot">쨌</span>
+                  <span class="time">03/18 11:24</span>
+                  <span class="dot">쨌</span>
+                  <span class="topic">?꾨ℓ?쒖옣</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64063" target="_top" rel="noopener">?먮Ц ?닿린</a>
+              </div>
+              <div class="ttl">吏??냽?곕Ъ ?좏넻援ъ“ ?대걣?닿????덈ぉ?랁삊 - ?듭궛?먯삁?랁삊 ?댁빱癒몄뒪 ?ъ뾽遺</div>
+              <div class="sum"># 湲됱꽦?μ꽭 ?띿궛臾??⑤씪???쒖옣. ?덈ぉ?랁삊 媛뺤젏?쇰줈 ?鍮꾪빐?쇱쟾?듭쟻?쇰줈 怨듭쁺?꾨ℓ?쒖옣怨??ㅽ봽?쇱씤 ?뚮ℓ 以묒떖?댁뿀???띿궛臾??좏넻 援ъ“???⑤씪???뚮옯?쇱씠 蹂멸꺽?곸쑝濡??깆옣?섎㈃?? ?띿궛臾?嫄곕옒 諛⑹떇怨??좏넻 寃쎈줈媛 ?ш쾶 蹂?섍퀬 ?덈떎. ?곕━?섎씪 ?띿궛臾??좏넻? ?ъ쟾???꾨ℓ?쒖옣 以묒떖??湲곕낯?대떎. 洹몃윭????援ъ“???좏넻 ?④퀎媛 留롮븘 鍮꾩슜 利앷?? 臾쇰쪟 鍮꾪슚??臾몄젣媛 吏?띿쟻?쇰줈 ?쒓린???붾떎. ?대윭???쒓퀎瑜??닿껐?섍린 ?꾪븳 ??덉쑝濡??⑤씪???좏넻 梨꾨꼸??鍮좊Ⅴ寃??뺣??섍퀬 ?덈떎.援?궡 ?앺뭹쨌?띿궛臾??⑤씪??嫄곕옒??2018???꾩껜 嫄곕옒?됱뿉 ??12%???寃껋씠 2022??/div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  ?앹쑁 由ъ뒪??諛?諛⑹젣
+                </div>
+                <div class="secCount">0嫄?/div>
+              </div>
+              <div class="secBody"><div class="empty">?대떦?ы빆 ?놁쓬</div></div>
+            </section>
+            
+    </section>
+    <section id="view-commodity" class="viewPane commodityPane isActive" data-view-pane="commodity" role="tabpanel" aria-hidden="false">
+      
+    <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
+      <div class="commodityHead">
+        <div class="commodityHeadMain">
+          <div class="commodityEyebrow">?먯삁?섍툒遺 ?꾩껜 愿由??덈ぉ</div>
+          <h2 id="commodityBoardTitle">?꾩껜 ?덈ぉ 蹂대뱶</h2>
+          <div class="commodityLead">?덈ぉ蹂?愿??湲곗궗 ???癒쇱? ?볤쾶 紐⑥븘 蹂댁뿬以띾땲?? ?ㅻ뒛??釉뚮━?묒? ??湲곗궗 ? ?덉뿉???좊컻?섎ŉ, ?섍툒?ъ뾽 ?덈ぉ? 蹂꾨룄 諛곗?濡?媛뺤“?⑸땲??</div>
+        </div>
+        <div class="commodityHeadStats" aria-label="?덈ぉ 蹂대뱶 ?붿빟">
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">?꾩껜 愿由?/span>
+            <strong>33媛?/strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">?ㅻ뒛 ?곌껐</span>
+            <strong>9媛?/strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">?섍툒?ъ뾽 ?곌껐</span>
+            <strong>8媛?/strong>
+          </div>
+        </div>
+      </div>
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">?쎄렐梨꾨쪟<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">?묐뀗梨꾩냼瑜?span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">怨쇱콈瑜?span>1</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">怨쇱닔?뷀쎕瑜?span>4</span></a></div></div></div>
+      
+            <section id="commodity-group-root_leaf" class="commodityGroupBlock" style="--commodity-group-color:#0f766e;--commodity-group-soft:rgba(15,118,110,0.070);--commodity-group-border:rgba(15,118,110,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#0f766e"></span>
+                  <h3>?쎄렐梨꾨쪟</h3>
+                </div>
+                <div class="commodityGroupMeta">?쒖꽦 ?덈ぉ 2 / 5 쨌 ?섍툒?ъ뾽 2 / 4</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-napa_cabbage" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">諛곗텛</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64042" target="_top" rel="noopener">?좎뼇?덉쬆+誘몄깮臾쇳눜鍮??곗냽 泥섎━ ??/a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:01</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-potato" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">媛먯옄</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64035" target="_top" rel="noopener">?띿젙???띿떖, ?곸깮?묐젰 6?꾩㎏ ?숉뻾</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 10:54</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">誘몄뿰寃??덈ぉ 3媛?/div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">臾?/span><span class="commodityMiniChip isCore">?밴렐</span><span class="commodityMiniChip">?묐같異?/span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-seasoning_veg" class="commodityGroupBlock" style="--commodity-group-color:#b45309;--commodity-group-soft:rgba(180,83,9,0.070);--commodity-group-border:rgba(180,83,9,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#b45309"></span>
+                  <h3>?묐뀗梨꾩냼瑜?/h3>
+                </div>
+                <div class="commodityGroupMeta">?쒖꽦 ?덈ぉ 2 / 5 쨌 ?섍툒?ъ뾽 2 / 4</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-garlic" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">留덈뒛</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 2嫄?/span>
+                    <span>?듭떖 1嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span><span class="commoditySig" data-section="policy">?뺤콉</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64049" target="_top" rel="noopener">遊꾩쿋 留덈뒛 ?앹쑁 ?ш컻, ?묒닔遺?愿由?泥좎?</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:08</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">異붽? 湲곗궗</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64073" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">?뺤콉</span>
+                      <span class="commoditySupportText">?띿궛臾?媛寃??泥대줈 ?????섎씫??/span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-onion" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">?묓뙆</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">?뺤콉</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64034" target="_top" rel="noopener">?쒓뎅???묓뙆 ?앹궛援ъ“ 泥댁쭏 媛쒖꽑 ?꾩슂??/a>
+                    <div class="commodityPrimaryMeta">?뺤콉 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 10:53</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">誘몄뿰寃??덈ぉ 3媛?/div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">嫄닿퀬異?/span><span class="commodityMiniChip isCore">???/span><span class="commodityMiniChip">?앷컯</span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-fruit_veg" class="commodityGroupBlock" style="--commodity-group-color:#6d28d9;--commodity-group-soft:rgba(109,40,217,0.070);--commodity-group-border:rgba(109,40,217,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#6d28d9"></span>
+                  <h3>怨쇱콈瑜?/h3>
+                </div>
+                <div class="commodityGroupMeta">?쒖꽦 ?덈ぉ 1 / 10 쨌 ?섍툒?ъ뾽 1 / 5</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-tomato" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">?좊쭏??/div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">?뺤콉</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64041" target="_top" rel="noopener">?띿쭊泥? ?섏삩??臾댁씤 ?띿옉??濡쒕큸 蹂닿툒 ?뺣????꾩옣 ?먭?</a>
+                    <div class="commodityPrimaryMeta">?뺤콉 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:00</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">誘몄뿰寃??덈ぉ 9媛?/div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">?ㅼ씠</span><span class="commodityMiniChip isCore">?뗪퀬異?/span><span class="commodityMiniChip isCore">?좏샇諛?伊ы궎??</span><span class="commodityMiniChip isCore">媛吏</span><span class="commodityMiniChip">李몄쇅</span><span class="commodityMiniChip">?곸텛</span><span class="commodityMiniChip">?멸린</span><span class="commodityMiniChip">?뚰봽由ъ뭅</span><span class="commodityMiniChip">硫쒕줎</span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-fruit_flower" class="commodityGroupBlock" style="--commodity-group-color:#1d4ed8;--commodity-group-soft:rgba(29,78,216,0.070);--commodity-group-border:rgba(29,78,216,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#1d4ed8"></span>
+                  <h3>怨쇱닔?뷀쎕瑜?/h3>
+                </div>
+                <div class="commodityGroupMeta">?쒖꽦 ?덈ぉ 4 / 13 쨌 ?섍툒?ъ뾽 3 / 5</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-pear" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">諛?/div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 2嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64047" target="_top" rel="noopener">紐몄쓣 ?대∼寃??섎뒗 ?먯삁쨌?쎌슜?묐Ъ - 167</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:06</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">異붽? 湲곗궗</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64051" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">?섍툒</span>
+                      <span class="commoditySupportText">諛??곗뾽 諛쒖쟾 諛⑹븞 ?꾩옣怨?怨듭쑀</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-apple" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">?ш낵</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 2嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64053" target="_top" rel="noopener">怨쇱닔 苑? ?됰뀈蹂대떎 ??쾶 ??????湲곗긽 二쇱쓽</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:13</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">異붽? 湲곗궗</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64045" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">?섍툒</span>
+                      <span class="commoditySupportText">?숈젙</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-sweet_persimmon" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">?④컧</div>
+                    <span class="commodityBadge core">?섍툒?ъ뾽</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64045" target="_top" rel="noopener">?숈젙</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:04</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-peach" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">蹂듭댂??/div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>湲곗궗 1嫄?/span>
+                    <span>?듭떖 0嫄?/span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">?섍툒</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">???湲곗궗</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64053" target="_top" rel="noopener">怨쇱닔 苑? ?됰뀈蹂대떎 ??쾶 ??????湲곗긽 二쇱쓽</a>
+                    <div class="commodityPrimaryMeta">?섍툒 쨌 ?먯삁?곗뾽?좊Ц 쨌 03/18 11:13</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">誘몄뿰寃??덈ぉ 9媛?/div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">?щ룄(?ㅼ씤癒몄뒪罹?</span><span class="commodityMiniChip isCore">媛먭랠(留뚭컧瑜?</span><span class="commodityMiniChip">媛?怨띔컧</span><span class="commodityMiniChip">留ㅼ떎</span><span class="commodityMiniChip">?좎옄</span><span class="commodityMiniChip">李몃떎??/span><span class="commodityMiniChip">諛?/span><span class="commodityMiniChip">?뷀쎕</span><span class="commodityMiniChip">?먮몢</span></div>
+            </div>
+            
+              
+            </section>
+            
+    </section>
+    
+    </section>
+    <div class="footer">* ?먮룞 ?섏쭛 寃곌낵?낅땲?? ?듭떖 ?뺤씤? ?쒖썝臾??닿린?앸줈 ?먮Ц???뺤씤?섏꽭??</div>
+    
+  </div>
+
+  <script>
+    (function() {
+
+      var isDevPreviewPage = false;
+      var devLoaderHref = "/agri-news-brief/";
+      var devArchiveManifestUrl = "";
+      var currentReportDate = "2026-03-19";
+      var rootEl = document.documentElement;
+      var topbarEl = document.querySelector(".topbar");
+      var chipDockEl = document.getElementById("chipDock");
+      var chipDockInnerEl = document.getElementById("chipDockInner");
+      var mobileQuickNavEl = document.getElementById("mobileQuickNav");
+      var mobileQuickNavToggleEl = document.getElementById("mobileQuickNavToggle");
+      var mobileQuickNavToggleLabelEl = document.getElementById("mobileQuickNavToggleLabel");
+      var mobileQuickNavSheetEl = document.getElementById("mobileQuickNavSheet");
+      var mobileQuickNavBackdropEl = document.getElementById("mobileQuickNavBackdrop");
+      var mobileQuickNavCloseEl = document.getElementById("mobileQuickNavClose");
+      var mobileQuickNavBodyEl = document.getElementById("mobileQuickNavBody");
+      var mobileQuickNavTitleEl = document.getElementById("mobileQuickNavTitle");
+      function isCompactViewport() {
+        try {
+          return window.matchMedia("(max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse), (max-width: 640px)").matches;
+        } catch (e) {}
+        var coarsePointer = false;
+        try {
+          coarsePointer = !!(navigator && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 0);
+        } catch (e) {}
+        return window.innerWidth <= (coarsePointer ? 900 : 640);
+      }
+      function getActivePane() {
+        return document.querySelector('.viewPane.isActive[data-view-pane]');
+      }
+      function getActiveChipbar() {
+        var pane = getActivePane();
+        if (!pane) return null;
+        return pane.querySelector('.chipbar[data-view-pane-anchor]');
+      }
+      function getActiveQuickNavMeta(activeChipbar) {
+        var anchor = activeChipbar ? (activeChipbar.getAttribute("data-view-pane-anchor") || "") : "";
+        if (anchor === "commodity") {
+          return {
+            toggle: "?덈ぉ援??대룞",
+            title: "?덈ぉ援?諛붾줈媛湲?,
+          };
+        }
+        return {
+          toggle: "?뱀뀡 ?대룞",
+          title: "?뱀뀡 諛붾줈媛湲?,
+        };
+      }
+      function closeMobileQuickNavSheet() {
+        if (mobileQuickNavSheetEl) {
+          mobileQuickNavSheetEl.classList.remove("isOpen");
+          mobileQuickNavSheetEl.setAttribute("aria-hidden", "true");
+        }
+        try {
+          document.body.classList.remove("quickNavOpen");
+        } catch (e) {}
+      }
+      function openMobileQuickNavSheet() {
+        if (!mobileQuickNavSheetEl) return;
+        mobileQuickNavSheetEl.classList.add("isOpen");
+        mobileQuickNavSheetEl.setAttribute("aria-hidden", "false");
+        try {
+          document.body.classList.add("quickNavOpen");
+        } catch (e) {}
+      }
+
+      function syncStickyOffsets() {
+        if (!rootEl || !topbarEl) return;
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        if (!topbarHeight) return;
+        var activeChipbar = getActiveChipbar();
+        var compactViewport = isCompactViewport();
+        var chipbarHeight = Math.ceil(activeChipbar && !compactViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
+        rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
+        rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+        rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : chipbarHeight + 30)) + "px");
+      }
+
+      function syncFloatingChipbar() {
+        if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
+        if (isCompactViewport()) {
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }
+        var activeChipbar = getActiveChipbar();
+        if (!activeChipbar) {
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var dockTop = topbarHeight + 12;
+        var chipbarHeight = Math.ceil(activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0);
+        if (chipbarHeight) {
+          rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+          rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
+        }
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (chipDockEl.dataset.source !== sourceKey) {
+          chipDockInnerEl.innerHTML = activeChipbar.outerHTML;
+          chipDockEl.dataset.source = sourceKey;
+        }
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.top < dockTop && rect.bottom <= dockTop;
+        chipDockEl.classList.toggle("isVisible", shouldShow);
+        chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }
+      function syncMobileQuickNav() {
+        if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
+        var mobileViewport = isCompactViewport();
+        var activeChipbar = getActiveChipbar();
+        if (!mobileViewport || !activeChipbar) {
+          mobileQuickNavEl.classList.remove("isVisible");
+          mobileQuickNavEl.setAttribute("aria-hidden", "true");
+          mobileQuickNavEl.dataset.source = "";
+          mobileQuickNavBodyEl.innerHTML = "";
+          closeMobileQuickNavSheet();
+          return;
+        }
+        var meta = getActiveQuickNavMeta(activeChipbar);
+        if (mobileQuickNavToggleLabelEl) mobileQuickNavToggleLabelEl.textContent = meta.toggle;
+        if (mobileQuickNavTitleEl) mobileQuickNavTitleEl.textContent = meta.title;
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (mobileQuickNavEl.dataset.source !== sourceKey) {
+          mobileQuickNavBodyEl.innerHTML = activeChipbar.outerHTML;
+          mobileQuickNavEl.dataset.source = sourceKey;
+        }
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.bottom <= (topbarHeight + 8);
+        mobileQuickNavEl.classList.toggle("isVisible", shouldShow);
+        mobileQuickNavEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }
+
+      syncStickyOffsets();
+      syncFloatingChipbar();
+      syncMobileQuickNav();
+      window.addEventListener("load", syncStickyOffsets);
+      window.addEventListener("load", syncFloatingChipbar);
+      window.addEventListener("load", syncMobileQuickNav);
+      window.addEventListener("resize", syncStickyOffsets);
+      window.addEventListener("resize", syncFloatingChipbar);
+      window.addEventListener("resize", syncMobileQuickNav);
+      window.addEventListener("scroll", syncFloatingChipbar, { passive: true });
+      window.addEventListener("scroll", syncMobileQuickNav, { passive: true });
+
+      function currentPageHref() {
+        try {
+          if (window.top && window.top !== window) {
+            return String(window.top.location.href || "");
+          }
+        } catch (e) {}
+        return String(window.location.href || "");
+      }
+
+      function navigateToUrl(url) {
+        if (!url) return;
+        try {
+          if (window.top && window.top !== window) {
+            window.top.location.href = url;
+            return;
+          }
+        } catch (e) {}
+        window.location.href = url;
+      }
+
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "?대떦 ?좎쭨??釉뚮━?묒씠 ?놁뒿?덈떎.");
+          }
+        });
+      }
+
+      // ??(3) prev/next媛 ?놁쓣 ??404濡??대룞?섏? ?딅룄濡??뚮┝ 泥섎━
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "?대룞???섏씠吏媛 ?놁뒿?덈떎.";
+          alert(msg);
+        });
+      });
+
+      var viewTabs = Array.prototype.slice.call(document.querySelectorAll(".viewTab[data-view-tab]"));
+      var viewPanes = Array.prototype.slice.call(document.querySelectorAll(".viewPane[data-view-pane]"));
+
+      function activateView(viewKey, opts) {
+        opts = opts || {};
+        viewPanes.forEach(function(pane) {
+          var active = pane.getAttribute("data-view-pane") === viewKey;
+          pane.classList.toggle("isActive", active);
+          pane.setAttribute("aria-hidden", active ? "false" : "true");
+        });
+        viewTabs.forEach(function(tab) {
+          var active = tab.getAttribute("data-view-tab") === viewKey;
+          tab.classList.toggle("isActive", active);
+          tab.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        syncStickyOffsets();
+        syncFloatingChipbar();
+        syncMobileQuickNav();
+        closeMobileQuickNavSheet();
+
+        if (opts.skipHistory) return;
+        try {
+          var url = new URL(window.location.href);
+          if (viewKey === "commodity") {
+            url.searchParams.set("view", "commodity");
+            if ((url.hash || "").indexOf("#sec-") === 0) {
+              url.hash = "";
+            }
+          } else {
+            url.searchParams.delete("view");
+            if ((url.hash || "").indexOf("#commodity") === 0) {
+              url.hash = "";
+            }
+          }
+          window.history.replaceState(null, "", url.toString());
+        } catch (e) {}
+      }
+
+      function resolveInitialView() {
+        try {
+          var hash = (window.location.hash || "").replace(/^#/, "");
+          if (hash === "commodity-board" || hash.indexOf("commodity-") === 0) return "commodity";
+          if (hash.indexOf("sec-") === 0) return "briefing";
+          var url = new URL(window.location.href);
+          var view = (url.searchParams.get("view") || "").toLowerCase();
+          if (view === "commodity" || view === "briefing") return view;
+        } catch (e) {}
+        return "briefing";
+      }
+
+      viewTabs.forEach(function(tab) {
+        tab.setAttribute("data-swipe-ignore", "1");
+        tab.addEventListener("click", function() {
+          activateView(tab.getAttribute("data-view-tab") || "briefing");
+        });
+      });
+
+      window.addEventListener("hashchange", function() {
+        activateView(resolveInitialView(), { skipHistory: true });
+      });
+
+      if (mobileQuickNavToggleEl) {
+        mobileQuickNavToggleEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavToggleEl.addEventListener("click", function() {
+          if (mobileQuickNavSheetEl && mobileQuickNavSheetEl.classList.contains("isOpen")) {
+            closeMobileQuickNavSheet();
+          } else {
+            syncMobileQuickNav();
+            openMobileQuickNavSheet();
+          }
+        });
+      }
+      if (mobileQuickNavBackdropEl) {
+        mobileQuickNavBackdropEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavBackdropEl.addEventListener("click", closeMobileQuickNavSheet);
+      }
+      if (mobileQuickNavCloseEl) {
+        mobileQuickNavCloseEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavCloseEl.addEventListener("click", closeMobileQuickNavSheet);
+      }
+      if (mobileQuickNavBodyEl) {
+        mobileQuickNavBodyEl.addEventListener("click", function(ev) {
+          var target = ev.target;
+          if (target && target.closest && target.closest("a")) {
+            closeMobileQuickNavSheet();
+          }
+        });
+      }
+      document.addEventListener("keydown", function(ev) {
+        if ((ev.key || "") === "Escape") closeMobileQuickNavSheet();
+      });
+
+      activateView(resolveInitialView(), { skipHistory: true });
+
+      // ??(4) 紐⑤컮??醫????ㅼ??댄봽濡??댁쟾/?ㅼ쓬 ?좎쭨 ?대룞 (湲곗궗 ?곸뿭 ?곗꽑 / topbar ?쒖뒪泥?李⑤떒)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("?댁쟾")>=0) prevNav = el;
+          });
+        }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("?ㅼ쓬")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
+      }
+      _bindNavClick(prevNav, +1, "?댁쟾 釉뚮━?묒씠 ?놁뒿?덈떎.");
+      _bindNavClick(nextNav, -1, "?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "?대룞???섏씠吏媛 ?놁뒿?덈떎.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // ?곷떒(topbar: ?꾩뭅?대툕/?댁쟾/?좎쭨/?ㅼ쓬/?뱀뀡移??먯꽌???쒖뒪泥섎뒗 ?섏씠吏 ?ㅼ??댄봽 湲덉?
+        if (target.closest(".topbar")) return true;
+        if (target.closest("a[href],select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            navigateToUrl(href);
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ??404 諛⑹?: ?ㅼ젣 議댁옱?섎뒗 ?꾩뭅?대툕 紐⑸줉?쇰줈 ?쒕∼?ㅼ슫/?댁쟾/?ㅼ쓬/?ㅼ??댄봽瑜??ъ젙?ы븳??
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    if (isDevPreviewPage && devLoaderHref) {
+      var devUrl = new URL(devLoaderHref, currentPageHref());
+      __rootPrefix = devUrl.origin + devUrl.pathname.replace(/[^/]*$/, "");
+      return __rootPrefix;
+    }
+    var href = currentPageHref();
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
+    }
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  if (isDevPreviewPage) {
+    return devLoaderHref + "?date=" + encodeURIComponent(d);
+  }
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var param = str.match(/[?&]date=(\d{4}-\d{2}-\d{2})(?:[&#]|$)/);
+  if (param && param[1]) return param[1];
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(currentPageHref()) || currentReportDate;
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = isDevPreviewPage ? devArchiveManifestUrl : (_getRootPrefix() + "archive_manifest.json");
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "?대떦 ?좎쭨??釉뚮━?묒씠 ?놁뒿?덈떎.");
+    return;
+  }
+
+  if (isDevPreviewPage) {
+    isNavigating = true;
+    showNavLoading();
+    navigateToUrl(url);
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    navigateToUrl(url);
+    return;
+  }
+  showNoBrief(null, msg || "?대떦 ?좎쭨??釉뚮━?묒씠 ?놁뒿?덈떎.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "?대룞??釉뚮━?묒씠 ?놁뒿?덈떎."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    if (isDevPreviewPage) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      navigateToUrl(url);
+      return;
+    }
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      navigateToUrl(url);
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "?댁쟾 釉뚮━?묒씠 ?놁뒿?덈떎." : "?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeSuppressSelection = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeRootUserSelect = "";
+      var swipeRootWebkitUserSelect = "";
+      var swipeBodyCursor = "";
+      var wheelSwipeDx = 0;
+      var wheelSwipeDy = 0;
+      var wheelSwipeAt = 0;
+      var wheelSwipeLockUntil = 0;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        setDesktopSwipeMode(false);
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function setDesktopSwipeMode(active) {
+        var root = document.documentElement;
+        try {
+          if (active) {
+            if (swipeSuppressSelection) return;
+            swipeSuppressSelection = true;
+            swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || "") : "";
+            swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || "") : "";
+            swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || "") : "";
+            if (root && root.style) {
+              root.style.userSelect = "none";
+              root.style.webkitUserSelect = "none";
+            }
+            if (document.body && document.body.style) {
+              document.body.style.cursor = "grabbing";
+            }
+            return;
+          }
+          if (!swipeSuppressSelection) return;
+          swipeSuppressSelection = false;
+          if (root && root.style) {
+            root.style.userSelect = swipeRootUserSelect;
+            root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+          }
+          if (document.body && document.body.style) {
+            document.body.style.cursor = swipeBodyCursor;
+          }
+        } catch (_desktopSwipeErr) {}
+      }
+
+      function resetWheelSwipe() {
+        wheelSwipeDx = 0;
+        wheelSwipeDy = 0;
+        wheelSwipeAt = 0;
+      }
+
+      function handleWheelSwipe(e) {
+        if (!e || isNavigating) return;
+        if (e.ctrlKey) return;
+        if (isBlockedTarget(e.target)) return;
+        var now = Date.now();
+        if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+        if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {
+          resetWheelSwipe();
+        }
+        wheelSwipeAt = now;
+        wheelSwipeDx += Number(e.deltaX || 0);
+        wheelSwipeDy += Number(e.deltaY || 0);
+        if (Math.abs(wheelSwipeDx) < 120) return;
+        if (Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+        wheelSwipeLockUntil = now + 700;
+        try {
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        } catch (_wheelPreventErr) {}
+        var totalDx = wheelSwipeDx;
+        resetWheelSwipe();
+        if (totalDx > 0) {
+          gotoByOffset(-1, "?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎.");
+        } else {
+          gotoByOffset(+1, "?댁쟾 釉뚮━?묒씠 ?놁뒿?덈떎.");
+        }
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        if (blocked) {
+          swipeActive = false;
+          swipeTarget = null;
+          swipePointerId = null;
+          return;
+        }
+        if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {
+          setDesktopSwipeMode(true);
+        }
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedDesktopSwipe = swipeSuppressSelection;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selection = window.getSelection ? window.getSelection() : null;
+          var selected = selection ? String(selection) : "";
+          if (startedDesktopSwipe && selection && selection.removeAllRanges) {
+            selection.removeAllRanges();
+            selected = "";
+          }
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎.");
+        } else {
+          gotoByOffset(+1, "?댁쟾 釉뚮━?묒씠 ?놁뒿?덈떎.");
+        }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      swipeArea.addEventListener("dragstart", function(e) {
+        if (!swipeActive && !swipeSuppressSelection) return;
+        try {
+          if (e && e.preventDefault) e.preventDefault();
+        } catch (_dragErr) {}
+      });
+
+      swipeArea.addEventListener("wheel", function(e) {
+        handleWheelSwipe(e);
+      }, { passive: false });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+        resetWheelSwipe();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "?댁쟾 釉뚮━?묒씠 ?놁뒿?덈떎.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "?ㅼ쓬 釉뚮━?묒씠 ?놁뒿?덈떎.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // ?뚰듃??1踰덈쭔 ?좉퉸 ?몄텧(媛?낆꽦 ?좎?)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
+  </script>
+  <!-- build: b6a504e -->
+
+</body>
+</html>
+

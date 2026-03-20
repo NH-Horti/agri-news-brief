@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>agri-news-brief DEV preview</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #dbe4f0;
+      --accent: #1d4ed8;
+      --accent-soft: #dbeafe;
+      --ok: #047857;
+      --warn: #b45309;
+      --err: #b91c1c;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(29, 78, 216, 0.12), transparent 34%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .hero,
+    .status,
+    .frameWrap {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(26px, 4vw, 36px);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .metaGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .metaCard {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f8fbff;
+    }
+
+    .metaLabel {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .metaValue {
+      font-size: 14px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 18px 20px;
+    }
+
+    .statusRow {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .statusTitle {
+      margin: 0 0 6px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .statusText {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .statusBadge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #eef2ff;
+      color: var(--accent);
+    }
+
+    .statusBadge.ready {
+      background: #ecfdf5;
+      color: var(--ok);
+    }
+
+    .statusBadge.error {
+      background: #fef2f2;
+      color: var(--err);
+    }
+
+    .statusBadge.loading {
+      background: #fff7ed;
+      color: var(--warn);
+    }
+
+    .frameWrap {
+      margin-top: 16px;
+      overflow: visible;
+      min-height: 720px;
+    }
+
+    #previewFrame {
+      display: block;
+      width: 100%;
+      height: 720px;
+      min-height: 720px;
+      border: 0;
+      background: #fff;
+      border-radius: 18px;
+    }
+
+    .emptyState {
+      padding: 56px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        background: #ffffff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0 0 24px;
+      }
+
+      .hero,
+      .status {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+        padding: 18px 14px 0;
+      }
+
+      .status {
+        margin-top: 8px;
+        padding-top: 14px;
+      }
+
+      .frameWrap {
+        margin-top: 12px;
+        min-height: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      #previewFrame {
+        min-height: 0;
+        height: calc(100vh - 180px);
+        border-radius: 0;
+      }
+
+      .emptyState {
+        padding: 28px 16px 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">DEV Preview Loader</span>
+      <h1>개발단과 운영단을 분리한 안정형 미리보기</h1>
+      <p>
+        이 페이지는 운영 브랜치 <code>main</code>에 고정된 로더입니다.
+        실제 개발 산출물은 <code>codex/dev-preview</code> 브랜치의 raw asset을 읽어와서 표시합니다.
+      </p>
+      <div class="metaGrid">
+        <div class="metaCard">
+          <span class="metaLabel">Stable URL</span>
+          <span class="metaValue">https://nh-horti.github.io/agri-news-brief/dev/</span>
+        </div>
+        <div class="metaCard">
+          <span class="metaLabel">Code Branch</span>
+          <span class="metaValue" id="codeBranch">dev</span>
+        </div>
+        <div class="metaCard">
+          <span class="metaLabel">Preview Branch</span>
+          <span class="metaValue" id="previewBranch">codex/dev-preview</span>
+        </div>
+        <div class="metaCard">
+          <span class="metaLabel">Last Build</span>
+          <span class="metaValue" id="buildTag">Loading...</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="reloadBtn" class="btn primary" type="button">미리보기 새로 불러오기</button>
+        <a id="openRawBtn" class="btn" href="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/index.html" target="_blank" rel="noopener">raw preview 열기</a>
+        <a id="openVersionBtn" class="btn" href="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" target="_blank" rel="noopener">version.json 열기</a>
+        <a id="openDebugBtn" class="btn hidden" href="#" target="_blank" rel="noopener">debug JSON 열기</a>
+      </div>
+    </section>
+
+    <section class="status">
+      <div class="statusRow">
+        <div>
+          <h2 class="statusTitle" id="statusTitle">개발 미리보기를 불러오는 중입니다.</h2>
+          <p class="statusText" id="statusText">dev-verify 결과를 preview branch에서 읽고 있습니다.</p>
+        </div>
+        <span class="statusBadge loading" id="statusBadge">LOADING</span>
+      </div>
+    </section>
+
+    <section class="frameWrap">
+      <div class="emptyState" id="emptyState">
+        최신 dev-verify 결과를 불러오면 이 영역에 실제 미리보기 HTML이 표시됩니다.
+      </div>
+      <iframe id="previewFrame" title="agri-news-brief dev preview" class="hidden"></iframe>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var previewBranch = "codex/dev-preview";
+      var previewBase = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev";
+      var previewHtmlUrl = previewBase + "/index.html";
+      var previewVersionUrl = previewBase + "/version.json";
+
+      var buildTagEl = document.getElementById("buildTag");
+      var codeBranchEl = document.getElementById("codeBranch");
+      var previewBranchEl = document.getElementById("previewBranch");
+      var statusTitleEl = document.getElementById("statusTitle");
+      var statusTextEl = document.getElementById("statusText");
+      var statusBadgeEl = document.getElementById("statusBadge");
+      var reloadBtn = document.getElementById("reloadBtn");
+      var openRawBtn = document.getElementById("openRawBtn");
+      var openVersionBtn = document.getElementById("openVersionBtn");
+      var openDebugBtn = document.getElementById("openDebugBtn");
+      var emptyStateEl = document.getElementById("emptyState");
+      var frameEl = document.getElementById("previewFrame");
+      var currentBlobUrl = "";
+      var currentPreviewUrl = "";
+
+      function withBust(url) {
+        var joiner = url.indexOf("?") >= 0 ? "&" : "?";
+        return url + joiner + "_ts=" + Date.now();
+      }
+
+      function setStatus(kind, title, text) {
+        statusTitleEl.textContent = title;
+        statusTextEl.textContent = text;
+        statusBadgeEl.textContent = kind.toUpperCase();
+        statusBadgeEl.className = "statusBadge " + kind;
+      }
+
+      function setDebugLink(url) {
+        if (!url) {
+          openDebugBtn.classList.add("hidden");
+          openDebugBtn.removeAttribute("href");
+          return;
+        }
+        openDebugBtn.href = url;
+        openDebugBtn.classList.remove("hidden");
+      }
+
+      function revokePreviewBlob() {
+        if (!currentBlobUrl) {
+          return;
+        }
+        try {
+          URL.revokeObjectURL(currentBlobUrl);
+        } catch (error) {
+        }
+        currentBlobUrl = "";
+      }
+
+      function requestedDate() {
+        try {
+          var url = new URL(window.location.href);
+          var value = (url.searchParams.get("date") || "").trim();
+          return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function isMobileViewport() {
+        try {
+          return window.matchMedia("(max-width: 720px)").matches;
+        } catch (error) {
+          return window.innerWidth <= 720;
+        }
+      }
+
+      function resolvePreviewHtmlUrl(dateValue) {
+        if (dateValue) {
+          return previewBase + "/archive/" + encodeURIComponent(dateValue) + ".html";
+        }
+        return previewHtmlUrl;
+      }
+
+      function resolveDebugUrl(dateValue, fallbackUrl) {
+        if (dateValue) {
+          return previewBase + "/debug/" + encodeURIComponent(dateValue) + ".json";
+        }
+        return fallbackUrl || "";
+      }
+
+      function escapeAttr(value) {
+        return String(value || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+      }
+
+      function setFrameHeight(nextHeight) {
+        var height = Number(nextHeight || 0);
+        if (!height || !isFinite(height)) {
+          return;
+        }
+        var minHeight = isMobileViewport() ? 360 : 560;
+        frameEl.style.height = Math.max(minHeight, Math.ceil(height) + 24) + "px";
+      }
+
+      function syncFrameHeightFromDocument() {
+        try {
+          var doc = frameEl.contentDocument || (frameEl.contentWindow && frameEl.contentWindow.document);
+          if (!doc) {
+            return;
+          }
+          var docEl = doc.documentElement;
+          var body = doc.body;
+          var height = Math.max(
+            docEl ? docEl.scrollHeight : 0,
+            docEl ? docEl.offsetHeight : 0,
+            body ? body.scrollHeight : 0,
+            body ? body.offsetHeight : 0
+          );
+          setFrameHeight(height);
+        } catch (error) {
+        }
+      }
+
+      function buildPreviewDocument(previewHtml, previewUrl) {
+        var prepared = String(previewHtml || "");
+        var baseHref = String(previewUrl || previewHtmlUrl).replace(/[^/?#]*([?#].*)?$/, "");
+        var baseTag = '<base href="' + escapeAttr(baseHref) + '">';
+        var resizeScript = '<script>(function(){function postHeight(){try{var docEl=document.documentElement;var body=document.body;var height=Math.max(docEl?docEl.scrollHeight:0,docEl?docEl.offsetHeight:0,body?body.scrollHeight:0,body?body.offsetHeight:0);parent.postMessage({type:"agri-dev-preview-height",height:height},"*");}catch(error){}}window.addEventListener("load",postHeight);window.addEventListener("resize",postHeight);try{var observer=new MutationObserver(function(){postHeight();});observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,characterData:true});}catch(error){}setTimeout(postHeight,0);setTimeout(postHeight,300);})();<\/script>';
+
+        if (/<head[^>]*>/i.test(prepared)) {
+          prepared = prepared.replace(/<head([^>]*)>/i, "<head$1>" + baseTag);
+        } else {
+          prepared = baseTag + prepared;
+        }
+        if (/<\/body>/i.test(prepared)) {
+          prepared = prepared.replace(/<\/body>/i, resizeScript + "</body>");
+        } else {
+          prepared += resizeScript;
+        }
+        return prepared;
+      }
+
+      function renderPreview(previewHtml, previewUrl) {
+        var preparedHtml = buildPreviewDocument(previewHtml, previewUrl);
+        currentPreviewUrl = previewUrl;
+        revokePreviewBlob();
+        try {
+          frameEl.removeAttribute("src");
+          frameEl.srcdoc = preparedHtml;
+        } catch (error) {
+          currentBlobUrl = URL.createObjectURL(new Blob([preparedHtml], { type: "text/html;charset=utf-8" }));
+          frameEl.removeAttribute("srcdoc");
+          frameEl.src = currentBlobUrl;
+        }
+        frameEl.classList.remove("hidden");
+        emptyStateEl.classList.add("hidden");
+        setTimeout(syncFrameHeightFromDocument, 0);
+        setTimeout(syncFrameHeightFromDocument, 250);
+      }
+
+      window.addEventListener("message", function (event) {
+        if (!event || !event.data || event.data.type !== "agri-dev-preview-height") {
+          return;
+        }
+        setFrameHeight(event.data.height);
+      });
+
+      frameEl.addEventListener("load", function () {
+        syncFrameHeightFromDocument();
+      });
+
+      window.addEventListener("resize", function () {
+        syncFrameHeightFromDocument();
+      });
+
+      async function loadPreview() {
+        setStatus("loading", "개발 미리보기를 불러오는 중입니다.", "dev-verify가 만든 preview asset을 raw GitHub 경로에서 읽고 있습니다.");
+        frameEl.classList.add("hidden");
+        emptyStateEl.classList.remove("hidden");
+
+        try {
+          var versionResp = await fetch(withBust(previewVersionUrl), { cache: "no-store" });
+          if (!versionResp.ok) {
+            throw new Error("version.json fetch failed: " + versionResp.status);
+          }
+
+          var version = await versionResp.json();
+          var reportDate = typeof version.report_date === "string" ? version.report_date : "";
+          var buildTag = typeof version.build_tag === "string" ? version.build_tag : "unknown";
+          var generatedAt = typeof version.generated_at_kst === "string" ? version.generated_at_kst : "";
+          var contentRef = typeof version.content_ref === "string" ? version.content_ref : "main";
+          var contentBranch = typeof version.content_branch === "string" ? version.content_branch : previewBranch;
+          var debugUrl = typeof version.debug_url === "string" ? version.debug_url : "";
+          var requested = requestedDate();
+          var selectedPreviewUrl = resolvePreviewHtmlUrl(requested);
+          var effectiveDebugUrl = resolveDebugUrl(requested, debugUrl);
+
+          buildTagEl.textContent = buildTag;
+          codeBranchEl.textContent = "dev (content read: " + contentRef + ")";
+          previewBranchEl.textContent = contentBranch;
+          openRawBtn.href = selectedPreviewUrl;
+          openVersionBtn.href = typeof version.version_url === "string" && version.version_url ? version.version_url : previewVersionUrl;
+          setDebugLink(effectiveDebugUrl);
+
+          var htmlResp = await fetch(withBust(selectedPreviewUrl), { cache: "no-store" });
+          var usingFallbackLatest = false;
+          if (!htmlResp.ok && requested) {
+            selectedPreviewUrl = typeof version.preview_url === "string" && version.preview_url ? version.preview_url : previewHtmlUrl;
+            htmlResp = await fetch(withBust(selectedPreviewUrl), { cache: "no-store" });
+            usingFallbackLatest = true;
+          }
+          if (!htmlResp.ok) {
+            throw new Error("preview html fetch failed: " + htmlResp.status);
+          }
+
+          var previewHtml = await htmlResp.text();
+          openRawBtn.href = selectedPreviewUrl;
+          renderPreview(previewHtml, selectedPreviewUrl);
+
+          var detail = "report_date=" + (reportDate || "-") + " | build=" + buildTag;
+          if (requested) {
+            detail += " | view_date=" + requested;
+          }
+          if (usingFallbackLatest) {
+            detail += " | fallback=latest";
+          }
+          if (generatedAt) {
+            detail += " | generated_at_kst=" + generatedAt;
+          }
+          setStatus("ready", "개발 미리보기가 준비되었습니다.", detail);
+        } catch (error) {
+          buildTagEl.textContent = "Unavailable";
+          setDebugLink("");
+          setStatus("error", "개발 미리보기를 불러오지 못했습니다.", String(error && error.message ? error.message : error));
+        }
+      }
+
+      reloadBtn.addEventListener("click", function () {
+        loadPreview();
+      });
+
+      window.addEventListener("beforeunload", function () {
+        revokePreviewBlob();
+      });
+
+      loadPreview();
+    })();
+  </script>
+</body>
+</html>
