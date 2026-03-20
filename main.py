@@ -16068,21 +16068,24 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     primary_focus = bool(metrics.get("primary_focus"))
     board_score = float(metrics.get("board_score") or 0.0)
     story_priority = float(metrics.get("story_priority") or 0.0)
-    allow_issue_frame = bool(issue_bucket) or direct_supply or market_response or issue_title_hits >= 1
-    weak_training = training_title_hits >= 1 and not allow_issue_frame
-    weak_profile = profile_title_hits >= 1 and not allow_issue_frame
-    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not allow_issue_frame
-    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not allow_issue_frame
+    consumer_noise_hits = int(metrics.get("consumer_noise_hits") or 0)
+    allow_core_issue = bool(issue_bucket) or market_response
+    weak_training = training_title_hits >= 1 and not allow_core_issue
+    weak_profile = profile_title_hits >= 1 and not allow_core_issue
+    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not allow_core_issue
+    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not allow_core_issue
     weak_event = (
         any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS)
-        and not allow_issue_frame
+        and not allow_core_issue
         and feature_kind != "quality"
     )
+    weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not allow_core_issue) and (not direct_supply)
+    weak_tourism = is_supply_tourism_event_context(title, desc) and not allow_core_issue
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event:
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism:
         representative_rank = 0
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
@@ -16108,6 +16111,10 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         representative_score -= 16.0
     if weak_event:
         representative_score -= 10.0
+    if weak_consumer_lifestyle:
+        representative_score -= 18.0
+    if weak_tourism:
+        representative_score -= 20.0
 
     metrics.update(
         {
@@ -16119,6 +16126,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
             "weak_org_feature_story": bool(weak_org_feature),
             "weak_org_promo_story": bool(weak_org_promo),
             "weak_event_story": bool(weak_event),
+            "weak_consumer_lifestyle_story": bool(weak_consumer_lifestyle),
+            "weak_tourism_story": bool(weak_tourism),
         }
     )
     return metrics
@@ -16270,7 +16279,7 @@ def _normalize_supply_section_from_board(
     inserted = 0
     winners = _program_core_board_supply_candidates(board_source_by_section)
 
-    for min_rank in (2, 1):
+    for min_rank in (2,):
         for record in winners:
             article = record.get("article")
             metrics = record.get("metrics") or {}
@@ -16330,9 +16339,40 @@ def _normalize_supply_section_from_board(
         if len(deduped_supply) >= max_n:
             break
 
+    ranked_metrics: list[tuple[Article, dict[str, Any] | None]] = []
     for article in deduped_supply:
         article.is_core = False
-    for article in deduped_supply[: min(2, len(deduped_supply))]:
+        best = _best_program_core_board_metrics_for_article(article)
+        ranked_metrics.append((article, best[1] if best is not None else None))
+
+    core_candidates: list[Article] = [
+        article
+        for article, metrics in ranked_metrics
+        if isinstance(metrics, dict) and int(metrics.get("representative_rank", -1)) >= 2
+    ]
+    if len(core_candidates) < min(2, len(deduped_supply)):
+        for article, metrics in ranked_metrics:
+            if article in core_candidates:
+                continue
+            weak_story = bool(
+                isinstance(metrics, dict)
+                and (
+                    metrics.get("weak_training_story")
+                    or metrics.get("weak_profile_story")
+                    or metrics.get("weak_event_story")
+                    or metrics.get("weak_consumer_lifestyle_story")
+                    or metrics.get("weak_tourism_story")
+                    or metrics.get("weak_org_feature_story")
+                    or metrics.get("weak_org_promo_story")
+                )
+            )
+            if weak_story:
+                continue
+            core_candidates.append(article)
+            if len(core_candidates) >= min(2, len(deduped_supply)):
+                break
+
+    for article in core_candidates[: min(2, len(deduped_supply))]:
         article.is_core = True
         if not str(getattr(article, "selection_stage", "") or "").startswith("core"):
             article.selection_stage = "core_final"

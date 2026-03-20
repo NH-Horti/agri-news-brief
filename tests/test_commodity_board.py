@@ -231,6 +231,31 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertEqual(tomato_item["top_article"].title, issue_article.title)
 
+    def test_training_style_board_story_with_supply_terms_is_not_representative(self):
+        training_article = self._make_article(
+            "supply",
+            "화천농협, 양파 공선출하회 총회·재배기술교육 펼쳐",
+            "양파 재배 농가를 대상으로 공선출하회 총회와 재배기술교육을 진행했다.",
+            "https://example.com/onion-training-rank",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("onion"), training_article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_training_story"]))
+
+    def test_tourism_style_fruit_story_is_not_representative(self):
+        tourism_article = self._make_article(
+            "supply",
+            "형광빛 메타세쿼이아·고즈넉한 고택… 배꽃 필 무렵이 최고의 시간",
+            "배꽃 개화 시기에 맞춰 관광객이 찾는 봄 여행 코스를 소개하는 기사다.",
+            "https://example.com/pear-tourism",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("pear"), tourism_article)
+
+        self.assertLessEqual(int(metrics["representative_rank"]), 0)
+
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(
             "supply",
@@ -318,8 +343,8 @@ class TestCommodityBoard(unittest.TestCase):
         )
         strong_dist = self._make_article(
             "dist",
-            "사과 선별·공판 기능 결합…유통거점 부상",
-            "사과 선별과 공판 기능을 결합한 유통거점이 산지 출하 흐름을 바꾸고 있다.",
+            "사과 경락가 급등…공판장 반입 감소에 산지 출하 조절",
+            "사과 공판장 반입 감소와 경락가 급등이 이어지며 산지 출하 조절 필요성이 커지고 있다.",
             "https://example.com/apple-dist-core",
         )
         final_by_section = {key: [] for key in self.conf}
