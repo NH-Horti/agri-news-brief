@@ -459,5 +459,71 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertNotIn("eggplant", main.managed_commodity_keys_for_text(travel_text, None))
         self.assertNotIn("eggplant", main.managed_commodity_keys_for_text(branch_text, None))
 
+    def test_board_rejects_topic_only_story_without_item_focus(self):
+        article = self._make_article(
+            "policy",
+            "의성 급식예산 유지 속 '1인 지원 확대'…학생 감소에도 체감 복지 강화",
+            "학교 급식과 학생 복지 예산을 다룬 일반 행정 기사다.",
+            "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067478",
+        )
+        article.topic = "참외"
+        by_section = {key: [] for key in self.conf}
+        by_section["policy"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        oriental_melon = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "oriental_melon"
+        )
+
+        self.assertFalse(oriental_melon["active"])
+        self.assertEqual(oriental_melon["article_count"], 0)
+
+    def test_board_rejects_processed_food_story_even_with_item_flavor_term(self):
+        article = self._make_article(
+            "supply",
+            "아이스크림·과자도 가격 내린다…롯데웰푸드·빙그레 등 최대 13.4% 인하",
+            "복숭아맛 아이스크림과 스낵 등 가공식품 가격 인하 소식이다.",
+            "https://view.asiae.co.kr/article/2026031910413256160",
+        )
+        article.topic = "복숭아"
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        peach = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "peach"
+        )
+
+        self.assertFalse(peach["active"])
+        self.assertEqual(peach["article_count"], 0)
+
+    def test_board_rejects_lifestyle_wine_story_for_citron(self):
+        article = self._make_article(
+            "supply",
+            '"휴대폰 대신 와인잔을"…대부 감독 코폴라가 서울 식탁에 던진 "초대장"',
+            "유자 향 와인과 미식 경험을 소개하는 라이프스타일 기사다.",
+            "http://www.edaily.co.kr/news/newspath.asp?newsid=04382086645384960",
+        )
+        article.topic = "유자"
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        citron = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "citron"
+        )
+
+        self.assertFalse(citron["active"])
+        self.assertEqual(citron["article_count"], 0)
+
 if __name__ == "__main__":
     unittest.main()

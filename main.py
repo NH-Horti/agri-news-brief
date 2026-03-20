@@ -2162,7 +2162,7 @@ def build_managed_commodity_board_source_by_section(
         for article in sorted(by_section.get(section_key, []) or [], key=_sort_key_major_first, reverse=True):
             if not isinstance(article, Article):
                 continue
-            if not managed_commodity_keys_for_article(article):
+            if not managed_commodity_focus_keys_for_article(article):
                 continue
             if _postbuild_article_reject_reason(article, section_key):
                 continue
@@ -2953,6 +2953,48 @@ _MANAGED_COMMODITY_SECTION_LABELS = {
     "pest": "리스크",
 }
 
+_MANAGED_COMMODITY_FOCUS_AGRI_TERMS = tuple(
+    term.lower()
+    for term in (
+        "농산물", "원예", "과수", "과채", "채소", "과일", "화훼", "청과",
+        "농가", "산지", "재배", "작황", "생산", "생육", "수확", "출하", "출하량",
+        "병해충", "방제", "검역", "통관", "수출", "수입",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_MARKET_TERMS = tuple(
+    term.lower()
+    for term in (
+        "가락시장", "도매시장", "공영도매시장", "공판장", "경락", "경매", "반입",
+        "산지유통", "산지유통센터", "apc", "선별", "공동선별", "공선출하",
+        "저장", "저온저장", "저장고", "물량", "재고",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_ISSUE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "가격", "값", "시세", "수급", "출하", "작황", "생육", "재배", "도매가격",
+        "경락가", "하락", "상승", "급등", "급락", "약세", "강세", "부족", "과잉",
+        "불안", "안정", "피해", "확산", "회복",
+    )
+)
+_MANAGED_COMMODITY_PROCESSED_NOISE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "과자", "아이스크림", "빙과", "디저트", "음료", "주스", "와인", "맥주",
+        "칩", "감자칩", "포테이토칩", "소스", "잼", "젤리", "스낵", "케이크",
+        "메뉴", "레시피", "맛", "풍미", "향",
+    )
+)
+_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
+    term.lower()
+    for term in (
+        "축제", "관광", "행사", "프로모션", "급식예산", "급식 예산", "학생", "복지",
+        "마을", "영화", "감독", "초대장", "공연", "전시", "학교", "레트로",
+    )
+)
+_MANAGED_COMMODITY_FOCUS_MATCH_MIN = 2.4
+_MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
+
 
 def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
     txt = (text or "").lower()
@@ -2966,9 +3008,6 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         return False
     if key == "eggplant" and "가지" in txt and not is_edible_eggplant_context(txt):
         return False
-    registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
-    if topic and topic in registry_topics:
-        return True
 
     for term in item.get("match_terms") or []:
         term_l = str(term or "").strip().lower()
@@ -2988,6 +3027,237 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
         if pattern.search(txt):
             return True
     return False
+
+
+def _managed_commodity_focus_metrics(
+    item: dict[str, Any],
+    title: str,
+    desc: str,
+    topic: str = "",
+) -> dict[str, Any]:
+    key = str(item.get("key") or "").strip()
+    title_l = (title or "").lower()
+    desc_l = (desc or "").lower()
+    text_l = f"{title or ''} {desc or ''}".lower().strip()
+    empty = {
+        "focus_score": 0.0,
+        "title_primary_hits": 0,
+        "title_context_hits": 0,
+        "body_primary_hits": 0,
+        "body_context_hits": 0,
+        "pattern_hits": 0,
+        "agri_anchor_hits": 0,
+        "market_anchor_hits": 0,
+        "issue_anchor_hits": 0,
+        "consumer_noise_hits": 0,
+        "matched": False,
+        "topic_hit": False,
+    }
+    if not text_l or not key:
+        return empty
+
+    if key == "carrot" and "당근" in text_l and not is_edible_carrot_context(text_l):
+        return empty
+    if key == "potato" and "감자" in text_l and not is_fresh_potato_context(text_l):
+        return empty
+    if key == "eggplant" and "가지" in text_l and not is_edible_eggplant_context(text_l):
+        return empty
+    if key == "muskmelon" and "멜론" in text_l and not is_edible_melon_context(text_l):
+        return empty
+    if key == "apple" and "사과" in text_l and not is_edible_apple_context(text_l):
+        return empty
+
+    base_terms = _managed_commodity_base_terms(item, limit=6)
+    context_terms = _ordered_unique_terms(item.get("context_terms") or [])
+    registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
+    topic_hit = bool(topic and topic in registry_topics)
+
+    title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
+    title_context_hits = _commodity_board_term_hits(title_l, context_terms)
+    body_primary_hits = _commodity_board_term_hits(text_l, base_terms)
+    body_context_hits = _commodity_board_term_hits(text_l, context_terms)
+    pattern_hits = sum(1 for pattern in _MANAGED_COMMODITY_CONTEXT_PATTERNS.get(key, []) if pattern.search(text_l))
+    agri_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_AGRI_TERMS))
+    market_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_MARKET_TERMS))
+    issue_anchor_hits = count_any(text_l, list(_MANAGED_COMMODITY_FOCUS_ISSUE_TERMS))
+    processed_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_PROCESSED_NOISE_TERMS))
+    lifestyle_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS))
+    consumer_noise_hits = processed_noise_hits + lifestyle_noise_hits
+
+    score = (
+        (title_primary_hits * 3.2)
+        + (title_context_hits * 2.4)
+        + (body_primary_hits * 1.4)
+        + (body_context_hits * 0.9)
+        + (pattern_hits * 2.6)
+        + min(1.4, 0.22 * agri_anchor_hits)
+        + min(1.8, 0.34 * market_anchor_hits)
+        + min(1.6, 0.24 * issue_anchor_hits)
+        + (0.5 if topic_hit and (title_primary_hits or body_primary_hits or pattern_hits) else 0.0)
+    )
+
+    if (
+        title_primary_hits == 0
+        and title_context_hits == 0
+        and pattern_hits == 0
+        and body_primary_hits <= 1
+        and body_context_hits == 0
+        and agri_anchor_hits == 0
+        and market_anchor_hits == 0
+        and issue_anchor_hits == 0
+    ):
+        score -= 2.8
+
+    if processed_noise_hits and market_anchor_hits == 0 and issue_anchor_hits <= 1:
+        score -= min(4.2, 1.35 * processed_noise_hits)
+    if lifestyle_noise_hits and market_anchor_hits == 0 and issue_anchor_hits <= 1:
+        score -= min(4.2, 1.15 * lifestyle_noise_hits)
+
+    if is_fastfood_price_context(text_l) and market_anchor_hits == 0:
+        score -= 3.2
+    if is_general_consumer_price_noise(text_l) and market_anchor_hits == 0:
+        score -= 2.6
+    if is_fruit_foodservice_event_context(text_l) and market_anchor_hits == 0:
+        score -= 3.0
+    if is_flower_novelty_noise_context(title, desc) and market_anchor_hits == 0:
+        score -= 3.0
+    if is_macro_trade_noise_context(text_l) and market_anchor_hits == 0 and agri_anchor_hits <= 1:
+        score -= 2.6
+
+    direct_focus_hits = title_primary_hits + title_context_hits + pattern_hits
+    exact_or_context_hits = direct_focus_hits + body_primary_hits + body_context_hits
+    matched = bool(score >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN and exact_or_context_hits > 0)
+    if direct_focus_hits == 0 and market_anchor_hits == 0 and issue_anchor_hits == 0 and agri_anchor_hits < 2:
+        matched = False
+    if processed_noise_hits and direct_focus_hits == 0 and market_anchor_hits == 0:
+        matched = False
+
+    return {
+        "focus_score": round(float(score), 4),
+        "title_primary_hits": title_primary_hits,
+        "title_context_hits": title_context_hits,
+        "body_primary_hits": body_primary_hits,
+        "body_context_hits": body_context_hits,
+        "pattern_hits": pattern_hits,
+        "agri_anchor_hits": agri_anchor_hits,
+        "market_anchor_hits": market_anchor_hits,
+        "issue_anchor_hits": issue_anchor_hits,
+        "consumer_noise_hits": consumer_noise_hits,
+        "matched": matched,
+        "topic_hit": topic_hit,
+    }
+
+
+def _managed_commodity_focus_summary(title: str, desc: str, topic: str = "") -> dict[str, Any]:
+    matches: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
+    for item in MANAGED_COMMODITY_CATALOG:
+        key = str(item.get("key") or "").strip()
+        if not key:
+            continue
+        metrics = _managed_commodity_focus_metrics(item, title, desc, topic)
+        if not metrics.get("matched"):
+            continue
+        matches.append((key, item, metrics))
+
+    matches.sort(
+        key=lambda entry: (
+            float(entry[2].get("focus_score") or 0.0),
+            1 if entry[1].get("program_core") else 0,
+            -int(entry[1].get("order") or 0),
+        ),
+        reverse=True,
+    )
+    keys = [entry[0] for entry in matches]
+    focus_by_key = {
+        entry[0]: float(entry[2].get("focus_score") or 0.0)
+        for entry in matches
+    }
+    strong_keys = [
+        entry[0]
+        for entry in matches
+        if float(entry[2].get("focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ]
+    program_core_keys = [entry[0] for entry in matches if bool(entry[1].get("program_core"))]
+    program_core_strong_keys = [
+        entry[0]
+        for entry in matches
+        if bool(entry[1].get("program_core"))
+        and float(entry[2].get("focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ]
+    max_focus_score = max(focus_by_key.values()) if focus_by_key else 0.0
+    return {
+        "keys": keys,
+        "count": len(keys),
+        "focus_by_key": focus_by_key,
+        "strong_keys": strong_keys,
+        "strong_count": len(strong_keys),
+        "program_core_keys": program_core_keys,
+        "program_core_count": len(program_core_keys),
+        "program_core_strong_keys": program_core_strong_keys,
+        "program_core_strong_count": len(program_core_strong_keys),
+        "max_focus_score": float(max_focus_score),
+    }
+
+
+def _managed_commodity_focus_summary_for_article(article: "Article") -> dict[str, Any]:
+    cached = getattr(article, "_managed_focus_summary", None)
+    if isinstance(cached, dict):
+        return cached
+    summary = _managed_commodity_focus_summary(
+        getattr(article, "title", "") or "",
+        getattr(article, "description", "") or "",
+        getattr(article, "topic", "") or "",
+    )
+    setattr(article, "_managed_focus_summary", summary)
+    return summary
+
+
+def managed_commodity_focus_keys_for_text(
+    title: str,
+    desc: str,
+    topic: str = "",
+    max_keys: int | None = None,
+) -> list[str]:
+    summary = _managed_commodity_focus_summary(title, desc, topic)
+    keys = list(summary.get("keys") or [])
+    if not keys:
+        return []
+    if max_keys is None or max_keys <= 0 or len(keys) <= 1:
+        return keys if max_keys is None else keys[:max_keys]
+    focus_by_key = dict(summary.get("focus_by_key") or {})
+    lead_key = keys[0]
+    lead_score = float(focus_by_key.get(lead_key) or 0.0)
+    selected = [lead_key]
+    for key in keys[1:]:
+        if len(selected) >= max_keys:
+            break
+        focus_score = float(focus_by_key.get(key) or 0.0)
+        if focus_score >= max(_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.9, lead_score - 0.9):
+            selected.append(key)
+    return selected
+
+
+def managed_commodity_focus_keys_for_article(
+    article: "Article",
+    max_keys: int | None = None,
+) -> list[str]:
+    summary = _managed_commodity_focus_summary_for_article(article)
+    keys = list(summary.get("keys") or [])
+    if not keys:
+        return []
+    if max_keys is None or max_keys <= 0 or len(keys) <= 1:
+        return keys if max_keys is None else keys[:max_keys]
+    focus_by_key = dict(summary.get("focus_by_key") or {})
+    lead_key = keys[0]
+    lead_score = float(focus_by_key.get(lead_key) or 0.0)
+    selected = [lead_key]
+    for key in keys[1:]:
+        if len(selected) >= max_keys:
+            break
+        focus_score = float(focus_by_key.get(key) or 0.0)
+        if focus_score >= max(_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.9, lead_score - 0.9):
+            selected.append(key)
+    return selected
 
 
 def managed_commodity_keys_for_text(title: str, desc: str, topic: str = "") -> list[str]:
@@ -3055,6 +3325,7 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
     t = (title + " " + desc).lower()
     tl = (title or "").lower()
     scores: dict[str, float] = {}
+    managed_focus_item_cache: dict[str, dict[str, Any] | None] = {}
 
     for topic, words in COMMODITY_TOPICS:
         sc = 0.0
@@ -3084,6 +3355,15 @@ def _topic_scores(title: str, desc: str) -> dict[str, float]:
         if topic == "사과" and any(x in t for x in ("의사과학", "의사과학자", "의사과학원", "의사공학", "의과학", "의과학원")):
             # '의사과학자/의사과학원' 등은 '사과(apple)'가 아니라 의료/학문 용어(부분문자열) 오탐
             continue
+
+        managed_item = managed_focus_item_cache.get(topic)
+        if topic not in managed_focus_item_cache:
+            managed_item = _managed_commodity_item_for_seed(topic)
+            managed_focus_item_cache[topic] = managed_item
+        if managed_item:
+            focus_metrics = _managed_commodity_focus_metrics(managed_item, title, desc, topic)
+            if not focus_metrics.get("matched"):
+                continue
 
 
         # 기본(2글자 이상 키워드): 부분문자열 매칭
@@ -3161,10 +3441,10 @@ def best_horti_score(title: str, desc: str) -> float:
 def extract_topic(title: str, desc: str) -> str:
     topic, _ = best_topic_and_score(title, desc)
     if topic not in _HORTI_TOPICS_SET:
-        title_managed_summary = _managed_commodity_match_summary(title, "")
-        managed_summary = title_managed_summary if title_managed_summary.get("count") else _managed_commodity_match_summary(title, desc)
-        keys = list(managed_summary.get("keys") or [])
-        if keys:
+        title_focus_summary = _managed_commodity_focus_summary(title, "", "")
+        focus_summary = title_focus_summary if title_focus_summary.get("count") else _managed_commodity_focus_summary(title, desc, "")
+        keys = list(focus_summary.get("strong_keys") or focus_summary.get("keys") or [])
+        if keys and float(focus_summary.get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
             item = MANAGED_COMMODITY_BY_KEY.get(str(keys[0]) or "") or {}
             registry_topics = [str(v or "").strip() for v in (item.get("registry_topics") or []) if str(v or "").strip()]
             managed_topic = registry_topics[0] if registry_topics else str(item.get("short_label") or item.get("label") or "").strip()
@@ -6380,12 +6660,22 @@ PRESS_HOST_MAP = {
     "www.knnews.co.kr": "경남신문",
     "gnnews.co.kr": "경남일보",
     "www.gnnews.co.kr": "경남일보",
+    "gnmaeil.com": "경남매일",
+    "www.gnmaeil.com": "경남매일",
     "ksilbo.co.kr": "경상일보",
     "www.ksilbo.co.kr": "경상일보",
     "shinailbo.co.kr": "신아일보",
     "www.shinailbo.co.kr": "신아일보",
     "yonhapnewstv.co.kr": "연합뉴스TV",
     "www.yonhapnewstv.co.kr": "연합뉴스TV",
+    "kbsm.net": "경북신문",
+    "www.kbsm.net": "경북신문",
+    "kyongbuk.co.kr": "경북일보",
+    "www.kyongbuk.co.kr": "경북일보",
+    "andongmbc.co.kr": "안동MBC",
+    "www.andongmbc.co.kr": "안동MBC",
+    "dgmbc.com": "대구MBC",
+    "www.dgmbc.com": "대구MBC",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -6499,9 +6789,14 @@ ABBR_MAP = {
     "jndn": "전남매일",
     "knnews": "경남신문",
     "gnnews": "경남일보",
+    "gnmaeil": "경남매일",
     "ksilbo": "경상일보",
     "shinailbo": "신아일보",
     "yonhapnewstv": "연합뉴스TV",
+    "kbsm": "경북신문",
+    "kyongbuk": "경북일보",
+    "andongmbc": "안동MBC",
+    "dgmbc": "대구MBC",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -6643,6 +6938,8 @@ def press_priority(press: str, domain: str) -> int:
         return 2
     if p and ("방송" in p and p not in TOP_TIER_PRESS):
         return 2
+    if re.search(r"(KBS|MBC|SBS)$", p) and p not in TOP_TIER_PRESS:
+        return 2
 
     # UGC/커뮤니티성
     if any(h in d for h in _UGC_HOST_HINTS):
@@ -6752,6 +7049,8 @@ def press_tier(press: str, domain: str) -> int:
     if p in MID_TIER_PRESS:
         return 2
     if p and ('방송' in p and p not in MAJOR_PRESS):
+        return 2
+    if re.search(r"(KBS|MBC|SBS)$", p) and p not in MAJOR_PRESS:
         return 2
     if any(h in p for h in MID_PRESS_HINTS):
         return 2
@@ -8336,6 +8635,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
+    managed_focus_summary = _managed_commodity_focus_summary(title, desc)
+    managed_focus_max = float(managed_focus_summary.get("max_focus_score") or 0.0)
+    managed_focus_strong_count = int(managed_focus_summary.get("strong_count") or 0)
+    managed_focus_program_core_count = int(managed_focus_summary.get("program_core_strong_count") or 0)
 
     strength = agri_strength_score(text)
     korea = korea_context_score(text)
@@ -8391,6 +8694,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
+        if managed_focus_max >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+            score += min(2.6, 0.42 * managed_focus_max)
+        elif managed_focus_max >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
+            score += min(1.1, 0.24 * managed_focus_max)
+        if managed_focus_program_core_count:
+            score += min(0.9, 0.32 * managed_focus_program_core_count)
+        if managed_count >= 2 and managed_focus_strong_count == 0 and not has_direct_supply_chain_signal(text):
+            score -= min(1.6, 0.42 * managed_count)
         if is_supply_price_outlook_context(title, desc):
             score += 2.3
         if supply_feature_kind == "issue":
@@ -9886,6 +10197,21 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return key
 
     pool_managed_primary_keys = {primary for primary in (_managed_primary_key(a) for a in pool) if primary}
+    managed_focus_cache: dict[str, dict[str, Any]] = {}
+
+    def _managed_focus_summary_local(a: Article) -> dict[str, Any]:
+        cache_key = _dup_key(a)
+        summary = managed_focus_cache.get(cache_key)
+        if summary is None:
+            summary = _managed_commodity_focus_summary_for_article(a)
+            managed_focus_cache[cache_key] = summary
+        return summary
+
+    strong_supply_focus_pool_count = sum(
+        1
+        for a in pool
+        if float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+    ) if section_key == "supply" else 0
 
     def _managed_repeat_too_close(a: Article, selected: list[Article], score_gap_override: float | None = None) -> bool:
         primary = _managed_primary_key(a)
@@ -10416,6 +10742,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             mix = (a.title + " " + a.description).lower()
             dom = normalize_host(a.domain or "")
             pr = (a.press or "").strip()
+            focus_summary_local = _managed_focus_summary_local(a)
+            focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
             try:
                 _h = best_horti_score(a.title or "", a.description or "")
             except Exception:
@@ -10443,6 +10771,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
             if (a.topic or "").strip() == "정책":
                 continue
+            if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and (not has_direct_supply_chain_signal(mix)) and _h < 2.2:
+                continue
+            if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+                if (not has_direct_supply_chain_signal(mix)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.8):
+                    continue
         fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
         if fit_sc_core < core_fit_min and a.score < (core_min + 1.8):
             continue
@@ -10460,7 +10793,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
                 continue
         if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-            continue
+            if not (
+                section_key == "supply"
+                and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+            ):
+                continue
 
         if not _source_ok_local(a):
             continue
@@ -10506,6 +10843,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "supply":
                 dom = normalize_host(a.domain or "")
                 pr = (a.press or "").strip()
+                focus_summary_local = _managed_focus_summary_local(a)
+                focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
                 if is_supply_stabilization_policy_context(text, dom, pr):
                     continue
                 if is_policy_market_brief_context(text, dom, pr):
@@ -10518,6 +10857,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if (a.topic or "").strip() == "정책":
                     continue
+                if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and (not has_direct_supply_chain_signal(text)) and best_horti_score(a.title or "", a.description or "") < 2.0:
+                    continue
+                if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+                    if (not has_direct_supply_chain_signal(text)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.6):
+                        continue
             # 원산지/단속/검역/수출 키워드만으로 걸린 일반 기사 누수 방지(시장/APC 앵커가 없으면 제외)
             ops_hits = count_any(text, [t.lower() for t in ("원산지","부정유통","단속","검역","통관","수출")])
             market_anchor_hits = count_any(text, [t.lower() for t in ("가락시장","도매시장","공판장","공영도매시장","경락","경매","반입","온라인 도매시장","산지유통","산지유통센터")])
@@ -10540,7 +10884,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if not is_policy_market_brief_context(mix_local, normalize_host(a.domain or ""), (a.press or "").strip()):
                     continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-                continue
+                if not (
+                    section_key == "supply"
+                    and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+                ):
+                    continue
 
             if not _source_ok_local(a):
                 continue
@@ -10574,7 +10922,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _managed_repeat_too_close(a, core, score_gap_override=1.0):
                 continue
             if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-                continue
+                if not (
+                    section_key == "supply"
+                    and float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
+                ):
+                    continue
             if not _source_ok_local(a):
                 continue
             a.is_core = True
@@ -15091,32 +15443,43 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     body_l = f"{title} {desc}".lower()
     base_terms = _managed_commodity_base_terms(item, limit=6)
     context_terms = _ordered_unique_terms(list(item.get("context_terms") or []) + list(item.get("match_terms") or []))
-    matched_keys = managed_commodity_keys_for_article(article)
+    focus_summary = _managed_commodity_focus_summary_for_article(article)
+    focus_by_key = dict(focus_summary.get("focus_by_key") or {})
+    matched_keys = list(focus_summary.get("keys") or [])
+    focus_score = float(focus_by_key.get(item_key) or 0.0)
     match_count = len(matched_keys)
     single_focus = 1 if item_key and matched_keys == [item_key] else 0
+    primary_focus = 1 if item_key and matched_keys and matched_keys[0] == item_key else 0
+    strong_focus = 1 if focus_score >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0
     title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
     section_key = str(getattr(article, "section", "") or "").strip()
     board_score = (
-        (float(getattr(article, "score", 0.0) or 0.0) * 0.35)
-        + (title_primary_hits * 42.0)
-        + (title_context_hits * 12.0)
-        + (body_primary_hits * 8.0)
-        + (body_context_hits * 3.0)
-        + (14.0 if single_focus else 0.0)
+        (focus_score * 24.0)
+        + (float(getattr(article, "score", 0.0) or 0.0) * 0.28)
+        + (title_primary_hits * 18.0)
+        + (title_context_hits * 8.0)
+        + (body_primary_hits * 6.0)
+        + (body_context_hits * 2.5)
+        + (16.0 if primary_focus else 0.0)
+        + (12.0 if single_focus else 0.0)
+        + (10.0 if strong_focus else 0.0)
         + (6.0 if getattr(article, "is_core", False) else 0.0)
         + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
         + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
-        - (max(0, match_count - 1) * 6.0)
+        - (max(0, match_count - 1) * 8.0)
     )
     return {
         "board_score": board_score,
+        "focus_score": focus_score,
         "title_primary_hits": title_primary_hits,
         "title_context_hits": title_context_hits,
         "body_primary_hits": body_primary_hits,
         "body_context_hits": body_context_hits,
+        "primary_focus": primary_focus,
+        "strong_focus": strong_focus,
         "single_focus": single_focus,
         "match_count": match_count,
         "section_rank": _COMMODITY_BOARD_SECTION_RANK.get(section_key, 0),
@@ -15127,7 +15490,10 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
     metrics = _commodity_board_item_article_metrics(item, article)
     return (
         float(metrics["board_score"]),
+        float(metrics["focus_score"]),
         int(metrics["title_primary_hits"]),
+        int(metrics["primary_focus"]),
+        int(metrics["strong_focus"]),
         int(metrics["single_focus"]),
         int(metrics["body_primary_hits"]),
         1 if getattr(article, "is_core", False) else 0,
@@ -15184,7 +15550,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     for sec in SECTIONS:
         for article in by_section.get(sec["key"], []) or []:
-            for key in managed_commodity_keys_for_article(article):
+            for key in managed_commodity_focus_keys_for_article(article, max_keys=2):
                 payload = item_state.get(key)
                 if payload is None:
                     continue
