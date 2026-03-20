@@ -2550,6 +2550,22 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.press_name_from_url("https://www.paxetv.com/news/articleView.html?idxno=1"), "팍스경제TV")
         self.assertEqual(main.press_name_from_url("https://www.sentv.co.kr/news/view/1"), "서울경제TV")
         self.assertEqual(main.press_name_from_url("https://news.tf.co.kr/read/economy/1.htm"), "더팩트")
+        self.assertEqual(main.press_name_from_url("https://www.headlinejeju.co.kr/news/articleView.html?idxno=1"), "헤드라인제주")
+        self.assertEqual(main.press_name_from_url("https://www.namdonews.com/news/articleView.html?idxno=1"), "남도일보")
+        self.assertEqual(main.press_name_from_url("https://news.tvchosun.com/site/data/html_dir/2026/03/19/1.html"), "TV조선")
+        self.assertEqual(main.press_name_from_url("https://www.foodnews.co.kr/news/articleView.html?idxno=1"), "식품음료신문")
+        self.assertEqual(main.press_name_from_url("https://www.cctimes.kr/news/articleView.html?idxno=1"), "충청타임즈")
+        self.assertEqual(main.press_name_from_url("https://www.daejonilbo.com/news/articleView.html?idxno=1"), "대전일보")
+        self.assertEqual(main.press_name_from_url("https://www.siminilbo.co.kr/news/newsview.php?ncode=1"), "시민일보")
+        self.assertEqual(main.press_name_from_url("https://www.viva100.com/main/view.php?key=1"), "브릿지경제")
+        self.assertEqual(main.press_name_from_url("https://www.kfenews.co.kr/news/articleView.html?idxno=1"), "한국농식품유통신문")
+        self.assertEqual(main.press_name_from_url("https://www.nongaek.com/news/articleView.html?idxno=1"), "농객")
+
+    def test_normalize_press_label_maps_raw_english_aliases(self):
+        self.assertEqual(main.normalize_press_label("headlinejeju", "https://www.headlinejeju.co.kr/news/articleView.html?idxno=1"), "헤드라인제주")
+        self.assertEqual(main.normalize_press_label("tvchosun", "https://news.tvchosun.com/site/data/html_dir/2026/03/19/1.html"), "TV조선")
+        self.assertEqual(main.normalize_press_label("kfenews", "https://www.kfenews.co.kr/news/articleView.html?idxno=1"), "한국농식품유통신문")
+        self.assertEqual(main.normalize_press_label("ksmnews", "https://www.ksmnews.co.kr/news/articleView.html?idxno=1"), "경상매일신문")
 
     def test_policy_export_support_brief_excludes_generic_seminar_story(self):
         title = "글로벌 농식품 규정 변화 대응 세미나 개최"

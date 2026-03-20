@@ -174,8 +174,8 @@ class TestCommodityBoard(unittest.TestCase):
         generic_article.score = 180.0
         specific_article = self._make_article(
             "dist",
-            f"{label} 공동판매 확대와 출하 조절",
-            f"{label} 산지 출하 조절과 공동판매 확대가 핵심으로 다뤄졌다.",
+            f"{label} 경락가 급등…공판장 반입 감소에 산지 출하 조절",
+            f"{label} 공판장 반입 감소와 경락가 급등이 이어지며 산지 출하 조절 필요성이 커지고 있다.",
             "https://example.com/apple-specific",
         )
         specific_article.score = 55.0
@@ -256,6 +256,28 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertLessEqual(int(metrics["representative_rank"]), 0)
 
+    def test_board_context_moves_weak_only_program_core_item_to_inactive(self):
+        training_article = self._make_article(
+            "supply",
+            "장계농협, 고품질 오이 재배기술 교육",
+            "오이 재배 농가를 대상으로 재배기술 교육을 진행했다.",
+            "https://example.com/cucumber-training-only",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [training_article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        cucumber = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "cucumber"
+        )
+
+        self.assertFalse(cucumber["active"])
+        self.assertEqual(cucumber["article_count"], 1)
+        self.assertIsNone(cucumber["top_article"])
+
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(
             "supply",
@@ -296,8 +318,8 @@ class TestCommodityBoard(unittest.TestCase):
         )
         onion_article = self._make_article(
             "dist",
-            f"{onion} 소비 촉진과 공동판매 확대",
-            f"{onion} 온라인 판매와 유통채널 다변화로 판로를 넓히고 있다.",
+            f"{onion} 경락가 급락 우려…공동판매·출하 조절 확대",
+            f"{onion} 도매시장 경락 약세와 산지 물량 부담이 겹치며 공동판매 확대와 출하 조절이 추진되고 있다.",
             "https://www.jibs.co.kr/news/replay/viewNewsReplayDetail/999011",
         )
         raw_by_section = {key: [] for key in self.conf}
@@ -358,6 +380,29 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(final_by_section["supply"][0].title, strong_dist.title)
         self.assertEqual(final_by_section["supply"][0].section, "supply")
         self.assertTrue(final_by_section["supply"][0].is_core)
+
+    def test_supply_final_normalization_does_not_promote_tourism_board_story(self):
+        base_supply = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 물량 부담과 가격 급락 우려로 수급 대책 요구가 커지고 있다.",
+            "https://example.com/onion-base",
+        )
+        tourism_article = self._make_article(
+            "dist",
+            "형광빛 메타세쿼이아·고즈넉한 고택… 배꽃 필 무렵이 최고의 시간",
+            "배꽃 개화 시기에 맞춰 관광객이 찾는 봄 여행 코스를 소개하는 기사다.",
+            "https://example.com/pear-tourism-bridge",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [base_supply]
+        board_source = {key: [] for key in self.conf}
+        board_source["dist"] = [tourism_article]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=3)
+
+        self.assertEqual(changed, 0)
+        self.assertEqual(final_by_section["supply"][0].title, base_supply.title)
 
     def test_board_context_prefers_different_press_in_secondary_preview_when_available(self):
         onion = self._item("onion")["short_label"]
@@ -519,26 +564,26 @@ class TestCommodityBoard(unittest.TestCase):
         onion = self._item("onion")["short_label"]
         first = self._make_article(
             "dist",
-            f"{onion} 소비 촉진과 공동판매 확대",
-            f"{onion} 온라인 판매와 유통채널 다변화 기사다.",
+            f"{onion} 경락가 급락 우려…공동판매·출하 조절 확대",
+            f"{onion} 도매시장 경락 약세와 산지 물량 부담이 겹치며 공동판매 확대와 출하 조절이 추진되고 있다.",
             "https://example.com/onion-1",
         )
         second = self._make_article(
             "supply",
-            f"{onion} 가격 하락에 소비 대책 시급",
-            f"{onion} 산지 물량 부담으로 가격 하락세가 이어지고 있다.",
+            f"{onion} 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            f"{onion} 산지 물량 부담과 가격 급락 우려로 출하 조절과 수급 대책 요구가 커지고 있다.",
             "https://example.com/onion-2",
         )
         third = self._make_article(
             "policy",
-            f"{onion} 수급 안정 협의체 출범",
-            f"{onion} 수급 안정을 위한 협의체 운영 방안이 논의됐다.",
+            f"{onion} 수급 안정 대책 착수…가격 하락 대응 협의",
+            f"{onion} 가격 하락 대응과 수급 안정 대책을 위해 관계기관 협의가 본격화됐다.",
             "https://example.com/onion-3",
         )
         fourth = self._make_article(
             "pest",
-            f"{onion} 생육 관리와 병해충 대응",
-            f"{onion} 생육 리스크와 병해충 대응 현황을 짚었다.",
+            f"{onion} 노균병 확산 비상…산지 병해충 대응 강화",
+            f"{onion} 산지 생육 단계에서 노균병 확산 우려가 커지며 병해충 대응이 강화되고 있다.",
             "https://example.com/onion-4",
         )
         by_section = {key: [] for key in self.conf}
@@ -758,6 +803,16 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertFalse(eggplant["active"])
         self.assertEqual(eggplant["article_count"], 0)
+
+    def test_query_article_match_gate_rejects_other_commodity_tourism_hit(self):
+        self.assertFalse(
+            main._query_article_match_ok(
+                "무 재배",
+                "형광빛 메타세쿼이아·고즈넉한 고택… 배꽃 필 무렵이 최고의 시간",
+                "배꽃 개화 시기에 맞춰 관광객이 찾는 봄 여행 코스를 소개하는 기사다.",
+                "supply",
+            )
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -3444,6 +3444,27 @@ def _managed_article_significance_metrics(
     issue_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS])
     training_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS])
     profile_title_hits = count_any(title_l, [w.lower() for w in _MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS])
+    consumer_noise_hits = count_any(
+        text_l,
+        [
+            w.lower()
+            for w in (
+                "관광",
+                "여행",
+                "나들이",
+                "축제",
+                "포토존",
+                "인생샷",
+                "맛집",
+                "드라이브",
+                "고택",
+                "메타세쿼이아",
+                "꽃길",
+                "꽃 필 무렵",
+                "최고의 시간",
+            )
+        ],
+    )
     story_bonus = 0.0
     story_penalty = 0.0
 
@@ -3514,15 +3535,20 @@ def _managed_article_significance_metrics(
         and market_anchor_hits == 0
     ):
         story_penalty += 10.0
+    if consumer_noise_hits >= 2 and issue_bucket is None and (not direct_supply) and (not market_response):
+        story_penalty += 16.0
 
     return {
         "issue_bucket": issue_bucket or "",
         "feature_kind": feature_kind or "",
         "market_response": bool(market_response),
         "direct_supply": bool(direct_supply),
+        "market_anchor_hits": int(market_anchor_hits),
+        "issue_anchor_hits": int(issue_anchor_hits),
         "issue_title_hits": int(issue_title_hits),
         "training_title_hits": int(training_title_hits),
         "profile_title_hits": int(profile_title_hits),
+        "consumer_noise_hits": int(consumer_noise_hits),
         "story_bonus": round(float(story_bonus), 3),
         "story_penalty": round(float(story_penalty), 3),
         "priority_score": round(float(story_bonus - story_penalty), 3),
@@ -7112,6 +7138,58 @@ PRESS_HOST_MAP = {
     "news.tf.co.kr": "더팩트",
     "tf.co.kr": "더팩트",
     "www.tf.co.kr": "더팩트",
+    "headlinejeju.co.kr": "헤드라인제주",
+    "www.headlinejeju.co.kr": "헤드라인제주",
+    "namdonews.com": "남도일보",
+    "www.namdonews.com": "남도일보",
+    "news.tvchosun.com": "TV조선",
+    "tvchosun.com": "TV조선",
+    "foodnews.co.kr": "식품음료신문",
+    "www.foodnews.co.kr": "식품음료신문",
+    "cctimes.kr": "충청타임즈",
+    "www.cctimes.kr": "충청타임즈",
+    "daejonilbo.com": "대전일보",
+    "www.daejonilbo.com": "대전일보",
+    "siminilbo.co.kr": "시민일보",
+    "www.siminilbo.co.kr": "시민일보",
+    "viva100.com": "브릿지경제",
+    "www.viva100.com": "브릿지경제",
+    "cnbnews.com": "CNB뉴스",
+    "www.cnbnews.com": "CNB뉴스",
+    "economist.co.kr": "이코노미스트",
+    "www.economist.co.kr": "이코노미스트",
+    "aitimes.com": "AI타임스",
+    "www.aitimes.com": "AI타임스",
+    "safetimes.co.kr": "세이프타임즈",
+    "www.safetimes.co.kr": "세이프타임즈",
+    "news2day.co.kr": "뉴스투데이",
+    "www.news2day.co.kr": "뉴스투데이",
+    "newsfreezone.co.kr": "뉴스프리존",
+    "www.newsfreezone.co.kr": "뉴스프리존",
+    "newsroad.co.kr": "뉴스로드",
+    "www.newsroad.co.kr": "뉴스로드",
+    "straightnews.co.kr": "스트레이트뉴스",
+    "www.straightnews.co.kr": "스트레이트뉴스",
+    "job-post.co.kr": "잡포스트",
+    "www.job-post.co.kr": "잡포스트",
+    "kdfnews.com": "한국면세뉴스",
+    "www.kdfnews.com": "한국면세뉴스",
+    "kfenews.co.kr": "한국농식품유통신문",
+    "www.kfenews.co.kr": "한국농식품유통신문",
+    "nongaek.com": "농객",
+    "www.nongaek.com": "농객",
+    "pennmike.com": "펜앤마이크",
+    "www.pennmike.com": "펜앤마이크",
+    "skyedaily.com": "스카이데일리",
+    "www.skyedaily.com": "스카이데일리",
+    "weeklytrade.co.kr": "주간무역",
+    "www.weeklytrade.co.kr": "주간무역",
+    "ksmnews.co.kr": "경상매일신문",
+    "www.ksmnews.co.kr": "경상매일신문",
+    "jeonmae.co.kr": "전국매일신문",
+    "www.jeonmae.co.kr": "전국매일신문",
+    "hansbiz.co.kr": "한스경제",
+    "www.hansbiz.co.kr": "한스경제",
 }
 
 ABBR_MAP = {
@@ -7196,6 +7274,33 @@ ABBR_MAP = {
     "paxetv": "팍스경제TV",
     "sentv": "서울경제TV",
     "tf": "더팩트",
+    "headlinejeju": "헤드라인제주",
+    "namdonews": "남도일보",
+    "tvchosun": "TV조선",
+    "foodnews": "식품음료신문",
+    "cctimes": "충청타임즈",
+    "daejonilbo": "대전일보",
+    "siminilbo": "시민일보",
+    "viva100": "브릿지경제",
+    "cnbnews": "CNB뉴스",
+    "economist": "이코노미스트",
+    "aitimes": "AI타임스",
+    "safetimes": "세이프타임즈",
+    "news2day": "뉴스투데이",
+    "newsfreezone": "뉴스프리존",
+    "newsroad": "뉴스로드",
+    "straightnews": "스트레이트뉴스",
+    "job-post": "잡포스트",
+    "jobpost": "잡포스트",
+    "kdfnews": "한국면세뉴스",
+    "kfenews": "한국농식품유통신문",
+    "nongaek": "농객",
+    "pennmike": "펜앤마이크",
+    "skyedaily": "스카이데일리",
+    "weeklytrade": "주간무역",
+    "ksmnews": "경상매일신문",
+    "jeonmae": "전국매일신문",
+    "hansbiz": "한스경제",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -7250,6 +7355,33 @@ def normalize_press_label(press: str, url: str = "") -> str:
         "amnews": "\ub18d\ucd95\uc720\ud1b5\uc2e0\ubb38",
         "ikpnews": "\ud55c\uad6d\ub18d\uc815\uc2e0\ubb38",
         "fntimes": "\ud55c\uad6d\uae08\uc735\uc2e0\ubb38",
+        "headlinejeju": "\ud5e4\ub4dc\ub77c\uc778\uc81c\uc8fc",
+        "namdonews": "\ub0a8\ub3c4\uc77c\ubcf4",
+        "tvchosun": "TV\uc870\uc120",
+        "foodnews": "\uc2dd\ud488\uc74c\ub8cc\uc2e0\ubb38",
+        "cctimes": "\ucda9\uccad\ud0c0\uc784\uc988",
+        "daejonilbo": "\ub300\uc804\uc77c\ubcf4",
+        "siminilbo": "\uc2dc\ubbfc\uc77c\ubcf4",
+        "viva100": "\ube0c\ub9bf\uc9c0\uacbd\uc81c",
+        "cnbnews": "CNB\ub274\uc2a4",
+        "economist": "\uc774\ucf54\ub178\ubbf8\uc2a4\ud2b8",
+        "aitimes": "AI\ud0c0\uc784\uc2a4",
+        "safetimes": "\uc138\uc774\ud504\ud0c0\uc784\uc988",
+        "news2day": "\ub274\uc2a4\ud22c\ub370\uc774",
+        "newsfreezone": "\ub274\uc2a4\ud504\ub9ac\uc874",
+        "newsroad": "\ub274\uc2a4\ub85c\ub4dc",
+        "straightnews": "\uc2a4\ud2b8\ub808\uc774\ud2b8\ub274\uc2a4",
+        "job-post": "\uc7a1\ud3ec\uc2a4\ud2b8",
+        "jobpost": "\uc7a1\ud3ec\uc2a4\ud2b8",
+        "kdfnews": "\ud55c\uad6d\uba74\uc138\ub274\uc2a4",
+        "kfenews": "\ud55c\uad6d\ub18d\uc2dd\ud488\uc720\ud1b5\uc2e0\ubb38",
+        "nongaek": "\ub18d\uac1d",
+        "pennmike": "\ud39c\uc564\ub9c8\uc774\ud06c",
+        "skyedaily": "\uc2a4\uce74\uc774\ub370\uc77c\ub9ac",
+        "weeklytrade": "\uc8fc\uac04\ubb34\uc5ed",
+        "ksmnews": "\uacbd\uc0c1\ub9e4\uc77c\uc2e0\ubb38",
+        "jeonmae": "\uc804\uad6d\ub9e4\uc77c\uc2e0\ubb38",
+        "hansbiz": "\ud55c\uc2a4\uacbd\uc81c",
     }
     if p_compact in alias:
         return alias[p_compact]
@@ -8387,6 +8519,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("remote_foreign_trade_brief")
     if key in ("supply", "policy") and is_flower_novelty_noise_context(ttl, desc):
         return _reject("flower_novelty_noise")
+    if key in ("supply", "dist") and is_supply_tourism_event_context(ttl, desc):
+        return _reject("supply_tourism_event")
+    if key in ("supply", "dist") and is_fruit_blossom_tourism_context(ttl, desc):
+        return _reject("fruit_blossom_tourism")
 
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
@@ -12871,11 +13007,12 @@ _QUERY_TOKEN_STOPWORDS = {
     "수급", "가격", "작황", "출하", "정책", "브리핑", "보도자료", "농산물", "농식품", "과일", "채소",
     "동향", "이슈", "대책", "지원", "검역", "유통", "현장", "방제", "병해충",
     "수입", "수입산", "무관세", "관세", "fta", "통관", "할당관세",
+    "재배", "생산", "관리", "기술", "교육", "현장점검",
 }
 
 def _query_tokens(q: str) -> list[str]:
     """쿼리에서 의미 있는 토큰만 추출(스팸성 광역 쿼리 정밀도 보정용)."""
-    toks = re.findall(r"[0-9a-z가-힣]{2,}", (q or "").lower())
+    toks = re.findall(r"[0-9a-z\u3131-\u318e\uac00-\ud7a3]{2,}", _nfkc_lower(q))
     out: list[str] = []
     for t in toks:
         if t in _QUERY_TOKEN_STOPWORDS:
@@ -12890,10 +13027,15 @@ def _query_article_match_ok(q: str, title: str, desc: str, section_key: str) -> 
     - 광역/보강 쿼리에서 발생하는 오탐을 줄이기 위해, 의미 토큰이 기사 텍스트에 최소 1개 이상 포함되는지 확인.
     - 다만 policy 섹션은 공공기관 브리핑이 제목/본문 표현이 변형되는 경우가 있어 완화 기준 적용.
     """
+    query_managed_keys = set(_managed_commodity_match_summary(q or "", "").get("keys") or [])
+    if query_managed_keys and section_key in {"supply", "dist", "pest"}:
+        article_managed_keys = set(_managed_commodity_match_summary(title or "", desc or "").get("keys") or [])
+        if not article_managed_keys or article_managed_keys.isdisjoint(query_managed_keys):
+            return False
     toks = _query_tokens(q)
     if not toks:
         return True
-    txt = f"{title or ''} {desc or ''}".lower()
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
     hit = sum(1 for t in toks if t in txt)
     if section_key == "policy":
         return hit >= 1
@@ -16074,9 +16216,12 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         "feature_kind": str(story_metrics.get("feature_kind") or ""),
         "market_response": bool(story_metrics.get("market_response")),
         "direct_supply": bool(story_metrics.get("direct_supply")),
+        "market_anchor_hits": int(story_metrics.get("market_anchor_hits") or 0),
+        "issue_anchor_hits": int(story_metrics.get("issue_anchor_hits") or 0),
         "issue_title_hits": int(story_metrics.get("issue_title_hits") or 0),
         "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
         "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
+        "consumer_noise_hits": int(story_metrics.get("consumer_noise_hits") or 0),
     }
 
 
@@ -16089,6 +16234,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     feature_kind = str(metrics.get("feature_kind") or "")
     direct_supply = bool(metrics.get("direct_supply"))
     market_response = bool(metrics.get("market_response"))
+    market_anchor_hits = int(metrics.get("market_anchor_hits") or 0)
+    issue_anchor_hits = int(metrics.get("issue_anchor_hits") or 0)
     issue_title_hits = int(metrics.get("issue_title_hits") or 0)
     training_title_hits = int(metrics.get("training_title_hits") or 0)
     profile_title_hits = int(metrics.get("profile_title_hits") or 0)
@@ -16160,6 +16307,51 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         }
     )
     return metrics
+
+
+def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
+    return 3 if bool(item.get("program_core")) else 2
+
+
+def _commodity_board_article_is_active_candidate(
+    item: dict[str, Any],
+    article: Article,
+    metrics: dict[str, Any] | None = None,
+) -> bool:
+    article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
+    if not bool(article_metrics.get("board_eligible")):
+        return False
+    if int(article_metrics.get("representative_rank", -1)) < _commodity_board_active_min_rank(item):
+        return False
+    if bool(item.get("program_core")):
+        if not (
+            str(article_metrics.get("issue_bucket") or "")
+            or bool(article_metrics.get("direct_supply"))
+            or bool(article_metrics.get("market_response"))
+            or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+            or int(article_metrics.get("market_anchor_hits") or 0) >= 1
+        ):
+            return False
+    return True
+
+
+def _commodity_board_article_is_supply_bridge_candidate(
+    item: dict[str, Any],
+    article: Article,
+    metrics: dict[str, Any] | None = None,
+) -> bool:
+    article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
+    if not _commodity_board_article_is_active_candidate(item, article, article_metrics):
+        return False
+    if int(article_metrics.get("representative_rank", -1)) < 3:
+        return False
+    return bool(
+        str(article_metrics.get("issue_bucket") or "")
+        or bool(article_metrics.get("direct_supply"))
+        or bool(article_metrics.get("market_response"))
+        or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+        or int(article_metrics.get("market_anchor_hits") or 0) >= 1
+    )
 
 
 def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
@@ -16254,11 +16446,9 @@ def _program_core_board_supply_candidates(board_source_by_section: dict[str, lis
                 if not isinstance(article, Article):
                     continue
                 metrics = _commodity_board_item_article_representative_metrics(item, article)
+                if not _commodity_board_article_is_supply_bridge_candidate(item, article, metrics):
+                    continue
                 representative_rank = int(metrics.get("representative_rank", -1))
-                if representative_rank <= 0:
-                    continue
-                if not bool(metrics.get("board_eligible")):
-                    continue
                 cand = (
                     representative_rank,
                     float(metrics.get("representative_score", 0.0)),
@@ -16466,21 +16656,35 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_program_items = 0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
+        qualified_articles = [
+            article
+            for article in articles
+            if _commodity_board_article_is_active_candidate(
+                payload,
+                article,
+                _commodity_board_item_article_representative_metrics(payload, article),
+            )
+        ]
         payload["articles"] = articles
         payload["article_count"] = len(articles)
         payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
-        payload["active"] = bool(articles)
-        payload["top_article"] = articles[0] if articles else None
+        payload["qualified_article_count"] = len(qualified_articles)
+        payload["active"] = bool(qualified_articles)
+        payload["top_article"] = qualified_articles[0] if qualified_articles else None
         payload["top_article_board_score"] = (
-            float(_commodity_board_item_article_metrics(payload, articles[0]).get("board_score", 0.0))
-            if articles else 0.0
+            float(_commodity_board_item_article_metrics(payload, qualified_articles[0]).get("board_score", 0.0))
+            if qualified_articles else 0.0
         )
-        payload["preview_articles"] = articles[: 1 + secondary_preview_limit]
-        payload["secondary_articles"] = articles[1 : 1 + secondary_preview_limit]
+        payload["top_article_representative_score"] = (
+            float(_commodity_board_item_article_representative_metrics(payload, qualified_articles[0]).get("representative_score", 0.0))
+            if qualified_articles else 0.0
+        )
+        payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
+        payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
         payload["secondary_article_count"] = len(payload["secondary_articles"])
-        payload["extra_articles"] = articles[1 + secondary_preview_limit :]
+        payload["extra_articles"] = qualified_articles[1 + secondary_preview_limit :]
         payload["more_article_count"] = len(payload["extra_articles"])
-        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles])
+        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
         if payload["active"]:
             active_items += 1
             if payload.get("program_core"):
@@ -16494,6 +16698,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         active_group_items.sort(
             key=lambda item: (
                 0 if item.get("program_core") else 1,
+                -float(item.get("top_article_representative_score") or 0.0),
                 -float(item.get("top_article_board_score") or 0.0),
                 -int(item.get("core_count") or 0),
                 -int(item.get("article_count") or 0),
