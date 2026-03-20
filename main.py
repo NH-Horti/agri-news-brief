@@ -3378,6 +3378,8 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         return metrics
     if key == "tomato" and any(marker in title_l for marker in ("[ib 토마토", "ib 토마토", "뉴스토마토", "newstomato")):
         return metrics
+    if key in _FRUIT_TREE_COMMODITY_KEYS and is_fruit_blossom_tourism_context(title, desc):
+        return metrics
 
     if title_focus_hits == 0:
         return metrics
@@ -6079,6 +6081,20 @@ _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS = (
 _SUPPLY_FEATURE_ISSUE_RECOVERY_TERMS = (
     "\ud68c\ubcf5", "\ubc18\ub4f1", "\uc815\uc0c1\ud654", "\uac00\uaca9 \ud68c\ubcf5", "\uc2dc\uc138 \ud68c\ubcf5", "\uc81c\uac12", "\ud68c\ubcf5\uc138",
 )
+_FRUIT_TREE_COMMODITY_KEYS = {
+    "apple", "pear", "persimmon", "sweet_persimmon", "peach", "grape", "citrus", "maesil", "citron", "kiwifruit", "plum",
+}
+_FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS = (
+    "배꽃", "사과꽃", "복사꽃", "복숭아꽃", "자두꽃", "매화", "매실꽃", "꽃길", "개화",
+)
+_FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS = (
+    "관광", "여행", "나들이", "명소", "포토존", "인생샷", "드라이브", "최고의 시간",
+    "꽃 필 무렵", "꽃필무렵", "고즈넉", "메타세쿼이아", "힐링",
+)
+_FRUIT_BLOSSOM_TOURISM_KEEP_TERMS = (
+    "가격", "수급", "작황", "재배", "과원", "꽃눈", "착과", "냉해", "저온", "생산", "농가", "산지",
+    "출하", "경락", "경매", "도매시장", "공판장", "물량",
+)
 _SUPPLY_FEATURE_ISSUE_FARM_TERMS = (
     "\ub18d\uac00", "\uc0b0\uc9c0", "\uc8fc\uc0b0\uc9c0", "\uc0dd\uc0b0\uc790", "\uc7ac\ubc30\ub18d\uac00", "\uacfc\uc6d0", "\uc2dc\uc124", "\uc0dd\uc0b0\ube44", "\ub09c\ubc29\ube44", "\uba74\uc138\uc720",
 )
@@ -6286,6 +6302,19 @@ def is_fruit_foodservice_event_context(text: str) -> bool:
     # '딸기' 등 과일 키워드가 함께 있을 때만 활성화(일반 외식 기사 오탐 방지)
     fruit_hit = any(k in t for k in ("딸기", "과일", "생딸기", "딸기 디저트"))
     return fruit_hit and (brand_hit or marker_hit)
+
+
+def is_fruit_blossom_tourism_context(title: str, desc: str) -> bool:
+    t = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS]) == 0:
+        return False
+    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS]) == 0:
+        return False
+    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_KEEP_TERMS]) >= 2:
+        return False
+    if has_direct_supply_chain_signal(t):
+        return False
+    return True
 
 def is_remote_foreign_horti(text: str) -> bool:
     """해외 원예/화훼 업계(특히 특정 국가 내 시장/관세 이슈) 기사 중,
