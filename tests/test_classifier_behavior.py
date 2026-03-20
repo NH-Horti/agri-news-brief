@@ -3690,6 +3690,22 @@ class TestRecentItemsRebuild(unittest.TestCase):
         self.assertFalse(main.is_edible_eggplant_context(text))
         self.assertNotEqual(main.extract_topic(title, desc), "가지")
 
+    def test_extract_topic_does_not_treat_pruning_story_as_eggplant(self):
+        title = "사과 과원 가지치기 작업 본격화"
+        desc = "과원 전정과 가지치기 작업이 본격화되며 냉해 대비 관리가 진행되고 있다."
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
+    def test_extract_topic_does_not_treat_generic_phrase_as_eggplant(self):
+        title = "농가 현장에 한 가지 과제 더 남았다"
+        desc = "일반적인 과제 설명으로 품목 가지와는 무관한 문장이다."
+        text = f"{title} {desc}"
+
+        self.assertFalse(main.is_edible_eggplant_context(text))
+        self.assertNotEqual(main.extract_topic(title, desc), "가지")
+
     def test_extract_topic_does_not_promote_processed_food_story_to_peach(self):
         title = "아이스크림·과자도 가격 내린다…롯데웰푸드·빙그레 등 최대 13.4% 인하"
         desc = "복숭아맛 아이스크림과 스낵 등 가공식품 가격 인하 소식을 정리한 소비 기사다."
@@ -3731,6 +3747,26 @@ class TestRecentItemsRebuild(unittest.TestCase):
             main.normalize_press_label("newstnt", "https://www.newstnt.com/news/articleView.html?idxno=500496"),
             "뉴스티앤티",
         )
+        self.assertEqual(
+            main.normalize_press_label("NEWSKR", "https://www.newskr.kr/news/articleView.html?idxno=49069"),
+            "한국농어촌방송",
+        )
+        self.assertEqual(
+            main.normalize_press_label("NEWSAM", "https://newsam.co.kr/news/articleView.html?idxno=12345"),
+            "농기자재신문",
+        )
+        self.assertEqual(
+            main.normalize_press_label("GGILBO", "https://www.ggilbo.com/news/articleView.html?idxno=12345"),
+            "금강일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("DYNEWS", "https://www.dynews.co.kr/news/articleView.html?idxno=12345"),
+            "동양일보",
+        )
+        self.assertEqual(
+            main.normalize_press_label("CCDN", "https://www.ccdn.co.kr/news/articleView.html?idxno=12345"),
+            "충청매일",
+        )
 
     def test_supply_core_prefers_strong_managed_focus_articles_over_generic_macro_when_available(self):
         apple = self._make_article(
@@ -3763,6 +3799,63 @@ class TestRecentItemsRebuild(unittest.TestCase):
         self.assertIn(onion.title, picked_titles)
         self.assertNotIn(macro.title, picked_titles)
         self.assertTrue(all(article.is_core for article in picked))
+
+    def test_supply_core_demotes_training_story_when_issue_alternatives_exist(self):
+        training = self._make_article(
+            "supply",
+            "화천농협, 양파 공선출하회 총회·재배기술교육 펼쳐",
+            "양파 재배 농가를 대상으로 공선출하회 총회와 재배기술교육을 진행했다.",
+            "https://example.com/onion-training-core",
+        )
+        onion_issue = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
+            "https://example.com/onion-issue-core",
+        )
+        apple_issue = self._make_article(
+            "supply",
+            "사과 저장 물량 감소…가락시장 도매가격 강세",
+            "사과 저장 물량 감소와 출하 조절 여파로 가락시장 도매가격 강세가 이어지고 있다.",
+            "https://example.com/apple-issue-core",
+        )
+        training.score = max(onion_issue.score, apple_issue.score) + 3.0
+
+        picked = main.select_top_articles([training, onion_issue, apple_issue], "supply", 2)
+        picked_titles = [article.title for article in picked]
+        core_titles = [article.title for article in picked if getattr(article, "is_core", False)]
+
+        self.assertIn(onion_issue.title, picked_titles)
+        self.assertIn(apple_issue.title, picked_titles)
+        self.assertNotIn(training.title, core_titles)
+
+    def test_supply_selection_skips_promo_sale_story_when_issue_articles_exist(self):
+        promo = self._make_article(
+            "supply",
+            "대아청과 '달코미 양배추' 1만 통 할인판매 추진",
+            "양배추 소비 촉진을 위해 할인판매 행사를 추진한다는 판촉 기사다.",
+            "https://example.com/cabbage-promo-sale",
+        )
+        onion_issue = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
+            "https://example.com/onion-issue-promo-guard",
+        )
+        apple_issue = self._make_article(
+            "supply",
+            "사과 저장 물량 감소…가락시장 도매가격 강세",
+            "사과 저장 물량 감소와 출하 조절 여파로 가락시장 도매가격 강세가 이어지고 있다.",
+            "https://example.com/apple-issue-promo-guard",
+        )
+        promo.score = max(onion_issue.score, apple_issue.score) + 4.0
+
+        picked = main.select_top_articles([promo, onion_issue, apple_issue], "supply", 3)
+        picked_titles = [article.title for article in picked]
+
+        self.assertIn(onion_issue.title, picked_titles)
+        self.assertIn(apple_issue.title, picked_titles)
+        self.assertNotIn(promo.title, picked_titles)
 
 if __name__ == "__main__":
     unittest.main()

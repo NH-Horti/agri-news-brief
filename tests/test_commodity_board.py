@@ -187,6 +187,57 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(apple_item["top_article"].title, specific_article.title)
         self.assertGreater(apple_item["top_article_board_score"], 0.0)
 
+    def test_board_context_prefers_issue_story_over_training_story_for_same_item(self):
+        issue_article = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
+            "https://example.com/onion-issue",
+        )
+        training_article = self._make_article(
+            "supply",
+            "화천농협, 양파 공선출하회 총회·재배기술교육 펼쳐",
+            "양파 재배 농가를 대상으로 공선출하회 총회와 재배기술교육을 진행했다.",
+            "https://example.com/onion-training",
+        )
+        training_article.score = issue_article.score + 3.0
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [training_article, issue_article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        onion_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "onion")
+
+        self.assertEqual(onion_item["top_article"].title, issue_article.title)
+
+    def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
+        article = self._make_article(
+            "supply",
+            "양배추 가격 급락에 제주 농가 '시름'...소비확대 '총력전'",
+            "양배추 공급 과잉으로 가격이 급락하자 제주 농가가 소비 확대와 출하 조절에 나섰다.",
+            "https://example.com/cabbage-price",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        napa_cabbage = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "napa_cabbage"
+        )
+        cabbage = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "cabbage"
+        )
+
+        self.assertFalse(napa_cabbage["active"])
+        self.assertEqual(napa_cabbage["article_count"], 0)
+        self.assertTrue(cabbage["active"])
+        self.assertEqual(cabbage["top_article"].title, article.title)
+
     def test_board_source_builder_keeps_managed_candidates_from_raw_pool(self):
         apple = self._item("apple")["short_label"]
         onion = self._item("onion")["short_label"]
