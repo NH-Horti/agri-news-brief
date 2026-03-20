@@ -25,6 +25,19 @@ PREV_LABEL = "\uc774\uc804"
 NEXT_LABEL = "\ub2e4\uc74c"
 
 
+def _has_modern_archive_interactions(html_text: str) -> bool:
+    if not html_text:
+        return False
+    return (
+        'function activateView(viewKey, opts)' in html_text
+        or (
+            'data-view-tab="commodity"' in html_text
+            and 'data-view-pane="commodity"' in html_text
+        )
+        or 'id="mobileQuickNavSheet"' in html_text
+    )
+
+
 def insert_nav_loading_badge(html_text: str, extract_navrow_block: NavBlockExtractor) -> str:
     """Insert navLoading badge right after navRow only when missing."""
     if not html_text or 'id="navLoading"' in html_text:
@@ -410,7 +423,7 @@ def build_archive_ux_html(
             html_new,
             flags=re.S | re.I,
         )
-    else:
+    elif not _has_modern_archive_interactions(html_new):
         html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend|pointerdown|pointerup|mousedown|mouseup)[\s\S]*?</script>\s*", "", html_new, flags=re.S | re.I)
         html_new = re.sub(r"(</body>)", lambda _m: js_block + _m.group(1), html_new, count=1, flags=re.I)
 

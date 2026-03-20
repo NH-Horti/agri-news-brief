@@ -145,6 +145,59 @@ class TestUxPatchModule(unittest.TestCase):
         self.assertIsInstance(second, str)
         self.assertIn("nav-b", second)
 
+    def test_build_archive_ux_html_preserves_modern_view_tab_script(self):
+        html = f"""
+<html><body>
+<div class="navRow"><a class="navBtn">{ARCHIVE_LABEL}</a></div>
+<div id="mobileQuickNavSheet"></div>
+<div class="wrap">
+  <div class="viewTabs">
+    <button class="viewTab" data-view-tab="briefing" type="button"></button>
+    <button class="viewTab" data-view-tab="commodity" type="button"></button>
+  </div>
+  <section class="viewPane" data-view-pane="briefing"></section>
+  <section class="viewPane" data-view-pane="commodity"></section>
+</div>
+<script>
+function activateView(viewKey, opts) {{
+  return viewKey || opts;
+}}
+</script>
+</body></html>
+"""
+
+        def _extract(text: str):
+            marker = '<div class="navRow">'
+            s = text.find(marker)
+            if s < 0:
+                return None
+            e = text.find("</div>", s)
+            if e < 0:
+                return None
+            e += len("</div>")
+            return (s, e, text[s:e])
+
+        out = build_archive_ux_html(
+            html,
+            iso_date="2026-03-19",
+            site_path="/",
+            strip_swipe_hint_blocks=lambda x: x,
+            rebuild_missing_chipbar_from_sections=lambda x: x,
+            normalize_existing_chipbar_titles=lambda x: x,
+            get_ux_nav_dates_desc=lambda: ["2026-03-19"],
+            extract_navrow_block=_extract,
+            render_nav_row=lambda iso, dates, site: '<div class="navRow">nav</div>',
+            get_manifest_dates_desc_cached=lambda: ["2026-03-19"],
+            build_navrow_html_for_date=lambda iso, dates, site: '<div class="navRow">nav</div>',
+            warn=lambda _msg: None,
+        )
+
+        self.assertIsInstance(out, str)
+        self.assertIn('function activateView(viewKey, opts)', out)
+        self.assertNotIn('UX_PATCH_BEGIN', out)
+        self.assertIn('data-view-tab="commodity"', out)
+        self.assertIn('data-view-pane="commodity"', out)
+
 
 if __name__ == "__main__":
     unittest.main()
