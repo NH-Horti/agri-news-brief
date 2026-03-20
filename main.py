@@ -3438,6 +3438,8 @@ def _managed_article_significance_metrics(
     feature_kind = supply_feature_context_kind(title, desc)
     market_response = is_dist_field_market_response_context(title, desc, dom, press)
     direct_supply = has_direct_supply_chain_signal(text_l)
+    supply_tourism = is_supply_tourism_event_context(title, desc)
+    fruit_blossom_tourism = is_fruit_blossom_tourism_context(title, desc)
     market_anchor_hits = int((focus_metrics or {}).get("market_anchor_hits") or 0)
     issue_anchor_hits = int((focus_metrics or {}).get("issue_anchor_hits") or 0)
     focus_score = float((focus_metrics or {}).get("focus_score") or 0.0)
@@ -3535,6 +3537,10 @@ def _managed_article_significance_metrics(
         and market_anchor_hits == 0
     ):
         story_penalty += 10.0
+    if supply_tourism:
+        story_penalty += 18.0
+    if fruit_blossom_tourism:
+        story_penalty += 26.0
     if consumer_noise_hits >= 2 and issue_bucket is None and (not direct_supply) and (not market_response):
         story_penalty += 16.0
 
@@ -3543,6 +3549,8 @@ def _managed_article_significance_metrics(
         "feature_kind": feature_kind or "",
         "market_response": bool(market_response),
         "direct_supply": bool(direct_supply),
+        "supply_tourism": bool(supply_tourism),
+        "fruit_blossom_tourism": bool(fruit_blossom_tourism),
         "market_anchor_hits": int(market_anchor_hits),
         "issue_anchor_hits": int(issue_anchor_hits),
         "issue_title_hits": int(issue_title_hits),
@@ -6117,9 +6125,12 @@ _FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS = (
     "관광", "여행", "나들이", "명소", "포토존", "인생샷", "드라이브", "최고의 시간",
     "꽃 필 무렵", "꽃필무렵", "고즈넉", "메타세쿼이아", "힐링",
 )
-_FRUIT_BLOSSOM_TOURISM_KEEP_TERMS = (
-    "가격", "수급", "작황", "재배", "과원", "꽃눈", "착과", "냉해", "저온", "생산", "농가", "산지",
-    "출하", "경락", "경매", "도매시장", "공판장", "물량",
+_FRUIT_BLOSSOM_TOURISM_STRONG_KEEP_TERMS = (
+    "가격", "수급", "작황", "출하", "경락", "경매", "도매시장", "공판장", "물량",
+    "반입", "저장", "재고", "착과", "냉해", "저온", "피해", "생산비",
+)
+_FRUIT_BLOSSOM_TOURISM_WEAK_KEEP_TERMS = (
+    "재배", "과원", "꽃눈", "생산", "생산량", "농가", "산지",
 )
 _SUPPLY_FEATURE_ISSUE_FARM_TERMS = (
     "\ub18d\uac00", "\uc0b0\uc9c0", "\uc8fc\uc0b0\uc9c0", "\uc0dd\uc0b0\uc790", "\uc7ac\ubc30\ub18d\uac00", "\uacfc\uc6d0", "\uc2dc\uc124", "\uc0dd\uc0b0\ube44", "\ub09c\ubc29\ube44", "\uba74\uc138\uc720",
@@ -6137,6 +6148,8 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt or is_fruit_foodservice_event_context(txt):
+        return None
+    if is_fruit_blossom_tourism_context(title, desc):
         return None
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return None
@@ -6214,6 +6227,8 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt or is_fruit_foodservice_event_context(txt):
+        return None
+    if is_fruit_blossom_tourism_context(title, desc):
         return None
     if is_agri_training_recruitment_context(title, desc):
         return None
@@ -6332,13 +6347,24 @@ def is_fruit_foodservice_event_context(text: str) -> bool:
 
 def is_fruit_blossom_tourism_context(title: str, desc: str) -> bool:
     t = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
-    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS]) == 0:
+    flower_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_FLOWER_TERMS])
+    if flower_hits == 0:
         return False
-    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS]) == 0:
+    travel_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_TRAVEL_TERMS])
+    if travel_hits == 0:
         return False
-    if count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_KEEP_TERMS]) >= 2:
+    strong_keep_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_STRONG_KEEP_TERMS])
+    weak_keep_hits = count_any(t, [w.lower() for w in _FRUIT_BLOSSOM_TOURISM_WEAK_KEEP_TERMS])
+    if strong_keep_hits >= 1:
         return False
-    if has_direct_supply_chain_signal(t):
+    if (
+        weak_keep_hits >= 2
+        and (
+            count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_DISTRESS_TERMS]) >= 1
+            or count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_ACTION_TERMS]) >= 1
+            or count_any(t, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TITLE_TERMS]) >= 1
+        )
+    ):
         return False
     return True
 
@@ -7190,6 +7216,18 @@ PRESS_HOST_MAP = {
     "www.jeonmae.co.kr": "전국매일신문",
     "hansbiz.co.kr": "한스경제",
     "www.hansbiz.co.kr": "한스경제",
+    "kpenews.com": "한국정경신문",
+    "www.kpenews.com": "한국정경신문",
+    "mediapen.com": "미디어펜",
+    "www.mediapen.com": "미디어펜",
+    "businessplus.kr": "비즈니스플러스",
+    "www.businessplus.kr": "비즈니스플러스",
+    "newstree.kr": "뉴스트리",
+    "www.newstree.kr": "뉴스트리",
+    "danbinews.com": "단비뉴스",
+    "www.danbinews.com": "단비뉴스",
+    "ibabynews.com": "베이비뉴스",
+    "www.ibabynews.com": "베이비뉴스",
 }
 
 ABBR_MAP = {
@@ -7301,6 +7339,12 @@ ABBR_MAP = {
     "ksmnews": "경상매일신문",
     "jeonmae": "전국매일신문",
     "hansbiz": "한스경제",
+    "kpenews": "한국정경신문",
+    "mediapen": "미디어펜",
+    "businessplus": "비즈니스플러스",
+    "newstree": "뉴스트리",
+    "danbinews": "단비뉴스",
+    "ibabynews": "베이비뉴스",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -16222,6 +16266,8 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
         "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
         "consumer_noise_hits": int(story_metrics.get("consumer_noise_hits") or 0),
+        "supply_tourism": bool(story_metrics.get("supply_tourism")),
+        "fruit_blossom_tourism": bool(story_metrics.get("fruit_blossom_tourism")),
     }
 
 
@@ -16245,6 +16291,7 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     board_score = float(metrics.get("board_score") or 0.0)
     story_priority = float(metrics.get("story_priority") or 0.0)
     consumer_noise_hits = int(metrics.get("consumer_noise_hits") or 0)
+    fruit_blossom_tourism = bool(metrics.get("fruit_blossom_tourism"))
     allow_core_issue = bool(issue_bucket) or market_response
     weak_training = training_title_hits >= 1 and not allow_core_issue
     weak_profile = profile_title_hits >= 1 and not allow_core_issue
@@ -16256,12 +16303,13 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         and feature_kind != "quality"
     )
     weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not allow_core_issue) and (not direct_supply)
-    weak_tourism = is_supply_tourism_event_context(title, desc) and not allow_core_issue
+    weak_tourism = bool(metrics.get("supply_tourism")) and not allow_core_issue
+    weak_blossom_tourism = fruit_blossom_tourism and not allow_core_issue
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism:
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism:
         representative_rank = 0
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
@@ -16291,6 +16339,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         representative_score -= 18.0
     if weak_tourism:
         representative_score -= 20.0
+    if weak_blossom_tourism:
+        representative_score -= 24.0
 
     metrics.update(
         {
@@ -16304,6 +16354,7 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
             "weak_event_story": bool(weak_event),
             "weak_consumer_lifestyle_story": bool(weak_consumer_lifestyle),
             "weak_tourism_story": bool(weak_tourism),
+            "weak_blossom_tourism_story": bool(weak_blossom_tourism),
         }
     )
     return metrics
@@ -16564,12 +16615,36 @@ def _normalize_supply_section_from_board(
         best = _best_program_core_board_metrics_for_article(article)
         ranked_metrics.append((article, best[1] if best is not None else None))
 
-    core_candidates: list[Article] = [
-        article
-        for article, metrics in ranked_metrics
-        if isinstance(metrics, dict) and int(metrics.get("representative_rank", -1)) >= 2
-    ]
-    if len(core_candidates) < min(2, len(deduped_supply)):
+    supply_by_key = {
+        _article_selection_identity(article): article
+        for article in deduped_supply
+        if _article_selection_identity(article)
+    }
+    core_target = min(2, len(deduped_supply))
+    core_candidates: list[Article] = []
+
+    for record in winners:
+        article = record.get("article")
+        metrics = record.get("metrics") or {}
+        if not isinstance(article, Article):
+            continue
+        if int(metrics.get("representative_rank", -1)) < 3:
+            continue
+        selected_article = supply_by_key.get(_article_selection_identity(article))
+        if selected_article is None or selected_article in core_candidates:
+            continue
+        core_candidates.append(selected_article)
+        if len(core_candidates) >= core_target:
+            break
+
+    for article, metrics in ranked_metrics:
+        if article in core_candidates:
+            continue
+        if isinstance(metrics, dict) and int(metrics.get("representative_rank", -1)) >= 2:
+            core_candidates.append(article)
+            if len(core_candidates) >= core_target:
+                break
+    if len(core_candidates) < core_target:
         for article, metrics in ranked_metrics:
             if article in core_candidates:
                 continue
@@ -16581,6 +16656,7 @@ def _normalize_supply_section_from_board(
                     or metrics.get("weak_event_story")
                     or metrics.get("weak_consumer_lifestyle_story")
                     or metrics.get("weak_tourism_story")
+                    or metrics.get("weak_blossom_tourism_story")
                     or metrics.get("weak_org_feature_story")
                     or metrics.get("weak_org_promo_story")
                 )
@@ -16588,14 +16664,21 @@ def _normalize_supply_section_from_board(
             if weak_story:
                 continue
             core_candidates.append(article)
-            if len(core_candidates) >= min(2, len(deduped_supply)):
+            if len(core_candidates) >= core_target:
                 break
 
-    for article in core_candidates[: min(2, len(deduped_supply))]:
+    for article in core_candidates[:core_target]:
         article.is_core = True
         if not str(getattr(article, "selection_stage", "") or "").startswith("core"):
             article.selection_stage = "core_final"
-    final_by_section["supply"] = deduped_supply
+    final_by_section["supply"] = sorted(
+        deduped_supply,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            *_final_supply_article_sort_key(article),
+        ),
+        reverse=True,
+    )
     return inserted
 
 

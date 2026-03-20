@@ -256,6 +256,25 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertLessEqual(int(metrics["representative_rank"]), 0)
 
+    def test_fruit_blossom_tourism_context_stays_blocked_even_with_crop_terms(self):
+        title = "형광빛 메타세쿼이아·고즈넉한 고택… 배꽃 필 무렵이 최고의 시간"
+        desc = (
+            "전남 나주에서 배 재배 면적이 높아 전국 생산량의 상당수를 차지하며, "
+            "배꽃이 필 무렵 매력적인 풍경을 이룬다. 청도의 농민들은 수확을 축하하며 "
+            "미나리와 삼겹살을 함께 판매하는 전통을 이어가고 있다."
+        )
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://example.com/pear-blossom-tourism-hardblock",
+        )
+
+        self.assertTrue(main.is_fruit_blossom_tourism_context(title, desc))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("pear"), article)
+        self.assertLessEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_blossom_tourism_story"]))
+
     def test_board_context_moves_weak_only_program_core_item_to_inactive(self):
         training_article = self._make_article(
             "supply",
@@ -403,6 +422,39 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertEqual(changed, 0)
         self.assertEqual(final_by_section["supply"][0].title, base_supply.title)
+
+    def test_supply_final_normalization_prioritizes_top_board_winners_as_core(self):
+        retained_supply = self._make_article(
+            "supply",
+            "송미령 장관, 농협주유소·시설채소 점검…난방유 부담 대응 주문",
+            "시설채소 농가 난방비 부담 대응을 위한 현장 점검 기사로, 개별 품목 대표기사로 보기엔 범용적이다.",
+            "https://example.com/facility-fuel-check",
+        )
+        onion_core = self._make_article(
+            "supply",
+            "양파 가격 급락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 생산자 단체가 출하 조절과 공동판매 확대, 가격 하락 방지 대책 마련을 요구하고 있다.",
+            "https://example.com/onion-core-priority",
+        )
+        apple_core = self._make_article(
+            "dist",
+            "사과 경락가 급등…공판장 반입 감소에 산지 출하 조절",
+            "사과 공판장 반입 감소로 경락가가 급등하면서 산지 출하 조절과 도매시장 대응이 이어지고 있다.",
+            "https://example.com/apple-core-priority",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [retained_supply]
+        board_source = {key: [] for key in self.conf}
+        board_source["supply"] = [onion_core]
+        board_source["dist"] = [apple_core]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=4)
+
+        self.assertEqual(changed, 2)
+        first_two = final_by_section["supply"][:2]
+        self.assertEqual({article.title for article in first_two}, {onion_core.title, apple_core.title})
+        self.assertTrue(all(article.is_core for article in first_two))
+        self.assertFalse(any(article.title == retained_supply.title and article.is_core for article in final_by_section["supply"]))
 
     def test_board_context_prefers_different_press_in_secondary_preview_when_available(self):
         onion = self._item("onion")["short_label"]

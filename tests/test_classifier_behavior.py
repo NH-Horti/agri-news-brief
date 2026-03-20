@@ -2567,6 +2567,14 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.normalize_press_label("kfenews", "https://www.kfenews.co.kr/news/articleView.html?idxno=1"), "한국농식품유통신문")
         self.assertEqual(main.normalize_press_label("ksmnews", "https://www.ksmnews.co.kr/news/articleView.html?idxno=1"), "경상매일신문")
 
+    def test_normalize_press_label_maps_additional_ascii_brand_aliases(self):
+        self.assertEqual(main.normalize_press_label("kpenews", "https://kpenews.com/View.aspx?No=4010217"), "한국정경신문")
+        self.assertEqual(main.normalize_press_label("mediapen", "https://www.mediapen.com/news/view/1087903"), "미디어펜")
+        self.assertEqual(main.normalize_press_label("businessplus", "https://www.businessplus.kr/news/articleView.html?idxno=109157"), "비즈니스플러스")
+        self.assertEqual(main.normalize_press_label("newstree", "https://www.newstree.kr/newsView/ntr202603190013"), "뉴스트리")
+        self.assertEqual(main.normalize_press_label("danbinews", "https://www.danbinews.com/news/articleView.html?idxno=32644"), "단비뉴스")
+        self.assertEqual(main.normalize_press_label("ibabynews", "https://www.ibabynews.com/news/articleView.html?idxno=149752"), "베이비뉴스")
+
     def test_policy_export_support_brief_excludes_generic_seminar_story(self):
         title = "글로벌 농식품 규정 변화 대응 세미나 개최"
         desc = "농식품 수출 대응을 위한 세미나 개최 소식으로, 장관 브리핑이나 정부 업무계획 설명은 없는 행사성 기사다."
