@@ -400,6 +400,33 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(final_by_section["supply"][0].section, "supply")
         self.assertTrue(final_by_section["supply"][0].is_core)
 
+    def test_supply_final_normalization_can_promote_selected_dist_story_and_prune_dist(self):
+        weak_supply = self._make_article(
+            "supply",
+            "장계농협, 고품질 오이 재배기술 교육",
+            "오이 재배 농가를 대상으로 재배기술 교육을 진행했다.",
+            "https://example.com/cucumber-training-promote",
+        )
+        strong_dist = self._make_article(
+            "dist",
+            "사과 경락가 급등…공판장 반입 감소에 산지 출하 조절",
+            "사과 공판장 반입 감소와 경락가 급등이 이어지며 산지 출하 조절 필요성이 커지고 있다.",
+            "https://example.com/apple-dist-selected-core",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [weak_supply]
+        final_by_section["dist"] = [strong_dist]
+        board_source = {key: [] for key in self.conf}
+        board_source["dist"] = [strong_dist]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=3)
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(final_by_section["supply"][0].title, strong_dist.title)
+        self.assertEqual(final_by_section["supply"][0].section, "supply")
+        self.assertTrue(final_by_section["supply"][0].is_core)
+        self.assertEqual(final_by_section["dist"], [])
+
     def test_supply_final_normalization_does_not_promote_tourism_board_story(self):
         base_supply = self._make_article(
             "supply",

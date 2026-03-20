@@ -16541,12 +16541,13 @@ def _normalize_supply_section_from_board(
     selected_other_keys = {
         _article_selection_identity(article)
         for section_key, items in (final_by_section or {}).items()
-        if str(section_key) != "supply"
+        if str(section_key) not in {"supply", "dist"}
         for article in (items or [])
         if isinstance(article, Article)
     }
     current_supply_keys = {_article_selection_identity(article) for article in supply_items if _article_selection_identity(article)}
     inserted = 0
+    promoted_other_keys: set[str] = set()
     winners = _program_core_board_supply_candidates(board_source_by_section)
 
     for min_rank in (2,):
@@ -16578,11 +16579,14 @@ def _normalize_supply_section_from_board(
                 supply_items[victim_idx] = article
                 inserted += 1
             if getattr(article, "section", "") != "supply":
+                prev_section = str(getattr(article, "section", "") or "")
                 if not getattr(article, "origin_section", ""):
-                    article.origin_section = str(getattr(article, "section", "") or "")
-                if getattr(article, "section", ""):
-                    article.reassigned_from = str(getattr(article, "section", "") or "")
+                    article.origin_section = prev_section
+                if prev_section:
+                    article.reassigned_from = prev_section
                 article.section = "supply"
+                if prev_section and prev_section != "supply":
+                    promoted_other_keys.add(article_key)
             article.is_core = False
             article.selection_stage = "supply_board_bridge"
             article.selection_note = str(record.get("item_key") or "")
@@ -16679,6 +16683,15 @@ def _normalize_supply_section_from_board(
         ),
         reverse=True,
     )
+    if promoted_other_keys:
+        for section_key, items in list((final_by_section or {}).items()):
+            if str(section_key) == "supply":
+                continue
+            final_by_section[section_key] = [
+                article
+                for article in (items or [])
+                if not isinstance(article, Article) or _article_selection_identity(article) not in promoted_other_keys
+            ]
     return inserted
 
 
