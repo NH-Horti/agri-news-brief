@@ -54,6 +54,8 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-5.4
+          OPENAI_REASONING_EFFORT: low
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
@@ -106,6 +108,7 @@ jobs:
             echo '## Daily Summary'
             echo "- Event: ${{ github.event_name }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
+            echo "- OpenAI model: gpt-5.4"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"

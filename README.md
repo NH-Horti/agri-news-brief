@@ -10,6 +10,49 @@ python -m mypy --config-file mypy.ini
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
+## Local Rebuild
+
+You can run rebuilds locally without waiting for GitHub Actions.
+
+1. Copy `.env.local.example` to `.env.local`, `.env.dev.local`, or `.env.final.local`
+2. Fill in the local secrets you need
+3. Use one of the scripts below from the repo root
+
+Dry-run only:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-local-dryrun.ps1 -ReportDate 2026-03-20
+```
+
+This mode:
+
+- auto-loads `.env.local`
+- prefers `.env.dev.local` when present
+- reads source files from the current workspace
+- writes generated outputs under `.local-builds/`
+- does not write to GitHub
+
+Publish preview from your local machine:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-local-rebuild.ps1 -Target dev -ReportDate 2026-03-20 -DebugReport
+```
+
+Publish production from your local machine:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-local-rebuild.ps1 -Target prod -ReportDate 2026-03-20
+```
+
+Notes:
+
+- `.env.local` is auto-loaded by `main.py` when present
+- `scripts/run-local-dryrun.ps1` prefers `.env.dev.local`
+- `scripts/run-local-rebuild.ps1 -Target dev` prefers `.env.dev.local`
+- `scripts/run-local-rebuild.ps1 -Target prod` prefers `.env.final.local`
+- local publish uses `gh auth token` if `GH_TOKEN` or `GITHUB_TOKEN` is not already set
+- local dry-run does not require a GitHub token
+
 ## Pre-Push Hook
 
 This repo includes `.githooks/pre-push`.

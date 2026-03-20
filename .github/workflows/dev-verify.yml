@@ -134,6 +134,8 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-5.4-mini
+          OPENAI_REASONING_EFFORT: low
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
@@ -261,6 +263,7 @@ jobs:
             echo "- Tests: ${{ steps.tests.outcome }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Preview verify: ${{ steps.verify_preview.outcome }}"
+            echo "- OpenAI model: gpt-5.4-mini"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Preview: ${{ steps.vars.outputs.brief_view_url }}/"

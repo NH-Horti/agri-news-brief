@@ -9,3 +9,7 @@ __pycache__/
 reports/
 tmp_dev_*.patch
 tmp_dev_*.html
+.env
+.env.local
+.env.*.local
+.local-builds/

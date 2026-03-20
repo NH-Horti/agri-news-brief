@@ -18,6 +18,7 @@ agri-news-brief main.py (production)
 import os
 import re
 import unicodedata
+from pathlib import Path
 
 def _strip_swipe_hint_blocks(html: str) -> str:
     """Remove the swipe hint ('좌우 스와이프로 날짜 이동') from HTML."""
@@ -69,6 +70,103 @@ from retry_utils import exponential_backoff, retry_after_or_backoff
 from schemas import GithubDirItem, NaverSearchResponse
 from ux_patch import build_archive_ux_html
 
+
+_ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _strip_inline_env_comment(raw: str) -> str:
+    out: list[str] = []
+    in_single = False
+    in_double = False
+    for idx, ch in enumerate(raw):
+        if ch == "'" and not in_double:
+            in_single = not in_single
+        elif ch == '"' and not in_single:
+            in_double = not in_double
+        if ch == "#" and not in_single and not in_double:
+            prev = raw[idx - 1] if idx > 0 else " "
+            if prev.isspace():
+                break
+        out.append(ch)
+    return "".join(out).strip()
+
+
+def _unquote_env_value(raw: str) -> str:
+    text = str(raw or "").strip()
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in ("'", '"'):
+        body = text[1:-1]
+        if text[0] == '"':
+            body = (
+                body.replace(r"\\", "\\")
+                .replace(r"\"", '"')
+                .replace(r"\n", "\n")
+                .replace(r"\r", "\r")
+                .replace(r"\t", "\t")
+            )
+        return body
+    return _strip_inline_env_comment(text)
+
+
+def _load_env_file(path: Path, override: bool = False) -> dict[str, str]:
+    loaded: dict[str, str] = {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return loaded
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        if "=" not in line:
+            continue
+        key_raw, value_raw = line.split("=", 1)
+        key = key_raw.strip()
+        if not _ENV_KEY_RE.match(key):
+            continue
+        value = _unquote_env_value(value_raw)
+        if override or key not in os.environ:
+            os.environ[key] = value
+        loaded[key] = value
+    return loaded
+
+
+def _local_env_candidates() -> list[Path]:
+    raw_extra = str(os.getenv("AGRI_ENV_FILE", "") or "").strip()
+    candidates: list[str] = []
+    if raw_extra:
+        candidates.extend([x.strip() for x in raw_extra.split(os.pathsep) if x.strip()])
+    candidates.extend([".env.local", ".env"])
+
+    seen: set[str] = set()
+    out: list[Path] = []
+    for raw in candidates:
+        p = Path(raw)
+        if not p.is_absolute():
+            p = Path.cwd() / p
+        key = str(p.resolve(strict=False))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out
+
+
+def _load_local_env_files() -> list[str]:
+    loaded_paths: list[str] = []
+    for path in _local_env_candidates():
+        if not path.is_file():
+            continue
+        loaded = _load_env_file(path, override=False)
+        if loaded:
+            loaded_paths.append(str(path))
+    return loaded_paths
+
+
+_AUTO_ENV_FILES_LOADED = _load_local_env_files()
+
 JsonDict = dict[str, Any]
 
 
@@ -83,6 +181,9 @@ SummaryCacheEntry = dict[str, str]
 # -----------------------------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("agri-brief")
+if _AUTO_ENV_FILES_LOADED:
+    loaded_labels = ", ".join(Path(p).name for p in _AUTO_ENV_FILES_LOADED)
+    log.info("[ENV] loaded local env file(s): %s", loaded_labels)
 
 # -----------------------------
 # Log sanitization (secrets / huge bodies)
@@ -7779,6 +7880,96 @@ def _normalize_repo_path(path: str) -> str:
     return "/".join(parts)
 
 
+def is_local_dry_run() -> bool:
+    return str(os.getenv("LOCAL_DRY_RUN", "false") or "").strip().lower() in ("1", "true", "yes", "y")
+
+
+def _local_output_root() -> Path:
+    raw = str(os.getenv("LOCAL_OUTPUT_DIR", ".local-builds") or ".local-builds").strip() or ".local-builds"
+    p = Path(raw)
+    if not p.is_absolute():
+        p = Path.cwd() / p
+    return p
+
+
+def _local_workspace_path(path: str) -> Path:
+    norm = _normalize_repo_path(path)
+    if not norm:
+        return Path.cwd()
+    return Path.cwd() / Path(norm)
+
+
+def _local_output_path(path: str, branch: str) -> Path:
+    branch_root = _local_output_root() / Path(_normalize_repo_path(branch or "main"))
+    norm = _normalize_repo_path(path)
+    if not norm:
+        return branch_root
+    return branch_root / Path(norm)
+
+
+def _local_file_sha(content: str) -> str:
+    return hashlib.sha1((content or "").encode("utf-8")).hexdigest()
+
+
+def _local_read_repo_file(path: str, ref: str) -> tuple[str | None, str | None]:
+    for candidate in (_local_output_path(path, ref), _local_workspace_path(path)):
+        if not candidate.is_file():
+            continue
+        raw = candidate.read_text(encoding="utf-8", errors="replace")
+        return raw, _local_file_sha(raw)
+    return None, None
+
+
+def _local_list_repo_dir(dir_path: str, ref: str) -> list[GithubDirItem]:
+    for base_dir in (_local_output_path(dir_path, ref), _local_workspace_path(dir_path)):
+        if not base_dir.is_dir():
+            continue
+        items: list[GithubDirItem] = []
+        for child in sorted(base_dir.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower())):
+            rel_path = _normalize_repo_path(str(Path(dir_path) / child.name))
+            sha = ""
+            size = 0
+            if child.is_file():
+                raw = child.read_text(encoding="utf-8", errors="replace")
+                sha = _local_file_sha(raw)
+                try:
+                    size = child.stat().st_size
+                except OSError:
+                    size = 0
+            items.append(
+                {
+                    "name": child.name,
+                    "path": rel_path,
+                    "sha": sha,
+                    "type": "dir" if child.is_dir() else "file",
+                    "size": size,
+                }
+            )
+        return items
+    return []
+
+
+def _local_write_repo_file(path: str, content: str, message: str, branch: str) -> JsonDict:
+    target = _local_output_path(path, branch)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
+    sha = _local_file_sha(content)
+    log.info("[LOCAL DRY RUN] write %s", target)
+    return {
+        "content": {
+            "name": target.name,
+            "path": _normalize_repo_path(path),
+            "sha": sha,
+        },
+        "commit": {
+            "message": message,
+            "sha": sha,
+        },
+        "branch": branch,
+        "local_path": str(target),
+    }
+
+
 def _dev_single_page_version_repo_path() -> str:
     configured = _normalize_repo_path(DEV_SINGLE_PAGE_VERSION_PATH)
     if configured:
@@ -7882,6 +8073,8 @@ def _assert_dev_single_page_write_path(path: str) -> None:
 
 
 def github_get_file(repo: str, path: str, token: str, ref: str = "main") -> tuple[str | None, str | None]:
+    if is_local_dry_run():
+        return _local_read_repo_file(path, _resolve_github_ref(ref))
     return _io_github_get_file(
         repo,
         path,
@@ -7894,6 +8087,8 @@ def github_get_file(repo: str, path: str, token: str, ref: str = "main") -> tupl
 
 def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> list[GithubDirItem]:
     """List a directory via GitHub Contents API. Returns [] on 404."""
+    if is_local_dry_run():
+        return _local_list_repo_dir(dir_path, _resolve_github_ref(ref))
     return _io_github_list_dir(
         repo,
         dir_path,
@@ -7906,6 +8101,12 @@ def github_list_dir(repo: str, dir_path: str, token: str, ref: str = "main") -> 
 
 def github_put_file(repo: str, path: str, content: str, token: str, message: str, sha: str | None = None, branch: str = "main") -> JsonDict:
     _assert_dev_single_page_write_path(path)
+    resolved_branch = _resolve_github_branch(branch)
+    if is_local_dry_run():
+        final_content = content
+        if isinstance(final_content, str) and path.endswith(".html"):
+            final_content = _strip_swipe_hint_blocks(final_content)
+        return _local_write_repo_file(path, final_content, message, resolved_branch)
     return _io_github_put_file(
         repo,
         path,
@@ -7913,7 +8114,7 @@ def github_put_file(repo: str, path: str, content: str, token: str, message: str
         token,
         message,
         sha=sha,
-        branch=_resolve_github_branch(branch),
+        branch=resolved_branch,
         session_factory=http_session,
         logger=log,
         log_http_error=_log_http_error,
@@ -20273,8 +20474,10 @@ def main() -> None:
     _write_kakao_send_status("not_attempted")
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
-    if not GH_TOKEN:
+    if not GH_TOKEN and not is_local_dry_run():
         raise RuntimeError("GH_TOKEN or GITHUB_TOKEN is not set")
+    if is_local_dry_run():
+        log.info("[LOCAL DRY RUN] output root: %s", _local_output_root())
 
     maintenance_task = (os.getenv("MAINTENANCE_TASK", "") or "").strip().lower()
 
