@@ -12017,35 +12017,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if section_key == "supply":
         core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
         if core_count < min(2, len(deduped)):
-            promote_candidates = sorted(
-                deduped,
-                key=lambda a: (
-                    1 if float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0,
-                    int(_managed_focus_summary_local(a).get("program_core_strong_count") or 0),
-                    round(best_horti_score(a.title or "", a.description or ""), 3),
-                    1 if has_direct_supply_chain_signal(((a.title or "") + " " + (a.description or "")).lower()) else 0,
-                    round(section_fit_score(a.title or "", a.description or "", sec_conf), 3),
-                    float(getattr(a, "score", 0.0) or 0.0),
-                    getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
-                ),
-                reverse=True,
-            )
-            for a in promote_candidates:
+            for a in deduped:
                 if core_count >= 2:
                     break
                 if getattr(a, "is_core", False):
                     continue
                 text = ((a.title or "") + " " + (a.description or "")).lower()
-                focus_summary_local = _managed_focus_summary_local(a)
-                focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
                 if _is_supply_policy_like_tail_story(a) or _is_supply_dist_like_tail_story(a) or _is_supply_weak_tail_story(a):
                     continue
                 if is_fruit_foodservice_event_context(text) or is_fastfood_price_context(text):
-                    continue
-                if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and best_horti_score(a.title or "", a.description or "") < 1.8 and not has_direct_supply_chain_signal(text):
-                    continue
-                fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
-                if fit_sc_core < max(0.9, core_fit_min - 0.35) and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
                     continue
                 a.is_core = True
                 _record_selection(a, "core_promote")
