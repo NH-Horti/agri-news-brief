@@ -3357,16 +3357,11 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         return metrics
     if key == "tomato" and not is_edible_tomato_context(text_l):
         return metrics
+    if key == "tomato" and any(marker in title_l for marker in ("[ib 토마토", "ib 토마토", "뉴스토마토", "newstomato")):
+        return metrics
 
     if title_focus_hits == 0:
-        if body_focus_hits < 2 and market_anchor_hits == 0:
-            return metrics
-        if agri_anchor_hits == 0 and market_anchor_hits == 0:
-            return metrics
-        if issue_anchor_hits >= 1 and market_anchor_hits == 0 and agri_anchor_hits == 0:
-            return metrics
-        if focus_score < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.5) and market_anchor_hits == 0:
-            return metrics
+        return metrics
 
     if is_general_consumer_price_noise(text_l) and title_focus_hits == 0:
         return metrics
@@ -12025,9 +12020,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             promote_candidates = sorted(
                 deduped,
                 key=lambda a: (
-                    1 if managed_commodity_board_keys_for_article(a, max_keys=1) else 0,
                     1 if float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0,
                     int(_managed_focus_summary_local(a).get("program_core_strong_count") or 0),
+                    round(best_horti_score(a.title or "", a.description or ""), 3),
                     1 if has_direct_supply_chain_signal(((a.title or "") + " " + (a.description or "")).lower()) else 0,
                     round(section_fit_score(a.title or "", a.description or "", sec_conf), 3),
                     float(getattr(a, "score", 0.0) or 0.0),
@@ -12047,7 +12042,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if is_fruit_foodservice_event_context(text) or is_fastfood_price_context(text):
                     continue
-                if not managed_commodity_board_keys_for_article(a, max_keys=1) and focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and not has_direct_supply_chain_signal(text):
+                if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and best_horti_score(a.title or "", a.description or "") < 1.8 and not has_direct_supply_chain_signal(text):
                     continue
                 fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
                 if fit_sc_core < max(0.9, core_fit_min - 0.35) and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
