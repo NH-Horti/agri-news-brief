@@ -2998,13 +2998,16 @@ _MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
 _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS = (
     "교육", "기술교육", "총회", "설명회", "간담회", "워크숍", "세미나",
     "행사", "축제", "판촉", "특판", "할인판매", "할인 행사", "홍보",
+    "기념식", "발대식", "출범식",
 )
 _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS = (
     "교육", "기술교육", "재배기술", "재배 기술", "컨설팅", "현장 컨설팅",
     "총회", "설명회", "워크숍", "세미나", "아카데미", "개강", "모집",
+    "기술지도", "당부", "요령", "방법", "재배 시기", "재배시기",
+    "파종", "정식", "심기", "수경 재배", "수경재배", "싹 자르기", "싹자르기",
 )
 _MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS = (
-    "인터뷰", "대담", "대표", "회장", "사장", "농부의 길", "스토리",
+    "인터뷰", "대담", "대표", "회장", "사장", "농부의 길", "스토리", "사람들",
 )
 _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "가격", "값", "시세", "수급", "출하", "반입", "경락", "경매", "저장", "재고",
@@ -3500,6 +3503,15 @@ def _managed_article_significance_metrics(
         and market_anchor_hits == 0
     ):
         story_penalty += 8.0
+    if (
+        feature_kind == "field"
+        and issue_bucket is None
+        and (not direct_supply)
+        and (not market_response)
+        and issue_title_hits == 0
+        and market_anchor_hits == 0
+    ):
+        story_penalty += 10.0
 
     return {
         "issue_bucket": issue_bucket or "",
@@ -7056,6 +7068,21 @@ PRESS_HOST_MAP = {
     "www.dynews.co.kr": "동양일보",
     "ccdn.co.kr": "충청매일",
     "www.ccdn.co.kr": "충청매일",
+    "dkilbo.com": "대경일보",
+    "www.dkilbo.com": "대경일보",
+    "kenews.co.kr": "한국농촌경제신문",
+    "www.kenews.co.kr": "한국농촌경제신문",
+    "mhj21.com": "문화저널21",
+    "www.mhj21.com": "문화저널21",
+    "newscj.com": "천지일보",
+    "www.newscj.com": "천지일보",
+    "paxetv.com": "팍스경제TV",
+    "www.paxetv.com": "팍스경제TV",
+    "sentv.co.kr": "서울경제TV",
+    "www.sentv.co.kr": "서울경제TV",
+    "news.tf.co.kr": "더팩트",
+    "tf.co.kr": "더팩트",
+    "www.tf.co.kr": "더팩트",
 }
 
 ABBR_MAP = {
@@ -7133,6 +7160,13 @@ ABBR_MAP = {
     "ggilbo": "금강일보",
     "dynews": "동양일보",
     "ccdn": "충청매일",
+    "dkilbo": "대경일보",
+    "kenews": "한국농촌경제신문",
+    "mhj21": "문화저널21",
+    "newscj": "천지일보",
+    "paxetv": "팍스경제TV",
+    "sentv": "서울경제TV",
+    "tf": "더팩트",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -15334,6 +15368,12 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     pruned_final = _audit_final_sections(final_by_section)
     if pruned_final:
         log.info("[AUDIT] pruned %d final item(s) after section assembly", pruned_final)
+    try:
+        promoted_supply = _normalize_supply_section_from_board(final_by_section, board_source_by_section)
+        if promoted_supply:
+            log.info("[REBALANCE] promoted %d program-core board story(s) into final supply", promoted_supply)
+    except Exception as e:
+        log.warning("[WARN] supply board normalization failed: %s", e)
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
 
@@ -16001,12 +16041,94 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         "story_priority": story_priority,
         "story_bonus": float(story_metrics.get("story_bonus") or 0.0),
         "story_penalty": float(story_metrics.get("story_penalty") or 0.0),
+        "issue_bucket": str(story_metrics.get("issue_bucket") or ""),
+        "feature_kind": str(story_metrics.get("feature_kind") or ""),
+        "market_response": bool(story_metrics.get("market_response")),
+        "direct_supply": bool(story_metrics.get("direct_supply")),
+        "issue_title_hits": int(story_metrics.get("issue_title_hits") or 0),
+        "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
+        "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
     }
 
 
+def _commodity_board_item_article_representative_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
+    metrics = dict(_commodity_board_item_article_metrics(item, article))
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    title_l = _nfkc_lower(title)
+    issue_bucket = str(metrics.get("issue_bucket") or "")
+    feature_kind = str(metrics.get("feature_kind") or "")
+    direct_supply = bool(metrics.get("direct_supply"))
+    market_response = bool(metrics.get("market_response"))
+    issue_title_hits = int(metrics.get("issue_title_hits") or 0)
+    training_title_hits = int(metrics.get("training_title_hits") or 0)
+    profile_title_hits = int(metrics.get("profile_title_hits") or 0)
+    board_eligible = bool(metrics.get("board_eligible"))
+    strong_focus = bool(metrics.get("strong_focus"))
+    primary_focus = bool(metrics.get("primary_focus"))
+    board_score = float(metrics.get("board_score") or 0.0)
+    story_priority = float(metrics.get("story_priority") or 0.0)
+    allow_issue_frame = bool(issue_bucket) or direct_supply or market_response or issue_title_hits >= 1
+    weak_training = training_title_hits >= 1 and not allow_issue_frame
+    weak_profile = profile_title_hits >= 1 and not allow_issue_frame
+    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not allow_issue_frame
+    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not allow_issue_frame
+    weak_event = (
+        any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS)
+        and not allow_issue_frame
+        and feature_kind != "quality"
+    )
+
+    representative_rank = -1
+    if not board_eligible:
+        representative_rank = -1
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event:
+        representative_rank = 0
+    elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
+        representative_rank = 4
+    elif direct_supply or market_response:
+        representative_rank = 3
+    elif issue_title_hits >= 1 and strong_focus and story_priority >= 8.0:
+        representative_rank = 3
+    elif feature_kind in ("field", "quality") and strong_focus and story_priority >= 4.0:
+        representative_rank = 2
+    elif strong_focus and primary_focus and board_score >= 88.0:
+        representative_rank = 1
+    else:
+        representative_rank = 0
+
+    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5)
+    if weak_training:
+        representative_score -= 26.0
+    if weak_profile:
+        representative_score -= 28.0
+    if weak_org_feature:
+        representative_score -= 18.0
+    if weak_org_promo:
+        representative_score -= 16.0
+    if weak_event:
+        representative_score -= 10.0
+
+    metrics.update(
+        {
+            "representative_rank": int(representative_rank),
+            "representative_score": round(float(representative_score), 3),
+            "representative_eligible": bool(representative_rank >= 1),
+            "weak_training_story": bool(weak_training),
+            "weak_profile_story": bool(weak_profile),
+            "weak_org_feature_story": bool(weak_org_feature),
+            "weak_org_promo_story": bool(weak_org_promo),
+            "weak_event_story": bool(weak_event),
+        }
+    )
+    return metrics
+
+
 def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
-    metrics = _commodity_board_item_article_metrics(item, article)
+    metrics = _commodity_board_item_article_representative_metrics(item, article)
     return (
+        int(metrics.get("representative_rank", -1)),
+        float(metrics.get("representative_score", 0.0)),
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
         float(metrics["focus_score"]),
@@ -16020,6 +16142,202 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
         float(getattr(article, "score", 0.0) or 0.0),
         getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
     )
+
+
+def _article_selection_identity(article: Article) -> str:
+    return (
+        str(getattr(article, "canon_url", "") or "")
+        or str(getattr(article, "norm_key", "") or "")
+        or str(getattr(article, "title_key", "") or "")
+        or str(getattr(article, "originallink", "") or getattr(article, "link", "") or "")
+    )
+
+
+def _best_program_core_board_metrics_for_article(article: Article) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    candidate_keys = managed_commodity_board_keys_for_article(article, max_keys=3)
+    best_item: dict[str, Any] | None = None
+    best_metrics: dict[str, Any] | None = None
+    best_sort: tuple[Any, ...] | None = None
+    for key in candidate_keys:
+        item = MANAGED_COMMODITY_BY_KEY.get(str(key) or "")
+        if not item or not bool(item.get("program_core")):
+            continue
+        metrics = _commodity_board_item_article_representative_metrics(item, article)
+        cand = (
+            int(metrics.get("representative_rank", -1)),
+            float(metrics.get("representative_score", 0.0)),
+            float(metrics.get("board_score", 0.0)),
+            float(metrics.get("story_priority", 0.0)),
+            float(metrics.get("focus_score", 0.0)),
+        )
+        if best_sort is None or cand > best_sort:
+            best_item = item
+            best_metrics = metrics
+            best_sort = cand
+    if best_item is None or best_metrics is None:
+        return None
+    return best_item, best_metrics
+
+
+def _final_supply_article_sort_key(article: Article) -> tuple[Any, ...]:
+    best = _best_program_core_board_metrics_for_article(article)
+    if best is not None:
+        _, metrics = best
+        return (
+            int(metrics.get("representative_rank", -1)),
+            float(metrics.get("representative_score", 0.0)),
+            float(metrics.get("board_score", 0.0)),
+            float(metrics.get("story_priority", 0.0)),
+            1 if str(getattr(article, "section", "") or "").strip() == "supply" else 0,
+            float(getattr(article, "score", 0.0) or 0.0),
+            getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        )
+    return (
+        0,
+        0.0,
+        0.0,
+        0.0,
+        1 if str(getattr(article, "section", "") or "").strip() == "supply" else 0,
+        float(getattr(article, "score", 0.0) or 0.0),
+        getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+    )
+
+
+def _program_core_board_supply_candidates(board_source_by_section: dict[str, list[Article]]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for item in MANAGED_COMMODITY_CATALOG:
+        if not bool(item.get("program_core")):
+            continue
+        best_article: Article | None = None
+        best_metrics: dict[str, Any] | None = None
+        best_sort: tuple[Any, ...] | None = None
+        for section_key in ("supply", "dist"):
+            for article in board_source_by_section.get(section_key, []) or []:
+                if not isinstance(article, Article):
+                    continue
+                metrics = _commodity_board_item_article_representative_metrics(item, article)
+                representative_rank = int(metrics.get("representative_rank", -1))
+                if representative_rank <= 0:
+                    continue
+                if not bool(metrics.get("board_eligible")):
+                    continue
+                cand = (
+                    representative_rank,
+                    float(metrics.get("representative_score", 0.0)),
+                    float(metrics.get("board_score", 0.0)),
+                    float(metrics.get("story_priority", 0.0)),
+                    1 if section_key == "supply" else 0,
+                    float(getattr(article, "score", 0.0) or 0.0),
+                    getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+                )
+                if best_sort is None or cand > best_sort:
+                    best_article = article
+                    best_metrics = metrics
+                    best_sort = cand
+        if best_article is None or best_metrics is None or best_sort is None:
+            continue
+        records.append(
+            {
+                "item_key": str(item.get("key") or ""),
+                "item_label": str(item.get("label") or ""),
+                "article": best_article,
+                "metrics": best_metrics,
+                "sort_key": best_sort,
+            }
+        )
+    records.sort(key=lambda rec: rec.get("sort_key") or (), reverse=True)
+    return records
+
+
+def _normalize_supply_section_from_board(
+    final_by_section: dict[str, list[Article]],
+    board_source_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    selected_other_keys = {
+        _article_selection_identity(article)
+        for section_key, items in (final_by_section or {}).items()
+        if str(section_key) != "supply"
+        for article in (items or [])
+        if isinstance(article, Article)
+    }
+    current_supply_keys = {_article_selection_identity(article) for article in supply_items if _article_selection_identity(article)}
+    inserted = 0
+    winners = _program_core_board_supply_candidates(board_source_by_section)
+
+    for min_rank in (2, 1):
+        for record in winners:
+            article = record.get("article")
+            metrics = record.get("metrics") or {}
+            if not isinstance(article, Article):
+                continue
+            if int(metrics.get("representative_rank", -1)) < min_rank:
+                continue
+            article_key = _article_selection_identity(article)
+            if not article_key:
+                continue
+            if article_key in current_supply_keys:
+                continue
+            if article_key in selected_other_keys:
+                continue
+            if len(supply_items) < max_n:
+                supply_items.append(article)
+                inserted += 1
+            else:
+                victim_idx = min(
+                    range(len(supply_items)),
+                    key=lambda idx: _final_supply_article_sort_key(supply_items[idx]),
+                )
+                victim = supply_items[victim_idx]
+                if record.get("sort_key") and record.get("sort_key") <= _final_supply_article_sort_key(victim):
+                    continue
+                supply_items[victim_idx] = article
+                inserted += 1
+            if getattr(article, "section", "") != "supply":
+                if not getattr(article, "origin_section", ""):
+                    article.origin_section = str(getattr(article, "section", "") or "")
+                if getattr(article, "section", ""):
+                    article.reassigned_from = str(getattr(article, "section", "") or "")
+                article.section = "supply"
+            article.is_core = False
+            article.selection_stage = "supply_board_bridge"
+            article.selection_note = str(record.get("item_key") or "")
+            current_supply_keys.add(article_key)
+            if inserted >= 2:
+                break
+        if inserted >= 2:
+            break
+
+    ranked_supply = sorted(
+        [article for article in supply_items if isinstance(article, Article)],
+        key=_final_supply_article_sort_key,
+        reverse=True,
+    )
+    deduped_supply: list[Article] = []
+    seen_supply_keys: set[str] = set()
+    for article in ranked_supply:
+        article_key = _article_selection_identity(article)
+        if article_key and article_key in seen_supply_keys:
+            continue
+        if article_key:
+            seen_supply_keys.add(article_key)
+        deduped_supply.append(article)
+        if len(deduped_supply) >= max_n:
+            break
+
+    for article in deduped_supply:
+        article.is_core = False
+    for article in deduped_supply[: min(2, len(deduped_supply))]:
+        article.is_core = True
+        if not str(getattr(article, "selection_stage", "") or "").startswith("core"):
+            article.selection_stage = "core_final"
+    final_by_section["supply"] = deduped_supply
+    return inserted
 
 
 def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Article]) -> list[Article]:

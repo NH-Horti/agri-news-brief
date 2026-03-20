@@ -2543,6 +2543,13 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.press_name_from_url("https://cooknchefnews.com/news/view/1065603268596477"), "쿡앤셰프")
         self.assertEqual(main.press_name_from_url("https://www.jnilbo.com/news/articleView.html?idxno=1"), "진일보")
         self.assertEqual(main.press_name_from_url("http://www.breaknews.com/123"), "브레이크뉴스")
+        self.assertEqual(main.press_name_from_url("https://www.dkilbo.com/news/articleView.html?idxno=1"), "대경일보")
+        self.assertEqual(main.press_name_from_url("https://www.kenews.co.kr/news/articleView.html?idxno=1"), "한국농촌경제신문")
+        self.assertEqual(main.press_name_from_url("https://www.mhj21.com/33473"), "문화저널21")
+        self.assertEqual(main.press_name_from_url("https://www.newscj.com/news/articleView.html?idxno=1"), "천지일보")
+        self.assertEqual(main.press_name_from_url("https://www.paxetv.com/news/articleView.html?idxno=1"), "팍스경제TV")
+        self.assertEqual(main.press_name_from_url("https://www.sentv.co.kr/news/view/1"), "서울경제TV")
+        self.assertEqual(main.press_name_from_url("https://news.tf.co.kr/read/economy/1.htm"), "더팩트")
 
     def test_policy_export_support_brief_excludes_generic_seminar_story(self):
         title = "글로벌 농식품 규정 변화 대응 세미나 개최"

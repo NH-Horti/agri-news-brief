@@ -209,6 +209,28 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertEqual(onion_item["top_article"].title, issue_article.title)
 
+    def test_board_context_prefers_issue_story_over_interview_story_for_same_item(self):
+        issue_article = self._make_article(
+            "supply",
+            "토마토 가격 약세 장기화…출하 조절·수급 대응 시급",
+            "토마토 산지의 출하 물량 부담과 가격 약세가 이어지며 수급 대응 요구가 커지고 있다.",
+            "https://example.com/tomato-issue",
+        )
+        interview_article = self._make_article(
+            "supply",
+            "[인터뷰] 가람 토마토 대표의 35년 농부의 길",
+            "토마토 재배 경험과 농가 운영 스토리를 소개하는 인터뷰 기사다.",
+            "https://example.com/tomato-interview",
+        )
+        interview_article.score = issue_article.score + 6.0
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [interview_article, issue_article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        tomato_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "tomato")
+
+        self.assertEqual(tomato_item["top_article"].title, issue_article.title)
+
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(
             "supply",
@@ -263,24 +285,73 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(onion_item["article_count"], 1)
         self.assertEqual(onion_item["preview_articles"][0].title, onion_article.title)
 
+    def test_supply_final_normalization_promotes_program_core_board_story(self):
+        weak_supply = self._make_article(
+            "supply",
+            "동광양농협, 농가주부모임과 감자 심기 행사 진행",
+            "감자 심기 행사와 현장 체험 중심의 지역 행사 기사다.",
+            "https://example.com/potato-event",
+        )
+        strong_supply = self._make_article(
+            "supply",
+            "양파 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            "양파 산지의 출하 물량 부담과 가격 급락 우려로 수급 대책 요구가 커지고 있다.",
+            "https://example.com/onion-brief-core",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [weak_supply]
+        board_source = {key: [] for key in self.conf}
+        board_source["supply"] = [weak_supply, strong_supply]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=3)
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(final_by_section["supply"][0].title, strong_supply.title)
+        self.assertTrue(final_by_section["supply"][0].is_core)
+
+    def test_supply_final_normalization_can_pull_dist_representative_into_supply(self):
+        weak_supply = self._make_article(
+            "supply",
+            "장계농협, 고품질 오이 재배기술 교육",
+            "오이 재배 농가를 대상으로 재배기술 교육을 진행했다.",
+            "https://example.com/cucumber-training",
+        )
+        strong_dist = self._make_article(
+            "dist",
+            "사과 선별·공판 기능 결합…유통거점 부상",
+            "사과 선별과 공판 기능을 결합한 유통거점이 산지 출하 흐름을 바꾸고 있다.",
+            "https://example.com/apple-dist-core",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [weak_supply]
+        board_source = {key: [] for key in self.conf}
+        board_source["dist"] = [strong_dist]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=3)
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(final_by_section["supply"][0].title, strong_dist.title)
+        self.assertEqual(final_by_section["supply"][0].section, "supply")
+        self.assertTrue(final_by_section["supply"][0].is_core)
+
     def test_board_context_prefers_different_press_in_secondary_preview_when_available(self):
-        apple = self._item("apple")["short_label"]
+        onion = self._item("onion")["short_label"]
         primary = self._make_article(
             "supply",
-            f"{apple} 가격 강세와 출하 조절",
-            f"{apple} 물량 감소로 가격 강세가 이어지고 있다.",
+            f"{onion} 가격 폭락 우려…산지 출하 조절·수급 대책 촉구",
+            f"{onion} 산지의 출하 조절과 수급 대책 요구가 커지며 가격 급락 우려가 확산하고 있다.",
             "https://www.wonyesanup.co.kr/news/articleView.html?idxno=900001",
         )
         secondary_same_press = self._make_article(
             "dist",
-            f"{apple} 공동판매 확대",
-            f"{apple} 공동판매 확대와 산지 유통 개선이 진행 중이다.",
+            f"{onion} 공동판매 확대",
+            f"{onion} 공동판매 확대와 산지 유통 개선이 진행 중이다.",
             "https://www.wonyesanup.co.kr/news/articleView.html?idxno=900002",
         )
         secondary_other_press = self._make_article(
             "policy",
-            f"{apple} 수급 안정 대책 점검",
-            f"{apple} 수급 안정과 가격 대응 방안을 점검했다.",
+            f"{onion} 수급 안정 대책 점검",
+            f"{onion} 수급 안정과 가격 대응 방안을 점검했다.",
             "https://www.agrinet.co.kr/news/articleView.html?idxno=900003",
         )
         primary.score = 180.0
@@ -293,10 +364,10 @@ class TestCommodityBoard(unittest.TestCase):
         by_section["policy"] = [secondary_other_press]
 
         ctx = main.build_managed_commodity_board_context(by_section)
-        apple_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "apple")
+        onion_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "onion")
 
-        self.assertEqual(apple_item["top_article"].title, primary.title)
-        self.assertEqual(apple_item["secondary_articles"][0].title, secondary_other_press.title)
+        self.assertEqual(onion_item["top_article"].title, primary.title)
+        self.assertEqual(onion_item["secondary_articles"][0].title, secondary_other_press.title)
 
     def test_managed_only_commodity_tags_are_emitted(self):
         radish = self._item("radish")["short_label"]
