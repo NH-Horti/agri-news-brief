@@ -3084,6 +3084,27 @@ def _managed_commodity_focus_metrics(
     lifestyle_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS))
     consumer_noise_hits = processed_noise_hits + lifestyle_noise_hits
 
+    if key == "potato" and count_any(title_l, list(_POTATO_PROCESSED_MARKERS)) >= 1:
+        return empty
+    if key == "eggplant" and (
+        any(marker.lower() in title_l for marker in _EGGPLANT_NON_EDIBLE_MARKERS)
+        or (_EGGPLANT_NON_EDIBLE_RX.search(title_l) is not None)
+    ):
+        return empty
+    if (
+        title_primary_hits == 0
+        and title_context_hits == 0
+        and pattern_hits == 0
+        and market_anchor_hits == 0
+        and (
+            processed_noise_hits >= 1
+            or lifestyle_noise_hits >= 1
+            or is_general_consumer_price_noise(text_l)
+            or is_fruit_foodservice_event_context(text_l)
+        )
+    ):
+        return empty
+
     score = (
         (title_primary_hits * 3.2)
         + (title_context_hits * 2.4)
@@ -6676,6 +6697,10 @@ PRESS_HOST_MAP = {
     "www.andongmbc.co.kr": "안동MBC",
     "dgmbc.com": "대구MBC",
     "www.dgmbc.com": "대구MBC",
+    "ccdailynews.com": "충청일보",
+    "www.ccdailynews.com": "충청일보",
+    "topstarnews.net": "톱스타뉴스",
+    "www.topstarnews.net": "톱스타뉴스",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -6797,6 +6822,8 @@ ABBR_MAP = {
     "kyongbuk": "경북일보",
     "andongmbc": "안동MBC",
     "dgmbc": "대구MBC",
+    "ccdailynews": "충청일보",
+    "topstarnews": "톱스타뉴스",
 }
 
 def press_name_from_url(url: str) -> str:
