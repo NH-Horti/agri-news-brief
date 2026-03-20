@@ -3723,6 +3723,14 @@ class TestRecentItemsRebuild(unittest.TestCase):
             main.normalize_press_label("topstarnews", "https://www.topstarnews.net/news/articleView.html?idxno=123456"),
             "톱스타뉴스",
         )
+        self.assertEqual(
+            main.normalize_press_label("newstomato", "https://www.newstomato.com/ReadNews.aspx?no=1260237"),
+            "뉴스토마토",
+        )
+        self.assertEqual(
+            main.normalize_press_label("newstnt", "https://www.newstnt.com/news/articleView.html?idxno=500496"),
+            "뉴스티앤티",
+        )
 
     def test_supply_core_prefers_strong_managed_focus_articles_over_generic_macro_when_available(self):
         apple = self._make_article(

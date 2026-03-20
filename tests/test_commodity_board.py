@@ -525,5 +525,92 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertFalse(citron["active"])
         self.assertEqual(citron["article_count"], 0)
 
+    def test_board_rejects_processed_potato_chip_story(self):
+        article = self._make_article(
+            "supply",
+            "감자 칩 사재기... 왜? [앵커리포트]",
+            "일본 스낵 업계에서 감자 칩 공급 차질 우려가 번지며 사재기 현상이 나타났다는 리포트다.",
+            "https://imnews.imbc.com/replay/2026/nwdesk/article/6720000_36799.html",
+        )
+        article.topic = "감자"
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        potato = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "potato"
+        )
+
+        self.assertFalse(potato["active"])
+        self.assertEqual(potato["article_count"], 0)
+
+    def test_board_rejects_general_consumer_price_story_for_garlic(self):
+        article = self._make_article(
+            "policy",
+            "계란·화장지 등 민생물가 잡는다…과자·아이스크림도 가격 인하",
+            "정부가 생필품과 가공식품 할인 대책을 발표했다. 일부 문단에 양파·마늘 등 농산물 언급이 있지만 기사 중심은 소비자 물가다.",
+            "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8236000",
+        )
+        article.topic = "마늘"
+        by_section = {key: [] for key in self.conf}
+        by_section["policy"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        garlic = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "garlic"
+        )
+
+        self.assertFalse(garlic["active"])
+        self.assertEqual(garlic["article_count"], 0)
+
+    def test_board_rejects_macro_brand_story_for_tomato(self):
+        article = self._make_article(
+            "policy",
+            "[IB 토마토] 반도건설, 1조 매출 지켰지만 빚도 4배 불었다",
+            "건설사의 실적과 차입금, 재무구조를 분석하는 증권 기사다.",
+            "https://www.newstomato.com/ReadNews.aspx?no=1260237",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["policy"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        tomato = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "tomato"
+        )
+
+        self.assertFalse(tomato["active"])
+        self.assertEqual(tomato["article_count"], 0)
+
+    def test_board_rejects_macro_story_without_agri_context_for_eggplant(self):
+        article = self._make_article(
+            "supply",
+            "AI가 올린 증시, 유가가 흔든다…수혜 갈리는 고유가 장세",
+            "정유·항공 업종의 두 가지 시나리오를 비교한 증시 분석 기사다.",
+            "https://www.etoday.co.kr/news/view/2482000",
+        )
+        article.topic = "가지"
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        eggplant = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "eggplant"
+        )
+
+        self.assertFalse(eggplant["active"])
+        self.assertEqual(eggplant["article_count"], 0)
+
 if __name__ == "__main__":
     unittest.main()

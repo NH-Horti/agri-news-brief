@@ -17,6 +17,7 @@ agri-news-brief main.py (production)
 
 import os
 import re
+import unicodedata
 
 def _strip_swipe_hint_blocks(html: str) -> str:
     """Remove the swipe hint ('좌우 스와이프로 날짜 이동') from HTML."""
@@ -2162,7 +2163,7 @@ def build_managed_commodity_board_source_by_section(
         for article in sorted(by_section.get(section_key, []) or [], key=_sort_key_major_first, reverse=True):
             if not isinstance(article, Article):
                 continue
-            if not managed_commodity_focus_keys_for_article(article):
+            if not managed_commodity_board_keys_for_article(article):
                 continue
             if _postbuild_article_reject_reason(article, section_key):
                 continue
@@ -2994,6 +2995,32 @@ _MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
 )
 _MANAGED_COMMODITY_FOCUS_MATCH_MIN = 2.4
 _MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
+_MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS = (
+    "교육", "기술교육", "총회", "설명회", "간담회", "워크숍", "세미나",
+    "행사", "축제", "판촉", "특판", "할인판매", "할인 행사", "홍보",
+)
+
+
+def _nfkc_lower(text: str) -> str:
+    return unicodedata.normalize("NFKC", str(text or "")).lower()
+
+
+def _compact_match_text(text: str) -> str:
+    normalized = _nfkc_lower(text)
+    if not normalized:
+        return ""
+    return re.sub(r"[\s\-_~·ㆍ.,:;!?/\\'\"“”‘’()\[\]{}<>|]+", "", normalized)
+
+
+def _contains_compact_marker(text: str, markers: Sequence[str]) -> bool:
+    compact_text = _compact_match_text(text)
+    if not compact_text:
+        return False
+    for marker in markers:
+        compact_marker = _compact_match_text(marker)
+        if compact_marker and compact_marker in compact_text:
+            return True
+    return False
 
 
 def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
@@ -3036,9 +3063,11 @@ def _managed_commodity_focus_metrics(
     topic: str = "",
 ) -> dict[str, Any]:
     key = str(item.get("key") or "").strip()
-    title_l = (title or "").lower()
-    desc_l = (desc or "").lower()
-    text_l = f"{title or ''} {desc or ''}".lower().strip()
+    title_l = _nfkc_lower(title or "")
+    desc_l = _nfkc_lower(desc or "")
+    text_l = f"{title_l} {desc_l}".strip()
+    compact_title_l = _compact_match_text(title or "")
+    compact_text_l = _compact_match_text(f"{title or ''} {desc or ''}")
     empty = {
         "focus_score": 0.0,
         "title_primary_hits": 0,
@@ -3062,6 +3091,8 @@ def _managed_commodity_focus_metrics(
         return empty
     if key == "eggplant" and "가지" in text_l and not is_edible_eggplant_context(text_l):
         return empty
+    if key == "tomato" and "토마토" in text_l and not is_edible_tomato_context(text_l):
+        return empty
     if key == "muskmelon" and "멜론" in text_l and not is_edible_melon_context(text_l):
         return empty
     if key == "apple" and "사과" in text_l and not is_edible_apple_context(text_l):
@@ -3084,12 +3115,18 @@ def _managed_commodity_focus_metrics(
     lifestyle_noise_hits = count_any(text_l, list(_MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS))
     consumer_noise_hits = processed_noise_hits + lifestyle_noise_hits
 
-    if key == "potato" and count_any(title_l, list(_POTATO_PROCESSED_MARKERS)) >= 1:
+    if key == "potato" and (
+        count_any(title_l, list(_POTATO_PROCESSED_MARKERS)) >= 1
+        or _contains_compact_marker(compact_title_l, list(_POTATO_PROCESSED_MARKERS))
+    ):
         return empty
     if key == "eggplant" and (
         any(marker.lower() in title_l for marker in _EGGPLANT_NON_EDIBLE_MARKERS)
         or (_EGGPLANT_NON_EDIBLE_RX.search(title_l) is not None)
+        or _contains_compact_marker(compact_title_l, list(_EGGPLANT_NON_EDIBLE_MARKERS))
     ):
+        return empty
+    if key == "tomato" and not is_edible_tomato_context(text_l):
         return empty
     if (
         title_primary_hits == 0
@@ -3150,7 +3187,13 @@ def _managed_commodity_focus_metrics(
     matched = bool(score >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN and exact_or_context_hits > 0)
     if direct_focus_hits == 0 and market_anchor_hits == 0 and issue_anchor_hits == 0 and agri_anchor_hits < 2:
         matched = False
+    if direct_focus_hits == 0 and market_anchor_hits == 0 and agri_anchor_hits == 0:
+        matched = False
     if processed_noise_hits and direct_focus_hits == 0 and market_anchor_hits == 0:
+        matched = False
+    if key == "potato" and _contains_compact_marker(compact_text_l, list(_POTATO_PROCESSED_MARKERS)):
+        matched = False
+    if key == "eggplant" and _contains_compact_marker(compact_text_l, list(_EGGPLANT_NON_EDIBLE_MARKERS)):
         matched = False
 
     return {
@@ -3279,6 +3322,108 @@ def managed_commodity_focus_keys_for_article(
         if focus_score >= max(_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.9, lead_score - 0.9):
             selected.append(key)
     return selected
+
+
+def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Article") -> dict[str, Any]:
+    metrics = dict(
+        _managed_commodity_focus_metrics(
+            item,
+            getattr(article, "title", "") or "",
+            getattr(article, "description", "") or "",
+            getattr(article, "topic", "") or "",
+        )
+    )
+    metrics["board_eligible"] = False
+    metrics["board_penalty"] = 0.0
+    if not metrics.get("matched"):
+        return metrics
+
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    text = f"{title} {desc}".strip()
+    text_l = _nfkc_lower(text)
+    title_l = _nfkc_lower(title)
+    key = str(item.get("key") or "").strip()
+    title_focus_hits = int(metrics.get("title_primary_hits") or 0) + int(metrics.get("title_context_hits") or 0) + int(metrics.get("pattern_hits") or 0)
+    body_focus_hits = int(metrics.get("body_primary_hits") or 0) + int(metrics.get("body_context_hits") or 0)
+    agri_anchor_hits = int(metrics.get("agri_anchor_hits") or 0)
+    market_anchor_hits = int(metrics.get("market_anchor_hits") or 0)
+    issue_anchor_hits = int(metrics.get("issue_anchor_hits") or 0)
+    focus_score = float(metrics.get("focus_score") or 0.0)
+
+    if key == "potato" and not is_fresh_potato_context(text_l):
+        return metrics
+    if key == "eggplant" and not is_edible_eggplant_context(text_l):
+        return metrics
+    if key == "tomato" and not is_edible_tomato_context(text_l):
+        return metrics
+
+    if title_focus_hits == 0:
+        if body_focus_hits < 2 and market_anchor_hits == 0:
+            return metrics
+        if agri_anchor_hits == 0 and market_anchor_hits == 0:
+            return metrics
+        if issue_anchor_hits >= 1 and market_anchor_hits == 0 and agri_anchor_hits == 0:
+            return metrics
+        if focus_score < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.5) and market_anchor_hits == 0:
+            return metrics
+
+    if is_general_consumer_price_noise(text_l) and title_focus_hits == 0:
+        return metrics
+    if is_fastfood_price_context(text_l):
+        return metrics
+    if is_macro_trade_noise_context(text_l) and title_focus_hits == 0 and market_anchor_hits == 0:
+        return metrics
+    if is_retail_promo_context(text_l) and title_focus_hits == 0 and market_anchor_hits == 0:
+        return metrics
+
+    board_penalty = 0.0
+    if is_local_agri_org_feature_context(title, desc) and market_anchor_hits == 0 and focus_score < (_MANAGED_COMMODITY_FOCUS_STRONG_MIN + 1.0):
+        board_penalty += 12.0
+    if any(term in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS) and market_anchor_hits == 0:
+        board_penalty += 6.0
+    if is_retail_promo_context(text_l):
+        board_penalty += 8.0
+    if str(getattr(article, "section", "") or "").strip() == "supply" and is_supply_tourism_event_context(title, desc):
+        board_penalty += 10.0
+
+    metrics["board_eligible"] = True
+    metrics["board_penalty"] = round(float(board_penalty), 3)
+    return metrics
+
+
+def _managed_commodity_board_focus_metrics_for_article(article: "Article", item: dict[str, Any]) -> dict[str, Any]:
+    key = str(item.get("key") or "").strip()
+    cache = getattr(article, "_managed_board_focus_metrics", None)
+    if not isinstance(cache, dict):
+        cache = {}
+    cached = cache.get(key)
+    if isinstance(cached, dict):
+        return cached
+    metrics = _managed_commodity_board_focus_metrics(item, article)
+    cache[key] = metrics
+    setattr(article, "_managed_board_focus_metrics", cache)
+    return metrics
+
+
+def managed_commodity_board_keys_for_article(
+    article: "Article",
+    max_keys: int | None = None,
+) -> list[str]:
+    keys = list(managed_commodity_focus_keys_for_article(article))
+    if not keys:
+        return []
+    selected: list[str] = []
+    for key in keys:
+        item = MANAGED_COMMODITY_BY_KEY.get(key)
+        if item is None:
+            continue
+        metrics = _managed_commodity_board_focus_metrics_for_article(article, item)
+        if metrics.get("board_eligible"):
+            selected.append(key)
+    if max_keys is None or max_keys <= 0:
+        return selected
+    return selected[:max_keys]
 
 
 def managed_commodity_keys_for_text(title: str, desc: str, topic: str = "") -> list[str]:
@@ -3660,6 +3805,33 @@ def is_edible_carrot_context(text: str) -> bool:
     edible_hit = any(w.lower() in t for w in _CARROT_EDIBLE_MARKERS)
     platform_hit = any(w.lower() in t for w in _CARROT_PLATFORM_MARKERS)
     if platform_hit and not edible_hit:
+        return False
+    return edible_hit
+
+
+_TOMATO_BRAND_NOISE_MARKERS = (
+    "[ib 토마토]", "ib 토마토", "뉴스토마토", "newstomato", "tomato tv", "토마토tv",
+    "증시", "주가", "랠리", "장세", "실적", "차입금", "반도건설",
+)
+_TOMATO_EDIBLE_MARKERS = (
+    "농산물", "채소", "과채", "원예", "시설", "하우스", "산지", "농가", "재배", "생육",
+    "수확", "출하", "반입", "작황", "수급", "가격", "시세", "도매", "도매가격", "도매시장",
+    "공판장", "경락", "경매", "방울토마토", "대추방울토마토", "토마토 가격", "토마토 수급",
+    "토마토 작황", "토마토 출하", "토마토 재배", "토마토 농가", "토마토뿔나방",
+)
+
+
+def is_edible_tomato_context(text: str) -> bool:
+    """Return True only when '토마토' clearly refers to the crop or pest context."""
+    t = _nfkc_lower(text or "")
+    if "토마토" not in t:
+        return False
+    edible_hit = any(w.lower() in t for w in _TOMATO_EDIBLE_MARKERS)
+    brand_noise_hit = any(w.lower() in t for w in _TOMATO_BRAND_NOISE_MARKERS)
+    price_pat = bool(re.search(r"토마토\s*(가격|시세|수급|출하(?:량)?|작황|생육|재배|농가|도매|경매|병해충)", t))
+    if price_pat or "토마토뿔나방" in t:
+        edible_hit = True
+    if brand_noise_hit and not edible_hit:
         return False
     return edible_hit
 
@@ -6701,6 +6873,10 @@ PRESS_HOST_MAP = {
     "www.ccdailynews.com": "충청일보",
     "topstarnews.net": "톱스타뉴스",
     "www.topstarnews.net": "톱스타뉴스",
+    "newstomato.com": "뉴스토마토",
+    "www.newstomato.com": "뉴스토마토",
+    "newstnt.com": "뉴스티앤티",
+    "www.newstnt.com": "뉴스티앤티",
 
     # ✅ (추가) 아주뉴스/아주경제
     "ajunews.com": "아주경제",
@@ -6824,6 +7000,8 @@ ABBR_MAP = {
     "dgmbc": "대구MBC",
     "ccdailynews": "충청일보",
     "topstarnews": "톱스타뉴스",
+    "newstomato": "뉴스토마토",
+    "newstnt": "뉴스티앤티",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -11841,6 +12019,43 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         non_forced_selected = [a for a in deduped if (a.canon_url or _dup_key(a)) not in forced_keys]
         deduped = forced_selected + non_forced_selected
 
+    if section_key == "supply":
+        core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
+        if core_count < min(2, len(deduped)):
+            promote_candidates = sorted(
+                deduped,
+                key=lambda a: (
+                    1 if managed_commodity_board_keys_for_article(a, max_keys=1) else 0,
+                    1 if float(_managed_focus_summary_local(a).get("max_focus_score") or 0.0) >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0,
+                    int(_managed_focus_summary_local(a).get("program_core_strong_count") or 0),
+                    1 if has_direct_supply_chain_signal(((a.title or "") + " " + (a.description or "")).lower()) else 0,
+                    round(section_fit_score(a.title or "", a.description or "", sec_conf), 3),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                    getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+                ),
+                reverse=True,
+            )
+            for a in promote_candidates:
+                if core_count >= 2:
+                    break
+                if getattr(a, "is_core", False):
+                    continue
+                text = ((a.title or "") + " " + (a.description or "")).lower()
+                focus_summary_local = _managed_focus_summary_local(a)
+                focus_max_local = float(focus_summary_local.get("max_focus_score") or 0.0)
+                if _is_supply_policy_like_tail_story(a) or _is_supply_dist_like_tail_story(a) or _is_supply_weak_tail_story(a):
+                    continue
+                if is_fruit_foodservice_event_context(text) or is_fastfood_price_context(text):
+                    continue
+                if not managed_commodity_board_keys_for_article(a, max_keys=1) and focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and not has_direct_supply_chain_signal(text):
+                    continue
+                fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+                if fit_sc_core < max(0.9, core_fit_min - 0.35) and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
+                    continue
+                a.is_core = True
+                _record_selection(a, "core_promote")
+                core_count += 1
+
     # Debug report payload (top candidates + selection decisions)
     if DEBUG_REPORT:
         try:
@@ -15473,6 +15688,7 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     focus_summary = _managed_commodity_focus_summary_for_article(article)
     focus_by_key = dict(focus_summary.get("focus_by_key") or {})
     matched_keys = list(focus_summary.get("keys") or [])
+    board_metrics = _managed_commodity_board_focus_metrics_for_article(article, item)
     focus_score = float(focus_by_key.get(item_key) or 0.0)
     match_count = len(matched_keys)
     single_focus = 1 if item_key and matched_keys == [item_key] else 0
@@ -15483,6 +15699,8 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
     section_key = str(getattr(article, "section", "") or "").strip()
+    board_penalty = float(board_metrics.get("board_penalty") or 0.0)
+    board_eligible = bool(board_metrics.get("board_eligible"))
     board_score = (
         (focus_score * 24.0)
         + (float(getattr(article, "score", 0.0) or 0.0) * 0.28)
@@ -15497,7 +15715,11 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
         + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
         - (max(0, match_count - 1) * 8.0)
+        - board_penalty
     )
+    if not board_eligible:
+        board_score -= 120.0
+        focus_score = 0.0
     return {
         "board_score": board_score,
         "focus_score": focus_score,
@@ -15510,6 +15732,8 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         "single_focus": single_focus,
         "match_count": match_count,
         "section_rank": _COMMODITY_BOARD_SECTION_RANK.get(section_key, 0),
+        "board_eligible": board_eligible,
+        "board_penalty": board_penalty,
     }
 
 
@@ -15577,7 +15801,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     for sec in SECTIONS:
         for article in by_section.get(sec["key"], []) or []:
-            for key in managed_commodity_focus_keys_for_article(article, max_keys=2):
+            for key in managed_commodity_board_keys_for_article(article, max_keys=2):
                 payload = item_state.get(key)
                 if payload is None:
                     continue
