@@ -837,6 +837,7 @@ OPINION_BAN_TERMS = [
     "[사설]", "사설", "칼럼", "오피니언", "기고", "독자기고", "기자수첩",
     "일기", "농막일기", "수필", "에세이", "연재", "기행",
     "만평", "데스크칼럼", "횡설수설", "기자의 시선", "논단",
+    "촉석루", "[촉석루]", "경제이야기",
 ]
 
 # 지역 동정/기부/장학/발전기금 등 커뮤니티성 기사 제외용(특히 ○○농협 + 기금전달류 오탐 방지)
@@ -3092,6 +3093,8 @@ _MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
     for term in (
         "축제", "관광", "행사", "프로모션", "급식예산", "급식 예산", "학생", "복지",
         "마을", "영화", "감독", "초대장", "공연", "전시", "학교", "레트로",
+        "알뜰장보기", "구매 타이밍", "다이어트", "비타민", "1인 가구", "맛의 도시", "본산",
+        "품절 대란", "비빔밥", "레시피", "먹방",
     )
 )
 _MANAGED_COMMODITY_FOCUS_MATCH_MIN = 2.4
@@ -3099,7 +3102,7 @@ _MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
 _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS = (
     "교육", "기술교육", "총회", "설명회", "간담회", "워크숍", "세미나",
     "행사", "축제", "판촉", "특판", "할인판매", "할인 행사", "홍보",
-    "기념식", "발대식", "출범식",
+    "기념식", "발대식", "출범식", "박람회", "엑스포",
 )
 _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS = (
     "교육", "기술교육", "재배기술", "재배 기술", "컨설팅", "현장 컨설팅",
@@ -3503,6 +3506,18 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         board_penalty += 8.0
     if str(getattr(article, "section", "") or "").strip() == "supply" and is_supply_tourism_event_context(title, desc):
         board_penalty += 10.0
+    if is_commodity_sales_promo_context(title, desc):
+        board_penalty += 10.0
+    if is_commodity_political_statement_context(title, desc):
+        board_penalty += 10.0
+    if is_commodity_support_advice_context(title, desc):
+        board_penalty += 10.0
+    if is_commodity_consumer_guide_context(title, desc):
+        board_penalty += 12.0
+    if is_commodity_regional_branding_context(title, desc):
+        board_penalty += 12.0
+    if is_commodity_broad_price_roundup_context(title, desc):
+        board_penalty += 12.0
 
     metrics["board_eligible"] = True
     metrics["board_penalty"] = round(float(board_penalty), 3)
@@ -3644,6 +3659,18 @@ def _managed_article_significance_metrics(
         story_penalty += 26.0
     if consumer_noise_hits >= 2 and issue_bucket is None and (not direct_supply) and (not market_response):
         story_penalty += 16.0
+    if is_commodity_sales_promo_context(title, desc):
+        story_penalty += 18.0
+    if is_commodity_political_statement_context(title, desc):
+        story_penalty += 18.0
+    if is_commodity_support_advice_context(title, desc):
+        story_penalty += 20.0
+    if is_commodity_consumer_guide_context(title, desc):
+        story_penalty += 18.0
+    if is_commodity_regional_branding_context(title, desc):
+        story_penalty += 18.0
+    if is_commodity_broad_price_roundup_context(title, desc):
+        story_penalty += 20.0
 
     return {
         "issue_bucket": issue_bucket or "",
@@ -4849,6 +4876,62 @@ _SUPPLY_TOURISM_KEEP_TERMS = (
 _SUPPLY_PROMO_FEATURE_SEASON_TERMS = (
     "제철", "출하 시기", "출하시기", "출하 집중", "집중되는", "수확", "봄으로 넘어가는 시기", "주요 출하 시기",
 )
+_COMMODITY_PROMO_TAIL_TERMS = (
+    "소비촉진", "소비 촉진", "소비확대", "소비 확대", "소비 지원", "할인판매", "할인 판매", "할인 행사",
+    "기획전", "특판", "판촉", "프로모션", "세일즈", "홈쇼핑", "홈쇼핑 시장", "공략", "응원전", "총력전",
+    "판로 확대", "판로 개척", "유통망 확대",
+)
+_COMMODITY_PROMO_RETAIL_ACTOR_TERMS = (
+    "쿠팡", "킴스클럽", "이랜드", "롯데마트", "이마트", "홈플러스", "하나로마트", "대아청과",
+)
+_COMMODITY_PROMO_RETAIL_ACTION_TERMS = (
+    "물량 확대", "산지 물량 확대", "매입", "판매", "할인", "기획전", "판촉",
+)
+_COMMODITY_PROMO_KEEP_TERMS = (
+    "가격", "값", "시세", "수급", "경락", "경매", "반입", "도매시장", "공판장", "가락시장",
+    "산지유통", "산지유통센터", "저장", "재고", "생산비", "난방비", "폭락", "급락", "하락", "약세", "강세",
+    "출하 조절", "출하조절",
+)
+_COMMODITY_POLITICAL_ACTOR_TERMS = (
+    "의원", "도의원", "국회의원", "국회", "청와대", "농해수위", "생산자협회", "협회", "연합회", "위원장", "회장", "대표",
+    "민주당", "국민의힘", "여당", "야당", "경선", "대선", "후보", "캠프",
+)
+_COMMODITY_POLITICAL_ACTION_TERMS = (
+    "결의 대회", "결의대회", "기자회견", "규탄", "촉구", "호소", "성명", "요구", "건의", "주장", "비판", "항의",
+    "찾아", "방문", "시찰", "현장 방문", "총력전", "장바구니 미션", "미션", "공약", "토론", "유세", "검토",
+)
+_COMMODITY_POLITICAL_KEEP_TERMS = (
+    "가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "공동선별", "공선출하", "선적", "검역", "통관",
+)
+_COMMODITY_SUPPORT_TITLE_TERMS = (
+    "지원", "지원 확대", "장려금", "보급", "기술 지원", "기술지원", "맞춤형", "기반 강화", "경쟁력 강화", "관리 중요",
+    "관리 사활", "온·습도", "온습도", "품종 선택", "품종선택", "요령", "실시간 모니터링", "모니터링", "당부", "정식",
+    "초기 생육", "신품종", "육성계통", "공개", "상토", "파종 기계", "파종기계", "시연회", "스마트팜", "임대형 스마트팜",
+    "양액 재배", "양액재배", "재배 기술", "재배기술", "현장 컨설팅", "기술 교육", "기술교육", "방제약", "약제 공급",
+    "보급종", "관리법", "모주", "연작 장해", "윤작", "토양훈증제", "미생물 퇴비", "안전사용서", "해법",
+)
+_COMMODITY_SUPPORT_KEEP_TERMS = (
+    "가격", "시세", "수급", "경락", "경매", "반입", "도매시장", "공판장", "가락시장", "저장", "재고",
+    "생산량 급감", "물량 감소", "폭락", "급락", "하락", "약세", "강세", "난방비", "생산비", "냉해", "저온", "피해",
+)
+_COMMODITY_CONSUMER_GUIDE_TERMS = (
+    "알뜰장보기", "구매 타이밍", "다이어트", "비타민", "드세요", "한입", "더 달콤", "1인 가구", "효자",
+)
+_COMMODITY_CONSUMER_GUIDE_KEEP_TERMS = (
+    "가격", "시세", "수급", "경락", "경매", "반입", "도매시장", "공판장", "가락시장", "저장", "재고", "출하", "작황", "생육",
+)
+_COMMODITY_REGIONAL_BRANDING_TERMS = (
+    "맛의 도시", "본산", "전국 평정", "자연과 기술이 빚은", "명산지", "대표 산지",
+)
+_COMMODITY_MACRO_ROUNDUP_TERMS = (
+    "민생물가", "생활물가", "장바구니", "가격 인하", "물가 특별관리", "특별관리", "물가 잡는다", "물가 안정",
+)
+_COMMODITY_MACRO_ROUNDUP_GOODS_TERMS = (
+    "쌀", "콩", "계란", "화장지", "과자", "아이스크림", "라면", "빵", "우유", "커피",
+)
+_COMMODITY_UNANCHORED_GENERIC_TERMS = (
+    "드론", "자율 트랙터", "ai 시대", "농업기술원", "농기원", "기술원", "농사", "관리법", "안전사용서", "재배 기술", "스마트팜",
+)
 
 def is_supply_org_promo_feature_context(title: str, desc: str) -> bool:
     ttl = title or ""
@@ -4908,6 +4991,207 @@ def is_supply_tourism_event_context(title: str, desc: str) -> bool:
         return False
 
     return keep_hits == 0 and (title_tourism_hits >= 1 or tourism_hits >= 2)
+
+
+def is_commodity_sales_promo_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    topic_hit = topic in _HORTI_TOPICS_SET and topic_sc >= 1.0
+    if managed_count == 0 and item_hits == 0 and (not topic_hit) and best_horti_score(ttl, desc or "") < 1.6:
+        return False
+    promo_hits = count_any(txt, [w.lower() for w in _COMMODITY_PROMO_TAIL_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _COMMODITY_PROMO_KEEP_TERMS])
+    retail_actor_hits = count_any(txt, [w.lower() for w in _COMMODITY_PROMO_RETAIL_ACTOR_TERMS])
+    retail_action_hits = count_any(txt, [w.lower() for w in _COMMODITY_PROMO_RETAIL_ACTION_TERMS])
+    retail_like = is_retail_promo_context(txt) or (retail_actor_hits >= 1 and retail_action_hits >= 1)
+    if promo_hits == 0 and not retail_like:
+        return False
+    if retail_like and retail_actor_hits >= 1 and retail_action_hits >= 1:
+        return keep_hits <= 3
+    if keep_hits >= 2:
+        return False
+    if is_dist_sales_channel_ops_context(ttl, desc) or is_dist_field_market_response_context(ttl, desc):
+        return False
+    return True
+
+
+def is_commodity_political_statement_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    topic_hit = topic in _HORTI_TOPICS_SET and topic_sc >= 1.0
+    if managed_count == 0 and item_hits == 0 and (not topic_hit) and best_horti_score(ttl, desc or "") < 1.6:
+        return False
+    actor_hits = count_any(ttl_l, [w.lower() for w in _COMMODITY_POLITICAL_ACTOR_TERMS]) + count_any(txt, [w.lower() for w in _COMMODITY_POLITICAL_ACTOR_TERMS])
+    action_hits = count_any(txt, [w.lower() for w in _COMMODITY_POLITICAL_ACTION_TERMS])
+    quoted_statement = actor_hits >= 1 and any(mark in ttl for mark in ('"', "“", "”", "‘", "’")) and count_any(txt, [w.lower() for w in ("가격", "값", "생산비", "격리", "대책")]) >= 1
+    keep_hits = count_any(txt, [w.lower() for w in _COMMODITY_POLITICAL_KEEP_TERMS])
+    if actor_hits == 0 or (action_hits == 0 and not quoted_statement):
+        return False
+    if keep_hits >= 1 and (is_dist_market_ops_context(ttl, desc) or is_horti_market_action_context(ttl, desc) or is_dist_field_market_response_context(ttl, desc)):
+        return False
+    return keep_hits == 0
+
+
+def is_commodity_support_advice_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    topic_hit = topic in _HORTI_TOPICS_SET and topic_sc >= 1.0
+    if managed_count == 0 and item_hits == 0 and (not topic_hit) and best_horti_score(ttl, desc or "") < 1.6:
+        return False
+    title_hits = count_any(ttl_l, [w.lower() for w in _COMMODITY_SUPPORT_TITLE_TERMS])
+    text_hits = count_any(txt, [w.lower() for w in _COMMODITY_SUPPORT_TITLE_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _COMMODITY_SUPPORT_KEEP_TERMS])
+    market_hits = count_any(txt, [w.lower() for w in _MANAGED_COMMODITY_FOCUS_MARKET_TERMS])
+    if title_hits == 0 and text_hits < 2:
+        return False
+    if keep_hits >= 2 or (keep_hits >= 1 and title_hits == 0) or market_hits >= 2:
+        return False
+    if is_dist_sales_channel_ops_context(ttl, desc) or is_dist_field_market_response_context(ttl, desc):
+        return False
+    return True
+
+
+def is_commodity_consumer_guide_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    topic_hit = topic in _HORTI_TOPICS_SET and topic_sc >= 1.0
+    if managed_count == 0 and item_hits == 0 and (not topic_hit) and best_horti_score(ttl, desc or "") < 1.6:
+        return False
+    guide_hits = count_any(txt, [w.lower() for w in _COMMODITY_CONSUMER_GUIDE_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _COMMODITY_CONSUMER_GUIDE_KEEP_TERMS])
+    if guide_hits == 0:
+        return False
+    return keep_hits == 0
+
+
+def is_commodity_regional_branding_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L)
+    try:
+        topic, topic_sc = best_topic_and_score(ttl, desc or "")
+    except Exception:
+        topic, topic_sc = ("", 0.0)
+    topic_hit = topic in _HORTI_TOPICS_SET and topic_sc >= 1.0
+    if managed_count == 0 and item_hits == 0 and (not topic_hit) and best_horti_score(ttl, desc or "") < 1.6:
+        return False
+    geo_hit = (
+        (_LOCAL_REGION_IN_TITLE_RX.search(ttl) is not None)
+        or (re.search(r"[가-힣]{2,12}(?=,)", ttl) is not None)
+        or (re.search(r"(?:맛의 도시|본산)\s*['\"“”‘’]?\s*[가-힣]{2,12}", ttl) is not None)
+        or (re.search(r"[가-힣]{2,12}\s*(?:본산|대표 산지)", ttl) is not None)
+    )
+    if not geo_hit:
+        return False
+    brand_hits = count_any(txt, [w.lower() for w in _COMMODITY_REGIONAL_BRANDING_TERMS])
+    title_brand_hits = count_any(ttl_l, [w.lower() for w in _COMMODITY_REGIONAL_BRANDING_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _COMMODITY_CONSUMER_GUIDE_KEEP_TERMS]) + count_any(txt, [w.lower() for w in _MANAGED_COMMODITY_FOCUS_MARKET_TERMS])
+    if title_brand_hits >= 1:
+        return keep_hits <= 3
+    return brand_hits >= 1 and keep_hits == 0
+
+
+def is_commodity_broad_price_roundup_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    macro_hits = count_any(txt, [w.lower() for w in _COMMODITY_MACRO_ROUNDUP_TERMS])
+    goods_hits = count_any(txt, [w.lower() for w in _COMMODITY_MACRO_ROUNDUP_GOODS_TERMS])
+    keep_hits = (
+        count_any(txt, [w.lower() for w in _MANAGED_COMMODITY_FOCUS_MARKET_TERMS])
+        + count_any(txt, [w.lower() for w in _COMMODITY_SUPPORT_KEEP_TERMS])
+    )
+    multi_item_like = bool(re.search(r"\d+\s*개\s*품목", txt)) or txt.count("·") >= 2
+    return macro_hits >= 1 and (goods_hits >= 2 or multi_item_like) and keep_hits <= 1
+
+
+def is_commodity_unanchored_general_context(
+    item: dict[str, Any],
+    title: str,
+    desc: str,
+    dom: str = "",
+    press: str = "",
+) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt or not isinstance(item, dict):
+        return False
+    if is_supply_stabilization_policy_context(txt, dom, press) or is_policy_market_brief_context(txt, dom, press):
+        return False
+
+    anchor_terms = _ordered_unique_terms(
+        list(item.get("context_terms") or [])
+        + list(item.get("match_terms") or [])
+        + [str(item.get("label") or ""), str(item.get("short_label") or "")]
+    )
+    anchor_terms_l = [str(term or "").strip().lower() for term in anchor_terms if str(term or "").strip()]
+    title_anchor_hits = _commodity_board_term_hits(ttl_l, anchor_terms_l)
+    body_anchor_hits = _commodity_board_term_hits(txt, anchor_terms_l)
+    if title_anchor_hits >= 1 or body_anchor_hits >= 2:
+        return False
+
+    keep_hits = (
+        count_any(txt, [w.lower() for w in _MANAGED_COMMODITY_FOCUS_MARKET_TERMS])
+        + count_any(txt, [w.lower() for w in _COMMODITY_SUPPORT_KEEP_TERMS])
+        + count_any(txt, [w.lower() for w in _COMMODITY_CONSUMER_GUIDE_KEEP_TERMS])
+    )
+    if keep_hits >= 2:
+        return False
+
+    macro_hits = count_any(txt, [w.lower() for w in _COMMODITY_MACRO_ROUNDUP_TERMS])
+    goods_hits = count_any(txt, [w.lower() for w in _COMMODITY_MACRO_ROUNDUP_GOODS_TERMS])
+    generic_hits = count_any(txt, [w.lower() for w in _COMMODITY_UNANCHORED_GENERIC_TERMS])
+    multi_item_like = bool(re.search(r"\d+\s*개\s*품목", txt)) or txt.count("·") >= 2
+
+    if macro_hits >= 1 and (goods_hits >= 2 or multi_item_like):
+        return True
+    return generic_hits >= 2
 
 
 def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
@@ -5788,6 +6072,109 @@ def is_dist_export_support_hub_context(title: str, desc: str, dom: str = "", pre
     return actor_hits >= 1 and support_hits >= 3 and export_hits >= 1 and agri_hits >= 1
 
 
+_SUPPLY_MACRO_OFFICIAL_SHOCK_TERMS = (
+    "중동", "전쟁", "유가", "환율", "정유사", "호르무즈", "리스크", "위기", "비상시",
+    "석유제품", "원유", "수급 불안", "최고가격",
+)
+_SUPPLY_MACRO_OFFICIAL_ACTOR_TERMS = (
+    "장관", "차관", "산업부", "산업통상자원부", "농식품부", "농림축산식품부", "정부",
+    "관계부처", "비상경제", "회의", "점검 회의", "브리핑",
+)
+_SUPPLY_MACRO_OFFICIAL_POLICY_TERMS = (
+    "플랜b", "대응", "점검", "대책", "방안", "준비", "검토", "발표", "비상시",
+    "수출 물량", "가용물량", "조정",
+)
+_SUPPLY_MACRO_OFFICIAL_KEEP_TERMS = (
+    "가락시장", "도매시장", "공판장", "도매가격", "경락", "경매", "출하", "작황",
+    "재배", "생산량", "수확", "농가", "하우스", "시설농가", "비축", "저장",
+    "청과", "물량 증가", "가격 하락", "가격 급락",
+)
+_SUPPLY_PROCESSED_PANIC_TERMS = (
+    "감자칩", "감자 칩", "포테이토칩", "과자", "스낵", "화장지", "품귀", "품귀설",
+    "사재기", "웃돈", "대란", "생산 중단", "판매 중단",
+)
+_SUPPLY_PROCESSED_PANIC_FOREIGN_TERMS = (
+    "이란", "일본", "日", "해외", "유통업계", "중동", "전쟁", "전쟁 여파", "국제",
+)
+_SUPPLY_PROCESSED_PANIC_KEEP_TERMS = (
+    "가락시장", "도매시장", "공판장", "도매가격", "경락", "경매", "출하", "작황",
+    "재배", "수확", "농가", "산지", "저장", "씨감자", "봄감자", "수미감자",
+    "감자 수급", "감자 가격", "감자 도매가격",
+)
+
+
+def is_supply_macro_official_shock_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+
+    title_item_hits = count_any(ttl_l, HORTI_ITEM_TERMS_L)
+    horti_title_sc = best_horti_score(ttl, "")
+    title_macro_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_SHOCK_TERMS])
+    title_actor_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_ACTOR_TERMS])
+    title_policy_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_POLICY_TERMS])
+    if title_item_hits == 0 and horti_title_sc < 1.2 and title_actor_hits >= 1 and title_macro_hits >= 3 and title_policy_hits >= 1:
+        return True
+    if is_supply_feature_article(title, desc) or is_supply_price_outlook_context(title, desc):
+        return False
+
+    macro_hits = count_any(txt, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_SHOCK_TERMS])
+    actor_hits = count_any(txt, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_ACTOR_TERMS])
+    policy_hits = count_any(txt, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_POLICY_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_MACRO_OFFICIAL_KEEP_TERMS])
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    horti_sc = best_horti_score(ttl, desc or "")
+    direct_supply = has_direct_supply_chain_signal(txt)
+
+    if macro_hits < 2 or actor_hits == 0:
+        return False
+    if title_item_hits >= 1 or horti_title_sc >= 1.2:
+        return False
+    if title_actor_hits >= 1 and title_macro_hits >= 3 and title_policy_hits >= 1:
+        return True
+    if keep_hits >= 2 and direct_supply and (managed_count >= 1 or horti_sc >= 2.2):
+        return False
+    if not (
+        policy_hits >= 2
+        or is_policy_announcement_issue(txt, dom, press)
+        or is_macro_policy_issue(txt)
+    ):
+        return False
+    return managed_count == 0 or horti_sc < 1.8 or keep_hits == 0
+
+
+def is_supply_processed_consumer_panic_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return False
+    title_l = _nfkc_lower(ttl)
+    potato_processed_title = count_any(title_l, [w.lower() for w in _POTATO_PROCESSED_MARKERS]) + (
+        1 if _contains_compact_marker(title_l, list(_POTATO_PROCESSED_MARKERS)) else 0
+    )
+    if "감자" in txt and is_fresh_potato_context(txt) and potato_processed_title == 0:
+        return False
+
+    processed_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PANIC_TERMS]) + potato_processed_title
+    foreign_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PANIC_FOREIGN_TERMS]) + count_any(
+        txt,
+        [w.lower() for w in _FOREIGN_REMOTE_MARKERS],
+    )
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PANIC_KEEP_TERMS])
+    panic_hits = count_any(
+        txt,
+        [w.lower() for w in ("품귀", "품귀설", "사재기", "웃돈", "대란", "생산 중단", "판매 중단")],
+    )
+
+    if processed_hits == 0:
+        return False
+    if keep_hits >= 2 and has_direct_supply_chain_signal(txt) and best_horti_score(ttl, desc or "") >= 2.0:
+        return False
+    return foreign_hits >= 1 or panic_hits >= 2 or is_general_consumer_price_noise(txt)
+
+
 def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     """Return True for weak supply-tail stories that should not block stronger item features.
 
@@ -5806,9 +6193,25 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
         return True
     if is_dist_political_visit_context(title, desc):
         return True
+    if is_supply_macro_official_shock_context(title, desc):
+        return True
+    if is_supply_processed_consumer_panic_context(title, desc):
+        return True
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return False
     if is_supply_tourism_event_context(title, desc):
+        return True
+    if is_commodity_sales_promo_context(title, desc):
+        return True
+    if is_commodity_political_statement_context(title, desc):
+        return True
+    if is_commodity_support_advice_context(title, desc):
+        return True
+    if is_commodity_consumer_guide_context(title, desc):
+        return True
+    if is_commodity_regional_branding_context(title, desc):
+        return True
+    if is_commodity_broad_price_roundup_context(title, desc):
         return True
     if is_supply_org_promo_feature_context(title, desc):
         return False
@@ -7181,6 +7584,20 @@ PRESS_HOST_MAP = {
     "www.dgmbc.com": "대구MBC",
     "ccdailynews.com": "충청일보",
     "www.ccdailynews.com": "충청일보",
+    "econonews.co.kr": "이코노뉴스",
+    "www.econonews.co.kr": "이코노뉴스",
+    "ekn.kr": "에너지경제신문",
+    "www.ekn.kr": "에너지경제신문",
+    "samdailbo.com": "삼다일보",
+    "www.samdailbo.com": "삼다일보",
+    "queen.co.kr": "이코노미퀸",
+    "www.queen.co.kr": "이코노미퀸",
+    "wsobi.com": "여성소비자신문",
+    "www.wsobi.com": "여성소비자신문",
+    "newsfarm.co.kr": "한국농업신문",
+    "www.newsfarm.co.kr": "한국농업신문",
+    "4th.kr": "포쓰저널",
+    "www.4th.kr": "포쓰저널",
     "topstarnews.net": "톱스타뉴스",
     "www.topstarnews.net": "톱스타뉴스",
     "newstomato.com": "뉴스토마토",
@@ -7398,6 +7815,13 @@ ABBR_MAP = {
     "andongmbc": "안동MBC",
     "dgmbc": "대구MBC",
     "ccdailynews": "충청일보",
+    "econonews": "이코노뉴스",
+    "ekn": "에너지경제신문",
+    "samdailbo": "삼다일보",
+    "queen": "이코노미퀸",
+    "wsobi": "여성소비자신문",
+    "newsfarm": "한국농업신문",
+    "4th": "포쓰저널",
     "topstarnews": "톱스타뉴스",
     "newstomato": "뉴스토마토",
     "newstnt": "뉴스티앤티",
@@ -8762,6 +9186,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("hardblock_macro_trade_noise")
     if is_remote_foreign_trade_brief_context(ttl, desc, dom):
         return _reject("remote_foreign_trade_brief")
+    if key == "supply" and is_supply_macro_official_shock_context(ttl, desc, dom, press):
+        return _reject("supply_macro_official_shock")
+    if key == "supply" and is_supply_processed_consumer_panic_context(ttl, desc):
+        return _reject("supply_processed_consumer_panic")
     if key in ("supply", "policy") and is_flower_novelty_noise_context(ttl, desc):
         return _reject("flower_novelty_noise")
     if key in ("supply", "dist") and is_supply_tourism_event_context(ttl, desc):
@@ -9412,6 +9840,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_event_tail = is_policy_event_tail_context(title, desc, dom, press)
     dist_export_field = is_dist_export_field_context(title, desc, dom, press)
     policy_export_support_brief = is_policy_export_support_brief_context(title, desc, dom, press)
+    supply_macro_official_shock = is_supply_macro_official_shock_context(title, desc, dom, press)
+    supply_processed_consumer_panic = is_supply_processed_consumer_panic_context(title, desc)
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
@@ -9516,6 +9946,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 5.4
         if policy_market_brief:
             score -= 6.2
+        if supply_macro_official_shock:
+            score -= 8.8
+        if supply_processed_consumer_panic:
+            score -= 10.2
         if local_org_feature:
             score -= 4.8
         if dist_market_ops:
@@ -16476,6 +16910,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     metrics = dict(_commodity_board_item_article_metrics(item, article))
     title = str(getattr(article, "title", "") or "")
     desc = str(getattr(article, "description", "") or "")
+    dom = str(getattr(article, "domain", "") or "")
+    press = str(getattr(article, "press", "") or "")
     title_l = _nfkc_lower(title)
     issue_bucket = str(metrics.get("issue_bucket") or "")
     feature_kind = str(metrics.get("feature_kind") or "")
@@ -16487,6 +16923,7 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     training_title_hits = int(metrics.get("training_title_hits") or 0)
     profile_title_hits = int(metrics.get("profile_title_hits") or 0)
     board_eligible = bool(metrics.get("board_eligible"))
+    section_key = str(getattr(article, "section", "") or "").strip()
     strong_focus = bool(metrics.get("strong_focus"))
     primary_focus = bool(metrics.get("primary_focus"))
     board_score = float(metrics.get("board_score") or 0.0)
@@ -16506,11 +16943,21 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not allow_core_issue) and (not direct_supply)
     weak_tourism = bool(metrics.get("supply_tourism")) and not allow_core_issue
     weak_blossom_tourism = fruit_blossom_tourism and not allow_core_issue
+    weak_sales_promo = is_commodity_sales_promo_context(title, desc) and not market_response
+    weak_political_statement = is_commodity_political_statement_context(title, desc) and not market_response
+    weak_support_advice = is_commodity_support_advice_context(title, desc) and not market_response
+    weak_consumer_guide = is_commodity_consumer_guide_context(title, desc) and not market_response
+    weak_regional_branding = is_commodity_regional_branding_context(title, desc) and not market_response
+    weak_macro_roundup = is_commodity_broad_price_roundup_context(title, desc) and not market_response
+    weak_unanchored_general = is_commodity_unanchored_general_context(item, title, desc, dom, press) and not market_response
+    weak_opinion = any(term.lower() in title_l for term in OPINION_BAN_TERMS) and not is_strong_horti_opinion_context(title, desc, dom, press, section_key)
+    weak_supply_macro_official = is_supply_macro_official_shock_context(title, desc, dom, press) and not market_response
+    weak_processed_panic = is_supply_processed_consumer_panic_context(title, desc) and not market_response
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism:
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic:
         representative_rank = 0
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
@@ -16542,6 +16989,26 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         representative_score -= 20.0
     if weak_blossom_tourism:
         representative_score -= 24.0
+    if weak_sales_promo:
+        representative_score -= 18.0
+    if weak_political_statement:
+        representative_score -= 22.0
+    if weak_support_advice:
+        representative_score -= 20.0
+    if weak_consumer_guide:
+        representative_score -= 20.0
+    if weak_regional_branding:
+        representative_score -= 18.0
+    if weak_macro_roundup:
+        representative_score -= 20.0
+    if weak_unanchored_general:
+        representative_score -= 24.0
+    if weak_opinion:
+        representative_score -= 26.0
+    if weak_supply_macro_official:
+        representative_score -= 28.0
+    if weak_processed_panic:
+        representative_score -= 28.0
 
     metrics.update(
         {
@@ -16556,6 +17023,16 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
             "weak_consumer_lifestyle_story": bool(weak_consumer_lifestyle),
             "weak_tourism_story": bool(weak_tourism),
             "weak_blossom_tourism_story": bool(weak_blossom_tourism),
+            "weak_sales_promo_story": bool(weak_sales_promo),
+            "weak_political_statement_story": bool(weak_political_statement),
+            "weak_support_advice_story": bool(weak_support_advice),
+            "weak_consumer_guide_story": bool(weak_consumer_guide),
+            "weak_regional_branding_story": bool(weak_regional_branding),
+            "weak_macro_roundup_story": bool(weak_macro_roundup),
+            "weak_unanchored_general_story": bool(weak_unanchored_general),
+            "weak_opinion_story": bool(weak_opinion),
+            "weak_supply_macro_official_story": bool(weak_supply_macro_official),
+            "weak_processed_panic_story": bool(weak_processed_panic),
         }
     )
     return metrics
@@ -16864,6 +17341,8 @@ def _normalize_supply_section_from_board(
                     or metrics.get("weak_blossom_tourism_story")
                     or metrics.get("weak_org_feature_story")
                     or metrics.get("weak_org_promo_story")
+                    or metrics.get("weak_supply_macro_official_story")
+                    or metrics.get("weak_processed_panic_story")
                 )
             )
             if weak_story:
