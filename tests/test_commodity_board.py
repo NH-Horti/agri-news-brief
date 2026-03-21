@@ -244,6 +244,250 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_training_story"]))
 
+    def test_promo_campaign_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "대아청과 '달코미 양배추' 1만 통 할인판매 추진",
+            "대아청과가 달코미 양배추 소비 확대를 위해 할인판매와 판촉 행사를 추진한다.",
+            "https://example.com/cabbage-promo",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("cabbage"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_sales_promo_story"]))
+
+    def test_political_statement_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "\"국산 양파 산업 무너질라\"… 양파 생산자협회, 청와대서 결의 대회",
+            "양파 생산자협회가 청와대 앞에서 가격 폭락 저지와 수급 대책 마련을 촉구하는 결의 대회를 열었다.",
+            "https://example.com/onion-political",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_political_statement_story"]))
+
+    def test_coop_channel_expansion_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "고흥 거금도농협, 조생양파 판로 확대 나서",
+            "지역 농협이 조생양파 판매 촉진을 위해 판로 확대에 나섰다.",
+            "https://example.com/onion-coop-channel",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_sales_promo_story"]))
+
+    def test_support_project_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "예산군, 쪽파 재배 농가 상토 지원…안정 생산 기반 강화",
+            "쪽파 재배 농가에 상토와 장려금을 지원해 안정 생산 기반을 강화할 계획이다.",
+            "https://example.com/green-onion-support",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_support_advice_story"]))
+
+    def test_smartfarm_success_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "경북 봉화군, 스마트팜으로 겨울철 쪽파 성공 출하",
+            "임대형 스마트팜에서 겨울철 쪽파를 재배해 성공 출하했다는 현장 성과 소개 기사다.",
+            "https://example.com/green-onion-smartfarm",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_support_advice_story"]))
+
+    def test_consumer_guide_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "[주간알뜰장보기] '쪽파·애호박' 지금이 구매 타이밍! (3월3주)",
+            "3월 셋째 주 알뜰장보기 품목으로 쪽파와 애호박을 추천하며 구매 타이밍을 소개했다.",
+            "https://example.com/zucchini-shopping-guide",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("zucchini"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_consumer_guide_story"]))
+
+    def test_regional_branding_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "'K-과일'의 본산 경산, 대추·천도 복숭아 로 전국 평정했다",
+            "경산을 K-과일 본산으로 소개하며 천도 복숭아와 대추 브랜드 경쟁력을 부각하는 지역 홍보 기사다.",
+            "https://example.com/peach-branding",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("peach"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_regional_branding_story"]))
+
+    def test_regional_branding_story_with_supply_words_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "자두·포도·호두…자연과 기술이 빚은 '맛의 도시' 김천",
+            "김천은 자두·포도·호두 등 과수 주산지로, 농가가 시설재배를 확대하며 출하 시기 조절에 나서고 있다.",
+            "https://example.com/grape-branding-kimcheon",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("grape"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_regional_branding_story"]))
+
+    def test_price_crisis_story_with_promo_wording_can_stay_representative(self):
+        article = self._make_article(
+            "supply",
+            "월동무 가격 하락에 긴급 소비 촉진 사업 추진",
+            "월동무 가격 하락과 재고 부담에 대응해 긴급 소비 촉진 사업과 수급 대책을 함께 추진한다.",
+            "https://example.com/radish-price-crisis",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("radish"), article)
+
+        self.assertFalse(bool(metrics["weak_sales_promo_story"]))
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
+
+    def test_seed_supply_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "고양시, 감자 보급종 물량 확보 농가 공급 숨통",
+            "감자 보급종과 종서 지원으로 농가 공급 숨통을 틔운다는 지원 기사다.",
+            "https://example.com/potato-seed-support",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("potato"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_support_advice_story"]))
+
+    def test_party_basket_mission_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            '[단독] "대파 한 단에 얼마?"…민주당, 경선서 장바구니 미션 검토',
+            "민주당 경선 과정에서 장바구니 물가 체험 미션을 검토 중이라는 정치 기사다.",
+            "https://example.com/green-onion-political-mission",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_political_statement_story"]))
+
+    def test_rotation_advice_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            '생강 연작 장해, "윤작"이 답이다',
+            "생강 연작 피해를 줄이기 위한 윤작 관리법을 소개했다.",
+            "https://example.com/ginger-rotation-advice",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("ginger"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_support_advice_story"]))
+
+    def test_recipe_hype_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "품절 대란 강호동 '봄동 비빔밥'의 반전…사실은 얼갈이 배추",
+            "방송에서 소개된 비빔밥 재료를 다룬 소비자 화제성 기사다.",
+            "https://example.com/napa-cabbage-recipe-hype",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("napa_cabbage"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+
+    def test_unanchored_macro_roundup_story_is_not_representative(self):
+        article = self._make_article(
+            "policy",
+            "계란·화장지 등 민생물가 잡는다…과자·아이스크림도 가격 인하",
+            "정부가 23개 품목 물가 특별관리에 나섰다는 일반 물가 기사다.",
+            "https://example.com/garlic-macro-roundup",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("garlic"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+
+    def test_broad_macro_roundup_story_is_not_representative(self):
+        article = self._make_article(
+            "policy",
+            "쌀·콩·마늘 등 23개 품목 지정…물가 특별관리 나섰다",
+            "정부가 여러 생활물가 품목을 묶어 특별관리 대상으로 지정했다는 일반 물가 기사다.",
+            "https://example.com/garlic-broad-roundup",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("garlic"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_macro_roundup_story"]))
+
+    def test_retail_storage_sales_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            '“기체조절 기술로 신선함 꽉 잡았어요"…CA 저장 사과 ·양파 판매',
+            "롯데마트·수퍼는 CA 저장 기술로 사과와 양파 물량을 선제 확보해 판매하고 있다.",
+            "https://example.com/onion-retail-storage-sales",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("onion"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_sales_promo_story"]))
+
+    def test_unanchored_generic_agri_tech_story_is_not_representative(self):
+        article = self._make_article(
+            "pest",
+            "드론이 방제하고, 자율 트랙터가 밭 갈고… 농사도 AI 시대",
+            "농업 현장의 디지털 전환을 소개한 일반 기술 기사다.",
+            "https://example.com/green-onion-generic-ai",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_unanchored_general_story"]))
+
+    def test_expo_event_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "'2028 충청남도 국제밤산업박람회' 개최 청신호",
+            "국제밤산업박람회 개최 추진 소식이다.",
+            "https://example.com/chestnut-expo",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("chestnut"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+
+    def test_opinion_column_story_is_not_representative(self):
+        article = self._make_article(
+            "supply",
+            "[김흥길 교수의 경제이야기]고부가가치 작물 파프리카",
+            "교수 칼럼 형식으로 파프리카 산업을 해설한 오피니언 기사다.",
+            "https://example.com/paprika-opinion-column",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("paprika"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_opinion_story"]))
+
     def test_tourism_style_fruit_story_is_not_representative(self):
         tourism_article = self._make_article(
             "supply",
@@ -892,6 +1136,91 @@ class TestCommodityBoard(unittest.TestCase):
                 "supply",
             )
         )
+
+    def test_supply_macro_official_shock_story_is_rejected_from_supply(self):
+        title = '문신학 산업차관 "비상시 정유사 수출 물량 줄일수도…2차 최고가격 오를수도"'
+        desc = (
+            "문신학 산업차관은 중동발 위기 대응을 위해 비상시 정유사 수출 물량을 줄이는 방안까지 포함한 "
+            "플랜B를 준비 중이라고 밝혔다. 국내 석유제품 수급 불안이 커진 상황이 배경이다."
+        )
+        url = "https://www.sedaily.com/article/20021867"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+
+        self.assertTrue(main.is_supply_macro_official_shock_context(title, desc, dom, press))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+
+    def test_processed_consumer_panic_story_is_rejected_from_supply(self):
+        title = "이란 전쟁에 日 유통업계도 타격… 감자 칩 생산 중단, 화장지 품귀설 확산"
+        desc = (
+            "이란 전쟁 여파로 일본 유통업계에서도 감자칩 생산 중단과 화장지 품귀설이 번지고 있다. "
+            "원유 정제 소재가 쓰이는 자동차 부품과 의료기기 수급 차질 우려도 제기됐다."
+        )
+        url = "https://biz.chosun.com/international/international_economy/2026/03/21/G7Z72WHI75H6TFIPFTFFKCNVMI/"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        article = self._make_article("supply", title, desc, url)
+
+        self.assertTrue(main.is_supply_processed_consumer_panic_context(title, desc))
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("potato"), article)
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_processed_panic_story"]))
+
+    def test_supply_selection_skips_macro_official_and_processed_panic_tails(self):
+        valid_articles = [
+            self._make_article(
+                "supply",
+                "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                "https://example.com/oriental-melon-supply",
+            ),
+            self._make_article(
+                "supply",
+                "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                "https://example.com/tomato-heating-shock",
+            ),
+            self._make_article(
+                "supply",
+                '"마늘 수확량 월등히 많고, 1등품이 73% 차지"',
+                "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                "https://example.com/garlic-harvest-quality",
+            ),
+            self._make_article(
+                "supply",
+                '"햇양파 도매 가격 kg당 400원, 수확 비용도 못 건져"',
+                "햇양파 도매가격이 급락해 수확 비용도 건지기 어려운 상황이라 산지 출하 조절 요구가 커지고 있다.",
+                "https://example.com/onion-price-collapse",
+            ),
+            self._make_article(
+                "supply",
+                "사과 선별·공판 기능 결합…유통거점 부상",
+                "사과 선별과 공판 기능이 결합되며 산지 출하와 물량 조절 거점 역할이 커지고 있다.",
+                "https://example.com/apple-hub-supply",
+            ),
+        ]
+        for idx, article in enumerate(valid_articles):
+            article.score += max(0.0, 12.0 - idx)
+
+        macro_article = self._make_article(
+            "supply",
+            '문신학 산업차관 "비상시 정유사 수출 물량 줄일수도…2차 최고가격 오를수도"',
+            "문신학 산업차관은 중동발 위기 대응을 위해 비상시 정유사 수출 물량을 줄이는 방안까지 포함한 플랜B를 준비 중이라고 밝혔다.",
+            "https://www.sedaily.com/article/20021867",
+        )
+        panic_article = self._make_article(
+            "supply",
+            "이란 전쟁에 日 유통업계도 타격… 감자 칩 생산 중단, 화장지 품귀설 확산",
+            "이란 전쟁 여파로 일본 유통업계에서도 감자칩 생산 중단과 화장지 품귀설이 번지고 있다. 원유 정제 소재가 쓰이는 자동차 부품과 의료기기 수급 차질 우려도 제기됐다.",
+            "https://biz.chosun.com/international/international_economy/2026/03/21/G7Z72WHI75H6TFIPFTFFKCNVMI/",
+        )
+
+        selected = main.select_top_articles(valid_articles + [macro_article, panic_article], "supply", 4)
+        selected_titles = {article.title for article in selected}
+
+        self.assertNotIn(macro_article.title, selected_titles)
+        self.assertNotIn(panic_article.title, selected_titles)
 
 if __name__ == "__main__":
     unittest.main()

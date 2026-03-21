@@ -1,5 +1,3 @@
-$ErrorActionPreference = "Stop"
-
 param(
     [Parameter(Mandatory = $true)]
     [string]$ReportDate,
@@ -7,6 +5,8 @@ param(
     [switch]$DebugReport,
     [switch]$SkipOpenAI
 )
+
+$ErrorActionPreference = "Stop"
 
 function Get-RepoRoot {
     return (Resolve-Path (Join-Path $PSScriptRoot "..")).Path

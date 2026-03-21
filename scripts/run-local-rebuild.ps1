@@ -1,5 +1,3 @@
-$ErrorActionPreference = "Stop"
-
 param(
     [Parameter(Mandatory = $true)]
     [string]$ReportDate,
@@ -10,6 +8,8 @@ param(
     [int]$MaxPerSection = 5,
     [int]$UxPatchDays = 0
 )
+
+$ErrorActionPreference = "Stop"
 
 function Get-RepoRoot {
     return (Resolve-Path (Join-Path $PSScriptRoot "..")).Path

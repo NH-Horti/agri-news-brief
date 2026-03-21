@@ -2575,6 +2575,15 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(main.normalize_press_label("danbinews", "https://www.danbinews.com/news/articleView.html?idxno=32644"), "단비뉴스")
         self.assertEqual(main.normalize_press_label("ibabynews", "https://www.ibabynews.com/news/articleView.html?idxno=149752"), "베이비뉴스")
 
+    def test_normalize_press_label_maps_recent_raw_aliases_from_board_outputs(self):
+        self.assertEqual(main.normalize_press_label("econonews", "https://www.econonews.co.kr/news/articleView.html?idxno=1"), "이코노뉴스")
+        self.assertEqual(main.normalize_press_label("EKN", "https://www.ekn.kr/web/view.php?key=1"), "에너지경제신문")
+        self.assertEqual(main.normalize_press_label("samdailbo", "http://www.samdailbo.com/news/articleView.html?idxno=1"), "삼다일보")
+        self.assertEqual(main.normalize_press_label("QUEEN", "https://www.queen.co.kr/news/articleView.html?idxno=1"), "이코노미퀸")
+        self.assertEqual(main.normalize_press_label("WSOBI", "http://www.wsobi.com/news/articleView.html?idxno=1"), "여성소비자신문")
+        self.assertEqual(main.normalize_press_label("newsfarm", "https://www.newsfarm.co.kr/news/articleView.html?idxno=1"), "한국농업신문")
+        self.assertEqual(main.normalize_press_label("4TH", "https://www.4th.kr/news/articleView.html?idxno=1"), "포쓰저널")
+
     def test_policy_export_support_brief_excludes_generic_seminar_story(self):
         title = "글로벌 농식품 규정 변화 대응 세미나 개최"
         desc = "농식품 수출 대응을 위한 세미나 개최 소식으로, 장관 브리핑이나 정부 업무계획 설명은 없는 행사성 기사다."
