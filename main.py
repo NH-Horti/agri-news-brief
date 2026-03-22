@@ -2865,20 +2865,19 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         if a_region and b_region and a_region != b_region:
             if is_pest_control_policy_context(a_txt) and is_pest_control_policy_context(b_txt):
                 return False
-    # 0) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
-    try:
-        if _near_duplicate_title(a, b, section_key):
-            return True
-    except Exception:
-        pass
-
-
-    # 1) 섹션별 선언형 이벤트 시그니처가 있으면 우선 적용
+    # 0) 섹션별 선언형 이벤트 시그니처가 있으면 우선 적용(정확도 높고 비용 낮음)
     if section_key in _EVENT_KEY_SECTIONS:
         sa = _section_story_signature(section_key, at, ad, getattr(a, "domain", "") or "", getattr(a, "press", "") or "")
         sb = _section_story_signature(section_key, bt, bd, getattr(b, "domain", "") or "", getattr(b, "press", "") or "")
         if sa and sb and sa == sb:
             return True
+
+    # 1) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
+    try:
+        if _near_duplicate_title(a, b, section_key):
+            return True
+    except Exception:
+        pass
 
 
     # 2) 앵커 겹침 + 3-gram Jaccard(섹션별 임계치)
@@ -8161,7 +8160,7 @@ def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
-    w = {4: 12.5, 3: 9.5, 2: 4.5, 1: -2.0}.get(t, -2.0)
+    w = {4: 7.0, 3: 5.5, 2: 2.5, 1: -1.5}.get(t, -1.5)
     p = (press or '').strip()
     d = (domain or '').lower()
     # 로컬 매체(특정): 기본 가중치에 추가 감점(핵심 상단 잠식 방지)
@@ -9864,12 +9863,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
 
 
-    # trade_policy_core_boost: 품목(토픽) + 무역/정책(관세/FTA/통관/수입) + 영향(수급/가격/잠식 등) 조합이면 핵심성 가산
-    trade_terms = ("관세", "할당관세", "무관세", "fta", "통관", "보세", "수입", "검역")
-    impact_terms = ("수급", "가격", "물량", "잠식", "경쟁", "타격", "부추", "압박", "급등", "급락")
-    if any(x in text for x in trade_terms) and any(x in text for x in impact_terms):
-        if any(_term in text for _tn,_terms in TOPICS for _term in _terms[:3]):
-            score += 1.6
     # 지방 "인구감소/생활인구" 예산 기사(원예 키워드가 섞여도 핵심성 낮음) 감점
     if ("인구감소" in text) or ("생활인구" in text):
         score -= 6.0
@@ -10289,6 +10282,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 전 섹션: 패스트푸드 가격 기사 방어(필터를 통과하더라도 점수 하락)
     if is_fastfood_price_context(text):
         score -= 6.0
+
+    # 점수 하한: 다수 감점 누적에 의한 극단적 음수 방지
+    score = max(score, -5.0)
 
     return round(score, 3)
 def _token_set(s: str) -> set[str]:
@@ -11136,10 +11132,10 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
 # -----------------------------
 # 섹션별 최소 스코어 기준선(너무 약한 기사는 후보 풀에서 제외)
 BASE_MIN_SCORE = {
-    "supply": 7.0,
-    "policy": 7.0,
-    "dist": 7.2,
-    "pest": 6.6,
+    "supply": 4.0,
+    "policy": 4.0,
+    "dist": 4.5,
+    "pest": 4.0,
 }
 
 def _dist_selection_reference_score(candidates_sorted: list["Article"]) -> float:
@@ -15314,11 +15310,30 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         if cur not in conf_by_key:
             cur = "supply" if "supply" in conf_by_key else (keys[0] if keys else cur)
 
-        # pest는 기본 유지(섹션 스코어링보다 컨텍스트 판정이 중요)
+        # pest는 기본 유지하되, policy/dist에서 점수가 크게 높으면 재분류 허용
         if cur == "pest":
-            target = "pest"
+            pest_score = float(getattr(a, "score", 0.0) or 0.0)
+            _pest_dom = normalize_host(getattr(a, "domain", "") or "")
+            _pest_press = (getattr(a, "press", "") or "").strip()
+            best_alt_key: str | None = None
+            best_alt_score = pest_score
+            for alt_key in ("policy", "dist"):
+                if alt_key not in conf_by_key:
+                    continue
+                alt_score = compute_rank_score(
+                    a.title or "", a.description or "", _pest_dom,
+                    getattr(a, "pub_dt_kst", None), conf_by_key[alt_key], _pest_press,
+                )
+                if alt_score >= pest_score + 2.0 and alt_score > best_alt_score:
+                    best_alt_score = alt_score
+                    best_alt_key = alt_key
+            target = best_alt_key if best_alt_key else "pest"
             di = local_dedupe_by.get(target)
             if di and di.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                if target != "pest":
+                    a.reassigned_from = "pest"
+                    a.section = target
+                    a.score = best_alt_score
                 new_by.setdefault(target, []).append(a)
             continue
 
@@ -16177,29 +16192,55 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
 
     board_source_by_section = build_managed_commodity_board_source_by_section(raw_by_section)
     final_by_section: dict[str, list[Article]] = {}
-    global_dedupe = DedupeIndex()
 
-    # ✅ 전역 dedupe는 '후보 수집'이 아니라 '최종 선택'에서 적용(섹션 간 누락 방지)
+    # ✅ Phase 1: 모든 섹션 버퍼를 먼저 생성
+    _section_buffers: dict[str, list[Article]] = {}
     for sec in SECTIONS:
         key = sec["key"]
         candidates = raw_by_section.get(key, [])
-
-        # 섹션 내부 품질/임계치/근접중복 억제는 기존 로직 유지하되,
-        # 전역 dedupe로 인해 스킵될 수 있으니 여유분을 더 뽑아둔다.
         buffer_n = max(MAX_PER_SECTION * 8, 60)
         pre = select_top_articles(candidates, key, buffer_n)
-
-        picked: list[Article] = []
+        valid: list[Article] = []
         for a in pre:
             reason = _postbuild_article_reject_reason(a, key)
             if reason:
                 log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
                 continue
+            valid.append(a)
+        _section_buffers[key] = valid
+
+    # ✅ Phase 2: 여러 섹션에 동시 등장하는 기사 → 최고 점수 섹션에 배정
+    _article_sections: dict[str, dict[str, float]] = {}  # ident -> {section: score}
+    for key, articles in _section_buffers.items():
+        for a in articles:
+            ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+            if ident not in _article_sections:
+                _article_sections[ident] = {}
+            _article_sections[ident][key] = float(a.score)
+
+    _blocked_idents: dict[str, set[str]] = {}  # section -> set of idents to skip
+    for ident, sec_scores in _article_sections.items():
+        if len(sec_scores) <= 1:
+            continue
+        best_section = max(sec_scores, key=lambda k: sec_scores[k])
+        for k in sec_scores:
+            if k != best_section:
+                _blocked_idents.setdefault(k, set()).add(ident)
+
+    # ✅ Phase 3: 배정 결과에 따라 global_dedupe + MAX_PER_SECTION 적용
+    global_dedupe = DedupeIndex()
+    for sec in SECTIONS:
+        key = sec["key"]
+        blocked = _blocked_idents.get(key, set())
+        picked: list[Article] = []
+        for a in _section_buffers.get(key, []):
+            ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+            if ident in blocked:
+                continue
             if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                 picked.append(a)
                 if len(picked) >= MAX_PER_SECTION:
                     break
-
         final_by_section[key] = picked
         if DEBUG_SELECTION:
             top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
@@ -16214,6 +16255,57 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
                          a.score, press_priority(a.press, a.domain), press_tier(a.press, a.domain),
                          rk, nh, a.title[:120])
 
+
+    # ── Phase 4: Cross-section similar-story dedup + backfill ──
+    _all_section_keys = [s["key"] for s in SECTIONS]
+    _cross_removals: list[tuple[str, int]] = []  # (section_key, index)
+    for i, key_a in enumerate(_all_section_keys):
+        for key_b in _all_section_keys[i + 1:]:
+            for idx_a, art_a in enumerate(final_by_section.get(key_a, [])):
+                for idx_b, art_b in enumerate(final_by_section.get(key_b, [])):
+                    # Use a neutral section_key for cross-section comparison
+                    if not _is_similar_story(art_a, art_b, key_a):
+                        continue
+                    score_a = float(getattr(art_a, "score", 0.0) or 0.0)
+                    score_b = float(getattr(art_b, "score", 0.0) or 0.0)
+                    if score_a >= score_b:
+                        _cross_removals.append((key_b, idx_b))
+                        log.info("[CROSS-DEDUP] keep section=%s score=%.2f title=%s | drop section=%s score=%.2f title=%s",
+                                 key_a, score_a, (art_a.title or "")[:80], key_b, score_b, (art_b.title or "")[:80])
+                    else:
+                        _cross_removals.append((key_a, idx_a))
+                        log.info("[CROSS-DEDUP] keep section=%s score=%.2f title=%s | drop section=%s score=%.2f title=%s",
+                                 key_b, score_b, (art_b.title or "")[:80], key_a, score_a, (art_a.title or "")[:80])
+
+    # Deduplicate removal indices and remove (reverse order to preserve indices)
+    _removal_by_section: dict[str, set[int]] = {}
+    for sec_key, idx in _cross_removals:
+        _removal_by_section.setdefault(sec_key, set()).add(idx)
+
+    for sec_key, indices in _removal_by_section.items():
+        old_list = final_by_section.get(sec_key, [])
+        final_by_section[sec_key] = [a for i, a in enumerate(old_list) if i not in indices]
+
+        # Backfill from section buffer
+        needed = MAX_PER_SECTION - len(final_by_section[sec_key])
+        if needed > 0:
+            existing_idents = set()
+            for a in final_by_section[sec_key]:
+                existing_idents.add(a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}")
+            for a in _section_buffers.get(sec_key, []):
+                ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+                if ident in existing_idents:
+                    continue
+                if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                    continue
+                if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
+                    continue
+                final_by_section[sec_key].append(a)
+                existing_idents.add(ident)
+                log.info("[CROSS-DEDUP-BACKFILL] section=%s title=%s", sec_key, (a.title or "")[:80])
+                needed -= 1
+                if needed <= 0:
+                    break
 
     try:
         moved_dist = _rebalance_underfilled_dist_from_supply(final_by_section)
