@@ -8566,6 +8566,9 @@ def normalize_press_label(press: str, url: str = "") -> str:
 
     if mapped and mapped != "미상" and re.fullmatch(r"[a-z0-9._-]+", p_compact):
         return mapped
+    # fallback: check ABBR_MAP for raw domain-brand press names
+    if p_compact in ABBR_MAP:
+        return ABBR_MAP[p_compact]
     return p
 
 
@@ -18667,7 +18670,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
             if primary_article:
                 primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
-                primary_press_label = str(getattr(primary_article, "press", "") or "").strip()
+                primary_press_label = normalize_press_label(str(getattr(primary_article, "press", "") or "").strip(), str(getattr(primary_article, "url", "") or ""))
                 primary_meta_terms = [
                     term
                     for term in (
@@ -18747,7 +18750,9 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
         inactive_chips = "".join(
             (
                 f'<span class="commodityMiniChip{" isCore" if item.get("program_core") else ""}">'
-                f'{esc(str(item.get("label") or ""))}</span>'
+                f'{esc(str(item.get("label") or ""))}'
+                f'{"  ·수급" if item.get("program_core") else ""}'
+                f'</span>'
             )
             for item in (group.get("inactive_items") or [])
         )
@@ -18954,12 +18959,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             url = a.originallink or a.link
             summary_html = "<br>".join(esc(a.summary).splitlines())
             core_badge = '<span class="badgeCore">핵심</span>' if is_core else ""
+            press_label = normalize_press_label(a.press, url)
             return f"""
-            <div class=\"card\" style=\"border-left-color:{color}\">
+            <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\">
               <div class=\"cardTop\">
                 <div class=\"meta\">
                   {core_badge}
-                  <span class=\"press\">{esc(a.press)}</span>
+                  <span class=\"press\">{esc(press_label)}</span>
                   <span class=\"dot\">·</span>
                   <span class=\"time\">{esc(fmt_dt(a.pub_dt_kst))}</span>
                   <span class=\"dot\">·</span>
@@ -18979,7 +18985,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
         section_blocks.append(
             f"""
-            <section id=\"sec-{key}\" class=\"sec\">
+            <section id=\"sec-{key}\" class=\"sec\" style=\"--sec-color:{color}\">
               <div class=\"secHead\" style=\"border-left:8px solid {color};\">
                 <div class=\"secTitle\">
                   <span class=\"dotColor\" style=\"background:{color}\"></span>
@@ -19093,7 +19099,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     /* fallback: first nav button */
     .navRow > a.navBtn:first-child{{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}}
 
-    .navBtn.disabled{{opacity:.45;cursor:pointer}}
+    .navBtn.disabled{{opacity:.45;cursor:not-allowed}}
     .dateSelWrap{{display:inline-flex;align-items:center;gap:6px}}
     select{{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
             width:165px; max-width:165px;}}
@@ -19227,8 +19233,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityInactive{{margin-top:12px;padding:12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc}}
     .commodityInactiveTitle{{color:#64748b;font-size:12px;font-weight:800;margin-bottom:8px}}
     .commodityMiniGrid{{display:flex;flex-wrap:wrap;gap:8px}}
-    .commodityMiniChip{{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #dbe4ee;background:#fff;color:#475569;font-size:12px;font-weight:700}}
-    .commodityMiniChip.isCore{{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}}
+    .commodityMiniChip{{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #dbe4ee;background:#fff;color:#475569;font-size:12px;font-weight:700;opacity:.7}}
+    .commodityMiniChip.isCore{{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8;opacity:1;font-weight:900;border-width:2px}}
     .commodityEmpty{{padding:20px 18px 22px}}
     .commodityGroupEmpty{{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}}
 
@@ -19240,14 +19246,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .dotColor{{width:10px;height:10px;border-radius:999px}}
     .secCount{{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}}
     .secBody{{padding:12px 12px 14px}}
-    .card{{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff}}
+    .card{{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease}}
+    .card:hover{{border-color:#94a3b8;box-shadow:0 4px 12px rgba(15,23,42,.08)}}
     .cardTop{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}}
     .meta{{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}}
     .press{{color:#111827;font-weight:900}}
     .dot{{opacity:.5}}
-    .topic{{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827}}
+    .topic{{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827;cursor:pointer;transition:background .15s ease}}
+    .topic:hover{{background:#e0e7ff;border-color:#a5b4fc;color:#3730a3}}
     .ttl{{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}}
-    .sum{{margin-top:8px;color:#374151;font-size:13px;line-height:1.55}}
+    .sum{{margin-top:8px;color:#374151;font-size:13px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}
 
     .badgeCore {{
       display:inline-flex; align-items:center; justify-content:center;
@@ -19345,13 +19353,86 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityTile{{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
       .commodityInactive{{padding:0;border:none;background:transparent}}
       .commodityInactiveTitle{{margin-bottom:10px}}
-      .sec{{margin-top:18px !important;border:none;border-radius:0 !important;overflow:visible;background:transparent}}
-      .secHead{{padding:0 0 10px;background:transparent;border-bottom:none}}
-      .secBody{{padding:0}}
+      .sec{{margin-top:22px !important;border:none;border-left:4px solid var(--sec-color, #cbd5e1);border-radius:0 !important;overflow:visible;background:transparent;padding-left:12px}}
+      .secHead{{padding:0 0 10px;background:transparent;border-bottom:1px solid var(--line)}}
+      .secBody{{padding:4px 0 0}}
       .card{{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
       .commoditySupportText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}
+    }}
+    @media print {{
+      .topbar,.chipDock,.mobileQuickNav,.mobileQuickNavSheet,.navLoading,.swipeHint,.btnOpen,.viewTabs{{display:none !important}}
+      body{{background:#fff;color:#000}}
+      .wrap{{max-width:none;padding:10px !important}}
+      .briefingHero{{border:1px solid #ccc;box-shadow:none;background:#fff}}
+      .chipbar{{display:block;border:none;box-shadow:none;background:transparent}}
+      .chips{{flex-wrap:wrap}}
+      .chip{{border:1px solid #ccc;box-shadow:none;background:#f9f9f9;page-break-inside:avoid}}
+      .sec{{border:1px solid #ccc;page-break-inside:avoid}}
+      .card{{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid;cursor:default}}
+      .card:hover{{border-color:#ccc;box-shadow:none}}
+      .sum{{display:block;-webkit-line-clamp:unset;overflow:visible}}
+      .commodityBoard{{box-shadow:none;border:1px solid #ccc}}
+      .commodityTile{{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}}
+      .footer{{page-break-before:always}}
+      a{{color:#000;text-decoration:none}}
+      .press{{color:#000}} .ttl{{color:#000}}
+    }}
+    @media (prefers-color-scheme: dark) {{
+      :root {{
+        --bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--card:#1e293b;
+        --chip:#1e293b;--btn:#3b82f6;--btnHover:#2563eb;--btnBg:#1e293b;
+        --shadow:0 4px 12px rgba(0,0,0,.3);
+      }}
+      body{{background:var(--bg);color:var(--text)}}
+      .topbar{{background:rgba(15,23,42,0.94);border-bottom-color:var(--line)}}
+      .navBtn{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .navBtn:hover{{border-color:#475569}}
+      .navBtn.navArchive{{background:#1e3a5f !important;border-color:#3b82f6 !important;color:#93c5fd !important}}
+      .navRow > a.navBtn:first-child{{background:#1e3a5f !important;border-color:#3b82f6 !important;color:#93c5fd !important}}
+      select{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .viewTab{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);color:#e2e8f0;border-color:var(--line)}}
+      .viewTab:hover{{border-color:#475569}}
+      .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);border-color:#1d4ed8}}
+      .viewTabDesc{{color:#94a3b8}}
+      .viewTabStat{{background:rgba(255,255,255,.08);color:#e2e8f0}}
+      .briefingHero{{background:linear-gradient(135deg,#1e293b 0%,#0f172a 56%,#1e293b 100%);border-color:var(--line)}}
+      .briefingHeroStat{{background:rgba(30,41,59,.92);border-color:var(--line)}}
+      .briefingHeroStat strong{{color:#e2e8f0}}
+      .briefingHeroStatLabel{{color:#94a3b8}}
+      .chipbar{{background:rgba(30,41,59,.96);border-color:var(--line)}}
+      .chip{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);color:#e2e8f0}}
+      .sec{{background:var(--card)}}
+      .secHead{{background:#1e293b;border-bottom-color:var(--line)}}
+      .card{{background:#1e293b;border-color:var(--line)}}
+      .card:hover{{border-color:#475569;box-shadow:0 4px 12px rgba(0,0,0,.2)}}
+      .press{{color:#e2e8f0}}
+      .topic{{background:#334155;border-color:#475569;color:#e2e8f0}}
+      .ttl{{color:#f1f5f9}}
+      .sum{{color:#94a3b8}}
+      .badgeCore{{background:#3b82f6;color:#fff}}
+      .commodityBoard{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}}
+      .commodityHead{{background:linear-gradient(135deg,#1e293b 0%,#0f172a 68%,#1e293b 100%);border-bottom-color:var(--line)}}
+      .commodityHead::after{{display:none}}
+      .commodityHeadStat{{background:rgba(30,41,59,.95);border-color:var(--line)}}
+      .commodityHeadStat strong{{color:#e2e8f0}}
+      .commodityTile{{background:#1e293b;border-color:var(--line)}}
+      .commodityTile.isActive{{border-color:#34d399;box-shadow:0 8px 24px rgba(52,211,153,.1)}}
+      .commodityPrimaryCard{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}}
+      .commodityPrimaryStory{{color:#f1f5f9}}
+      .commoditySupportStory,.commodityMoreStory{{background:#1e293b;border-color:var(--line);color:#e2e8f0}}
+      .commodityMoreWrap{{background:#0f172a;border-color:#475569}}
+      .commodityMoreSummary{{color:#94a3b8}}
+      .commodityGroupBlock{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}}
+      .commodityInactive{{background:#0f172a;border-color:#475569}}
+      .commodityMiniChip{{background:#1e293b;border-color:#475569;color:#94a3b8}}
+      .commodityMiniChip.isCore{{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}}
+      .commodityStoryMuted{{background:#0f172a;border-color:#475569;color:#64748b}}
+      .mobileQuickNavPanel{{background:#1e293b;border-color:var(--line)}}
+      .mobileQuickNavClose{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .chipDock .chipbar{{background:rgba(30,41,59,.98)}}
+      .empty{{color:#64748b}}
     }}
   </style>
 </head>
@@ -19418,6 +19499,37 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <script>
     (function() {{
 {dev_refresh_js}
+      // card click-to-open
+      document.addEventListener("click", function(e) {{
+        var card = e.target.closest && e.target.closest(".card[data-href]");
+        if (!card) return;
+        if (e.target.closest("a,button,select,input,textarea,.topic")) return;
+        var href = card.getAttribute("data-href");
+        if (href) window.open(href, "_top", "noopener");
+      }});
+      // topic badge click -> jump to commodity board item
+      document.addEventListener("click", function(e) {{
+        var topicEl = e.target.closest && e.target.closest(".topic");
+        if (!topicEl) return;
+        var name = (topicEl.textContent || "").trim();
+        if (!name) return;
+        // find matching commodity tile
+        var tiles = document.querySelectorAll(".commodityTileName");
+        for (var i = 0; i < tiles.length; i++) {{
+          if ((tiles[i].textContent || "").trim() === name) {{
+            // switch to commodity view
+            var commodityTab = document.querySelector('[data-view-tab="commodity"]');
+            if (commodityTab && typeof activateView === "function") activateView("commodity");
+            else if (commodityTab) commodityTab.click();
+            tiles[i].closest(".commodityTile").scrollIntoView({{ behavior: "smooth", block: "center" }});
+            tiles[i].closest(".commodityTile").style.outline = "3px solid #3b82f6";
+            setTimeout(function() {{ tiles[i].closest(".commodityTile").style.outline = ""; }}, 2000);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }}
+        }}
+      }});
       var isDevPreviewPage = {json.dumps(is_dev_preview)};
       var devLoaderHref = {json.dumps(preview_href)};
       var devArchiveManifestUrl = {json.dumps(dev_archive_manifest_url)};
@@ -20347,7 +20459,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     .btn{{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;text-decoration:none;color:#fff;
          border:1px solid var(--btn);padding:10px 14px;border-radius:12px;background:var(--btn);font-weight:900; cursor:pointer; user-select:none}}
     .btn:hover{{background:var(--btnHover);border-color:var(--btnHover)}}
-    .btn.disabled{{opacity:.5; cursor:pointer}}
+    .btn.disabled{{opacity:.5; cursor:not-allowed}}
     .btn.ghost{{background:#fff;color:var(--btn);border-color:var(--line)}}
     .btn.ghost:hover{{border-color:#cbd5e1;background:#f8fafc}}
 
@@ -20363,6 +20475,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     .dt{{font-size:15px;font-weight:900}}
     .meta{{margin-top:6px;color:var(--muted);font-size:12px}}
     .empty{{color:var(--muted);font-size:13px}}
+    .cardBadge{{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;padding:1px 7px;border-radius:999px;background:#eef2ff;color:#1d4ed8;font-size:11px;font-weight:800;border:1px solid #c7d2fe}}
 
     /* search */
     .searchRow{{display:flex;gap:10px;align-items:center}}
@@ -20398,6 +20511,31 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
     .groupHdr{{margin-top:8px;font-weight:900;font-size:13px;color:#111827}}
     .groupWrap{{display:flex;flex-direction:column;gap:10px}}
+    @media (prefers-color-scheme: dark) {{
+      :root {{--bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--btn:#3b82f6;--btnHover:#2563eb;--chip:#334155;--mark:#854d0e}}
+      body{{background:var(--bg);color:var(--text)}}
+      .btn{{color:#fff}} .btn.ghost{{background:#1e293b;color:#93c5fd;border-color:var(--line)}}
+      .btn.ghost:hover{{background:#334155;border-color:#475569}}
+      .btn.disabled{{opacity:.5}}
+      .panel{{background:#1e293b;border-color:var(--line)}}
+      .card{{background:#1e293b;border-color:var(--line);color:var(--text)}}
+      .card:hover{{border-color:#475569}}
+      .dt{{color:#f1f5f9}}
+      .searchInput{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .searchInput:focus{{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.2)}}
+      .sel,.date{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .sel:focus,.date:focus{{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.2)}}
+      .chip{{background:#334155;border-color:#475569;color:#e2e8f0}}
+      .result{{background:#1e293b;border-color:var(--line)}}
+      .rTitle{{color:#f1f5f9}}
+      .rSum{{color:#94a3b8}}
+      .rLinks a{{color:#93c5fd}}
+      .pager .pbtn{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
+      .pager .pbtn:hover{{background:#334155;border-color:#475569}}
+      mark{{background:#854d0e;color:#fde68a}}
+      .groupHdr{{color:#e2e8f0}}
+      .cardBadge{{background:#1e3a5f;color:#93c5fd;border-color:#3b82f6}}
+    }}
   </style>
 </head>
 <body>
@@ -20889,6 +21027,28 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
           metaLeft.innerHTML = "<span class='chip'><b>준비 완료</b> 키워드를 입력하세요</span>";
           metaRight.textContent = "인덱스 " + items.length + "건";
+
+          // annotate archive cards with article counts
+          try {{
+            var dateCounts = {{}};
+            for (var i = 0; i < items.length; i++) {{
+              var dd = items[i].date || "";
+              if (dd) dateCounts[dd] = (dateCounts[dd] || 0) + 1;
+            }}
+            var archiveCards = document.querySelectorAll(".grid .card[href]");
+            for (var i = 0; i < archiveCards.length; i++) {{
+              var c = archiveCards[i];
+              var href = c.getAttribute("href") || "";
+              var m = href.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
+              if (m && dateCounts[m[1]]) {{
+                var badge = document.createElement("span");
+                badge.className = "cardBadge";
+                badge.textContent = dateCounts[m[1]] + "건";
+                var metaEl = c.querySelector(".meta");
+                if (metaEl) metaEl.appendChild(badge);
+              }}
+            }}
+          }} catch (_annotateErr) {{}}
         }} catch(e) {{
           DATA = null;
           metaLeft.innerHTML = "<span class='chip'><b>오류</b> 검색 인덱스를 불러오지 못했습니다. 새로고침 후 다시 시도하세요.</span>";
