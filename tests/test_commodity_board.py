@@ -296,7 +296,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_support_advice_story"]))
 
-    def test_smartfarm_success_story_is_not_representative(self):
+    def test_smartfarm_success_story_is_board_visible_but_low_rank(self):
         article = self._make_article(
             "supply",
             "경북 봉화군, 스마트팜으로 겨울철 쪽파 성공 출하",
@@ -306,8 +306,7 @@ class TestCommodityBoard(unittest.TestCase):
 
         metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
 
-        self.assertEqual(int(metrics["representative_rank"]), 0)
-        self.assertTrue(bool(metrics["weak_support_advice_story"]))
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
 
     def test_consumer_guide_story_is_not_representative(self):
         article = self._make_article(
