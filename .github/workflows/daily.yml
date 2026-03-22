@@ -71,6 +71,8 @@ jobs:
           MAINTENANCE_TASK: ''
           FORCE_REPORT_DATE: ''
           FORCE_RUN_ANYDAY: 'false'
+          REPLAY_WRITE_SNAPSHOT: 'true'
+          REPLAY_SNAPSHOT_DIR: .agri_replay
           UX_PATCH_DAYS: '45'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
@@ -79,11 +81,34 @@ jobs:
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          NAVER_MAX_WORKERS: '1'
+          NAVER_MAX_WORKERS: '2'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
         run: |
           python main.py
+
+      - name: Publish replay snapshot
+        if: success()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          if [ ! -f "$snapshot_path" ]; then
+            echo "Replay snapshot was not generated: $snapshot_path"
+            exit 1
+          fi
+
+          python scripts/replay_snapshot_repo.py push \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --branch main \
+            --remote-path "docs/replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --input "$snapshot_path" \
+            --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
 
       - name: Resolve Kakao status
         if: always()

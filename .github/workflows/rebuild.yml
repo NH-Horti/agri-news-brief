@@ -105,10 +105,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Run tests before rebuild
-        id: tests
+      - name: Run smoke checks before rebuild
+        id: smoke
         run: |
-          python -m unittest discover -s tests -p "test_*.py"
+          python scripts/run_smoke_checks.py
 
       - name: Rebuild
         id: rebuild
@@ -135,6 +135,8 @@ jobs:
           MAINTENANCE_TASK: rebuild_date
           FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
+          REPLAY_WRITE_SNAPSHOT: 'true'
+          REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 
           FORCE_RUN_ANYDAY: 'false'
@@ -142,7 +144,7 @@ jobs:
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
 
-          NAVER_MAX_WORKERS: '1'
+          NAVER_MAX_WORKERS: '2'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
           DEBUG_REPORT: ${{ steps.vars.outputs.debug_enabled }}
@@ -152,6 +154,29 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Publish replay snapshot
+        if: steps.rebuild.outcome == 'success'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          if [ ! -f "$snapshot_path" ]; then
+            echo "Replay snapshot was not generated: $snapshot_path"
+            exit 1
+          fi
+
+          python scripts/replay_snapshot_repo.py push \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --branch main \
+            --remote-path "docs/replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --input "$snapshot_path" \
+            --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
 
       - name: Resolve Kakao status
         if: always()
@@ -226,7 +251,7 @@ jobs:
             echo "- Event: ${{ github.event_name }}"
             echo "- Branch: ${{ github.ref_name }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
-            echo "- Tests: ${{ steps.tests.outcome }}"
+            echo "- Smoke checks: ${{ steps.smoke.outcome }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
             echo "- OpenAI model: gpt-5.4"

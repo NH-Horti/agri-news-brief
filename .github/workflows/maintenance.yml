@@ -77,9 +77,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Run tests before backfill
+      - name: Run smoke checks before backfill
         run: |
-          python -m unittest discover -s tests -p "test_*.py"
+          python scripts/run_smoke_checks.py
 
       - name: Backfill rebuild
         env:
@@ -108,6 +108,8 @@ jobs:
           BACKFILL_REBUILD_SKIP_OPENAI: ${{ inputs.skip_openai }}
           BACKFILL_REBUILD_SLEEP_SEC: ${{ inputs.sleep_sec }}
           BACKFILL_INCLUDE_NONBUSINESS_DAYS: ${{ inputs.include_nonbusiness_days }}
+          REPLAY_WRITE_SNAPSHOT: 'true'
+          REPLAY_SNAPSHOT_DIR: .agri_replay
 
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'false'
@@ -115,7 +117,7 @@ jobs:
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          NAVER_MAX_WORKERS: '1'
+          NAVER_MAX_WORKERS: '2'
           NAVER_MIN_INTERVAL_SEC: '0.6'
           DEBUG_REPORT: ${{ inputs.debug && '1' || '0' }}
           DEBUG_REPORT_WRITE_JSON: ${{ inputs.debug && '1' || '0' }}
@@ -124,3 +126,28 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Publish replay snapshots
+        if: success()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          count=0
+          for snapshot_path in .agri_replay/*.snapshot.json; do
+            name="$(basename "$snapshot_path")"
+            python scripts/replay_snapshot_repo.py push \
+              --repo "$REPO" \
+              --token "$GITHUB_TOKEN" \
+              --branch main \
+              --remote-path "docs/replay/${name}" \
+              --input "$snapshot_path" \
+              --message "Update replay snapshot (${name})"
+            count=$((count + 1))
+          done
+
+          echo "Published replay snapshots: $count"
