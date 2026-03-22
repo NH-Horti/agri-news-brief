@@ -686,7 +686,7 @@ except Exception:
     pass
 # Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
 DEFAULT_WHITELIST_RSS_URLS = [
-    "https://www.wonyesanup.co.kr/rss/allArticle.xml",
+    "http://www.wonyesanup.co.kr/rss/allArticle.xml",  # HTTP: server SSL cert is invalid for this domain
 ]
 WHITELIST_RSS_URLS: list[str] = []
 for _rss_url in list(DEFAULT_WHITELIST_RSS_URLS) + [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]:
