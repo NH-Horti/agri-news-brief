@@ -39,6 +39,7 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -60,14 +61,20 @@ jobs:
       - name: Resolve run variables
         id: vars
         shell: bash
+        env:
+          INPUT_REPORT_DATE: ${{ inputs.report_date }}
+          INPUT_UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+          INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
+          INPUT_MAX_PER_SECTION: ${{ inputs.max_per_section }}
+          INPUT_DEBUG: ${{ inputs.debug }}
         run: |
           set -euo pipefail
 
-          report_date='${{ inputs.report_date }}'
-          ux_patch_days='${{ inputs.ux_patch_days }}'
-          send_kakao='${{ inputs.send_kakao }}'
-          max_per_section='${{ inputs.max_per_section }}'
-          debug_input='${{ inputs.debug }}'
+          report_date="$INPUT_REPORT_DATE"
+          ux_patch_days="$INPUT_UX_PATCH_DAYS"
+          send_kakao="$INPUT_SEND_KAKAO"
+          max_per_section="$INPUT_MAX_PER_SECTION"
+          debug_input="$INPUT_DEBUG"
 
           if [ -z "$ux_patch_days" ]; then
             ux_patch_days='0'
