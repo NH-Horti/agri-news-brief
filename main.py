@@ -2875,20 +2875,19 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         if a_region and b_region and a_region != b_region:
             if is_pest_control_policy_context(a_txt) and is_pest_control_policy_context(b_txt):
                 return False
-    # 0) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
-    try:
-        if _near_duplicate_title(a, b, section_key):
-            return True
-    except Exception:
-        pass
-
-
-    # 1) 섹션별 선언형 이벤트 시그니처가 있으면 우선 적용
+    # 0) 섹션별 선언형 이벤트 시그니처가 있으면 우선 적용(정확도 높고 비용 낮음)
     if section_key in _EVENT_KEY_SECTIONS:
         sa = _section_story_signature(section_key, at, ad, getattr(a, "domain", "") or "", getattr(a, "press", "") or "")
         sb = _section_story_signature(section_key, bt, bd, getattr(b, "domain", "") or "", getattr(b, "press", "") or "")
         if sa and sb and sa == sb:
             return True
+
+    # 1) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
+    try:
+        if _near_duplicate_title(a, b, section_key):
+            return True
+    except Exception:
+        pass
 
 
     # 2) 앵커 겹침 + 3-gram Jaccard(섹션별 임계치)
@@ -2903,8 +2902,8 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
 
     inter = ah & bh
     if section_key == "dist":
-        # dist는 보도자료 중복이 많으므로 앵커 조건을 조금 완화
-        if len(ah) < 3 or len(bh) < 3 or len(inter) < 2:
+        # dist는 보도자료 중복이 많으므로 앵커 조건을 완화
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
             return False
         thr = 0.18
     elif section_key in ("supply", "policy"):
@@ -7120,6 +7119,50 @@ def has_direct_supply_chain_signal(text: str) -> bool:
     return count_any(t, [w.lower() for w in _DIRECT_SUPPLY_SIGNAL_TERMS]) >= 2
 
 
+# ── 유가/에너지 주제 기사 판별: 농업은 부수적 언급에 불과한 경우 ──
+_OIL_ENERGY_PRIMARY_TERMS = (
+    "유가", "국제유가", "원유", "wti", "브렌트", "두바이유", "배럴",
+    "경유", "휘발유", "가솔린", "디젤", "유류", "유류세", "유류비",
+    "에너지", "전기요금", "전기료", "가스요금", "난방비",
+    "opec", "석유", "정유", "주유소",
+)
+_OIL_ENERGY_TITLE_TERMS = (
+    "유가", "국제유가", "원유", "wti", "브렌트", "배럴",
+    "경유", "휘발유", "에너지", "전기요금", "가스요금",
+    "opec", "석유", "주유소",
+)
+_OIL_ENERGY_AGRI_DIRECT_TERMS = (
+    "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "청과",
+    "사과", "배", "감귤", "딸기", "포도", "참외", "토마토", "파프리카", "오이",
+    "수급", "출하", "경락", "도매시장", "가락시장", "공판장", "산지유통",
+)
+
+def is_oil_energy_primary_macro_context(title: str, desc: str) -> bool:
+    """유가/에너지가 기사 주제이고, 농업은 부수적(농가 부담/물가 전이 등) 언급인 경우.
+    - 제목에 유가/에너지 키워드가 있고
+    - 농산물 직접 신호(품목명/수급/도매시장)가 약하면 True
+    """
+    ttl = (title or "").lower()
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    title_oil_hits = count_any(ttl, [w.lower() for w in _OIL_ENERGY_TITLE_TERMS])
+    if title_oil_hits == 0:
+        return False
+    body_oil_hits = count_any(txt, [w.lower() for w in _OIL_ENERGY_PRIMARY_TERMS])
+    if body_oil_hits < 2:
+        return False
+    agri_direct_hits = count_any(txt, [w.lower() for w in _OIL_ENERGY_AGRI_DIRECT_TERMS])
+    title_agri_hits = count_any(ttl, [w.lower() for w in _OIL_ENERGY_AGRI_DIRECT_TERMS])
+    # 제목에 농산물 직접 신호가 있으면 유가가 농산물 수급에 미치는 영향 기사 → 허용
+    if title_agri_hits >= 1:
+        return False
+    # 본문에도 직접 농산물 신호가 충분하면 허용
+    if agri_direct_hits >= 3:
+        return False
+    return True
+
+
 _SUPPLY_FEATURE_FIELD_TERMS = (
     "생육", "생육적온", "재배", "작황", "농가", "농장", "산지", "생산자", "하우스", "시설",
     "수확", "착과", "난방", "난방비", "연료비", "유가", "한파", "냉해", "동해", "꽃샘추위",
@@ -8699,7 +8742,7 @@ def press_weight(press: str, domain: str) -> float:
     """스코어 가중치(정밀)."""
     t = press_tier(press, domain)
     # 기본 가중치: 공식 > 주요언론 > 중간 > 기타
-    w = {4: 12.5, 3: 9.5, 2: 4.5, 1: -2.0}.get(t, -2.0)
+    w = {4: 7.0, 3: 5.5, 2: 2.5, 1: -1.5}.get(t, -1.5)
     p = (press or '').strip()
     d = (domain or '').lower()
     # 로컬 매체(특정): 기본 가중치에 추가 감점(핵심 상단 잠식 방지)
@@ -9848,6 +9891,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     if key in ("supply", "dist") and is_fruit_blossom_tourism_context(ttl, desc):
         return _reject("fruit_blossom_tourism")
 
+    # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
+    if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
+        return _reject("oil_energy_primary_macro")
+
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
         if best_horti_score(ttl, desc) < 1.8 and (not macro_policy_like) and (not broad_macro_price):
@@ -9900,6 +9947,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
         return _reject("ban_keywords")
+
+    # 엔터테인먼트/연예 기사 차단(농산물 브리핑과 무관)
+    _ENTERTAINMENT_BLOCK_TERMS = ("bts", "방탄소년단", "블랙핑크", "팬미팅", "콘서트", "공연", "뮤지컬", "페스티벌")
+    if any(w in text for w in _ENTERTAINMENT_BLOCK_TERMS):
+        agri_keep = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "수급", "출하", "도매시장", "가락시장", "경락", "공판장")])
+        if agri_keep < 2:
+            return _reject("hardblock_entertainment")
 
     # ✅ '멜론' 동음이의어(음원 플랫폼) 오탐 차단:
     # - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 통과
@@ -10498,6 +10552,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
     policy_price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
     policy_general_macro_tail = is_policy_general_macro_tail_context(title, desc, dom, press)
+    oil_energy_primary_macro = is_oil_energy_primary_macro_context(title, desc)
     policy_event_tail = is_policy_event_tail_context(title, desc, dom, press)
     dist_export_field = is_dist_export_field_context(title, desc, dom, press)
     policy_export_support_brief = is_policy_export_support_brief_context(title, desc, dom, press)
@@ -10532,12 +10587,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
 
 
 
-    # trade_policy_core_boost: 품목(토픽) + 무역/정책(관세/FTA/통관/수입) + 영향(수급/가격/잠식 등) 조합이면 핵심성 가산
-    trade_terms = ("관세", "할당관세", "무관세", "fta", "통관", "보세", "수입", "검역")
-    impact_terms = ("수급", "가격", "물량", "잠식", "경쟁", "타격", "부추", "압박", "급등", "급락")
-    if any(x in text for x in trade_terms) and any(x in text for x in impact_terms):
-        if any(_term in text for _tn,_terms in TOPICS for _term in _terms[:3]):
-            score += 1.6
     # 지방 "인구감소/생활인구" 예산 기사(원예 키워드가 섞여도 핵심성 낮음) 감점
     if ("인구감소" in text) or ("생활인구" in text):
         score -= 6.0
@@ -10662,6 +10711,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 5.0
         if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and ((not direct_supply_story) or policy_market_brief):
             score -= 4.2
+        if oil_energy_primary_macro:
+            score -= 6.0
         if managed_count:
             score += min(2.0, 0.34 * managed_count)
             score += min(2.2, 1.05 * program_core_count)
@@ -10790,6 +10841,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 2.4
         if policy_general_macro_tail:
             score -= 6.4
+        if oil_energy_primary_macro:
+            score -= 8.0
         if policy_event_tail:
             score -= 8.4
         if managed_count and (macro_policy_like or policy_stabilization or policy_market_brief or policy_major_issue or policy_export_support_brief):
@@ -10983,6 +11036,9 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 전 섹션: 패스트푸드 가격 기사 방어(필터를 통과하더라도 점수 하락)
     if is_fastfood_price_context(text):
         score -= 6.0
+
+    # 점수 하한: 다수 감점 누적에 의한 극단적 음수 방지
+    score = max(score, -5.0)
 
     return round(score, 3)
 def _token_set(s: str) -> set[str]:
@@ -11380,6 +11436,12 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
         common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
         common_cmd = len((ta & tb) & _SUPPLY_COMMODITY_TOKENS)
         if common_cmd >= 1 and common_core >= 2 and jac >= 0.50:
+            return True
+        # 유가/에너지 매크로 기사 동일 주제 중복 억제
+        _macro_topic_tokens = {"유가", "국제유가", "원유", "경유", "휘발유", "에너지", "물가", "소비자물가", "환율"}
+        a_macro = (ta & _macro_topic_tokens)
+        b_macro = (tb & _macro_topic_tokens)
+        if len(a_macro) >= 1 and len(b_macro) >= 1 and (a_macro & b_macro) and jac >= 0.30:
             return True
 
     if section_key == "dist":
@@ -11830,10 +11892,10 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
 # -----------------------------
 # 섹션별 최소 스코어 기준선(너무 약한 기사는 후보 풀에서 제외)
 BASE_MIN_SCORE = {
-    "supply": 7.0,
-    "policy": 7.0,
-    "dist": 7.2,
-    "pest": 6.6,
+    "supply": 4.0,
+    "policy": 4.0,
+    "dist": 4.5,
+    "pest": 4.0,
 }
 
 def _dist_selection_reference_score(candidates_sorted: list["Article"]) -> float:
@@ -16039,11 +16101,30 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         if cur not in conf_by_key:
             cur = "supply" if "supply" in conf_by_key else (keys[0] if keys else cur)
 
-        # pest는 기본 유지(섹션 스코어링보다 컨텍스트 판정이 중요)
+        # pest는 기본 유지하되, policy/dist에서 점수가 크게 높으면 재분류 허용
         if cur == "pest":
-            target = "pest"
+            pest_score = float(getattr(a, "score", 0.0) or 0.0)
+            _pest_dom = normalize_host(getattr(a, "domain", "") or "")
+            _pest_press = (getattr(a, "press", "") or "").strip()
+            best_alt_key: str | None = None
+            best_alt_score = pest_score
+            for alt_key in ("policy", "dist"):
+                if alt_key not in conf_by_key:
+                    continue
+                alt_score = compute_rank_score(
+                    a.title or "", a.description or "", _pest_dom,
+                    getattr(a, "pub_dt_kst", None), conf_by_key[alt_key], _pest_press,
+                )
+                if alt_score >= pest_score + 2.0 and alt_score > best_alt_score:
+                    best_alt_score = alt_score
+                    best_alt_key = alt_key
+            target = best_alt_key if best_alt_key else "pest"
             di = local_dedupe_by.get(target)
             if di and di.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                if target != "pest":
+                    a.reassigned_from = "pest"
+                    a.section = target
+                    a.score = best_alt_score
                 new_by.setdefault(target, []).append(a)
             continue
 
@@ -16931,29 +17012,55 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
 
     board_source_by_section = build_managed_commodity_board_source_by_section(raw_by_section)
     final_by_section: dict[str, list[Article]] = {}
-    global_dedupe = DedupeIndex()
 
-    # ✅ 전역 dedupe는 '후보 수집'이 아니라 '최종 선택'에서 적용(섹션 간 누락 방지)
+    # ✅ Phase 1: 모든 섹션 버퍼를 먼저 생성
+    _section_buffers: dict[str, list[Article]] = {}
     for sec in SECTIONS:
         key = sec["key"]
         candidates = raw_by_section.get(key, [])
-
-        # 섹션 내부 품질/임계치/근접중복 억제는 기존 로직 유지하되,
-        # 전역 dedupe로 인해 스킵될 수 있으니 여유분을 더 뽑아둔다.
         buffer_n = max(MAX_PER_SECTION * 8, 60)
         pre = select_top_articles(candidates, key, buffer_n)
-
-        picked: list[Article] = []
+        valid: list[Article] = []
         for a in pre:
             reason = _postbuild_article_reject_reason(a, key)
             if reason:
                 log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
                 continue
+            valid.append(a)
+        _section_buffers[key] = valid
+
+    # ✅ Phase 2: 여러 섹션에 동시 등장하는 기사 → 최고 점수 섹션에 배정
+    _article_sections: dict[str, dict[str, float]] = {}  # ident -> {section: score}
+    for key, articles in _section_buffers.items():
+        for a in articles:
+            ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+            if ident not in _article_sections:
+                _article_sections[ident] = {}
+            _article_sections[ident][key] = float(a.score)
+
+    _blocked_idents: dict[str, set[str]] = {}  # section -> set of idents to skip
+    for ident, sec_scores in _article_sections.items():
+        if len(sec_scores) <= 1:
+            continue
+        best_section = max(sec_scores, key=lambda k: sec_scores[k])
+        for k in sec_scores:
+            if k != best_section:
+                _blocked_idents.setdefault(k, set()).add(ident)
+
+    # ✅ Phase 3: 배정 결과에 따라 global_dedupe + MAX_PER_SECTION 적용
+    global_dedupe = DedupeIndex()
+    for sec in SECTIONS:
+        key = sec["key"]
+        blocked = _blocked_idents.get(key, set())
+        picked: list[Article] = []
+        for a in _section_buffers.get(key, []):
+            ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+            if ident in blocked:
+                continue
             if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                 picked.append(a)
                 if len(picked) >= MAX_PER_SECTION:
                     break
-
         final_by_section[key] = picked
         if DEBUG_SELECTION:
             top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
@@ -16968,6 +17075,57 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                          a.score, press_priority(a.press, a.domain), press_tier(a.press, a.domain),
                          rk, nh, a.title[:120])
 
+
+    # ── Phase 4: Cross-section similar-story dedup + backfill ──
+    _all_section_keys = [s["key"] for s in SECTIONS]
+    _cross_removals: list[tuple[str, int]] = []  # (section_key, index)
+    for i, key_a in enumerate(_all_section_keys):
+        for key_b in _all_section_keys[i + 1:]:
+            for idx_a, art_a in enumerate(final_by_section.get(key_a, [])):
+                for idx_b, art_b in enumerate(final_by_section.get(key_b, [])):
+                    # Use a neutral section_key for cross-section comparison
+                    if not _is_similar_story(art_a, art_b, key_a):
+                        continue
+                    score_a = float(getattr(art_a, "score", 0.0) or 0.0)
+                    score_b = float(getattr(art_b, "score", 0.0) or 0.0)
+                    if score_a >= score_b:
+                        _cross_removals.append((key_b, idx_b))
+                        log.info("[CROSS-DEDUP] keep section=%s score=%.2f title=%s | drop section=%s score=%.2f title=%s",
+                                 key_a, score_a, (art_a.title or "")[:80], key_b, score_b, (art_b.title or "")[:80])
+                    else:
+                        _cross_removals.append((key_a, idx_a))
+                        log.info("[CROSS-DEDUP] keep section=%s score=%.2f title=%s | drop section=%s score=%.2f title=%s",
+                                 key_b, score_b, (art_b.title or "")[:80], key_a, score_a, (art_a.title or "")[:80])
+
+    # Deduplicate removal indices and remove (reverse order to preserve indices)
+    _removal_by_section: dict[str, set[int]] = {}
+    for sec_key, idx in _cross_removals:
+        _removal_by_section.setdefault(sec_key, set()).add(idx)
+
+    for sec_key, indices in _removal_by_section.items():
+        old_list = final_by_section.get(sec_key, [])
+        final_by_section[sec_key] = [a for i, a in enumerate(old_list) if i not in indices]
+
+        # Backfill from section buffer
+        needed = MAX_PER_SECTION - len(final_by_section[sec_key])
+        if needed > 0:
+            existing_idents = set()
+            for a in final_by_section[sec_key]:
+                existing_idents.add(a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}")
+            for a in _section_buffers.get(sec_key, []):
+                ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+                if ident in existing_idents:
+                    continue
+                if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                    continue
+                if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
+                    continue
+                final_by_section[sec_key].append(a)
+                existing_idents.add(ident)
+                log.info("[CROSS-DEDUP-BACKFILL] section=%s title=%s", sec_key, (a.title or "")[:80])
+                needed -= 1
+                if needed <= 0:
+                    break
 
     try:
         moved_dist = _rebalance_underfilled_dist_from_supply(final_by_section)
