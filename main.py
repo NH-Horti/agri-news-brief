@@ -2869,6 +2869,18 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
                 if (not has_direct_supply_chain_signal(a_txt)) and (not has_direct_supply_chain_signal(b_txt)):
                     return False
 
+    # supply/policy: 유가/에너지 동일 토픽 기사 → 같은 이슈로 간주(중복 제거)
+    if section_key in ("supply", "policy"):
+        _oil_kws = ("유가", "원유", "국제유가", "기름값", "휘발유", "경유", "석유", "에너지", "opec", "배럴")
+        a_oil = count_any(a_txt.lower(), list(_oil_kws)) >= 2
+        b_oil = count_any(b_txt.lower(), list(_oil_kws)) >= 2
+        if a_oil and b_oil:
+            # 둘 다 유가/에너지 primary → horti 품목이 다르지 않은 한 같은 이슈
+            a_horti = best_horti_score(at, ad)
+            b_horti = best_horti_score(bt, bd)
+            if a_horti < 1.8 and b_horti < 1.8:
+                return True
+
     if section_key == "pest":
         a_region = _pest_region_or_fallback_key(a)
         b_region = _pest_region_or_fallback_key(b)
@@ -2902,10 +2914,10 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
 
     inter = ah & bh
     if section_key == "dist":
-        # dist는 보도자료 중복이 많으므로 앵커 조건을 완화
+        # dist는 보도자료 중복이 많으므로 앵커 조건 완화 + Jaccard로 보강
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
             return False
-        thr = 0.18
+        thr = 0.22
     elif section_key in ("supply", "policy"):
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
             return False
@@ -7639,6 +7651,9 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base -= 1.0
         if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and ((not has_direct_supply_chain_signal(txt)) or policy_market_brief):
             base -= 0.6
+        # 유가/에너지 primary 기사: 품목 수급과 무관하므로 큰 감점
+        if is_oil_energy_primary_macro_context(title, desc):
+            base -= 4.0
         if managed_count:
             base += min(0.72, 0.15 * managed_count)
             base += min(0.48, 0.22 * program_core_count)
@@ -9918,6 +9933,18 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         if not has_agri:
             return _reject("dist_retail_promo_no_agri")
 
+    # dist: 엔터테인먼트·연예·스포츠 등 원예 무관 기사 하드블록
+    if key == "dist":
+        _DIST_ENTERTAINMENT_BLOCK = (
+            "bts", "블랙핑크", "아이돌", "콘서트", "공연", "팬미팅", "뮤직비디오",
+            "드라마", "영화", "예능", "배우", "가수", "엔터", "연예",
+            "축구", "야구", "올림픽", "월드컵",
+        )
+        if any(w in ttl.lower() for w in _DIST_ENTERTAINMENT_BLOCK):
+            # 제목에 도매시장/유통 키워드가 동시에 있으면 예외 허용
+            if not any(w in ttl.lower() for w in ("도매시장", "공판장", "가락시장", "농산물")):
+                return _reject("dist_entertainment_hardblock")
+
     # dist: "오늘, 서울시" 등 지자체 행사/캠페인성 알림 기사 차단(도매시장 문구가 있어도 핵심성 낮음)
     if key == "dist":
         ttl_l2 = ttl.lower()
@@ -10841,6 +10868,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 2.4
         if policy_general_macro_tail:
             score -= 6.4
+        # 유가/에너지 primary 기사: 농업은 부차적 언급이므로 큰 감점
         if oil_energy_primary_macro:
             score -= 8.0
         if policy_event_tail:
