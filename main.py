@@ -17813,6 +17813,22 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     if strong_field_response:
         weak_support_advice = False
 
+    # ── 품목명이 제목에 있고 수급/이슈 키워드도 함께 있으면 weak 필터 완화 ──
+    _has_title_item_and_issue = bool(
+        title_primary_hits >= 1
+        and any(
+            term.lower() in title_l
+            for term in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS
+        )
+    )
+    if _has_title_item_and_issue:
+        weak_org_feature = False
+        weak_org_promo = False
+        weak_event = False
+        weak_consumer_lifestyle = False
+        weak_support_advice = False
+        weak_regional_branding = False
+
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
@@ -17831,6 +17847,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     elif feature_kind in ("field", "quality") and strong_focus and story_priority >= 4.0:
         representative_rank = 2
     elif strong_focus and primary_focus and board_score >= 88.0:
+        representative_rank = 1
+    elif title_primary_hits >= 1 and board_eligible:
         representative_rank = 1
     else:
         representative_rank = 0
@@ -17911,7 +17929,7 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
 
 
 def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
-    return 1 if bool(item.get("program_core")) else 2
+    return 1 if bool(item.get("program_core")) else 1
 
 
 def _commodity_board_article_is_active_candidate(
@@ -17938,15 +17956,18 @@ def _commodity_board_article_is_active_candidate(
             str(article_metrics.get("issue_bucket") or "")
             or bool(article_metrics.get("direct_supply"))
             or bool(article_metrics.get("market_response"))
-            or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+            or int(article_metrics.get("issue_anchor_hits") or 0) >= 1
             or int(article_metrics.get("market_anchor_hits") or 0) >= 1
             or (
                 str(article_metrics.get("feature_kind") or "") in ("field", "issue")
-                and bool(article_metrics.get("strong_focus"))
                 and (
                     int(article_metrics.get("title_primary_hits") or 0) >= 1
                     or bool(article_metrics.get("primary_focus"))
                 )
+            )
+            or (
+                int(article_metrics.get("title_primary_hits") or 0) >= 1
+                and int(article_metrics.get("issue_title_hits") or 0) >= 1
             )
         ):
             return False
