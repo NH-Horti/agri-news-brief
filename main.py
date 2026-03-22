@@ -7121,56 +7121,6 @@ def is_policy_general_macro_tail_context(title: str, desc: str, dom: str = "", p
     return agri_hits <= 1 and title_agri_hits == 0 and horti_sc < 1.6 and title_macro_hits >= 1
 
 
-# ── 유가/에너지 primary 기사 판정 (정책 섹션 감점용) ──
-_OIL_ENERGY_PRIMARY_TITLE_TERMS = (
-    "유가", "원유", "국제유가", "기름값", "휘발유", "경유", "석유",
-    "에너지", "에너지가격", "정유", "opec", "브렌트", "wti",
-)
-_OIL_ENERGY_BODY_TERMS = (
-    "유가", "원유", "국제유가", "기름값", "휘발유", "경유", "석유",
-    "에너지", "정유", "opec", "브렌트", "wti", "배럴", "셰일",
-    "가솔린", "등유", "lng", "천연가스",
-)
-
-
-def is_policy_oil_energy_primary_context(title: str, desc: str) -> bool:
-    """정책 섹션에서 유가/에너지가 *주제*이고 농업은 부차적 언급인 기사를 판정.
-
-    예: '유가 급등에 농가 울상' — 유가가 primary, 농가는 영향 받는 쪽.
-    이런 기사는 policy 핵심성이 낮으므로 감점 대상.
-    """
-    ttl = (title or "").lower()
-    txt = f"{ttl} {desc or ''}".lower()
-    if not txt:
-        return False
-
-    # 제목에 유가/에너지 키워드가 있어야 primary
-    title_oil_hits = count_any(ttl, list(_OIL_ENERGY_PRIMARY_TITLE_TERMS))
-    if title_oil_hits == 0:
-        return False
-
-    # 본문 유가/에너지 밀도
-    body_oil_hits = count_any(txt, list(_OIL_ENERGY_BODY_TERMS))
-    if body_oil_hits < 2:
-        return False
-
-    # 농업이 제목에서 주도적이면 primary가 아님
-    title_agri = count_any(ttl, [w.lower() for w in _POLICY_GENERAL_MACRO_AGRI_TERMS])
-    if title_agri >= 2:
-        return False
-
-    # 도매시장/유통 현장 맥락이 있으면 농업 core
-    if any(w in txt for w in ("도매시장", "공판장", "경락", "가락시장", "산지유통")):
-        return False
-
-    # horti score가 높으면 농업 주제
-    horti_sc = best_horti_score(title or "", desc or "")
-    if horti_sc >= 2.0:
-        return False
-
-    return True
-
-
 def has_direct_supply_chain_signal(text: str) -> bool:
     t = (text or "").lower()
     if not t:
@@ -7179,6 +7129,50 @@ def has_direct_supply_chain_signal(text: str) -> bool:
     if count_any(t, [w.lower() for w in market_terms]) >= 1:
         return True
     return count_any(t, [w.lower() for w in _DIRECT_SUPPLY_SIGNAL_TERMS]) >= 2
+
+
+# ── 유가/에너지 주제 기사 판별: 농업은 부수적 언급에 불과한 경우 ──
+_OIL_ENERGY_PRIMARY_TERMS = (
+    "유가", "국제유가", "원유", "wti", "브렌트", "두바이유", "배럴",
+    "경유", "휘발유", "가솔린", "디젤", "유류", "유류세", "유류비",
+    "에너지", "전기요금", "전기료", "가스요금", "난방비",
+    "opec", "석유", "정유", "주유소",
+)
+_OIL_ENERGY_TITLE_TERMS = (
+    "유가", "국제유가", "원유", "wti", "브렌트", "배럴",
+    "경유", "휘발유", "에너지", "전기요금", "가스요금",
+    "opec", "석유", "주유소",
+)
+_OIL_ENERGY_AGRI_DIRECT_TERMS = (
+    "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "청과",
+    "사과", "배", "감귤", "딸기", "포도", "참외", "토마토", "파프리카", "오이",
+    "수급", "출하", "경락", "도매시장", "가락시장", "공판장", "산지유통",
+)
+
+def is_oil_energy_primary_macro_context(title: str, desc: str) -> bool:
+    """유가/에너지가 기사 주제이고, 농업은 부수적(농가 부담/물가 전이 등) 언급인 경우.
+    - 제목에 유가/에너지 키워드가 있고
+    - 농산물 직접 신호(품목명/수급/도매시장)가 약하면 True
+    """
+    ttl = (title or "").lower()
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    title_oil_hits = count_any(ttl, [w.lower() for w in _OIL_ENERGY_TITLE_TERMS])
+    if title_oil_hits == 0:
+        return False
+    body_oil_hits = count_any(txt, [w.lower() for w in _OIL_ENERGY_PRIMARY_TERMS])
+    if body_oil_hits < 2:
+        return False
+    agri_direct_hits = count_any(txt, [w.lower() for w in _OIL_ENERGY_AGRI_DIRECT_TERMS])
+    title_agri_hits = count_any(ttl, [w.lower() for w in _OIL_ENERGY_AGRI_DIRECT_TERMS])
+    # 제목에 농산물 직접 신호가 있으면 유가가 농산물 수급에 미치는 영향 기사 → 허용
+    if title_agri_hits >= 1:
+        return False
+    # 본문에도 직접 농산물 신호가 충분하면 허용
+    if agri_direct_hits >= 3:
+        return False
+    return True
 
 
 _SUPPLY_FEATURE_FIELD_TERMS = (
@@ -7658,7 +7652,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
         if is_macro_policy_issue(txt) and count_any((title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(title or "", "") < 1.6 and best_horti_score(title or "", desc or "") < 1.8 and ((not has_direct_supply_chain_signal(txt)) or policy_market_brief):
             base -= 0.6
         # 유가/에너지 primary 기사: 품목 수급과 무관하므로 큰 감점
-        if is_policy_oil_energy_primary_context(title, desc):
+        if is_oil_energy_primary_macro_context(title, desc):
             base -= 4.0
         if managed_count:
             base += min(0.72, 0.15 * managed_count)
@@ -9912,6 +9906,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     if key in ("supply", "dist") and is_fruit_blossom_tourism_context(ttl, desc):
         return _reject("fruit_blossom_tourism")
 
+    # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
+    if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
+        return _reject("oil_energy_primary_macro")
+
     # HARD BLOCK: 일반 소비자물가/가계지출 나열 기사(원예 수급 신호 약함)
     if is_general_consumer_price_noise(text):
         if best_horti_score(ttl, desc) < 1.8 and (not macro_policy_like) and (not broad_macro_price):
@@ -9976,6 +9974,13 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # 공통 제외(광고/구인/부동산 등)
     if any(k in text for k in BAN_KWS):
         return _reject("ban_keywords")
+
+    # 엔터테인먼트/연예 기사 차단(농산물 브리핑과 무관)
+    _ENTERTAINMENT_BLOCK_TERMS = ("bts", "방탄소년단", "블랙핑크", "팬미팅", "콘서트", "공연", "뮤지컬", "페스티벌")
+    if any(w in text for w in _ENTERTAINMENT_BLOCK_TERMS):
+        agri_keep = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "수급", "출하", "도매시장", "가락시장", "경락", "공판장")])
+        if agri_keep < 2:
+            return _reject("hardblock_entertainment")
 
     # ✅ '멜론' 동음이의어(음원 플랫폼) 오탐 차단:
     # - '먹는 멜론' 맥락(재배/출하/작황/농가/도매시장 등)일 때만 통과
@@ -10574,6 +10579,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
     policy_price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
     policy_general_macro_tail = is_policy_general_macro_tail_context(title, desc, dom, press)
+    oil_energy_primary_macro = is_oil_energy_primary_macro_context(title, desc)
     policy_event_tail = is_policy_event_tail_context(title, desc, dom, press)
     dist_export_field = is_dist_export_field_context(title, desc, dom, press)
     policy_export_support_brief = is_policy_export_support_brief_context(title, desc, dom, press)
@@ -10732,6 +10738,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 5.0
         if macro_policy_like and count_any(title_l, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and horti_title_sc < 1.6 and horti_sc < 1.8 and ((not direct_supply_story) or policy_market_brief):
             score -= 4.2
+        if oil_energy_primary_macro:
+            score -= 6.0
         if managed_count:
             score += min(2.0, 0.34 * managed_count)
             score += min(2.2, 1.05 * program_core_count)
@@ -10861,7 +10869,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if policy_general_macro_tail:
             score -= 6.4
         # 유가/에너지 primary 기사: 농업은 부차적 언급이므로 큰 감점
-        if is_policy_oil_energy_primary_context(title, desc):
+        if oil_energy_primary_macro:
             score -= 8.0
         if policy_event_tail:
             score -= 8.4
@@ -11456,6 +11464,12 @@ def _near_duplicate_title(a: "Article", b: "Article", section_key: str) -> bool:
         common_core = len((ta & tb) & _SUPPLY_CORE_TOKENS)
         common_cmd = len((ta & tb) & _SUPPLY_COMMODITY_TOKENS)
         if common_cmd >= 1 and common_core >= 2 and jac >= 0.50:
+            return True
+        # 유가/에너지 매크로 기사 동일 주제 중복 억제
+        _macro_topic_tokens = {"유가", "국제유가", "원유", "경유", "휘발유", "에너지", "물가", "소비자물가", "환율"}
+        a_macro = (ta & _macro_topic_tokens)
+        b_macro = (tb & _macro_topic_tokens)
+        if len(a_macro) >= 1 and len(b_macro) >= 1 and (a_macro & b_macro) and jac >= 0.30:
             return True
 
     if section_key == "dist":
