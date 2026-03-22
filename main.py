@@ -3484,7 +3484,28 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
     if key in _FRUIT_TREE_COMMODITY_KEYS and is_fruit_blossom_tourism_context(title, desc):
         return metrics
 
-    if title_focus_hits == 0:
+    body_operational_match = bool(
+        item.get("program_core")
+        and title_focus_hits == 0
+        and body_focus_hits >= 1
+        and not is_commodity_broad_price_roundup_context(title, desc)
+        and (
+            has_direct_supply_chain_signal(text_l)
+            or market_anchor_hits >= 1
+        )
+    )
+    body_policy_roundup_match = bool(
+        item.get("program_core")
+        and title_focus_hits == 0
+        and body_focus_hits >= 1
+        and (
+            is_supply_stabilization_policy_context(text_l)
+            or is_policy_market_brief_context(text_l)
+        )
+    )
+    if body_policy_roundup_match:
+        return metrics
+    if title_focus_hits == 0 and not body_operational_match:
         return metrics
 
     if is_general_consumer_price_noise(text_l) and title_focus_hits == 0:
@@ -4481,6 +4502,30 @@ def is_general_consumer_price_noise(text: str) -> bool:
         return True
     return False
 
+
+def is_processed_food_lifestyle_context(title: str, desc: str) -> bool:
+    """와인/외식 페어링 등 가공식품·라이프스타일 기사 노이즈를 판정."""
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not txt:
+        return False
+    market_hits = count_any(
+        txt,
+        [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "출하", "수급", "도매가격", "시세")],
+    )
+    if market_hits >= 1:
+        return False
+    processed_hits = count_any(
+        txt,
+        [w.lower() for w in ("와인", "wine", "맥주", "주류", "디저트", "메뉴", "풍미", "페어링", "레스토랑", "바비큐", "bbq", "산지오베제", "빈티지", "소믈리에", "한 잔", "어때요")],
+    )
+    lifestyle_hits = count_any(
+        txt,
+        [w.lower() for w in ("레스토랑", "바비큐", "bbq", "한 잔", "어때요", "페어링", "풍미", "희소성", "국제 품종", "100%")],
+    )
+    title_hits = count_any(ttl, [w.lower() for w in ("와인", "wine", "바비큐", "bbq", "한 잔", "어때요", "페어링")])
+    return (processed_hits >= 3 and lifestyle_hits >= 2) or (processed_hits >= 2 and title_hits >= 2)
+
 def is_policy_announcement_issue(text: str, dom: str = "", press: str = "") -> bool:
     """정책/기관 발표성 기사인지 판정(공급/유통 섹션 과다 유입 방지용).
     단, 일반 언론의 '품목 가격/수급' 중심 기사까지 과하게 policy로 보내지 않도록 시장/품목 강신호는 예외 처리.
@@ -4928,6 +4973,27 @@ _COMMODITY_MACRO_ROUNDUP_TERMS = (
 _COMMODITY_MACRO_ROUNDUP_GOODS_TERMS = (
     "쌀", "콩", "계란", "화장지", "과자", "아이스크림", "라면", "빵", "우유", "커피",
 )
+_SUPPLY_GENERIC_CATEGORY_WATCH_TERMS = (
+    "채소값", "채소 가격", "채솟값", "과일값", "과일 가격", "농산물값", "농산물 가격",
+    "원예 농산물", "원예농산물", "과채 가격", "엽근채 가격",
+)
+_SUPPLY_GENERIC_CATEGORY_WATCH_ISSUE_TERMS = (
+    "삼중고", "곤두박질", "급락", "하락", "약세", "강세", "출렁", "불안", "비상",
+    "가격 동향", "수급 점검", "점검", "동향", "부담", "고공행진",
+)
+_SUPPLY_LOCAL_SALES_EVENT_TITLE_TERMS = (
+    "직거래장터", "직거래 장터", "상생 장터", "로컬푸드 장터", "로컬푸드 직매장", "파머스마켓",
+)
+_SUPPLY_LOCAL_SALES_EVENT_METRIC_TERMS = (
+    "매출", "판매액", "판매고", "완판", "방문객", "만원", "억 원", "억원",
+)
+_SUPPLY_LOCAL_SALES_EVENT_PROMO_TERMS = (
+    "연장 운영", "운영 연장", "연장", "개장", "개최", "판로 지원", "판로 확대", "소비 촉진", "행사", "운영",
+)
+_SUPPLY_LOCAL_SALES_EVENT_KEEP_TERMS = (
+    "가격", "값", "수급", "출하", "경락", "경매", "도매시장", "공판장", "가락시장", "산지유통",
+    "산지유통센터", "반입", "저장", "재고", "작황", "생산량", "난방비",
+)
 _COMMODITY_UNANCHORED_GENERIC_TERMS = (
     "드론", "자율 트랙터", "ai 시대", "농업기술원", "농기원", "기술원", "농사", "관리법", "안전사용서", "재배 기술", "스마트팜",
 )
@@ -5147,6 +5213,50 @@ def is_commodity_broad_price_roundup_context(title: str, desc: str) -> bool:
     )
     multi_item_like = bool(re.search(r"\d+\s*개\s*품목", txt)) or txt.count("·") >= 2
     return macro_hits >= 1 and (goods_hits >= 2 or multi_item_like) and keep_hits <= 1
+
+
+def is_supply_generic_category_watch_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    category_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_GENERIC_CATEGORY_WATCH_TERMS])
+    issue_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_GENERIC_CATEGORY_WATCH_ISSUE_TERMS])
+    broad_anchor_hits = count_any(
+        txt,
+        [w.lower() for w in ("채소", "과일", "농산물", "원예", "과채", "엽근채", "수급", "가격", "공급", "소비", "정책")],
+    )
+    multi_item_like = bool(re.search(r"\d+\s*개\s*품목", txt)) or txt.count("·") >= 2
+    return category_hits >= 1 and issue_hits >= 1 and (broad_anchor_hits >= 4 or multi_item_like)
+
+
+def is_supply_local_sales_event_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    if is_dist_market_ops_context(title, desc, "", "") or is_dist_supply_management_center_context(title, desc):
+        return False
+    local_actor = (_LOCAL_REGION_IN_TITLE_RX.search(ttl) is not None) or (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl) is not None)
+    if not local_actor:
+        return False
+    title_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_LOCAL_SALES_EVENT_TITLE_TERMS])
+    promo_hits = count_any(txt, [w.lower() for w in _SUPPLY_LOCAL_SALES_EVENT_PROMO_TERMS])
+    metric_hits = count_any(txt, [w.lower() for w in _SUPPLY_LOCAL_SALES_EVENT_METRIC_TERMS])
+    if re.search(r"\d[\d,]*\s*(?:만\s*원|억\s*원|억원)", txt):
+        metric_hits += 1
+    hard_keep_hits = count_any(
+        txt,
+        [w.lower() for w in ("수급", "출하", "경락", "경매", "도매시장", "공판장", "가락시장", "산지유통", "산지유통센터", "반입", "재고", "작황", "생산량", "난방비")],
+    )
+    soft_keep_hits = count_any(txt, [w.lower() for w in ("가격", "값", "저장")])
+    return title_hits >= 1 and promo_hits >= 1 and metric_hits >= 1 and hard_keep_hits == 0 and soft_keep_hits <= 2
 
 
 def is_commodity_unanchored_general_context(
@@ -5386,10 +5496,29 @@ def is_dist_sales_channel_ops_context(title: str, desc: str) -> bool:
     agri_hits = count_any(txt, [w.lower() for w in ("\ub18d\uc5c5", "\ub18d\uc0b0\ubb3c", "\ub18d\uac00", "\uc720\ud1b5", "\ud310\ub85c", "\uc0b0\uc9c0\uc720\ud1b5", "\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5")])
     market_hits = count_any(txt, [w.lower() for w in ("\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uacf5\ud310\uc7a5", "\uc0b0\uc9c0\uc720\ud1b5", "\ucd9c\ud558", "\ubb3c\ub958", "\uc720\ud1b5\ucc44\ub110")])
     event_hits = count_any(txt, [w.lower() for w in ("\ud3c9\uac00\ud68c", "\uc6cc\ud06c\uc20d", "\ud68c\uc758", "\uac04\ub2f4\ud68c")])
+    hard_anchor_hits = count_any(
+        txt,
+        [w.lower() for w in ("\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uacf5\ud310\uc7a5", "\uc0b0\uc9c0\uc720\ud1b5", "\uc0b0\uc9c0\uc720\ud1b5\uc13c\ud130", "\ud1b5\ud569\uc720\ud1b5", "\ud1b5\ud569 \uc720\ud1b5", "\uc628\ub77c\uc778 \ud310\ub9e4", "\uc628\ub77c\uc778 \ud310\ub85c", "\uc720\ud1b5\ucc44\ub110", "\ubb3c\ub958", "\ucd9c\ud558")],
+    )
     title_hits = count_any(
         ttl.lower(),
         [w.lower() for w in ("\uc5f0\ud569\ud310\ub9e4\uc0ac\uc5c5", "\uc9c1\uac70\ub798", "\ud310\ub9e4\uc0ac\uc5c5", "\ud1b5\ud569\uc720\ud1b5", "\ubb3c\ub7c9 \ud1b5\ud569\uad00\ub9ac", "\uc18c\ube44 \ucd09\uc9c4", "\uc628\ub77c\uc778 \ud310\ub9e4", "\uac70\ub798\ucc98 \ub2e4\ubcc0\ud654")]
     )
+    promo_title_hits = count_any(
+        ttl.lower(),
+        [w.lower() for w in ("\uc18c\ube44 \ucd09\uc9c4", "\uc18c\ube44\ucd09\uc9c4", "\uc9c1\uac70\ub798 \uc7a5\ud130", "\uc9c1\uac70\ub798\uc7a5\ud130", "\ub3d9\ud589\ub9c8\ucf00\ud305", "\uacf5\ub3d9\uad6c\ub9e4", "\ucd9c\ud558\ube44\uc6a9 \ubcf4\uc804", "\ucd9c\ud558 \ube44\uc6a9 \ubcf4\uc804", "\ud310\ub85c \ud655\ub300")],
+    )
+    signature_title_hits = count_any(
+        ttl.lower(),
+        [w.lower() for w in ("연합판매사업", "직거래", "직거래 장터", "직거래장터", "푸드통합지원센터", "온라인 도매시장", "온라인도매시장", "거래처 다변화")],
+    )
+    sales_channel_signature = actor_hits >= 1 and channel_hits >= 2 and (
+        title_hits >= 1 or signature_title_hits >= 2 or (signature_title_hits >= 1 and event_hits >= 1)
+    )
+    if event_hits >= 1 and promo_title_hits >= 1 and hard_anchor_hits < 2 and not sales_channel_signature:
+        return False
+    if event_hits >= 2 and hard_anchor_hits < 2 and not sales_channel_signature:
+        return False
     return actor_hits >= 1 and (
         (
             channel_hits >= 2
@@ -5715,6 +5844,12 @@ def is_dist_field_market_response_context(title: str, desc: str, dom: str = "", 
         return False
     if is_remote_foreign_trade_brief_context(ttl, desc or "", dom):
         return False
+    if is_supply_program_brand_action_context(ttl, desc or ""):
+        return False
+    if is_supply_price_support_event_context(ttl, desc or ""):
+        return False
+    if is_dist_program_event_noise_context(ttl, desc or "", dom, press):
+        return False
 
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
     agri_hits = count_any(txt, [w.lower() for w in _DIST_FIELD_MARKET_RESPONSE_AGRI_TERMS]) + managed_count
@@ -5724,6 +5859,210 @@ def is_dist_field_market_response_context(title: str, desc: str, dom: str = "", 
     trade_press = ((press or "").strip() in AGRI_TRADE_PRESS) or (normalize_host(dom or "") in AGRI_TRADE_HOSTS)
 
     return agri_hits >= 2 and response_hits >= 2 and distress_hits >= 1 and (trade_press or title_hits >= 1)
+
+
+_DIST_PROGRAM_EVENT_NOISE_TERMS = (
+    "워크숍", "평가회", "직거래 장터", "직거래장터", "직거래 확대", "직거래 확대 강화",
+    "판매활성화", "판매 활성화", "소비촉진", "소비 촉진", "소비확대", "소비 확대",
+    "동행마케팅", "공동구매", "출하비용 보전", "출하 비용 보전", "보전 사업", "농가 지원",
+    "판로 확대", "판로확대", "판로 개척", "유통 혁신", "유통구조", "유통 구조",
+    "단지 조성", "조성 추진", "활성화", "상생 장터", "상생 직거래", "버팀목",
+)
+_DIST_PROGRAM_EVENT_KEEP_TERMS = (
+    "도매시장", "공판장", "가락시장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc",
+    "선적", "통관", "검역", "물류", "하역", "현대화", "준공", "가동", "저온", "선별", "시장도매인",
+)
+_DIST_PROGRAM_EVENT_ACTOR_TERMS = (
+    "농협", "원예농협", "품목농협", "조합", "공사", "센터", "지자체", "시청", "군청", "구청", "도청", "본부",
+)
+_DIST_PROGRAM_EVENT_STRONG_TITLE_TERMS = (
+    "소비촉진", "소비 촉진", "공동구매", "동행마케팅", "판로 확대", "출하비용 보전", "출하 비용 보전",
+    "직거래 장터", "직거래장터", "판로 개척", "농가 지원", "판매활성화", "판매 활성화",
+)
+_DIST_PROGRAM_EVENT_HARD_KEEP_TITLE_TERMS = (
+    "선적", "통관", "검역", "준공", "현대화", "가동", "저온", "선별", "물류", "하역", "수출", "수입",
+)
+_DIST_UNANCHORED_AGRITECH_NOISE_TERMS = (
+    "드론", "자율 트랙터", "ai 시대", "스마트팜", "스마트 농업", "스마트농업", "농업기술원", "농기원",
+    "재배 기술", "재배기술", "관리법", "안전사용서",
+)
+_DIST_NON_HORTI_ANCHOR_TERMS = (
+    "농산물", "농수산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "농가", "산지", "청과",
+)
+_DIST_PHYSICAL_MARKET_KEEP_TERMS = (
+    "가락시장", "도매시장", "공판장", "공영도매시장", "경락", "경매", "반입",
+    "산지유통", "산지유통센터", "저온", "선별", "집하", "물류", "하역", "현대화", "준공", "가동",
+)
+
+
+def is_dist_program_event_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    dom_norm = normalize_host(dom or "")
+    press_norm = (press or "").strip()
+    if not txt:
+        return False
+    if is_remote_foreign_trade_brief_context(ttl, desc or "", dom_norm):
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    actor_hits = count_any(txt, [w.lower() for w in _DIST_PROGRAM_EVENT_ACTOR_TERMS])
+    local_program = is_local_agri_policy_program_context(txt)
+    local_gov_named = (
+        re.search(r"(?:^|[\s·,，])(?:[가-힣]{2,12}(?:특별자치시|특별자치도|광역시|특별시|시|군|구|도))(?=$|[\s·,，])", ttl) is not None
+        or re.search(r"(?:^|[\s·,，])(?:[가-힣]{2,12}(?:특별자치시|특별자치도|광역시|특별시|시|군|구|도))(?=$|[\s·,，])", desc or "") is not None
+    )
+    strong_title_hits = count_any(ttl_l, [w.lower() for w in _DIST_PROGRAM_EVENT_STRONG_TITLE_TERMS])
+    hard_keep_title_hits = count_any(ttl_l, [w.lower() for w in _DIST_PROGRAM_EVENT_HARD_KEEP_TITLE_TERMS])
+    # Strong promo/program titles should not survive just because the body also mentions channels or logistics.
+    if strong_title_hits >= 1 and hard_keep_title_hits == 0 and (actor_hits >= 1 or managed_count >= 1 or local_gov_named):
+        return True
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_export_shipping_context(ttl, desc or "")
+        or is_dist_export_field_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_market_disruption_context(ttl, desc or "")
+    ):
+        return False
+    if is_supply_program_brand_action_context(ttl, desc or "") or is_supply_price_support_event_context(ttl, desc or ""):
+        return True
+
+    agri_hits = count_any(
+        txt,
+        [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼", "농가", "산지", "유통", "도매가격")],
+    ) + managed_count
+    program_hits = count_any(txt, [w.lower() for w in _DIST_PROGRAM_EVENT_NOISE_TERMS])
+    title_hits = count_any(ttl_l, [w.lower() for w in _DIST_PROGRAM_EVENT_NOISE_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _DIST_PROGRAM_EVENT_KEEP_TERMS]) + (1 if has_apc_agri_context(txt) else 0)
+    if agri_hits == 0:
+        return False
+    if program_hits == 0 and not local_program:
+        return False
+    if keep_hits >= 3 and title_hits == 0:
+        return False
+    return (
+        local_program
+        or title_hits >= 1
+        or program_hits >= 2
+        or ((actor_hits + (1 if local_gov_named else 0)) >= 1 and program_hits >= 1)
+    )
+
+
+def is_dist_unanchored_agritech_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    dom_norm = normalize_host(dom or "")
+    press_norm = (press or "").strip()
+    if not txt:
+        return False
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_export_shipping_context(ttl, desc or "")
+        or is_dist_export_field_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_market_disruption_context(ttl, desc or "")
+    ):
+        return False
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농업", "원예", "과수", "과일", "채소", "화훼", "농가", "산지")]) + managed_count
+    generic_hits = count_any(txt, [w.lower() for w in _DIST_UNANCHORED_AGRITECH_NOISE_TERMS])
+    title_hits = count_any(ttl_l, [w.lower() for w in _DIST_UNANCHORED_AGRITECH_NOISE_TERMS])
+    market_hits = count_any(
+        txt,
+        [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc", "선적", "통관", "검역", "물류")],
+    ) + (1 if has_apc_agri_context(txt) else 0)
+    return agri_hits >= 1 and market_hits == 0 and (title_hits >= 1 or generic_hits >= 2)
+
+
+def is_dist_non_horti_anchorless_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    dom_norm = normalize_host(dom or "")
+    press_norm = (press or "").strip()
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    horti_sc = best_horti_score(ttl, desc or "")
+    horti_title_sc = best_horti_score(ttl, "")
+    agri_anchor_hits = count_any(txt, [w.lower() for w in _DIST_NON_HORTI_ANCHOR_TERMS]) + managed_count
+    market_anchor_hits = count_any(txt, [w.lower() for w in _DIST_PHYSICAL_MARKET_KEEP_TERMS]) + (1 if has_apc_agri_context(txt) else 0)
+    title_agri_anchor_hits = count_any(ttl_l, [w.lower() for w in _DIST_NON_HORTI_ANCHOR_TERMS])
+    title_market_anchor_hits = count_any(ttl_l, [w.lower() for w in _DIST_PHYSICAL_MARKET_KEEP_TERMS])
+    hard_nonagri_title_hits = count_any(
+        ttl_l,
+        [w.lower() for w in ("수출", "선적", "글로벌", "경제", "성장축", "의미", "공연", "버스", "하객", "정부", "실적", "기업")],
+    )
+
+    if title_agri_anchor_hits == 0 and title_market_anchor_hits == 0 and horti_title_sc < 1.2 and hard_nonagri_title_hits >= 1:
+        if (
+            is_dist_export_shipping_context(ttl, desc or "")
+            or is_dist_export_field_context(ttl, desc or "", dom_norm, press_norm)
+            or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, press_norm)
+        ):
+            return False
+        return True
+
+    if agri_anchor_hits >= 1 or horti_sc >= 1.4:
+        return False
+    if market_anchor_hits >= 2:
+        return False
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_export_shipping_context(ttl, desc or "")
+        or is_dist_export_field_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_field_market_response_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_market_disruption_context(ttl, desc or "")
+    ):
+        return False
+    return True
+
+
+def is_dist_local_roundup_title_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    ttl_l = _nfkc_lower(ttl)
+    if not ttl_l:
+        return False
+    city_hits = len(re.findall(r"[가-힣]{2,12}(?:시|군|구)", ttl))
+    return ("로컬뉴스" in ttl_l or ttl_l.endswith("소식")) and (city_hits >= 2 or ttl_l.endswith("소식"))
+
+
+def is_dist_official_cost_response_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    dom_norm = normalize_host(dom or "")
+    press_norm = (press or "").strip()
+    market_anchor_hits = count_any(txt, [w.lower() for w in _DIST_PHYSICAL_MARKET_KEEP_TERMS]) + (1 if has_apc_agri_context(txt) else 0)
+    if market_anchor_hits >= 2:
+        return False
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_field_market_response_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_local_field_profile_context(ttl, desc or "")
+        or is_dist_market_disruption_context(ttl, desc or "")
+    ):
+        return False
+    actor_hits = count_any(txt, [w.lower() for w in ("정부", "농식품부", "농림축산식품부", "관계부처", "장관", "차관")])
+    response_hits = count_any(ttl_l, [w.lower() for w in ("대응", "점검", "대책", "전방위 대응", "총력")]) + count_any(
+        txt,
+        [w.lower() for w in ("대응", "점검", "대책", "전방위 대응", "총력")],
+    )
+    cost_hits = count_any(txt, [w.lower() for w in ("농업비용", "생산비", "비료", "물류", "면세유", "유가", "에너지", "비용")])
+    return actor_hits >= 1 and response_hits >= 1 and cost_hits >= 2
 
 
 def is_policy_event_tail_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
@@ -6174,6 +6513,181 @@ def is_supply_processed_consumer_panic_context(title: str, desc: str) -> bool:
     return foreign_hits >= 1 or panic_hits >= 2 or is_general_consumer_price_noise(txt)
 
 
+_SUPPLY_PROGRAM_BRAND_ACTION_TERMS = (
+    "공동영농", "공동 영농", "소득배당", "묘목 보급", "출하계약", "출하 계약", "계약출하", "계약 출하",
+    "공동선별", "규격화", "단일 브랜드", "브랜드 판매", "브랜드화", "브랜드 육성",
+    "프리미엄 판로", "판로 확보", "판로 개척", "생산비 절감", "골든볼",
+)
+_SUPPLY_PROGRAM_BRAND_KEEP_TERMS = (
+    "도매가격", "경락가", "경매가격", "반입량", "출하량", "생산량", "수확량", "작황", "생육",
+    "냉해", "한파", "병해충", "난방비", "면세유", "유가", "가격 급락", "가격 하락", "폭락", "수급 차질",
+)
+_SUPPLY_PRICE_SUPPORT_EVENT_TERMS = (
+    "긴급 할인행사", "긴급 할인 행사", "할인행사", "할인 행사", "할인판매", "할인 판매", "특판",
+)
+_SUPPLY_PRICE_SUPPORT_EVENT_SUPPORT_TERMS = (
+    "가격지지", "가격 지지", "가격 회복 tf", "가격회복 tf", "tf 회의",
+)
+_SUPPLY_PRICE_SUPPORT_EVENT_KEEP_TERMS = (
+    "생산량", "출하량", "반입량", "작황", "생육", "냉해", "한파", "병해충", "난방비", "면세유", "유가", "수확량", "재배면적",
+)
+_SUPPLY_PRICE_SUPPORT_EVENT_PRICE_TERMS = (
+    "도매가격", "경락가", "경매가격", "가격 하락", "가격 급락", "하락", "급락", "폭락", "가격 회복", "경매가격 회복",
+)
+_SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ACTOR_TERMS = (
+    "장관", "차관", "농식품부", "농림축산식품부", "정부", "관계부처", "청와대",
+)
+_SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ACTION_TERMS = (
+    "점검", "현장", "대응", "주문", "총력", "지원", "줄이겠다", "완화", "대책", "대응 주문",
+)
+_SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ISSUE_TERMS = (
+    "면세유", "난방유", "농자재", "생산비", "경영비", "유가", "에너지",
+)
+_SUPPLY_OFFICIAL_SUPPORT_RESPONSE_KEEP_TERMS = (
+    "도매가격", "경락", "경매", "반입", "출하량", "생산량", "수확량", "재배면적", "작황", "생육", "재고", "저장", "수급 차질",
+)
+_SUPPLY_PROCESSED_PRICE_ROUNDUP_TERMS = (
+    "가격 인하", "값 인하", "인하", "내린다", "도미노 인하", "줄줄이 인하",
+)
+_SUPPLY_PROCESSED_PRICE_ROUNDUP_GOODS_TERMS = (
+    "과자", "아이스크림", "라면", "빵", "우유", "커피", "화장지", "가공식품",
+)
+_SUPPLY_PROCESSED_PRICE_ROUNDUP_KEEP_TERMS = (
+    "도매가격", "경락", "경매", "반입", "출하", "작황", "생산량", "수급", "산지", "농가", "원예", "과수", "과일", "채소",
+)
+_SUPPLY_ACCUSATORY_QUOTE_TERMS = (
+    "외면", "혈안", "비판", "규탄", "촉구", "호소", "논란", "실종", "보여주기",
+)
+_SUPPLY_PROGRAM_ACTION_MARKET_TERMS_L = tuple(
+    term.lower()
+    for term in tuple(WHOLESALE_MARKET_TERMS) + ("산지유통", "산지유통센터", "apc")
+)
+
+
+def is_supply_program_brand_action_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+    if count_any(txt, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_EXPORT_TERMS]) >= 2:
+        return False
+
+    title_program_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_PROGRAM_BRAND_ACTION_TERMS])
+    program_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROGRAM_BRAND_ACTION_TERMS])
+    if title_program_hits == 0 and program_hits < 2:
+        return False
+
+    market_anchor_hits = count_any(txt, list(_SUPPLY_PROGRAM_ACTION_MARKET_TERMS_L))
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROGRAM_BRAND_KEEP_TERMS])
+    local_org_hits = count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS])
+    if _LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl):
+        local_org_hits += 1
+    strong_price_title_hits = count_any(
+        ttl_l,
+        [w.lower() for w in ("가격", "수급", "출하량", "반입량", "도매가격", "경락", "경매", "작황")],
+    )
+
+    if market_anchor_hits >= 1 and keep_hits >= 4 and strong_price_title_hits >= 1:
+        return False
+
+    return (
+        title_program_hits >= 1
+        or (program_hits >= 3 and local_org_hits >= 1)
+        or (program_hits >= 2 and market_anchor_hits == 0 and keep_hits <= 2)
+    )
+
+
+def is_supply_price_support_event_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
+        return False
+
+    title_event_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_PRICE_SUPPORT_EVENT_TERMS])
+    event_hits = count_any(txt, [w.lower() for w in _SUPPLY_PRICE_SUPPORT_EVENT_TERMS])
+    support_hits = count_any(txt, [w.lower() for w in _SUPPLY_PRICE_SUPPORT_EVENT_SUPPORT_TERMS])
+    explicit_emergency_hits = count_any(ttl_l, [w.lower() for w in ("긴급", "특판")])
+    if title_event_hits == 0 and event_hits < 2 and support_hits == 0:
+        return False
+
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_PRICE_SUPPORT_EVENT_KEEP_TERMS])
+    if keep_hits >= 2 and support_hits == 0:
+        return False
+
+    price_hits = count_any(txt, [w.lower() for w in _SUPPLY_PRICE_SUPPORT_EVENT_PRICE_TERMS])
+    return (
+        price_hits >= 1
+        and (title_event_hits >= 1 or event_hits >= 2)
+        and (support_hits >= 1 or explicit_emergency_hits >= 1)
+    )
+
+
+def is_supply_official_support_response_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    actor_hits = count_any(txt, [w.lower() for w in _SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ACTOR_TERMS])
+    issue_hits = count_any(txt, [w.lower() for w in _SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ISSUE_TERMS])
+    if actor_hits == 0 or issue_hits == 0:
+        return False
+    action_hits = count_any(txt, [w.lower() for w in _SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ACTION_TERMS])
+    title_action_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_OFFICIAL_SUPPORT_RESPONSE_ACTION_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_OFFICIAL_SUPPORT_RESPONSE_KEEP_TERMS])
+    concrete_supply_hits = count_any(
+        txt,
+        [w.lower() for w in ("도매가격", "경락", "경매", "반입", "출하량", "생산량", "수확량", "재배면적")],
+    )
+    if keep_hits >= 4 and concrete_supply_hits >= 2 and has_direct_supply_chain_signal(txt):
+        return False
+    return title_action_hits >= 1 or action_hits >= 2
+
+
+def is_supply_processed_price_roundup_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    goods_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PRICE_ROUNDUP_GOODS_TERMS])
+    if goods_hits == 0:
+        return False
+    action_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PRICE_ROUNDUP_TERMS])
+    title_action_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_PROCESSED_PRICE_ROUNDUP_TERMS])
+    keep_hits = count_any(txt, [w.lower() for w in _SUPPLY_PROCESSED_PRICE_ROUNDUP_KEEP_TERMS])
+    if keep_hits >= 2 and has_direct_supply_chain_signal(txt):
+        return False
+    return (title_action_hits >= 1 or action_hits >= 2) and (goods_hits >= 2 or is_general_consumer_price_noise(txt))
+
+
+def is_supply_accusatory_quote_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    if not any(mark in ttl for mark in ('"', "“", "”", "‘", "’")):
+        return False
+    loaded_hits = count_any(ttl_l, [w.lower() for w in _SUPPLY_ACCUSATORY_QUOTE_TERMS]) + count_any(
+        txt,
+        [w.lower() for w in _SUPPLY_ACCUSATORY_QUOTE_TERMS],
+    )
+    if loaded_hits == 0:
+        return False
+    keep_hits = count_any(txt, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) + count_any(
+        txt,
+        [w.lower() for w in ("도매가격", "경락", "경매", "반입", "출하량", "생산량", "작황", "생육")],
+    )
+    return keep_hits < 3 or not has_direct_supply_chain_signal(txt)
+
+
 def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     """Return True for weak supply-tail stories that should not block stronger item features.
 
@@ -6195,6 +6709,20 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     if is_supply_macro_official_shock_context(title, desc):
         return True
     if is_supply_processed_consumer_panic_context(title, desc):
+        return True
+    if is_supply_official_support_response_context(title, desc):
+        return True
+    if is_supply_processed_price_roundup_context(title, desc):
+        return True
+    if is_supply_accusatory_quote_context(title, desc):
+        return True
+    if is_supply_program_brand_action_context(title, desc):
+        return True
+    if is_supply_price_support_event_context(title, desc):
+        return True
+    if is_supply_generic_category_watch_context(title, desc):
+        return True
+    if is_supply_local_sales_event_context(title, desc):
         return True
     if is_supply_stabilization_policy_context(txt) or is_policy_market_brief_context(txt):
         return False
@@ -8330,6 +8858,297 @@ def _local_output_path(path: str, branch: str) -> Path:
     return branch_root / Path(norm)
 
 
+def _env_flag(name: str, default: bool = False) -> bool:
+    fallback = "true" if default else "false"
+    return str(os.getenv(name, fallback) or "").strip().lower() in ("1", "true", "yes", "y")
+
+
+def _replay_snapshot_write_enabled() -> bool:
+    return _env_flag("REPLAY_WRITE_SNAPSHOT", default=is_local_dry_run())
+
+
+def _replay_allow_openai() -> bool:
+    return _env_flag("REPLAY_ALLOW_OPENAI", default=False)
+
+
+def _clone_article(article: "Article") -> "Article":
+    return Article(
+        section=str(getattr(article, "section", "") or ""),
+        title=str(getattr(article, "title", "") or ""),
+        description=str(getattr(article, "description", "") or ""),
+        link=str(getattr(article, "link", "") or ""),
+        originallink=str(getattr(article, "originallink", "") or ""),
+        pub_dt_kst=getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        domain=str(getattr(article, "domain", "") or ""),
+        press=str(getattr(article, "press", "") or ""),
+        norm_key=str(getattr(article, "norm_key", "") or ""),
+        title_key=str(getattr(article, "title_key", "") or ""),
+        canon_url=str(getattr(article, "canon_url", "") or ""),
+        topic=str(getattr(article, "topic", "") or ""),
+        is_core=bool(getattr(article, "is_core", False)),
+        score=float(getattr(article, "score", 0.0) or 0.0),
+        summary=str(getattr(article, "summary", "") or ""),
+        forced_section=str(getattr(article, "forced_section", "") or ""),
+        origin_section=str(getattr(article, "origin_section", "") or ""),
+        source_query=str(getattr(article, "source_query", "") or ""),
+        source_channel=str(getattr(article, "source_channel", "") or ""),
+        selection_stage=str(getattr(article, "selection_stage", "") or ""),
+        selection_note=str(getattr(article, "selection_note", "") or ""),
+        selection_fit_score=float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+        reassigned_from=str(getattr(article, "reassigned_from", "") or ""),
+    )
+
+
+def _clone_articles_by_section(by_section: dict[str, list["Article"]] | None) -> dict[str, list["Article"]]:
+    out: dict[str, list[Article]] = {}
+    for sec in SECTIONS:
+        key = str(sec.get("key") or "").strip()
+        if not key:
+            continue
+        out[key] = [_clone_article(article) for article in (by_section or {}).get(key, []) or [] if isinstance(article, Article)]
+    return out
+
+
+def _article_to_snapshot_dict(article: "Article") -> JsonDict:
+    pub = getattr(article, "pub_dt_kst", None)
+    if not isinstance(pub, datetime):
+        pub = datetime.min.replace(tzinfo=KST)
+    if pub.tzinfo is None:
+        pub = pub.replace(tzinfo=KST)
+    return {
+        "section": str(getattr(article, "section", "") or ""),
+        "title": str(getattr(article, "title", "") or ""),
+        "description": str(getattr(article, "description", "") or ""),
+        "link": str(getattr(article, "link", "") or ""),
+        "originallink": str(getattr(article, "originallink", "") or ""),
+        "pub_dt_kst": pub.astimezone(KST).isoformat(),
+        "domain": str(getattr(article, "domain", "") or ""),
+        "press": str(getattr(article, "press", "") or ""),
+        "norm_key": str(getattr(article, "norm_key", "") or ""),
+        "title_key": str(getattr(article, "title_key", "") or ""),
+        "canon_url": str(getattr(article, "canon_url", "") or ""),
+        "topic": str(getattr(article, "topic", "") or ""),
+        "is_core": bool(getattr(article, "is_core", False)),
+        "score": float(getattr(article, "score", 0.0) or 0.0),
+        "summary": str(getattr(article, "summary", "") or ""),
+        "forced_section": str(getattr(article, "forced_section", "") or ""),
+        "origin_section": str(getattr(article, "origin_section", "") or ""),
+        "source_query": str(getattr(article, "source_query", "") or ""),
+        "source_channel": str(getattr(article, "source_channel", "") or ""),
+        "selection_stage": str(getattr(article, "selection_stage", "") or ""),
+        "selection_note": str(getattr(article, "selection_note", "") or ""),
+        "selection_fit_score": float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+        "reassigned_from": str(getattr(article, "reassigned_from", "") or ""),
+    }
+
+
+def _snapshot_datetime_from_value(value: Any) -> datetime:
+    if isinstance(value, datetime):
+        return value.astimezone(KST) if value.tzinfo else value.replace(tzinfo=KST)
+    raw = str(value or "").strip()
+    if not raw:
+        return datetime.min.replace(tzinfo=KST)
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=KST)
+        return dt.astimezone(KST)
+    except Exception:
+        return datetime.min.replace(tzinfo=KST)
+
+
+def _article_from_snapshot_dict(payload: Any) -> "Article":
+    data = payload if isinstance(payload, dict) else {}
+    return Article(
+        section=str(data.get("section", "") or ""),
+        title=str(data.get("title", "") or ""),
+        description=str(data.get("description", "") or ""),
+        link=str(data.get("link", "") or ""),
+        originallink=str(data.get("originallink", "") or ""),
+        pub_dt_kst=_snapshot_datetime_from_value(data.get("pub_dt_kst")),
+        domain=str(data.get("domain", "") or ""),
+        press=str(data.get("press", "") or ""),
+        norm_key=str(data.get("norm_key", "") or ""),
+        title_key=str(data.get("title_key", "") or ""),
+        canon_url=str(data.get("canon_url", "") or ""),
+        topic=str(data.get("topic", "") or ""),
+        is_core=bool(data.get("is_core", False)),
+        score=float(data.get("score", 0.0) or 0.0),
+        summary=str(data.get("summary", "") or ""),
+        forced_section=str(data.get("forced_section", "") or ""),
+        origin_section=str(data.get("origin_section", "") or ""),
+        source_query=str(data.get("source_query", "") or ""),
+        source_channel=str(data.get("source_channel", "") or ""),
+        selection_stage=str(data.get("selection_stage", "") or ""),
+        selection_note=str(data.get("selection_note", "") or ""),
+        selection_fit_score=float(data.get("selection_fit_score", 0.0) or 0.0),
+        reassigned_from=str(data.get("reassigned_from", "") or ""),
+    )
+
+
+def _snapshot_summary_cache_for_articles(
+    by_section: dict[str, list["Article"]] | None,
+    cache: dict[str, SummaryCacheEntry | str] | None,
+) -> dict[str, SummaryCacheEntry | str]:
+    keys = {
+        str(getattr(article, "norm_key", "") or "")
+        for lst in (by_section or {}).values()
+        for article in (lst or [])
+        if isinstance(article, Article) and str(getattr(article, "norm_key", "") or "").strip()
+    }
+    out: dict[str, SummaryCacheEntry | str] = {}
+    for key in sorted(keys):
+        value = (cache or {}).get(key)
+        if isinstance(value, str):
+            if value.strip():
+                out[key] = value.strip()
+        elif isinstance(value, dict):
+            text = str(value.get("s", "") or "").strip()
+            if text:
+                out[key] = {
+                    "s": text,
+                    "t": str(value.get("t", "") or "").strip(),
+                }
+    return out
+
+
+def _snapshot_debug_payload() -> JsonDict:
+    if not DEBUG_REPORT:
+        return {}
+    try:
+        with _DEBUG_LOCK:
+            return json.loads(
+                json.dumps(
+                    {
+                        "collections": DEBUG_DATA.get("collections", {}) or {},
+                        "filter_rejects": DEBUG_DATA.get("filter_rejects", []) or [],
+                    },
+                    ensure_ascii=False,
+                )
+            )
+    except Exception:
+        return {}
+
+
+def _restore_debug_from_snapshot(payload: Any, snapshot_path: Path | None = None) -> None:
+    if not DEBUG_REPORT:
+        return
+    reset_debug_report()
+    data = payload if isinstance(payload, dict) else {}
+    try:
+        with _DEBUG_LOCK:
+            collections = data.get("collections", {})
+            filter_rejects = data.get("filter_rejects", [])
+            DEBUG_DATA["collections"] = collections if isinstance(collections, dict) else {}
+            DEBUG_DATA["filter_rejects"] = filter_rejects if isinstance(filter_rejects, list) else []
+            DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
+            DEBUG_DATA["build_tag"] = BUILD_TAG
+            DEBUG_DATA["replay"] = {
+                "enabled": True,
+                "snapshot_path": str(snapshot_path) if snapshot_path else "",
+            }
+    except Exception:
+        return
+
+
+def _resolve_replay_snapshot_path(report_date: str) -> Path:
+    raw_path = str(os.getenv("REPLAY_SNAPSHOT_PATH", "") or "").strip()
+    if raw_path:
+        p = Path(raw_path)
+        return p if p.is_absolute() else (Path.cwd() / p)
+
+    raw_dir = str(os.getenv("REPLAY_SNAPSHOT_DIR", "") or "").strip()
+    if raw_dir:
+        base = Path(raw_dir)
+        if not base.is_absolute():
+            base = Path.cwd() / base
+        return base / f"{report_date}.snapshot.json"
+
+    if is_local_dry_run():
+        branch = _resolve_github_branch(GH_CONTENT_BRANCH or GH_CONTENT_REF or "main")
+        return _local_output_path(f".agri_replay/{report_date}.snapshot.json", branch)
+
+    return Path.cwd() / ".agri_replay" / f"{report_date}.snapshot.json"
+
+
+def save_replay_snapshot(
+    report_date: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    raw_by_section: dict[str, list["Article"]],
+    summary_cache: dict[str, SummaryCacheEntry | str] | None = None,
+    debug_payload: JsonDict | None = None,
+) -> Path:
+    target = _resolve_replay_snapshot_path(report_date)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    payload: JsonDict = {
+        "version": 1,
+        "report_date": str(report_date or "").strip(),
+        "created_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+        "build_tag": BUILD_TAG,
+        "content_ref": GH_CONTENT_REF,
+        "content_branch": GH_CONTENT_BRANCH,
+        "window": {
+            "start_kst": start_kst.astimezone(KST).isoformat() if isinstance(start_kst, datetime) else str(start_kst),
+            "end_kst": end_kst.astimezone(KST).isoformat() if isinstance(end_kst, datetime) else str(end_kst),
+        },
+        "raw_by_section": {
+            key: [_article_to_snapshot_dict(article) for article in (raw_by_section or {}).get(key, []) or [] if isinstance(article, Article)]
+            for key in (
+                str(sec.get("key") or "").strip()
+                for sec in SECTIONS
+            )
+            if key
+        },
+        "summary_cache": _snapshot_summary_cache_for_articles(raw_by_section, summary_cache),
+        "debug": debug_payload if isinstance(debug_payload, dict) else {},
+    }
+    target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return target
+
+
+def load_replay_snapshot(report_date: str) -> tuple[dict[str, list["Article"]], datetime, datetime, dict[str, SummaryCacheEntry | str], JsonDict, Path]:
+    target = _resolve_replay_snapshot_path(report_date)
+    if not target.is_file():
+        raise RuntimeError(f"Replay snapshot not found: {target}")
+    try:
+        payload = json.loads(target.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise RuntimeError(f"Replay snapshot read failed: {target} ({exc})") from exc
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Replay snapshot is invalid JSON object: {target}")
+
+    snapshot_report_date = str(payload.get("report_date", "") or "").strip()
+    if snapshot_report_date and report_date and snapshot_report_date != report_date:
+        raise RuntimeError(
+            f"Replay snapshot date mismatch: requested={report_date} snapshot={snapshot_report_date} path={target}"
+        )
+
+    raw_payload = payload.get("raw_by_section", {})
+    raw_by_section: dict[str, list[Article]] = {}
+    for sec in SECTIONS:
+        key = str(sec.get("key") or "").strip()
+        if not key:
+            continue
+        rows = raw_payload.get(key, []) if isinstance(raw_payload, dict) else []
+        raw_by_section[key] = [_article_from_snapshot_dict(item) for item in rows if isinstance(item, dict)]
+
+    window = payload.get("window", {})
+    start_kst = _snapshot_datetime_from_value(window.get("start_kst") if isinstance(window, dict) else None)
+    end_kst = _snapshot_datetime_from_value(window.get("end_kst") if isinstance(window, dict) else None)
+
+    summary_cache = payload.get("summary_cache", {})
+    debug_payload = payload.get("debug", {})
+    return (
+        raw_by_section,
+        start_kst,
+        end_kst,
+        summary_cache if isinstance(summary_cache, dict) else {},
+        debug_payload if isinstance(debug_payload, dict) else {},
+        target,
+    )
+
+
 def _local_file_sha(content: str) -> str:
     return hashlib.sha1((content or "").encode("utf-8")).hexdigest()
 
@@ -9661,6 +10480,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return _reject("dist_local_infra_designation")
         if is_dist_local_crop_strategy_noise_context(ttl, desc):
             return _reject("dist_local_crop_strategy")
+        if is_dist_local_roundup_title_context(ttl, desc):
+            return _reject("dist_local_roundup")
+        if is_dist_official_cost_response_noise_context(title, desc, dom, press):
+            return _reject("dist_official_cost_response")
 
         # 소프트/하드 신호 분리(일반어: 브랜드/통합/조화/꽃 등은 제거)
         dist_soft = ["산지유통", "산지유통센터", "원예농협", "과수농협", "판매농협", "작목반", "화훼", "절화", "자조금", "하나로마트", "온라인 도매시장", "유통", "도매", "도매법인", "하역", "하역비", "하역대란", "출하", "집하", "물류센터"]
@@ -9687,6 +10510,12 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return _reject("dist_macro_export_noise")
         if is_dist_campaign_noise_context(title, desc):
             return _reject("dist_campaign_noise")
+        if is_dist_non_horti_anchorless_noise_context(title, desc, dom, press):
+            return _reject("dist_non_horti_anchorless")
+        if is_dist_program_event_noise_context(title, desc, dom, press):
+            return _reject("dist_program_event_noise")
+        if is_dist_unanchored_agritech_noise_context(title, desc, dom, press):
+            return _reject("dist_unanchored_agritech_noise")
         if dist_export_support_hub:
             return True
         if apc_ctx:
@@ -9841,6 +10670,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     policy_export_support_brief = is_policy_export_support_brief_context(title, desc, dom, press)
     supply_macro_official_shock = is_supply_macro_official_shock_context(title, desc, dom, press)
     supply_processed_consumer_panic = is_supply_processed_consumer_panic_context(title, desc)
+    supply_official_support_response = is_supply_official_support_response_context(title, desc)
+    supply_processed_price_roundup = is_supply_processed_price_roundup_context(title, desc)
+    supply_accusatory_quote = is_supply_accusatory_quote_context(title, desc)
+    supply_program_brand_action = is_supply_program_brand_action_context(title, desc)
+    supply_price_support_event = is_supply_price_support_event_context(title, desc)
+    dist_program_event_noise = is_dist_program_event_noise_context(title, desc, dom, press)
+    dist_unanchored_agritech_noise = is_dist_unanchored_agritech_noise_context(title, desc, dom, press)
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
@@ -9943,6 +10779,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 8.8
         if supply_processed_consumer_panic:
             score -= 10.2
+        if supply_official_support_response:
+            score -= 7.8
+        if supply_processed_price_roundup:
+            score -= 10.4
+        if supply_accusatory_quote:
+            score -= 8.6
+        if supply_program_brand_action:
+            score -= 7.6
+        if supply_price_support_event:
+            score -= 8.2
         if local_org_feature:
             score -= 4.8
         if dist_market_ops:
@@ -9950,7 +10796,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if dist_supply_center:
             score -= 4.4
         if dist_sales_channel_ops:
-            score -= 4.8
+            score -= 7.4
+            sales_channel_signature_hits = count_any(
+                text,
+                [t.lower() for t in ("연합판매사업", "직거래", "직거래 장터", "온라인 판매", "온라인 판로", "온라인 도매시장", "거래처 다변화", "공동사업법인", "유통채널")],
+            )
+            if sales_channel_signature_hits >= 2:
+                score -= 4.0
         if dist_field_market_response:
             score -= 9.0
         if is_dist_export_shipping_context(title, desc) and supply_issue_bucket != "export_recovery":
@@ -10002,6 +10854,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 8.4
         if is_dist_campaign_noise_context(title, desc):
             score -= 7.2
+        if dist_program_event_noise:
+            score -= 10.6
+        if dist_unanchored_agritech_noise:
+            score -= 10.2
         elif dist_local_field_profile:
             score += 2.2
         if dist_market_ops:
@@ -10009,7 +10865,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if dist_supply_center:
             score += 7.2
         if dist_sales_channel_ops:
-            score += 7.6
+            score += 8.4
+            sales_channel_signature_hits = count_any(
+                text,
+                [t.lower() for t in ("연합판매사업", "직거래", "직거래 장터", "온라인 판매", "온라인 판로", "온라인 도매시장", "거래처 다변화", "공동사업법인", "유통채널")],
+            )
+            if sales_channel_signature_hits >= 2:
+                score += 2.6
             if managed_count:
                 score += min(1.4, 0.35 * managed_count)
             if ("연합판매사업" in text) and ("직거래" in text):
@@ -11687,10 +12549,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             is_dist_political_visit_context(a.title or "", a.description or "")
             or is_local_agri_infra_designation_context(a.title or "", a.description or "")
             or is_dist_local_crop_strategy_noise_context(a.title or "", a.description or "")
+            or is_dist_local_roundup_title_context(a.title or "", a.description or "")
+            or is_dist_official_cost_response_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
             or is_dist_local_org_tail_context(a.title or "", a.description or "")
             or is_dist_consumer_tail_context(a.title or "", a.description or "")
+            or is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
             or is_dist_macro_export_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
             or is_dist_campaign_noise_context(a.title or "", a.description or "")
+            or is_dist_program_event_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+            or is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
         )
 
     def _is_policy_weak_tail_story(a: Article) -> bool:
@@ -11804,6 +12671,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             export_field = is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
             export_support_hub = is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local)
             if _is_dist_weak_tail_story(a):
+                return None
+            if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", dom_local, pr_local):
                 return None
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
             local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
@@ -12105,6 +12974,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_supply_weak_tail_story(a):
                 continue
+            if is_supply_generic_category_watch_context(a.title or "", a.description or ""):
+                continue
             if _is_supply_low_signal_feature_story(a):
                 continue
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
@@ -12193,6 +13064,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if _is_supply_dist_like_tail_story(a):
                     continue
                 if _is_supply_weak_tail_story(a):
+                    continue
+                if is_supply_generic_category_watch_context(a.title or "", a.description or ""):
                     continue
                 if _is_supply_low_signal_feature_story(a):
                     continue
@@ -12518,6 +13391,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_dist_weak_tail_story(a):
                 continue
+            if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+                continue
+            if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+                continue
             # 정치/사건성 제목 누수는 다시 한번 방어(점수는 높아도 dist 핵심과 무관한 경우가 있음)
             ttl_l = (a.title or "").lower()
             if any(w in ttl_l for w in ("제주4.3", "4.3", "희생자", "보상", "내란", "탄핵", "계엄")) and best_horti_score(a.title or "", "") < 1.3:
@@ -12765,6 +13642,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < _underfill_score_cut(a):
                 continue
             if _already_used(a):
+                continue
+            if section_key == "supply" and _is_supply_weak_tail_story(a):
+                continue
+            if section_key == "supply" and _is_supply_low_signal_feature_story(a):
+                continue
+            if section_key == "supply" and _is_supply_dist_like_tail_story(a):
+                continue
+            if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
                 continue
@@ -13051,6 +13936,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         seen.add(k)
         deduped.append(a)
+
+    if section_key == "dist":
+        dist_unique: list[Article] = []
+        for a in deduped:
+            if any(_is_similar_story(a, b, "dist") for b in dist_unique):
+                continue
+            dist_unique.append(a)
+        deduped = dist_unique
 
     if section_key == "pest":
         pest_unique: list[Article] = []
@@ -15358,6 +16251,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         dist_sales_channel_ops_like = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
         dist_local_org_tail = is_dist_local_org_tail_context(a.title or "", a.description or "")
         dist_export_support_hub_like = is_dist_export_support_hub_context(a.title or "", a.description or "", dom, press)
+        dist_program_event_noise_like = is_dist_program_event_noise_context(a.title or "", a.description or "", dom, press)
+        dist_unanchored_agritech_noise_like = is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", dom, press)
         macro_policy_like = is_macro_policy_issue(txt)
         broad_macro_price = is_broad_macro_price_context(a.title or "", a.description or "")
         direct_supply_story = has_direct_supply_chain_signal(txt)
@@ -15385,6 +16280,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if is_dist_macro_export_noise_context(a.title or "", a.description or "", dom, press):
                     continue
                 if is_dist_campaign_noise_context(a.title or "", a.description or ""):
+                    continue
+                if dist_program_event_noise_like or dist_unanchored_agritech_noise_like:
                     continue
                 if is_dist_political_visit_context(a.title or "", a.description or ""):
                     continue
@@ -15456,6 +16353,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
         prefer_move_to_dist = (
             cur != "dist"
+            and not dist_program_event_noise_like
+            and not dist_unanchored_agritech_noise_like
             and (dist_market_disruption or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like or is_dist_export_shipping_context(a.title, a.description) or dist_export_field_like or dist_export_support_hub_like or (local_org_feature and (not dist_local_org_tail) and has_apc_agri_context(txt)))
             and ("dist" in cand_scores)
             and (
@@ -15468,6 +16367,8 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         )
         preserve_dist_owner = (
             cur == "dist"
+            and not dist_program_event_noise_like
+            and not dist_unanchored_agritech_noise_like
             and (
                 dist_market_disruption
                 or dist_market_ops_like
@@ -15652,6 +16553,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
         return "agri_org_admin_noise"
     if section_key in ("supply", "policy") and is_title_livestock_dominant_context(a.title or "", a.description or ""):
         return "livestock_title_dominant"
+    if section_key in ("supply", "policy", "dist") and is_processed_food_lifestyle_context(a.title or "", a.description or ""):
+        return "processed_food_lifestyle_noise"
     if section_key == "policy":
         if is_policy_forest_admin_noise_context(a.title or "", a.description or ""):
             return "policy_forest_admin_noise"
@@ -15664,6 +16567,16 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
             return "dist_local_infra_designation"
         if is_dist_local_crop_strategy_noise_context(a.title or "", a.description or ""):
             return "dist_local_crop_strategy"
+        if is_dist_local_roundup_title_context(a.title or "", a.description or ""):
+            return "dist_local_roundup"
+        if is_dist_official_cost_response_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+            return "dist_official_cost_response"
+        if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+            return "dist_non_horti_anchorless"
+        if is_dist_program_event_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+            return "dist_program_event_noise"
+        if is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+            return "dist_unanchored_agritech_noise"
     if section_key in ("supply", "policy"):
         if is_flower_novelty_noise_context(a.title or "", a.description or ""):
             return "flower_novelty_noise"
@@ -15813,7 +16726,7 @@ def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Ar
 
     dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
     supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
-    dist_target = min(MAX_PER_SECTION, 3)
+    dist_target = min(MAX_PER_SECTION, 2)
     if len(dist_items) >= dist_target or len(supply_items) <= 2:
         return 0
 
@@ -15832,6 +16745,10 @@ def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Ar
         if is_dist_macro_export_noise_context(a.title or "", a.description or "", dom, press):
             continue
         if is_dist_campaign_noise_context(a.title or "", a.description or ""):
+            continue
+        if is_dist_program_event_noise_context(a.title or "", a.description or "", dom, press):
+            continue
+        if is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", dom, press):
             continue
         fit_dist = section_fit_score(a.title or "", a.description or "", dist_conf)
         fit_supply = section_fit_score(a.title or "", a.description or "", supply_conf)
@@ -15922,11 +16839,10 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
         final_by_section[str(key)] = keep
     return pruned
 
-def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
+def collect_raw_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
     reset_extra_call_budget()
     reset_debug_report()
     raw_by_section: dict[str, list[Article]] = {}
-    board_source_by_section: dict[str, list[Article]] = {str(sec.get("key") or "").strip(): [] for sec in SECTIONS if str(sec.get("key") or "").strip()}
 
     ordered = sorted(SECTIONS, key=lambda s: 0 if s["key"] == "policy" else 1)
     for sec in ordered:
@@ -15937,6 +16853,12 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
         _maybe_add_krei_issues_to_policy(raw_by_section, start_kst, end_kst)
     except Exception as e:
         log.warning("[WARN] report augmentation failed: %s", e)
+
+    return raw_by_section
+
+
+def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
+    board_source_by_section: dict[str, list[Article]] = {str(sec.get("key") or "").strip(): [] for sec in SECTIONS if str(sec.get("key") or "").strip()}
 
     # ✅ 정책/기관 도메인(정책브리핑/농식품부/aT/농관원/KREI 등)은 수급/유통 쿼리에도 걸릴 수 있다.
     #    수집 단계에서는 살려두되, 최종 섹션은 policy로 강제 이동(누락/오분류 방지).
@@ -16323,10 +17245,18 @@ def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
             log.info("[REBALANCE] promoted %d program-core board story(s) into final supply", promoted_supply)
     except Exception as e:
         log.warning("[WARN] supply board normalization failed: %s", e)
+    post_norm_pruned = _audit_final_sections(final_by_section)
+    if post_norm_pruned:
+        log.info("[AUDIT] pruned %d final item(s) after section normalization", post_norm_pruned)
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
 
     return final_by_section
+
+
+def collect_all_sections(start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
+    raw_by_section = collect_raw_sections(start_kst, end_kst)
+    return build_sections_from_raw(raw_by_section, start_kst, end_kst)
 
 
 # -----------------------------
@@ -16923,6 +17853,38 @@ def _commodity_board_term_hits(text: str, terms: Sequence[str]) -> int:
     return hits
 
 
+def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any]) -> bool:
+    issue_bucket = str(article_metrics.get("issue_bucket") or "")
+    feature_kind = str(article_metrics.get("feature_kind") or "")
+    direct_supply = bool(article_metrics.get("direct_supply"))
+    market_response = bool(article_metrics.get("market_response"))
+    issue_anchor_hits = int(article_metrics.get("issue_anchor_hits") or 0)
+    market_anchor_hits = int(article_metrics.get("market_anchor_hits") or 0)
+    issue_title_hits = int(article_metrics.get("issue_title_hits") or 0)
+    title_primary_hits = int(article_metrics.get("title_primary_hits") or 0)
+    title_context_hits = int(article_metrics.get("title_context_hits") or 0)
+    strong_focus = bool(article_metrics.get("strong_focus"))
+    has_named_or_context_focus = title_primary_hits >= 1 or title_context_hits >= 1
+    return bool(
+        issue_bucket
+        or market_response
+        or (
+            direct_supply
+            and (
+                issue_anchor_hits >= 2
+                or market_anchor_hits >= 2
+                or (issue_title_hits >= 1 and has_named_or_context_focus)
+            )
+        )
+        or (
+            strong_focus
+            and has_named_or_context_focus
+            and feature_kind in ("field", "issue")
+            and issue_anchor_hits >= 2
+        )
+    )
+
+
 def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
     item_key = str(item.get("key") or "").strip()
     title = str(getattr(article, "title", "") or "")
@@ -17025,23 +17987,28 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     section_key = str(getattr(article, "section", "") or "").strip()
     strong_focus = bool(metrics.get("strong_focus"))
     primary_focus = bool(metrics.get("primary_focus"))
+    single_focus = bool(metrics.get("single_focus"))
+    match_count = int(metrics.get("match_count") or 0)
+    title_primary_hits = int(metrics.get("title_primary_hits") or 0)
+    title_context_hits = int(metrics.get("title_context_hits") or 0)
     board_score = float(metrics.get("board_score") or 0.0)
     story_priority = float(metrics.get("story_priority") or 0.0)
     consumer_noise_hits = int(metrics.get("consumer_noise_hits") or 0)
     fruit_blossom_tourism = bool(metrics.get("fruit_blossom_tourism"))
-    allow_core_issue = bool(issue_bucket) or market_response
-    weak_training = training_title_hits >= 1 and not allow_core_issue
-    weak_profile = profile_title_hits >= 1 and not allow_core_issue
-    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not allow_core_issue
-    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not allow_core_issue
+    operational_issue_signal = _commodity_board_has_operational_issue_signal(metrics)
+    core_issue_override = bool(issue_bucket) or market_response
+    weak_training = training_title_hits >= 1 and not core_issue_override
+    weak_profile = profile_title_hits >= 1 and not core_issue_override
+    weak_org_feature = is_local_agri_org_feature_context(title, desc) and not core_issue_override
+    weak_org_promo = is_supply_org_promo_feature_context(title, desc) and not core_issue_override
     weak_event = (
         any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS)
-        and not allow_core_issue
+        and not operational_issue_signal
         and feature_kind != "quality"
     )
-    weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not allow_core_issue) and (not direct_supply)
-    weak_tourism = bool(metrics.get("supply_tourism")) and not allow_core_issue
-    weak_blossom_tourism = fruit_blossom_tourism and not allow_core_issue
+    weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not operational_issue_signal) and (not direct_supply)
+    weak_tourism = bool(metrics.get("supply_tourism")) and not operational_issue_signal
+    weak_blossom_tourism = fruit_blossom_tourism and not operational_issue_signal
     weak_sales_promo = is_commodity_sales_promo_context(title, desc) and not market_response
     weak_political_statement = is_commodity_political_statement_context(title, desc) and not market_response
     weak_support_advice = is_commodity_support_advice_context(title, desc) and not market_response
@@ -17052,18 +18019,75 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     weak_opinion = any(term.lower() in title_l for term in OPINION_BAN_TERMS) and not is_strong_horti_opinion_context(title, desc, dom, press, section_key)
     weak_supply_macro_official = is_supply_macro_official_shock_context(title, desc, dom, press) and not market_response
     weak_processed_panic = is_supply_processed_consumer_panic_context(title, desc) and not market_response
+    weak_program_brand = is_supply_program_brand_action_context(title, desc) and not market_response
+    weak_price_support_event = is_supply_price_support_event_context(title, desc) and not market_response
+    weak_generic_market_watch = (
+        is_supply_generic_category_watch_context(title, desc)
+        and (match_count >= 2 or (not single_focus) or title_primary_hits == 0)
+        and not market_response
+    )
+    strong_price_support_response = bool(
+        weak_price_support_event
+        and title_primary_hits >= 1
+        and operational_issue_signal
+        and (
+            issue_bucket in ("commodity_issue", "farm_action", "export_recovery")
+            or issue_anchor_hits >= 2
+            or market_anchor_hits >= 2
+            or (direct_supply and issue_title_hits >= 1)
+        )
+    )
+    if strong_price_support_response:
+        weak_training = False
+    if strong_price_support_response:
+        weak_event = False
+        weak_price_support_event = False
+    strong_field_response = bool(
+        strong_focus
+        and (title_primary_hits >= 1 or title_context_hits >= 1)
+        and issue_anchor_hits >= 2
+        and feature_kind in ("field", "issue")
+        and (direct_supply or bool(issue_bucket) or issue_title_hits >= 1)
+        and not any(
+            (
+                weak_training,
+                weak_profile,
+                weak_org_feature,
+                weak_org_promo,
+                weak_tourism,
+                weak_blossom_tourism,
+                weak_sales_promo,
+                weak_political_statement,
+                weak_consumer_guide,
+                weak_regional_branding,
+                weak_macro_roundup,
+                weak_unanchored_general,
+                weak_opinion,
+                weak_supply_macro_official,
+                weak_processed_panic,
+                weak_program_brand,
+                weak_generic_market_watch,
+            )
+        )
+    )
+    if strong_field_response:
+        weak_support_advice = False
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic:
+    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch:
         representative_rank = 0
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
     elif direct_supply or market_response:
         representative_rank = 3
+    elif strong_field_response:
+        representative_rank = 3
     elif issue_title_hits >= 1 and strong_focus and story_priority >= 8.0:
         representative_rank = 3
+    elif feature_kind in ("field", "issue") and strong_focus and (title_primary_hits >= 1 or primary_focus) and issue_anchor_hits >= 1:
+        representative_rank = 2
     elif feature_kind in ("field", "quality") and strong_focus and story_priority >= 4.0:
         representative_rank = 2
     elif strong_focus and primary_focus and board_score >= 88.0:
@@ -17108,6 +18132,12 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         representative_score -= 28.0
     if weak_processed_panic:
         representative_score -= 28.0
+    if weak_program_brand:
+        representative_score -= 24.0
+    if weak_price_support_event:
+        representative_score -= 26.0
+    if weak_generic_market_watch:
+        representative_score -= 24.0
 
     metrics.update(
         {
@@ -17132,13 +18162,16 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
             "weak_opinion_story": bool(weak_opinion),
             "weak_supply_macro_official_story": bool(weak_supply_macro_official),
             "weak_processed_panic_story": bool(weak_processed_panic),
+            "weak_program_brand_story": bool(weak_program_brand),
+            "weak_price_support_event_story": bool(weak_price_support_event),
+            "weak_generic_market_watch_story": bool(weak_generic_market_watch),
         }
     )
     return metrics
 
 
 def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
-    return 3 if bool(item.get("program_core")) else 2
+    return 1 if bool(item.get("program_core")) else 2
 
 
 def _commodity_board_article_is_active_candidate(
@@ -17149,15 +18182,32 @@ def _commodity_board_article_is_active_candidate(
     article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
     if not bool(article_metrics.get("board_eligible")):
         return False
-    if int(article_metrics.get("representative_rank", -1)) < _commodity_board_active_min_rank(item):
+    representative_rank = int(article_metrics.get("representative_rank", -1))
+    if representative_rank < _commodity_board_active_min_rank(item):
         return False
     if bool(item.get("program_core")):
+        has_direct_item_focus = int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
+        has_indirect_issue_focus = bool(
+            representative_rank >= 4
+            and bool(article_metrics.get("strong_focus"))
+            and _commodity_board_has_operational_issue_signal(article_metrics)
+        )
+        if not has_direct_item_focus and not has_indirect_issue_focus:
+            return False
         if not (
             str(article_metrics.get("issue_bucket") or "")
             or bool(article_metrics.get("direct_supply"))
             or bool(article_metrics.get("market_response"))
             or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
             or int(article_metrics.get("market_anchor_hits") or 0) >= 1
+            or (
+                str(article_metrics.get("feature_kind") or "") in ("field", "issue")
+                and bool(article_metrics.get("strong_focus"))
+                and (
+                    int(article_metrics.get("title_primary_hits") or 0) >= 1
+                    or bool(article_metrics.get("primary_focus"))
+                )
+            )
         ):
             return False
     return True
@@ -17269,7 +18319,7 @@ def _program_core_board_supply_candidates(board_source_by_section: dict[str, lis
         best_article: Article | None = None
         best_metrics: dict[str, Any] | None = None
         best_sort: tuple[Any, ...] | None = None
-        for section_key in ("supply", "dist"):
+        for section_key in ("supply", "dist", "policy"):
             for article in board_source_by_section.get(section_key, []) or []:
                 if not isinstance(article, Article):
                     continue
@@ -17282,7 +18332,7 @@ def _program_core_board_supply_candidates(board_source_by_section: dict[str, lis
                     float(metrics.get("representative_score", 0.0)),
                     float(metrics.get("board_score", 0.0)),
                     float(metrics.get("story_priority", 0.0)),
-                    1 if section_key == "supply" else 0,
+                    2 if section_key == "supply" else (1 if section_key == "dist" else 0),
                     float(getattr(article, "score", 0.0) or 0.0),
                     getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
                 )
@@ -17315,13 +18365,6 @@ def _normalize_supply_section_from_board(
         return 0
     supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
     max_n = max(1, int(max_items or MAX_PER_SECTION))
-    selected_other_keys = {
-        _article_selection_identity(article)
-        for section_key, items in (final_by_section or {}).items()
-        if str(section_key) not in {"supply", "dist"}
-        for article in (items or [])
-        if isinstance(article, Article)
-    }
     current_supply_keys = {_article_selection_identity(article) for article in supply_items if _article_selection_identity(article)}
     inserted = 0
     promoted_other_keys: set[str] = set()
@@ -17339,8 +18382,6 @@ def _normalize_supply_section_from_board(
             if not article_key:
                 continue
             if article_key in current_supply_keys:
-                continue
-            if article_key in selected_other_keys:
                 continue
             if len(supply_items) < max_n:
                 supply_items.append(article)
@@ -17389,6 +18430,18 @@ def _normalize_supply_section_from_board(
         deduped_supply.append(article)
         if len(deduped_supply) >= max_n:
             break
+    if len(deduped_supply) >= 5:
+        strong_supply_count = sum(
+            1
+            for article in deduped_supply
+            if not is_supply_local_sales_event_context(article.title or "", article.description or "")
+        )
+        if strong_supply_count >= 4:
+            deduped_supply = [
+                article
+                for article in deduped_supply
+                if not is_supply_local_sales_event_context(article.title or "", article.description or "")
+            ]
 
     ranked_metrics: list[tuple[Article, dict[str, Any] | None]] = []
     for article in deduped_supply:
@@ -17442,6 +18495,9 @@ def _normalize_supply_section_from_board(
                     or metrics.get("weak_org_promo_story")
                     or metrics.get("weak_supply_macro_official_story")
                     or metrics.get("weak_processed_panic_story")
+                    or metrics.get("weak_program_brand_story")
+                    or metrics.get("weak_price_support_event_story")
+                    or metrics.get("weak_generic_market_watch_story")
                 )
             )
             if weak_story:
@@ -20802,32 +21858,69 @@ def build_dev_preview_version_json(report_date: str) -> str:
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
 
-def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:
-    """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
-    if not report_date or not is_iso_date_str(report_date):
-        raise ValueError("report_date must be YYYY-MM-DD")
-    # business-day guard (override with FORCE_RUN_ANYDAY)
-    try:
-        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(date.fromisoformat(report_date))):
-            log.info("[MAINT] rebuild_date skip non-business day: %s", report_date)
-            return
-    except Exception:
-        pass
+def _build_sections_for_report(
+    repo: str,
+    token: str,
+    report_date: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    allow_openai: bool = True,
+    replay_snapshot: bool = False,
+) -> tuple[dict[str, list[Article]], dict[str, SummaryCacheEntry | str], datetime, datetime]:
+    snapshot_summary_cache: dict[str, SummaryCacheEntry | str] = {}
+    snapshot_path: Path | None = None
+    raw_snapshot: dict[str, list[Article]] | None = None
+    snapshot_debug: JsonDict = {}
 
-    start_kst, end_kst = _compute_window_for_report_date(report_date)
-    log.info("[MAINT] rebuild_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+    if replay_snapshot:
+        raw_by_section, snap_start, snap_end, snapshot_summary_cache, snapshot_debug, snapshot_path = load_replay_snapshot(report_date)
+        start_kst = snap_start
+        end_kst = snap_end
+        _restore_debug_from_snapshot(snapshot_debug, snapshot_path)
+        log.info("[REPLAY] loaded snapshot: %s", snapshot_path)
+    else:
+        raw_by_section = collect_raw_sections(start_kst, end_kst)
+        raw_snapshot = _clone_articles_by_section(raw_by_section)
+        snapshot_debug = _snapshot_debug_payload()
 
-    # collect + summarize
-    by_section = collect_all_sections(start_kst, end_kst)
+    by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
     summary_cache = load_summary_cache(repo, token)
+    if snapshot_summary_cache:
+        summary_cache.update(snapshot_summary_cache)
     by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
 
-    # nav dates from actual archive listing
+    if raw_snapshot is not None and _replay_snapshot_write_enabled():
+        try:
+            saved_path = save_replay_snapshot(
+                report_date,
+                start_kst,
+                end_kst,
+                raw_snapshot,
+                summary_cache=summary_cache,
+                debug_payload=snapshot_debug,
+            )
+            log.info("[REPLAY] snapshot saved: %s", saved_path)
+        except Exception as exc:
+            log.warning("[WARN] replay snapshot save failed: %s", exc)
+
+    return by_section, summary_cache, start_kst, end_kst
+
+
+def _publish_maintenance_report(
+    repo: str,
+    token: str,
+    report_date: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    site_path: str,
+    by_section: dict[str, list[Article]],
+    summary_cache: dict[str, SummaryCacheEntry | str] | None = None,
+    action_label: str = "maintenance rebuild_date",
+) -> None:
     avail = _list_dev_preview_archive_dates(repo, token) if DEV_SINGLE_PAGE_MODE else _list_archive_dates(repo, token)
     avail.add(report_date)
     archive_dates_desc = sorted(avail, reverse=True)
 
-    # render
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
 
     if DEV_SINGLE_PAGE_MODE:
@@ -20891,7 +21984,7 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
                 log_kakao_link(daily_url)
                 kakao_send_to_me(kakao_text, daily_url)
                 _write_kakao_send_status("success")
-                log.info("[OK] Kakao message sent (maintenance rebuild_date, single-page). URL=%s", daily_url)
+                log.info("[OK] Kakao message sent (%s, single-page). URL=%s", action_label, daily_url)
             except Exception as e:
                 _write_kakao_send_status(_kakao_send_status_for_exception(e))
                 if KAKAO_FAIL_OPEN:
@@ -20905,7 +21998,6 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
     log.info("[MAINT PUT] %s", daily_path)
 
-    # Optional: debug report JSON (maintenance rebuild_date)
     if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
         try:
             DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
@@ -20917,12 +22009,10 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
         except Exception as e:
             log.warning("[WARN] debug report upload failed: %s", e)
 
-    # update search index
     search_idx, ssha = load_search_index(repo, token)
     search_idx = update_search_index(search_idx, report_date, by_section, site_path)
     save_search_index(repo, token, search_idx, ssha)
 
-    # refresh index based on archive listing
     avail2 = _list_archive_dates(repo, token)
     avail2.add(report_date)
     archive_dates_desc2 = sorted(avail2, reverse=True)
@@ -20930,8 +22020,6 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
     github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index {report_date}", sha=sha_i, branch="main")
 
-
-    # refresh archive manifest files (.agri_archive.json + docs/archive_manifest.json)
     try:
         avail3 = _list_archive_dates(repo, token)
         avail3.add(report_date)
@@ -20944,23 +22032,19 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     except Exception as e:
         log.warning("[WARN] manifest update after rebuild_date failed: %s", e)
 
-    # neighbor nav repair (older pages may miss next/prev)
     try:
         backfill_neighbor_archive_nav(repo, token, report_date, archive_dates_desc2, site_path)
     except Exception as e:
         log.warning("[WARN] neighbor nav backfill failed: %s", e)
 
-    # optional UX patch sweep
     _maybe_ux_patch(repo, token, report_date, site_path)
 
-    # save summary cache (rebuild may create new summaries)
-    try:
-        save_summary_cache(repo, token, summary_cache)
-    except Exception as e:
-        log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
+    if summary_cache is not None:
+        try:
+            save_summary_cache(repo, token, summary_cache)
+        except Exception as e:
+            log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
 
-
-    # optional Kakao send (maintenance rebuild_date)
     if MAINTENANCE_SEND_KAKAO:
         try:
             base_url = get_pages_base_url(repo).rstrip("/")
@@ -20972,13 +22056,78 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
             log_kakao_link(daily_url)
             kakao_send_to_me(kakao_text, daily_url)
             _write_kakao_send_status("success")
-            log.info("[OK] Kakao message sent (maintenance rebuild_date). URL=%s", daily_url)
+            log.info("[OK] Kakao message sent (%s). URL=%s", action_label, daily_url)
         except Exception as e:
             _write_kakao_send_status(_kakao_send_status_for_exception(e))
             if KAKAO_FAIL_OPEN:
                 _log_kakao_fail_open(e)
             else:
                 raise
+
+
+def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:
+    """Rebuild a single date page (docs/archive/YYYY-MM-DD.html) and refresh index/search. No Kakao, no state."""
+    if not report_date or not is_iso_date_str(report_date):
+        raise ValueError("report_date must be YYYY-MM-DD")
+    # business-day guard (override with FORCE_RUN_ANYDAY)
+    try:
+        if (not FORCE_RUN_ANYDAY) and (not is_business_day_kr(date.fromisoformat(report_date))):
+            log.info("[MAINT] rebuild_date skip non-business day: %s", report_date)
+            return
+    except Exception:
+        pass
+
+    start_kst, end_kst = _compute_window_for_report_date(report_date)
+    log.info("[MAINT] rebuild_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+
+    by_section, summary_cache, start_kst, end_kst = _build_sections_for_report(
+        repo,
+        token,
+        report_date,
+        start_kst,
+        end_kst,
+        allow_openai=allow_openai,
+        replay_snapshot=False,
+    )
+    _publish_maintenance_report(
+        repo,
+        token,
+        report_date,
+        start_kst,
+        end_kst,
+        site_path,
+        by_section,
+        summary_cache=summary_cache,
+        action_label="maintenance rebuild_date",
+    )
+
+
+def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = False) -> None:
+    """Rebuild a single date page from a saved replay snapshot. No Naver collection."""
+    if not report_date or not is_iso_date_str(report_date):
+        raise ValueError("report_date must be YYYY-MM-DD")
+
+    by_section, summary_cache, start_kst, end_kst = _build_sections_for_report(
+        repo,
+        token,
+        report_date,
+        datetime.min.replace(tzinfo=KST),
+        datetime.min.replace(tzinfo=KST),
+        allow_openai=allow_openai,
+        replay_snapshot=True,
+    )
+    log.info("[MAINT] replay_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+    _publish_maintenance_report(
+        repo,
+        token,
+        report_date,
+        start_kst,
+        end_kst,
+        site_path,
+        by_section,
+        summary_cache=summary_cache,
+        action_label="maintenance replay_date",
+    )
 
 def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site_path: str) -> None:
     """Backfill rebuild recent archives (excludes base_date itself). No Kakao, no state."""
@@ -21125,8 +22274,19 @@ def main() -> None:
         return
 
     # -----------------------------
-    # Maintenance tasks (rebuild/backfill) - no Kakao, no state update
+    # Maintenance tasks (replay/rebuild/backfill) - no state update
     # -----------------------------
+    if maintenance_task == "replay_date":
+        try:
+            site_path = get_run_site_path(repo)
+        except Exception:
+            site_path = "/"
+        if not FORCE_REPORT_DATE:
+            raise RuntimeError("FORCE_REPORT_DATE(force_report_date) is required for task=replay_date")
+        d_iso = str(FORCE_REPORT_DATE).strip()
+        maintenance_replay_date(repo, GH_TOKEN, d_iso, site_path, allow_openai=_replay_allow_openai())
+        return
+
     if maintenance_task in ("rebuild_date", "backfill_rebuild"):
         if not NAVER_CLIENT_ID or not NAVER_CLIENT_SECRET:
             raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")

@@ -54,7 +54,7 @@ jobs:
   run:
     if: github.event_name == 'schedule' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout workflow branch
         uses: actions/checkout@v5

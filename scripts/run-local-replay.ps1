@@ -1,9 +1,11 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$ReportDate,
-    [string]$OutputDir = ".local-builds\\dryrun",
+    [string]$SnapshotDate = "",
+    [string]$SnapshotRoot = ".local-builds\\dryrun",
+    [string]$OutputDir = ".local-builds\\replay",
     [switch]$DebugReport,
-    [switch]$SkipOpenAI
+    [switch]$AllowOpenAI
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,24 +55,34 @@ function Resolve-EnvFile([string]$RepoRoot) {
 $repoRoot = Get-RepoRoot
 $pythonCmd = Get-PythonCommand $repoRoot
 $outputPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $OutputDir))
+$snapshotRootPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $SnapshotRoot))
 $envFile = Resolve-EnvFile $repoRoot
+
+if (-not $SnapshotDate) {
+    $SnapshotDate = $ReportDate
+}
+
+$snapshotPath = Join-Path (Join-Path (Join-Path $snapshotRootPath "main") ".agri_replay") "$SnapshotDate.snapshot.json"
+if (-not (Test-Path $snapshotPath)) {
+    throw "Replay snapshot not found: $snapshotPath"
+}
 
 $env:GITHUB_REPO = Get-RepoSlug
 $env:GITHUB_REPOSITORY = $env:GITHUB_REPO
 $env:AGRI_ENV_FILE = $envFile
 $env:LOCAL_DRY_RUN = "true"
 $env:LOCAL_OUTPUT_DIR = $outputPath
-$env:MAINTENANCE_TASK = "rebuild_date"
+$env:MAINTENANCE_TASK = "replay_date"
 $env:FORCE_REPORT_DATE = $ReportDate
 $env:FORCE_RUN_ANYDAY = "true"
 $env:MAINTENANCE_SEND_KAKAO = "false"
 $env:WINDOW_MIN_HOURS = "0"
 $env:CROSSDAY_DEDUPE_ENABLED = "false"
 $env:UX_PATCH_DAYS = "0"
-$env:NAVER_MAX_WORKERS = "1"
-$env:NAVER_MIN_INTERVAL_SEC = "0.6"
-$env:REPLAY_WRITE_SNAPSHOT = "true"
-$env:BUILD_TAG = "local-dryrun-$($ReportDate -replace '-', '')"
+$env:REPLAY_SNAPSHOT_PATH = $snapshotPath
+$env:REPLAY_WRITE_SNAPSHOT = "false"
+$env:REPLAY_ALLOW_OPENAI = $(if ($AllowOpenAI) { "true" } else { "false" })
+$env:BUILD_TAG = "local-replay-$($ReportDate -replace '-', '')"
 $env:KAKAO_STATUS_FILE = Join-Path $env:TEMP "agri-news-brief-kakao-local.txt"
 
 if ($DebugReport) {
@@ -83,21 +95,14 @@ if ($DebugReport) {
     $env:DEBUG_REPORT_WRITE_JSON = "0"
 }
 
-if ($SkipOpenAI) {
-    $env:OPENAI_API_KEY = ""
-}
-
 Push-Location $repoRoot
 try {
     & $pythonCmd main.py
     if ($envFile) {
-        Write-Host "[local-dryrun] env file: $envFile"
+        Write-Host "[local-replay] env file: $envFile"
     }
-    $snapshotPath = Join-Path (Join-Path (Join-Path $outputPath "main") ".agri_replay") "$ReportDate.snapshot.json"
-    if (Test-Path $snapshotPath) {
-        Write-Host "[local-dryrun] snapshot: $snapshotPath"
-    }
-    Write-Host "[local-dryrun] output root: $outputPath"
+    Write-Host "[local-replay] snapshot: $snapshotPath"
+    Write-Host "[local-replay] output root: $outputPath"
 }
 finally {
     Pop-Location

@@ -541,6 +541,49 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(cucumber["article_count"], 1)
         self.assertIsNone(cucumber["top_article"])
 
+    def test_generic_category_watch_story_is_not_representative_for_program_core_item(self):
+        title = "채소값 곤두박질…공급·소비·정책 삼중고"
+        desc = "풋고추와 오이 등 채소류 가격이 흔들리고 공급과 소비, 정책 부담이 함께 겹치고 있다."
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://example.com/vegetable-category-watch",
+        )
+
+        self.assertTrue(main.is_supply_generic_category_watch_context(title, desc))
+        self.assertTrue(main.is_supply_weak_tail_context(title, desc))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_pepper"), article)
+
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_generic_market_watch_story"]))
+
+    def test_generic_category_watch_story_is_not_active_candidate_for_program_core_item(self):
+        article = self._make_article(
+            "supply",
+            "채소값 곤두박질…공급·소비·정책 삼중고",
+            "풋고추와 오이 등 채소류 가격이 흔들리고 공급과 소비, 정책 부담이 함께 겹치고 있다.",
+            "https://example.com/vegetable-category-watch-inactive",
+        )
+        item = self._item("green_pepper")
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
+    def test_program_core_item_accepts_indirect_facility_issue_story(self):
+        article = self._make_article(
+            "supply",
+            "송미령 장관, 농협주유소·시설채소 점검…난방유 부담 대응 주문",
+            "시설채소 주산지에서 풋고추·애호박 농가의 난방유 부담과 출하 차질을 점검하고 수급 안정을 위한 대응을 주문했다.",
+            "https://example.com/facility-vegetable-response",
+        )
+        item = self._item("green_pepper")
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 4)
+        self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
+        self.assertTrue(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(
             "supply",
@@ -1084,6 +1127,44 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertFalse(garlic["active"])
         self.assertEqual(garlic["article_count"], 0)
 
+    def test_board_rejects_multi_item_policy_roundup_for_garlic(self):
+        article = self._make_article(
+            "policy",
+            "계란·화장지 등 민생물가 잡는다…과자·아이스크림도 가격 인하",
+            "농식품부는 계란, 돼지고기, 가공식품(식용유 등), 마늘 등 4개 품목, 산업통상부는 화장지, 세탁세제 물량을 점검한다. "
+            "김도 물김과 마른김의 수급 동향을 지속 관리하고 생산자·가공업계 의견 수렴을 통해 개선한다.",
+            "https://example.com/garlic-policy-roundup",
+        )
+        article.topic = "마늘"
+        by_section = {key: [] for key in self.conf}
+        by_section["policy"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        garlic = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "garlic"
+        )
+
+        self.assertFalse(garlic["active"])
+        self.assertEqual(garlic["article_count"], 0)
+
+    def test_board_metrics_reject_body_only_policy_roundup_for_garlic(self):
+        article = self._make_article(
+            "policy",
+            "계란·화장지 등 민생물가 잡는다…과자·아이스크림도 가격 인하",
+            "농식품부는 계란, 돼지고기, 가공식품(식용유 등), 마늘 등 4개 품목, 산업통상부는 화장지, 세탁세제 물량을 점검한다. "
+            "김도 물김과 마른김의 수급 동향을 지속 관리하고 생산자·가공업계 의견 수렴을 통해 개선한다.",
+            "https://example.com/garlic-policy-roundup-metrics",
+        )
+        article.topic = "마늘"
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("garlic"), article)
+
+        self.assertFalse(bool(metrics["board_eligible"]))
+        self.assertLess(int(metrics["representative_rank"]), 1)
+
     def test_board_rejects_macro_brand_story_for_tomato(self):
         article = self._make_article(
             "policy",
@@ -1167,6 +1248,515 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertLess(int(metrics["representative_rank"]), 1)
         self.assertTrue(bool(metrics["weak_processed_panic_story"]))
 
+    def test_program_brand_action_story_is_demoted_from_supply_and_board(self):
+        title = "‘경북형 공동영농’ 소득배당으로 농가소득 높여"
+        desc = (
+            "경북형 공동영농은 묘목 보급과 출하계약을 바탕으로 사과와 시설채소의 생산비를 낮추는 방식으로 추진된다. "
+            "2027년에는 규격화한 ‘골든볼’ 사과를 단일 브랜드로 판매할 계획이다."
+        )
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://www.nongmin.com/article/20260317500487",
+        )
+
+        self.assertTrue(main.is_supply_program_brand_action_context(title, desc))
+        self.assertTrue(main.is_supply_weak_tail_context(title, desc))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("apple"), article)
+        self.assertLess(int(metrics["representative_rank"]), 1)
+        self.assertTrue(bool(metrics["weak_program_brand_story"]))
+
+    def test_price_support_event_story_with_real_supply_stress_survives_board_and_bridge(self):
+        title = "월동무 가격 하락에 긴급 할인행사 추진"
+        desc = (
+            "제주농산물수급관리연합회와 센터가 월동무 도매가격 하락에 대응해 긴급 할인행사를 추진한다. "
+            "가격지지 TF 회의도 열어 경매가격 회복 방안을 논의했다."
+        )
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=316761",
+        )
+
+        self.assertTrue(main.is_supply_price_support_event_context(title, desc))
+        self.assertTrue(main.is_supply_weak_tail_context(title, desc))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("radish"), article)
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 3)
+        self.assertFalse(bool(metrics["weak_price_support_event_story"]))
+        self.assertTrue(main._commodity_board_article_is_active_candidate(self._item("radish"), article, metrics))
+        self.assertTrue(main._commodity_board_article_is_supply_bridge_candidate(self._item("radish"), article, metrics))
+
+    def test_consumer_expansion_tail_is_not_misclassified_as_price_support_event(self):
+        title = "양배추 가격 급락에 제주 농가 '시름'...소비확대 '총력전'"
+        desc = "양배추 가격 급락으로 농가 부담이 커지자 할인 판매와 소비 촉진 행사가 이어지고 있다."
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://www.headlinejeju.co.kr/news/articleView.html?idxno=588956",
+        )
+
+        self.assertFalse(main.is_supply_price_support_event_context(title, desc))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("cabbage"), article)
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
+
+    def test_orchard_monitoring_response_story_stays_active_for_pear(self):
+        article = self._make_article(
+            "supply",
+            "나주시, 이상기상 선제 대응 나주배 과원 실시간 모니터링",
+            "나주배 과원의 저온 피해와 생육 상황을 실시간 점검하고 출하 차질을 줄이기 위한 선제 대응 체계를 가동한다.",
+            "https://example.com/pear-orchard-monitoring",
+        )
+        item = self._item("pear")
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
+        self.assertFalse(bool(metrics["weak_support_advice_story"]))
+        self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
+    def test_supply_core_selection_skips_generic_category_watch_story(self):
+        generic_watch = self._make_article(
+            "supply",
+            "채소값 곤두박질…공급·소비·정책 삼중고",
+            "풋고추와 오이 등 채소류 가격이 흔들리고 공급과 소비, 정책 부담이 함께 겹치고 있다.",
+            "https://example.com/vegetable-category-watch-core",
+        )
+        valid_articles = [
+            self._make_article(
+                "supply",
+                "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                "https://example.com/tomato-heating-shock-core",
+            ),
+            self._make_article(
+                "supply",
+                "\"마늘 수확량 월등히 많고, 1등품이 73% 차지\"",
+                "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                "https://example.com/garlic-harvest-quality-core",
+            ),
+            self._make_article(
+                "supply",
+                "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                "https://example.com/oriental-melon-supply-core",
+            ),
+            generic_watch,
+        ]
+
+        selected = main.select_top_articles(valid_articles, "supply", 4)
+        selected_titles = {article.title for article in selected}
+        core_titles = {article.title for article in selected if article.is_core}
+
+        self.assertIn("고유가에 난방비 걱정...방울 토마토 농가 생산량 급감", core_titles)
+        self.assertNotIn(generic_watch.title, selected_titles)
+        self.assertNotIn(generic_watch.title, core_titles)
+
+    def test_local_sales_event_story_is_demoted_from_supply_tail(self):
+        title = "익산시, 직거래장터 연장 운영…3일간 1600만원 매출"
+        desc = (
+            "익산시가 농산물 직거래장터 운영 기간을 연장한 결과 3일간 1600만원 매출을 기록했다. "
+            "지역 농가 판로 지원과 소비 촉진을 위해 장터를 이어간다."
+        )
+        local_sales = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://example.com/iksan-market-sales",
+        )
+        valid_articles = [
+            self._make_article(
+                "supply",
+                "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                "https://example.com/tomato-heating-shock-tail",
+            ),
+            self._make_article(
+                "supply",
+                "\"마늘 수확량 월등히 많고, 1등품이 73% 차지\"",
+                "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                "https://example.com/garlic-harvest-quality-tail",
+            ),
+            self._make_article(
+                "supply",
+                "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                "https://example.com/oriental-melon-supply-tail",
+            ),
+            local_sales,
+        ]
+
+        self.assertTrue(main.is_supply_local_sales_event_context(title, desc))
+        self.assertTrue(main.is_supply_weak_tail_context(title, desc))
+        selected = main.select_top_articles(valid_articles, "supply", 4)
+        selected_titles = {article.title for article in selected}
+
+        self.assertNotIn(title, selected_titles)
+
+    def test_supply_normalization_prunes_local_sales_filler_when_four_stronger_items_exist(self):
+        local_sales = self._make_article(
+            "supply",
+            "익산시, 직거래장터 연장 운영…3일간 1600만원 매출",
+            "판매 품목은 하우스 작물과 저장 농산물, 계란 등 16개로, 딸기와 토마토, 고구마, 잡곡류, 대파 등 지역 농가가 직접 생산한 "
+            "신선 농산물이 합리적인 가격에 제공됐다. 준비된 물량이 연일 조기 소진될 정도로 큰 호응을 얻었다.",
+            "https://example.com/iksan-market-sales-normalize",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [
+            self._make_article(
+                "supply",
+                "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                "https://example.com/tomato-heating-shock-normalize",
+            ),
+            self._make_article(
+                "supply",
+                "\"마늘 수확량 월등히 많고, 1등품이 73% 차지\"",
+                "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                "https://example.com/garlic-harvest-quality-normalize",
+            ),
+            self._make_article(
+                "supply",
+                "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                "https://example.com/oriental-melon-supply-normalize",
+            ),
+            self._make_article(
+                "supply",
+                "사과 선별·공판 기능 결합…유통거점 부상",
+                "산지 출하 가격과 공판 기능이 결합되며 사과 유통거점 역할이 강화되고 있다.",
+                "https://example.com/apple-hub-normalize",
+            ),
+            local_sales,
+        ]
+        board_source = {key: [] for key in self.conf}
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=5)
+
+        self.assertTrue(main.is_supply_local_sales_event_context(local_sales.title, local_sales.description))
+        self.assertEqual(changed, 0)
+        self.assertEqual(len(final_by_section["supply"]), 4)
+        self.assertNotIn(local_sales.title, {article.title for article in final_by_section["supply"]})
+
+    def test_supply_official_support_response_story_is_demoted_from_supply(self):
+        title = "송미령 장관, 농협주유소·시설채소 점검…난방유 부담 대응 주문"
+        desc = (
+            "송미령 농식품부 장관이 농협주유소와 시설채소 농가를 찾아 난방유와 면세유 부담 대응을 주문하며 "
+            "생산비 완화 대책을 점검했다."
+        )
+        article = self._make_article(
+            "supply",
+            title,
+            desc,
+            "https://www.dailian.co.kr/news/view/1622945/?sc=Naver",
+        )
+
+        self.assertTrue(main.is_supply_official_support_response_context(title, desc))
+        self.assertTrue(main.is_supply_weak_tail_context(title, desc))
+        selected = main.select_top_articles(
+            [
+                self._make_article(
+                    "supply",
+                    "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                    "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                    "https://example.com/tomato-heating-shock",
+                ),
+                self._make_article(
+                    "supply",
+                    '"마늘 수확량 월등히 많고, 1등품이 73% 차지"',
+                    "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                    "https://example.com/garlic-harvest-quality",
+                ),
+                self._make_article(
+                    "supply",
+                    "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                    "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                    "https://example.com/oriental-melon-supply",
+                ),
+                article,
+            ],
+            "supply",
+            3,
+        )
+        self.assertNotIn(title, {picked.title for picked in selected})
+
+    def test_supply_processed_price_roundup_and_accusatory_quote_are_demoted(self):
+        roundup_title = "아이스크림·과자도 가격 내린다…롯데웰푸드·빙그레 등 최대 13.4% 인하..."
+        roundup_desc = "가공식품 가격 인하가 이어지며 과자와 아이스크림 제품 가격이 줄줄이 내려간다."
+        quote_title = "\"생산비 폭등 외면, 농산물 가격 억제에만 혈안\""
+        quote_desc = "농산물 가격 억제 정책을 비판하는 현장 목소리를 전한 기사다."
+
+        self.assertTrue(main.is_supply_processed_price_roundup_context(roundup_title, roundup_desc))
+        self.assertTrue(main.is_supply_weak_tail_context(roundup_title, roundup_desc))
+        self.assertTrue(main.is_supply_accusatory_quote_context(quote_title, quote_desc))
+        self.assertTrue(main.is_supply_weak_tail_context(quote_title, quote_desc))
+
+    def test_dist_program_event_and_agritech_noise_are_rejected(self):
+        price_support_title = "월동무 가격 하락에 긴급 할인행사 추진"
+        price_support_desc = (
+            "제주농산물수급관리연합회와 센터가 월동무 도매가격 하락에 대응해 긴급 할인행사를 추진한다. "
+            "가격지지 TF 회의도 열어 경매가격 회복 방안을 논의했다."
+        )
+        program_title = "대아청과, '제주 양배추 농가 지원' 소비촉진 행사"
+        program_desc = (
+            "대아청과가 제주 양배추 농가 지원을 위해 소비촉진 행사와 공동구매를 진행하며 "
+            "판매 활성화에 나선다."
+        )
+        agritech_title = "드론이 방제하고, 자율 트랙터가 밭 갈고… 농사도 'AI 시대'"
+        agritech_desc = "드론 방제와 자율 트랙터, 스마트팜 기술을 활용한 농업 혁신 사례를 소개했다."
+        coop_title = "인천농협, 미나리 공동구매 소비 촉진 나서"
+        coop_desc = "인천농협이 미나리 공동구매와 소비 촉진 행사로 판로 지원에 나선다고 밝혔다."
+        lane_title = "강원도, 온라인·대형유통망 연계해 농수특산물 판로 확대"
+        lane_desc = "강원도가 온라인 판매와 대형유통망을 연계해 농수특산물 판로 확대 사업을 추진한다."
+
+        self.assertTrue(main.is_dist_program_event_noise_context(price_support_title, price_support_desc, "aflnews.co.kr", "농수축산신문"))
+        self.assertTrue(main.is_dist_program_event_noise_context(program_title, program_desc, "amnews.co.kr", "농축유통신문"))
+        self.assertTrue(main.is_dist_program_event_noise_context(coop_title, coop_desc, "nongmin.com", "농민신문"))
+        self.assertTrue(main.is_dist_program_event_noise_context(lane_title, lane_desc, "chmbc.co.kr", "춘천MBC"))
+        self.assertTrue(main.is_dist_unanchored_agritech_noise_context(agritech_title, agritech_desc))
+
+    def test_dist_selection_skips_program_event_and_agritech_noise(self):
+        valid_articles = [
+            self._make_article(
+                "dist",
+                "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+                "청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                "https://example.com/cheongju-market-modernization",
+            ),
+            self._make_article(
+                "dist",
+                "기린원당농협두부조공법인, 첫 영국 수출 선적식",
+                "기린원당농협두부조공법인이 첫 영국 수출 선적식을 열고 물류와 통관 절차를 점검했다.",
+                "https://example.com/uk-export-shipping",
+            ),
+            self._make_article(
+                "dist",
+                "강원특별자치도, 전국 최초 농산물 광역수급관리센터 가동",
+                "강원특별자치도가 농산물 광역수급관리센터를 가동하며 반입 조절과 물량 배분 체계를 강화했다.",
+                "https://example.com/gangwon-supply-center",
+            ),
+        ]
+        noise_articles = [
+            self._make_article(
+                "dist",
+                "월동무 가격 하락에 긴급 할인행사 추진",
+                "제주농산물수급관리연합회와 센터가 월동무 도매가격 하락에 대응해 긴급 할인행사를 추진한다. 가격지지 TF 회의도 열어 경매가격 회복 방안을 논의했다.",
+                "http://www.aflnews.co.kr/news/articleView.html?idxno=316761",
+            ),
+            self._make_article(
+                "dist",
+                "대아청과, '제주 양배추 농가 지원' 소비촉진 행사",
+                "대아청과가 제주 양배추 농가 지원을 위해 소비촉진 행사와 공동구매를 진행하며 판매 활성화에 나선다.",
+                "https://example.com/cabbage-promo-event",
+            ),
+            self._make_article(
+                "dist",
+                "드론이 방제하고, 자율 트랙터가 밭 갈고… 농사도 'AI 시대'",
+                "드론 방제와 자율 트랙터, 스마트팜 기술을 활용한 농업 혁신 사례를 소개했다.",
+                "https://example.com/agritech-feature",
+            ),
+        ]
+
+        selected = main.select_top_articles(valid_articles + noise_articles, "dist", 4)
+        selected_titles = {article.title for article in selected}
+
+        self.assertNotIn("월동무 가격 하락에 긴급 할인행사 추진", selected_titles)
+        self.assertNotIn("대아청과, '제주 양배추 농가 지원' 소비촉진 행사", selected_titles)
+        self.assertNotIn("드론이 방제하고, 자율 트랙터가 밭 갈고… 농사도 'AI 시대'", selected_titles)
+
+    def test_dist_program_event_title_override_prunes_final_section_even_with_channel_desc(self):
+        article = self._make_article(
+            "dist",
+            "강원도, 온라인·대형유통망 연계해 농수특산물 판로 확대",
+            "강원도가 온라인 판매와 대형유통망, 물류 지원 체계를 연계해 농수특산물 판로 확대 사업을 추진한다고 밝혔다.",
+            "https://example.com/gangwon-channel-expansion",
+        )
+
+        self.assertTrue(
+            main.is_dist_program_event_noise_context(
+                article.title,
+                article.description,
+                main.domain_of(article.link),
+                main.normalize_press_label("춘천MBC", article.link),
+            )
+        )
+
+        final_by_section = {"dist": [article]}
+        self.assertEqual(main._audit_final_sections(final_by_section), 1)
+        self.assertEqual(final_by_section["dist"], [])
+
+    def test_dist_non_horti_anchorless_noise_is_rejected(self):
+        roundup_title = "[퇴근길포인트] BTS 광화문 공연에…警, 하객 수송 버스 띄운다...정부,..."
+        roundup_desc = "공연과 교통 대책, 정부 대응을 짚은 퇴근길 종합 기사다."
+        export_title = "빙그레, '수출이 성장축'으로…글로벌 확장이 한국 경제에 던지는 의미"
+        export_desc = "기업의 글로벌 확장과 수출 전략이 한국 경제에 미칠 영향을 짚은 해설 기사다."
+
+        self.assertTrue(main.is_dist_non_horti_anchorless_noise_context(roundup_title, roundup_desc))
+        self.assertTrue(main.is_dist_non_horti_anchorless_noise_context(export_title, export_desc))
+
+    def test_dist_local_roundup_and_official_cost_response_noise_are_rejected(self):
+        roundup_title = "［E-로컬뉴스］김천시, 구미시, 성주군 소식"
+        roundup_desc = "김천시, 구미시, 성주군의 지역 소식을 묶은 기사다."
+        response_title = "중동 리스크에 농업비용 급등…정부, 비료·물류·수출 전방위 대응"
+        response_desc = "정부가 비료와 물류, 수출 비용 상승 대응책을 점검하고 관계부처 대책을 논의했다."
+
+        self.assertTrue(main.is_dist_local_roundup_title_context(roundup_title, roundup_desc))
+        self.assertTrue(
+            main.is_dist_official_cost_response_noise_context(
+                response_title,
+                response_desc,
+                "newspim.com",
+                "뉴스핌",
+            )
+        )
+
+    def test_dist_selection_skips_non_horti_anchorless_underfill_noise(self):
+        valid_articles = [
+            self._make_article(
+                "dist",
+                "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+                "청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                "https://example.com/cheongju-market-modernization",
+            ),
+            self._make_article(
+                "dist",
+                "강원특별자치도, 전국 최초 농산물 광역수급관리센터 가동",
+                "강원특별자치도가 농산물 광역수급관리센터를 가동하며 반입 조절과 물량 배분 체계를 강화했다.",
+                "https://example.com/gangwon-supply-center",
+            ),
+        ]
+        noise_articles = [
+            self._make_article(
+                "dist",
+                "[퇴근길포인트] BTS 광화문 공연에…警, 하객 수송 버스 띄운다...정부,...",
+                "공연과 교통 대책, 정부 대응을 짚은 퇴근길 종합 기사다.",
+                "https://example.com/evening-roundup",
+            ),
+            self._make_article(
+                "dist",
+                "빙그레, '수출이 성장축'으로…글로벌 확장이 한국 경제에 던지는 의미",
+                "기업의 글로벌 확장과 수출 전략이 한국 경제에 미칠 영향을 짚은 해설 기사다.",
+                "https://example.com/binggrae-global-export",
+            ),
+        ]
+
+        selected = main.select_top_articles(valid_articles + noise_articles, "dist", 4)
+        selected_titles = {article.title for article in selected}
+
+        self.assertNotIn("[퇴근길포인트] BTS 광화문 공연에…警, 하객 수송 버스 띄운다...정부,...", selected_titles)
+        self.assertNotIn("빙그레, '수출이 성장축'으로…글로벌 확장이 한국 경제에 던지는 의미", selected_titles)
+
+    def test_dist_selection_skips_local_roundup_and_official_cost_response_noise(self):
+        valid_articles = [
+            self._make_article(
+                "dist",
+                "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+                "청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                "https://example.com/cheongju-market-modernization",
+            ),
+            self._make_article(
+                "dist",
+                "강원특별자치도, 전국 최초 농산물 광역수급관리센터 가동",
+                "강원특별자치도가 농산물 광역수급관리센터를 가동하며 반입 조절과 물량 배분 체계를 강화했다.",
+                "https://example.com/gangwon-supply-center",
+            ),
+        ]
+        noise_articles = [
+            self._make_article(
+                "dist",
+                "［E-로컬뉴스］김천시, 구미시, 성주군 소식",
+                "김천시, 구미시, 성주군의 지역 소식을 묶은 기사다.",
+                "https://example.com/e-local-roundup",
+            ),
+            self._make_article(
+                "dist",
+                "중동 리스크에 농업비용 급등…정부, 비료·물류·수출 전방위 대응",
+                "정부가 비료와 물류, 수출 비용 상승 대응책을 점검하고 관계부처 대책을 논의했다.",
+                "https://example.com/official-cost-response",
+            ),
+        ]
+
+        selected = main.select_top_articles(valid_articles + noise_articles, "dist", 4)
+        selected_titles = {article.title for article in selected}
+
+        self.assertNotIn("［E-로컬뉴스］김천시, 구미시, 성주군 소식", selected_titles)
+        self.assertNotIn("중동 리스크에 농업비용 급등…정부, 비료·물류·수출 전방위 대응", selected_titles)
+
+    def test_dist_final_dedupes_same_market_modernization_story(self):
+        selected = main.select_top_articles(
+            [
+                self._make_article(
+                    "dist",
+                    "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+                    "청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                    "https://example.com/cheongju-market-modernization-a",
+                ),
+                self._make_article(
+                    "dist",
+                    "청주 농수산물 도매시장 현대화 ‘착착’…11월 준공",
+                    "청주 농수산물 도매시장 현대화 사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                    "https://example.com/cheongju-market-modernization-b",
+                ),
+                self._make_article(
+                    "dist",
+                    "강원특별자치도, 전국 최초 농산물 광역수급관리센터 가동",
+                    "강원특별자치도가 농산물 광역수급관리센터를 가동하며 반입 조절과 물량 배분 체계를 강화했다.",
+                    "https://example.com/gangwon-supply-center",
+                ),
+            ],
+            "dist",
+            4,
+        )
+        selected_titles = {article.title for article in selected}
+        modernization_titles = {
+            "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+            "청주 농수산물 도매시장 현대화 ‘착착’…11월 준공",
+        }
+        self.assertEqual(len(selected_titles & modernization_titles), 1)
+
+    def test_dist_rebalance_does_not_pull_supply_when_two_dist_items_exist(self):
+        final_by_section = {
+            "dist": [
+                self._make_article(
+                    "dist",
+                    "청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표",
+                    "청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 경매장과 저온저장 시설을 확충하고 있다.",
+                    "https://example.com/cheongju-market-modernization",
+                ),
+                self._make_article(
+                    "dist",
+                    "강원특별자치도, 전국 최초 농산물 광역수급관리센터 가동",
+                    "강원특별자치도가 농산물 광역수급관리센터를 가동하며 반입 조절과 물량 배분 체계를 강화했다.",
+                    "https://example.com/gangwon-supply-center",
+                ),
+            ],
+            "supply": [
+                self._make_article(
+                    "supply",
+                    "고유가에 난방비 걱정...방울 토마토 농가 생산량 급감",
+                    "고유가로 시설 난방비가 급등하면서 방울 토마토 농가 생산량이 줄고 출하 조절 부담이 커졌다.",
+                    "https://example.com/tomato-heating-shock",
+                ),
+                self._make_article(
+                    "supply",
+                    '"마늘 수확량 월등히 많고, 1등품이 73% 차지"',
+                    "마늘 작황이 좋아 수확량과 상품 비중이 크게 늘면서 산지 수급 흐름이 달라지고 있다.",
+                    "https://example.com/garlic-harvest-quality",
+                ),
+                self._make_article(
+                    "supply",
+                    "[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세",
+                    "참외가 본격 출하되며 물량이 늘고 대체 품목 경쟁까지 겹쳐 가격은 지난해보다 낮은 흐름이다.",
+                    "https://example.com/oriental-melon-supply",
+                ),
+            ],
+        }
+
+        moved = main._rebalance_underfilled_dist_from_supply(final_by_section)
+        self.assertEqual(moved, 0)
+        self.assertEqual(len(final_by_section["dist"]), 2)
+
     def test_supply_selection_skips_macro_official_and_processed_panic_tails(self):
         valid_articles = [
             self._make_article(
@@ -1215,12 +1805,62 @@ class TestCommodityBoard(unittest.TestCase):
             "이란 전쟁 여파로 일본 유통업계에서도 감자칩 생산 중단과 화장지 품귀설이 번지고 있다. 원유 정제 소재가 쓰이는 자동차 부품과 의료기기 수급 차질 우려도 제기됐다.",
             "https://biz.chosun.com/international/international_economy/2026/03/21/G7Z72WHI75H6TFIPFTFFKCNVMI/",
         )
+        processed_lifestyle_article = self._make_article(
+            "supply",
+            '"K바비큐에 톨라이니 발디산티 한 잔 어때요"',
+            "한동안 방치됐던 고지대 포도 밭을 다시 정비해 만든 와인으로, 작황에 따라 생산량이 3000병 수준에 그치거나 아예 출시되지 않을 만큼 희소성이 높다. "
+            "100% 산지오베제로 만들어진다.",
+            "https://example.com/grape-wine-lifestyle",
+        )
 
-        selected = main.select_top_articles(valid_articles + [macro_article, panic_article], "supply", 4)
+        program_article = self._make_article(
+            "supply",
+            "‘경북형 공동영농’ 소득배당으로 농가소득 높여",
+            "경북형 공동영농은 묘목 보급과 출하계약을 바탕으로 사과와 시설채소의 생산비를 낮추는 방식으로 추진된다. 2027년에는 규격화한 ‘골든볼’ 사과를 단일 브랜드로 판매할 계획이다.",
+            "https://www.nongmin.com/article/20260317500487",
+        )
+        price_support_article = self._make_article(
+            "supply",
+            "월동무 가격 하락에 긴급 할인행사 추진",
+            "제주농산물수급관리연합회와 센터가 월동무 도매가격 하락에 대응해 긴급 할인행사를 추진한다. 가격지지 TF 회의도 열어 경매가격 회복 방안을 논의했다.",
+            "http://www.aflnews.co.kr/news/articleView.html?idxno=316761",
+        )
+
+        selected = main.select_top_articles(
+            valid_articles + [macro_article, panic_article, processed_lifestyle_article, program_article, price_support_article],
+            "supply",
+            4,
+        )
         selected_titles = {article.title for article in selected}
 
         self.assertNotIn(macro_article.title, selected_titles)
         self.assertNotIn(panic_article.title, selected_titles)
+        self.assertNotIn(processed_lifestyle_article.title, selected_titles)
+        self.assertNotIn(program_article.title, selected_titles)
+        self.assertNotIn(price_support_article.title, selected_titles)
+
+    def test_supply_final_normalization_skips_generic_category_watch_story(self):
+        weak_supply = self._make_article(
+            "supply",
+            "동광양농협, 농가주부모임과 감자 심기 행사 진행",
+            "감자 심기 행사와 현장 체험 중심의 지역 행사 기사다.",
+            "https://example.com/potato-event-normalize",
+        )
+        generic_watch = self._make_article(
+            "supply",
+            "채소값 곤두박질…공급·소비·정책 삼중고",
+            "풋고추와 오이 등 채소류 가격이 흔들리고 공급과 소비, 정책 부담이 함께 겹치고 있다.",
+            "https://example.com/vegetable-category-watch-normalize",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [weak_supply]
+        board_source = {key: [] for key in self.conf}
+        board_source["supply"] = [weak_supply, generic_watch]
+
+        changed = main._normalize_supply_section_from_board(final_by_section, board_source, max_items=3)
+
+        self.assertEqual(changed, 0)
+        self.assertEqual(final_by_section["supply"][0].title, weak_supply.title)
 
 if __name__ == "__main__":
     unittest.main()
