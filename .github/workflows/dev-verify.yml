@@ -25,6 +25,11 @@ on:
         required: false
         default: '0'
         type: string
+      build_mode:
+        description: 'Build mode for manual runs (auto/replay/live)'
+        required: false
+        default: 'auto'
+        type: string
   push:
     branches:
       - dev
@@ -39,6 +44,7 @@ on:
       - 'orchestrator.py'
       - 'observability.py'
       - 'tests/**'
+      - 'scripts/**'
       - '.github/workflows/dev-verify.yml'
       - 'requirements.txt'
       - 'requirements-dev.txt'
@@ -83,6 +89,7 @@ jobs:
           INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
           INPUT_BRIEF_VIEW_URL: ${{ inputs.brief_view_url }}
           INPUT_UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+          INPUT_BUILD_MODE: ${{ inputs.build_mode }}
         run: |
           set -euo pipefail
 
@@ -116,21 +123,65 @@ jobs:
             ux_patch_days='0'
           fi
 
+          requested_build_mode='auto'
+          if [ "$EVENT_NAME" = 'schedule' ]; then
+            requested_build_mode='live'
+          elif [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ -n "$INPUT_BUILD_MODE" ]; then
+            requested_build_mode="$INPUT_BUILD_MODE"
+          fi
+
           echo "content_ref=$content_ref" >> "$GITHUB_OUTPUT"
           echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
           echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
           echo "brief_view_url=$brief_view_url" >> "$GITHUB_OUTPUT"
           echo "ux_patch_days=$ux_patch_days" >> "$GITHUB_OUTPUT"
+          echo "requested_build_mode=$requested_build_mode" >> "$GITHUB_OUTPUT"
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Run tests before rebuild
-        id: tests
+      - name: Run smoke checks before rebuild
+        id: smoke
         run: |
-          python -m unittest discover -s tests -p "test_*.py"
+          python scripts/run_smoke_checks.py
+
+      - name: Resolve replay snapshot
+        id: replay
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          report_date='${{ steps.vars.outputs.report_date }}'
+          requested='${{ steps.vars.outputs.requested_build_mode }}'
+          actual="$requested"
+          source='none'
+          snapshot_path=".agri_replay/${report_date}.snapshot.json"
+
+          mkdir -p .agri_replay
+
+          if [ "$requested" != 'live' ]; then
+            if python scripts/replay_snapshot_repo.py fetch --repo "$REPO" --token "$GITHUB_TOKEN" --ref codex/dev-preview --remote-path "docs/dev/replay/${report_date}.snapshot.json" --output "$snapshot_path"; then
+              actual='replay'
+              source='dev-preview'
+            elif python scripts/replay_snapshot_repo.py fetch --repo "$REPO" --token "$GITHUB_TOKEN" --ref main --remote-path "docs/replay/${report_date}.snapshot.json" --output "$snapshot_path"; then
+              actual='replay'
+              source='main'
+            elif [ "$requested" = 'replay' ]; then
+              echo "Replay snapshot not found for ${report_date} on codex/dev-preview or main."
+              exit 1
+            else
+              actual='live'
+              rm -f "$snapshot_path"
+            fi
+          fi
+
+          echo "actual_build_mode=$actual" >> "$GITHUB_OUTPUT"
+          echo "snapshot_source=$source" >> "$GITHUB_OUTPUT"
 
       - name: Dev verify rebuild (single preview page overwrite)
         id: rebuild
@@ -160,9 +211,12 @@ jobs:
           DEV_SINGLE_PAGE_PATH: docs/dev/index.html
           DEV_SINGLE_PAGE_URL_PATH: index.html
 
-          MAINTENANCE_TASK: rebuild_date
+          MAINTENANCE_TASK: ${{ steps.replay.outputs.actual_build_mode == 'replay' && 'replay_date' || 'rebuild_date' }}
           FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
+          REPLAY_ALLOW_OPENAI: 'false'
+          REPLAY_WRITE_SNAPSHOT: ${{ steps.replay.outputs.actual_build_mode == 'replay' && 'false' || 'true' }}
+          REPLAY_SNAPSHOT_DIR: .agri_replay
 
           FORCE_RUN_ANYDAY: 'true'
           UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
@@ -172,7 +226,7 @@ jobs:
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          NAVER_MAX_WORKERS: '1'
+          NAVER_MAX_WORKERS: '2'
           NAVER_MIN_INTERVAL_SEC: '0.6'
 
           DEBUG_REPORT: '1'
@@ -182,6 +236,29 @@ jobs:
 
         run: |
           python main.py
+
+      - name: Publish replay snapshot
+        if: steps.rebuild.outcome == 'success' && steps.replay.outputs.actual_build_mode != 'replay'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          if [ ! -f "$snapshot_path" ]; then
+            echo "Replay snapshot was not generated: $snapshot_path"
+            exit 1
+          fi
+
+          python scripts/replay_snapshot_repo.py push \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --branch codex/dev-preview \
+            --remote-path "docs/dev/replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --input "$snapshot_path" \
+            --message "Update dev replay snapshot (${{ steps.vars.outputs.report_date }})"
 
       - name: Resolve Kakao status
         if: always()
@@ -268,7 +345,9 @@ jobs:
             echo "- Event: ${{ github.event_name }}"
             echo "- Content ref: ${{ steps.vars.outputs.content_ref }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
-            echo "- Tests: ${{ steps.tests.outcome }}"
+            echo "- Smoke checks: ${{ steps.smoke.outcome }}"
+            echo "- Build mode: ${{ steps.replay.outputs.actual_build_mode }}"
+            echo "- Replay source: ${{ steps.replay.outputs.snapshot_source }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Preview verify: ${{ steps.verify_preview.outcome }}"
             echo "- OpenAI model: gpt-5.4-mini"
