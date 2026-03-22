@@ -18,6 +18,7 @@ COMPILE_TARGETS = [
     "ranking.py",
     "orchestrator.py",
     "observability.py",
+    "replay.py",
 ]
 
 SMOKE_PATTERNS = [
@@ -28,6 +29,8 @@ SMOKE_PATTERNS = [
     "test_contract_collector.py",
     "test_write_optimizations.py",
     "test_retry_utils.py",
+    "test_commodity_board.py",
+    "test_replay.py",
 ]
 
 

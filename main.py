@@ -68,6 +68,16 @@ from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orch
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
 from schemas import GithubDirItem, NaverSearchResponse
+from replay import (
+    SNAPSHOT_SCHEMA_VERSION as _REPLAY_SCHEMA_VERSION,
+    SnapshotVersionError as _ReplaySnapshotVersionError,
+    article_to_snapshot_dict as _replay_article_to_dict,
+    article_dict_to_kwargs as _replay_article_dict_to_kwargs,
+    extract_summary_cache_for_articles as _replay_extract_summary_cache,
+    resolve_snapshot_path as _replay_resolve_snapshot_path,
+    save_snapshot as _replay_save_snapshot,
+    load_snapshot as _replay_load_snapshot,
+)
 from ux_patch import build_archive_ux_html
 
 
@@ -8872,31 +8882,8 @@ def _replay_allow_openai() -> bool:
 
 
 def _clone_article(article: "Article") -> "Article":
-    return Article(
-        section=str(getattr(article, "section", "") or ""),
-        title=str(getattr(article, "title", "") or ""),
-        description=str(getattr(article, "description", "") or ""),
-        link=str(getattr(article, "link", "") or ""),
-        originallink=str(getattr(article, "originallink", "") or ""),
-        pub_dt_kst=getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
-        domain=str(getattr(article, "domain", "") or ""),
-        press=str(getattr(article, "press", "") or ""),
-        norm_key=str(getattr(article, "norm_key", "") or ""),
-        title_key=str(getattr(article, "title_key", "") or ""),
-        canon_url=str(getattr(article, "canon_url", "") or ""),
-        topic=str(getattr(article, "topic", "") or ""),
-        is_core=bool(getattr(article, "is_core", False)),
-        score=float(getattr(article, "score", 0.0) or 0.0),
-        summary=str(getattr(article, "summary", "") or ""),
-        forced_section=str(getattr(article, "forced_section", "") or ""),
-        origin_section=str(getattr(article, "origin_section", "") or ""),
-        source_query=str(getattr(article, "source_query", "") or ""),
-        source_channel=str(getattr(article, "source_channel", "") or ""),
-        selection_stage=str(getattr(article, "selection_stage", "") or ""),
-        selection_note=str(getattr(article, "selection_note", "") or ""),
-        selection_fit_score=float(getattr(article, "selection_fit_score", 0.0) or 0.0),
-        reassigned_from=str(getattr(article, "reassigned_from", "") or ""),
-    )
+    """Article 딥카피 (replay 스냅샷 저장 전 원본 보존용)."""
+    return Article(**_replay_article_dict_to_kwargs(_replay_article_to_dict(article)))
 
 
 def _clone_articles_by_section(by_section: dict[str, list["Article"]] | None) -> dict[str, list["Article"]]:
@@ -8906,109 +8893,6 @@ def _clone_articles_by_section(by_section: dict[str, list["Article"]] | None) ->
         if not key:
             continue
         out[key] = [_clone_article(article) for article in (by_section or {}).get(key, []) or [] if isinstance(article, Article)]
-    return out
-
-
-def _article_to_snapshot_dict(article: "Article") -> JsonDict:
-    pub = getattr(article, "pub_dt_kst", None)
-    if not isinstance(pub, datetime):
-        pub = datetime.min.replace(tzinfo=KST)
-    if pub.tzinfo is None:
-        pub = pub.replace(tzinfo=KST)
-    return {
-        "section": str(getattr(article, "section", "") or ""),
-        "title": str(getattr(article, "title", "") or ""),
-        "description": str(getattr(article, "description", "") or ""),
-        "link": str(getattr(article, "link", "") or ""),
-        "originallink": str(getattr(article, "originallink", "") or ""),
-        "pub_dt_kst": pub.astimezone(KST).isoformat(),
-        "domain": str(getattr(article, "domain", "") or ""),
-        "press": str(getattr(article, "press", "") or ""),
-        "norm_key": str(getattr(article, "norm_key", "") or ""),
-        "title_key": str(getattr(article, "title_key", "") or ""),
-        "canon_url": str(getattr(article, "canon_url", "") or ""),
-        "topic": str(getattr(article, "topic", "") or ""),
-        "is_core": bool(getattr(article, "is_core", False)),
-        "score": float(getattr(article, "score", 0.0) or 0.0),
-        "summary": str(getattr(article, "summary", "") or ""),
-        "forced_section": str(getattr(article, "forced_section", "") or ""),
-        "origin_section": str(getattr(article, "origin_section", "") or ""),
-        "source_query": str(getattr(article, "source_query", "") or ""),
-        "source_channel": str(getattr(article, "source_channel", "") or ""),
-        "selection_stage": str(getattr(article, "selection_stage", "") or ""),
-        "selection_note": str(getattr(article, "selection_note", "") or ""),
-        "selection_fit_score": float(getattr(article, "selection_fit_score", 0.0) or 0.0),
-        "reassigned_from": str(getattr(article, "reassigned_from", "") or ""),
-    }
-
-
-def _snapshot_datetime_from_value(value: Any) -> datetime:
-    if isinstance(value, datetime):
-        return value.astimezone(KST) if value.tzinfo else value.replace(tzinfo=KST)
-    raw = str(value or "").strip()
-    if not raw:
-        return datetime.min.replace(tzinfo=KST)
-    try:
-        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=KST)
-        return dt.astimezone(KST)
-    except Exception:
-        return datetime.min.replace(tzinfo=KST)
-
-
-def _article_from_snapshot_dict(payload: Any) -> "Article":
-    data = payload if isinstance(payload, dict) else {}
-    return Article(
-        section=str(data.get("section", "") or ""),
-        title=str(data.get("title", "") or ""),
-        description=str(data.get("description", "") or ""),
-        link=str(data.get("link", "") or ""),
-        originallink=str(data.get("originallink", "") or ""),
-        pub_dt_kst=_snapshot_datetime_from_value(data.get("pub_dt_kst")),
-        domain=str(data.get("domain", "") or ""),
-        press=str(data.get("press", "") or ""),
-        norm_key=str(data.get("norm_key", "") or ""),
-        title_key=str(data.get("title_key", "") or ""),
-        canon_url=str(data.get("canon_url", "") or ""),
-        topic=str(data.get("topic", "") or ""),
-        is_core=bool(data.get("is_core", False)),
-        score=float(data.get("score", 0.0) or 0.0),
-        summary=str(data.get("summary", "") or ""),
-        forced_section=str(data.get("forced_section", "") or ""),
-        origin_section=str(data.get("origin_section", "") or ""),
-        source_query=str(data.get("source_query", "") or ""),
-        source_channel=str(data.get("source_channel", "") or ""),
-        selection_stage=str(data.get("selection_stage", "") or ""),
-        selection_note=str(data.get("selection_note", "") or ""),
-        selection_fit_score=float(data.get("selection_fit_score", 0.0) or 0.0),
-        reassigned_from=str(data.get("reassigned_from", "") or ""),
-    )
-
-
-def _snapshot_summary_cache_for_articles(
-    by_section: dict[str, list["Article"]] | None,
-    cache: dict[str, SummaryCacheEntry | str] | None,
-) -> dict[str, SummaryCacheEntry | str]:
-    keys = {
-        str(getattr(article, "norm_key", "") or "")
-        for lst in (by_section or {}).values()
-        for article in (lst or [])
-        if isinstance(article, Article) and str(getattr(article, "norm_key", "") or "").strip()
-    }
-    out: dict[str, SummaryCacheEntry | str] = {}
-    for key in sorted(keys):
-        value = (cache or {}).get(key)
-        if isinstance(value, str):
-            if value.strip():
-                out[key] = value.strip()
-        elif isinstance(value, dict):
-            text = str(value.get("s", "") or "").strip()
-            if text:
-                out[key] = {
-                    "s": text,
-                    "t": str(value.get("t", "") or "").strip(),
-                }
     return out
 
 
@@ -9051,24 +8935,18 @@ def _restore_debug_from_snapshot(payload: Any, snapshot_path: Path | None = None
         return
 
 
+def _section_keys() -> list[str]:
+    """SECTIONS에서 유효한 key 목록 추출."""
+    return [str(sec.get("key") or "").strip() for sec in SECTIONS if str(sec.get("key") or "").strip()]
+
+
 def _resolve_replay_snapshot_path(report_date: str) -> Path:
-    raw_path = str(os.getenv("REPLAY_SNAPSHOT_PATH", "") or "").strip()
-    if raw_path:
-        p = Path(raw_path)
-        return p if p.is_absolute() else (Path.cwd() / p)
-
-    raw_dir = str(os.getenv("REPLAY_SNAPSHOT_DIR", "") or "").strip()
-    if raw_dir:
-        base = Path(raw_dir)
-        if not base.is_absolute():
-            base = Path.cwd() / base
-        return base / f"{report_date}.snapshot.json"
-
-    if is_local_dry_run():
-        branch = _resolve_github_branch(GH_CONTENT_BRANCH or GH_CONTENT_REF or "main")
-        return _local_output_path(f".agri_replay/{report_date}.snapshot.json", branch)
-
-    return Path.cwd() / ".agri_replay" / f"{report_date}.snapshot.json"
+    return _replay_resolve_snapshot_path(
+        report_date,
+        local_output_path_fn=_local_output_path if is_local_dry_run() else None,
+        content_branch=_resolve_github_branch(GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"),
+        is_local=is_local_dry_run(),
+    )
 
 
 def save_replay_snapshot(
@@ -9079,73 +8957,27 @@ def save_replay_snapshot(
     summary_cache: dict[str, SummaryCacheEntry | str] | None = None,
     debug_payload: JsonDict | None = None,
 ) -> Path:
-    target = _resolve_replay_snapshot_path(report_date)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    payload: JsonDict = {
-        "version": 1,
-        "report_date": str(report_date or "").strip(),
-        "created_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
-        "build_tag": BUILD_TAG,
-        "content_ref": GH_CONTENT_REF,
-        "content_branch": GH_CONTENT_BRANCH,
-        "window": {
-            "start_kst": start_kst.astimezone(KST).isoformat() if isinstance(start_kst, datetime) else str(start_kst),
-            "end_kst": end_kst.astimezone(KST).isoformat() if isinstance(end_kst, datetime) else str(end_kst),
-        },
-        "raw_by_section": {
-            key: [_article_to_snapshot_dict(article) for article in (raw_by_section or {}).get(key, []) or [] if isinstance(article, Article)]
-            for key in (
-                str(sec.get("key") or "").strip()
-                for sec in SECTIONS
-            )
-            if key
-        },
-        "summary_cache": _snapshot_summary_cache_for_articles(raw_by_section, summary_cache),
-        "debug": debug_payload if isinstance(debug_payload, dict) else {},
-    }
-    target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return target
+    return _replay_save_snapshot(
+        report_date,
+        start_kst,
+        end_kst,
+        raw_by_section,
+        _section_keys(),
+        summary_cache=summary_cache,
+        debug_payload=debug_payload,
+        build_tag=BUILD_TAG,
+        content_ref=GH_CONTENT_REF,
+        content_branch=GH_CONTENT_BRANCH,
+        target=_resolve_replay_snapshot_path(report_date),
+    )
 
 
 def load_replay_snapshot(report_date: str) -> tuple[dict[str, list["Article"]], datetime, datetime, dict[str, SummaryCacheEntry | str], JsonDict, Path]:
-    target = _resolve_replay_snapshot_path(report_date)
-    if not target.is_file():
-        raise RuntimeError(f"Replay snapshot not found: {target}")
-    try:
-        payload = json.loads(target.read_text(encoding="utf-8"))
-    except Exception as exc:
-        raise RuntimeError(f"Replay snapshot read failed: {target} ({exc})") from exc
-    if not isinstance(payload, dict):
-        raise RuntimeError(f"Replay snapshot is invalid JSON object: {target}")
-
-    snapshot_report_date = str(payload.get("report_date", "") or "").strip()
-    if snapshot_report_date and report_date and snapshot_report_date != report_date:
-        raise RuntimeError(
-            f"Replay snapshot date mismatch: requested={report_date} snapshot={snapshot_report_date} path={target}"
-        )
-
-    raw_payload = payload.get("raw_by_section", {})
-    raw_by_section: dict[str, list[Article]] = {}
-    for sec in SECTIONS:
-        key = str(sec.get("key") or "").strip()
-        if not key:
-            continue
-        rows = raw_payload.get(key, []) if isinstance(raw_payload, dict) else []
-        raw_by_section[key] = [_article_from_snapshot_dict(item) for item in rows if isinstance(item, dict)]
-
-    window = payload.get("window", {})
-    start_kst = _snapshot_datetime_from_value(window.get("start_kst") if isinstance(window, dict) else None)
-    end_kst = _snapshot_datetime_from_value(window.get("end_kst") if isinstance(window, dict) else None)
-
-    summary_cache = payload.get("summary_cache", {})
-    debug_payload = payload.get("debug", {})
-    return (
-        raw_by_section,
-        start_kst,
-        end_kst,
-        summary_cache if isinstance(summary_cache, dict) else {},
-        debug_payload if isinstance(debug_payload, dict) else {},
-        target,
+    return _replay_load_snapshot(
+        report_date,
+        _section_keys(),
+        article_factory=lambda kw: Article(**kw),
+        target=_resolve_replay_snapshot_path(report_date),
     )
 
 
@@ -18073,6 +17905,22 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     if strong_field_response:
         weak_support_advice = False
 
+    # ── 품목명이 제목에 있고 수급/이슈 키워드도 함께 있으면 weak 필터 완화 ──
+    _has_title_item_and_issue = bool(
+        title_primary_hits >= 1
+        and any(
+            term.lower() in title_l
+            for term in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS
+        )
+    )
+    if _has_title_item_and_issue:
+        weak_org_feature = False
+        weak_org_promo = False
+        weak_event = False
+        weak_consumer_lifestyle = False
+        weak_support_advice = False
+        weak_regional_branding = False
+
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
@@ -18091,6 +17939,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     elif feature_kind in ("field", "quality") and strong_focus and story_priority >= 4.0:
         representative_rank = 2
     elif strong_focus and primary_focus and board_score >= 88.0:
+        representative_rank = 1
+    elif title_primary_hits >= 1 and board_eligible:
         representative_rank = 1
     else:
         representative_rank = 0
@@ -18171,7 +18021,7 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
 
 
 def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
-    return 1 if bool(item.get("program_core")) else 2
+    return 1 if bool(item.get("program_core")) else 1
 
 
 def _commodity_board_article_is_active_candidate(
@@ -18198,15 +18048,18 @@ def _commodity_board_article_is_active_candidate(
             str(article_metrics.get("issue_bucket") or "")
             or bool(article_metrics.get("direct_supply"))
             or bool(article_metrics.get("market_response"))
-            or int(article_metrics.get("issue_anchor_hits") or 0) >= 2
+            or int(article_metrics.get("issue_anchor_hits") or 0) >= 1
             or int(article_metrics.get("market_anchor_hits") or 0) >= 1
             or (
                 str(article_metrics.get("feature_kind") or "") in ("field", "issue")
-                and bool(article_metrics.get("strong_focus"))
                 and (
                     int(article_metrics.get("title_primary_hits") or 0) >= 1
                     or bool(article_metrics.get("primary_focus"))
                 )
+            )
+            or (
+                int(article_metrics.get("title_primary_hits") or 0) >= 1
+                and int(article_metrics.get("issue_title_hits") or 0) >= 1
             )
         ):
             return False
