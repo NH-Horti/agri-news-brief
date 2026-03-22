@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from typing import Callable
 
@@ -131,6 +132,14 @@ def build_archive_ux_html(
     # Mark chipbar/chips as swipe-ignore.
     html_new = ensure_swipe_ignore_attributes(html_new)
 
+    # Safely escape Korean constants for JS string interpolation (XSS prevention).
+    # ensure_ascii=False keeps Korean readable; [1:-1] strips outer quotes.
+    _js_empty = json.dumps(EMPTY_BRIEF_MESSAGE, ensure_ascii=False)[1:-1]
+    _js_prev_msg = json.dumps(PREV_BRIEF_MESSAGE, ensure_ascii=False)[1:-1]
+    _js_next_msg = json.dumps(NEXT_BRIEF_MESSAGE, ensure_ascii=False)[1:-1]
+    _js_prev_lbl = json.dumps(PREV_LABEL, ensure_ascii=False)[1:-1]
+    _js_next_lbl = json.dumps(NEXT_LABEL, ensure_ascii=False)[1:-1]
+
     js_block = f"""
   <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
   <script>
@@ -155,7 +164,7 @@ def build_archive_ux_html(
           t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 12px;border-radius:12px;font-size:14px;max-width:90vw;z-index:99999;display:none;box-shadow:0 6px 16px rgba(0,0,0,.25);';
           document.body.appendChild(t);
         }}
-        t.textContent = msg || '{EMPTY_BRIEF_MESSAGE}';
+        t.textContent = msg || '{_js_empty}';
         t.style.display = 'block';
         clearTimeout(t.__t);
         t.__t = setTimeout(function(){{ t.style.display='none'; }}, 1600);
@@ -186,8 +195,8 @@ def build_archive_ux_html(
       var btns = navRow.querySelectorAll('a.navBtn,button.navBtn');
       for(var i=0;i<btns.length;i++){{
         var t = (btns[i].textContent||'') + ' ' + (btns[i].getAttribute ? (btns[i].getAttribute('title')||'') : '');
-        if(kind==='prev' && t.indexOf('{PREV_LABEL}')>=0) return btns[i];
-        if(kind==='next' && t.indexOf('{NEXT_LABEL}')>=0) return btns[i];
+        if(kind==='prev' && t.indexOf('{_js_prev_lbl}')>=0) return btns[i];
+        if(kind==='next' && t.indexOf('{_js_next_lbl}')>=0) return btns[i];
       }}
       return null;
     }}
@@ -208,8 +217,8 @@ def build_archive_ux_html(
 
     var prev = _pick('prev');
     var next = _pick('next');
-    _bindNav(prev, '{PREV_BRIEF_MESSAGE}');
-    _bindNav(next, '{NEXT_BRIEF_MESSAGE}');
+    _bindNav(prev, '{_js_prev_msg}');
+    _bindNav(next, '{_js_next_msg}');
 
     var sel = document.getElementById('dateSelect');
     if(sel){{
@@ -321,12 +330,12 @@ def build_archive_ux_html(
       if(totalDx > 0) {{
         var n = next || _pick('next');
         var href2 = _getHref(n);
-        if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{NEXT_BRIEF_MESSAGE}'); return; }}
+        if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{_js_next_msg}'); return; }}
         _showLoading(); window.location.href = href2; return;
       }}
       var p = prev || _pick('prev');
       var href = _getHref(p);
-      if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{PREV_BRIEF_MESSAGE}'); return; }}
+      if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{_js_prev_msg}'); return; }}
       _showLoading(); window.location.href = href;
     }}
     function _beginSwipe(e){{
@@ -382,12 +391,12 @@ def build_archive_ux_html(
       if(dx > 0) {{
         var p = prev || _pick('prev');
         var href = _getHref(p);
-        if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{PREV_BRIEF_MESSAGE}'); return; }}
+        if(!href || _isDisabled(p)){{ _hideLoading(); _toast('{_js_prev_msg}'); return; }}
         _showLoading(); window.location.href = href; return;
       }}
       var n = next || _pick('next');
       var href2 = _getHref(n);
-      if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{NEXT_BRIEF_MESSAGE}'); return; }}
+      if(!href2 || _isDisabled(n)){{ _hideLoading(); _toast('{_js_next_msg}'); return; }}
       _showLoading(); window.location.href = href2;
     }}
     if(swipeArea && swipeArea.addEventListener){{
@@ -442,8 +451,8 @@ def build_archive_ux_html(
                 s, e, _old = nav_block
                 new_nav = build_navrow_html_for_date(iso_date, dates_desc, site_path)
                 html_new = html_new[:s] + new_nav + html_new[e:]
-    except Exception:
-        pass
+    except Exception as _nav_err:
+        warn(f"[WARN] final nav refresh from manifest failed: {_nav_err}")
 
     if html_new == raw_html:
         return None

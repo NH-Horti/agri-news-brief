@@ -46,6 +46,7 @@ jobs:
   promote:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout main
         uses: actions/checkout@v5
@@ -58,15 +59,22 @@ jobs:
       - name: Resolve run variables
         id: vars
         shell: bash
+        env:
+          INPUT_TRIGGER_REBUILD: ${{ inputs.trigger_rebuild }}
+          INPUT_REPORT_DATE: ${{ inputs.report_date }}
+          INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
+          INPUT_UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
+          INPUT_MAX_PER_SECTION: ${{ inputs.max_per_section }}
+          INPUT_DEBUG: ${{ inputs.debug }}
         run: |
           set -euo pipefail
 
-          trigger_rebuild='${{ inputs.trigger_rebuild }}'
-          report_date='${{ inputs.report_date }}'
-          send_kakao='${{ inputs.send_kakao }}'
-          ux_patch_days='${{ inputs.ux_patch_days }}'
-          max_per_section='${{ inputs.max_per_section }}'
-          debug_enabled='${{ inputs.debug }}'
+          trigger_rebuild="$INPUT_TRIGGER_REBUILD"
+          report_date="$INPUT_REPORT_DATE"
+          send_kakao="$INPUT_SEND_KAKAO"
+          ux_patch_days="$INPUT_UX_PATCH_DAYS"
+          max_per_section="$INPUT_MAX_PER_SECTION"
+          debug_enabled="$INPUT_DEBUG"
 
           if [ -z "$ux_patch_days" ]; then
             ux_patch_days='0'

@@ -32,6 +32,13 @@ class MetricsRegistry:
         with self._lock:
             return dict(self._counters)
 
+    def snapshot_and_clear(self) -> dict[str, int]:
+        """Atomically snapshot and clear counters to prevent data loss."""
+        with self._lock:
+            snap = dict(self._counters)
+            self._counters.clear()
+            return snap
+
     def clear(self) -> None:
         with self._lock:
             self._counters.clear()
@@ -53,8 +60,9 @@ def log_event(event: str, **payload: Any) -> None:
 
 
 def flush_metrics(event: str = "metrics_snapshot", *, clear: bool = False) -> dict[str, int]:
-    snap = METRICS.snapshot()
-    log_event(event, metrics=snap)
     if clear:
-        METRICS.clear()
+        snap = METRICS.snapshot_and_clear()
+    else:
+        snap = METRICS.snapshot()
+    log_event(event, metrics=snap)
     return snap
