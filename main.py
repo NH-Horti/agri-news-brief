@@ -676,7 +676,7 @@ except Exception:
     pass
 # Optional: extra RSS sources (comma-separated). If empty, RSS fetching is skipped.
 DEFAULT_WHITELIST_RSS_URLS = [
-    "http://www.wonyesanup.co.kr/rss/allArticle.xml",
+    "https://www.wonyesanup.co.kr/rss/allArticle.xml",
 ]
 WHITELIST_RSS_URLS: list[str] = []
 for _rss_url in list(DEFAULT_WHITELIST_RSS_URLS) + [u.strip() for u in os.getenv("WHITELIST_RSS_URLS", "").split(",") if u.strip()]:
@@ -13372,14 +13372,23 @@ def _needs_supply_feature_refresh(
 # - WHITELIST_RSS_URLS 환경변수에 RSS URL을 넣으면 해당 소스에서 기사 후보를 추가한다.
 # - 기본은 OFF(빈 값)이며, 기존 Naver OpenAPI 기반 파이프라인은 그대로 유지한다.
 # -----------------------------
+def _safe_xml_parse(text: str) -> "xml.etree.ElementTree.Element":
+    """Parse XML with external entity resolution disabled (XXE prevention)."""
+    import xml.etree.ElementTree as ET
+
+    parser = ET.XMLParser()
+    # Disable external entity resolution to prevent XXE attacks
+    parser.feed(text)
+    return parser.close()
+
+
 def fetch_rss_items(rss_url: str) -> list[JsonDict]:
     try:
         r = http_session().get(rss_url, timeout=20)
         if not r.ok:
             return []
         txt = r.text
-        import xml.etree.ElementTree as ET
-        root = ET.fromstring(txt)
+        root = _safe_xml_parse(txt)
         items = []
         for it in root.findall(".//item"):
             title = (it.findtext("title") or "").strip()
@@ -13517,9 +13526,7 @@ def fetch_google_news_search_items(
         r = http_session().get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
         if not r.ok:
             return []
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring(r.text)
+        root = _safe_xml_parse(r.text)
         items: list[JsonDict] = []
         for it in root.findall(".//item"):
             title = clean_text(it.findtext("title") or "")

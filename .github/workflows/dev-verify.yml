@@ -54,6 +54,7 @@ jobs:
   run:
     if: github.event_name == 'schedule' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout workflow branch
         uses: actions/checkout@v5
@@ -75,35 +76,42 @@ jobs:
       - name: Resolve run variables
         id: vars
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_REPORT_DATE: ${{ inputs.report_date }}
+          INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
+          INPUT_BRIEF_VIEW_URL: ${{ inputs.brief_view_url }}
+          INPUT_UX_PATCH_DAYS: ${{ inputs.ux_patch_days }}
         run: |
           set -euo pipefail
 
-          if [ "${{ github.event_name }}" = 'schedule' ]; then
+          if [ "$EVENT_NAME" = 'schedule' ]; then
             content_ref='dev'
           else
-            content_ref='${{ github.ref_name }}'
+            content_ref="$REF_NAME"
           fi
 
-          if [ -n "${{ inputs.report_date }}" ]; then
-            report_date='${{ inputs.report_date }}'
+          if [ -n "$INPUT_REPORT_DATE" ]; then
+            report_date="$INPUT_REPORT_DATE"
           else
             report_date="$(TZ=Asia/Seoul date +%F)"
           fi
 
-          if [ "${{ github.event_name }}" = 'schedule' ]; then
+          if [ "$EVENT_NAME" = 'schedule' ]; then
             send_kakao='true'
-          elif [ "${{ github.event_name }}" = 'workflow_dispatch' ] && [ "${{ inputs.send_kakao }}" = 'true' ]; then
+          elif [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ "$INPUT_SEND_KAKAO" = 'true' ]; then
             send_kakao='true'
           else
             send_kakao='false'
           fi
 
-          brief_view_url='${{ inputs.brief_view_url }}'
+          brief_view_url="$INPUT_BRIEF_VIEW_URL"
           if [ -z "$brief_view_url" ]; then
             brief_view_url='https://nh-horti.github.io/agri-news-brief/dev'
           fi
 
-          ux_patch_days='${{ inputs.ux_patch_days }}'
+          ux_patch_days="$INPUT_UX_PATCH_DAYS"
           if [ -z "$ux_patch_days" ]; then
             ux_patch_days='0'
           fi

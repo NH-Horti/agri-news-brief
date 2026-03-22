@@ -62,7 +62,14 @@ def _naver_search(
             data: NaverSearchResponse
             try:
                 data = ensure_naver_response(r.json())
-            except Exception:
+            except Exception as _parse_err:
+                metric_inc("collector.json_parse_error", endpoint=endpoint)
+                logger.warning(
+                    "%s response JSON parse/validate failed (status=%s): %s",
+                    log_prefix,
+                    r.status_code,
+                    _parse_err,
+                )
                 data = {"items": []}
 
             is_rate = (r.status_code == 429) or (str(data.get("errorCode", "")) == "012")

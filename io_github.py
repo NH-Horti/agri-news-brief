@@ -99,7 +99,10 @@ def github_put_file(
     )
     payload: JsonDict = request_body.to_request_json()
 
-    max_try = max(2, int(os.getenv("GH_PUT_MAX_RETRIES", "4")))
+    try:
+        max_try = max(2, int(os.getenv("GH_PUT_MAX_RETRIES", "4")))
+    except (ValueError, TypeError):
+        max_try = 4
     max_try = max(2, min(max_try, 10))
 
     last_resp = None
