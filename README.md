@@ -32,6 +32,20 @@ This mode:
 - writes generated outputs under `.local-builds/`
 - does not write to GitHub
 
+Fast replay from the last dry-run snapshot:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-local-replay.ps1 -ReportDate 2026-03-20
+```
+
+This mode:
+
+- reuses `.local-builds/dryrun/main/.agri_replay/YYYY-MM-DD.snapshot.json`
+- skips Naver collection entirely
+- reruns section reassignment, scoring, commodity board selection, and HTML rendering
+- writes replay outputs under `.local-builds/replay/`
+- can optionally re-run OpenAI summaries with `-AllowOpenAI`
+
 Publish preview from your local machine:
 
 ```powershell
@@ -48,10 +62,19 @@ Notes:
 
 - `.env.local` is auto-loaded by `main.py` when present
 - `scripts/run-local-dryrun.ps1` prefers `.env.dev.local`
+- `scripts/run-local-dryrun.ps1` also saves a replay snapshot for the same date
+- `scripts/run-local-replay.ps1` prefers `.env.dev.local`
 - `scripts/run-local-rebuild.ps1 -Target dev` prefers `.env.dev.local`
 - `scripts/run-local-rebuild.ps1 -Target prod` prefers `.env.final.local`
 - local publish uses `gh auth token` if `GH_TOKEN` or `GITHUB_TOKEN` is not already set
 - local dry-run does not require a GitHub token
+
+Recommended fast iteration loop:
+
+1. Run `run-local-dryrun.ps1` once when queries/scrapers changed or you need a fresh candidate pool
+2. Tune scoring/filtering rules and verify with `run-local-replay.ps1`
+3. Run `run-local-dryrun.ps1` again only when you want a fresh scrape
+4. Use `run-local-rebuild.ps1` only for final dev/prod publish
 
 ## Pre-Push Hook
 

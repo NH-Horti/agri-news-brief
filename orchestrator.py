@@ -33,6 +33,10 @@ def execute_orchestration(ctx: OrchestratorContext, handlers: OrchestratorHandle
         handlers.run_ux_patch(ctx.repo, ctx.end_kst)
         return
 
+    if task == "replay_date":
+        handlers.run_maintenance_rebuild(ctx.repo, ctx.end_kst, task)
+        return
+
     if task in ("rebuild_date", "backfill_rebuild"):
         if not ctx.naver_ready:
             raise RuntimeError("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET is not set")
