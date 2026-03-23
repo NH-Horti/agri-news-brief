@@ -221,8 +221,8 @@ class TestRegressions(unittest.TestCase):
 
     def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
         self.assertIn("requirements-dev.txt", self.maintenance_text)
-        self.assertIn("Run tests before backfill", self.maintenance_text)
-        self.assertIn("python -m unittest discover -s tests -p \"test_*.py\"", self.maintenance_text)
+        self.assertIn("Run smoke checks before backfill", self.maintenance_text)
+        self.assertIn("python scripts/run_smoke_checks.py", self.maintenance_text)
         self.assertIn("DEBUG_REPORT:", self.maintenance_text)
         self.assertIn("Write debug JSON for rebuilt archive pages", self.maintenance_text)
 if __name__ == "__main__":
