@@ -31,19 +31,35 @@ def _log_http_error(prefix: str, response: Any) -> None:
 
 
 def fetch_snapshot(args: argparse.Namespace) -> int:
-    raw, _sha = github_get_file(
-        args.repo,
-        args.remote_path,
-        args.token,
-        ref=args.ref,
-        session_factory=_session_factory,
-        log_http_error=_log_http_error,
-    )
-    if raw is None:
+    # GitHub Contents API has 1 MB limit; use raw download for large snapshots
+    raw_url = f"https://raw.githubusercontent.com/{args.repo}/{args.ref}/{args.remote_path}"
+    sess = _session_factory()
+    resp = sess.get(raw_url, timeout=60)
+    if resp.status_code == 404:
+        LOG.warning("Snapshot not found via raw URL: %s", raw_url)
+        # Fallback to Contents API for smaller files
+        raw, _sha = github_get_file(
+            args.repo,
+            args.remote_path,
+            args.token,
+            ref=args.ref,
+            session_factory=_session_factory,
+            log_http_error=_log_http_error,
+        )
+        if raw is None:
+            return 2
+    elif not resp.ok:
+        _log_http_error("[RAW FETCH ERROR]", resp)
+        return 2
+    else:
+        raw = resp.text
+    if not raw or not raw.strip():
+        LOG.error("Fetched snapshot is empty")
         return 2
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(raw, encoding="utf-8")
+    LOG.info("Snapshot saved: %s (%d bytes)", output, len(raw))
     return 0
 
 
