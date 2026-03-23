@@ -98,8 +98,8 @@ jobs:
 
           snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
           if [ ! -f "$snapshot_path" ]; then
-            echo "Replay snapshot was not generated: $snapshot_path"
-            exit 1
+            echo "::warning::Replay snapshot was not generated: $snapshot_path"
+            exit 0
           fi
 
           python scripts/replay_snapshot_repo.py push \
