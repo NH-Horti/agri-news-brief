@@ -124,9 +124,7 @@ jobs:
           fi
 
           requested_build_mode='auto'
-          if [ "$EVENT_NAME" = 'schedule' ]; then
-            requested_build_mode='live'
-          elif [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ -n "$INPUT_BUILD_MODE" ]; then
+          if [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ -n "$INPUT_BUILD_MODE" ]; then
             requested_build_mode="$INPUT_BUILD_MODE"
           fi
 
