@@ -22140,7 +22140,10 @@ def _publish_maintenance_report(
 
     search_idx, ssha = load_search_index(repo, token)
     search_idx = update_search_index(search_idx, report_date, by_section, site_path)
-    save_search_index(repo, token, search_idx, ssha)
+    try:
+        save_search_index(repo, token, search_idx, ssha)
+    except Exception as e:
+        log.warning("[WARN] save_search_index failed (non-fatal): %s", e)
 
     avail2 = _list_archive_dates(repo, token)
     avail2.add(report_date)
@@ -22282,7 +22285,10 @@ def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site
     search_idx = backfill_rebuild_recent_archives(
         repo, token, base_date_iso, archive_dates_desc, site_path, summary_cache, search_idx
     )
-    save_search_index(repo, token, search_idx, ssha)
+    try:
+        save_search_index(repo, token, search_idx, ssha)
+    except Exception as e:
+        log.warning("[WARN] save_search_index failed (non-fatal): %s", e)
 
     # index refresh (in case create_missing enabled)
     avail2 = _list_archive_dates(repo, token)
@@ -22625,7 +22631,10 @@ def main() -> None:
     except Exception as e2:
         log.warning("[WARN] save_summary_cache after backfill failed: %s", e2)
 
-    save_search_index(repo, GH_TOKEN, search_idx, ssha)
+    try:
+        save_search_index(repo, GH_TOKEN, search_idx, ssha)
+    except Exception as e:
+        log.warning("[WARN] save_search_index failed (non-fatal): %s", e)
 
 
     # write daily
