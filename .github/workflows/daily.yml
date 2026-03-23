@@ -17,7 +17,7 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -81,8 +81,8 @@ jobs:
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
 
-          NAVER_MAX_WORKERS: '2'
-          NAVER_MIN_INTERVAL_SEC: '0.6'
+          NAVER_MAX_WORKERS: '4'
+          NAVER_MIN_INTERVAL_SEC: '0.35'
 
         run: |
           python main.py
