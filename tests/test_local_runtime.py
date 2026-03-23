@@ -6,6 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import main
+import replay
 
 
 class LocalRuntimeTests(TestCase):
@@ -107,8 +108,8 @@ class LocalRuntimeTests(TestCase):
         article.selection_fit_score = 3.4
         article.reassigned_from = "dist"
 
-        payload = main._article_to_snapshot_dict(article)
-        restored = main._article_from_snapshot_dict(payload)
+        payload = replay.article_to_snapshot_dict(article)
+        restored = main.Article(**replay.article_dict_to_kwargs(payload))
 
         self.assertEqual(restored.title, article.title)
         self.assertEqual(restored.summary, article.summary)
