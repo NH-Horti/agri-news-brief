@@ -22559,7 +22559,16 @@ def main() -> None:
     manifest["dates"] = sorted(set(sanitize_dates(list(avail_dates))))
 
     # collect + summarize
-    by_section = collect_all_sections(start_kst, end_kst)
+    raw_by_section = collect_raw_sections(start_kst, end_kst)
+    # replay snapshot 저장 (다음 rebuild 시 Naver 수집 스킵 가능)
+    if _replay_snapshot_write_enabled():
+        try:
+            raw_clone = _clone_articles_by_section(raw_by_section)
+            saved_snap = save_replay_snapshot(report_date, start_kst, end_kst, raw_clone, debug_payload=_snapshot_debug_payload())
+            log.info("[REPLAY] snapshot saved: %s", saved_snap)
+        except Exception as exc:
+            log.warning("[WARN] replay snapshot save failed: %s", exc)
+    by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
     summary_cache = load_summary_cache(repo, GH_TOKEN)
     by_section = fill_summaries(by_section, cache=summary_cache)
     try:

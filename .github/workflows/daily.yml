@@ -73,7 +73,7 @@ jobs:
           FORCE_RUN_ANYDAY: 'false'
           REPLAY_WRITE_SNAPSHOT: 'true'
           REPLAY_SNAPSHOT_DIR: .agri_replay
-          UX_PATCH_DAYS: '45'
+          UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
           CROSSDAY_DEDUPE_DAYS: '7'
