@@ -833,6 +833,8 @@ BAN_KWS = [
     "부동산", "분양", "오피스텔", "청약", "전세", "월세",
     # 금융/도박 스팸
     "대출", "보험", "카지노", "바카라", "토토", "도박",
+    # 엔터테인먼트/연예 - 농업 브리핑에 부적절
+    "bts", "블랙핑크", "뉴진스", "아이브", "르세라핌", "에스파",
     # 기타 스팸성
     "스팸",
 ]
@@ -3515,13 +3517,13 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         return metrics
 
     body_operational_match = bool(
-        item.get("program_core")
-        and title_focus_hits == 0
+        title_focus_hits == 0
         and body_focus_hits >= 1
         and not is_commodity_broad_price_roundup_context(title, desc)
         and (
             has_direct_supply_chain_signal(text_l)
             or market_anchor_hits >= 1
+            or issue_anchor_hits >= 1
         )
     )
     body_policy_roundup_match = bool(
@@ -4124,6 +4126,8 @@ _CARROT_PLATFORM_MARKERS = [
     "당근마켓", "당근 마켓", "당근앱", "당근 앱", "지역 커뮤니티", "커뮤니티 앱", "동네생활",
     "중고거래", "포장주문", "치킨", "bhc", "할인", "쿠폰", "주문", "입점", "배달",
     "당근페이", "당근 페이", "karrot", "daangn",
+    "플랫폼", "거래액", "앱테크", "리셀", "번개장터", "중고나라",
+    "로컬 커뮤니티", "이웃", "채팅", "알바", "구인",
 ]
 _CARROT_EDIBLE_MARKERS = [
     "농산물", "채소", "원예", "산지", "농가", "재배", "수확", "출하", "반입",
@@ -4137,6 +4141,10 @@ def is_edible_carrot_context(text: str) -> bool:
     """Return True only when '당근' clearly refers to fresh produce."""
     t = (text or "").lower()
     if "당근" not in t:
+        return False
+    # 제목/본문에 "당근마켓" 등 플랫폼명이 직접 등장하면 즉시 제외
+    _CARROT_PLATFORM_STRONG = ("당근마켓", "당근 마켓", "당근앱", "당근 앱", "당근페이", "당근 페이", "karrot", "daangn")
+    if any(w in t for w in _CARROT_PLATFORM_STRONG):
         return False
     edible_hit = any(w.lower() in t for w in _CARROT_EDIBLE_MARKERS)
     platform_hit = any(w.lower() in t for w in _CARROT_PLATFORM_MARKERS)
@@ -10882,7 +10890,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 6.4
         # 유가/에너지 primary 기사: 농업은 부차적 언급이므로 큰 감점
         if oil_energy_primary_macro:
-            score -= 8.0
+            score -= 14.0
         if policy_event_tail:
             score -= 8.4
         if managed_count and (macro_policy_like or policy_stabilization or policy_market_brief or policy_major_issue or policy_export_support_brief):
@@ -17945,6 +17953,9 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         and feature_kind != "quality"
     )
     weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not operational_issue_signal) and (not direct_supply)
+    # 제목에 레시피/뷰티 키워드가 직접 등장 → 절대 대표기사 불가
+    _TITLE_RECIPE_RETAIL_BLOCK = ("레시피", "요리법", "조리법", "볶음", "볶음밥", "라면", "만들기", "끓이기", "무침", "반찬", "밑반찬", "올리브영", "화장품", "뷰티", "스킨케어", "코스메틱", "맛집")
+    weak_title_recipe_retail = any(kw in title_l for kw in _TITLE_RECIPE_RETAIL_BLOCK) and not operational_issue_signal
     weak_tourism = bool(metrics.get("supply_tourism")) and not operational_issue_signal
     weak_blossom_tourism = fruit_blossom_tourism and not operational_issue_signal
     weak_sales_promo = is_commodity_sales_promo_context(title, desc) and not market_response
@@ -18023,14 +18034,15 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         weak_org_feature = False
         weak_org_promo = False
         weak_event = False
-        weak_consumer_lifestyle = False
+        if not weak_title_recipe_retail:
+            weak_consumer_lifestyle = False
         weak_support_advice = False
         weak_regional_branding = False
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch:
+    elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch:
         representative_rank = 0
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
@@ -18063,7 +18075,9 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     if weak_event:
         representative_score -= 10.0
     if weak_consumer_lifestyle:
-        representative_score -= 18.0
+        representative_score -= 36.0
+    if weak_title_recipe_retail:
+        representative_score -= 40.0
     if weak_tourism:
         representative_score -= 20.0
     if weak_blossom_tourism:
@@ -19361,7 +19375,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityTile{{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
       .commodityInactive{{padding:0;border:none;background:transparent}}
       .commodityInactiveTitle{{margin-bottom:10px}}
-      .sec{{margin-top:22px !important;border:none;border-radius:0 !important;overflow:visible;background:transparent;padding-left:0}}
+      .sec{{margin-top:22px !important;border:none !important;border-left:none !important;border-radius:0 !important;overflow:visible;background:transparent;padding-left:0}}
       .secHead{{padding:0 0 10px;background:transparent;border-bottom:1px solid var(--line);border-left:none !important}}
       .secBody{{padding:4px 0 0}}
       .card{{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08);border-left:none !important}}
