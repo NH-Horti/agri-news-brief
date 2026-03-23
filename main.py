@@ -3107,6 +3107,12 @@ _MANAGED_COMMODITY_PROCESSED_NOISE_TERMS = tuple(
         "과자", "아이스크림", "빙과", "디저트", "음료", "주스", "와인", "맥주",
         "칩", "감자칩", "포테이토칩", "소스", "잼", "젤리", "스낵", "케이크",
         "메뉴", "레시피", "맛", "풍미", "향",
+        # 요리/조리 콘텐츠
+        "볶음", "볶음밥", "요리법", "조리법", "만들기", "끓이기", "무침", "조림",
+        "반찬", "밑반찬", "국물", "찌개", "라면",
+        # 뷰티/화장품/비식품
+        "올리브영", "화장품", "뷰티", "스킨케어", "에센스", "크림", "세럼",
+        "코스메틱", "cosmetic",
     )
 )
 _MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
@@ -3116,6 +3122,8 @@ _MANAGED_COMMODITY_LIFESTYLE_NOISE_TERMS = tuple(
         "마을", "영화", "감독", "초대장", "공연", "전시", "학교", "레트로",
         "알뜰장보기", "구매 타이밍", "다이어트", "비타민", "1인 가구", "맛의 도시", "본산",
         "품절 대란", "비빔밥", "레시피", "먹방",
+        "올리브영", "뷰티", "화장품", "스킨케어",
+        "볶음", "요리", "요리법", "조리법", "맛집", "카페",
     )
 )
 _MANAGED_COMMODITY_FOCUS_MATCH_MIN = 2.4
@@ -4115,6 +4123,7 @@ def is_fresh_potato_context(text: str) -> bool:
 _CARROT_PLATFORM_MARKERS = [
     "당근마켓", "당근 마켓", "당근앱", "당근 앱", "지역 커뮤니티", "커뮤니티 앱", "동네생활",
     "중고거래", "포장주문", "치킨", "bhc", "할인", "쿠폰", "주문", "입점", "배달",
+    "당근페이", "당근 페이", "karrot", "daangn",
 ]
 _CARROT_EDIBLE_MARKERS = [
     "농산물", "채소", "원예", "산지", "농가", "재배", "수확", "출하", "반입",
@@ -18141,7 +18150,9 @@ def _commodity_board_article_is_active_candidate(
         )
         if not has_direct_item_focus and not has_indirect_issue_focus:
             return False
-        if not (
+        # 제목에 품목명이 있으면 issue/supply 시그널 요건 완화
+        _title_has_item = int(article_metrics.get("title_primary_hits") or 0) >= 1
+        if not _title_has_item and not (
             str(article_metrics.get("issue_bucket") or "")
             or bool(article_metrics.get("direct_supply"))
             or bool(article_metrics.get("market_response"))
@@ -18149,14 +18160,7 @@ def _commodity_board_article_is_active_candidate(
             or int(article_metrics.get("market_anchor_hits") or 0) >= 1
             or (
                 str(article_metrics.get("feature_kind") or "") in ("field", "issue")
-                and (
-                    int(article_metrics.get("title_primary_hits") or 0) >= 1
-                    or bool(article_metrics.get("primary_focus"))
-                )
-            )
-            or (
-                int(article_metrics.get("title_primary_hits") or 0) >= 1
-                and int(article_metrics.get("issue_title_hits") or 0) >= 1
+                and bool(article_metrics.get("primary_focus"))
             )
         ):
             return False
@@ -18563,7 +18567,11 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
         payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
         payload["secondary_article_count"] = len(payload["secondary_articles"])
-        payload["extra_articles"] = qualified_articles[1 + secondary_preview_limit :]
+        # qualified 이후 잔여 + qualified 안 된 일반 articles도 "관련 기사 보기"에 포함
+        _extra_qualified = qualified_articles[1 + secondary_preview_limit :]
+        _shown_urls = {getattr(a, "url", "") for a in qualified_articles[: 1 + secondary_preview_limit]}
+        _extra_unqualified = [a for a in articles if getattr(a, "url", "") not in _shown_urls and a not in _extra_qualified]
+        payload["extra_articles"] = _extra_qualified + _extra_unqualified
         payload["more_article_count"] = len(payload["extra_articles"])
         payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
         if payload["active"]:
@@ -19353,10 +19361,10 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityTile{{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
       .commodityInactive{{padding:0;border:none;background:transparent}}
       .commodityInactiveTitle{{margin-bottom:10px}}
-      .sec{{margin-top:22px !important;border:none;border-left:4px solid var(--sec-color, #cbd5e1);border-radius:0 !important;overflow:visible;background:transparent;padding-left:12px}}
-      .secHead{{padding:0 0 10px;background:transparent;border-bottom:1px solid var(--line)}}
+      .sec{{margin-top:22px !important;border:none;border-radius:0 !important;overflow:visible;background:transparent;padding-left:0}}
+      .secHead{{padding:0 0 10px;background:transparent;border-bottom:1px solid var(--line);border-left:none !important}}
       .secBody{{padding:4px 0 0}}
-      .card{{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}}
+      .card{{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08);border-left:none !important}}
       .commoditySupportStory,.commodityMoreStory{{width:100%}}
       .commoditySupportText{{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
       .commodityMiniGrid{{gap:6px}}
