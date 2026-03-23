@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="66be6e4" />
-  <meta name="agri-rendered-at-kst" content="2026-03-23T19:39:52+09:00" />
+  <meta name="agri-build" content="0bf56a0" />
+  <meta name="agri-rendered-at-kst" content="2026-03-23T22:17:22+09:00" />
   <meta name="agri-dev-version-url" content="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" />
   <title>[2026-03-23 농산물 뉴스 Brief] [DEV]</title>
   <style>
@@ -204,8 +204,8 @@
     .secBody{padding:12px 12px 14px}
     .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease}
     .card:hover{border-color:#94a3b8;box-shadow:0 4px 12px rgba(15,23,42,.08)}
-    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;flex:1 1 0%}
     .press{color:#111827;font-weight:900}
     .dot{opacity:.5}
     .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827;cursor:pointer;transition:background .15s ease}
@@ -220,9 +220,9 @@
       margin-right:2px;
     }
 
-    .btnOpen{display:inline-flex;align-items:center;justify-content:center;
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
-             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900;white-space:nowrap}
     .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
 
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
@@ -397,7 +397,7 @@
     <div class="topin">
       <div>
         <h1>[2026-03-23 농산물 뉴스 Brief] [DEV]<span class="envBadge">DEV</span></h1>
-        <div class="sub">기간: 2026-03-20 07:00 ~ 2026-03-23 07:00 · 기사 19건 · 개발 버전 미리보기 · build 66be6e4</div>
+        <div class="sub">기간: 2026-03-20 07:00 ~ 2026-03-23 07:00 · 기사 19건 · 개발 버전 미리보기 · build 0bf56a0</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/index.html" title="날짜별 아카이브 목록" target="_top">DEV 미리보기</a>
@@ -516,7 +516,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">gokorea</span>
+                  <span class="press">고코리아</span>
                   <span class="dot">·</span>
                   <span class="time">03/22 09:28</span>
                   <span class="dot">·</span>
@@ -525,7 +525,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.gokorea.kr/news/articleView.html?idxno=861159" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">난방유 가격 급등… 농가 경영 악화, 정부 대책 시급</div>
-              <div class="sum">난방유 가격 급등으로 방울토마토·하우스 감귤 등 시설원예와 화훼 농가의 난방비 부담이 커지고 있다. 농식품부는 가격 변동을 관찰하며 상승 원인을 조사 중이라고 밝혔다.</div>
+              <div class="sum">농식품부 관계자는 가격 변동을 관찰하고 있으며, 상승 원인에 대해 조사 중이라고 전했다. 방울토마토, 하우스 감귤 등 시설원예 농가와 화훼 농가는 난방비 부담이 커져 힘든 상황에 놓여 있다. 전국농민회총연맹...</div>
             </div>
             
 
@@ -542,7 +542,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69934" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">양파가격 폭락, 시장격리 조치가 시급하다</div>
-              <div class="sum">양파 가격이 600원 이하로 떨어진 해는 2014년 이후 없었다는 분석이 나왔다. 선별·포장·운송·저장 비용을 감안하면 농가 실수취 가격은 400원대에 그칠 것으로 추정돼 시장격리 필요성이 제기됐다.</div>
+              <div class="sum">2010년 이후 양파가격 이 600원 이하로 내려간 해는 2014년 단 한 해였다. 선별·포장·운송·저장 등의 비용을 고려한다면 도매시장 가격 중에서 농가가 실제로 수취하는 가격은 400원을 겨우 넘길 것으로 추정된다. 이는...</div>
             </div>
             
 
@@ -559,7 +559,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.chosun.com/economy/market_trend/2026/03/23/AQQW5L6WP5C65PK7RAHZN3NCWA/" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">수급 불안정 해소하려… 저산소 저장고·스마트팜 늘리는 마트들</div>
-              <div class="sum">올 1월 사과 산지 반입량은 전년보다 33.6% 줄고 도매가격은 23.1% 올랐다. 대형마트들은 가격 안정을 위해 선제 확보한 CA 저장 사과 물량을 전년보다 20% 늘렸다.</div>
+              <div class="sum">지난 1월 한국농촌경제연구원 기준으로 사과 산지 반입량이 전년 대비 33.6% 줄고, 도매 가격 이 전년 대비 23.1% 오르자 선제적으로 확보한 CA 저장 사과 물량을 전년보다 20% 늘려 가격 안정화에 나선 것이다. 1년 전 보관한...</div>
             </div>
             
 
@@ -576,7 +576,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260322026600053?input=1195m" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">구미, &#x27; 양파 주산지&#x27;로 지정돼…생산·저장·유통기반 강화 추진</div>
-              <div class="sum">구미시가 실측 조사 결과 양파 재배면적 194.5㏊를 확인해 주산지 지정 기준을 충족했다고 밝혔다. 이에 따라 생산·저장·유통 기반 강화와 함께 관련 지원사업 참여 기반을 갖추게 됐다.</div>
+              <div class="sum">구미시에 따르면 지난해 11월부터 실시한 실측 조사 결과 지역 내 양파 재배면적은 194.5㏊로 농수산물 유통 및 가격 안정에 관한 법률에서 정한 해당 채소류 주산지 지정 기준(재배면적 190㏊ 이상 등)을 충족한 것으로...</div>
             </div>
             
 
@@ -593,7 +593,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.ytn.co.kr/_ln/0115_202603201142327627" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">고유가에 난방비 걱정... 방울토마토 농가 생산량 급감</div>
-              <div class="sum">고유가로 난방비 부담이 커지면서 전남 화순 방울토마토 시설하우스 농가의 생산량이 급감했다. 출하 시기까지 몰리며 방울토마토 가격도 좋지 않아 농가 어려움이 커지고 있다.</div>
+              <div class="sum">심지어 출하 시기가 몰리면서 방울토마토 가격 도 그리 좋지 않아, 농민들은 엎친 데 덮친 격입니다. 지금까지 전남 화순 시설 하우스 농가에서 YTN 나현호입니다. 영상기자 : 이강휘</div>
             </div>
             </div>
             </section>
@@ -612,7 +612,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  <span class="press">NAEIL</span>
+                  <span class="press">내일신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/20 13:06</span>
                   <span class="dot">·</span>
@@ -621,7 +621,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.naeil.com/news/read/582065" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">4월추경·최고 가격 제로 ‘중동 리스크’ 넘어설 수 있을까</div>
-              <div class="sum">재정경제부는 중동 리스크로 경기 하방 위험이 커졌다고 최근 경제동향에서 밝혔다. 다만 낮은 농축산물 가격 흐름과 정부 물가 안정 대책은 하방 요인으로 작용할 수 있다고 봤다.</div>
+              <div class="sum">19일 재정경제부는 ‘2026년 3월 최근 경제 동향 (그린북)’에서 “중동리스크로 경기하방 위험이 증대됐다”... 다만 낮은 농축산물 가격 흐름, 정부 물가 안정 대책이 하방 요인이 될 수 있다며 “유가 움직임에 크게...</div>
             </div>
             
 
@@ -638,7 +638,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.news1.kr/economy/trend/6108004" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">정부 &quot;중동 사태로 물가 상승·경기 하방 위험 커질 수 있어&quot;(종합)</div>
-              <div class="sum">정부는 중동 사태로 물가 상승과 경기 하방 위험이 커질 수 있다고 최근 경제동향에서 밝혔다. 소비자심리지수 등 내수 지표는 개선됐지만, 에너지·식료품 관련 불확실성은 확대됐다고 설명했다.</div>
+              <div class="sum">재정경제부는 13일 발표한 &#x27;2026년 3월 최근 경제 동향 (그린북)&#x27;에서 &quot;최근 우리 경제는 소비 등 내수 개선... 식료품·에너지를 제외한 근원물가는 2.3%, 농산물 및 석유류 제외 지수는 2.5% 각각 상승했다. 소비자심리지수...</div>
             </div>
             
 
@@ -655,7 +655,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402747" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">&quot;농축산물 할인지원 부정 수급 신고하세요&quot;</div>
-              <div class="sum">농식품부와 aT가 농축산물 할인지원 부정 수급 신고센터 운영을 알렸다. 부정 수급 의심 사례에 대한 신고를 당부하며 관리·점검을 강화하겠다고 밝혔다.</div>
+              <div class="sum">농식품부 와 한국농수산식품유통공사(aT)에 따르면 농축산물 할인지원 부정 수급 신고센터(이하 신고센터)는... 관리· 점검 을 강화하겠다&quot;라며 &quot;부정 수급 사례가 의심되는 경우 적극적으로 신고해 달라&quot;고 당부했다....</div>
             </div>
             
 
@@ -663,7 +663,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">kbmaeil</span>
+                  <span class="press">경북매일</span>
                   <span class="dot">·</span>
                   <span class="time">03/22 10:10</span>
                   <span class="dot">·</span>
@@ -672,7 +672,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.kbmaeil.com/article/20260322500141" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">구미시, 양파 주산지 공식 지정 “생산·유통· 가격안정 체계 구축 전환...</div>
-              <div class="sum">구미시가 양파 주산지 공식 지정을 받아 생산·유통·가격안정 체계 구축 사업 참여 자격을 확보했다. 이를 바탕으로 저장·유통 기반을 강화하고 계약재배 확대도 추진할 계획이다.</div>
+              <div class="sum">공모 사업 에 참여할 수 있는 자격을 확보했다. 이를 통해 생산·저장·유통 전반에 대한 단계적 기반 강화가 가능해졌으며, 지역 농산물 브랜드 가치 제고도 기대된다. 특히 채소 가격안정 제와 계약재배 확대를 통한 가격 ...</div>
             </div>
             </div>
             </section>
@@ -700,7 +700,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260320500744" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">공영도매시장 경락값, 전국의 기준가격 역할</div>
-              <div class="sum">공영도매시장에서 형성되는 경락값은 전국 농산물 기준가격 역할을 한다. 도매시장은 가격 형성과 대금 결제뿐 아니라 물적 유통 기능도 수행한다고 설명했다.</div>
+              <div class="sum">이들은 산지에서 출하한 농산물에 대해 중 도매 인을 상대로 경매 한다. 이 과정에서 나오는 경락값은 전국의 기준가격 역할을 한다. 공영도매시장 은 가격 형성과 대금 결제와 같은 상적 유통 외에도 ▲물적 유통 수행...</div>
             </div>
             
 
@@ -717,7 +717,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://weekly.khan.co.kr/article/202603230600041" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">‘회장 잔혹사’ 끊을 수 있을까… 농협 개혁 다시 시험대</div>
-              <div class="sum">채소·과일 주산지 단위농협들은 APC를 운영하며 공동선별·포장·출하를 맡고 있다. 기사에서는 농협 개혁 논의 속에서 이런 산지유통 구조가 다시 주목받고 있다고 전했다.</div>
+              <div class="sum">채소·과일 주산지의 단위 농협 들은 개별 또는 연합 형태로 산지유통센터(APC)를 운영한다. 조합원 농민들이 생산에 전념할 수 있도록 농산물을 한데 모아 APC 공동선별 장에서 선별 ·포장·출하를 맡는 구조다. 물량이 한곳에...</div>
             </div>
             
 
@@ -734,7 +734,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260320500679" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">판매사업 강화 온힘…‘강소농협’ 도약</div>
-              <div class="sum">한 농협이 양파·시금치·쪽파 등을 직접 수집·판매해 농가의 판로 부담을 덜고 있다고 소개했다. 운임과 작업비를 따로 받지 않아 농가 만족도가 높고, 판매사업 강화로 ‘강소농협’ 도약을 추진 중이다.</div>
+              <div class="sum">심기화씨(70·청계면)는 “ 양파 ·시금치·쪽파 등을 재배 하는데, 농협이 트럭을 직접 보내 물량을 모두 수집·판매해주니 판로 걱정이 없다”며 “운임이나 작업비도 따로 받지 않아 농가 입장에서는 그야말로 든든한...</div>
             </div>
             
 
@@ -751,7 +751,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260320500741" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">제값 받는 안정적 판로 제공…농가 생산에만 집중</div>
-              <div class="sum">토마토 농가가 전량을 서울 가락시장 중앙청과로 출하하고 있으며, 경매 다음날 바로 대금 정산이 이뤄진다고 소개했다. 물량이 많아도 당일 처리가 가능해 안정적 판로로 평가했다.</div>
+              <div class="sum">그는 “지금은 수확한 토마토 전량을 서울 가락시장 중앙청과로 출하 하는데 경매 다음날 바로 대금 정산이 이뤄지고 물량을 많이 보내도 어떻게든 당일 처리가 가능하다는 게 가장 큰 장점”이라고 엄지를 치켜들었다....</div>
             </div>
             
 
@@ -759,7 +759,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">ccreview</span>
+                  <span class="press">충청리뷰</span>
                   <span class="dot">·</span>
                   <span class="time">03/20 16:48</span>
                   <span class="dot">·</span>
@@ -768,7 +768,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.ccreview.co.kr/news/articleView.html?idxno=344860" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">청주 농수산물 도매시장 시설현대화사업, 11월 준공 목표</div>
-              <div class="sum">청주 농수산물 도매시장 시설현대화사업이 11월 준공을 목표로 추진 중이다. 부지 14만8260㎡, 연면적 4만5733㎡ 규모로 조성되며 반입·경매·배송·반출 기능 강화에 중점을 뒀다.</div>
+              <div class="sum">흥덕구 옥산면 오산리 일원에 부지면적 14만8260㎡, 연면적 4만5733㎡ 규모로 조성되며 물류를 안정적으로 처리할 수 있는 유통 거점 기능 수행에 중점을 뒀다. 특히 농산물 의 반입부터 경매, 배송, 반출까지 이어지는 유통 ...</div>
             </div>
             </div>
             </section>
@@ -796,7 +796,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=316820" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">경북도, &#x27;2026년 복숭아 병해충 예찰단&#x27; 출범</div>
-              <div class="sum">경북도가 복숭아 선도농가 45명으로 병해충 예찰단을 출범시켰다. 예찰단은 순나방·탄저병 등을 정기 조사하고, 현장 정보를 SNS로 공유해 조기 차단과 적기 방제를 지원한다.</div>
+              <div class="sum">복숭아 선도 농가 45명으로 구성된 예찰단은 복숭아 순나방, 탄저병 등 주요 병해충을 정기적으로 조사한다. 특히 현장에서 파악한 발생 정보를 SNS를 통해 실시간 공유함으로써 병해충 확산을 조기 차단하고 적기 방제를...</div>
             </div>
             
 
@@ -813,7 +813,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=316883" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">서천군 농기센터, 고추 육묘 농가…칼라병 매개 총채벌레 방제 철저히 ...</div>
-              <div class="sum">서천군 농기센터가 고추 육묘 농가에 총채벌레와 칼라병 등 병해충 방제를 철저히 당부했다. 바이러스 의심 묘 즉시 제거, 잡초 제거, 방충망 설치, 끈끈이 트랩 활용 등을 강조했다.</div>
+              <div class="sum">등 병해충 방제 에 각별한 주의가 필요하다. 특히 바이러스 감염이 의심되는 묘는 즉시 제거하고, 육묘장 내·외부 잡초 제거, 방충망 설치, 끈끈이 트랩 예찰 , 발생 초기 적용약제 방제 등 해충 유입 차단과 예방관리를...</div>
             </div>
             
 
@@ -830,7 +830,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.ccdailynews.com/news/articleView.html?idxno=2404839" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">단양군, 과수화상병 방제 약제 &#x27;배부 완료&#x27;</div>
-              <div class="sum">단양군이 과수화상병 방제 약제 배부를 완료했다. 군은 사과·배 재배 농업인에게 적기 방제를 당부하고, 의심 증상 발견 시 농업기술센터 신고를 안내했다.</div>
+              <div class="sum">군 관계자는 &quot;화상병 예방과 확산 차단을 위해 사과 ·배 재배 농업인 모두가 공급된 약제를 활용해 적기 방제를 철저히 해야 한다&quot;고 강조했다. 의심 증상이 발견될 경우 센터(☏043-420-3432)로 신고하면 된다. /단양=</div>
             </div>
             
 
@@ -847,24 +847,24 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260320500376" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">영천시, 잔류농약 방지 교육… 포도 수출 안전성 강화</div>
-              <div class="sum">영천시가 포도 수출 안전성 강화를 위해 잔류농약 방지 교육을 실시했다. 농약 안전관리 기준, 병해충 방제 요령, 고품질 수출용 포도 재배 기술 등을 교육했다.</div>
+              <div class="sum">주요 교육내용은 ▲농약 안전관리 기준 ▲주요 병해충 방제 요령 ▲고품질 수출용 포도 재배 기술 등으로 구성돼 참석 농가들의 큰 호응을 얻었다. 이날 현장 교육에 참석하지 못한 농가는 온라인으로 수강하기도 했다....</div>
             </div>
             
 
-            <div class="card" style="border-left-color:#b45309" data-href="https://www.gukjenews.com/news/articleView.html?idxno=3534935">
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.amnews.co.kr/news/articleView.html?idxno=71585">
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">국제뉴스</span>
+                  <span class="press">농축유통신문</span>
                   <span class="dot">·</span>
-                  <span class="time">03/20 14:26</span>
+                  <span class="time">03/20 11:28</span>
                   <span class="dot">·</span>
-                  <span class="topic">정책</span>
+                  <span class="topic">병해충</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3534935" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71585" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수</div>
-              <div class="sum">홍천군이 과수화상병 예방을 위해 예찰과 방제 체계를 강화하고 있다. 군은 농가 교육과 적기 방제 이행을 당부하며 발생 차단에 총력을 기울이겠다고 밝혔다.</div>
+              <div class="ttl">블루베리 농가, 병해충 동시 방제 해야</div>
+              <div class="sum">총체벌레 피해를 입은 블루베리 봄철 큰 일교차와 건조한 기후로 블루베리 시설 재배 농가의 병해충 위협이... 특히 시설 내 해충은 세대가 짧아 약제 저항성이 빠르게 나타나는 만큼, 초기 예찰 을 통한 동시 방제 가...</div>
             </div>
             </div>
             </section>
@@ -912,7 +912,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 8건</span>
+                    <span>기사 7건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
@@ -941,16 +941,11 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 5건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
                       <div class="commodityMoreList">
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69906" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">정책</span>
                       <span class="commoditySupportText">가닥 잡힌 가락시장 개장일 감축 4차 시범사업</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25914" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">안성시 서부농업기술상담소, 고품질 감자 재배 기술 교육</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://news.tf.co.kr/read/national/2304350.htm" target="_top" rel="noopener">
@@ -980,7 +975,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 2건</span>
+                    <span>기사 1건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span></div>
@@ -993,16 +988,6 @@
                   </div>
                   
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402766" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[기자수첩] 민생 안정, 농민 생활안정도 돌봐주길</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1081,7 +1066,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 19건</span>
+                    <span>기사 20건</span>
                     <span>핵심 1건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span><span class="commoditySig" data-section="dist">유통</span></div>
@@ -1096,35 +1081,25 @@
                     <div class="commoditySupportList">
                       <div class="commoditySupportTitle">추가 기사</div>
                       
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067594" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">구미 양파 주산지 지정…유통· 가격 안정까지 산업 전환 가속</span>
-                    </a>
-                    
                     <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260322026600053?input=1195m" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">구미, &#x27; 양파 주산지&#x27;로 지정돼…생산·저장·유통기반 강화 추진</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.kbmaeil.com/article/20260322500141" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">구미시, 양파 주산지 공식 지정 “생산·유통· 가격안정 체계 구축 전환...</span>
                     </a>
                     
                     </div>
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 16건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 17건 더 보기</summary>
                       <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kbmaeil.com/article/20260322500141" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">정책</span>
-                      <span class="commoditySupportText">구미시, 양파 주산지 공식 지정 “생산·유통· 가격안정 체계 구축 전환...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.imaeil.com/page/view/2026032211413350316" target="_top" rel="noopener">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067594" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">구미 양파 &#x27;경북 주산지&#x27; 공식 지정…생산·유통 대전환</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ksmnews.co.kr/news/view.php?idx=596213" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">양파 주산지 구미…“산업 체계 구축 전환점”</span>
+                      <span class="commoditySupportText">구미 양파 주산지 지정…유통· 가격 안정까지 산업 전환 가속</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dkilbo.com/news/articleView.html?idxno=538064" target="_top" rel="noopener">
@@ -1147,6 +1122,11 @@
                       <span class="commoditySupportText">&quot;햇양파 도매 가격 kg당 400원, 수확 비용도 못 건져&quot;</span>
                     </a>
                     
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ksmnews.co.kr/news/view.php?idx=596213" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">양파 주산지 구미…“산업 체계 구축 전환점”</span>
+                    </a>
+                    
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://biz.heraldcorp.com/article/10699938" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">구미시, 양파 주산지로 공식 지정</span>
@@ -1155,6 +1135,11 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260322_0003558398" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">구미시, 양파 주산지로 공식 지정…&quot;생산체계 구축 전환점&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.imaeil.com/page/view/2026032211413350316" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">구미 양파 &#x27;경북 주산지&#x27; 공식 지정…생산·유통 대전환</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dkilbo.com/news/articleView.html?idxno=538059" target="_top" rel="noopener">
@@ -1190,6 +1175,11 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.startuptoday.co.kr/news/articleView.html?idxno=600820" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">김장호 구미시장 &quot;농민이 생산에만 전념할 수 있는 환경 만든다&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402718" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">박성재 전남도의원 &quot;생산비도 안되는 양파 값···비축물량 완전 격리를...</span>
                     </a>
                     </div>
                     </details>
@@ -1257,7 +1247,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 24건</span>
+                    <span>기사 25건</span>
                     <span>핵심 1건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="dist">유통</span></div>
@@ -1266,7 +1256,7 @@
                   <div class="commodityPrimaryCard">
                     <div class="commodityPrimaryKicker">대표 기사</div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.gokorea.kr/news/articleView.html?idxno=861159" target="_top" rel="noopener">난방유 가격 급등… 농가 경영 악화, 정부 대책 시급</a>
-                    <div class="commodityPrimaryMeta">수급 · gokorea · 03/22 09:28</div>
+                    <div class="commodityPrimaryMeta">수급 · 고코리아 · 03/22 09:28</div>
                   </div>
                   
                     <div class="commoditySupportList">
@@ -1286,7 +1276,7 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 21건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 22건 더 보기</summary>
                       <div class="commodityMoreList">
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69912" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
@@ -1316,6 +1306,11 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ytn.co.kr/_ln/0115_202603201049420132" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">고유가 여파로 생산량 감소...시설 하우스 농가 직격탄</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25920" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">시설원예 면세유 공급·생육 상황 점검</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.chosun.com/economy/economy_general/2026/03/22/SP7RLVXHLRDNHJGFHIHMCCCPXE/" target="_top" rel="noopener">
@@ -1710,7 +1705,7 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 13건</span>
+                    <span>기사 14건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
@@ -1739,11 +1734,11 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 10건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 11건 더 보기</summary>
                       <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402766" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[기자수첩] 민생 안정, 농민 생활안정도 돌봐주길</span>
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3534935" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.inews365.com/news/article.html?no=911541" target="_top" rel="noopener">
@@ -1754,6 +1749,11 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdailynews.com/news/articleView.html?idxno=2404839" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">리스크</span>
                       <span class="commoditySupportText">단양군, 과수화상병 방제 약제 &#x27;배부 완료&#x27;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.breaknews.com/1193579" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">홍천군, 과수화상병 예방 ‘골든타임’ 사수 총력… 6단계 방제망 전격...</span>
                     </a>
                     
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ibabynews.com/news/articleView.html?idxno=149804" target="_top" rel="noopener">
@@ -1938,7 +1938,7 @@
                   <div class="commodityPrimaryCard">
                     <div class="commodityPrimaryKicker">대표 기사</div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.segyebiz.com/newsView/20260322505101" target="_top" rel="noopener">중동사태에 수출기업 ‘삼중고’… 시설 원예·화훼 농가는 ‘기름’ 걱...</a>
-                    <div class="commodityPrimaryMeta">수급 · segyebiz · 03/22 11:50</div>
+                    <div class="commodityPrimaryMeta">수급 · 세계비즈 · 03/22 11:50</div>
                   </div>
                   
                   
@@ -2034,7 +2034,7 @@
                   <div class="commodityPrimaryCard">
                     <div class="commodityPrimaryKicker">대표 기사</div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.dtnews24.com/news/articleView.html?idxno=808925" target="_top" rel="noopener">고흥, FTA 대응 과수 현대화 속도…&quot;고품질·판로 동시 잡는다&quot;</a>
-                    <div class="commodityPrimaryMeta">수급 · dtnews24 · 03/21 14:30</div>
+                    <div class="commodityPrimaryMeta">수급 · 디티뉴스24 · 03/21 14:30</div>
                   </div>
                   
                   
@@ -2057,7 +2057,7 @@
                   <div class="commodityPrimaryCard">
                     <div class="commodityPrimaryKicker">대표 기사</div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.dtnews24.com/news/articleView.html?idxno=808925" target="_top" rel="noopener">고흥, FTA 대응 과수 현대화 속도…&quot;고품질·판로 동시 잡는다&quot;</a>
-                    <div class="commodityPrimaryMeta">수급 · dtnews24 · 03/21 14:30</div>
+                    <div class="commodityPrimaryMeta">수급 · 디티뉴스24 · 03/21 14:30</div>
                   </div>
                   
                   
@@ -2079,13 +2079,13 @@
     
     </section>
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
-    <div class="footer footerMeta">* DEV build 66be6e4 · 생성 2026-03-23T19:39:52+09:00</div>
+    <div class="footer footerMeta">* DEV build 0bf56a0 · 생성 2026-03-23T22:17:22+09:00</div>
   </div>
 
   <script>
     (function() {
 
-      var currentBuild = "66be6e4";
+      var currentBuild = "0bf56a0";
       var devVersionUrl = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json";
       function syncLatestDevBuild() {
         if (window.top && window.top !== window) return;
@@ -2970,7 +2970,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: 66be6e4 -->
+  <!-- build: 0bf56a0 -->
 
     <style>
       details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
@@ -2991,7 +2991,7 @@ try { _ensureDates(); } catch (e) {}
     <details class="dbgWrap">
       <summary>디버그 리포트 (선정/필터 로그)</summary>
       <div class='dbgLinks'><a href='https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-03-23.json' target='_blank' rel='noopener'>debug json 보기</a></div>
-      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 66be6e4</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-23T19:39:52+09:00</span></div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 0bf56a0</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-23T22:17:22+09:00</span></div>
       <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: supply_context_gate(136), must_terms_fail(131), supply_macro_price_watch(114), ban_keywords(89), pest_partial_mention(89), apple_non_edible_context(77), dist_non_horti_anchorless(75), opinion_or_editorial(68), potato_non_fresh_context(56), carrot_non_edible_context(54), supply_policy_market_brief(41), finance_strict_no_agri_context(38)</div>
       
         <div class="dbgSec">
@@ -3009,7 +3009,7 @@ try { _ensureDates(); } catch (e) {}
                   <th>미선정 사유</th><th>제목</th>
                 </tr>
               </thead>
-              <tbody><tr><td class='c'>—</td><td class='c'></td><td class='r'>42.86</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>7</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316940' target='_blank' rel='noopener'>[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>35.46</td><td class='c'>3</td><td>조선일보</td><td class='muted'>chosun.com</td><td class='r'>1.6</td><td class='r'>1</td><td class='r'>6</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.chosun.com/economy/market_trend/2026/03/23/AQQW5L6WP5C65PK7RAHZN3NCWA/' target='_blank' rel='noopener'>수급 불안정 해소하려… 저산소 저장고·스마트팜 늘리는 마트들</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>30.68</td><td class='c'>3</td><td>연합뉴스</td><td class='muted'>yna.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.yna.co.kr/view/AKR20260322026600053?input=1195m' target='_blank' rel='noopener'>구미, &#x27; 양파 주산지&#x27;로 지정돼…생산·저장·유통기반 강화 추진</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>30.5</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.ytn.co.kr/_ln/0115_202603201142327627' target='_blank' rel='noopener'>고유가에 난방비 걱정... 방울토마토 농가 생산량 급감</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.93</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603201049420132' target='_blank' rel='noopener'>고유가 여파로 생산량 감소...시설 하우스 농가 직격탄</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.75</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603210116590949' target='_blank' rel='noopener'>고유가 여파로 생산량 급감... 방울토마토 농가 &#x27;울상&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.18</td><td class='c'>1</td><td>JIBS</td><td class='muted'>jibs.co.kr</td><td class='r'>1.63</td><td class='r'>2</td><td class='r'>5</td><td class='r'>1</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.jibs.co.kr/news/replay/viewNewsReplayDetail/2026032121172741486?feed=na' target='_blank' rel='noopener'>양배추 가격 급락.. &quot;도매시장 재고 누적&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>25.86</td><td class='c'>3</td><td>조선일보</td><td class='muted'>chosun.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>supply_policy_like</td><td><a href='https://www.chosun.com/economy/economy_general/2026/03/22/SP7RLVXHLRDNHJGFHIHMCCCPXE/' target='_blank' rel='noopener'>석유 최고 가격 제 시행됐지만 농업용 난방유는 상승세...보름 넘게 올라</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>24.68</td><td class='c'>1</td><td>JIBS</td><td class='muted'>jibs.co.kr</td><td class='r'>1.63</td><td class='r'>2</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.jibs.co.kr/news/articles/articlesDetail/59174?feed=na' target='_blank' rel='noopener'>양배추 가격 절반 가까이 뚝.. &quot;도매시장 재고 누적&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.92</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://biz.heraldcorp.com/article/10699713' target='_blank' rel='noopener'>최고 가격 제에도 농업용 난방유 고공행진…방울토마토 등 가격 인상 가능...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.45</td><td class='c'>1</td><td>이코노뉴스</td><td class='muted'>econonews.co.kr</td><td class='r'>8.9</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>weak_tail</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=431950' target='_blank' rel='noopener'>쿠팡, 만감류 20t 매입 할인 판매...제주 농가 판로 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.45</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402753' target='_blank' rel='noopener'>&quot;햇양파 도매 가격 kg당 400원, 수확 비용도 못 건져&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.83</td><td class='c'>1</td><td>대경일보</td><td class='muted'>dkilbo.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dkilbo.com/news/articleView.html?idxno=538064' target='_blank' rel='noopener'>구미시, 양파 주산지 공식 지정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.47</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500266' target='_blank' rel='noopener'>“영암 멜론 이 으뜸”…영암낭주농협, 케이 멜론 공선 출하 회 사업설명회</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.46</td><td class='c'>2</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dailian.co.kr/news/view/1623353/?sc=Naver' target='_blank' rel='noopener'>가축 건강·과일 출하 시기까지 AI 분석…“AX플랫폼, 농업 생산성 높일...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.35</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.32</td><td class='r'>1</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500520' target='_blank' rel='noopener'>경북 안동농협, 통산 10번째 종합업적 1위 ‘위업’</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.13</td><td class='c'>1</td><td>경상매일신문</td><td class='muted'>ksmnews.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ksmnews.co.kr/news/view.php?idx=596213' target='_blank' rel='noopener'>양파 주산지 구미…“산업 체계 구축 전환점”</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.77</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402766' target='_blank' rel='noopener'>[기자수첩] 민생 안정, 농민 생활안정도 돌봐주길</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.34</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.1</td><td class='r'>2</td><td class='r'>5</td><td class='r'>1</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402699' target='_blank' rel='noopener'>제주도, &#x27;유가 급등&#x27; 시설농가 지원 모색</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.33</td><td class='c'>1</td><td>경북일보</td><td class='muted'>kyongbuk.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067594' target='_blank' rel='noopener'>구미 양파 주산지 지정…유통· 가격 안정까지 산업 전환 가속</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.23</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=02607606645385944' target='_blank' rel='noopener'>[포토] 농협유통, 파파야 멜론 출시</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.98</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=02610886645385944' target='_blank' rel='noopener'>[포토] 경북 고령 &#x27;파파야 멜론 &#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.96</td><td class='c'>1</td><td>segyebiz</td><td class='muted'>segyebiz.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.segyebiz.com/newsView/20260322505101' target='_blank' rel='noopener'>중동사태에 수출기업 ‘삼중고’… 시설 원예·화훼 농가는 ‘기름’ 걱...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.74</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://biz.heraldcorp.com/article/10699938' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.68</td><td class='c'>3</td><td>동아일보</td><td class='muted'>donga.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.donga.com/news/Economy/article/all/20260322/133581458/2' target='_blank' rel='noopener'>국내산 파파야 멜론 나왔어요</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.65</td><td class='c'>1</td><td>경상매일신문</td><td class='muted'>ksmnews.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ksmnews.co.kr/news/view.php?idx=595940' target='_blank' rel='noopener'>김천시, 농산물종합유통센터 조성사업 현장 점검</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.5</td><td class='c'>1</td><td>강원도민일보</td><td class='muted'>kado.net</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.kado.net/news/articleView.html?idxno=2040010' target='_blank' rel='noopener'>농업용 난방유 18일째 상승…&quot;기름값 월 2000만원, 농사 포기할 판&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.44</td><td class='c'>1</td><td>대경일보</td><td class='muted'>dkilbo.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dkilbo.com/news/articleView.html?idxno=538059' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정…생산체계 구축 전환점</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.16</td><td class='c'>2</td><td>아주경제</td><td class='muted'>ajunews.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ajunews.com/view/20260322140848785' target='_blank' rel='noopener'>최고 가격 제에도 농업용 난방유 &#x27;나 홀로 상승&#x27;…보름 넘게 상승세</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.08</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>8</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402718' target='_blank' rel='noopener'>박성재 전남도의원 &quot;생산비도 안되는 양파값···비축물량 완전 격리를...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.27</td><td class='c'>1</td><td>한국농업신문</td><td class='muted'>newsfarm.co.kr</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsfarm.co.kr/news/articleView.html?idxno=100572' target='_blank' rel='noopener'>양배추 가격 붕괴···전년 대비 1/3토막</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.23</td><td class='c'>3</td><td>연합뉴스</td><td class='muted'>yna.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.yna.co.kr/view/PYH20260322015900013?input=1196m' target='_blank' rel='noopener'>농협유통, 국내산 파파야 멜론 선봬</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.72</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320114909Y48' target='_blank' rel='noopener'>속 타는 화물차 기사들…시설 농가도 시름</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.66</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316626' target='_blank' rel='noopener'>경북도, 70억 원 규모 &#x27;사과 재해대응형 시설재배&#x27; 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.95</td><td class='c'>3</td><td>파이낸셜뉴스</td><td class='muted'>fnnews.com</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.fnnews.com/news/202603220936180496' target='_blank' rel='noopener'>“식량 위기” 호르무즈해협에 막힌 비료...추경 반영한다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.92</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320135850mBp' target='_blank' rel='noopener'>기름값에 화물차 기사들 막막…시설 농가 시름</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.91</td><td class='c'>3</td><td>한국경제</td><td class='muted'>hankyung.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.hankyung.com/article/2026032277781' target='_blank' rel='noopener'>농심, 포테토칩 감자 ·너구리 다시마…농가는 웃고, 기업은 품질 높여</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.87</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603220445108889' target='_blank' rel='noopener'>[新농비] &quot;농작물의 스트레스를 줄여라&quot;...미생물 친환경 비료</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.84</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402749' target='_blank' rel='noopener'>[영남 초대형산불 1년] 더딘 회복···매일 &#x27;그날&#x27; 마주치는 주민들</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.69</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500221' target='_blank' rel='noopener'>화천농협, 양파 공선 출하 회 대상 재배기술 교육</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.3</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402698' target='_blank' rel='noopener'>&quot;마늘 수확량 월등히 많고, 1등품이 73% 차지&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.06</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402738' target='_blank' rel='noopener'>계란 기준 가격 폐지 이후··· 가격 정보 공백에 시장 혼란 더 커졌다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.02</td><td class='c'>1</td><td>hidomin</td><td class='muted'>hidomin.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.hidomin.com/news/articleView.html?idxno=613355' target='_blank' rel='noopener'>양파 주산지 된 구미 &quot;생산·저장·유통 기반 강화&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.9</td><td class='c'>1</td><td>dtnews24</td><td class='muted'>dtnews24.com</td><td class='r'>1.64</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.dtnews24.com/news/articleView.html?idxno=808925' target='_blank' rel='noopener'>고흥, FTA 대응 과수 현대화 속도…&quot;고품질·판로 동시 잡는다&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.67</td><td class='c'>1</td><td>farminsight</td><td class='muted'>farminsight.net</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farminsight.net/news/articleView.html?idxno=16136' target='_blank' rel='noopener'>송미령 농식품부 장관, 고유가 시대 농가 경영 안정 &#x27;동분서주&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.46</td><td class='c'>3</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://view.asiae.co.kr/article/2026032009090705008' target='_blank' rel='noopener'>&quot;전쟁 길어지면 못 먹어…지금이 마지막 기회&quot; 웃돈에 사재기까지 난리...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.42</td><td class='c'>1</td><td>jejusori</td><td class='muted'>jejusori.net</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.jejusori.net/news/articleView.html?idxno=500684' target='_blank' rel='noopener'>대정읍 김나솔, 조생양파 출하 현장 방문 &quot;계절근로 확대&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.31</td><td class='c'>1</td><td>이코노뉴스</td><td class='muted'>econonews.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=431953' target='_blank' rel='noopener'>이랜드 킴스클럽, 토마토 산지 7곳으로 확대…직거래 강화로 가격 최대...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.23</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402752' target='_blank' rel='noopener'>농산 자조금단체 &#x27;거출·운영&#x27; 법적 권한 부여한다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.21</td><td class='c'>3</td><td>조선일보</td><td class='muted'>biz.chosun.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://biz.chosun.com/policy/politics/president_office/2026/03/20/7RJ67SI5GZEWRJ6BOJ4UMWFP2U/' target='_blank' rel='noopener'>[정치 인사이드] 김어준은 “차기 주자” 일본에선 “부럽다”…중동 사...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.16</td><td class='c'>1</td><td>한스경제</td><td class='muted'>hansbiz.co.kr</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.hansbiz.co.kr/news/articleView.html?idxno=826291' target='_blank' rel='noopener'>석유 최고 가격 제에도…농업용 등유는 &#x27;나홀로 상승&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.84</td><td class='c'>2</td><td>뉴시스</td><td class='muted'>newsis.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newsis.com/view/NISX20260322_0003558398' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정…&quot;생산체계 구축 전환점&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.56</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500248' target='_blank' rel='noopener'>“1년 내내 고품질 딸기 생산”…수직재배대·이동형 LED ‘주목’ [디지...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.51</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320211455Qtj' target='_blank' rel='noopener'>&quot;농사 접을 판&quot;…난방비 폭등에 시설 농가 울상</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>14.43</td><td class='c'>1</td><td>한국농정신문</td><td class='muted'>ikpnews.net</td><td class='r'>1.95</td><td class='r'>1</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.ikpnews.net/news/articleView.html?idxno=69934' target='_blank' rel='noopener'>양파가격 폭락, 시장격리 조치가 시급하다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.34</td><td class='c'>1</td><td>한국농업신문</td><td class='muted'>newsfarm.co.kr</td><td class='r'>2.33</td><td class='r'>1</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsfarm.co.kr/news/articleView.html?idxno=100569' target='_blank' rel='noopener'>[품목분석] &quot; 딸기 냐 토마토냐&quot;…가락시장 &#x27;양강 구도&#x27;, 농업인의 선택은</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.26</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402757' target='_blank' rel='noopener'>법원 &quot;밭떼기 계약 후 수확량 적어도 잔금 줘야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.91</td><td class='c'>3</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://view.asiae.co.kr/article/2026031816082308458' target='_blank' rel='noopener'>&quot;줄 서도 못 구한다&quot; 5배 &#x27;웃돈&#x27; 거래까지 난리난 황치즈칩…과자 한정...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.9</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=01790886645385616' target='_blank' rel='noopener'>키움증권·티에프이· 오이 솔루션[하나證 주간추천주]</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.76</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ytn.co.kr/_ln/0104_202603222241059896' target='_blank' rel='noopener'>트럼프, 이란에 초토화 통첩...확전 vs 협상 갈림길</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>18.29</td><td class='c'>1</td><td>gokorea</td><td class='muted'>gokorea.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>4</td><td class='r'>1</td><td class='muted'></td><td><a href='https://www.gokorea.kr/news/articleView.html?idxno=861159' target='_blank' rel='noopener'>난방유 가격 급등… 농가 경영 악화, 정부 대책 시급</a></td></tr></tbody>
+              <tbody><tr><td class='c'>—</td><td class='c'></td><td class='r'>42.86</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>7</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316940' target='_blank' rel='noopener'>[시황] 참외 본격 출하…물량 증가·대체 품목 경쟁에 가격 하락세</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>35.46</td><td class='c'>3</td><td>조선일보</td><td class='muted'>chosun.com</td><td class='r'>1.6</td><td class='r'>1</td><td class='r'>6</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.chosun.com/economy/market_trend/2026/03/23/AQQW5L6WP5C65PK7RAHZN3NCWA/' target='_blank' rel='noopener'>수급 불안정 해소하려… 저산소 저장고·스마트팜 늘리는 마트들</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>30.68</td><td class='c'>3</td><td>연합뉴스</td><td class='muted'>yna.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.yna.co.kr/view/AKR20260322026600053?input=1195m' target='_blank' rel='noopener'>구미, &#x27; 양파 주산지&#x27;로 지정돼…생산·저장·유통기반 강화 추진</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>30.5</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.ytn.co.kr/_ln/0115_202603201142327627' target='_blank' rel='noopener'>고유가에 난방비 걱정... 방울토마토 농가 생산량 급감</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.93</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603201049420132' target='_blank' rel='noopener'>고유가 여파로 생산량 감소...시설 하우스 농가 직격탄</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.75</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603210116590949' target='_blank' rel='noopener'>고유가 여파로 생산량 급감... 방울토마토 농가 &#x27;울상&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>26.18</td><td class='c'>1</td><td>JIBS</td><td class='muted'>jibs.co.kr</td><td class='r'>1.63</td><td class='r'>2</td><td class='r'>5</td><td class='r'>1</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.jibs.co.kr/news/replay/viewNewsReplayDetail/2026032121172741486?feed=na' target='_blank' rel='noopener'>양배추 가격 급락.. &quot;도매시장 재고 누적&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>25.86</td><td class='c'>3</td><td>조선일보</td><td class='muted'>chosun.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>supply_policy_like</td><td><a href='https://www.chosun.com/economy/economy_general/2026/03/22/SP7RLVXHLRDNHJGFHIHMCCCPXE/' target='_blank' rel='noopener'>석유 최고 가격 제 시행됐지만 농업용 난방유는 상승세...보름 넘게 올라</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>24.68</td><td class='c'>1</td><td>JIBS</td><td class='muted'>jibs.co.kr</td><td class='r'>1.63</td><td class='r'>2</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.jibs.co.kr/news/articles/articlesDetail/59174?feed=na' target='_blank' rel='noopener'>양배추 가격 절반 가까이 뚝.. &quot;도매시장 재고 누적&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.92</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://biz.heraldcorp.com/article/10699713' target='_blank' rel='noopener'>최고 가격 제에도 농업용 난방유 고공행진…방울토마토 등 가격 인상 가능...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.45</td><td class='c'>1</td><td>이코노뉴스</td><td class='muted'>econonews.co.kr</td><td class='r'>8.9</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>weak_tail</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=431950' target='_blank' rel='noopener'>쿠팡, 만감류 20t 매입 할인 판매...제주 농가 판로 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>23.03</td><td class='c'>1</td><td>경북일보</td><td class='muted'>kyongbuk.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>tail_cut</td><td><a href='https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067594' target='_blank' rel='noopener'>구미 양파 주산지 지정…유통· 가격 안정까지 산업 전환 가속</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.45</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402753' target='_blank' rel='noopener'>&quot;햇양파 도매 가격 kg당 400원, 수확 비용도 못 건져&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>22.03</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402718' target='_blank' rel='noopener'>박성재 전남도의원 &quot;생산비도 안되는 양파 값···비축물량 완전 격리를...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.83</td><td class='c'>1</td><td>대경일보</td><td class='muted'>dkilbo.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dkilbo.com/news/articleView.html?idxno=538064' target='_blank' rel='noopener'>구미시, 양파 주산지 공식 지정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.5</td><td class='c'>2</td><td>팜&amp;마켓</td><td class='muted'>farmnmarket.com</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farmnmarket.com/news/article.html?no=25920' target='_blank' rel='noopener'>시설원예 면세유 공급·생육 상황 점검</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.47</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500266' target='_blank' rel='noopener'>“영암 멜론 이 으뜸”…영암낭주농협, 케이 멜론 공선 출하 회 사업설명회</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.46</td><td class='c'>2</td><td>데일리안</td><td class='muted'>dailian.co.kr</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dailian.co.kr/news/view/1623353/?sc=Naver' target='_blank' rel='noopener'>가축 건강·과일 출하 시기까지 AI 분석…“AX플랫폼, 농업 생산성 높일...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.35</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.32</td><td class='r'>1</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500520' target='_blank' rel='noopener'>경북 안동농협, 통산 10번째 종합업적 1위 ‘위업’</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.77</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402766' target='_blank' rel='noopener'>[기자수첩] 민생 안정, 농민 생활안정도 돌봐주길</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.34</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.1</td><td class='r'>2</td><td class='r'>5</td><td class='r'>1</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402699' target='_blank' rel='noopener'>제주도, &#x27;유가 급등&#x27; 시설농가 지원 모색</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.23</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=02607606645385944' target='_blank' rel='noopener'>[포토] 농협유통, 파파야 멜론 출시</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.98</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=02610886645385944' target='_blank' rel='noopener'>[포토] 경북 고령 &#x27;파파야 멜론 &#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.96</td><td class='c'>1</td><td>segyebiz</td><td class='muted'>segyebiz.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.segyebiz.com/newsView/20260322505101' target='_blank' rel='noopener'>중동사태에 수출기업 ‘삼중고’… 시설 원예·화훼 농가는 ‘기름’ 걱...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.74</td><td class='c'>3</td><td>헤럴드경제</td><td class='muted'>biz.heraldcorp.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://biz.heraldcorp.com/article/10699938' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.68</td><td class='c'>3</td><td>동아일보</td><td class='muted'>donga.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.donga.com/news/Economy/article/all/20260322/133581458/2' target='_blank' rel='noopener'>국내산 파파야 멜론 나왔어요</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.65</td><td class='c'>1</td><td>경상매일신문</td><td class='muted'>ksmnews.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ksmnews.co.kr/news/view.php?idx=595940' target='_blank' rel='noopener'>김천시, 농산물종합유통센터 조성사업 현장 점검</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.5</td><td class='c'>1</td><td>강원도민일보</td><td class='muted'>kado.net</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.kado.net/news/articleView.html?idxno=2040010' target='_blank' rel='noopener'>농업용 난방유 18일째 상승…&quot;기름값 월 2000만원, 농사 포기할 판&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.44</td><td class='c'>1</td><td>대경일보</td><td class='muted'>dkilbo.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.dkilbo.com/news/articleView.html?idxno=538059' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정…생산체계 구축 전환점</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.16</td><td class='c'>2</td><td>아주경제</td><td class='muted'>ajunews.com</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ajunews.com/view/20260322140848785' target='_blank' rel='noopener'>최고 가격 제에도 농업용 난방유 &#x27;나 홀로 상승&#x27;…보름 넘게 상승세</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.27</td><td class='c'>1</td><td>한국농업신문</td><td class='muted'>newsfarm.co.kr</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsfarm.co.kr/news/articleView.html?idxno=100572' target='_blank' rel='noopener'>양배추 가격 붕괴···전년 대비 1/3토막</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.23</td><td class='c'>3</td><td>연합뉴스</td><td class='muted'>yna.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.yna.co.kr/view/PYH20260322015900013?input=1196m' target='_blank' rel='noopener'>농협유통, 국내산 파파야 멜론 선봬</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.72</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320114909Y48' target='_blank' rel='noopener'>속 타는 화물차 기사들…시설 농가도 시름</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.66</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316626' target='_blank' rel='noopener'>경북도, 70억 원 규모 &#x27;사과 재해대응형 시설재배&#x27; 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.95</td><td class='c'>3</td><td>파이낸셜뉴스</td><td class='muted'>fnnews.com</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.fnnews.com/news/202603220936180496' target='_blank' rel='noopener'>“식량 위기” 호르무즈해협에 막힌 비료...추경 반영한다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.92</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320135850mBp' target='_blank' rel='noopener'>기름값에 화물차 기사들 막막…시설 농가 시름</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.91</td><td class='c'>3</td><td>한국경제</td><td class='muted'>hankyung.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.hankyung.com/article/2026032277781' target='_blank' rel='noopener'>농심, 포테토칩 감자 ·너구리 다시마…농가는 웃고, 기업은 품질 높여</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.87</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ytn.co.kr/_ln/0115_202603220445108889' target='_blank' rel='noopener'>[新농비] &quot;농작물의 스트레스를 줄여라&quot;...미생물 친환경 비료</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.69</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500221' target='_blank' rel='noopener'>화천농협, 양파 공선 출하 회 대상 재배기술 교육</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.3</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402698' target='_blank' rel='noopener'>&quot;마늘 수확량 월등히 많고, 1등품이 73% 차지&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.06</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>1</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402738' target='_blank' rel='noopener'>계란 기준 가격 폐지 이후··· 가격 정보 공백에 시장 혼란 더 커졌다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.02</td><td class='c'>1</td><td>hidomin</td><td class='muted'>hidomin.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.hidomin.com/news/articleView.html?idxno=613355' target='_blank' rel='noopener'>양파 주산지 된 구미 &quot;생산·저장·유통 기반 강화&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.9</td><td class='c'>1</td><td>dtnews24</td><td class='muted'>dtnews24.com</td><td class='r'>1.64</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.dtnews24.com/news/articleView.html?idxno=808925' target='_blank' rel='noopener'>고흥, FTA 대응 과수 현대화 속도…&quot;고품질·판로 동시 잡는다&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.67</td><td class='c'>1</td><td>farminsight</td><td class='muted'>farminsight.net</td><td class='r'>0.0</td><td class='r'>1</td><td class='r'>6</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.farminsight.net/news/articleView.html?idxno=16136' target='_blank' rel='noopener'>송미령 농식품부 장관, 고유가 시대 농가 경영 안정 &#x27;동분서주&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.46</td><td class='c'>3</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://view.asiae.co.kr/article/2026032009090705008' target='_blank' rel='noopener'>&quot;전쟁 길어지면 못 먹어…지금이 마지막 기회&quot; 웃돈에 사재기까지 난리...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.42</td><td class='c'>1</td><td>jejusori</td><td class='muted'>jejusori.net</td><td class='r'>2.8</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.jejusori.net/news/articleView.html?idxno=500684' target='_blank' rel='noopener'>대정읍 김나솔, 조생양파 출하 현장 방문 &quot;계절근로 확대&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.31</td><td class='c'>1</td><td>이코노뉴스</td><td class='muted'>econonews.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.econonews.co.kr/news/articleView.html?idxno=431953' target='_blank' rel='noopener'>이랜드 킴스클럽, 토마토 산지 7곳으로 확대…직거래 강화로 가격 최대...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.23</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>2.2</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402752' target='_blank' rel='noopener'>농산 자조금단체 &#x27;거출·운영&#x27; 법적 권한 부여한다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.21</td><td class='c'>3</td><td>조선일보</td><td class='muted'>biz.chosun.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://biz.chosun.com/policy/politics/president_office/2026/03/20/7RJ67SI5GZEWRJ6BOJ4UMWFP2U/' target='_blank' rel='noopener'>[정치 인사이드] 김어준은 “차기 주자” 일본에선 “부럽다”…중동 사...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.16</td><td class='c'>1</td><td>한스경제</td><td class='muted'>hansbiz.co.kr</td><td class='r'>2.84</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.hansbiz.co.kr/news/articleView.html?idxno=826291' target='_blank' rel='noopener'>석유 최고 가격 제에도…농업용 등유는 &#x27;나홀로 상승&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.84</td><td class='c'>2</td><td>뉴시스</td><td class='muted'>newsis.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.newsis.com/view/NISX20260322_0003558398' target='_blank' rel='noopener'>구미시, 양파 주산지로 공식 지정…&quot;생산체계 구축 전환점&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.56</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.nongmin.com/article/20260320500248' target='_blank' rel='noopener'>“1년 내내 고품질 딸기 생산”…수직재배대·이동형 LED ‘주목’ [디지...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.51</td><td class='c'>1</td><td>연합뉴스TV</td><td class='muted'>yonhapnewstv.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.yonhapnewstv.co.kr/MYH20260320211455Qtj' target='_blank' rel='noopener'>&quot;농사 접을 판&quot;…난방비 폭등에 시설 농가 울상</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>14.43</td><td class='c'>1</td><td>한국농정신문</td><td class='muted'>ikpnews.net</td><td class='r'>1.95</td><td class='r'>1</td><td class='r'>3</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.ikpnews.net/news/articleView.html?idxno=69934' target='_blank' rel='noopener'>양파가격 폭락, 시장격리 조치가 시급하다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.34</td><td class='c'>1</td><td>한국농업신문</td><td class='muted'>newsfarm.co.kr</td><td class='r'>2.33</td><td class='r'>1</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsfarm.co.kr/news/articleView.html?idxno=100569' target='_blank' rel='noopener'>[품목분석] &quot; 딸기 냐 토마토냐&quot;…가락시장 &#x27;양강 구도&#x27;, 농업인의 선택은</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.26</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402757' target='_blank' rel='noopener'>법원 &quot;밭떼기 계약 후 수확량 적어도 잔금 줘야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.91</td><td class='c'>3</td><td>아시아경제</td><td class='muted'>view.asiae.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://view.asiae.co.kr/article/2026031816082308458' target='_blank' rel='noopener'>&quot;줄 서도 못 구한다&quot; 5배 &#x27;웃돈&#x27; 거래까지 난리난 황치즈칩…과자 한정...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.9</td><td class='c'>3</td><td>이데일리</td><td class='muted'>edaily.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.edaily.co.kr/news/newspath.asp?newsid=01790886645385616' target='_blank' rel='noopener'>키움증권·티에프이· 오이 솔루션[하나證 주간추천주]</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.76</td><td class='c'>3</td><td>YTN</td><td class='muted'>ytn.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>1</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.ytn.co.kr/_ln/0104_202603222241059896' target='_blank' rel='noopener'>트럼프, 이란에 초토화 통첩...확전 vs 협상 갈림길</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>13.55</td><td class='c'>1</td><td>이투데이</td><td class='muted'>etoday.co.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.etoday.co.kr/news/view/2567841' target='_blank' rel='noopener'>최고 가격 제에도 농업용 난방유만 올랐다…시설농가 난방비 부담 가중</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>18.29</td><td class='c'>1</td><td>gokorea</td><td class='muted'>gokorea.kr</td><td class='r'>2.52</td><td class='r'>0</td><td class='r'>4</td><td class='r'>1</td><td class='muted'></td><td><a href='https://www.gokorea.kr/news/articleView.html?idxno=861159' target='_blank' rel='noopener'>난방유 가격 급등… 농가 경영 악화, 정부 대책 시급</a></td></tr></tbody>
             </table>
           </div>
         </div>
@@ -3069,7 +3069,7 @@ try { _ensureDates(); } catch (e) {}
                   <th>미선정 사유</th><th>제목</th>
                 </tr>
               </thead>
-              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>28.87</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316820' target='_blank' rel='noopener'>경북도, &#x27;2026년 복숭아 병해충 예찰단&#x27; 출범</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>22.93</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316883' target='_blank' rel='noopener'>서천군 농기센터, 고추 육묘 농가…칼라병 매개 총채벌레 방제 철저히 ...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>22.75</td><td class='c'>1</td><td>충청일보</td><td class='muted'>ccdailynews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.ccdailynews.com/news/articleView.html?idxno=2404839' target='_blank' rel='noopener'>단양군, 과수화상병 방제 약제 &#x27;배부 완료&#x27;</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>22.08</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.nongmin.com/article/20260320500376' target='_blank' rel='noopener'>영천시, 잔류농약 방지 교육… 포도 수출 안전성 강화</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.73</td><td class='c'>1</td><td>충남일보</td><td class='muted'>chungnamilbo.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='http://www.chungnamilbo.co.kr/news/articleView.html?idxno=878956' target='_blank' rel='noopener'>서천군, 고추 육묘농가에 칼라병 매개 총채벌레 방제 당부</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>21.56</td><td class='c'>1</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3534935' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.31</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>similar_title</td><td><a href='https://www.shinailbo.co.kr/news/articleView.html?idxno=5003112' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수한다</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.18</td><td class='c'>1</td><td>농축유통신문</td><td class='muted'>amnews.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='http://www.amnews.co.kr/news/articleView.html?idxno=71585' target='_blank' rel='noopener'>블루베리 농가, 병해충 동시 방제 해야</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>20.76</td><td class='c'>1</td><td>브레이크뉴스</td><td class='muted'>breaknews.com</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='http://www.breaknews.com/1193579' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 ‘골든타임’ 사수 총력… 6단계 방제 망 전격...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.98</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402744' target='_blank' rel='noopener'>[2026 농산업포럼] &quot;병해충 선제적 방제·저탄소 제품개발 나서야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.74</td><td class='c'>1</td><td>KMAEIL</td><td class='muted'>kmaeil.com</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.kmaeil.com/news/articleView.html?idxno=633809' target='_blank' rel='noopener'>이천시, 2026년 과수화상병 예방 총력</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.01</td><td class='c'>3</td><td>YTN</td><td class='muted'>science.ytn.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://science.ytn.co.kr/program/view.php?mcd=0082&amp;hcd=&amp;key=202603201103231350' target='_blank' rel='noopener'>고랭지 배추 시들음병...복합 방제로 99% 차단</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.23</td><td class='c'>1</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260321010007113' target='_blank' rel='noopener'>서천, 철저한 방제 로 고추 칼라병 매개 총채벌레 퇴치해야</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.52</td><td class='c'>1</td><td>한국영농신문</td><td class='muted'>youngnong.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='http://www.youngnong.co.kr/news/articleView.html?idxno=58192' target='_blank' rel='noopener'>봄철 병해충부터 여름 작형까지…팜한농, 4월 추천 제품 제안</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.3</td><td class='c'>1</td><td>진일보</td><td class='muted'>jnilbo.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.jnilbo.com/news/articleView.html?idxno=90000027233' target='_blank' rel='noopener'>광양시, 가로수 병해충 방제작업 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.74</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402751' target='_blank' rel='noopener'>밤 종실해충 판도 변화···&#x27;밤애기잎말이나방&#x27; 최대 피해종 부상</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.05</td><td class='c'>1</td><td>CNB뉴스</td><td class='muted'>cnbnews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.cnbnews.com/news/article.html?no=784872' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.93</td><td class='c'>1</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3535070' target='_blank' rel='noopener'>고추 육묘농가, 칼라병 총채벌레 &#x27;주의&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.78</td><td class='c'>1</td><td>smartbizn</td><td class='muted'>smartbizn.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.smartbizn.com/news/articleView.html?idxno=139799' target='_blank' rel='noopener'>영천시, 대만 수출 포도 농가 농약 안전사용 교육 실시</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.08</td><td class='c'>1</td><td>thefairnews</td><td class='muted'>thefairnews.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.thefairnews.co.kr/news/articleView.html?idxno=72078' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 선제 대응…방제약제 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260322010006940' target='_blank' rel='noopener'>광양시, 녹색도시 조성 가로수 병해충 선제 대응</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>newsworker</td><td class='muted'>newsworker.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsworker.co.kr/news/articleView.html?idxno=418350' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>이뉴스투데이</td><td class='muted'>enewstoday.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.enewstoday.co.kr/news/articleView.html?idxno=2408608' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>4.73</td><td class='c'>1</td><td>jeollailbo</td><td class='muted'>jeollailbo.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jeollailbo.com/news/articleView.html?idxno=795298' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 &#x27;사전 차단&#x27; 총력</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.53</td><td class='c'>1</td><td>새전북신문</td><td class='muted'>sjbnews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://sjbnews.com/news/news.php?number=874309' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 ‘사전 차단’ 총력</a></td></tr></tbody>
+              <tbody><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>28.87</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.63</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316820' target='_blank' rel='noopener'>경북도, &#x27;2026년 복숭아 병해충 예찰단&#x27; 출범</a></td></tr><tr><td class='c'>✅</td><td class='c'>핵심</td><td class='r'>22.93</td><td class='c'>2</td><td>농수축산신문</td><td class='muted'>aflnews.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.aflnews.co.kr/news/articleView.html?idxno=316883' target='_blank' rel='noopener'>서천군 농기센터, 고추 육묘 농가…칼라병 매개 총채벌레 방제 철저히 ...</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>22.55</td><td class='c'>1</td><td>충청일보</td><td class='muted'>ccdailynews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.ccdailynews.com/news/articleView.html?idxno=2404839' target='_blank' rel='noopener'>단양군, 과수화상병 방제 약제 &#x27;배부 완료&#x27;</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>22.08</td><td class='c'>3</td><td>농민신문</td><td class='muted'>nongmin.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'></td><td><a href='https://www.nongmin.com/article/20260320500376' target='_blank' rel='noopener'>영천시, 잔류농약 방지 교육… 포도 수출 안전성 강화</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.95</td><td class='c'>1</td><td>브레이크뉴스</td><td class='muted'>breaknews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='http://www.breaknews.com/1193579' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 ‘골든타임’ 사수 총력… 6단계 방제망 전격...</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.73</td><td class='c'>1</td><td>충남일보</td><td class='muted'>chungnamilbo.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='http://www.chungnamilbo.co.kr/news/articleView.html?idxno=878956' target='_blank' rel='noopener'>서천군, 고추 육묘농가에 칼라병 매개 총채벌레 방제 당부</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>21.31</td><td class='c'>1</td><td>신아일보</td><td class='muted'>shinailbo.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.shinailbo.co.kr/news/articleView.html?idxno=5003112' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수한다</a></td></tr><tr><td class='c'>✅</td><td class='c'></td><td class='r'>21.18</td><td class='c'>1</td><td>농축유통신문</td><td class='muted'>amnews.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'></td><td><a href='http://www.amnews.co.kr/news/articleView.html?idxno=71585' target='_blank' rel='noopener'>블루베리 농가, 병해충 동시 방제 해야</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.98</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402744' target='_blank' rel='noopener'>[2026 농산업포럼] &quot;병해충 선제적 방제·저탄소 제품개발 나서야&quot;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.74</td><td class='c'>1</td><td>KMAEIL</td><td class='muted'>kmaeil.com</td><td class='r'>1.92</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.kmaeil.com/news/articleView.html?idxno=633809' target='_blank' rel='noopener'>이천시, 2026년 과수화상병 예방 총력</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>19.7</td><td class='c'>1</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3534935' target='_blank' rel='noopener'>홍천군, 과수화상병 예방 &#x27;골든타임&#x27; 사수</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>18.01</td><td class='c'>3</td><td>YTN</td><td class='muted'>science.ytn.co.kr</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>postbuild_pruned</td><td><a href='https://science.ytn.co.kr/program/view.php?mcd=0082&amp;hcd=&amp;key=202603201103231350' target='_blank' rel='noopener'>고랭지 배추 시들음병...복합 방제로 99% 차단</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>17.23</td><td class='c'>1</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>similar_story</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260321010007113' target='_blank' rel='noopener'>서천, 철저한 방제 로 고추 칼라병 매개 총채벌레 퇴치해야</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.52</td><td class='c'>1</td><td>한국영농신문</td><td class='muted'>youngnong.co.kr</td><td class='r'>1.32</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='http://www.youngnong.co.kr/news/articleView.html?idxno=58192' target='_blank' rel='noopener'>봄철 병해충부터 여름 작형까지…팜한농, 4월 추천 제품 제안</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>16.3</td><td class='c'>1</td><td>진일보</td><td class='muted'>jnilbo.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>source_cap</td><td><a href='https://www.jnilbo.com/news/articleView.html?idxno=90000027233' target='_blank' rel='noopener'>광양시, 가로수 병해충 방제작업 추진</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>15.74</td><td class='c'>2</td><td>한국농어민신문</td><td class='muted'>agrinet.co.kr</td><td class='r'>0.0</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.agrinet.co.kr/news/articleView.html?idxno=402751' target='_blank' rel='noopener'>밤 종실해충 판도 변화···&#x27;밤애기잎말이나방&#x27; 최대 피해종 부상</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>14.05</td><td class='c'>1</td><td>CNB뉴스</td><td class='muted'>cnbnews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>3</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.cnbnews.com/news/article.html?no=784872' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.93</td><td class='c'>1</td><td>국제뉴스</td><td class='muted'>gukjenews.com</td><td class='r'>1.4</td><td class='r'>0</td><td class='r'>5</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.gukjenews.com/news/articleView.html?idxno=3535070' target='_blank' rel='noopener'>고추 육묘농가, 칼라병 총채벌레 &#x27;주의&#x27;</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.78</td><td class='c'>1</td><td>smartbizn</td><td class='muted'>smartbizn.com</td><td class='r'>1.95</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.smartbizn.com/news/articleView.html?idxno=139799' target='_blank' rel='noopener'>영천시, 대만 수출 포도 농가 농약 안전사용 교육 실시</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>12.08</td><td class='c'>1</td><td>thefairnews</td><td class='muted'>thefairnews.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.thefairnews.co.kr/news/articleView.html?idxno=72078' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 선제 대응…방제약제 지원</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>중도일보</td><td class='muted'>joongdo.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='https://www.joongdo.co.kr/web/view.php?key=20260322010006940' target='_blank' rel='noopener'>광양시, 녹색도시 조성 가로수 병해충 선제 대응</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>newsworker</td><td class='muted'>newsworker.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.newsworker.co.kr/news/articleView.html?idxno=418350' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>11.48</td><td class='c'>1</td><td>이뉴스투데이</td><td class='muted'>enewstoday.co.kr</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>2</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.enewstoday.co.kr/news/articleView.html?idxno=2408608' target='_blank' rel='noopener'>광양시, 가로수 병해충 선제 대응으로 건강한 녹색도시 조성</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>4.73</td><td class='c'>1</td><td>jeollailbo</td><td class='muted'>jeollailbo.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://www.jeollailbo.com/news/articleView.html?idxno=795298' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 &#x27;사전 차단&#x27; 총력</a></td></tr><tr><td class='c'>—</td><td class='c'></td><td class='r'>2.53</td><td class='c'>1</td><td>새전북신문</td><td class='muted'>sjbnews.com</td><td class='r'>1.6</td><td class='r'>0</td><td class='r'>4</td><td class='r'>0</td><td class='muted'>below_threshold</td><td><a href='http://sjbnews.com/news/news.php?number=874309' target='_blank' rel='noopener'>완주군, 과수 화상병·돌발해충 ‘사전 차단’ 총력</a></td></tr></tbody>
             </table>
           </div>
         </div>
