@@ -8359,6 +8359,56 @@ PRESS_HOST_MAP = {
     "www.danbinews.com": "단비뉴스",
     "ibabynews.com": "베이비뉴스",
     "www.ibabynews.com": "베이비뉴스",
+    "gokorea.kr": "고코리아",
+    "www.gokorea.kr": "고코리아",
+    "segyebiz.com": "세계비즈",
+    "www.segyebiz.com": "세계비즈",
+    "hidomin.com": "하이도민",
+    "www.hidomin.com": "하이도민",
+    "dtnews24.com": "디티뉴스24",
+    "www.dtnews24.com": "디티뉴스24",
+    "farminsight.net": "팜인사이트",
+    "www.farminsight.net": "팜인사이트",
+    "jejusori.net": "제주의소리",
+    "www.jejusori.net": "제주의소리",
+    "naeil.com": "내일신문",
+    "www.naeil.com": "내일신문",
+    "einfomax.co.kr": "연합인포맥스",
+    "www.einfomax.co.kr": "연합인포맥스",
+    "cstimes.com": "소비자경제",
+    "www.cstimes.com": "소비자경제",
+    "kbmaeil.com": "경북매일",
+    "www.kbmaeil.com": "경북매일",
+    "gndomin.com": "경남도민신문",
+    "www.gndomin.com": "경남도민신문",
+    "fsnews.co.kr": "식품안전뉴스",
+    "www.fsnews.co.kr": "식품안전뉴스",
+    "ccreview.co.kr": "충청리뷰",
+    "www.ccreview.co.kr": "충청리뷰",
+    "jjan.kr": "전북일보",
+    "www.jjan.kr": "전북일보",
+    "kwangju.co.kr": "광주일보",
+    "www.kwangju.co.kr": "광주일보",
+    "inews365.com": "인뉴스365",
+    "www.inews365.com": "인뉴스365",
+    "upkoreanews.com": "업코리아",
+    "www.upkoreanews.com": "업코리아",
+    "newswhoplus.com": "뉴스후플러스",
+    "www.newswhoplus.com": "뉴스후플러스",
+    "startuptoday.kr": "스타트업투데이",
+    "www.startuptoday.kr": "스타트업투데이",
+    "jeollailbo.com": "전라일보",
+    "www.jeollailbo.com": "전라일보",
+    "kmaeil.com": "경기매일",
+    "www.kmaeil.com": "경기매일",
+    "smartbizn.com": "스마트비즈니스",
+    "www.smartbizn.com": "스마트비즈니스",
+    "thefairnews.co.kr": "더페어뉴스",
+    "www.thefairnews.co.kr": "더페어뉴스",
+    "newsworker.co.kr": "뉴스워커",
+    "www.newsworker.co.kr": "뉴스워커",
+    "finomy.com": "피노미",
+    "www.finomy.com": "피노미",
 }
 
 ABBR_MAP = {
@@ -8483,6 +8533,32 @@ ABBR_MAP = {
     "newstree": "뉴스트리",
     "danbinews": "단비뉴스",
     "ibabynews": "베이비뉴스",
+    "gokorea": "고코리아",
+    "segyebiz": "세계비즈",
+    "hidomin": "하이도민",
+    "dtnews24": "디티뉴스24",
+    "farminsight": "팜인사이트",
+    "jejusori": "제주의소리",
+    "naeil": "내일신문",
+    "einfomax": "연합인포맥스",
+    "cstimes": "소비자경제",
+    "kbmaeil": "경북매일",
+    "gndomin": "경남도민신문",
+    "fsnews": "식품안전뉴스",
+    "ccreview": "충청리뷰",
+    "jjan": "전북일보",
+    "kwangju": "광주일보",
+    "inews365": "인뉴스365",
+    "upkoreanews": "업코리아",
+    "newswhoplus": "뉴스후플러스",
+    "startuptoday": "스타트업투데이",
+    "jeollailbo": "전라일보",
+    "kmaeil": "경기매일",
+    "smartbizn": "스마트비즈니스",
+    "thefairnews": "더페어뉴스",
+    "newsworker": "뉴스워커",
+    "asiaa": "아시아A",
+    "finomy": "피노미",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -8827,6 +8903,15 @@ def low_quality_domain_penalty(domain: str) -> float:
     if d in LOW_QUALITY_DOMAINS:
         return 3.5
     return 0.0
+
+# 농협 내부 정치/부정적 기사 필터
+_NH_NEGATIVE_KWS = ("잔혹사", "비리", "횡령", "배임", "구속", "기소", "수사", "검찰", "부정", "비위", "징계", "해임", "파면", "감사원")
+def is_nh_internal_negative(title: str, desc: str = "") -> bool:
+    """농협 회장/임원 관련 부정적 기사 판별"""
+    t = (title + " " + desc).lower()
+    if "농협" not in t:
+        return False
+    return any(kw in t for kw in _NH_NEGATIVE_KWS)
 
 _LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
 
@@ -11084,6 +11169,10 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 전 섹션: 패스트푸드 가격 기사 방어(필터를 통과하더라도 점수 하락)
     if is_fastfood_price_context(text):
         score -= 6.0
+
+    # 전 섹션: 농협 내부 정치/부정적 기사 감점
+    if is_nh_internal_negative(title, desc):
+        score -= 12.0
 
     # 점수 하한: 다수 감점 누적에 의한 극단적 음수 방지
     score = max(score, -5.0)
@@ -17131,8 +17220,12 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         for key_b in _all_section_keys[i + 1:]:
             for idx_a, art_a in enumerate(final_by_section.get(key_a, [])):
                 for idx_b, art_b in enumerate(final_by_section.get(key_b, [])):
+                    # URL-based dedup (exact same article in multiple sections)
+                    url_a = getattr(art_a, 'canon_url', '') or ''
+                    url_b = getattr(art_b, 'canon_url', '') or ''
+                    is_same_url = bool(url_a and url_b and url_a == url_b)
                     # Use a neutral section_key for cross-section comparison
-                    if not _is_similar_story(art_a, art_b, key_a):
+                    if not is_same_url and not _is_similar_story(art_a, art_b, key_a):
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
@@ -18063,7 +18156,10 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
     else:
         representative_rank = 0
 
-    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5)
+    # press tier bonus: 메이저 매체 대표기사 우선
+    _rep_press_tier = press_priority(item.get("press", ""), item.get("domain", ""))
+    _rep_tier_bonus = {3: 8.0, 2: 3.0}.get(_rep_press_tier, 0.0)
+    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus
     if weak_training:
         representative_score -= 26.0
     if weak_profile:
@@ -18108,6 +18204,8 @@ def _commodity_board_item_article_representative_metrics(item: dict[str, Any], a
         representative_score -= 26.0
     if weak_generic_market_watch:
         representative_score -= 24.0
+    if is_nh_internal_negative(title, desc):
+        representative_score -= 50.0
 
     metrics.update(
         {
@@ -18151,6 +18249,18 @@ def _commodity_board_article_is_active_candidate(
 ) -> bool:
     article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
     if not bool(article_metrics.get("board_eligible")):
+        return False
+    # 와인/주류 브랜드 스토리 등 가공식품 라이프스타일 기사 제외
+    _cb_title = getattr(article, "title", "") or ""
+    _cb_desc = getattr(article, "description", "") or ""
+    if is_processed_food_lifestyle_context(_cb_title, _cb_desc):
+        return False
+    _cb_text_l = (_cb_title + " " + _cb_desc).lower()
+    _WINE_BRAND_KWS = ("와인", "wine", "소믈리에", "빈티지", "수도사", "양조장", "와이너리", "winery", "브랜드 언박싱")
+    _wine_hits = sum(1 for w in _WINE_BRAND_KWS if w in _cb_text_l)
+    _supply_kws = ("출하", "수급", "도매", "경락", "산지", "농가", "재배", "작황", "수확")
+    _supply_hits = sum(1 for w in _supply_kws if w in _cb_text_l)
+    if _wine_hits >= 2 and _supply_hits == 0:
         return False
     representative_rank = int(article_metrics.get("representative_rank", -1))
     if representative_rank < _commodity_board_active_min_rank(item):
@@ -19270,8 +19380,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .secBody{{padding:12px 12px 14px}}
     .card{{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease}}
     .card:hover{{border-color:#94a3b8;box-shadow:0 4px 12px rgba(15,23,42,.08)}}
-    .cardTop{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}}
-    .meta{{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}}
+    .cardTop{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}}
+    .meta{{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;flex:1 1 0%}}
     .press{{color:#111827;font-weight:900}}
     .dot{{opacity:.5}}
     .topic{{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827;cursor:pointer;transition:background .15s ease}}
@@ -19286,9 +19396,9 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       margin-right:2px;
     }}
 
-    .btnOpen{{display:inline-flex;align-items:center;justify-content:center;
+    .btnOpen{{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
-             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900}}
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900;white-space:nowrap}}
     .btnOpen:hover{{background:var(--btnHover);border-color:var(--btnHover)}}
 
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
