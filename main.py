@@ -16625,6 +16625,36 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
     if moved:
         raw_by_section["policy"] = keep_policy
         raw_by_section["pest"] = pest_items
+
+    # supply에서도 저온피해/개화기/동해/방제 기사를 pest로 이동
+    supply_items = list(raw_by_section.get("supply", []) or [])
+    if supply_items:
+        keep_supply: list[Article] = []
+        _PEST_STRONG_KWS = ("저온 피해", "저온피해", "냉해", "동해 피해", "동해피해", "서리 피해", "서리피해",
+                            "개화기 피해", "개화기 방제", "개화기 저온", "병해충 방제", "과수화상병", "탄저병",
+                            "해충 방제", "방제단", "지원단 운영", "예찰", "살포")
+        for a in supply_items:
+            txt = ((a.title or "") + " " + (a.description or "")).lower()
+            pest_kw_hits = sum(1 for kw in _PEST_STRONG_KWS if kw in txt)
+            if pest_kw_hits < 2:
+                keep_supply.append(a)
+                continue
+            # pest로 이동
+            d = normalize_host(getattr(a, "domain", "") or "")
+            p = (getattr(a, "press", "") or "").strip()
+            a.section = "pest"
+            if pest_conf is not None:
+                try:
+                    a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, pest_conf, p)
+                except Exception:
+                    pass
+            if pest_idx.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                pest_items.append(a)
+            moved += 1
+        if moved > 0:
+            raw_by_section["supply"] = keep_supply
+            raw_by_section["pest"] = pest_items
+
     return moved
 
 
@@ -16645,6 +16675,20 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     if any(kw in text for kw in _GRAIN_ONLY_KWS):
         if not any(h in text for h in _HORTI_RESCUE):
             return "grain_only_not_horti"
+    # 원예 무관 산업 매크로 기사 필터 (나프타, 석유화학, 자동차, 건설, 조선 등)
+    _MACRO_INDUSTRY_KWS = ("나프타", "석유화학", "정유", "에틸렌", "기초유분", "조선업", "자동차산업",
+                           "반도체", "건설업", "가전", "철강", "lng", "lng선")
+    _MACRO_HORTI_RESCUE = ("농산물", "농업", "농가", "원예", "과일", "채소", "과수", "시설원예", "난방비")
+    if any(kw in text for kw in _MACRO_INDUSTRY_KWS):
+        if not any(h in text for h in _MACRO_HORTI_RESCUE):
+            return "macro_industry_not_horti"
+    # 인프라/공모사업 기사: supply가 아닌 policy에 더 적합 → supply에서 제거
+    if section_key == "supply":
+        _INFRA_KWS = ("공모 선정", "공모사업", "함양사업", "기반조성", "사업비", "국비")
+        if sum(1 for kw in _INFRA_KWS if kw in text) >= 2:
+            _SUPPLY_ANCHOR = ("가격", "시세", "출하", "경매", "경락", "수급", "작황", "도매")
+            if not any(sa in text for sa in _SUPPLY_ANCHOR):
+                return "infra_project_not_supply"
     if section_key in ("supply", "policy", "dist") and is_agri_training_recruitment_context(a.title or "", a.description or ""):
         return "agri_training_recruitment"
     if section_key == "supply" and is_agri_org_rename_context(a.title or "", a.description or ""):
@@ -17317,6 +17361,11 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             existing_idents = set()
             for a in final_by_section[sec_key]:
                 existing_idents.add(a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}")
+            # 다른 섹션의 기사 목록도 수집 (cross-section 중복 방지)
+            _other_section_articles: list[Article] = []
+            for _other_key in _all_section_keys:
+                if _other_key != sec_key:
+                    _other_section_articles.extend(final_by_section.get(_other_key, []))
             for a in _section_buffers.get(sec_key, []):
                 ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
                 if ident in existing_idents:
@@ -17324,6 +17373,10 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                     continue
                 if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
+                    continue
+                # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
+                if any(_is_similar_story(a, b, sec_key) for b in _other_section_articles):
+                    log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (similar to other section)", sec_key, (a.title or "")[:80])
                     continue
                 final_by_section[sec_key].append(a)
                 existing_idents.add(ident)
