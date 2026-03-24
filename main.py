@@ -16693,6 +16693,14 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
         return "agri_training_recruitment"
     if section_key == "supply" and is_agri_org_rename_context(a.title or "", a.description or ""):
         return "agri_org_admin_noise"
+    # 기업 협력/CSR/마케팅 기사는 supply 품목 수급과 거리가 있음
+    if section_key == "supply":
+        _CORP_CSR_KWS = ("윈윈", "동행", "상생", "사회공헌", "csr", "협력 관계", "함께하는", "품질 업그레이드")
+        _CORP_NAMES = ("농심", "cj", "풀무원", "오뚜기", "삼성", "롯데", "신세계", "이마트", "쿠팡")
+        if any(kw in text for kw in _CORP_CSR_KWS) and any(cn in text for cn in _CORP_NAMES):
+            _SUPPLY_DIRECT = ("가격", "시세", "경락", "수급", "출하량", "작황", "반입", "도매")
+            if not any(sd in text for sd in _SUPPLY_DIRECT):
+                return "corp_csr_not_supply"
     if section_key in ("supply", "policy") and is_title_livestock_dominant_context(a.title or "", a.description or ""):
         return "livestock_title_dominant"
     if section_key in ("supply", "policy", "dist") and is_processed_food_lifestyle_context(a.title or "", a.description or ""):
@@ -17097,6 +17105,21 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             if tpc and ("정책" in tpc or tpc in ("정부", "제도", "법", "관세", "예산", "지원")):
                 keep_policy.append(a)
                 continue
+            # 농협 조합장/경영/현장 기사 → dist로 이동 (정책이 아닌 유통/현장 성격)
+            _NH_FIELD_KWS = ("조합장", "조합원", "경제사업", "판매사업", "연합사업", "유통 혁신",
+                             "소득 견인", "산지조직", "직거래", "공동선별", "출하 혁신")
+            _POLICY_ANCHOR_KWS = ("정책", "대책", "지원", "제도", "법", "관세", "예산", "보도자료")
+            if dist_conf is not None and any(kw in txt for kw in _NH_FIELD_KWS):
+                has_policy_anchor = any(kw in txt for kw in _POLICY_ANCHOR_KWS)
+                if not has_policy_anchor and not policy_domain_override(d, txt):
+                    try:
+                        a.section = "dist"
+                        a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, dist_conf, p)
+                        raw_by_section.setdefault("dist", []).append(a)
+                        moved_ps += 1
+                        continue
+                    except Exception:
+                        pass
             # 소매 매출/판매 데이터 기반 트렌드(예: 무인 과일가게 판매 데이터)는 supply가 자연스러움
             if is_retail_sales_trend_context(txt) and (not policy_domain_override(d, txt)):
                 # supply로 재평가해서 통과할 때만 이동
@@ -17375,7 +17398,37 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
                     continue
                 # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
-                if any(_is_similar_story(a, b, sec_key) for b in _other_section_articles):
+                # _is_similar_story는 section-specific early-exit가 있어 cross-section 비교에 부적합
+                # → 품목+지역+이슈 직접 비교 + URL/title 유사도 병행
+                _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
+                _a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt}
+                _BACKFILL_REGION_TERMS = ("구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
+                                          "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
+                _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
+                _backfill_cross_skip = False
+                for b in _other_section_articles:
+                    _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                    # URL 중복 체크
+                    _a_url = getattr(a, 'canon_url', '') or ''
+                    _b_url = getattr(b, 'canon_url', '') or ''
+                    if _a_url and _b_url and _a_url == _b_url:
+                        _backfill_cross_skip = True
+                        break
+                    # 품목+지역 중복 체크
+                    if _a_commodities and _a_regions:
+                        _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
+                        _b_regions = {r for r in _BACKFILL_REGION_TERMS if r in _b_txt}
+                        if (_a_commodities & _b_commodities) and (_a_regions & _b_regions):
+                            _backfill_cross_skip = True
+                            break
+                    # title 유사도 체크
+                    try:
+                        if _is_similar_title(a.title_key or "", b.title_key or ""):
+                            _backfill_cross_skip = True
+                            break
+                    except Exception:
+                        pass
+                if _backfill_cross_skip:
                     log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (similar to other section)", sec_key, (a.title or "")[:80])
                     continue
                 final_by_section[sec_key].append(a)
