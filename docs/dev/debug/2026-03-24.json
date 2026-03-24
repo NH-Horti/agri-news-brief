@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-24T17:36:14+09:00",
-  "build_tag": "5823a3b",
+  "generated_at_kst": "2026-03-24T18:41:30+09:00",
+  "build_tag": "b2ed377",
   "filter_rejects": [
     {
       "section": "policy",
@@ -9154,16 +9154,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "이코노미퀸",
-      "domain": "queen.co.kr",
-      "title": "농업경제지주 수장에 오른 '농협맨' 김주양이 걸어온 길 & 풀어야 할 숙...",
-      "url": "https://queen.co.kr/news/articleView.html?idxno=453579",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
       "reason": "must_terms_fail",
       "press": "농수축산신문",
       "domain": "aflnews.co.kr",
@@ -9533,6 +9523,16 @@
       "source_channel": ""
     },
     {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "이코노미퀸",
+      "domain": "queen.co.kr",
+      "title": "농업경제지주 수장에 오른 '농협맨' 김주양이 걸어온 길 & 풀어야 할 숙...",
+      "url": "https://queen.co.kr/news/articleView.html?idxno=453579",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "pest",
       "reason": "pest_partial_mention",
       "press": "popcornnews",
@@ -9606,7 +9606,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 22.25,
           "tier": 3,
@@ -9614,9 +9614,9 @@
           "domain": "radio.ytn.co.kr",
           "title": "'혈관 청소부' 미나리, 줄기보다 잎이 항산화 6배",
           "url": "https://radio.ytn.co.kr/program/?f=2&id=107959&s_mcd=0206&s_hcd=15",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 0.96,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "tail",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -10038,7 +10038,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 14.86,
           "tier": 3,
@@ -10046,9 +10046,9 @@
           "domain": "view.asiae.co.kr",
           "title": "감자 ·꿀 농가와 동행…'품질 업그레이드' 농심의 윈윈",
           "url": "https://view.asiae.co.kr/article/2026032009113243207",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 1.8,
-          "selection_stage": "supply_feature_backfill",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -11275,7 +11275,7 @@
       "threshold": 17.28,
       "tail_cut": 17.48,
       "core_min": 17.28,
-      "total_candidates": 76,
+      "total_candidates": 75,
       "total_selected": 5,
       "top": [
         {
@@ -12253,33 +12253,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.07,
-          "tier": 1,
-          "press": "이코노미퀸",
-          "domain": "queen.co.kr",
-          "title": "농업경제지주 수장에 오른 '농협맨' 김주양이 걸어온 길 & 풀어야 할 숙...",
-          "url": "http://www.queen.co.kr/news/articleView.html?idxno=453579",
-          "reason": "below_threshold",
-          "fit_score": 0.28,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농산물 유통 구조 개선",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 9.89,
           "tier": 2,
           "press": "농수축산신문",
@@ -12685,33 +12658,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.15,
-          "tier": 1,
-          "press": "삼다일보",
-          "domain": "samdailbo.com",
-          "title": "오정훈 \"1차 산업에 문화예술 더한 '6차 산업' 추진\"",
-          "url": "http://www.samdailbo.com/news/articleView.html?idxno=261512",
-          "reason": "below_threshold",
-          "fit_score": 0.2,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감귤 무관세",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 4.96,
           "tier": 1,
           "press": "tleaves",
@@ -12731,6 +12677,33 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 0,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.95,
+          "tier": 1,
+          "press": "삼다일보",
+          "domain": "samdailbo.com",
+          "title": "오정훈 \"1차 산업에 문화예술 더한 '6차 산업' 추진\"",
+          "url": "http://www.samdailbo.com/news/articleView.html?idxno=261512",
+          "reason": "below_threshold",
+          "fit_score": 0.2,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 무관세",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
@@ -12897,6 +12870,33 @@
             "press_tier": 2,
             "press_weight": 3.7
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 3.29,
+          "tier": 1,
+          "press": "popcornnews",
+          "domain": "popcornnews.net",
+          "title": "[오늘(24일)의 경제·산업 주요 일정·행사] 고려아연 주주총회 등",
+          "url": "http://www.popcornnews.net/news/articleView.html?idxno=115916",
+          "reason": "below_threshold",
+          "fit_score": 0.66,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농식품부 정책브리핑",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
         }
       ],
       "coverage_ledger": [
@@ -13002,7 +13002,7 @@
       "threshold": 18.05,
       "tail_cut": 18.65,
       "core_min": 18.05,
-      "total_candidates": 23,
+      "total_candidates": 24,
       "total_selected": 4,
       "top": [
         {
@@ -13577,6 +13577,33 @@
           "is_core": false,
           "score": -5.0,
           "tier": 1,
+          "press": "이코노미퀸",
+          "domain": "queen.co.kr",
+          "title": "농업경제지주 수장에 오른 '농협맨' 김주양이 걸어온 길 & 풀어야 할 숙...",
+          "url": "http://www.queen.co.kr/news/articleView.html?idxno=453579",
+          "reason": "below_threshold",
+          "fit_score": -0.62,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농산물 유통 구조 개선",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -5.0,
+          "tier": 1,
           "press": "시민일보",
           "domain": "siminilbo.co.kr",
           "title": "안성시, 먹거리 선순환 거점 ‘먹거리희망공급소’ 시범 운영 돌입",
@@ -13645,12 +13672,12 @@
           "sample_title": "도매시장 시범휴업, 논란 속 강행 예고…현장 혼란 가중되나"
         },
         {
-          "seed": "공동구매",
-          "rep": "공동구매",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
+          "seed": "직거래",
+          "rep": "직거래",
+          "hits": 3,
+          "selected_hits": 2,
+          "missing": false,
+          "sample_title": "제주산 감귤·채소, 하루 만에 육지 소비자 식탁에 오른다"
         },
         {
           "seed": "거점",
@@ -13677,17 +13704,25 @@
           "sample_title": "경기도 안성에도 제주 농산물물류센터, 전국에 총 5곳"
         },
         {
-          "seed": "대책",
-          "rep": "대책",
+          "seed": "판로",
+          "rep": "판로",
+          "hits": 3,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "동천안농협 청년부, 로컬푸드 직매장 첫 출하…전용 코너 운영"
+        },
+        {
+          "seed": "구조",
+          "rep": "구조",
           "hits": 5,
           "selected_hits": 1,
           "missing": false,
-          "sample_title": "농촌관광 연계 전통주·한식 육성···농식품 수출 전과정 지원"
+          "sample_title": "제주산 감귤·채소, 하루 만에 육지 소비자 식탁에 오른다"
         },
         {
           "seed": "농협",
           "rep": "농협",
-          "hits": 8,
+          "hits": 9,
           "selected_hits": 3,
           "missing": false,
           "sample_title": "제주산 감귤·채소, 하루 만에 육지 소비자 식탁에 오른다"
@@ -13695,14 +13730,6 @@
         {
           "seed": "연합판매사업",
           "rep": "연합판매사업",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
-        },
-        {
-          "seed": "품목농협",
-          "rep": "품목농협",
           "hits": 0,
           "selected_hits": 0,
           "missing": true,
@@ -14573,7 +14600,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.5,
+          "score": 7.3,
           "tier": 1,
           "press": "뉴스프리존",
           "domain": "newsfreezone.co.kr",
