@@ -2095,6 +2095,12 @@ SECTIONS: list[SectionConfig] = [
             "광역수급관리센터 수급 관리",
             "화훼공판장 경매",
             "절화 경매",
+            # 유통 현장·운영·구조 개편
+            "가락시장 운영", "가락시장 주5일", "도매시장 현대화", "도매시장 운영 개선",
+            "농산물 유통 현장", "농산물 산지 유통",
+            "농산물 난방비 시설원예", "시설원예 난방비",
+            "농산물 물류비 절감", "농산물 콜드체인",
+            "산지조직 경영", "농협 경제사업 활성화",
         ],
         "must_terms": [
             "가락시장",
@@ -2128,6 +2134,17 @@ SECTIONS: list[SectionConfig] = [
             "화훼",
             "절화",
             "화훼공판장",
+            # 유통 현장 확대
+            "주5일",
+            "휴무",
+            "하역",
+            "유통비용",
+            "유통구조",
+            "물류비",
+            "콜드체인",
+            "난방비",
+            "면세유",
+            "중도매인",
         ],
     },
     {
@@ -2881,6 +2898,26 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
             a_horti = best_horti_score(at, ad)
             b_horti = best_horti_score(bt, bd)
             if a_horti < 1.8 and b_horti < 1.8:
+                return True
+
+    # cross-section: 같은 품목+지역+이슈 키워드 조합이면 같은 이슈로 간주
+    _REGION_TERMS = ("구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
+                     "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
+    a_lower = a_txt.lower()
+    b_lower = b_txt.lower()
+    a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in a_lower}
+    b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in b_lower}
+    shared_commodities = a_commodities & b_commodities
+    if shared_commodities:
+        a_regions = {r for r in _REGION_TERMS if r in a_lower}
+        b_regions = {r for r in _REGION_TERMS if r in b_lower}
+        shared_regions = a_regions & b_regions
+        if shared_regions:
+            # 같은 품목 + 같은 지역 = 같은 이슈
+            _ISSUE_KWS = ("주산지", "지정", "생산", "재배", "출하", "수급", "가격", "피해", "방제", "작황")
+            a_issue = any(k in a_lower for k in _ISSUE_KWS)
+            b_issue = any(k in b_lower for k in _ISSUE_KWS)
+            if a_issue and b_issue:
                 return True
 
     if section_key == "pest":
@@ -4182,9 +4219,12 @@ def is_edible_tomato_context(text: str) -> bool:
 
 _EGGPLANT_NON_EDIBLE_MARKERS = [
     "가지말", "가지 말", "가지마",
-    "한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "몇 가지", "여러 가지",
-    "한가지", "두가지", "세가지", "네가지", "다섯가지", "몇가지", "여러가지",
+    "한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "여섯 가지", "일곱 가지",
+    "몇 가지", "여러 가지", "수십 가지", "수백 가지", "백 가지", "열 가지", "다양한 가지",
+    "한가지", "두가지", "세가지", "네가지", "다섯가지", "여섯가지", "일곱가지",
+    "몇가지", "여러가지", "수십가지", "수백가지", "백가지", "열가지",
     "나뭇가지", "곁가지", "잔가지", "가지치기", "가지 끝", "가지끝",
+    "가지런", "가지각색",
 ]
 _EGGPLANT_EDIBLE_MARKERS = [
     "농산물", "채소", "과채", "원예", "산지", "생산", "생육", "재배", "농가", "시설", "하우스",
@@ -4195,10 +4235,12 @@ _EGGPLANT_EDIBLE_MARKERS = [
 ]
 _EGGPLANT_NON_EDIBLE_RX = re.compile(
     r"가지\s*말(?:까|고|라|자|라고)?|"
-    r"(?:한|두|세|네|다섯|몇|여러)\s*가지|"
+    r"(?:한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|몇|여러|수십|수백|백)\s*가지|"
+    r"\d+\s*가지|"
     r"(?:잎|줄기)\s*[·,/]\s*가지|"
     r"가지\s*[·,/]\s*(?:꽃|열매)|"
-    r"(?:사과|배|과수|나무).{0,12}(?:잎|줄기|가지|꽃|열매)"
+    r"(?:사과|배|과수|나무).{0,12}(?:잎|줄기|가지|꽃|열매)|"
+    r"가지각색|가지런"
 )
 
 
@@ -4221,7 +4263,17 @@ def is_edible_eggplant_context(text: str) -> bool:
         edible_hit = True
     if non_edible_hit and not strong_edible_hit:
         return False
-    return edible_hit
+    # "가지"가 채소로 쓰이려면 반드시 edible 맥락이 있어야 함 (범용 단어이므로 보수적 판정)
+    if not edible_hit:
+        return False
+    # 추가 보수 판정: edible_hit가 일반적 농업용어(채소, 농산물 등)만으로 충족되고
+    # "가지"가 명시적 품목 문맥(가지 가격/수급/출하 등)이 아니면 오탐 가능성 높음
+    if not strong_edible_hit:
+        # "가지" 앞뒤에 품목명으로 쓰인 명시적 패턴이 없으면 reject
+        has_explicit_eggplant_ref = bool(re.search(r"(?:^|[^\w])가지(?:\s*(?:가격|수급|출하|작황|재배|시세|도매|농가|경매|유통|생육|병해충|품목|산지|생산))", t))
+        if not has_explicit_eggplant_ref:
+            return False
+    return True
 
 
 _APPLE_APOLOGY_MARKERS = (
@@ -16582,6 +16634,14 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
         return "apple_apology_context"
     if "당근" in text and not is_edible_carrot_context(text):
         return "carrot_non_edible_context"
+    # 쌀/곡류 전용 기사 필터 (원예 브리핑 범위 밖)
+    _GRAIN_ONLY_KWS = ("쌀 판매", "쌀값", "쌀 수급", "벼 수매", "쌀 재고", "쌀 소비", "쌀 유통", "햅쌀",
+                        "쌀 가공", "쌀 공급", "쌀 수입", "밀 수입", "밀가루", "보리 수매", "맥류")
+    _HORTI_RESCUE = ("과일", "과수", "채소", "원예", "화훼", "사과", "배", "딸기", "감귤", "토마토",
+                     "오이", "양파", "마늘", "대파", "배추", "무", "당근", "고추", "포도", "감자")
+    if any(kw in text for kw in _GRAIN_ONLY_KWS):
+        if not any(h in text for h in _HORTI_RESCUE):
+            return "grain_only_not_horti"
     if section_key in ("supply", "policy", "dist") and is_agri_training_recruitment_context(a.title or "", a.description or ""):
         return "agri_training_recruitment"
     if section_key == "supply" and is_agri_org_rename_context(a.title or "", a.description or ""):
@@ -17010,7 +17070,7 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
     if dist_conf is not None and supply_conf is not None:
         # dist 후보가 너무 적으면 supply에서 '유통/도매/APC/수출' 신호가 강한 기사를 dist로 이동
         dist_now = len(raw_by_section.get("dist", []) or [])
-        if dist_now < 4:
+        if dist_now < 6:
             moved_sd = 0
             keep_supply = []
             for a in raw_by_section.get("supply", []) or []:
@@ -17023,7 +17083,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     "가락시장","도매시장","공판장","공영도매시장","경락","경매","반입",
                     "산지유통","산지유통센터","apc","도매법인","중도매","시장도매인",
                     "하역","하역비","하역대란","물류","물류센터","출하","집하",
-                    "원산지","부정유통","단속","검역","통관","수출","선적","수출길","유통","도매"
+                    "원산지","부정유통","단속","검역","통관","수출","선적","수출길","유통","도매",
+                    "난방비","면세유","유통비용","유통구조","주5일","휴무","콜드체인","중도매인"
                 )])
                 if is_dist_export_shipping_context(a.title, a.description):
                     dist_like_hits = max(dist_like_hits, 3)
