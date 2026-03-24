@@ -16650,7 +16650,7 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
                     pass
             if pest_idx.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                 pest_items.append(a)
-            moved += 1
+                moved += 1
         if moved > 0:
             raw_by_section["supply"] = keep_supply
             raw_by_section["pest"] = pest_items
@@ -17135,7 +17135,7 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             keep_policy.append(a)
         raw_by_section["policy"] = keep_policy
         if moved_ps:
-            log.info("[REBALANCE] moved %d retail-sales-trend item(s): policy -> supply", moved_ps)
+            log.info("[REBALANCE] moved %d item(s) from policy -> supply/dist (retail-trend + NH-field)", moved_ps)
 
     if dist_conf is not None and supply_conf is not None:
         # dist 후보가 너무 적으면 supply에서 '유통/도매/APC/수출' 신호가 강한 기사를 dist로 이동
