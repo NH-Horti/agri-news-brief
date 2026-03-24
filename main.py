@@ -16632,6 +16632,9 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_apple_apology_context(text):
         return "apple_apology_context"
+    # 농협 회장/임원 부정적 기사 완전 차단
+    if is_nh_internal_negative(a.title or "", a.description or ""):
+        return "nh_internal_negative"
     if "당근" in text and not is_edible_carrot_context(text):
         return "carrot_non_edible_context"
     # 쌀/곡류 전용 기사 필터 (원예 브리핑 범위 밖)
