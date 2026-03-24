@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-24T10:35:51+09:00",
-  "build_tag": "d7c506d",
+  "generated_at_kst": "2026-03-24T19:45:46+09:00",
+  "build_tag": "b2ed377",
   "filter_rejects": [
     {
       "section": "policy",
@@ -14368,7 +14368,7 @@
       "threshold": 22.68,
       "tail_cut": 23.08,
       "core_min": 22.68,
-      "total_candidates": 349,
+      "total_candidates": 346,
       "total_selected": 5,
       "top": [
         {
@@ -15103,33 +15103,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.5,
-          "tier": 1,
-          "press": "강원도민일보",
-          "domain": "kado.net",
-          "title": "농업용 난방유 18일째 상승…\"기름값 월 2000만원, 농사 포기할 판\"",
-          "url": "https://www.kado.net/news/articleView.html?idxno=2040010",
-          "reason": "below_threshold",
-          "fit_score": 3.05,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "policy",
-          "source_query": "감귤 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.84,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 19.44,
           "tier": 1,
           "press": "대경일보",
@@ -15157,7 +15130,34 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.16,
+          "score": 19.3,
+          "tier": 1,
+          "press": "강원도민일보",
+          "domain": "kado.net",
+          "title": "농업용 난방유 18일째 상승…\"기름값 월 2000만원, 농사 포기할 판\"",
+          "url": "https://www.kado.net/news/articleView.html?idxno=2040010",
+          "reason": "below_threshold",
+          "fit_score": 3.05,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "감귤 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.84,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 18.96,
           "tier": 2,
           "press": "아주경제",
           "domain": "ajunews.com",
@@ -15395,33 +15395,6 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.69,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "화천농협, 양파 공선 출하 회 대상 재배기술 교육",
-          "url": "https://www.nongmin.com/article/20260320500221",
-          "reason": "below_threshold",
-          "fit_score": 0.8,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
           }
         },
         {
@@ -15992,6 +15965,33 @@
           }
         },
         {
+          "selected": false,
+          "is_core": false,
+          "score": 13.35,
+          "tier": 1,
+          "press": "이투데이",
+          "domain": "etoday.co.kr",
+          "title": "최고 가격 제에도 농업용 난방유만 올랐다…시설농가 난방비 부담 가중",
+          "url": "https://www.etoday.co.kr/news/view/2567841",
+          "reason": "below_threshold",
+          "fit_score": 2.54,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "감귤 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
           "selected": true,
           "is_core": true,
           "score": 18.09,
@@ -16031,7 +16031,7 @@
         {
           "seed": "양파",
           "rep": "양파",
-          "hits": 22,
+          "hits": 21,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "구미, ' 양파 주산지'로 지정돼…생산·저장·유통기반 강화 추진"
@@ -16290,15 +16290,15 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 25.3,
+          "score": 25.1,
           "tier": 1,
           "press": "cstimes",
           "domain": "cstimes.com",
           "title": "농업용 난방유 가격 '어쩌나'…최고 가격 제에도 18일째 오름세",
           "url": "https://www.cstimes.com/news/articleView.html?idxno=698671",
-          "reason": "tail_cut",
+          "reason": "below_threshold",
           "fit_score": 3.55,
-          "selection_stage": "tail_cut",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -16614,33 +16614,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.68,
-          "tier": 3,
-          "press": "YTN",
-          "domain": "ytn.co.kr",
-          "title": "농업용 난방유 '독주'...27일 기름값 더 오른다",
-          "url": "https://www.ytn.co.kr/_ln/0102_202603221856188832",
-          "reason": "below_threshold",
-          "fit_score": 1.92,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "토마토 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.59,
           "tier": 1,
           "press": "남도일보",
@@ -16663,6 +16636,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.48,
+          "tier": 3,
+          "press": "YTN",
+          "domain": "ytn.co.kr",
+          "title": "농업용 난방유 '독주'...27일 기름값 더 오른다",
+          "url": "https://www.ytn.co.kr/_ln/0102_202603221856188832",
+          "reason": "below_threshold",
+          "fit_score": 1.92,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "토마토 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
@@ -17850,7 +17850,7 @@
       "tail_cut": 22.48,
       "core_min": 21.88,
       "total_candidates": 29,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -17880,17 +17880,17 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 26.16,
           "tier": 3,
           "press": "경향신문",
           "domain": "weekly.khan.co.kr",
           "title": "‘회장 잔혹사’ 끊을 수 있을까… 농협 개혁 다시 시험대",
           "url": "https://weekly.khan.co.kr/article/202603230600041",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 1.14,
-          "selection_stage": "core",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -17990,7 +17990,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.78,
+          "score": 22.58,
           "tier": 1,
           "press": "충청매일",
           "domain": "ccdn.co.kr",
@@ -18044,7 +18044,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.85,
+          "score": 15.65,
           "tier": 3,
           "press": "서울신문",
           "domain": "seoul.co.kr",
@@ -18395,7 +18395,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.02,
+          "score": 4.82,
           "tier": 1,
           "press": "M-I",
           "domain": "m-i.kr",
@@ -18739,7 +18739,7 @@
       "threshold": 15.93,
       "tail_cut": 15.93,
       "core_min": 15.93,
-      "total_candidates": 25,
+      "total_candidates": 27,
       "total_selected": 5,
       "top": [
         {
@@ -19177,6 +19177,33 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 15.62,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "화천농협, 양파 공선 출하 회 대상 재배기술 교육",
+          "url": "https://www.nongmin.com/article/20260320500221",
+          "reason": "below_threshold",
+          "fit_score": 2.22,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 14.05,
           "tier": 1,
           "press": "CNB뉴스",
@@ -19393,7 +19420,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.53,
+          "score": 2.33,
           "tier": 1,
           "press": "새전북신문",
           "domain": "sjbnews.com",
@@ -19416,13 +19443,40 @@
             "press_tier": 1,
             "press_weight": -3.9
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -3.52,
+          "tier": 1,
+          "press": "경북일보",
+          "domain": "kyongbuk.co.kr",
+          "title": "봄철 급변 기온에 과수 농가 비상…경북, 개화기 저온 피해 선제 대응 ...",
+          "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067602",
+          "reason": "below_threshold",
+          "fit_score": 0.75,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "복숭아 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.92,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
         }
       ],
       "coverage_ledger": [
         {
           "seed": "복숭아",
           "rep": "복숭아",
-          "hits": 1,
+          "hits": 2,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "경북도, '2026년 복숭아 병해충 예찰단' 출범"
@@ -19430,7 +19484,7 @@
         {
           "seed": "병해충",
           "rep": "병해충",
-          "hits": 25,
+          "hits": 26,
           "selected_hits": 7,
           "missing": false,
           "sample_title": "경북도, '2026년 복숭아 병해충 예찰단' 출범"
@@ -19438,7 +19492,7 @@
         {
           "seed": "사과",
           "rep": "사과",
-          "hits": 7,
+          "hits": 8,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "단양군, 과수화상병 방제 약제 '배부 완료'"
@@ -19482,6 +19536,14 @@
           "selected_hits": 0,
           "missing": false,
           "sample_title": "광양시, 가로수 병해충 방제작업 추진"
+        },
+        {
+          "seed": "양파",
+          "rep": "양파",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "화천농협, 양파 공선 출하 회 대상 재배기술 교육"
         }
       ]
     }
