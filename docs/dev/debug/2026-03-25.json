@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-25T12:53:56+09:00",
-  "build_tag": "bc1ddaf",
+  "generated_at_kst": "2026-03-25T13:27:56+09:00",
+  "build_tag": "49970b7",
   "filter_rejects": [
     {
       "section": "policy",
@@ -11616,33 +11616,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.08,
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "[농업기술 고수를 찾아라] ‘대저토마토 선생님’의 성공 비결…염류 잡...",
-          "url": "https://www.nongmin.com/article/20260323500782",
-          "reason": "below_threshold",
-          "fit_score": 1.8,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "dist",
-          "source_query": "가락시장 운영",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 3,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 21.95,
           "tier": 3,
           "press": "농민신문",
@@ -11662,6 +11635,33 @@
             "market_hits": 1,
             "strength": 4,
             "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.68,
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "[농업기술 고수를 찾아라] ‘대저토마토 선생님’의 성공 비결…염류 잡...",
+          "url": "https://www.nongmin.com/article/20260323500782",
+          "reason": "below_threshold",
+          "fit_score": 1.8,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "dist",
+          "source_query": "가락시장 운영",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 4,
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 6.7
@@ -15658,7 +15658,7 @@
       "tail_cut": 28.71,
       "core_min": 28.71,
       "total_candidates": 42,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -15715,17 +15715,17 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 33.16,
           "tier": 1,
           "press": "충청타임즈",
           "domain": "cctimes.kr",
           "title": "개화기 약제 방제, 과수화상병 예방의 첫걸음",
           "url": "http://www.cctimes.kr/news/articleView.html?idxno=898071",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 4.47,
-          "selection_stage": "core",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -15771,7 +15771,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.16,
+          "score": 32.96,
           "tier": 1,
           "press": "동양일보",
           "domain": "dynews.co.kr",
