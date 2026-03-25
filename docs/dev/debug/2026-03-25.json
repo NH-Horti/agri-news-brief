@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-25T13:27:56+09:00",
-  "build_tag": "49970b7",
+  "generated_at_kst": "2026-03-25T14:08:32+09:00",
+  "build_tag": "f12ce91",
   "filter_rejects": [
     {
       "section": "policy",
@@ -15654,16 +15654,16 @@
       ]
     },
     "pest": {
-      "threshold": 28.71,
-      "tail_cut": 28.71,
-      "core_min": 28.71,
+      "threshold": 28.51,
+      "tail_cut": 28.51,
+      "core_min": 28.51,
       "total_candidates": 42,
       "total_selected": 3,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 35.71,
+          "score": 35.51,
           "tier": 1,
           "press": "충남일보",
           "domain": "chungnamilbo.co.kr",
@@ -16203,7 +16203,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.18,
+          "score": 22.98,
           "tier": 1,
           "press": "뉴스경남",
           "domain": "newsgn.com",
