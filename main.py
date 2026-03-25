@@ -17401,11 +17401,11 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 shared_comm = ci & cj
                 shared_reg = ri & rj
                 shared_issue = ii & ij
-                # 품목+지역+이슈 모두 겹치거나, 품목+이슈가 2개 이상 겹치면 중복
+                # 같은 섹션 내: 품목+이슈 1개만 겹쳐도 중복 가능성 높음
                 topic_dup = (
-                    (shared_comm and shared_reg and len(shared_issue) >= 1)
-                    or (shared_comm and len(shared_issue) >= 2)
-                    or (shared_comm and len(shared_comm) >= 1 and _is_similar_story(articles[i], articles[j], key))
+                    (shared_comm and len(shared_issue) >= 1)
+                    or (shared_comm and shared_reg)
+                    or (_is_similar_story(articles[i], articles[j], key))
                 )
                 if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
