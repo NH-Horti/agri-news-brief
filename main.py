@@ -2101,6 +2101,8 @@ SECTIONS: list[SectionConfig] = [
             "농산물 난방비 시설원예", "시설원예 난방비",
             "농산물 물류비 절감", "농산물 콜드체인",
             "산지조직 경영", "농협 경제사업 활성화",
+            # 공선회/공동선별/조합 판매사업
+            "공선회 공선출하 판매", "농협 공선출하 조직화", "공동선별 출하 농협",
         ],
         "must_terms": [
             "가락시장",
@@ -2145,6 +2147,10 @@ SECTIONS: list[SectionConfig] = [
             "난방비",
             "면세유",
             "중도매인",
+            "공선회",
+            "공선출하",
+            "공동선별",
+            "출하비",
         ],
     },
     {
@@ -2954,17 +2960,17 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
     inter = ah & bh
     if section_key == "dist":
         # dist는 보도자료 중복이 많으므로 앵커 조건 완화 + Jaccard로 보강
-        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.22
+        thr = 0.35
     elif section_key in ("supply", "policy"):
-        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.30
+        thr = 0.40
     else:
-        if len(ah) < 2 or len(bh) < 2 or len(inter) < 1:
+        if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.26
+        thr = 0.35
 
     ta = getattr(a, "_story_tri", None)
     if ta is None:
@@ -12166,7 +12172,7 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
                 break
 
     best = _selection_reference_score(candidates_sorted, section_key)
-    margin = 10.0 if section_key == "policy" else (9.0 if section_key == "dist" else (8.0 if section_key == "supply" else 7.0))
+    margin = 10.0 if section_key == "policy" else (13.0 if section_key == "dist" else (10.0 if section_key == "supply" else 7.0))
     thr = max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
     unique_candidates = _dedupe_by_event_key(list(candidates_sorted), section_key)
@@ -17418,12 +17424,11 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 shared_comm = ci & cj
                 shared_reg = ri & rj
                 shared_issue = ii & ij
-                # 같은 섹션 내: 품목+이슈 1개만 겹쳐도 중복 가능성 높음
+                # 같은 섹션 내: 토픽 시그니처 기반 중복 판정 (anchor/Jaccard 폴백 제거 — 오탐 방지)
                 topic_dup = (
                     (shared_comm and len(shared_issue) >= 1)
                     or (shared_comm and shared_reg)
                     or (shared_reg and len(shared_issue) >= 2)  # 비품목 기사: 지역+이슈2 (영암군 최저가격보장제 등)
-                    or (_is_similar_story(articles[i], articles[j], key))
                 )
                 # 비품목 기사 fallback: title 유사도 체크 (같은 뉴스의 다른 매체 보도)
                 if not topic_dup:
@@ -17465,10 +17470,17 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
                     _a_comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt)
                     _a_regs = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _a_txt)
-                    # 기존 기사와 토픽 중복 체크
-                    if any((_a_comms & ec) and (_a_regs & er) for ec, er in _existing_sigs if ec and er):
+                    # 기존 기사와 토픽 중복 체크 (commodity+region 또는 commodity+issue)
+                    _a_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt)
+                    _within_bf_skip = False
+                    for ec, er in _existing_sigs:
+                        if (_a_comms & ec) and ((_a_regs & er) or _a_issues):
+                            _within_bf_skip = True
+                            break
+                    if _within_bf_skip:
                         continue
-                    if any(_is_similar_story(a, b, key) for b in kept):
+                    # title 유사도 체크 (같은 뉴스 다른 매체)
+                    if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in kept):
                         continue
                     kept.append(a)
                     _existing_idents.add(ident)
@@ -17503,7 +17515,14 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                         # cross-section: 품목+이슈만 겹쳐도 중복 (지역 없어도 OK)
                         if (_ca & _cb) and len(_ia & _ib) >= 1:
                             _is_topic_dup = True
-                    if not is_same_url and not _is_topic_dup and not _is_similar_story(art_a, art_b, key_a):
+                    # cross-section: URL/토픽/제목 유사도만 사용 (anchor+Jaccard 폴백 제거 — 오탐 방지)
+                    _is_title_dup = False
+                    if not is_same_url and not _is_topic_dup:
+                        try:
+                            _is_title_dup = _is_similar_title(art_a.title_key or "", art_b.title_key or "")
+                        except Exception:
+                            pass
+                    if not is_same_url and not _is_topic_dup and not _is_title_dup:
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
@@ -17542,9 +17561,10 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     continue
                 if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
                     continue
-                if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
+                # title 유사도 체크 (같은 뉴스 다른 매체)
+                if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in final_by_section[sec_key]):
                     continue
-                # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완)
+                # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크
                 _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
                 _a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt}
                 _a_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt}
