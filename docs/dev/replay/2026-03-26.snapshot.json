@@ -2,7 +2,7 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-03-26",
-  "created_at_kst": "2026-03-26T08:20:53+09:00",
+  "created_at_kst": "2026-03-26T08:37:02+09:00",
   "build_tag": "65f9363",
   "content_ref": "dev",
   "content_branch": "codex/dev-preview",
@@ -288,6 +288,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-03-25T10:58:00+09:00",
+        "section": "supply",
+        "title": "\"햇양파 1kg에 400원, 수확비도 안 나와\"",
+        "description": "생산비 폭등과 수입산 물량 공세라는 이중고에 직면한 양파 재배 농민들이 정부의 수급 정책 실패를... 장관의 사과 등을 담은 대정부 요구안을 이태문 농식품부 정책보좌관에게 전달했다. 결의대회 이후 협회 임원진은...",
+        "link": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64126",
+        "originallink": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64126",
+        "domain": "wonyesanup.co.kr",
+        "press": "원예산업신문",
+        "norm_key": "url:79c8833b1e9351ad",
+        "title_key": "햇양파1kg에400원수확비도안나와",
+        "canon_url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64126",
+        "topic": "양파",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 24.11,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-03-25T23:50:00+09:00",
         "section": "supply",
         "title": "[기고] 전환의 시대, 기술로 여는 원예특작의 새 길",
@@ -492,13 +517,13 @@
         "section": "supply",
         "title": "남보다 빠른 감자 수확으로 3∼4배 고소득",
         "description": "시설 재배로 노지 재배 대비 3∼4배 높은 소득을 올리고 있어 눈길을 끌고 있다. 25일 강릉시 송정동 한 농민이 일반 봄감자보다 2개월가량 이른 5월 초·중순부터 수확하는 겨울 감자 재배 상태를 살펴보고 있다. 2026.3.25",
-        "link": "https://n.news.naver.com/mnews/article/001/0015981162?sid=101",
-        "originallink": "https://www.yna.co.kr/view/PYH20260325141800062?input=1196m",
+        "link": "https://n.news.naver.com/mnews/article/001/0015981163?sid=101",
+        "originallink": "https://www.yna.co.kr/view/PYH20260325141900062?input=1196m",
         "domain": "yna.co.kr",
         "press": "연합뉴스",
-        "norm_key": "url:bc99a4fd33eb49e8",
+        "norm_key": "url:7c0ecfee4d502ae7",
         "title_key": "남보다빠른감자수확으로34배고소득",
-        "canon_url": "https://yna.co.kr/view/PYH20260325141800062?input=1196m",
+        "canon_url": "https://yna.co.kr/view/PYH20260325141900062?input=1196m",
         "topic": "감자",
         "summary": "",
         "forced_section": "",
@@ -1213,31 +1238,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-03-25T23:40:00+09:00",
-        "section": "supply",
-        "title": "고흥군, 2026학년도 고흥미래농업대학 입학식 개최",
-        "description": "복숭아반은 품종 선택부터 시기별 과원관리, 병해충 방제, 수확 후 저장·유통관리 등을 중점적으로 다루며, 양념채소반은 고추· 마늘 ·생강의 재배 기술과 토양관리, 병해충 관리, 수확 후 저장관리 등 품목별 맞춤형...",
-        "link": "http://www.lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
-        "originallink": "http://www.lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
-        "domain": "lawissue.co.kr",
-        "press": "lawissue",
-        "norm_key": "url:cd475720c1123f21",
-        "title_key": "고흥군2026학년도고흥미래농업대학입학식개최",
-        "canon_url": "https://lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
-        "topic": "마늘",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "마늘 재배",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 13.532,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-03-25T19:04:00+09:00",
         "section": "supply",
         "title": "홍천군, 임대형 스마트팜 악조건 속 토마토 첫 출하",
@@ -1359,6 +1359,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 13.233,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-03-25T23:40:00+09:00",
+        "section": "supply",
+        "title": "고흥군, 2026학년도 고흥미래농업대학 입학식 개최",
+        "description": "복숭아반은 품종 선택부터 시기별 과원관리, 병해충 방제, 수확 후 저장·유통관리 등을 중점적으로 다루며, 양념채소반은 고추· 마늘 ·생강의 재배 기술과 토양관리, 병해충 관리, 수확 후 저장관리 등 품목별 맞춤형...",
+        "link": "http://www.lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
+        "originallink": "http://www.lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
+        "domain": "lawissue.co.kr",
+        "press": "lawissue",
+        "norm_key": "url:cd475720c1123f21",
+        "title_key": "고흥군2026학년도고흥미래농업대학입학식개최",
+        "canon_url": "https://lawissue.co.kr/view.php?ud=202603251228011450edd30pn2gj_12",
+        "topic": "마늘",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "마늘 재배",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 13.132,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -1584,6 +1609,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 12.19,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-03-26T00:12:00+09:00",
+        "section": "supply",
+        "title": "과수화상병에 비료·면세유까지…봄 영농 앞둔 농가 '삼중 압박'",
+        "description": "송미령 농림축산식품부 장관은 3월 25일 강원 영월 지역을 찾아 과수화상병 방제 준비 상황과 농자재 수급 ... 과수화상병은 사과 ㆍ배 등 주요 과수에 치명적인 피해를 입히는 국가검역 병해로, 발생 시 신속한 매몰과...",
+        "link": "http://www.youngnong.co.kr/news/articleView.html?idxno=58291",
+        "originallink": "http://www.youngnong.co.kr/news/articleView.html?idxno=58291",
+        "domain": "youngnong.co.kr",
+        "press": "한국영농신문",
+        "norm_key": "url:4ecfcb1159d3bbc0",
+        "title_key": "과수화상병에비료면세유까지봄영농앞둔농가삼중압박",
+        "canon_url": "https://youngnong.co.kr/news/articleView.html?idxno=58291",
+        "topic": "사과",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 12.142,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -2838,31 +2888,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-03-25T07:54:00+09:00",
-        "section": "supply",
-        "title": "NIE 논술 - '뭉치면 산다' 베네룩스 3국에서 유럽 연합까지",
-        "description": "엄마: 튤립은 양파 같은 알뿌리(구근) 식물인데, 차가운 온도를 겪어야 꽃을 피워. 그 온도를 우리나라에서... 그래서 가격 이 오르고 올라 집 한 채 가격 이 넘을 정도가 되었다고 해. 시윤: 그래도 그렇지, 먹을 수도 없는...",
-        "link": "https://www.kidshankook.kr/news/articleView.html?idxno=16680",
-        "originallink": "https://www.kidshankook.kr/news/articleView.html?idxno=16680",
-        "domain": "kidshankook.kr",
-        "press": "kidshankook",
-        "norm_key": "url:a380e251fac15c42",
-        "title_key": "nie논술뭉치면산다베네룩스3국에서유럽연합까지",
-        "canon_url": "https://kidshankook.kr/news/articleView.html?idxno=16680",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "양파 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 8.01,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-03-25T10:58:00+09:00",
         "section": "supply",
         "title": "농사포인트 - 강풍대비 바람으로 비닐 찢어지지 않도록 고정끈 설치",
@@ -2884,6 +2909,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 8.005,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-03-25T07:54:00+09:00",
+        "section": "supply",
+        "title": "NIE 논술 - '뭉치면 산다' 베네룩스 3국에서 유럽 연합까지",
+        "description": "엄마: 튤립은 양파 같은 알뿌리(구근) 식물인데, 차가운 온도를 겪어야 꽃을 피워. 그 온도를 우리나라에서... 그래서 가격 이 오르고 올라 집 한 채 가격 이 넘을 정도가 되었다고 해. 시윤: 그래도 그렇지, 먹을 수도 없는...",
+        "link": "https://www.kidshankook.kr/news/articleView.html?idxno=16680",
+        "originallink": "https://www.kidshankook.kr/news/articleView.html?idxno=16680",
+        "domain": "kidshankook.kr",
+        "press": "kidshankook",
+        "norm_key": "url:a380e251fac15c42",
+        "title_key": "nie논술뭉치면산다베네룩스3국에서유럽연합까지",
+        "canon_url": "https://kidshankook.kr/news/articleView.html?idxno=16680",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "양파 가격",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 7.81,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -3659,31 +3709,6 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 6.482,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-03-26T00:12:00+09:00",
-        "section": "supply",
-        "title": "과수화상병에 비료·면세유까지…봄 영농 앞둔 농가 '삼중 압박'",
-        "description": "과수화상병은 사과 ㆍ배 등 주요 과수에 치명적인 피해를 입히는 국가검역 병해로, 발생 시 신속한 매몰과... 송미령 장관이 농협 주유소를 방문해 유류 가격 ...",
-        "link": "http://www.youngnong.co.kr/news/articleView.html?idxno=58291",
-        "originallink": "http://www.youngnong.co.kr/news/articleView.html?idxno=58291",
-        "domain": "youngnong.co.kr",
-        "press": "한국영농신문",
-        "norm_key": "url:4ecfcb1159d3bbc0",
-        "title_key": "과수화상병에비료면세유까지봄영농앞둔농가삼중압박",
-        "canon_url": "https://youngnong.co.kr/news/articleView.html?idxno=58291",
-        "topic": "사과",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 6.44,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -4788,31 +4813,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-03-25T10:58:00+09:00",
-        "section": "supply",
-        "title": "\"햇양파 1kg에 400원, 수확비도 안 나와\"",
-        "description": "산지 가격 안정 대책 마련을 정부에 강력히 촉구했다. 이날 전국 각지에서 상경한 200여 명의 농민은 비료 등... 장관의 사과 등을 담은 대정부 요구안을 이태문 농식품부 정책보좌관에게 전달했다. 결의대회 이후 협회...",
-        "link": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64126",
-        "originallink": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64126",
-        "domain": "wonyesanup.co.kr",
-        "press": "원예산업신문",
-        "norm_key": "url:79c8833b1e9351ad",
-        "title_key": "햇양파1kg에400원수확비도안나와",
-        "canon_url": "https://wonyesanup.co.kr/news/articleView.html?idxno=64126",
-        "topic": "양파",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 4.41,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-03-25T19:24:00+09:00",
         "section": "supply",
         "title": "진주중앙시장 1년 만에 '또 찾은' 李 대통령…\"열심히 하겠다\"",
@@ -4963,31 +4963,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-03-25T07:40:00+09:00",
-        "section": "supply",
-        "title": "GS25, 벚꽃 나들이 시즌 맞아 '이색 감성 디저트' 출시",
-        "description": "쫀득한 식감의 꼬끄에 부드러운 딸기 우유 크림을 샌딩해 맛과 비주얼을 동시에 살렸으며, 봄 나들이의 설렘을 더해주는 상품으로 기획됐다. 가격 은 2,900원이다. 함께 선보이는 '피쉬모양 소르베'는 실제 물고기 형태를...",
-        "link": "https://www.slist.kr/news/articleView.html?idxno=726395",
-        "originallink": "https://www.slist.kr/news/articleView.html?idxno=726395",
-        "domain": "slist.kr",
-        "press": "SLIST",
-        "norm_key": "url:561b4ed4d6e49489",
-        "title_key": "gs25벚꽃나들이시즌맞아이색감성디저트출시",
-        "canon_url": "https://slist.kr/news/articleView.html?idxno=726395",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "딸기 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 4.11,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-03-25T17:18:00+09:00",
         "section": "supply",
         "title": "양파 일관 기계화 마지막 단계 '수확' 시연회 26일 대정",
@@ -5034,6 +5009,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 4.03,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-03-25T07:40:00+09:00",
+        "section": "supply",
+        "title": "GS25, 벚꽃 나들이 시즌 맞아 '이색 감성 디저트' 출시",
+        "description": "쫀득한 식감의 꼬끄에 부드러운 딸기 우유 크림을 샌딩해 맛과 비주얼을 동시에 살렸으며, 봄 나들이의 설렘을 더해주는 상품으로 기획됐다. 가격 은 2,900원이다. 함께 선보이는 '피쉬모양 소르베'는 실제 물고기 형태를...",
+        "link": "https://www.slist.kr/news/articleView.html?idxno=726395",
+        "originallink": "https://www.slist.kr/news/articleView.html?idxno=726395",
+        "domain": "slist.kr",
+        "press": "SLIST",
+        "norm_key": "url:561b4ed4d6e49489",
+        "title_key": "gs25벚꽃나들이시즌맞아이색감성디저트출시",
+        "canon_url": "https://slist.kr/news/articleView.html?idxno=726395",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "딸기 가격",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 3.91,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -10667,31 +10667,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-03-25T08:02:00+09:00",
-        "section": "dist",
-        "title": "[경남 브리핑 모음(3월25일)] 진주시, 24일 ‘이현동 공영 주차장 준공식...",
-        "description": "◆ 진주시, 24일 ‘이현동 공영 주차장 준공식’ 개최 25억 투입 33면 주차장 조성 … 이현동행정복지센터 인근... 농산물이 시장 에서 제값을 받을 수 있도록 협조를 요청했다. 또한 경매 인과 중 도매 인을 대상으로 밀양...",
-        "link": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
-        "originallink": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
-        "domain": "dnews.co.kr",
-        "press": "DNEWS",
-        "norm_key": "url:6eda73cb2374b5eb",
-        "title_key": "진주시24일이현동공영주차장준공식",
-        "canon_url": "https://dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
-        "topic": "정책",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "dist",
-        "source_query": "공영도매시장 경매",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 4.04,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-03-25T10:58:00+09:00",
         "section": "dist",
         "title": "배정섭(전남서남부채소 농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
@@ -10738,6 +10713,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 3.95,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-03-25T08:02:00+09:00",
+        "section": "dist",
+        "title": "[경남 브리핑 모음(3월25일)] 진주시, 24일 ‘이현동 공영 주차장 준공식...",
+        "description": "◆ 진주시, 24일 ‘이현동 공영 주차장 준공식’ 개최 25억 투입 33면 주차장 조성 … 이현동행정복지센터 인근... 농산물이 시장 에서 제값을 받을 수 있도록 협조를 요청했다. 또한 경매 인과 중 도매 인을 대상으로 밀양...",
+        "link": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
+        "originallink": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
+        "domain": "dnews.co.kr",
+        "press": "DNEWS",
+        "norm_key": "url:6eda73cb2374b5eb",
+        "title_key": "진주시24일이현동공영주차장준공식",
+        "canon_url": "https://dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502",
+        "topic": "정책",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "공영도매시장 경매",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 3.84,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -11767,11 +11767,11 @@
             50
           ],
           [
-            "정책브리핑 농축수산물",
+            "농식품부 보도자료 농산물",
             50
           ],
           [
-            "농식품부 보도자료 농산물",
+            "정책브리핑 농축수산물",
             50
           ],
           [
@@ -12056,11 +12056,11 @@
         ],
         "api_items_top": [
           [
-            "사과 가격",
+            "사과 수급",
             50
           ],
           [
-            "사과 수급",
+            "사과 가격",
             50
           ],
           [
@@ -12146,6 +12146,10 @@
             11
           ],
           [
+            "사과 수급",
+            9
+          ],
+          [
             "딸기 생육",
             9
           ],
@@ -12168,10 +12172,6 @@
           [
             "포도 재배",
             8
-          ],
-          [
-            "사과 수급",
-            7
           ],
           [
             "배추 수급",
@@ -12475,7 +12475,7 @@
             "hits": 11,
             "selected_hits": 0,
             "missing": false,
-            "sample_title": "[기고] 전환의 시대, 기술로 여는 원예특작의 새 길"
+            "sample_title": "\"햇양파 1kg에 400원, 수확비도 안 나와\""
           },
           {
             "seed": "파프리카",
@@ -12570,11 +12570,11 @@
             50
           ],
           [
-            "도매시장 수급",
+            "도매시장 반입량",
             50
           ],
           [
-            "도매시장 반입량",
+            "도매시장 수급",
             50
           ],
           [
@@ -12851,11 +12851,11 @@
         ],
         "api_items_top": [
           [
-            "탄저병 방제",
+            "과수화상병 방제",
             50
           ],
           [
-            "과수화상병 방제",
+            "탄저병 방제",
             50
           ],
           [
@@ -12867,11 +12867,11 @@
             50
           ],
           [
-            "생육 관리 저온피해",
+            "냉해 동해 과수 피해",
             50
           ],
           [
-            "냉해 동해 과수 피해",
+            "생육 관리 저온피해",
             50
           ],
           [
@@ -14093,6 +14093,46 @@
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
+        "press": "연합인포맥스",
+        "domain": "news.einfomax.co.kr",
+        "title": "이규연 \"보유세 검토 지시 내려간거 아냐…아직 뽑지 않은 히든카드\"",
+        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4405917",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "CBCI",
+        "domain": "cbci.co.kr",
+        "title": "[정치家] 김민석 국무총리 ㅣ 전쟁 리스크에 비상경제 체제, AI 협력·글...",
+        "url": "https://www.cbci.co.kr/news/articleView.html?idxno=563238",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "日다카이치 \"이란 전쟁\" 발언 뒤 사과 …'전투'로 수정한 이유는",
+        "url": "https://www.news1.kr/world/northeast-asia/6113875",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "노컷뉴스",
+        "domain": "nocutnews.co.kr",
+        "title": "홍익표 \"유시민의 ABC론, 이걸로 왜 싸우나?\"[한판승부]",
+        "url": "https://www.nocutnews.co.kr/news/6490439",
+        "source_query": "사과 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
         "press": "쿠키뉴스",
         "domain": "kukinews.com",
         "title": "올해도 저당이 대세…식품업계, ‘덜 달게, 더 건강하게’ 신상 경쟁",
@@ -14308,46 +14348,6 @@
         "title": "홍익표 \"유시민의 ABC론, 이걸로 왜 싸우나?\"[한판승부]",
         "url": "https://www.nocutnews.co.kr/news/6490439",
         "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "연합인포맥스",
-        "domain": "news.einfomax.co.kr",
-        "title": "이규연 \"보유세 검토 지시 내려간거 아냐…아직 뽑지 않은 히든카드\"",
-        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4405917",
-        "source_query": "사과 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "CBCI",
-        "domain": "cbci.co.kr",
-        "title": "[정치家] 김민석 국무총리 ㅣ 전쟁 리스크에 비상경제 체제, AI 협력·글...",
-        "url": "https://www.cbci.co.kr/news/articleView.html?idxno=563238",
-        "source_query": "사과 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
-        "title": "日다카이치 \"이란 전쟁\" 발언 뒤 사과 …'전투'로 수정한 이유는",
-        "url": "https://www.news1.kr/world/northeast-asia/6113875",
-        "source_query": "사과 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "노컷뉴스",
-        "domain": "nocutnews.co.kr",
-        "title": "홍익표 \"유시민의 ABC론, 이걸로 왜 싸우나?\"[한판승부]",
-        "url": "https://www.nocutnews.co.kr/news/6490439",
-        "source_query": "사과 수급",
         "source_channel": "naver_api"
       },
       {
@@ -16363,6 +16363,16 @@
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
+        "press": "thepublic",
+        "domain": "thepublic.kr",
+        "title": "두 줄 김밥 '3,980원'에 선보이는 이마트…반값 가격 에 놀라운 맛",
+        "url": "https://www.thepublic.kr/news/articleView.html?idxno=298714",
+        "source_query": "당근 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "carrot_non_edible_context",
         "press": "아시아경제",
         "domain": "view.asiae.co.kr",
         "title": "[오늘의신상]두 줄에 3980원…이마트 '반전 가격 두줄김밥'",
@@ -16377,16 +16387,6 @@
         "domain": "yna.co.kr",
         "title": "이마트, 3천980원 '반전 가격 두 줄 김밥' 출시",
         "url": "https://www.yna.co.kr/view/AKR20260325147700030?input=1195m",
-        "source_query": "당근 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "carrot_non_edible_context",
-        "press": "thepublic",
-        "domain": "thepublic.kr",
-        "title": "두 줄 김밥 '3,980원'에 선보이는 이마트…반값 가격 에 놀라운 맛",
-        "url": "https://www.thepublic.kr/news/articleView.html?idxno=298714",
         "source_query": "당근 가격",
         "source_channel": "naver_api"
       },
@@ -16423,10 +16423,20 @@
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
-        "press": "popcornnews",
-        "domain": "popcornnews.net",
-        "title": "이마트, 반전있는 김밥, 반값 가격 에 놀라운 맛 선보인다",
-        "url": "http://www.popcornnews.net/news/articleView.html?idxno=116389",
+        "press": "뉴시스",
+        "domain": "newsis.com",
+        "title": "'고물가 속 반전이네' 이마트, 속재료 다른 '두줄김밥' 3980원",
+        "url": "https://www.newsis.com/view/NISX20260325_0003563956",
+        "source_query": "당근 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "carrot_non_edible_context",
+        "press": "bizwnews",
+        "domain": "bizwnews.com",
+        "title": "이마트, 두 줄 김밥 '3980원'에 출시…\"즉석조리 메뉴 다각화\"",
+        "url": "http://www.bizwnews.com/news/articleView.html?idxno=130828",
         "source_query": "당근 가격",
         "source_channel": "naver_api"
       },
@@ -16443,20 +16453,10 @@
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
-        "press": "뉴시스",
-        "domain": "newsis.com",
-        "title": "'고물가 속 반전이네' 이마트, 속재료 다른 '두줄김밥' 3980원",
-        "url": "https://www.newsis.com/view/NISX20260325_0003563956",
-        "source_query": "당근 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "carrot_non_edible_context",
-        "press": "bizwnews",
-        "domain": "bizwnews.com",
-        "title": "이마트, 두 줄 김밥 '3980원'에 출시…\"즉석조리 메뉴 다각화\"",
-        "url": "http://www.bizwnews.com/news/articleView.html?idxno=130828",
+        "press": "popcornnews",
+        "domain": "popcornnews.net",
+        "title": "이마트, 반전있는 김밥, 반값 가격 에 놀라운 맛 선보인다",
+        "url": "http://www.popcornnews.net/news/articleView.html?idxno=116389",
         "source_query": "당근 가격",
         "source_channel": "naver_api"
       },
@@ -17703,20 +17703,20 @@
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "경남도민신문",
-        "domain": "gndomin.com",
-        "title": "진주시민정원사협회 초전공원 '봄맞이 새단장' 봉사",
-        "url": "http://www.gndomin.com/news/articleView.html?idxno=469820",
+        "press": "인뉴스365",
+        "domain": "inews365.com",
+        "title": "혼란한 호르무즈 해협, 엔진오일도 LNG도 '고공행진'",
+        "url": "https://www.inews365.com/news/article.html?no=912248",
         "source_query": "가지 산업",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "인뉴스365",
-        "domain": "inews365.com",
-        "title": "혼란한 호르무즈 해협, 엔진오일도 LNG도 '고공행진'",
-        "url": "https://www.inews365.com/news/article.html?no=912248",
+        "press": "경남도민신문",
+        "domain": "gndomin.com",
+        "title": "진주시민정원사협회 초전공원 '봄맞이 새단장' 봉사",
+        "url": "http://www.gndomin.com/news/articleView.html?idxno=469820",
         "source_query": "가지 산업",
         "source_channel": "naver_api"
       },
@@ -19503,20 +19503,20 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "포쓰저널",
-        "domain": "4th.kr",
-        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
-        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
+        "press": "worktoday",
+        "domain": "worktoday.co.kr",
+        "title": "농협개혁위 \"중앙회장 출마 시 조합장직 사퇴, 퇴직자 재취업 제한 기준...",
+        "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82963",
         "source_query": "온라인 도매시장 제도 개선",
         "source_channel": "naver_api"
       },
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "worktoday",
-        "domain": "worktoday.co.kr",
-        "title": "농협개혁위 \"중앙회장 출마 시 조합장직 사퇴, 퇴직자 재취업 제한 기준...",
-        "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82963",
+        "press": "포쓰저널",
+        "domain": "4th.kr",
+        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
+        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
         "source_query": "온라인 도매시장 제도 개선",
         "source_channel": "naver_api"
       },
@@ -19753,16 +19753,6 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "전자신문",
-        "domain": "etnews.com",
-        "title": "“조합장 추천제 없애고 토론 도입”…농협개혁위, 선거제 개편 권고",
-        "url": "https://www.etnews.com/20260325000251",
-        "source_query": "도매시장 제도 개선",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "dist_program_event_noise",
         "press": "seoulwire",
         "domain": "seoulwire.com",
         "title": "농협개혁위, '조합장 사퇴 의무화' 등 13개 개혁안 확정…선거·지배구...",
@@ -19773,10 +19763,10 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "포쓰저널",
-        "domain": "4th.kr",
-        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
-        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
+        "press": "전자신문",
+        "domain": "etnews.com",
+        "title": "“조합장 추천제 없애고 토론 도입”…농협개혁위, 선거제 개편 권고",
+        "url": "https://www.etnews.com/20260325000251",
         "source_query": "도매시장 제도 개선",
         "source_channel": "naver_api"
       },
@@ -19797,6 +19787,16 @@
         "domain": "worktoday.co.kr",
         "title": "농협개혁위 \"중앙회장 출마 시 조합장직 사퇴, 퇴직자 재취업 제한 기준...",
         "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=82963",
+        "source_query": "도매시장 제도 개선",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_program_event_noise",
+        "press": "포쓰저널",
+        "domain": "4th.kr",
+        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
+        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
         "source_query": "도매시장 제도 개선",
         "source_channel": "naver_api"
       },
@@ -20172,16 +20172,6 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "신아일보",
-        "domain": "shinailbo.co.kr",
-        "title": "고흥군, 2026 대한민국 공공기관평가 우수대상 수상",
-        "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5004608",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "농수축산신문",
         "domain": "aflnews.co.kr",
@@ -20363,20 +20353,20 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "더페어뉴스",
-        "domain": "thefairnews.co.kr",
-        "title": "광주·전남, 직거래장터 로 상생 협력 확대…행정통합 공감대 형성",
-        "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=72473",
+        "press": "문화일보",
+        "domain": "munhwa.com",
+        "title": "전남광주통합특별시 출범 앞두고 ‘하나되는 직거래장터 ’ 연다",
+        "url": "https://www.munhwa.com/article/11577152",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "문화일보",
-        "domain": "munhwa.com",
-        "title": "전남광주통합특별시 출범 앞두고 ‘하나되는 직거래장터 ’ 연다",
-        "url": "https://www.munhwa.com/article/11577152",
+        "press": "더페어뉴스",
+        "domain": "thefairnews.co.kr",
+        "title": "광주·전남, 직거래장터 로 상생 협력 확대…행정통합 공감대 형성",
+        "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=72473",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -20892,21 +20882,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_entertainment_hardblock",
-        "press": "충청매일",
-        "domain": "ccdn.co.kr",
-        "title": "청주대, 아이돌봄서비스 활성화 간담회",
-        "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1069814",
-        "source_query": "광역수급관리센터 수급 관리",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "must_terms_fail",
         "press": "CBCI",
         "domain": "cbci.co.kr",
         "title": "[정치家] 김민석 국무총리 ㅣ 전쟁 리스크에 비상경제 체제, AI 협력·글...",
         "url": "https://www.cbci.co.kr/news/articleView.html?idxno=563238",
+        "source_query": "광역수급관리센터 수급 관리",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_entertainment_hardblock",
+        "press": "충청매일",
+        "domain": "ccdn.co.kr",
+        "title": "청주대, 아이돌봄서비스 활성화 간담회",
+        "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1069814",
         "source_query": "광역수급관리센터 수급 관리",
         "source_channel": "naver_api"
       },
@@ -21172,16 +21162,6 @@
       },
       {
         "section": "dist",
-        "reason": "dist_program_event_noise",
-        "press": "포쓰저널",
-        "domain": "4th.kr",
-        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
-        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
-        "source_query": "도매시장 운영 개선",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_non_horti_anchorless",
         "press": "worktoday",
         "domain": "worktoday.co.kr",
@@ -21197,6 +21177,16 @@
         "domain": "view.asiae.co.kr",
         "title": "농협중앙회 회장 출마시 조합장 사퇴 의무화…\"회장선출 방식은 결론 못...",
         "url": "https://view.asiae.co.kr/article/2026032512570792945",
+        "source_query": "도매시장 운영 개선",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_program_event_noise",
+        "press": "포쓰저널",
+        "domain": "4th.kr",
+        "title": "\"회장 출마 시 조합장직 사퇴\"..농협, 선거·지배구조 전면 손질",
+        "url": "http://www.4th.kr/news/articleView.html?idxno=2109541",
         "source_query": "도매시장 운영 개선",
         "source_channel": "naver_api"
       },
@@ -21372,21 +21362,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "남도일보",
-        "domain": "namdonews.com",
-        "title": "[6·3지방선거 현장 ]함평 한농연, 이상익 함평군수 예비후보 공식 지지...",
-        "url": "https://www.namdonews.com/news/articleView.html?idxno=905261",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_non_horti_anchorless",
         "press": "남도일보",
         "domain": "namdonews.com",
         "title": "[6·3지방선거 현장 ]\"시민 체감 경제로\"…박성현, 민생 중심 정책 비전 ...",
         "url": "https://www.namdonews.com/news/articleView.html?idxno=905235",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_county_local_weak_dist_signal",
+        "press": "남도일보",
+        "domain": "namdonews.com",
+        "title": "[6·3지방선거 현장 ]함평 한농연, 이상익 함평군수 예비후보 공식 지지...",
+        "url": "https://www.namdonews.com/news/articleView.html?idxno=905261",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -21422,21 +21412,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_program_event_noise",
-        "press": "뉴스티앤티",
-        "domain": "newstnt.com",
-        "title": "전남·광주, 통합 앞두고 '하나되는 직거래장터' 열린다",
-        "url": "http://www.newstnt.com/news/articleView.html?idxno=600039",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_soft_without_infra",
         "press": "전국매일신문",
         "domain": "jeonmae.co.kr",
         "title": "경기농촌융복합산업지원센터 '수원 메가쇼' 참가",
         "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1242081",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_program_event_noise",
+        "press": "뉴스티앤티",
+        "domain": "newstnt.com",
+        "title": "전남·광주, 통합 앞두고 '하나되는 직거래장터' 열린다",
+        "url": "http://www.newstnt.com/news/articleView.html?idxno=600039",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -21582,16 +21572,6 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "원예산업신문",
-        "domain": "wonyesanup.co.kr",
-        "title": "농식품부, 제6차 여성농업인 육성 기본계획(2026~2030) 수립",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64128",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
@@ -21602,11 +21582,11 @@
       },
       {
         "section": "dist",
-        "reason": "dist_local_org_profile",
+        "reason": "dist_soft_without_infra",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
+        "title": "농식품부, 제6차 여성농업인 육성 기본계획(2026~2030) 수립",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64128",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -22022,21 +22002,21 @@
       },
       {
         "section": "dist",
-        "reason": "must_terms_fail",
-        "press": "원예산업신문",
-        "domain": "wonyesanup.co.kr",
-        "title": "호남 품목농협, '내우외환' 속 강력 연대 천명",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64088",
-        "source_query": "산지조직 경영",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_local_org_profile",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
         "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
         "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
+        "source_query": "산지조직 경영",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "must_terms_fail",
+        "press": "원예산업신문",
+        "domain": "wonyesanup.co.kr",
+        "title": "호남 품목농협, '내우외환' 속 강력 연대 천명",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64088",
         "source_query": "산지조직 경영",
         "source_channel": "naver_api"
       },
@@ -22233,20 +22213,20 @@
       {
         "section": "dist",
         "reason": "must_terms_fail",
-        "press": "농민신문",
-        "domain": "nongmin.com",
-        "title": "[조합장 당선자] 경북 봉화 물야 농협 배항섭",
-        "url": "https://www.nongmin.com/article/20260325500476",
+        "press": "동양일보",
+        "domain": "dynews.co.kr",
+        "title": "농협 , 이번엔 개혁·쇄신할까? 농협 개혁위, 개혁과제 확정 \" 농협 중앙회...",
+        "url": "http://www.dynews.co.kr/news/articleView.html?idxno=843899",
         "source_query": "농협 경제사업 활성화",
         "source_channel": "naver_api"
       },
       {
         "section": "dist",
         "reason": "must_terms_fail",
-        "press": "동양일보",
-        "domain": "dynews.co.kr",
-        "title": "농협 , 이번엔 개혁·쇄신할까? 농협 개혁위, 개혁과제 확정 \" 농협 중앙회...",
-        "url": "http://www.dynews.co.kr/news/articleView.html?idxno=843899",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "title": "[조합장 당선자] 경북 봉화 물야 농협 배항섭",
+        "url": "https://www.nongmin.com/article/20260325500476",
         "source_query": "농협 경제사업 활성화",
         "source_channel": "naver_api"
       },
@@ -22537,26 +22517,6 @@
         "domain": "news.tf.co.kr",
         "title": "농협 회장 출마 시 조합장 사퇴 의무화… 농협 개혁위, 개혁과제 확정",
         "url": "https://news.tf.co.kr/read/economy/2306137.htm",
-        "source_query": "농협 경제사업 활성화",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "must_terms_fail",
-        "press": "헤럴드경제",
-        "domain": "biz.heraldcorp.com",
-        "title": "“ 농협 중앙회장 출마시 조합장 사퇴”… 농협 개혁위,13개 과제 권고안 확...",
-        "url": "https://biz.heraldcorp.com/article/10702375",
-        "source_query": "농협 경제사업 활성화",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "must_terms_fail",
-        "press": "pinpointnews",
-        "domain": "pinpointnews.co.kr",
-        "title": "농협 개혁위, '회장 출마 시 사퇴' 등 지배구조 손질 본격화",
-        "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=439815",
         "source_query": "농협 경제사업 활성화",
         "source_channel": "naver_api"
       },
@@ -23585,8 +23545,8 @@
         "reason": "pest_partial_mention",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
+        "title": "농진청, 노지 월동작물 생육 점검 … 기술지원 방안 논의",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64083",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
@@ -23595,8 +23555,8 @@
         "reason": "pest_partial_mention",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "농진청, 노지 월동작물 생육 점검 … 기술지원 방안 논의",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64083",
+        "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
@@ -23805,8 +23765,8 @@
         "reason": "pest_partial_mention",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
+        "title": "농사포인트 - 강풍대비 바람으로 비닐 찢어지지 않도록 고정끈 설치",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64080",
         "source_query": "양파 병해충",
         "source_channel": "naver_api"
       },
@@ -23825,8 +23785,8 @@
         "reason": "pest_partial_mention",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "농사포인트 - 강풍대비 바람으로 비닐 찢어지지 않도록 고정끈 설치",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64080",
+        "title": "배정섭(전남서남부채소농협 조합장) - \"이번 수상, 조합원·임직원이 함...",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079",
         "source_query": "양파 병해충",
         "source_channel": "naver_api"
       },
