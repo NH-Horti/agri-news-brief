@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-25T15:44:28+09:00",
-  "build_tag": "292348d",
+  "generated_at_kst": "2026-03-25T16:20:48+09:00",
+  "build_tag": "0905a53",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13203,7 +13203,7 @@
       "tail_cut": 31.54,
       "core_min": 29.34,
       "total_candidates": 81,
-      "total_selected": 3,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -13241,9 +13241,9 @@
           "domain": "seoul.co.kr",
           "title": "영암군, 농산물 최저 가격 보장제 추진",
           "url": "https://www.seoul.co.kr/news/publicnews/2026/03/24/20260324500232?wlog_tag3=naver",
-          "reason": "postbuild_pruned",
+          "reason": "similar_title",
           "fit_score": 3.03,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "similar_title",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -13397,7 +13397,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.16,
+          "score": 30.96,
           "tier": 1,
           "press": "M-I",
           "domain": "m-i.kr",
@@ -13449,17 +13449,17 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 30.31,
           "tier": 1,
           "press": "incheonilbo",
           "domain": "incheonilbo.com",
           "title": "유정복 인천시장, 중동 상황 대응 점검…\"경영안정자금 적기 지원을\"",
           "url": "https://www.incheonilbo.com/news/articleView.html?idxno=1319390",
-          "reason": "tail_cut",
+          "reason": "",
           "fit_score": 5.59,
-          "selection_stage": "tail_cut",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -13640,7 +13640,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.29,
+          "score": 29.09,
           "tier": 1,
           "press": "신아일보",
           "domain": "shinailbo.co.kr",
@@ -14831,7 +14831,7 @@
           "seed": "단감",
           "rep": "단감",
           "hits": 9,
-          "selected_hits": 2,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "영암군, 농산물 최저 가격 보장제 추진...농가 소득 안정 지원"
         },
