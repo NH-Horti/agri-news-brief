@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-25T09:46:52+09:00",
-  "build_tag": "359797e",
+  "generated_at_kst": "2026-03-25T12:53:56+09:00",
+  "build_tag": "bc1ddaf",
   "filter_rejects": [
     {
       "section": "policy",
@@ -14930,7 +14930,7 @@
       "tail_cut": 16.91,
       "core_min": 16.31,
       "total_candidates": 23,
-      "total_selected": 4,
+      "total_selected": 2,
       "top": [
         {
           "selected": true,
@@ -14987,7 +14987,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 17.92,
           "tier": 3,
@@ -14995,9 +14995,9 @@
           "domain": "nongmin.com",
           "title": "도농 상생 실천…서울강서농협, 밀양 농산물 직거래 특판행사",
           "url": "https://www.nongmin.com/article/20260323500649",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 1.73,
-          "selection_stage": "tail",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15284,7 +15284,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 4.42,
           "tier": 1,
@@ -15292,9 +15292,9 @@
           "domain": "breaknews.com",
           "title": "충북농협, 농축산물 직거래 금요 장터 농가 식품안전교육 진행",
           "url": "http://www.breaknews.com/1194676",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 1.83,
-          "selection_stage": "underfill",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15798,7 +15798,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.16,
+          "score": 32.96,
           "tier": 1,
           "press": "ccnnews",
           "domain": "ccnnews.co.kr",
@@ -15933,7 +15933,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.26,
+          "score": 30.06,
           "tier": 1,
           "press": "디티뉴스24",
           "domain": "dtnews24.com",
@@ -15960,7 +15960,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.26,
+          "score": 30.06,
           "tier": 1,
           "press": "인뉴스365",
           "domain": "inews365.com",
