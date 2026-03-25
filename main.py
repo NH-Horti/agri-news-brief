@@ -16630,9 +16630,12 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
     supply_items = list(raw_by_section.get("supply", []) or [])
     if supply_items:
         keep_supply: list[Article] = []
-        _PEST_STRONG_KWS = ("저온 피해", "저온피해", "냉해", "동해 피해", "동해피해", "서리 피해", "서리피해",
-                            "개화기 피해", "개화기 방제", "개화기 저온", "병해충 방제", "과수화상병", "탄저병",
-                            "해충 방제", "방제단", "지원단 운영", "예찰", "살포")
+        _PEST_STRONG_KWS = ("저온 피해", "저온피해", "냉해", "냉해 피해", "동해 피해", "동해피해",
+                            "서리 피해", "서리피해", "꽃샘추위 피해", "한파 피해",
+                            "개화기 피해", "개화기 방제", "개화기 저온", "개화기 대비",
+                            "병해충 방제", "과수화상병", "탄저병", "노균병",
+                            "해충 방제", "방제단", "지원단 운영", "예찰", "살포",
+                            "저온 대비", "동해 대비", "피해 대비", "피해 예방", "생육 관리")
         for a in supply_items:
             txt = ((a.title or "") + " " + (a.description or "")).lower()
             pest_kw_hits = sum(1 for kw in _PEST_STRONG_KWS if kw in txt)
@@ -16701,6 +16704,20 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
             _SUPPLY_DIRECT = ("가격", "시세", "경락", "수급", "출하량", "작황", "반입", "도매")
             if not any(sd in text for sd in _SUPPLY_DIRECT):
                 return "corp_csr_not_supply"
+    # 직거래 장터/행사/축제 기사는 원예 수급 핵심이 아님
+    if section_key in ("supply", "policy"):
+        _EVENT_NOISE_KWS = ("직거래 장터", "직거래장터", "로컬푸드 장터", "농산물 장터", "농특산물 장터",
+                            "농산물 축제", "농특산물 축제", "농산물 한마당", "직거래 행사", "장터 개장")
+        if any(kw in text for kw in _EVENT_NOISE_KWS):
+            _SUPPLY_ANCHOR_EV = ("가격", "시세", "경락", "수급", "출하량", "작황", "도매", "폭락", "폭등")
+            if not any(sa in text for sa in _SUPPLY_ANCHOR_EV):
+                return "direct_market_event_noise"
+    # 요소수/석유제품 관련 기사는 원예 맥락 없으면 제외
+    if section_key == "supply":
+        _UREA_KWS = ("요소수", "요소 가격", "요소 수급")
+        if any(kw in text for kw in _UREA_KWS):
+            if not any(h in text for h in ("농업", "농기계", "농가", "시설원예", "원예", "비료")):
+                return "urea_not_agri"
     if section_key in ("supply", "policy") and is_title_livestock_dominant_context(a.title or "", a.description or ""):
         return "livestock_title_dominant"
     if section_key in ("supply", "policy", "dist") and is_processed_food_lifestyle_context(a.title or "", a.description or ""):
@@ -17344,6 +17361,90 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                          rk, nh, a.title[:120])
 
 
+    # ── Phase 3.5: Within-section topic dedup ──
+    # 같은 섹션 내 품목+지역이 동일한 기사 중복 제거 (다른 매체의 같은 주제 기사)
+    _TOPIC_DEDUP_REGION_TERMS = frozenset((
+        "구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
+        "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도",
+        "영암", "김제", "익산", "정읍", "부여", "논산", "서산", "당진", "보성", "순천",
+        "가락시장", "도매시장", "공판장",
+    ))
+    _TOPIC_DEDUP_ISSUE_TERMS = frozenset((
+        "주산지", "지정", "생산", "재배", "출하", "수급", "가격", "피해", "방제", "작황",
+        "폭락", "폭등", "급등", "급락", "하락", "상승", "안정", "불안정", "과잉", "부족",
+        "경매", "경락", "반입", "도매", "수출", "품질",
+    ))
+    for key in list(final_by_section.keys()):
+        articles = final_by_section.get(key, [])
+        if len(articles) <= 1:
+            continue
+        # 각 기사의 토픽 시그니처 추출
+        _topic_sigs: list[tuple[frozenset, frozenset, frozenset]] = []
+        for a in articles:
+            _txt = ((a.title or "") + " " + (a.description or "")).lower()
+            _comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _txt)
+            _regs = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _txt)
+            _issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _txt)
+            _topic_sigs.append((_comms, _regs, _issues))
+        # 중복 탐지: 같은 품목+지역+이슈 조합이면 낮은 점수 기사 제거
+        _within_removals: set[int] = set()
+        for i in range(len(articles)):
+            if i in _within_removals:
+                continue
+            for j in range(i + 1, len(articles)):
+                if j in _within_removals:
+                    continue
+                ci, ri, ii = _topic_sigs[i]
+                cj, rj, ij = _topic_sigs[j]
+                shared_comm = ci & cj
+                shared_reg = ri & rj
+                shared_issue = ii & ij
+                if shared_comm and shared_reg and len(shared_issue) >= 1:
+                    score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
+                    score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
+                    drop_idx = j if score_i >= score_j else i
+                    _within_removals.add(drop_idx)
+                    log.info("[WITHIN-DEDUP] section=%s keep=%.2f title=%s | drop=%.2f title=%s",
+                             key,
+                             float(getattr(articles[i if drop_idx == j else j], "score", 0.0)),
+                             (articles[i if drop_idx == j else j].title or "")[:80],
+                             float(getattr(articles[drop_idx], "score", 0.0)),
+                             (articles[drop_idx].title or "")[:80])
+        if _within_removals:
+            kept = [a for idx, a in enumerate(articles) if idx not in _within_removals]
+            # 빈 자리를 버퍼에서 보충
+            needed = MAX_PER_SECTION - len(kept)
+            if needed > 0:
+                _existing_idents = {a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}" for a in kept}
+                _existing_sigs = []
+                for a in kept:
+                    _txt = ((a.title or "") + " " + (a.description or "")).lower()
+                    _existing_sigs.append((
+                        frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _txt),
+                        frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _txt),
+                    ))
+                for a in _section_buffers.get(key, []):
+                    ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+                    if ident in _existing_idents:
+                        continue
+                    if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                        continue
+                    _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
+                    _a_comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt)
+                    _a_regs = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _a_txt)
+                    # 기존 기사와 토픽 중복 체크
+                    if any((_a_comms & ec) and (_a_regs & er) for ec, er in _existing_sigs if ec and er):
+                        continue
+                    if any(_is_similar_story(a, b, key) for b in kept):
+                        continue
+                    kept.append(a)
+                    _existing_idents.add(ident)
+                    log.info("[WITHIN-DEDUP-BACKFILL] section=%s title=%s", key, (a.title or "")[:80])
+                    needed -= 1
+                    if needed <= 0:
+                        break
+            final_by_section[key] = kept
+
     # ── Phase 4: Cross-section similar-story dedup + backfill ──
     _all_section_keys = [s["key"] for s in SECTIONS]
     _cross_removals: list[tuple[str, int]] = []  # (section_key, index)
@@ -17355,8 +17456,20 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     url_a = getattr(art_a, 'canon_url', '') or ''
                     url_b = getattr(art_b, 'canon_url', '') or ''
                     is_same_url = bool(url_a and url_b and url_a == url_b)
-                    # Use a neutral section_key for cross-section comparison
-                    if not is_same_url and not _is_similar_story(art_a, art_b, key_a):
+                    # 품목+지역+이슈 토픽 중복 (cross-section에서도 적용)
+                    _is_topic_dup = False
+                    if not is_same_url:
+                        _ta = ((art_a.title or "") + " " + (art_a.description or "")).lower()
+                        _tb = ((art_b.title or "") + " " + (art_b.description or "")).lower()
+                        _ca = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _ta)
+                        _cb = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _tb)
+                        _ra = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _ta)
+                        _rb = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _tb)
+                        _ia = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _ta)
+                        _ib = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _tb)
+                        if (_ca & _cb) and (_ra & _rb) and len(_ia & _ib) >= 1:
+                            _is_topic_dup = True
+                    if not is_same_url and not _is_topic_dup and not _is_similar_story(art_a, art_b, key_a):
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
