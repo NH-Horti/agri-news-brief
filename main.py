@@ -17518,11 +17518,23 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     continue
                 if any(_is_similar_story(a, b, sec_key) for b in final_by_section[sec_key]):
                     continue
-                # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
-                # _is_similar_story는 section-specific early-exit가 있어 cross-section 비교에 부적합
-                # → 품목+지역+이슈 직접 비교 + URL/title 유사도 병행
+                # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완)
                 _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
                 _a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt}
+                _a_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt}
+                _backfill_within_skip = False
+                if _a_commodities and _a_issues:
+                    for b in final_by_section[sec_key]:
+                        _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                        _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
+                        _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                        if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
+                            _backfill_within_skip = True
+                            log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
+                            break
+                if _backfill_within_skip:
+                    continue
+                # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
                 _BACKFILL_REGION_TERMS = ("구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
                                           "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
                 _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
@@ -17535,9 +17547,14 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     if _a_url and _b_url and _a_url == _b_url:
                         _backfill_cross_skip = True
                         break
-                    # 품목+지역 중복 체크
+                    # 품목+이슈 중복 체크 (지역 없어도 OK)
+                    _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
+                    _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                    if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
+                        _backfill_cross_skip = True
+                        break
+                    # 품목+지역 중복 체크 (이슈 없어도 OK)
                     if _a_commodities and _a_regions:
-                        _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
                         _b_regions = {r for r in _BACKFILL_REGION_TERMS if r in _b_txt}
                         if (_a_commodities & _b_commodities) and (_a_regions & _b_regions):
                             _backfill_cross_skip = True
