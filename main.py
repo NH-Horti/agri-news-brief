@@ -5962,6 +5962,7 @@ _DIST_PROGRAM_EVENT_NOISE_TERMS = (
 _DIST_PROGRAM_EVENT_KEEP_TERMS = (
     "도매시장", "공판장", "가락시장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc",
     "선적", "통관", "검역", "물류", "하역", "현대화", "준공", "가동", "저온", "선별", "시장도매인",
+    "물량격리", "분산출하", "시장격리", "수급조절", "출하조절", "수급안정", "공선출하", "공선회",
 )
 _DIST_PROGRAM_EVENT_ACTOR_TERMS = (
     "농협", "원예농협", "품목농협", "조합", "공사", "센터", "지자체", "시청", "군청", "구청", "도청", "본부",
@@ -5972,6 +5973,8 @@ _DIST_PROGRAM_EVENT_STRONG_TITLE_TERMS = (
 )
 _DIST_PROGRAM_EVENT_HARD_KEEP_TITLE_TERMS = (
     "선적", "통관", "검역", "준공", "현대화", "가동", "저온", "선별", "물류", "하역", "수출", "수입",
+    "물량격리", "분산출하", "시장격리", "시장 격리", "수급조절", "수급 조절", "출하조절", "출하 조절",
+    "수급안정", "수급 안정", "소비확대", "소비 확대", "총력",
 )
 _DIST_UNANCHORED_AGRITECH_NOISE_TERMS = (
     "드론", "자율 트랙터", "ai 시대", "스마트팜", "스마트 농업", "스마트농업", "농업기술원", "농기원",
@@ -6032,7 +6035,11 @@ def is_dist_program_event_noise_context(title: str, desc: str, dom: str = "", pr
         return False
     if program_hits == 0 and not local_program:
         return False
-    if keep_hits >= 3 and title_hits == 0:
+    if keep_hits >= 2 and title_hits == 0:
+        return False
+    # 제목에 supply-management 핵심어가 있으면 프로그램 노이즈가 아님
+    _supply_mgmt_kws = ("물량격리", "분산출하", "시장격리", "수급조절", "출하조절", "수급안정", "수급 안정", "소비확대", "소비 확대", "총력")
+    if any(kw in ttl_l for kw in _supply_mgmt_kws):
         return False
     return (
         local_program
@@ -6350,6 +6357,12 @@ def is_dist_local_org_tail_context(title: str, desc: str) -> bool:
     if is_dist_local_field_profile_context(title, desc):
         return False
     if is_dist_export_shipping_context(title, desc) or is_dist_market_disruption_context(title, desc):
+        return False
+    # 유통·출하 핵심 활동 기사는 org profile이 아님
+    _DIST_ORG_RESCUE_TERMS = ("공선회", "공선출하", "공동선별", "판매 사업", "출하 사업", "유통사업", "유통 사업",
+                              "판매 조직", "출하 조직", "판매조직", "출하조직", "판매 힘", "판로 확대", "판매 확대",
+                              "출하량", "공동계산", "공동 계산", "수매 사업", "수매사업")
+    if any(kw in txt for kw in _DIST_ORG_RESCUE_TERMS):
         return False
 
     title_profile_hits = count_any(ttl, [w.lower() for w in _DIST_LOCAL_ORG_PROFILE_TITLE_TERMS]) + count_any(
@@ -12151,17 +12164,17 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
                 break
 
     best = _selection_reference_score(candidates_sorted, section_key)
-    margin = 8.0 if section_key in ("supply", "policy", "dist") else 7.0
+    margin = 10.0 if section_key == "policy" else (9.0 if section_key == "dist" else (8.0 if section_key == "supply" else 7.0))
     thr = max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
     unique_candidates = _dedupe_by_event_key(list(candidates_sorted), section_key)
     unique_n = len(unique_candidates)
     relief = 0.0
     if section_key == "policy":
-        if unique_n <= 4:
+        if unique_n <= 6:
             relief = 4.0
-        elif unique_n <= 8:
-            relief = 2.2
+        elif unique_n <= 12:
+            relief = 2.5
     elif section_key == "pest":
         if unique_n <= 4:
             relief = 3.0
@@ -12171,8 +12184,10 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
         if unique_n <= 5:
             relief = 1.4
     elif section_key == "dist":
-        if unique_n <= 4:
-            relief = 1.6
+        if unique_n <= 6:
+            relief = 3.0
+        elif unique_n <= 10:
+            relief = 1.8
     if relief > 0:
         thr = max(BASE_MIN_SCORE.get(section_key, 6.0), thr - relief)
     return thr
@@ -17405,8 +17420,16 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 topic_dup = (
                     (shared_comm and len(shared_issue) >= 1)
                     or (shared_comm and shared_reg)
+                    or (shared_reg and len(shared_issue) >= 2)  # 비품목 기사: 지역+이슈2 (영암군 최저가격보장제 등)
                     or (_is_similar_story(articles[i], articles[j], key))
                 )
+                # 비품목 기사 fallback: title 유사도 체크 (같은 뉴스의 다른 매체 보도)
+                if not topic_dup:
+                    try:
+                        if _is_similar_title(articles[i].title_key or "", articles[j].title_key or ""):
+                            topic_dup = True
+                    except Exception:
+                        pass
                 if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
                     score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
@@ -17475,7 +17498,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                         _rb = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _tb)
                         _ia = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _ta)
                         _ib = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _tb)
-                        if (_ca & _cb) and (_ra & _rb) and len(_ia & _ib) >= 1:
+                        # cross-section: 품목+이슈만 겹쳐도 중복 (지역 없어도 OK)
+                    if (_ca & _cb) and len(_ia & _ib) >= 1:
                             _is_topic_dup = True
                     if not is_same_url and not _is_topic_dup and not _is_similar_story(art_a, art_b, key_a):
                         continue
@@ -17539,6 +17563,18 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                                           "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
                 _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
                 _backfill_cross_skip = False
+                # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완)
+                for b in final_by_section[sec_key]:
+                    _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                    _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
+                    _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                    if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
+                        _backfill_cross_skip = True
+                        log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
+                        break
+                if _backfill_cross_skip:
+                    continue
+                # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크
                 for b in _other_section_articles:
                     _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
                     # URL 중복 체크
