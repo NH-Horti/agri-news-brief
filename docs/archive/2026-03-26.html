@@ -1,0 +1,2914 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="agri-build" content="fbcd6ca" />
+
+  <title>[2026-03-26 농산물 뉴스 Brief]</title>
+  <style>
+    :root {
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --chip:#f8fafc;
+      --btn:#1d4ed8;
+      --btnHover:#1e40af;
+      --btnBg:#ffffff;
+      --shadow:0 4px 12px rgba(17,24,39,.08);
+      --page-max:1220px;
+      --topbar-height:172px;
+      --chipbar-height:58px;
+      --nav-chip-height:40px;
+      --sticky-nav-offset:188px;
+      --anchor-offset:248px;
+    }
+    *{box-sizing:border-box}
+    html {
+      scroll-behavior:smooth;
+      scroll-padding-top: var(--anchor-offset);
+    }
+    body{margin:0;background:var(--bg); color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial;}
+    .wrap{max-width:var(--page-max) !important;margin:0 auto !important;padding:18px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
+            border-bottom:1px solid var(--line); z-index:10;}
+    .topin{max-width:var(--page-max);margin:0 auto;padding:12px 20px;display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+    h1{margin:0;font-size:18px;letter-spacing:-0.2px}
+    .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .envBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:900;vertical-align:middle}
+    .navRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+    .navRow > *{min-width:0}
+    .navBtn{white-space:nowrap}
+    .navBtn{display:inline-flex;align-items:center;justify-content:center;
+            height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;
+            background:#fff;color:#111827;text-decoration:none;font-size:13px; cursor:pointer;}
+    .navBtn:hover{border-color:#cbd5e1}
+    .navBtn.navArchive{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+    .navBtn.navArchive:hover{filter:brightness(0.98)}
+    /* fallback: first nav button */
+    .navRow > a.navBtn:first-child{background:#eef5ff !important;border-color:#b7d4ff !important;color:#1d4ed8 !important;font-weight:800}
+
+    .navBtn.disabled{opacity:.45;cursor:not-allowed}
+    .dateSelWrap{display:inline-flex;align-items:center;gap:6px}
+    select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;font-size:13px;
+            width:165px; max-width:165px;}
+    @media (max-width: 520px) {
+      select{width:145px; max-width:145px;}
+    }
+
+    .viewTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;align-items:stretch}
+    .viewTab{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;min-height:132px;padding:18px 20px;border-radius:22px;border:1px solid #dbe4ee;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);color:#0f172a;cursor:pointer;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.08);transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+    .viewTab:hover{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 18px 36px rgba(15,23,42,.12)}
+    .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;border-color:#0f172a;box-shadow:0 20px 40px rgba(29,78,216,.24)}
+    .viewTabEyebrow{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(14,165,233,.1);color:#075985;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .viewTab.isActive .viewTabEyebrow{background:rgba(255,255,255,.16);color:#e0f2fe}
+    .viewTabTitle{font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}
+    .viewTabDesc{max-width:420px;font-size:13px;line-height:1.55;color:#475569}
+    .viewTab.isActive .viewTabDesc{color:rgba(255,255,255,.88)}
+    .viewTabStats{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}
+    .viewTabStat{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:999px;background:#eef2ff;color:#1e293b;font-size:12px;font-weight:800}
+    .viewTabStat strong{font-size:13px}
+    .viewTab.isActive .viewTabStat{background:rgba(255,255,255,.16);color:#fff}
+
+    .briefingHero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}
+    .briefingHeroMain{min-width:0}
+    .briefingEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .briefingHero h2{margin:10px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}
+    .briefingLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .briefingHeroStats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .briefingHeroStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .briefingHeroStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .briefingHeroStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
+
+    /* briefing chip bar */
+    .chipbar{position:relative;z-index:2;border:1px solid var(--line);border-radius:16px;background:rgba(248,250,252,.96);box-shadow:0 14px 32px rgba(15,23,42,.10);backdrop-filter:saturate(180%) blur(10px);overflow:hidden;}
+    .briefingChipbar{margin:16px 0 0}
+    .commodityBoardNav{margin:18px 18px 20px}
+    .chipwrap{max-width:var(--page-max);margin:0 auto;padding:10px 18px;}
+    .chips,.commodityGroupNav{display:flex;gap:10px;align-items:center;justify-content:flex-start;width:100%;}
+    .chips{flex-wrap:wrap;overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .chips::-webkit-scrollbar{height:8px}
+    .commodityGroupNav{flex-wrap:wrap;}
+    .chip,.commodityGroupChip{text-decoration:none;border:1px solid var(--chip-border, var(--group-chip-border, var(--line)));border-radius:999px;
+          background:linear-gradient(180deg,var(--chip-soft, var(--group-chip-soft, var(--chip))) 0%, #ffffff 100%);font-size:13px;color:#111827;display:inline-flex;gap:8px;align-items:center;justify-content:center;min-width:0;min-height:var(--nav-chip-height);padding:0 16px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.72);white-space:nowrap}
+    .chip:hover{border-color:var(--chip-color, #cbd5e1);transform:translateY(-1px)}
+    .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chipN,.commodityGroupChip span{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;text-align:center;color:#fff;padding:0 8px;border-radius:999px;font-size:11px}
+    .chipN{background:var(--chip-color, #111827)}
+    .chipDock{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}
+    .chipDock.isVisible{opacity:1;transform:translateY(0);pointer-events:auto}
+    .chipDockInner{max-width:var(--page-max);margin:0 auto;padding:0 20px}
+    .chipDock .chipbar{margin:0;box-shadow:0 18px 38px rgba(15,23,42,.14);background:rgba(248,250,252,.98)}
+    .chipDock .briefingChipbar,
+    .chipDock .commodityBoardNav{margin:0}
+    body.quickNavOpen{overflow:hidden}
+    .mobileQuickNav{display:none}
+    .mobileQuickNavToggle{pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .18s ease, transform .18s ease}
+    .mobileQuickNav.isVisible .mobileQuickNavToggle{pointer-events:auto;opacity:1;transform:translateY(0)}
+    .mobileQuickNavSheet{position:fixed;inset:0;display:none;z-index:14}
+    .mobileQuickNavSheet.isOpen{display:block}
+    .mobileQuickNavBackdrop{position:absolute;inset:0;border:0;background:rgba(15,23,42,.42)}
+    .mobileQuickNavPanel{position:absolute;left:12px;right:12px;bottom:14px;padding:16px;border:1px solid #dbe4ee;border-radius:24px;background:#ffffff;box-shadow:0 22px 56px rgba(15,23,42,.24)}
+    .mobileQuickNavHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .mobileQuickNavHead strong{font-size:15px;letter-spacing:-0.2px}
+    .mobileQuickNavClose{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#111827;font-size:12px;font-weight:800}
+    .mobileQuickNavBody .chipbar{border:none;background:transparent;box-shadow:none;overflow:visible}
+    .mobileQuickNavBody .chipwrap{padding:0;max-width:none}
+    .mobileQuickNavBody .chips,
+    .mobileQuickNavBody .commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+    .mobileQuickNavBody .chip,
+    .mobileQuickNavBody .commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px;font-size:13px;box-shadow:0 10px 24px rgba(15,23,42,.12)}
+
+    .viewPane{display:none}
+    .viewPane.isActive{display:block}
+    .briefingPane{margin-top:14px}
+    .commodityPane{margin-top:14px}
+
+    .commodityBoard{margin-top:14px;border:1px solid #dbe4ee;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:0 16px 34px rgba(15,23,42,.08);overflow:visible}
+    .commodityHead{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start;gap:18px;padding:22px 22px 16px;border-bottom:1px solid rgba(229,231,235,.9);background:linear-gradient(135deg,#ffffff 0%,#f8fafc 68%,#f0fdf4 100%);overflow:hidden;isolation:isolate}
+    .commodityHead::after{content:"";position:absolute;inset:-24% -6% -22% 48%;background:radial-gradient(circle at 50% 46%, rgba(110,231,183,.62) 0%, rgba(125,211,252,.26) 33%, rgba(255,255,255,0) 72%);pointer-events:none;z-index:0}
+    .commodityHeadMain{position:relative;z-index:1;min-width:0}
+    .commodityHead h2{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}
+    .commodityLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
+    .commodityEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commodityHeadStats{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .commodityHeadStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .commodityHeadStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .commodityHeadStat strong{margin-top:6px;color:#0f172a;font-size:22px;font-weight:900;letter-spacing:-0.4px}
+    .commodityBadge{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}
+    .commodityBadge.core{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
+    .commoditySignals{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
+    .commoditySig{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800}
+    .commoditySig[data-section="supply"]{background:#ccfbf1;color:#115e59}
+    .commoditySig[data-section="policy"]{background:#dbeafe;color:#1d4ed8}
+    .commoditySig[data-section="dist"]{background:#ede9fe;color:#6d28d9}
+    .commoditySig[data-section="pest"]{background:#ffedd5;color:#b45309}
+    .commoditySig.muted{background:#f8fafc;color:#94a3b8}
+    .commodityStoryCluster{display:flex;flex-direction:column;gap:10px;height:100%}
+    .commodityPrimaryCard{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);min-height:124px}
+    .commodityPrimaryKicker{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}
+    .commodityPrimaryStory{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}
+    .commodityPrimaryStory:hover{text-decoration:underline}
+    .commodityPrimaryMeta{margin-top:7px;color:#64748b;font-size:11px;font-weight:700}
+    .commoditySupportList{display:flex;flex-direction:column;gap:8px}
+    .commoditySupportTitle{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commoditySupportStory,.commodityMoreStory{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:14px;border:1px solid #dbe4ee;background:#fff;color:#0f172a;text-decoration:none;min-width:0}
+    .commoditySupportStory:hover,.commodityMoreStory:hover{border-color:#cbd5e1}
+    .commoditySupportLabel{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:900;flex:0 0 auto}
+    .commoditySupportText{display:-webkit-box;min-width:0;font-size:12px;line-height:1.5;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .commodityMoreWrap{border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc}
+    .commodityMoreSummary{list-style:none;cursor:pointer;padding:10px 12px;color:#334155;font-size:12px;font-weight:900}
+    .commodityMoreSummary::-webkit-details-marker{display:none}
+    .commodityMoreList{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
+    .commodityStoryMuted{padding:11px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#94a3b8;font-size:12px}
+    .commodityBoardNav{border-color:#cfe0f4;background:rgba(255,255,255,.98);box-shadow:0 18px 36px rgba(15,23,42,.12)}
+    .commodityGroupChip:hover{border-color:var(--group-chip-color, #334155);transform:translateY(-1px)}
+    .commodityGroupChip{border-color:var(--group-chip-border, var(--line));background:linear-gradient(180deg,var(--group-chip-soft, var(--chip)) 0%, #ffffff 100%);}
+    .commodityGroupChip span{background:var(--group-chip-color, #111827)}
+    .commodityGroupBlock{margin:0 18px 20px;padding:20px;border:1px solid var(--commodity-group-border, #dbe4ee);border-left:4px solid var(--commodity-group-color, #475569);border-radius:22px;background:linear-gradient(180deg,var(--commodity-group-soft, #f8fafc) 0%, #ffffff 100%);box-shadow:0 16px 34px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.8);scroll-margin-top:calc(var(--anchor-offset) + 28px)}
+    .commodityGroupHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 0 14px;border-bottom:1px solid var(--commodity-group-border, #dbe4ee);margin-bottom:16px;flex-wrap:wrap}
+    .commodityGroupTitleWrap{display:flex;align-items:center;gap:10px}
+    .commodityGroupTitleWrap h3{margin:0;font-size:16px}
+    .commodityGroupDot{width:12px;height:12px;border-radius:999px;box-shadow:0 0 0 8px var(--commodity-group-soft, rgba(15,23,42,.06))}
+    .commodityGroupMeta{margin-left:auto;color:#64748b;font-size:12px;font-weight:700}
+    .commodityGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+    .commodityGrid.isSingle{grid-template-columns:minmax(280px,520px)}
+    .commodityGrid.isDuo{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .commodityTile{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff;min-height:100%}
+    .commodityTile.isActive{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}
+    .commodityTileTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .commodityTileName{font-size:16px;font-weight:900;line-height:1.35}
+    .commodityTileMeta{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}
+    .commodityInactive{margin-top:12px;padding:12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc}
+    .commodityInactiveTitle{color:#64748b;font-size:12px;font-weight:800;margin-bottom:8px}
+    .commodityMiniGrid{display:flex;flex-wrap:wrap;gap:8px}
+    .commodityMiniChip{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #dbe4ee;background:#fff;color:#475569;font-size:12px;font-weight:700;opacity:.7}
+    .commodityMiniChip.isCore{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8;opacity:1;font-weight:900;border-width:2px}
+    .commodityEmpty{padding:20px 18px 22px}
+    .commodityGroupEmpty{margin-top:10px;padding:14px 12px;border:1px dashed #dbe4ee;border-radius:14px;background:#f8fafc;color:#64748b;font-size:13px}
+
+    .sec{margin-top:14px !important;border:1px solid var(--line);border-radius:14px !important;overflow:hidden;background:var(--card);
+          scroll-margin-top: calc(var(--anchor-offset) + 18px);
+    }
+    .secHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+    .secTitle{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .dotColor{width:10px;height:10px;border-radius:999px}
+    .secCount{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+    .secBody{padding:12px 12px 14px}
+    .card{border:1px solid var(--line);border-left:5px solid #334155;border-radius:14px;padding:12px;margin:10px 0;background:#fff;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease}
+    .card:hover{border-color:#94a3b8;box-shadow:0 4px 12px rgba(15,23,42,.08)}
+    .cardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+    .meta{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;flex:1 1 0%}
+    .press{color:#111827;font-weight:900}
+    .dot{opacity:.5}
+    .topic{background:#f3f4f6;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:11.5px;color:#111827;cursor:pointer;transition:background .15s ease}
+    .topic:hover{background:#e0e7ff;border-color:#a5b4fc;color:#3730a3}
+    .ttl{margin-top:8px;font-size:15px;line-height:1.35;font-weight:900}
+    .sum{margin-top:8px;color:#374151;font-size:13px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+    .badgeCore {
+      display:inline-flex; align-items:center; justify-content:center;
+      height:18px; padding:0 8px; border-radius:999px;
+      background:#111827; color:#fff; font-size:11px; font-weight:900;
+      margin-right:2px;
+    }
+
+    .btnOpen{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+             height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
+             background:var(--btn);color:#fff;text-decoration:none;font-size:13px;font-weight:900;white-space:nowrap}
+    .btnOpen:hover{background:var(--btnHover);border-color:var(--btnHover)}
+
+    .empty{color:var(--muted);font-size:13px;padding:10px 2px}
+    .footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
+    .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
+    .swipeHint.show{display:flex}
+    .swipeHint.hide{opacity:0;transform:translateY(-4px)}
+    .swipeHint .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);font-size:11px;line-height:1}
+    .swipeHint .txt{letter-spacing:-0.1px}
+    .swipeHint .pill{padding:2px 8px;border:1px dashed var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    @media (hover:hover) and (pointer:fine){ .swipeHint{display:none !important;} }
+    @media (prefers-reduced-motion: reduce){ .swipeHint{transition:none} }
+    .navLoading{display:none;align-items:center;justify-content:center;margin:4px 0 0;color:var(--muted);font-size:12px}
+    .navLoading.show{display:flex}
+    .navLoading .badge{padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--btnBg, #fff);box-shadow:var(--shadow, 0 4px 12px rgba(17,24,39,.08))}
+    .navRow{transition:transform .18s ease, opacity .18s ease}
+    .navRow.swipeActive{transition:none}
+    .navRow.swipeSettling{transition:transform .18s ease, opacity .18s ease}
+    @media (max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse){
+      .chipDock{display:none}
+      .chips,.commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+      .chip,.commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:18px}
+      .chipN,.commodityGroupChip span{min-width:24px;height:24px;padding:0 7px}
+      .mobileQuickNav{display:block;position:fixed;right:14px;bottom:18px;z-index:13}
+      .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}
+    }
+    @media (max-width: 840px){
+      .topbar{background:rgba(255,255,255,0.98);backdrop-filter:none}
+      .wrap{padding:16px 16px 72px !important}
+      .topin{padding:12px 16px}
+      .chipDockInner{padding:0 16px}
+      .commodityGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width: 640px){
+      .wrap{padding:12px 12px 64px !important}
+      .topin{gap:8px}
+      .navRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+      .navRow > .navBtn:first-child{grid-column:1}
+      .navRow > .navBtn:nth-child(2){grid-column:2}
+      .navRow > .dateSelWrap{grid-column:1; width:100%}
+      .navRow > .navBtn:last-child{grid-column:2}
+      .dateSelWrap{width:100%}
+      .dateSelWrap select{width:100%;max-width:none}
+      .viewTabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:12px;padding:4px;border:1px solid #dbe4ee;border-radius:18px;background:#f8fafc}
+      .viewTab{min-height:auto;padding:10px 12px;border:none;border-radius:14px;gap:4px;box-shadow:none;align-items:center;justify-content:center;background:transparent}
+      .viewTab:hover{transform:none;box-shadow:none;border-color:transparent}
+      .viewTab.isActive{box-shadow:0 10px 22px rgba(29,78,216,.22)}
+      .viewTabEyebrow{display:none}
+      .viewTabTitle{width:100%;font-size:17px;letter-spacing:-0.35px;text-align:center}
+      .viewTabDesc{display:none}
+      .viewTabStats{display:none}
+      .briefingPane,.commodityPane{margin-top:12px}
+      .briefingHero{grid-template-columns:1fr;padding:0;border:none;border-radius:0;gap:10px;background:transparent;box-shadow:none}
+      .briefingEyebrow,.commodityEyebrow{min-height:22px;padding:0 8px;font-size:10px}
+      .briefingHero h2{font-size:26px;letter-spacing:-0.6px}
+      .briefingLead,.commodityLead{margin-top:8px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      .briefingHeroStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}
+      .briefingHeroStat{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}
+      .briefingHeroStatLabel{font-size:10px}
+      .briefingHeroStat strong{margin-top:4px;font-size:18px}
+      .briefingChipbar{margin:12px 0 18px}
+      .commodityBoardNav{margin:10px 0 16px}
+      .chipDock{display:none}
+      .chipbar{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+      .chipwrap{padding:0}
+      .chips,.commodityGroupNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch;overflow:visible}
+      .chip,.commodityGroupChip{width:100%;justify-content:space-between;min-height:48px;padding:0 14px;font-size:13px;border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.10)}
+      .chipN,.commodityGroupChip span{min-width:24px;height:24px;padding:0 7px}
+      .mobileQuickNav{display:block;position:fixed;right:14px;bottom:18px;z-index:13}
+      .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28)}
+      .commodityBoard{margin-top:8px;border:none;border-radius:0;background:transparent;box-shadow:none}
+      .commodityHead{grid-template-columns:1fr;padding:0;border-bottom:none;background:transparent;overflow:visible}
+      .commodityHead::after{display:none}
+      .commodityHead h2{font-size:26px;letter-spacing:-0.6px}
+      .commodityHeadStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}
+      .commodityHeadStat{min-width:0;min-height:0;padding:10px 10px 11px;border-radius:14px;box-shadow:none;border:1px solid #e2e8f0;background:#f8fafc}
+      .commodityHeadStatLabel{font-size:10px}
+      .commodityHeadStat strong{margin-top:4px;font-size:18px}
+      .commodityGrid,.commodityGrid.isSingle,.commodityGrid.isDuo{grid-template-columns:1fr}
+      .commodityGroupBlock{margin:0 0 20px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}
+      .commodityGroupHead{display:block;padding:0 0 10px;border-bottom:none;margin-bottom:12px}
+      .commodityGroupMeta{margin-top:6px}
+      .commodityTile{padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08)}
+      .commodityInactive{padding:0;border:none;background:transparent}
+      .commodityInactiveTitle{margin-bottom:10px}
+      .sec{margin-top:22px !important;border:none !important;border-left:none !important;border-radius:0 !important;overflow:visible;background:transparent;padding-left:0}
+      .secHead{padding:0 0 10px;background:transparent;border-bottom:1px solid var(--line);border-left:none !important}
+      .secBody{padding:4px 0 0}
+      .card{margin:0 0 12px;padding:14px;border-radius:18px;box-shadow:0 12px 26px rgba(15,23,42,.08);border-left:none !important}
+      .commoditySupportStory,.commodityMoreStory{width:100%}
+      .commoditySupportText{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+      .commodityMiniGrid{gap:6px}
+    }
+    @media print {
+      .topbar,.chipDock,.mobileQuickNav,.mobileQuickNavSheet,.navLoading,.swipeHint,.btnOpen,.viewTabs{display:none !important}
+      body{background:#fff;color:#000}
+      .wrap{max-width:none;padding:10px !important}
+      .briefingHero{border:1px solid #ccc;box-shadow:none;background:#fff}
+      .chipbar{display:block;border:none;box-shadow:none;background:transparent}
+      .chips{flex-wrap:wrap}
+      .chip{border:1px solid #ccc;box-shadow:none;background:#f9f9f9;page-break-inside:avoid}
+      .sec{border:1px solid #ccc;page-break-inside:avoid}
+      .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid;cursor:default}
+      .card:hover{border-color:#ccc;box-shadow:none}
+      .sum{display:block;-webkit-line-clamp:unset;overflow:visible}
+      .commodityBoard{box-shadow:none;border:1px solid #ccc}
+      .commodityTile{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+      .footer{page-break-before:always}
+      a{color:#000;text-decoration:none}
+      .press{color:#000} .ttl{color:#000}
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--card:#1e293b;
+        --chip:#1e293b;--btn:#3b82f6;--btnHover:#2563eb;--btnBg:#1e293b;
+        --shadow:0 4px 12px rgba(0,0,0,.3);
+      }
+      body{background:var(--bg);color:var(--text)}
+      .topbar{background:rgba(15,23,42,0.94);border-bottom-color:var(--line)}
+      .navBtn{background:#1e293b;color:#e2e8f0;border-color:var(--line)}
+      .navBtn:hover{border-color:#475569}
+      .navBtn.navArchive{background:#1e3a5f !important;border-color:#3b82f6 !important;color:#93c5fd !important}
+      .navRow > a.navBtn:first-child{background:#1e3a5f !important;border-color:#3b82f6 !important;color:#93c5fd !important}
+      select{background:#1e293b;color:#e2e8f0;border-color:var(--line)}
+      .viewTab{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);color:#e2e8f0;border-color:var(--line)}
+      .viewTab:hover{border-color:#475569}
+      .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);border-color:#1d4ed8}
+      .viewTabDesc{color:#94a3b8}
+      .viewTabStat{background:rgba(255,255,255,.08);color:#e2e8f0}
+      .briefingHero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 56%,#1e293b 100%);border-color:var(--line)}
+      .briefingHeroStat{background:rgba(30,41,59,.92);border-color:var(--line)}
+      .briefingHeroStat strong{color:#e2e8f0}
+      .briefingHeroStatLabel{color:#94a3b8}
+      .chipbar{background:rgba(30,41,59,.96);border-color:var(--line)}
+      .chip{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);color:#e2e8f0}
+      .sec{background:var(--card)}
+      .secHead{background:#1e293b;border-bottom-color:var(--line)}
+      .card{background:#1e293b;border-color:var(--line)}
+      .card:hover{border-color:#475569;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+      .press{color:#e2e8f0}
+      .topic{background:#334155;border-color:#475569;color:#e2e8f0}
+      .ttl{color:#f1f5f9}
+      .sum{color:#94a3b8}
+      .badgeCore{background:#3b82f6;color:#fff}
+      .commodityBoard{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}
+      .commodityHead{background:linear-gradient(135deg,#1e293b 0%,#0f172a 68%,#1e293b 100%);border-bottom-color:var(--line)}
+      .commodityHead::after{display:none}
+      .commodityHeadStat{background:rgba(30,41,59,.95);border-color:var(--line)}
+      .commodityHeadStat strong{color:#e2e8f0}
+      .commodityTile{background:#1e293b;border-color:var(--line)}
+      .commodityTile.isActive{border-color:#34d399;box-shadow:0 8px 24px rgba(52,211,153,.1)}
+      .commodityPrimaryCard{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}
+      .commodityPrimaryStory{color:#f1f5f9}
+      .commoditySupportStory,.commodityMoreStory{background:#1e293b;border-color:var(--line);color:#e2e8f0}
+      .commodityMoreWrap{background:#0f172a;border-color:#475569}
+      .commodityMoreSummary{color:#94a3b8}
+      .commodityGroupBlock{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}
+      .commodityInactive{background:#0f172a;border-color:#475569}
+      .commodityMiniChip{background:#1e293b;border-color:#475569;color:#94a3b8}
+      .commodityMiniChip.isCore{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+      .commodityStoryMuted{background:#0f172a;border-color:#475569;color:#64748b}
+      .mobileQuickNavPanel{background:#1e293b;border-color:var(--line)}
+      .mobileQuickNavClose{background:#1e293b;color:#e2e8f0;border-color:var(--line)}
+      .chipDock .chipbar{background:rgba(30,41,59,.98)}
+      .empty{color:#64748b}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topin">
+      <div>
+        <h1>[2026-03-26 농산물 뉴스 Brief]</h1>
+        <div class="sub">기간: 2026-03-25 07:00 ~ 2026-03-26 07:00 · 기사 15건</div>
+      </div>
+      <div class="navRow">
+        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-25.html">◀ 이전</a>
+        <div class="dateSelWrap">
+          <select id="dateSelect" aria-label="날짜 선택">
+            <option value="/agri-news-brief/archive/2026-03-26.html" selected>26-03-26 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-25.html">26-03-25 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-24.html">26-03-24 (화)</option>
+<option value="/agri-news-brief/archive/2026-03-23.html">26-03-23 (월)</option>
+<option value="/agri-news-brief/archive/2026-03-20.html">26-03-20 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-19.html">26-03-19 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-18.html">26-03-18 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-17.html">26-03-17 (화)</option>
+<option value="/agri-news-brief/archive/2026-03-16.html">26-03-16 (월)</option>
+<option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-11.html">26-02-11 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (월)</option>
+<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (금)</option>
+<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (목)</option>
+<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (수)</option>
+<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (화)</option>
+<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-23.html">26-01-23 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-22.html">26-01-22 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-21.html">26-01-21 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-20.html">26-01-20 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-19.html">26-01-19 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-16.html">26-01-16 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-15.html">26-01-15 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-14.html">26-01-14 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-13.html">26-01-13 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-12.html">26-01-12 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-09.html">26-01-09 (금)</option>
+<option value="/agri-news-brief/archive/2026-01-08.html">26-01-08 (목)</option>
+<option value="/agri-news-brief/archive/2026-01-07.html">26-01-07 (수)</option>
+<option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
+<option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
+<option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
+          </select>
+        </div>
+        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
+      </div>
+<div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+        <span class="badge">날짜 이동 중…</span>
+      </div>
+    </div>
+  </div>
+  <div id="chipDock" class="chipDock" aria-hidden="true">
+    <div id="chipDockInner" class="chipDockInner"></div>
+  </div>
+  <div id="mobileQuickNav" class="mobileQuickNav" aria-hidden="true">
+    <button id="mobileQuickNavToggle" class="mobileQuickNavToggle" type="button" data-swipe-ignore="1">
+      <span id="mobileQuickNavToggleLabel">섹션 이동</span>
+    </button>
+  </div>
+  <div id="mobileQuickNavSheet" class="mobileQuickNavSheet" aria-hidden="true">
+    <button id="mobileQuickNavBackdrop" class="mobileQuickNavBackdrop" type="button" aria-label="빠른 이동 닫기" data-swipe-ignore="1"></button>
+    <section class="mobileQuickNavPanel" aria-labelledby="mobileQuickNavTitle">
+      <div class="mobileQuickNavHead">
+        <strong id="mobileQuickNavTitle">섹션 바로가기</strong>
+        <button id="mobileQuickNavClose" class="mobileQuickNavClose" type="button" data-swipe-ignore="1">닫기</button>
+      </div>
+      <div id="mobileQuickNavBody" class="mobileQuickNavBody"></div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    
+      <div class="viewTabs" role="tablist" aria-label="보기 전환">
+        <button class="viewTab isActive" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">
+          <span class="viewTabEyebrow">핵심 요약</span>
+          <span class="viewTabTitle">오늘의 브리핑</span>
+          <span class="viewTabDesc">섹션별 핵심 기사와 바로가기를 한눈에 확인합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>4</strong>개 섹션</span>
+            <span class="viewTabStat"><strong>15</strong>건 기사</span>
+          </span>
+        </button>
+        <button class="viewTab" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">
+          <span class="viewTabEyebrow">품목 추적</span>
+          <span class="viewTabTitle">전체 품목 보드</span>
+          <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
+          <span class="viewTabStats">
+            <span class="viewTabStat"><strong>18</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>11</strong>개 수급사업</span>
+          </span>
+        </button>
+      </div>
+    
+    <section id="view-briefing" class="viewPane briefingPane isActive" data-view-pane="briefing" role="tabpanel">
+      
+    <section class="briefingHero" aria-labelledby="briefingHeroTitle">
+      <div class="briefingHeroMain">
+        <div class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</div>
+        <h2 id="briefingHeroTitle">오늘의 브리핑</h2>
+        <div class="briefingLead">섹션별 핵심 기사를 한 번에 훑고 바로 원문으로 이동할 수 있게 정리했습니다. 아래 섹션 칩을 누르면 원하는 영역으로 즉시 이동합니다.</div>
+      </div>
+      <div class="briefingHeroStats" aria-label="브리핑 요약">
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">섹션</span>
+          <strong>4개</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">기사</span>
+          <strong>15건</strong>
+        </div>
+        <div class="briefingHeroStat">
+          <span class="briefingHeroStatLabel">핵심</span>
+          <strong>7건</strong>
+        </div>
+      </div>
+    </section>
+    
+      <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="--chip-color:#0f766e;--chip-soft:rgba(15,118,110,0.120);--chip-border:rgba(15,118,110,0.360);" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">3</span></a>
+<a class="chip" style="--chip-color:#1d4ed8;--chip-soft:rgba(29,78,216,0.120);--chip-border:rgba(29,78,216,0.360);" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">4</span></a>
+<a class="chip" style="--chip-color:#6d28d9;--chip-soft:rgba(109,40,217,0.120);--chip-border:rgba(109,40,217,0.360);" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">4</span></a>
+<a class="chip" style="--chip-color:#b45309;--chip-soft:rgba(180,83,9,0.120);--chip-border:rgba(180,83,9,0.360);" href="#sec-pest"><span class="chipTitle">생육 리스크 및 방제</span><span class="chipN">4</span></a></div></div></div>
+      
+            <section id="sec-supply" class="sec" style="--sec-color:#0f766e">
+              <div class="secHead" style="border-left:8px solid #0f766e;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#0f766e"></span>
+                  품목 및 수급 동향
+                </div>
+                <div class="secCount">3건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#0f766e" data-href="http://www.breaknews.com/1194773">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">브레이크뉴스</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 10:16</span>
+                  <span class="dot">·</span>
+                  <span class="topic">배추</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.breaknews.com/1194773" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">전남도, 봄무·배추·양배추 재배면적 정밀 조사… &quot;수급 안정 선제 대응...</div>
+              <div class="sum">전남도가 봄무·배추·양배추 재배면적을 정밀 조사해 예상 생산량을 사전에 파악하기로 했다. 가격 폭락이나 품귀에 선제 대응해 수급 안정을 도모하려는 조치라고 설명했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.newsis.com/view/NISX20260325_0003563343">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">뉴시스</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 15:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">배추</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260325_0003563343" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">봄배추 수급 점검 나선 농식차관 &quot;비료 등 관계부처 지원 강구&quot;</div>
+              <div class="sum">농식품부 차관이 봄배추 수급과 가격 불안 우려를 점검하며 비료 재고를 상시 관리하고 관계부처 지원을 강구하겠다고 밝혔다. 정부는 수입선 다변화, 원료 구입 부담 완화, 적정 시비 기술지도로 농가 부담을 줄일 방침이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.fntoday.co.kr/news/articleView.html?idxno=380679">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">fntoday</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 11:52</span>
+                  <span class="dot">·</span>
+                  <span class="topic">토마토</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.fntoday.co.kr/news/articleView.html?idxno=380679" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&quot;초보 농사꾼에서 스마트 전문가로&quot;…홍천 청년 농업인들의 값진 첫 수...</div>
+              <div class="sum">홍천 청년 농업인들이 완숙 토마토 첫 출하를 시작했다. 기사에는 1월 15일 모종 정식 뒤 약 두 달 만의 출하와 함께 농자재·난방 유류 가격 상승으로 생산비 부담이 커졌다고 소개됐다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-policy" class="sec" style="--sec-color:#1d4ed8">
+              <div class="secHead" style="border-left:8px solid #1d4ed8;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#1d4ed8"></span>
+                  정책 및 주요 이슈
+                </div>
+                <div class="secCount">4건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.ajunews.com/view/20260324132307338">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">아주경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/26 05:02</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.ajunews.com/view/20260324132307338" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">aT, 2030년까지 스마트 APC 300곳 구축…&quot; 농산물 유통 AX 전환 속도&quot;</div>
+              <div class="sum">aT가 2030년까지 스마트 APC 300곳 구축을 추진하며 농산물 유통의 AX 전환에 속도를 내기로 했다. 이는 정부의 농산물 유통구조 개선 방안 중 산지 스마트화 과제의 일환이며, 지난해 신규 APC 30곳을 추가 확충했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.gnnews.co.kr/news/articleView.html?idxno=633441">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">경남일보</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 20:04</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.gnnews.co.kr/news/articleView.html?idxno=633441" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&#x27;농산물은 하락 축산물은 보합세&#x27; 농식품부 가격동향 점검</div>
+              <div class="sum">농식품부가 농축산물 가격동향을 점검한 결과 농산물은 하락, 축산물은 보합세를 보였다고 전했다. 정부는 수급 동향을 지속 점검하고 축산물 유통구조의 비효율과 가격 상승 요인을 면밀히 살피겠다고 밝혔다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.jnilbo.com/news/articleView.html?idxno=90000027757">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">진일보</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 10:49</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.jnilbo.com/news/articleView.html?idxno=90000027757" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">영암군, 농산물 최저 가격 보장제 추진</div>
+              <div class="sum">영암군이 농산물 가격 하락에 따른 농가 소득 감소를 줄이기 위해 최저가격 보장제를 추진한다. 지원 대상은 고구마·풋고추·멜론·배·미나리·단감·가을무·감자·단호박·무화과 등으로 제시됐다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.sedaily.com/article/20023898">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">서울경제</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 13:22</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.sedaily.com/article/20023898" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">의정부시, 생애주기별 친환경 먹거리 복지 확대…임산부·청년까지 지원</div>
+              <div class="sum">의정부시가 생애주기별 친환경 먹거리 복지를 확대해 임산부와 청년까지 지원 대상을 넓혔다. 임산부에게는 유기농 농산물 구매비를 연 24만원 지원하며, 올해부터는 요건 충족 시 전원 지원으로 바뀌었다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-dist" class="sec" style="--sec-color:#6d28d9">
+              <div class="secHead" style="border-left:8px solid #6d28d9;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#6d28d9"></span>
+                  유통 및 현장 (도매시장/APC/수출)
+                </div>
+                <div class="secCount">4건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.mt.co.kr/economy/2026/03/26/2026032406200899770">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">머니투데이</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/26 05:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">포도</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.mt.co.kr/economy/2026/03/26/2026032406200899770" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&quot;K-푸드 수출은 대한민국 식품영토 확장…중동 악재에 적극 대응&quot;</div>
+              <div class="sum">aT는 포도·딸기 등 신선 농산물 수출과 시장 개척을 통해 K-푸드 수출 확대에 나서고 있다고 밝혔다. 중동 악재에 적극 대응하는 한편 본사 인력을 지방으로 재배치해 생산 현장 밀착도를 높이고 있다고 설명했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.nongmin.com/article/20260325500480">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 18:46</span>
+                  <span class="dot">·</span>
+                  <span class="topic">수박</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500480" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">다올찬수박 경쟁력 ‘쑥’…음성 대소 농협 공정육묘장 ‘첫 가동’</div>
+              <div class="sum">음성 대소농협 공정육묘장이 첫 가동에 들어가며 ‘다올찬수박’ 생산 기반을 강화했다. 대소농협은 6월 초중순부터 7월 초순까지 약 40일간 수박을 출하하고, 공선출하 조직을 통한 공동선별·공동출하 체계로 유통할 계획이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.donga.com/news/Society/article/all/20260325/133608505/2">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">동아일보</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/26 04:33</span>
+                  <span class="dot">·</span>
+                  <span class="topic">APC/산지유통</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.donga.com/news/Society/article/all/20260325/133608505/2" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">보은 ‘ 스마트 과수원’으로 기후위기 넘는다</div>
+              <div class="sum">보은군이 스마트 과수원과 귀농·귀촌 스마트 경영실습농장 조성으로 기후위기 대응과 스마트농업 확산에 나섰다. 7ha 부지에 스마트온실, 공동육묘장, 스마트 농산물 선별장(APC)을 2028년 12월까지 단계적으로 조성할 계획이다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.dailian.co.kr/news/view/1625572/?sc=Naver">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">데일리안</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 17:01</span>
+                  <span class="dot">·</span>
+                  <span class="topic">도매시장</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.dailian.co.kr/news/view/1625572/?sc=Naver" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">&quot;회장 출마 땐 조합장 사퇴&quot;…농협개혁위, 13개 개혁과제 확정</div>
+              <div class="sum">농협개혁위원회가 회장 선거제도 개선과 내부통제 강화, 경제사업 구조 개편 등을 포함한 13개 개혁과제를 확정했다. 산지 생산·유통시설 디지털화와 농작업 대행 서비스 확대, 온라인도매시장·로컬푸드 활성화도 과제에 담겼다.</div>
+            </div>
+            </div>
+            </section>
+            
+
+            <section id="sec-pest" class="sec" style="--sec-color:#b45309">
+              <div class="secHead" style="border-left:8px solid #b45309;">
+                <div class="secTitle">
+                  <span class="dotColor" style="background:#b45309"></span>
+                  생육 리스크 및 방제
+                </div>
+                <div class="secCount">4건</div>
+              </div>
+              <div class="secBody">
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.aflnews.co.kr/news/articleView.html?idxno=317232">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농수축산신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 16:12</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317232" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">병해충 대응, &#x27;민관 협의체&#x27;로 전환…R&amp;D–현장 연결 강화 신호</div>
+              <div class="sum">병해충 대응 체계가 민관 협의체 중심으로 전환되며 R&amp;D와 현장 연결 강화 신호가 제시됐다. 농진청은 과수화상병 예찰·방제 전략과 신규 연구사업 방향을 제시했고, 학계는 해외 사례를 공유하며 기술 고도화를 강조했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.amnews.co.kr/news/articleView.html?idxno=71642">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+                  <span class="press">농축유통신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 19:40</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71642" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농진청, &#x27;병해충 대응 민관 연구협의체&#x27; 발족</div>
+              <div class="sum">농촌진흥청이 병해충 대응 민관 연구협의체를 발족하고 중앙·지방정부, 대학, 협회 등 20여 명 전문가와 현장 밀착형 연구를 추진한다. 발족식 토론회에서는 과수화상병 방제와 신규 R&amp;D 기획 방향을 논의했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#b45309" data-href="https://www.farmnmarket.com/news/article.html?no=25960">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">팜&amp;마켓</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 08:50</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25960" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농식품부 장관, 과수화상병 예방 및 농기자재 공급 현장 점검</div>
+              <div class="sum">농식품부 장관이 과수화상병 예방 현장과 농기자재 공급 상황을 점검하며 전국적 선제 예찰·방제 체계를 살폈다. 중동 정세 불안에 따른 요소와 석유유래 제품 수급 상황도 점검하고 농기자재 공급 대응을 당부했다.</div>
+            </div>
+            
+
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64147">
+              <div class="cardTop">
+                <div class="meta">
+                  
+                  <span class="press">원예산업신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">03/25 10:55</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64147" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농식품부 장관, 과수화상병 현장점검</div>
+              <div class="sum">송미령 농식품부 장관이 경기 용인의 사과 과원을 방문해 과수화상병 사전 예방과 비료 등 농기자재 공급 상황을 점검했다. 이어 농협주유소에서 면세유 공급과 가격동향을 살피고 가격 안정화 방안을 논의했다.</div>
+            </div>
+            </div>
+            </section>
+            
+    </section>
+    <section id="view-commodity" class="viewPane commodityPane" data-view-pane="commodity" role="tabpanel" aria-hidden="true">
+      
+    <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
+      <div class="commodityHead">
+        <div class="commodityHeadMain">
+          <div class="commodityEyebrow">원예수급부 전체 관리 품목</div>
+          <h2 id="commodityBoardTitle">전체 품목 보드</h2>
+          <div class="commodityLead">품목별 관련 기사 풀을 먼저 넓게 모아 보여줍니다. 오늘의 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
+        </div>
+        <div class="commodityHeadStats" aria-label="품목 보드 요약">
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">전체 관리</span>
+            <strong>33개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">오늘 연결</span>
+            <strong>18개</strong>
+          </div>
+          <div class="commodityHeadStat">
+            <span class="commodityHeadStatLabel">수급사업 연결</span>
+            <strong>11개</strong>
+          </div>
+        </div>
+      </div>
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>4</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>7</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>5</span></a></div></div></div>
+      
+            <section id="commodity-group-root_leaf" class="commodityGroupBlock" style="--commodity-group-color:#0f766e;--commodity-group-soft:rgba(15,118,110,0.070);--commodity-group-border:rgba(15,118,110,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#0f766e"></span>
+                  <h3>엽근채류</h3>
+                </div>
+                <div class="commodityGroupMeta">활성 품목 4 / 5 · 수급사업 3 / 4</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-napa_cabbage" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">배추</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 16건</span>
+                    <span>핵심 3건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260325_0003563343" target="_top" rel="noopener">봄배추 수급 점검 나선 농식차관 &quot;비료 등 관계부처 지원 강구&quot;</a>
+                    <div class="commodityPrimaryMeta">수급 · 뉴시스 · 03/25 15:30</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.newskr.kr/news/articleView.html?idxno=103787" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">농식품부 , 봄배추 수급 동향 점검 &quot;농자재 공급 등 지원 강구&quot;</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.breaknews.com/1194773" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·배추·양배추 재배면적 정밀 조사… &quot;수급 안정 선제 대응...</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 13건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.youngnong.co.kr/news/articleView.html?idxno=58293" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">4월 말 &#x27;봄배추&#x27; 농협 계약재배 10% 확대… 비료 원료 수급은 7월까지 &#x27;...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.m-i.kr/news/articleView.html?idxno=1357711" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄배추 재배면적 조사…수급안정 선제 대응</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jeollailbo.com/news/articleView.html?idxno=795699" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무· 봄배추 ·봄양배추 재배 의향 면적 조사 &quot;수요 예측&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://mpmbc.co.kr/NewsArticle/1511007" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무 ·봄배추 재배 의향 면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202603251127011" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사···“생육관리·생산 예측...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jndn.com/article.php?aid=1774432898429577003" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dailysportshankook.co.kr/news/articleView.html?idxno=426365" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전라남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2410429" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.sisafocus.co.kr/news/articleView.html?idxno=357682" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">전남도, 봄 무 ·배추·양배추 재배 면적 전수 조사… 수급 안정 &#x27;선제 대...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.etoday.co.kr/news/view/2569176" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">중동발 비료 원료 불안에 정부 대응 강화…재고 점검·수입선 대체 나선...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.segye.com/newsView/20260325514889" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[기고] 전환의 시대, 기술로 여는 원예특작의 새 길</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.etnews.com/20260325000115" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[ET시론]농업·농촌의 새로운 미래, 모두를 위한 AI 대전환(AX)</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.viva100.com/article/20260325501401" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경북 영양군, 베트남ㆍ라오스 계절근로자 입국</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-potato" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">감자</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 15건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.jeonmin.co.kr/news/articleView.html?idxno=436522" target="_top" rel="noopener">김제광활 햇 감자 수확 시작…전국 30% 생산지 봄 감자 본격 출하</a>
+                    <div class="commodityPrimaryMeta">수급 · 전민일보 · 03/25 14:16</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.domin.co.kr/news/articleView.html?idxno=1549761" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">부안농협, 천년의솜씨 부안노을 감자 재배농가에 감자 박스 무상지원</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260325_0003562984" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">김제 광활 햇 감자 본격 수확…&quot;전국 봄 감자 의 30% 생산&quot;</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 12건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jeollailbo.com/news/articleView.html?idxno=795692" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전국 봄 감자 30% 책임&quot;… 김제 광활 햇 감자 , 대한민국 봄 식탁 선점</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.yna.co.kr/view/PYH20260325141800062?input=1196m" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">남보다 빠른 감자 수확으로 3∼4배 고소득</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kado.net/news/articleView.html?idxno=2040860" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">강릉 &#x27;겨울 감자 &#x27; 재배 확대 농가소득 창출 기대</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kwnews.co.kr/page/view/2026032510485236653" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">강릉시, 겨울 감자 시설재배 확대…농가소득 ‘효자 작목’ 육성</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.nocutnews.co.kr/news/6491150" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&quot;빠른 수확으로 3~4배 소득&quot; 강릉시, 농한기 겨울 감자 시설재배 확대</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3539424" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&#x27;식감 뛰어난&#x27; 김제 광활 햇 감자 , 수확 &#x27;본격&#x27; 전국적 명품 &#x27;자리 매김&#x27;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://sjbnews.com/news/news.php?number=874672" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">김제 광활 명품 햇 감자 본격 수확</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mbceg.co.kr/post/134784" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">강릉시, 겨울 감자 시설 재배 확대 추진</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.cbci.co.kr/news/articleView.html?idxno=563142" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[속보] 진원생명과학, 장중 VI 발동… 감자 결정 이후 변동성 제기</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260325114600062?input=1195m" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">강릉서 감자 로 3∼4배 고소득, 비결은? &quot;남보다 빠른 수확&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.domin.co.kr/news/articleView.html?idxno=1549773" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">김제 광활 명품 햇 감자 수확</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100638" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[뉴스팜리포트-공동영농] &quot;벼농사 대신 콩·양파로 월급 받는다&quot; 공동영...</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-radish" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">무</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 8건</span>
+                    <span>핵심 1건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.breaknews.com/1194773" target="_top" rel="noopener">전남도, 봄무·배추·양배추 재배면적 정밀 조사… &quot;수급 안정 선제 대응...</a>
+                    <div class="commodityPrimaryMeta">수급 · 브레이크뉴스 · 03/25 10:16</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202603251127011" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사···“생육관리·생산 예측...</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.m-i.kr/news/articleView.html?idxno=1357711" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄배추 재배면적 조사…수급안정 선제 대응</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 5건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jeollailbo.com/news/articleView.html?idxno=795699" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무· 봄배추 ·봄양배추 재배 의향 면적 조사 &quot;수요 예측&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://mpmbc.co.kr/NewsArticle/1511007" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무 ·봄배추 재배 의향 면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jndn.com/article.php?aid=1774432898429577003" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dailysportshankook.co.kr/news/articleView.html?idxno=426365" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전라남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2410429" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">전남도, 봄무·봄양배추 재배 의향면적 조사</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-cabbage" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">양배추</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 1건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.sisafocus.co.kr/news/articleView.html?idxno=357682" target="_top" rel="noopener">전남도, 봄 무 ·배추·양배추 재배 면적 전수 조사… 수급 안정 &#x27;선제 대...</a>
+                    <div class="commodityPrimaryMeta">정책 · sisafocus · 03/25 09:28</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">미연결 품목 1개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">당근  ·수급</span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-seasoning_veg" class="commodityGroupBlock" style="--commodity-group-color:#b45309;--commodity-group-soft:rgba(180,83,9,0.070);--commodity-group-border:rgba(180,83,9,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#b45309"></span>
+                  <h3>양념채소류</h3>
+                </div>
+                <div class="commodityGroupMeta">활성 품목 2 / 5 · 수급사업 2 / 4</div>
+              </div>
+              <div class="commodityGrid isDuo">
+                
+                <article id="commodity-onion" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">양파</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 7건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64126" target="_top" rel="noopener">&quot;햇양파 1kg에 400원, 수확비도 안 나와&quot;</a>
+                    <div class="commodityPrimaryMeta">수급 · 원예산업신문 · 03/25 10:58</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.jibs.co.kr/news/articles/articlesDetail/59322?feed=na" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">노동집약적 양파 생산 전 과정 기계화 현실화</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 5건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100638" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[뉴스팜리포트-공동영농] &quot;벼농사 대신 콩·양파로 월급 받는다&quot; 공동영...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.samdailbo.com/news/articleView.html?idxno=261668" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">양파 일관 기계화 마지막 단계 &#x27;수확&#x27; 시연회 26일 대정</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.jemin.com/news/articleView.html?idxno=835122" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">양파 수확기계 선발 시연회 개최...전 과정 기계화 본격화</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64088" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">호남 품목농협, &#x27;내우외환&#x27; 속 강력 연대 천명</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64079" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">배정섭(전남서남부채소농협 조합장) - &quot;이번 수상, 조합원·임직원이 함...</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-garlic" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">마늘</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 1건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="dist">유통</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.imaeil.com/page/view/2026032508222904724" target="_top" rel="noopener">[지선레이더] 이선희 청도군수 예비후보 &quot;대구 20분 시대·산업 대전환&quot;...</a>
+                    <div class="commodityPrimaryMeta">유통 · IMAEIL · 03/25 10:03</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">미연결 품목 3개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">건고추  ·수급</span><span class="commodityMiniChip isCore">대파  ·수급</span><span class="commodityMiniChip">생강</span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-fruit_veg" class="commodityGroupBlock" style="--commodity-group-color:#6d28d9;--commodity-group-soft:rgba(109,40,217,0.070);--commodity-group-border:rgba(109,40,217,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#6d28d9"></span>
+                  <h3>과채류</h3>
+                </div>
+                <div class="commodityGroupMeta">활성 품목 7 / 10 · 수급사업 3 / 5</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-tomato" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">토마토</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 17건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.pressian.com/pages/articles/2026032509552048846" target="_top" rel="noopener">담양군, 토마토뿔나방 확산 차단 총력… 방제 물품 지원</a>
+                    <div class="commodityPrimaryMeta">리스크 · 프레시안 · 03/25 10:09</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.fntoday.co.kr/news/articleView.html?idxno=380679" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&quot;초보 농사꾼에서 스마트 전문가로&quot;…홍천 청년 농업인들의 값진 첫 수...</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.kado.net/news/articleView.html?idxno=2040839" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">홍천군 임대형 스마트팜 농업 성과 가시화… 토마토 첫 출하</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 14건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3539577" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">홍천군, 임대형 스마트팜 악조건 속 토마토 첫 출하</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1241925" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">홍천군, 임대형 스마트팜 악조건 속 토마토 첫 출하</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://news.mtn.co.kr/news-detail/2026032517210691939" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">홍천군, 청년 농업인완숙 토마토 첫 출하</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.news1.kr/life-culture/food-restaurant/6113355" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[전호제의 먹거리 이야기] 쉘 위 토마토 ?</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newstomato.com/ReadNews.aspx?no=1295607&amp;inflow=N" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[뉴스 토마토 프라임] &quot;3년7개월 만에 다시 돌아왔습니다&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317153" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">담양군, 토마토뿔나방 확산 방지 &#x27;총력&#x27;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.ftoday.co.kr/news/articleView.html?idxno=356848" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&quot;해운대 99층서 즐기는 대저 토마토 ·기장 다시마&quot;… 풀무원 &#x27;스카이99&#x27;...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.pressian.com/pages/articles/2026032511393033464" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">한파와 고물가 이겨낸 청년 농부의 땀방울…홍천 스마트팜 첫 수확</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kwnews.co.kr/page/view/2026032509522616845" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">왕사남의 고장 영월 찾은 송미령 장관 &quot;AI영농기술 적극 뒷받침”</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newsworker.co.kr/news/articleView.html?idxno=419061" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">광주시, 토마토· 딸기 스마트팜 실증 현장평가</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160295660510153" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">광주광역시, 토마토· 딸기 스마트팜 실증 현장평가</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://news.bbsi.co.kr/news/articleView.html?idxno=4074282" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">송미령 농식품부 장관, 농업AX-농촌창업 현장 점검</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.metroseoul.co.kr/article/20260325500419" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">농식품장관 &quot;AI솔루션 도입부담 낮출 것...유통 자동화 지원&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newstomato.com/ReadNews.aspx?no=1295571&amp;inflow=N" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">중동 전쟁 여파에 중소기업 피해 379건…운송·계약 차질 확산</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-cucumber" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">오이</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 8건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64090" target="_top" rel="noopener">조재경(대전원예농협 조합원) - 적정비율 양액조제와 예방위주 방제로 ...</a>
+                    <div class="commodityPrimaryMeta">리스크 · 원예산업신문 · 03/25 10:58</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://view.asiae.co.kr/article/2026032509322386410" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[클릭 e종목]&quot; 오이 솔루션, CPO 시대 대비 특허 확보…AI 데이터센터 진입...</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.newspim.com/news/view/20260325000092" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[모닝 리포트] &quot; 오이 솔루션, CPO 핵심 &#x27;외장 광원&#x27; 확보…AI 데이터센터...</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 5건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.joongangenews.com/news/articleView.html?idxno=505880" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">오이 솔루션 주가, 3월 25일 41,600원 22.00% 상승 마감</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.etoday.co.kr/news/view/2568936" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">메리츠증권 &quot; 오이 솔루션, 광학 플러그 연결 패키지 발명 특허 긍정적 변...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.youngnong.co.kr/news/articleView.html?idxno=58295" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">이상기후에 흔들리는 오이 작황 …&quot;초기 품종 선택이 수량 좌우&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://news.bbsi.co.kr/news/articleView.html?idxno=4074282" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">송미령 농식품부 장관, 농업AX-농촌창업 현장 점검</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.metroseoul.co.kr/article/20260325500419" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">농식품장관 &quot;AI솔루션 도입부담 낮출 것...유통 자동화 지원&quot;</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-green_pepper" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">풋고추</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 3건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.jnilbo.com/news/articleView.html?idxno=90000027757" target="_top" rel="noopener">영암군, 농산물 최저 가격 보장제 추진</a>
+                    <div class="commodityPrimaryMeta">정책 · 진일보 · 03/25 10:49</div>
+                  </div>
+                  
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.onews.tv/news/articleView.html?idxno=277305" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">영암군, 농가소득 안정 ...농산물 최저 가격 보장제 실시</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.hansbiz.co.kr/news/articleView.html?idxno=827214" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">영암군, 농산물 최저 가격 보장제...농가 소득 안정 지원</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-strawberry" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">딸기</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 22건</span>
+                    <span>핵심 1건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.chungnamilbo.co.kr/news/articleView.html?idxno=879799" target="_top" rel="noopener">축제장 딸기 안전성 &#x27;이상 무 &#x27;... 논산시, 출하 전 검사 &#x27;전량 적합&#x27;</a>
+                    <div class="commodityPrimaryMeta">수급 · 충남일보 · 03/25 12:00</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.nongup.net/news/articleView.html?idxno=32751" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경남농기원, 딸기 &#x27;일사비례 급액제어&#x27;로 버려지는 양액 줄인다</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.cctimes.kr/news/articleView.html?idxno=898287" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">세계 딸기산업 의 수도 논산의 &#x27;K-딸기&#x27; 세계로 도약</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 19건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.daejonilbo.com/news/articleView.html?idxno=2264965" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&quot;논산 딸기 , 마스크팩·빵으로 변신한다&quot;… 논산시, 10개 기업과 &#x27;K-디저...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.chungnamilbo.co.kr/news/articleView.html?idxno=879796" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&#x27;K- 딸기 &#x27; 산업 화 박차... 논산시-민간기업 10개사 맞손</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdn.co.kr/news/articleView.html?idxno=1069767" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">유통</span>
+                      <span class="commoditySupportText">논산 K-딸기, 고부가가치 산업으로</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newsworker.co.kr/news/articleView.html?idxno=419061" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">광주시, 토마토· 딸기 스마트팜 실증 현장평가</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160295660510153" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">광주광역시, 토마토· 딸기 스마트팜 실증 현장평가</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317222" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">논산딸기 &#x27;안전성 이상 무 &#x27;…축제 앞두고 안심 먹거리 입증</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.asiatoday.co.kr/view.php?key=20260325010007567" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">유가급등 하우스 농가에 직격탄…청주시 &quot;에너지 절감기술이 효자&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.jnilbo.com/news/articleView.html?idxno=90000027734" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">담양군, 친환경 농특산물 직거래 장터 운영</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccreview.co.kr/news/articleView.html?idxno=345079" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">청주시, 시설 하우스 농가 난방비 부담 완화 위해 기술 지원 확대</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mt.co.kr/economy/2026/03/26/2026032406200899770" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">유통</span>
+                      <span class="commoditySupportText">&quot;K-푸드 수출은 대한민국 식품영토 확장…중동 악재에 적극 대응&quot;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202603241917133390502" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[경남 브리핑 모음(3월25일)] 진주시, 24일 ‘이현동 공영주차장 준공식...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newstnt.com/news/articleView.html?idxno=599754" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">청주시, 시설 하우스 에너지 절감 기술 보급... 농가 경영 안정 &#x27;총력&#x27;</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ggilbo.com/news/articleView.html?idxno=1148761" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">청주시, 농가에 에너지 절감 기술 보급으로 유가 상승 대응</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.joongdo.co.kr/web/view.php?key=20260325010008405" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">청주시, 농가에 에너지 절감 기술 보급으로 유가 상승 대응</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdailynews.com/news/articleView.html?idxno=2405703" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">청주시, 시설 농가에 보온커튼 등 에너지 절감 기술 지원</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mk.co.kr/article/11998047" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경북 영양, 전국 최초 ‘임산물 스마트팜 실증단지’ 선정</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.nongup.net/news/articleView.html?idxno=32765" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경농, 신규계통 흰가루병 살균제 &#x27;알투도&#x27; 출시… 저항성 관리 &#x27;정조준...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.cctimes.kr/news/articleView.html?idxno=898422" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">청주시, 시설 농가에 보온커튼 등 에너지 절감 기술 지원</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdn.co.kr/news/articleView.html?idxno=1069801" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">청주시, 에너지 절감 기술 보급 농가 부담 완화</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-oriental_melon" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">참외</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 2건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067957" target="_top" rel="noopener">3년 연속 6000억…성주 참외 7000억 향한 도전 본격화</a>
+                    <div class="commodityPrimaryMeta">수급 · 경북일보 · 03/25 10:04</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.eroun.net/news/articleView.html?idxno=76465" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">트럼프 대통령, &#x27; 참외 밭에서 신발끈 맨다?&#x27; 절묘한 타이밍, 정보 미리 알...</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-muskmelon" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">멜론</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 3건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.ggilbo.com/news/articleView.html?idxno=1148344" target="_top" rel="noopener">달콤함 제대로 터진다… 파파야 멜론 출하</a>
+                    <div class="commodityPrimaryMeta">수급 · 금강일보 · 03/26 00:00</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067956" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">고령 농특산물, 생산 넘어 &#x27;브랜드 산지&#x27;로 도약</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.joongdo.co.kr/web/view.php?key=20260325010008316" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">고창군 농업기술센터, 명품 수박· 멜론 인재 양성</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-lettuce" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">상추</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 3건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://weekly.chosun.com/news/articleView.html?idxno=50011" target="_top" rel="noopener">상추 사고 호떡 나눠 먹고…이 대통령, 진주중앙시장 &#x27;깜짝 민생 행보&#x27;</a>
+                    <div class="commodityPrimaryMeta">수급 · 조선일보 · 03/25 22:16</div>
+                  </div>
+                  
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.viva100.com/article/20260325501401" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경북 영양군, 베트남ㆍ라오스 계절근로자 입국</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mk.co.kr/article/11998047" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">경북 영양, 전국 최초 ‘임산물 스마트팜 실증단지’ 선정</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">미연결 품목 3개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">애호박(쥬키니)  ·수급</span><span class="commodityMiniChip isCore">가지  ·수급</span><span class="commodityMiniChip">파프리카</span></div>
+            </div>
+            
+              
+            </section>
+            
+            <section id="commodity-group-fruit_flower" class="commodityGroupBlock" style="--commodity-group-color:#1d4ed8;--commodity-group-soft:rgba(29,78,216,0.070);--commodity-group-border:rgba(29,78,216,0.220);">
+              <div class="commodityGroupHead">
+                <div class="commodityGroupTitleWrap">
+                  <span class="commodityGroupDot" style="background:#1d4ed8"></span>
+                  <h3>과수화훼류</h3>
+                </div>
+                <div class="commodityGroupMeta">활성 품목 5 / 13 · 수급사업 3 / 5</div>
+              </div>
+              <div class="commodityGrid">
+                
+                <article id="commodity-citrus" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">감귤(만감류)</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 6건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.inews365.com/news/article.html?no=912140" target="_top" rel="noopener">&quot;감귤이 옥천에서 되네&quot;…기후 바뀌자 농사도 바뀌었다</a>
+                    <div class="commodityPrimaryMeta">수급 · 인뉴스365 · 03/25 17:16</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.joongdo.co.kr/web/view.php?key=20260325010008475" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">기후이상으로 중부지방 옥천군도 ‘감귤’ 농사 짓는다</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4067956" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">고령 농특산물, 생산 넘어 &#x27;브랜드 산지&#x27;로 도약</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.breaknews.com/1194978" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">옥천군농업기술센터, 감귤류 및 만감류 재배 기술 현장교육 진행</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.bzeronews.com/news/articleView.html?idxno=814716" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">옥천군, 농업기술 교육·민원서비스 개선으로 군민 체감행정 강화</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kwnews.co.kr/page/view/2026032515300429630" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">정책</span>
+                      <span class="commoditySupportText">강릉시, 어린이 과일간식 사업 본격 추진</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-grape" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">포도(샤인머스캣)</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 4건</span>
+                    <span>핵심 1건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160288358435371" target="_top" rel="noopener">안성시 남부농업기술상담소, 이상기후 대응 ‘스마트 포도 과원’ 실증...</a>
+                    <div class="commodityPrimaryMeta">수급 · 시민일보 · 03/25 17:32</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.newspim.com/news/view/20260325001005" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">안성시 남부농업기술상담소, &#x27;스마트 포도 과원&#x27; 실증사업 착수</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.sommeliertimes.com/news/articleView.html?idxno=130508" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">&quot;부르고뉴의 햇빛을 병에 담다&quot; 자크 뒤부아(Jacques Dubois)가 말하는 &#x27;...</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mt.co.kr/economy/2026/03/26/2026032406200899770" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">유통</span>
+                      <span class="commoditySupportText">&quot;K-푸드 수출은 대한민국 식품영토 확장…중동 악재에 적극 대응&quot;</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-apple" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">사과</div>
+                    <span class="commodityBadge core">수급사업</span>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 7건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="pest">리스크</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.donga.com/news/Society/article/all/20260325/133608505/2" target="_top" rel="noopener">보은 ‘스마트 과수원’으로 기후위기 넘는다</a>
+                    <div class="commodityPrimaryMeta">수급 · 동아일보 · 03/26 04:33</div>
+                  </div>
+                  
+                    <div class="commoditySupportList">
+                      <div class="commoditySupportTitle">추가 기사</div>
+                      
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.breaknews.com/1194864" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">가평군, 과수화상병 ‘원천 봉쇄’ 선제 대응… 사과·배 농가에 3회 방...</span>
+                    </a>
+                    
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://nownews.seoul.co.kr/news/newsView.php?id=20260325601026&amp;wlog_tag3=naver" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">트럼프 위해 애쓰는 日 다카이치?…‘전쟁’ 단어 썼다가 급 사과 , 왜? ...</span>
+                    </a>
+                    
+                    </div>
+                    
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.donga.com/news/Society/article/all/20260325/133603522/1" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">기후변화 위기, 스마트 농업으로 이긴다</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.segye.com/newsView/20260325514889" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[기고] 전환의 시대, 기술로 여는 원예특작의 새 길</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kwnews.co.kr/page/view/2026032509522616845" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">왕사남의 고장 영월 찾은 송미령 장관 &quot;AI영농기술 적극 뒷받침”</span>
+                    </a>
+                    
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.youngnong.co.kr/news/articleView.html?idxno=58291" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">과수화상병에 비료·면세유까지…봄 영농 앞둔 농가 &#x27;삼중 압박&#x27;</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-peach" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">복숭아</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 2건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://news.skbroadband.com/news/articleView.html?idxno=222029" target="_top" rel="noopener">유가 상승 직격탄 맞은 농가…비료 수급 비상</a>
+                    <div class="commodityPrimaryMeta">수급 · skbroadband · 03/25 18:06</div>
+                  </div>
+                  
+                  
+                    <details class="commodityMoreWrap" data-swipe-ignore="1">
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
+                      <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdailynews.com/news/articleView.html?idxno=2405562" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">정지태 감곡농협조합장, 한국 복숭아 생산자협의회 회장 당선</span>
+                    </a>
+                    </div>
+                    </details>
+                    
+                </div>
+                
+                </article>
+                
+                <article id="commodity-citron" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">유자</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 1건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.wolyo.co.kr/news/articleView.html?idxno=310212" target="_top" rel="noopener">&#x27;MZ세대&#x27; 잡아라! 격화되는 편의점 주류 전쟁</a>
+                    <div class="commodityPrimaryMeta">수급 · WOLYO · 03/25 13:44</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+              </div>
+              
+            <div class="commodityInactive">
+              <div class="commodityInactiveTitle">미연결 품목 8개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">배  ·수급</span><span class="commodityMiniChip isCore">단감  ·수급</span><span class="commodityMiniChip">감/곶감</span><span class="commodityMiniChip">매실</span><span class="commodityMiniChip">참다래</span><span class="commodityMiniChip">밤</span><span class="commodityMiniChip">화훼</span><span class="commodityMiniChip">자두</span></div>
+            </div>
+            
+              
+            </section>
+            
+    </section>
+    
+    </section>
+    <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
+    
+  </div>
+
+  <script>
+    (function() {
+
+      // card click-to-open
+      document.addEventListener("click", function(e) {
+        var card = e.target.closest && e.target.closest(".card[data-href]");
+        if (!card) return;
+        if (e.target.closest("a,button,select,input,textarea,.topic")) return;
+        var href = card.getAttribute("data-href");
+        if (href) window.open(href, "_top", "noopener");
+      });
+      // topic badge click -> jump to commodity board item
+      document.addEventListener("click", function(e) {
+        var topicEl = e.target.closest && e.target.closest(".topic");
+        if (!topicEl) return;
+        var name = (topicEl.textContent || "").trim();
+        if (!name) return;
+        // find matching commodity tile
+        var tiles = document.querySelectorAll(".commodityTileName");
+        for (var i = 0; i < tiles.length; i++) {
+          if ((tiles[i].textContent || "").trim() === name) {
+            // switch to commodity view
+            var commodityTab = document.querySelector('[data-view-tab="commodity"]');
+            if (commodityTab && typeof activateView === "function") activateView("commodity");
+            else if (commodityTab) commodityTab.click();
+            tiles[i].closest(".commodityTile").scrollIntoView({ behavior: "smooth", block: "center" });
+            tiles[i].closest(".commodityTile").style.outline = "3px solid #3b82f6";
+            setTimeout(function() { tiles[i].closest(".commodityTile").style.outline = ""; }, 2000);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+        }
+      });
+      var isDevPreviewPage = false;
+      var devLoaderHref = "/agri-news-brief/";
+      var devArchiveManifestUrl = "";
+      var currentReportDate = "2026-03-26";
+      var rootEl = document.documentElement;
+      var topbarEl = document.querySelector(".topbar");
+      var chipDockEl = document.getElementById("chipDock");
+      var chipDockInnerEl = document.getElementById("chipDockInner");
+      var mobileQuickNavEl = document.getElementById("mobileQuickNav");
+      var mobileQuickNavToggleEl = document.getElementById("mobileQuickNavToggle");
+      var mobileQuickNavToggleLabelEl = document.getElementById("mobileQuickNavToggleLabel");
+      var mobileQuickNavSheetEl = document.getElementById("mobileQuickNavSheet");
+      var mobileQuickNavBackdropEl = document.getElementById("mobileQuickNavBackdrop");
+      var mobileQuickNavCloseEl = document.getElementById("mobileQuickNavClose");
+      var mobileQuickNavBodyEl = document.getElementById("mobileQuickNavBody");
+      var mobileQuickNavTitleEl = document.getElementById("mobileQuickNavTitle");
+      function isCompactViewport() {
+        try {
+          return window.matchMedia("(max-width: 900px) and (hover: none), (max-width: 900px) and (pointer: coarse), (max-width: 640px)").matches;
+        } catch (e) {}
+        var coarsePointer = false;
+        try {
+          coarsePointer = !!(navigator && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 0);
+        } catch (e) {}
+        return window.innerWidth <= (coarsePointer ? 900 : 640);
+      }
+      function getActivePane() {
+        return document.querySelector('.viewPane.isActive[data-view-pane]');
+      }
+      function getActiveChipbar() {
+        var pane = getActivePane();
+        if (!pane) return null;
+        return pane.querySelector('.chipbar[data-view-pane-anchor]');
+      }
+      function getActiveQuickNavMeta(activeChipbar) {
+        var anchor = activeChipbar ? (activeChipbar.getAttribute("data-view-pane-anchor") || "") : "";
+        if (anchor === "commodity") {
+          return {
+            toggle: "품목군 이동",
+            title: "품목군 바로가기",
+          };
+        }
+        return {
+          toggle: "섹션 이동",
+          title: "섹션 바로가기",
+        };
+      }
+      function closeMobileQuickNavSheet() {
+        if (mobileQuickNavSheetEl) {
+          mobileQuickNavSheetEl.classList.remove("isOpen");
+          mobileQuickNavSheetEl.setAttribute("aria-hidden", "true");
+        }
+        try {
+          document.body.classList.remove("quickNavOpen");
+        } catch (e) {}
+      }
+      function openMobileQuickNavSheet() {
+        if (!mobileQuickNavSheetEl) return;
+        mobileQuickNavSheetEl.classList.add("isOpen");
+        mobileQuickNavSheetEl.setAttribute("aria-hidden", "false");
+        try {
+          document.body.classList.add("quickNavOpen");
+        } catch (e) {}
+      }
+
+      function syncStickyOffsets() {
+        if (!rootEl || !topbarEl) return;
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        if (!topbarHeight) return;
+        var activeChipbar = getActiveChipbar();
+        var compactViewport = isCompactViewport();
+        var chipbarHeight = Math.ceil(activeChipbar && !compactViewport ? (activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0) : 0);
+        rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
+        rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+        rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : chipbarHeight + 30)) + "px");
+      }
+
+      function syncFloatingChipbar() {
+        if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
+        if (isCompactViewport()) {
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }
+        var activeChipbar = getActiveChipbar();
+        if (!activeChipbar) {
+          chipDockEl.classList.remove("isVisible");
+          chipDockEl.setAttribute("aria-hidden", "true");
+          chipDockEl.dataset.source = "";
+          chipDockInnerEl.innerHTML = "";
+          return;
+        }
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var dockTop = topbarHeight + 12;
+        var chipbarHeight = Math.ceil(activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0);
+        if (chipbarHeight) {
+          rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
+          rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
+        }
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (chipDockEl.dataset.source !== sourceKey) {
+          chipDockInnerEl.innerHTML = activeChipbar.outerHTML;
+          chipDockEl.dataset.source = sourceKey;
+        }
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.top < dockTop && rect.bottom <= dockTop;
+        chipDockEl.classList.toggle("isVisible", shouldShow);
+        chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }
+      function syncMobileQuickNav() {
+        if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
+        var mobileViewport = isCompactViewport();
+        var activeChipbar = getActiveChipbar();
+        if (!mobileViewport || !activeChipbar) {
+          mobileQuickNavEl.classList.remove("isVisible");
+          mobileQuickNavEl.setAttribute("aria-hidden", "true");
+          mobileQuickNavEl.dataset.source = "";
+          mobileQuickNavBodyEl.innerHTML = "";
+          closeMobileQuickNavSheet();
+          return;
+        }
+        var meta = getActiveQuickNavMeta(activeChipbar);
+        if (mobileQuickNavToggleLabelEl) mobileQuickNavToggleLabelEl.textContent = meta.toggle;
+        if (mobileQuickNavTitleEl) mobileQuickNavTitleEl.textContent = meta.title;
+        var sourceKey = [
+          activeChipbar.getAttribute("data-view-pane-anchor") || "",
+          activeChipbar.className || "",
+          activeChipbar.querySelectorAll("a").length,
+        ].join("|");
+        if (mobileQuickNavEl.dataset.source !== sourceKey) {
+          mobileQuickNavBodyEl.innerHTML = activeChipbar.outerHTML;
+          mobileQuickNavEl.dataset.source = sourceKey;
+        }
+        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var rect = activeChipbar.getBoundingClientRect();
+        var shouldShow = rect.bottom <= (topbarHeight + 8);
+        mobileQuickNavEl.classList.toggle("isVisible", shouldShow);
+        mobileQuickNavEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      }
+
+      syncStickyOffsets();
+      syncFloatingChipbar();
+      syncMobileQuickNav();
+      window.addEventListener("load", syncStickyOffsets);
+      window.addEventListener("load", syncFloatingChipbar);
+      window.addEventListener("load", syncMobileQuickNav);
+      window.addEventListener("resize", syncStickyOffsets);
+      window.addEventListener("resize", syncFloatingChipbar);
+      window.addEventListener("resize", syncMobileQuickNav);
+      window.addEventListener("scroll", syncFloatingChipbar, { passive: true });
+      window.addEventListener("scroll", syncMobileQuickNav, { passive: true });
+
+      function currentPageHref() {
+        try {
+          if (window.top && window.top !== window) {
+            return String(window.top.location.href || "");
+          }
+        } catch (e) {}
+        return String(window.location.href || "");
+      }
+
+      function navigateToUrl(url) {
+        if (!url) return;
+        try {
+          if (window.top && window.top !== window) {
+            window.top.location.href = url;
+            return;
+          }
+        } catch (e) {}
+        window.location.href = url;
+      }
+
+      var sel = document.getElementById("dateSelect");
+      if (sel) {
+        sel.setAttribute("data-swipe-ignore", "1");
+        sel.addEventListener("change", function() {
+          var v = sel.value;
+          if (v) {
+            var ld = document.getElementById("navLoading");
+            if (ld) ld.classList.add("show");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+          }
+        });
+      }
+
+      // ✅ (3) prev/next가 없을 때 404로 이동하지 않도록 알림 처리
+      var btns = document.querySelectorAll("button.navBtn[data-msg]");
+      btns.forEach(function(b) {
+        b.setAttribute("data-swipe-ignore", "1");
+        b.addEventListener("click", function() {
+          var msg = b.getAttribute("data-msg") || "이동할 페이지가 없습니다.";
+          alert(msg);
+        });
+      });
+
+      var viewTabs = Array.prototype.slice.call(document.querySelectorAll(".viewTab[data-view-tab]"));
+      var viewPanes = Array.prototype.slice.call(document.querySelectorAll(".viewPane[data-view-pane]"));
+
+      function activateView(viewKey, opts) {
+        opts = opts || {};
+        viewPanes.forEach(function(pane) {
+          var active = pane.getAttribute("data-view-pane") === viewKey;
+          pane.classList.toggle("isActive", active);
+          pane.setAttribute("aria-hidden", active ? "false" : "true");
+        });
+        viewTabs.forEach(function(tab) {
+          var active = tab.getAttribute("data-view-tab") === viewKey;
+          tab.classList.toggle("isActive", active);
+          tab.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        syncStickyOffsets();
+        syncFloatingChipbar();
+        syncMobileQuickNav();
+        closeMobileQuickNavSheet();
+
+        if (opts.skipHistory) return;
+        try {
+          var url = new URL(window.location.href);
+          if (viewKey === "commodity") {
+            url.searchParams.set("view", "commodity");
+            if ((url.hash || "").indexOf("#sec-") === 0) {
+              url.hash = "";
+            }
+          } else {
+            url.searchParams.delete("view");
+            if ((url.hash || "").indexOf("#commodity") === 0) {
+              url.hash = "";
+            }
+          }
+          window.history.replaceState(null, "", url.toString());
+        } catch (e) {}
+      }
+
+      function resolveInitialView() {
+        try {
+          var hash = (window.location.hash || "").replace(/^#/, "");
+          if (hash === "commodity-board" || hash.indexOf("commodity-") === 0) return "commodity";
+          if (hash.indexOf("sec-") === 0) return "briefing";
+          var url = new URL(window.location.href);
+          var view = (url.searchParams.get("view") || "").toLowerCase();
+          if (view === "commodity" || view === "briefing") return view;
+        } catch (e) {}
+        return "briefing";
+      }
+
+      viewTabs.forEach(function(tab) {
+        tab.setAttribute("data-swipe-ignore", "1");
+        tab.addEventListener("click", function() {
+          activateView(tab.getAttribute("data-view-tab") || "briefing");
+        });
+      });
+
+      window.addEventListener("hashchange", function() {
+        activateView(resolveInitialView(), { skipHistory: true });
+      });
+
+      if (mobileQuickNavToggleEl) {
+        mobileQuickNavToggleEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavToggleEl.addEventListener("click", function() {
+          if (mobileQuickNavSheetEl && mobileQuickNavSheetEl.classList.contains("isOpen")) {
+            closeMobileQuickNavSheet();
+          } else {
+            syncMobileQuickNav();
+            openMobileQuickNavSheet();
+          }
+        });
+      }
+      if (mobileQuickNavBackdropEl) {
+        mobileQuickNavBackdropEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavBackdropEl.addEventListener("click", closeMobileQuickNavSheet);
+      }
+      if (mobileQuickNavCloseEl) {
+        mobileQuickNavCloseEl.setAttribute("data-swipe-ignore", "1");
+        mobileQuickNavCloseEl.addEventListener("click", closeMobileQuickNavSheet);
+      }
+      if (mobileQuickNavBodyEl) {
+        mobileQuickNavBodyEl.addEventListener("click", function(ev) {
+          var target = ev.target;
+          if (target && target.closest && target.closest("a")) {
+            closeMobileQuickNavSheet();
+          }
+        });
+      }
+      document.addEventListener("keydown", function(ev) {
+        if ((ev.key || "") === "Escape") closeMobileQuickNavSheet();
+      });
+
+      activateView(resolveInitialView(), { skipHistory: true });
+
+      // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
+      var navRow = document.querySelector(".navRow");
+      var prevNav = navRow ? navRow.querySelector('[data-nav="prev"]') : null;
+      var nextNav = navRow ? navRow.querySelector('[data-nav="next"]') : null;
+      // fallback: old pages without data-nav
+      if (navRow) {
+        if (!prevNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!prevNav && (el.textContent||"").indexOf("이전")>=0) prevNav = el;
+          });
+        }
+        if (!nextNav) {
+          Array.prototype.forEach.call(navRow.querySelectorAll(".navBtn,button.navBtn"), function(el) {
+            if (!nextNav && (el.textContent||"").indexOf("다음")>=0) nextNav = el;
+          });
+        }
+      }
+      var swipeHint = document.getElementById("swipeHint");
+      var navLoading = document.getElementById("navLoading");
+      var isNavigating = false;
+
+      function _bindNavClick(el, delta, msg) {
+        if (!el || !el.addEventListener) return;
+        try { el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); } catch (e) {}
+        try {
+          el.addEventListener("click", function(ev) {
+            try { ev.preventDefault(); } catch (e2) {}
+            try { gotoByOffset(delta, msg); } catch (e3) {}
+          });
+        } catch (e4) {}
+      }
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+
+      function hasHref(el) {
+        return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
+      }
+
+      function showNavLoading() {
+        if (navLoading) navLoading.classList.add("show");
+        try { setTimeout(function(){ hideNavLoading(); }, 1500); } catch(e) {}
+      }
+
+      function hideNavLoading() {
+        if (navLoading) navLoading.classList.remove("show");
+      }
+
+      function showNoBrief(el, fallbackMsg) {
+        var msg = fallbackMsg || "이동할 페이지가 없습니다.";
+        try {
+          if (el && el.getAttribute) {
+            msg = el.getAttribute("data-msg") || el.getAttribute("title") || msg;
+          }
+        } catch (e) {}
+        hideNavLoading();
+        try { alert(msg); } catch (e2) {}
+      }
+
+      function isBlockedTarget(target) {
+        if (!target || !target.closest) return false;
+        if (target.closest('[data-swipe-ignore="1"]')) return true;
+        // 상단(topbar: 아카이브/이전/날짜/다음/섹션칩)에서의 제스처는 페이지 스와이프 금지
+        if (target.closest(".topbar")) return true;
+        if (target.closest("a[href],select,input,textarea,button,[contenteditable=\"true\"]")) return true;
+        return false;
+      }
+
+      function navigateBy(el) {
+        if (!el || isNavigating) return;
+        if (el.tagName && el.tagName.toLowerCase() === "a") {
+          var href = el.getAttribute("href");
+          if (href) {
+            isNavigating = true;
+            showNavLoading();
+            navigateToUrl(href);
+            return;
+          }
+        }
+        try {
+          el.click();
+        } catch (e) {}
+      }
+
+
+
+// ✅ 404 방지: 실제 존재하는 아카이브 목록으로 드롭다운/이전/다음/스와이프를 재정렬한다.
+var __manifestDates = null;
+var __rootPrefix = null;
+
+function _getRootPrefix() {
+  if (__rootPrefix) return __rootPrefix;
+  try {
+    if (isDevPreviewPage && devLoaderHref) {
+      var devUrl = new URL(devLoaderHref, currentPageHref());
+      __rootPrefix = devUrl.origin + devUrl.pathname.replace(/[^/]*$/, "");
+      return __rootPrefix;
+    }
+    var href = currentPageHref();
+    var i = href.indexOf("/archive/");
+    if (i >= 0) {
+      __rootPrefix = href.slice(0, i + 1);
+      return __rootPrefix;
+    }
+    // fallback: current directory
+    var p = href.replace(/[#?].*$/, "");
+    __rootPrefix = p.substring(0, p.lastIndexOf("/") + 1);
+    return __rootPrefix;
+  } catch (e) {
+    return "/";
+  }
+}
+
+function _dateToUrl(d) {
+  if (isDevPreviewPage) {
+    return devLoaderHref + "?date=" + encodeURIComponent(d);
+  }
+  return _getRootPrefix() + "archive/" + d + ".html";
+}
+
+function _extractDate(s) {
+  if (!s) return "";
+  var str = String(s);
+  var param = str.match(/[?&]date=(\d{4}-\d{2}-\d{2})(?:[&#]|$)/);
+  if (param && param[1]) return param[1];
+  var m = str.match(/(\d{4}-\d{2}-\d{2})\.html/);
+  if (m && m[1]) return m[1];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  return "";
+}
+
+function _currentDateIso() {
+  return _extractDate(currentPageHref()) || currentReportDate;
+}
+
+function _getDatesFromSelect() {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return [];
+  var ds = [];
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    var v = (opt && opt.value) ? opt.value : "";
+    var d = _extractDate(v) || _extractDate((opt && opt.textContent) ? opt.textContent : "");
+    if (d) ds.push(d);
+  }
+  ds = Array.from(new Set(ds));
+  ds.sort(); ds.reverse();
+  return ds;
+}
+
+function _setSelectDates(dates) {
+  var sel = document.getElementById("dateSelect");
+  if (!sel) return;
+  var cur = _currentDateIso();
+  try { sel.innerHTML = ""; } catch (e) {}
+  for (var i = 0; i < dates.length; i++) {
+    var d = dates[i];
+    var opt = document.createElement("option");
+    opt.value = _dateToUrl(d);
+    opt.textContent = d;
+    if (d === cur) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+async function _fetchManifestDates() {
+  try {
+    var url = isDevPreviewPage ? devArchiveManifestUrl : (_getRootPrefix() + "archive_manifest.json");
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r || !r.ok) return null;
+    var obj = await r.json();
+    var dates = (obj && obj.dates) ? obj.dates : null;
+    if (!dates || !Array.isArray(dates)) return null;
+    var clean = [];
+    for (var i = 0; i < dates.length; i++) {
+      var d = dates[i];
+      if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) clean.push(d);
+    }
+    clean = Array.from(new Set(clean));
+    clean.sort(); clean.reverse();
+    return clean;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function _ensureDates() {
+  if (__manifestDates && __manifestDates.length) return __manifestDates;
+  var dates = await _fetchManifestDates();
+  if (dates && dates.length) {
+    __manifestDates = dates;
+    _setSelectDates(dates);
+    return __manifestDates;
+  }
+  __manifestDates = _getDatesFromSelect();
+  return __manifestDates;
+}
+
+async function _urlExists(url) {
+  try {
+    var r = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  try {
+    var r2 = await fetch(url, { method: "GET", cache: "no-store" });
+    return !!(r2 && r2.ok);
+  } catch (e2) {}
+  return false;
+}
+
+async function gotoUrlChecked(url, msg) {
+  if (!url || isNavigating) return;
+  var dates = await _ensureDates();
+  var d = _extractDate(url);
+  if (d) url = _dateToUrl(d);
+
+  // If manifest/derived list exists and date is not in it, block early
+  if (d && dates && dates.length && dates.indexOf(d) < 0) {
+    showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+    return;
+  }
+
+  if (isDevPreviewPage) {
+    isNavigating = true;
+    showNavLoading();
+    navigateToUrl(url);
+    return;
+  }
+
+  var ok = await _urlExists(url);
+  if (ok) {
+    isNavigating = true;
+    showNavLoading();
+    navigateToUrl(url);
+    return;
+  }
+  showNoBrief(null, msg || "해당 날짜의 브리핑이 없습니다.");
+  // restore selection
+  try {
+    var sel = document.getElementById("dateSelect");
+    if (sel) {
+      var cur = _currentDateIso();
+      for (var i = 0; i < sel.options.length; i++) {
+        var dd = _extractDate(sel.options[i].value) || _extractDate(sel.options[i].textContent || "");
+        if (dd && dd === cur) sel.selectedIndex = i;
+      }
+    }
+  } catch (e) {}
+}
+
+async function gotoByOffset(delta, msg) {
+  var dates = await _ensureDates();
+  if (!dates || !dates.length) { showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }
+  var cur = _currentDateIso();
+  var idx = dates.indexOf(cur);
+  if (idx < 0) idx = 0;
+  var step = (delta >= 0) ? 1 : -1;
+  var j = idx + delta;
+  while (j >= 0 && j < dates.length) {
+    var d = dates[j];
+    var url = _dateToUrl(d);
+    if (isDevPreviewPage) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      navigateToUrl(url);
+      return;
+    }
+    // Always verify existence (manifest can be stale; Pages deploy can lag)
+    var ok = await _urlExists(url);
+    if (ok) {
+      if (isNavigating) return;
+      isNavigating = true;
+      showNavLoading();
+      navigateToUrl(url);
+      return;
+    }
+    j += step;
+  }
+  showNoBrief(null, msg || (delta > 0 ? "이전 브리핑이 없습니다." : "다음 브리핑이 없습니다."));
+}
+
+// non-blocking: try to load manifest & prune date list
+try { _ensureDates(); } catch (e) {}
+
+      function resetNavRowFeedback() {
+        if (!navRow) return;
+        navRow.style.transform = "";
+        navRow.style.opacity = "";
+      }
+
+      var sx = 0, sy = 0, st = 0, blocked = false;
+      var swipeActive = false;
+      var swipeSuppressSelection = false;
+      var swipeTarget = null;
+      var swipePointerId = null;
+      var swipeRootUserSelect = "";
+      var swipeRootWebkitUserSelect = "";
+      var swipeBodyCursor = "";
+      var wheelSwipeDx = 0;
+      var wheelSwipeDy = 0;
+      var wheelSwipeAt = 0;
+      var wheelSwipeLockUntil = 0;
+      var swipeArea = document.querySelector(".wrap") || document.documentElement || document.body || document;
+
+      function getSwipePoint(e, phase) {
+        try {
+          if (!e) return null;
+          if (phase !== "end" && e.touches && e.touches.length === 1) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          if (phase === "end" && e.changedTouches && e.changedTouches.length === 1) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          }
+          if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+            return { x: e.clientX, y: e.clientY };
+          }
+        } catch (_evtErr) {}
+        return null;
+      }
+
+      function resetSwipeState() {
+        try {
+          if (swipeArea && swipeArea.releasePointerCapture && swipePointerId !== null) {
+            swipeArea.releasePointerCapture(swipePointerId);
+          }
+        } catch (_releaseErr) {}
+        setDesktopSwipeMode(false);
+        swipeActive = false;
+        blocked = false;
+        swipeTarget = null;
+        swipePointerId = null;
+      }
+
+      function setDesktopSwipeMode(active) {
+        var root = document.documentElement;
+        try {
+          if (active) {
+            if (swipeSuppressSelection) return;
+            swipeSuppressSelection = true;
+            swipeRootUserSelect = (root && root.style) ? (root.style.userSelect || "") : "";
+            swipeRootWebkitUserSelect = (root && root.style) ? (root.style.webkitUserSelect || "") : "";
+            swipeBodyCursor = (document.body && document.body.style) ? (document.body.style.cursor || "") : "";
+            if (root && root.style) {
+              root.style.userSelect = "none";
+              root.style.webkitUserSelect = "none";
+            }
+            if (document.body && document.body.style) {
+              document.body.style.cursor = "grabbing";
+            }
+            return;
+          }
+          if (!swipeSuppressSelection) return;
+          swipeSuppressSelection = false;
+          if (root && root.style) {
+            root.style.userSelect = swipeRootUserSelect;
+            root.style.webkitUserSelect = swipeRootWebkitUserSelect;
+          }
+          if (document.body && document.body.style) {
+            document.body.style.cursor = swipeBodyCursor;
+          }
+        } catch (_desktopSwipeErr) {}
+      }
+
+      function resetWheelSwipe() {
+        wheelSwipeDx = 0;
+        wheelSwipeDy = 0;
+        wheelSwipeAt = 0;
+      }
+
+      function handleWheelSwipe(e) {
+        if (!e || isNavigating) return;
+        if (e.ctrlKey) return;
+        if (isBlockedTarget(e.target)) return;
+        var now = Date.now();
+        if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
+        if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {
+          resetWheelSwipe();
+        }
+        wheelSwipeAt = now;
+        wheelSwipeDx += Number(e.deltaX || 0);
+        wheelSwipeDy += Number(e.deltaY || 0);
+        if (Math.abs(wheelSwipeDx) < 120) return;
+        if (Math.abs(wheelSwipeDx) < Math.abs(wheelSwipeDy) * 1.25) return;
+        wheelSwipeLockUntil = now + 700;
+        try {
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        } catch (_wheelPreventErr) {}
+        var totalDx = wheelSwipeDx;
+        resetWheelSwipe();
+        if (totalDx > 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      function beginSwipe(e) {
+        if (!swipeArea) return;
+        if (e && e.pointerType === "mouse" && typeof e.button === "number" && e.button !== 0) return;
+        if (e && !e.pointerType && typeof e.button === "number" && e.button !== 0) return;
+        var point = getSwipePoint(e, "start");
+        if (!point) return;
+        blocked = isBlockedTarget(e ? e.target : null);
+        if (blocked) {
+          swipeActive = false;
+          swipeTarget = null;
+          swipePointerId = null;
+          return;
+        }
+        if (e && (e.pointerType === "mouse" || (!e.pointerType && !e.touches))) {
+          setDesktopSwipeMode(true);
+        }
+        swipeActive = true;
+        swipeTarget = e ? (e.target || null) : null;
+        swipePointerId = (e && typeof e.pointerId === "number") ? e.pointerId : null;
+        sx = point.x;
+        sy = point.y;
+        st = Date.now();
+        try {
+          if (swipeArea.setPointerCapture && swipePointerId !== null) {
+            swipeArea.setPointerCapture(swipePointerId);
+          }
+        } catch (_captureErr) {}
+      }
+
+      function endSwipe(e) {
+        if (!swipeActive) return;
+        if (swipePointerId !== null && e && typeof e.pointerId === "number" && e.pointerId !== swipePointerId) return;
+        var point = getSwipePoint(e, "end");
+        var startedBlocked = blocked;
+        var startedDesktopSwipe = swipeSuppressSelection;
+        var startedTarget = swipeTarget;
+        resetSwipeState();
+        if (!point) return;
+        if (startedBlocked || isBlockedTarget(e ? e.target : null) || isBlockedTarget(startedTarget)) return;
+        try {
+          var selection = window.getSelection ? window.getSelection() : null;
+          var selected = selection ? String(selection) : "";
+          if (startedDesktopSwipe && selection && selection.removeAllRanges) {
+            selection.removeAllRanges();
+            selected = "";
+          }
+          if (selected && selected.trim()) return;
+        } catch (_selectionErr) {}
+        var dx = point.x - sx;
+        var dy = point.y - sy;
+        var dt = Date.now() - st;
+        if (dt > 900 || Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx < 0) {
+          gotoByOffset(-1, "다음 브리핑이 없습니다.");
+        } else {
+          gotoByOffset(+1, "이전 브리핑이 없습니다.");
+        }
+      }
+
+      if (window.PointerEvent) {
+        swipeArea.addEventListener("pointerdown", function(e) {
+          beginSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointerup", function(e) {
+          endSwipe(e);
+        }, { passive: true });
+        window.addEventListener("pointercancel", function() {
+          resetSwipeState();
+        }, { passive: true });
+      }
+
+      swipeArea.addEventListener("touchstart", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("touchend", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      }, { passive: true });
+
+      swipeArea.addEventListener("mousedown", function(e) {
+        if (window.PointerEvent) return;
+        beginSwipe(e);
+      });
+
+      window.addEventListener("mouseup", function(e) {
+        if (window.PointerEvent) return;
+        endSwipe(e);
+      });
+
+      swipeArea.addEventListener("dragstart", function(e) {
+        if (!swipeActive && !swipeSuppressSelection) return;
+        try {
+          if (e && e.preventDefault) e.preventDefault();
+        } catch (_dragErr) {}
+      });
+
+      swipeArea.addEventListener("wheel", function(e) {
+        handleWheelSwipe(e);
+      }, { passive: false });
+
+      window.addEventListener("blur", function() {
+        resetSwipeState();
+        resetWheelSwipe();
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if (!e) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isBlockedTarget(e.target)) return;
+        if (e.key === "ArrowLeft") {
+          if (hasHref(prevNav)) {
+            showNavLoading();
+            navigateBy(prevNav);
+          } else {
+            showNoBrief(prevNav, "이전 브리핑이 없습니다.");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (hasHref(nextNav)) {
+            showNavLoading();
+            navigateBy(nextNav);
+          } else {
+            showNoBrief(nextNav, "다음 브리핑이 없습니다.");
+          }
+        }
+      });
+
+      window.addEventListener("pageshow", function() {
+        isNavigating = false;
+        hideNavLoading();
+        resetNavRowFeedback();
+      });
+
+      // 힌트는 1번만 잠깐 노출(가독성 유지)
+      (function maybeShowSwipeHint() {
+        if (!swipeHint) return;
+        try {
+          var k = "agri_swipe_hint_shown";
+          if (window.sessionStorage && sessionStorage.getItem(k) === "1") {
+            swipeHint.style.display = "none";
+            return;
+          }
+          swipeHint.style.display = "flex";
+          if (window.sessionStorage) sessionStorage.setItem(k, "1");
+          window.setTimeout(function() {
+            swipeHint.style.display = "none";
+          }, 1200);
+        } catch (e) {}
+      })();
+})();
+  </script>
+  <!-- build: fbcd6ca -->
+
+</body>
+</html>
