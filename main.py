@@ -16705,9 +16705,11 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
             if not any(sd in text for sd in _SUPPLY_DIRECT):
                 return "corp_csr_not_supply"
     # 직거래 장터/행사/축제 기사는 원예 수급 핵심이 아님
-    if section_key in ("supply", "policy"):
+    if section_key in ("supply", "policy", "dist"):
         _EVENT_NOISE_KWS = ("직거래 장터", "직거래장터", "로컬푸드 장터", "농산물 장터", "농특산물 장터",
-                            "농산물 축제", "농특산물 축제", "농산물 한마당", "직거래 행사", "장터 개장")
+                            "농산물 축제", "농특산물 축제", "농산물 한마당", "직거래 행사", "장터 개장",
+                            "직거래 특판", "농산물 특판", "농축산물 직거래", "금요 장터", "금요장터",
+                            "식품안전교육", "농산물 홍보 세일즈")
         if any(kw in text for kw in _EVENT_NOISE_KWS):
             _SUPPLY_ANCHOR_EV = ("가격", "시세", "경락", "수급", "출하량", "작황", "도매", "폭락", "폭등")
             if not any(sa in text for sa in _SUPPLY_ANCHOR_EV):
@@ -17399,7 +17401,13 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 shared_comm = ci & cj
                 shared_reg = ri & rj
                 shared_issue = ii & ij
-                if shared_comm and shared_reg and len(shared_issue) >= 1:
+                # 품목+지역+이슈 모두 겹치거나, 품목+이슈가 2개 이상 겹치면 중복
+                topic_dup = (
+                    (shared_comm and shared_reg and len(shared_issue) >= 1)
+                    or (shared_comm and len(shared_issue) >= 2)
+                    or (shared_comm and len(shared_comm) >= 1 and _is_similar_story(articles[i], articles[j], key))
+                )
+                if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
                     score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
                     drop_idx = j if score_i >= score_j else i
