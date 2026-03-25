@@ -3006,8 +3006,10 @@ def _is_similar_title(k1: str, k2: str) -> bool:
         # 10글자 미만은 사실상 제목 키로 신뢰하기 어려움
         return False
 
-    # 포함관계: 짧은 키가 긴 키에 포함되고 길이 차이가 크지 않으면 동일 이슈로 봄
-    if shorter in longer and (ls / ll) >= 0.78:
+    # 포함관계: 짧은 키가 긴 키에 포함되면 동일 이슈로 봄
+    # (짧은 키가 충분히 길면 길이 비율 완화 — 영암군 최저가격보장제 등)
+    contain_ratio_thr = 0.55 if ls >= 14 else 0.78
+    if shorter in longer and (ls / ll) >= contain_ratio_thr:
         return True
 
     # 문자열 유사도(SequenceMatcher)
@@ -17499,7 +17501,7 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                         _ia = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _ta)
                         _ib = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _tb)
                         # cross-section: 품목+이슈만 겹쳐도 중복 (지역 없어도 OK)
-                    if (_ca & _cb) and len(_ia & _ib) >= 1:
+                        if (_ca & _cb) and len(_ia & _ib) >= 1:
                             _is_topic_dup = True
                     if not is_same_url and not _is_topic_dup and not _is_similar_story(art_a, art_b, key_a):
                         continue
