@@ -16706,7 +16706,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
             return "grain_only_not_horti"
     # 원예 무관 산업 매크로 기사 필터 (나프타, 석유화학, 자동차, 건설, 조선 등)
     _MACRO_INDUSTRY_KWS = ("나프타", "석유화학", "정유", "에틸렌", "기초유분", "조선업", "자동차산업",
-                           "반도체", "건설업", "가전", "철강", "lng", "lng선")
+                           "반도체", "d램", "dram", "메모리반도체", "hbm", "삼성전자", "sk하이닉스",
+                           "건설업", "가전", "철강", "lng", "lng선")
     _MACRO_HORTI_RESCUE = ("농산물", "농업", "농가", "원예", "과일", "채소", "과수", "시설원예", "난방비")
     if any(kw in text for kw in _MACRO_INDUSTRY_KWS):
         if not any(h in text for h in _MACRO_HORTI_RESCUE):
