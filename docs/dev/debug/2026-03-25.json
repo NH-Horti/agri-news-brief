@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-25T16:20:48+09:00",
-  "build_tag": "0905a53",
+  "generated_at_kst": "2026-03-26T17:47:55+09:00",
+  "build_tag": "3ddc1d4",
   "filter_rejects": [
     {
       "section": "policy",
@@ -11445,11 +11445,11 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 26.34,
+      "threshold": 24.34,
       "tail_cut": 26.74,
-      "core_min": 26.34,
+      "core_min": 24.34,
       "total_candidates": 223,
-      "total_selected": 4,
+      "total_selected": 5,
       "top": [
         {
           "selected": true,
@@ -11462,7 +11462,7 @@
           "url": "https://www.nongmin.com/article/20260323500785",
           "reason": "",
           "fit_score": 2.64,
-          "selection_stage": "core",
+          "selection_stage": "tail",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -11506,17 +11506,17 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 26.88,
+          "score": 26.68,
           "tier": 1,
           "press": "팜인사이트",
           "domain": "farminsight.net",
           "title": "샤인머스켓 가격 폭락... 중앙청과 '자체 재원' 투입 출하비 지원",
           "url": "https://www.farminsight.net/news/articleView.html?idxno=16153",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 1.55,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "dist",
@@ -11543,7 +11543,7 @@
           "url": "https://www.nongmin.com/article/20260321500028",
           "reason": "",
           "fit_score": 1.15,
-          "selection_stage": "underfill",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -11568,9 +11568,9 @@
           "domain": "kmib.co.kr",
           "title": "“박살난 수준”… 난방비 폭등·소비위축에 화훼 농가 한숨",
           "url": "https://www.kmib.co.kr/article/view.asp?arcid=0029577817&code=61141111&cp=nv",
-          "reason": "below_threshold",
+          "reason": "postbuild_pruned",
           "fit_score": 2.06,
-          "selection_stage": "below_threshold",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -11643,7 +11643,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.68,
+          "score": 21.48,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
@@ -12831,33 +12831,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.56,
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "[오늘의 주요일정]농림축산식품부(3월25일수요일)",
-          "url": "https://www.newsis.com/view/NISX20260324_0003560641",
-          "reason": "below_threshold",
-          "fit_score": 0.75,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "policy",
-          "source_query": "배추 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 1.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 9.55,
           "tier": 1,
           "press": "CFNEWS",
@@ -12885,6 +12858,33 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 9.36,
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "[오늘의 주요일정]농림축산식품부(3월25일수요일)",
+          "url": "https://www.newsis.com/view/NISX20260324_0003560641",
+          "reason": "below_threshold",
+          "fit_score": 0.75,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "배추 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 9.33,
           "tier": 1,
           "press": "새전북신문",
@@ -12907,33 +12907,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -3.9
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.16,
-          "tier": 1,
-          "press": "popcornnews",
-          "domain": "popcornnews.net",
-          "title": "[오늘(25일)의 경제·산업 주요 일정·행사] 'SK하이닉스, 주주총회' 등",
-          "url": "http://www.popcornnews.net/news/articleView.html?idxno=116069",
-          "reason": "below_threshold",
-          "fit_score": 0.85,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "policy",
-          "source_query": "배추 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
           }
         },
         {
@@ -13020,6 +12993,33 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 8.96,
+          "tier": 1,
+          "press": "popcornnews",
+          "domain": "popcornnews.net",
+          "title": "[오늘(25일)의 경제·산업 주요 일정·행사] 'SK하이닉스, 주주총회' 등",
+          "url": "http://www.popcornnews.net/news/articleView.html?idxno=116069",
+          "reason": "below_threshold",
+          "fit_score": 0.85,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "배추 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 8.91,
           "tier": 2,
           "press": "뉴스핌",
@@ -13081,7 +13081,7 @@
           "title": "가락시장 중앙청과 ‘가격급락’ 샤인머스켓 농가에 비용 보전",
           "url": "https://www.mk.co.kr/article/11996655",
           "reason": "",
-          "fit_score": 2.38,
+          "fit_score": 2.56,
           "selection_stage": "core_final",
           "selection_note": "grape",
           "origin_section": "dist",
@@ -13120,7 +13120,7 @@
           "seed": "화훼",
           "rep": "화훼",
           "hits": 13,
-          "selected_hits": 0,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "“박살난 수준”… 난방비 폭등·소비위축에 화훼 농가 한숨"
         },
@@ -13199,16 +13199,16 @@
       ]
     },
     "policy": {
-      "threshold": 29.34,
-      "tail_cut": 31.54,
-      "core_min": 29.34,
+      "threshold": 29.14,
+      "tail_cut": 31.34,
+      "core_min": 29.14,
       "total_candidates": 81,
       "total_selected": 4,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 39.34,
+          "score": 39.14,
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
@@ -13235,7 +13235,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 36.84,
+          "score": 36.44,
           "tier": 3,
           "press": "서울신문",
           "domain": "seoul.co.kr",
@@ -13316,7 +13316,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.66,
+          "score": 31.46,
           "tier": 1,
           "press": "시민일보",
           "domain": "siminilbo.co.kr",
@@ -13343,15 +13343,15 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.64,
+          "score": 31.24,
           "tier": 1,
           "press": "뉴스워커",
           "domain": "newsworker.co.kr",
           "title": "영암군, '농산물 최저 가격 보장제 추진'... 농가 소득 안정 지원",
           "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=418849",
-          "reason": "similar_title",
+          "reason": "tail_cut",
           "fit_score": 3.43,
-          "selection_stage": "similar_title",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -13370,7 +13370,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.44,
+          "score": 31.24,
           "tier": 1,
           "press": "dailysportshankook",
           "domain": "dailysportshankook.co.kr",
@@ -13397,7 +13397,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.96,
+          "score": 30.76,
           "tier": 1,
           "press": "M-I",
           "domain": "m-i.kr",
@@ -13640,7 +13640,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.09,
+          "score": 28.89,
           "tier": 1,
           "press": "신아일보",
           "domain": "shinailbo.co.kr",
@@ -13775,7 +13775,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.39,
+          "score": 22.99,
           "tier": 1,
           "press": "한국농업신문",
           "domain": "newsfarm.co.kr",
@@ -13856,33 +13856,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.34,
-          "tier": 1,
-          "press": "브릿지경제",
-          "domain": "viva100.com",
-          "title": "전남 영암군, 농가 소득 보호 위한 최저 가격 보장제 도입",
-          "url": "https://www.viva100.com/article/20260324501279",
-          "reason": "below_threshold",
-          "fit_score": 3.03,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "단감 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.12,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.96,
           "tier": 1,
           "press": "팜인사이트",
@@ -13905,6 +13878,33 @@
             "offtopic_pen": 1,
             "press_tier": 2,
             "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.94,
+          "tier": 1,
+          "press": "브릿지경제",
+          "domain": "viva100.com",
+          "title": "전남 영암군, 농가 소득 보호 위한 최저 가격 보장제 도입",
+          "url": "https://www.viva100.com/article/20260324501279",
+          "reason": "below_threshold",
+          "fit_score": 3.03,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "단감 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.12,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -14396,7 +14396,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.45,
+          "score": 12.25,
           "tier": 1,
           "press": "중부매일",
           "domain": "jbnews.com",
@@ -14504,7 +14504,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.35,
+          "score": 9.15,
           "tier": 1,
           "press": "seoultimes",
           "domain": "seoultimes.news",
@@ -14666,33 +14666,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.52,
-          "tier": 1,
-          "press": "socialvalue",
-          "domain": "socialvalue.kr",
-          "title": "롯데마트, ‘메가급 할인’ 꺼냈다…‘메가통큰’서 최대 60% 할인",
-          "url": "https://www.socialvalue.kr/news/view/1065571568432074",
-          "reason": "below_threshold",
-          "fit_score": 1.18,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "딸기 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.36,
           "tier": 1,
           "press": "s-journal",
@@ -14713,6 +14686,33 @@
             "strength": 2,
             "korea": 3,
             "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.32,
+          "tier": 1,
+          "press": "socialvalue",
+          "domain": "socialvalue.kr",
+          "title": "롯데마트, ‘메가급 할인’ 꺼냈다…‘메가통큰’서 최대 60% 할인",
+          "url": "https://www.socialvalue.kr/news/view/1065571568432074",
+          "reason": "below_threshold",
+          "fit_score": 1.18,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
           }
@@ -14926,16 +14926,16 @@
       ]
     },
     "dist": {
-      "threshold": 15.31,
-      "tail_cut": 16.91,
-      "core_min": 15.31,
+      "threshold": 11.11,
+      "tail_cut": 16.71,
+      "core_min": 11.11,
       "total_candidates": 23,
       "total_selected": 2,
       "top": [
         {
           "selected": false,
           "is_core": false,
-          "score": 24.31,
+          "score": 24.11,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
@@ -14969,7 +14969,7 @@
           "title": "가락시장 중앙청과 ‘가격급락’ 샤인머스켓 농가에 비용 보전",
           "url": "https://www.mk.co.kr/article/11996655",
           "reason": "postbuild_pruned",
-          "fit_score": 2.38,
+          "fit_score": 2.56,
           "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "dist",
@@ -15014,7 +15014,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 14.42,
           "tier": 3,
@@ -15022,9 +15022,9 @@
           "domain": "yna.co.kr",
           "title": "원주시의회, 제264회 임시회 폐회…조례안 등 36건 처리",
           "url": "https://www.yna.co.kr/view/AKR20260324117600062?input=1195m",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 0.28,
-          "selection_stage": "below_threshold",
+          "selection_stage": "dist_anchor_backfill",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15041,7 +15041,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 13.66,
           "tier": 1,
@@ -15049,9 +15049,9 @@
           "domain": "handmk.com",
           "title": "사람을 중심에 둔 물류로 산업의 가치를 말하다 - 지티종합물류 김형주...",
           "url": "https://www.handmk.com/news/articleView.html?idxno=36667",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 1.99,
-          "selection_stage": "below_threshold",
+          "selection_stage": "dist_anchor_backfill",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15068,7 +15068,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 10.81,
           "tier": 1,
@@ -15076,9 +15076,9 @@
           "domain": "onews.tv",
           "title": "밀양시 농산물 유통상생협의회, 가락시장에서 지역 농산물 홍보 세일즈...",
           "url": "https://www.onews.tv/news/articleView.html?idxno=277211",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 2.19,
-          "selection_stage": "underfill",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15292,9 +15292,9 @@
           "domain": "breaknews.com",
           "title": "충북농협, 농축산물 직거래 금요 장터 농가 식품안전교육 진행",
           "url": "http://www.breaknews.com/1194676",
-          "reason": "postbuild_pruned",
+          "reason": "below_threshold",
           "fit_score": 1.83,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -15552,33 +15552,6 @@
             "press_tier": 1,
             "press_weight": -1.5
           }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 13.23,
-          "tier": 1,
-          "press": "팜인사이트",
-          "domain": "farminsight.net",
-          "title": "샤인머스켓 가격 폭락... 중앙청과 '자체 재원' 투입 출하비 지원",
-          "url": "https://www.farminsight.net/news/articleView.html?idxno=16153",
-          "reason": "",
-          "fit_score": 0.38,
-          "selection_stage": "cross_section_dist_backfill",
-          "selection_note": "supply_to_dist_underfill",
-          "origin_section": "dist",
-          "reassigned_from": "supply",
-          "source_query": "도매시장 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 2,
-            "strength": 6,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
         }
       ],
       "coverage_ledger": [
@@ -15599,12 +15572,12 @@
           "sample_title": "가락시장 중앙청과 ‘가격급락’ 샤인머스켓 농가에 비용 보전"
         },
         {
-          "seed": "판로",
-          "rep": "판로",
-          "hits": 11,
-          "selected_hits": 2,
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 6,
+          "selected_hits": 4,
           "missing": false,
-          "sample_title": "도농 상생 실천…서울강서농협, 밀양 농산물 직거래 특판행사"
+          "sample_title": "\"하역노조원 업무 가중···가락시장 시범 휴업 반대\""
         },
         {
           "seed": "산지",
@@ -15618,7 +15591,7 @@
           "seed": "현장",
           "rep": "현장",
           "hits": 9,
-          "selected_hits": 1,
+          "selected_hits": 0,
           "missing": false,
           "sample_title": "밀양시 농산물 유통상생협의회, 가락시장에서 지역 농산물 홍보 세일즈..."
         },
@@ -15626,23 +15599,15 @@
           "seed": "직거래",
           "rep": "직거래",
           "hits": 4,
-          "selected_hits": 2,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "도농 상생 실천…서울강서농협, 밀양 농산물 직거래 특판행사"
-        },
-        {
-          "seed": "거점",
-          "rep": "거점",
-          "hits": 2,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "[언론 4사 지방선거 특별대담] 재선 도전 오영훈 제주도지사 대담요지"
         },
         {
           "seed": "apc",
           "rep": "apc",
           "hits": 4,
-          "selected_hits": 0,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "사람을 중심에 둔 물류로 산업의 가치를 말하다 - 지티종합물류 김형주..."
         },
@@ -15650,21 +15615,21 @@
           "seed": "농협",
           "rep": "농협",
           "hits": 3,
-          "selected_hits": 2,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "도농 상생 실천…서울강서농협, 밀양 농산물 직거래 특판행사"
         },
         {
-          "seed": "품목농협",
-          "rep": "품목농협",
+          "seed": "연합판매사업",
+          "rep": "연합판매사업",
           "hits": 0,
           "selected_hits": 0,
           "missing": true,
           "sample_title": ""
         },
         {
-          "seed": "원예농협",
-          "rep": "원예농협",
+          "seed": "품목농협",
+          "rep": "품목농협",
           "hits": 0,
           "selected_hits": 0,
           "missing": true,
@@ -15677,20 +15642,28 @@
           "selected_hits": 0,
           "missing": true,
           "sample_title": ""
+        },
+        {
+          "seed": "푸드통합지원센터",
+          "rep": "푸드통합지원센터",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
         }
       ]
     },
     "pest": {
-      "threshold": 28.51,
-      "tail_cut": 28.51,
-      "core_min": 28.51,
+      "threshold": 28.31,
+      "tail_cut": 28.31,
+      "core_min": 28.31,
       "total_candidates": 42,
       "total_selected": 3,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 35.51,
+          "score": 35.31,
           "tier": 1,
           "press": "충남일보",
           "domain": "chungnamilbo.co.kr",
@@ -15742,9 +15715,36 @@
           }
         },
         {
+          "selected": true,
+          "is_core": false,
+          "score": 32.83,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "[주목 이 제품] SG한국삼공, 4월 방제 약 3종 추천···예방·치료·생육...",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402839",
+          "reason": "",
+          "fit_score": 3.47,
+          "selection_stage": "tail",
+          "selection_note": "",
+          "origin_section": "pest",
+          "reassigned_from": "",
+          "source_query": "과수화상병 방제",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
           "selected": false,
           "is_core": false,
-          "score": 33.16,
+          "score": 32.76,
           "tier": 1,
           "press": "충청타임즈",
           "domain": "cctimes.kr",
@@ -15771,7 +15771,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.96,
+          "score": 32.76,
           "tier": 1,
           "press": "충청매일",
           "domain": "ccdn.co.kr",
@@ -15798,7 +15798,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.96,
+          "score": 32.76,
           "tier": 1,
           "press": "동양일보",
           "domain": "dynews.co.kr",
@@ -15825,7 +15825,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.96,
+          "score": 32.76,
           "tier": 1,
           "press": "ccnnews",
           "domain": "ccnnews.co.kr",
@@ -15852,7 +15852,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.96,
+          "score": 32.76,
           "tier": 1,
           "press": "데일리한국",
           "domain": "daily.hankooki.com",
@@ -15874,33 +15874,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 32.83,
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "[주목 이 제품] SG한국삼공, 4월 방제 약 3종 추천···예방·치료·생육...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402839",
-          "reason": "",
-          "fit_score": 3.47,
-          "selection_stage": "tail",
-          "selection_note": "",
-          "origin_section": "pest",
-          "reassigned_from": "",
-          "source_query": "과수화상병 방제",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
           }
         },
         {
@@ -15933,7 +15906,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.06,
+          "score": 29.86,
           "tier": 1,
           "press": "충청일보",
           "domain": "ccdailynews.com",
@@ -15960,7 +15933,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.06,
+          "score": 29.86,
           "tier": 1,
           "press": "디티뉴스24",
           "domain": "dtnews24.com",
@@ -15987,7 +15960,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.06,
+          "score": 29.86,
           "tier": 1,
           "press": "인뉴스365",
           "domain": "inews365.com",
@@ -16068,7 +16041,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.06,
+          "score": 26.86,
           "tier": 1,
           "press": "ttlnews",
           "domain": "ttlnews.com",
@@ -16095,7 +16068,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.16,
+          "score": 25.76,
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
@@ -16149,7 +16122,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.76,
+          "score": 24.36,
           "tier": 3,
           "press": "파이낸셜뉴스",
           "domain": "fnnews.com",
@@ -16230,7 +16203,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.98,
+          "score": 22.78,
           "tier": 1,
           "press": "뉴스경남",
           "domain": "newsgn.com",
@@ -16257,7 +16230,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.31,
+          "score": 22.11,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
@@ -16338,7 +16311,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.16,
+          "score": 20.76,
           "tier": 2,
           "press": "뉴시스",
           "domain": "newsis.com",
@@ -16392,7 +16365,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.68,
+          "score": 19.28,
           "tier": 1,
           "press": "이투데이",
           "domain": "etoday.co.kr",
@@ -16473,7 +16446,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.47,
+          "score": 16.27,
           "tier": 3,
           "press": "동아일보",
           "domain": "donga.com",
@@ -16500,7 +16473,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.47,
+          "score": 16.27,
           "tier": 1,
           "press": "문화일보",
           "domain": "munhwa.com",
@@ -16608,33 +16581,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.83,
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "예산군, 농업 현장 맞춤 지원 ...안정적 영농 기반 마련",
-          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317088",
-          "reason": "below_threshold",
-          "fit_score": 2.59,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "pest",
-          "reassigned_from": "policy",
-          "source_query": "토마토뿔나방 약제 지원",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 10.8,
           "tier": 1,
           "press": "천지일보",
@@ -16657,6 +16603,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.63,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "예산군, 농업 현장 맞춤 지원 ...안정적 영농 기반 마련",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317088",
+          "reason": "below_threshold",
+          "fit_score": 2.59,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "pest",
+          "reassigned_from": "policy",
+          "source_query": "토마토뿔나방 약제 지원",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -16797,7 +16770,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.83,
+          "score": 4.43,
           "tier": 1,
           "press": "bzeronews",
           "domain": "bzeronews.com",
