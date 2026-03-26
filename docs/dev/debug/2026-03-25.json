@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-26T23:26:53+09:00",
-  "build_tag": "101a3bd",
+  "generated_at_kst": "2026-03-27T00:17:26+09:00",
+  "build_tag": "a0f4bc2",
   "filter_rejects": [
     {
       "section": "policy",
@@ -11479,17 +11479,17 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 33.66,
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
           "title": "판촉·물량격리·분산출하…제주 양배추·월동무 소비확대 ‘총력’",
           "url": "https://www.nongmin.com/article/20260320500670",
-          "reason": "weak_tail",
-          "fit_score": 2.44,
-          "selection_stage": "weak_tail",
+          "reason": "",
+          "fit_score": 3.54,
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -11533,7 +11533,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 25.54,
           "tier": 3,
@@ -11541,9 +11541,9 @@
           "domain": "nongmin.com",
           "title": "경남 거창 북부농협, 사과 수매·인력 공급 사업 통해 농민 실익 증대 이...",
           "url": "https://www.nongmin.com/article/20260321500028",
-          "reason": "",
+          "reason": "tail_cut",
           "fit_score": 1.15,
-          "selection_stage": "core",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13073,7 +13073,7 @@
         },
         {
           "selected": true,
-          "is_core": true,
+          "is_core": false,
           "score": 27.36,
           "tier": 2,
           "press": "한국농어민신문",
@@ -13082,7 +13082,7 @@
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402816",
           "reason": "",
           "fit_score": 2.49,
-          "selection_stage": "core_final",
+          "selection_stage": "supply_board_bridge",
           "selection_note": "onion",
           "origin_section": "policy",
           "reassigned_from": "policy",
@@ -16446,33 +16446,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.27,
-          "tier": 1,
-          "press": "문화일보",
-          "domain": "munhwa.com",
-          "title": "과수화상병 선제 차단 총력…송미령 장관, 궤양 제거·면세유 점검",
-          "url": "https://www.munhwa.com/article/11577013",
-          "reason": "below_threshold",
-          "fit_score": 2.28,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "농식품부 수급 점검",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 16.07,
           "tier": 3,
           "press": "동아일보",
@@ -16495,6 +16468,33 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.07,
+          "tier": 1,
+          "press": "문화일보",
+          "domain": "munhwa.com",
+          "title": "과수화상병 선제 차단 총력…송미령 장관, 궤양 제거·면세유 점검",
+          "url": "https://www.munhwa.com/article/11577013",
+          "reason": "below_threshold",
+          "fit_score": 2.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "policy",
+          "source_query": "농식품부 수급 점검",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
