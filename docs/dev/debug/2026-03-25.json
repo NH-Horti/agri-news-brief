@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-26T22:09:30+09:00",
-  "build_tag": "528da11",
+  "generated_at_kst": "2026-03-26T23:26:53+09:00",
+  "build_tag": "101a3bd",
   "filter_rejects": [
     {
       "section": "policy",
@@ -11508,7 +11508,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 26.68,
+          "score": 26.48,
           "tier": 1,
           "press": "팜인사이트",
           "domain": "farminsight.net",
@@ -14930,20 +14930,20 @@
       "tail_cut": 16.51,
       "core_min": 10.91,
       "total_candidates": 23,
-      "total_selected": 2,
+      "total_selected": 3,
       "top": [
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 23.91,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
           "title": "\"하역노조원 업무 가중···가락시장 시범 휴업 반대\"",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402874",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 2.87,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -15658,7 +15658,7 @@
       "tail_cut": 28.31,
       "core_min": 28.31,
       "total_candidates": 42,
-      "total_selected": 3,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -15742,17 +15742,17 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 32.76,
           "tier": 1,
           "press": "충청타임즈",
           "domain": "cctimes.kr",
           "title": "개화기 약제 방제, 과수화상병 예방의 첫걸음",
           "url": "http://www.cctimes.kr/news/articleView.html?idxno=898071",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 4.47,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -16447,33 +16447,6 @@
           "selected": false,
           "is_core": false,
           "score": 16.27,
-          "tier": 3,
-          "press": "동아일보",
-          "domain": "donga.com",
-          "title": "물로 씻어 먹는데…잔류 농약 많은 12가지 농산물은?",
-          "url": "https://www.donga.com/news/Inter/article/all/20260324/133600736/1",
-          "reason": "below_threshold",
-          "fit_score": 1.98,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "감자 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.52,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.27,
           "tier": 1,
           "press": "문화일보",
           "domain": "munhwa.com",
@@ -16495,6 +16468,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.07,
+          "tier": 3,
+          "press": "동아일보",
+          "domain": "donga.com",
+          "title": "물로 씻어 먹는데…잔류 농약 많은 12가지 농산물은?",
+          "url": "https://www.donga.com/news/Inter/article/all/20260324/133600736/1",
+          "reason": "below_threshold",
+          "fit_score": 1.98,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "감자 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
