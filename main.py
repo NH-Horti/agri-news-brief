@@ -17358,19 +17358,40 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 _blocked_idents.setdefault(k, set()).add(ident)
 
     # ✅ Phase 3: 배정 결과에 따라 global_dedupe + MAX_PER_SECTION 적용
+    #   - title 유사도 + commodity+issue 중복도 여기서 1차 걸러냄
     global_dedupe = DedupeIndex()
     for sec in SECTIONS:
         key = sec["key"]
         blocked = _blocked_idents.get(key, set())
         picked: list[Article] = []
+        _picked_sigs: list[tuple[frozenset, frozenset]] = []  # (commodity_set, issue_set)
         for a in _section_buffers.get(key, []):
             ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
             if ident in blocked:
                 continue
-            if global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
-                picked.append(a)
-                if len(picked) >= MAX_PER_SECTION:
+            if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                continue
+            # title 유사도 체크 (같은 뉴스 다른 매체)
+            if any(_is_similar_title(a.title_key or "", p.title_key or "") for p in picked):
+                continue
+            # commodity+issue 중복 체크 (같은 품목+이슈 다른 기사)
+            _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
+            _a_comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt)
+            _a_issues = frozenset(k for k in ("주산지", "지정", "생산", "재배", "출하", "수급", "가격",
+                                               "피해", "방제", "작황", "폭락", "폭등", "급등", "급락",
+                                               "하락", "상승", "안정", "불안정", "과잉", "부족",
+                                               "경매", "경락", "반입", "도매", "수출", "품질") if k in _a_txt)
+            _topic_dup = False
+            for pc, pi in _picked_sigs:
+                if (_a_comms & pc) and (_a_issues & pi):
+                    _topic_dup = True
                     break
+            if _topic_dup:
+                continue
+            picked.append(a)
+            _picked_sigs.append((_a_comms, _a_issues))
+            if len(picked) >= MAX_PER_SECTION:
+                break
         final_by_section[key] = picked
         if DEBUG_SELECTION:
             top = sorted(candidates, key=_sort_key_major_first, reverse=True)[:12]
