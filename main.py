@@ -17374,8 +17374,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             # title 유사도 체크 (같은 뉴스 다른 매체)
             if any(_is_similar_title(a.title_key or "", p.title_key or "") for p in picked):
                 continue
-            # commodity+issue 중복 체크 (같은 품목+이슈 다른 기사)
-            _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
+            # commodity+issue 중복 체크 (같은 품목+이슈 다른 기사, title만 사용)
+            _a_txt = (a.title or "").lower()
             _a_comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt)
             _a_issues = frozenset(k for k in ("주산지", "지정", "생산", "재배", "출하", "수급", "가격",
                                                "피해", "방제", "작황", "폭락", "폭등", "급등", "급락",
@@ -17413,7 +17413,7 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         "구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
         "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도",
         "영암", "김제", "익산", "정읍", "부여", "논산", "서산", "당진", "보성", "순천",
-        "가락시장", "도매시장", "공판장",
+        # NOTE: "가락시장","도매시장","공판장" 제거 — 다양한 유통 기사에 공통 등장하여 오탐 유발
     ))
     _TOPIC_DEDUP_ISSUE_TERMS = frozenset((
         "주산지", "지정", "생산", "재배", "출하", "수급", "가격", "피해", "방제", "작황",
@@ -17424,10 +17424,10 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         articles = final_by_section.get(key, [])
         if len(articles) <= 1:
             continue
-        # 각 기사의 토픽 시그니처 추출
+        # 각 기사의 토픽 시그니처 추출 (title만 사용 — description은 간접 키워드가 오탐 유발)
         _topic_sigs: list[tuple[frozenset, frozenset, frozenset]] = []
         for a in articles:
-            _txt = ((a.title or "") + " " + (a.description or "")).lower()
+            _txt = (a.title or "").lower()
             _comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _txt)
             _regs = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _txt)
             _issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _txt)
@@ -17445,11 +17445,11 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 shared_comm = ci & cj
                 shared_reg = ri & rj
                 shared_issue = ii & ij
-                # 같은 섹션 내: 토픽 시그니처 기반 중복 판정 (anchor/Jaccard 폴백 제거 — 오탐 방지)
+                # 같은 섹션 내: 토픽 시그니처 기반 중복 판정
+                # 품목이 공유되어야 중복 판정 (비품목 기사는 title 유사도 fallback으로)
                 topic_dup = (
                     (shared_comm and len(shared_issue) >= 1)
                     or (shared_comm and shared_reg)
-                    or (shared_reg and len(shared_issue) >= 2)  # 비품목 기사: 지역+이슈2 (영암군 최저가격보장제 등)
                 )
                 # 비품목 기사 fallback: title 유사도 체크 (같은 뉴스의 다른 매체 보도)
                 if not topic_dup:
@@ -17525,8 +17525,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     # 품목+지역+이슈 토픽 중복 (cross-section에서도 적용)
                     _is_topic_dup = False
                     if not is_same_url:
-                        _ta = ((art_a.title or "") + " " + (art_a.description or "")).lower()
-                        _tb = ((art_b.title or "") + " " + (art_b.description or "")).lower()
+                        _ta = (art_a.title or "").lower()
+                        _tb = (art_b.title or "").lower()
                         _ca = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _ta)
                         _cb = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _tb)
                         _ra = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _ta)
@@ -17585,14 +17585,14 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 # title 유사도 체크 (같은 뉴스 다른 매체)
                 if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in final_by_section[sec_key]):
                     continue
-                # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크
-                _a_txt = ((a.title or "") + " " + (a.description or "")).lower()
+                # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크 (title만 사용)
+                _a_txt = (a.title or "").lower()
                 _a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt}
                 _a_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt}
                 _backfill_within_skip = False
                 if _a_commodities and _a_issues:
                     for b in final_by_section[sec_key]:
-                        _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                        _b_txt = (b.title or "").lower()
                         _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
                         _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
                         if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
@@ -17606,9 +17606,9 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                                           "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
                 _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
                 _backfill_cross_skip = False
-                # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완)
+                # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완, title만 사용)
                 for b in final_by_section[sec_key]:
-                    _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                    _b_txt = (b.title or "").lower()
                     _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
                     _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
                     if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
@@ -17617,9 +17617,9 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                         break
                 if _backfill_cross_skip:
                     continue
-                # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크
+                # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크 (title만 사용)
                 for b in _other_section_articles:
-                    _b_txt = ((b.title or "") + " " + (b.description or "")).lower()
+                    _b_txt = (b.title or "").lower()
                     # URL 중복 체크
                     _a_url = getattr(a, 'canon_url', '') or ''
                     _b_url = getattr(b, 'canon_url', '') or ''
