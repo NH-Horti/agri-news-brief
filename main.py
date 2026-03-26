@@ -18848,6 +18848,22 @@ def _normalize_supply_section_from_board(
                 continue
             if article_key in current_supply_keys:
                 continue
+            # commodity+issue 중복 체크 (같은 품목 기사 중복 방지)
+            _cand_txt = ((article.title or "") + " " + (article.description or "")).lower()
+            _cand_comms = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _cand_txt}
+            _BOARD_ISSUE_KWS = ("가격", "수급", "출하", "폭락", "폭등", "급등", "급락", "재배", "생산")
+            _cand_issues = {k for k in _BOARD_ISSUE_KWS if k in _cand_txt}
+            _board_topic_dup = False
+            if _cand_comms and _cand_issues:
+                for existing in supply_items:
+                    _e_txt = ((existing.title or "") + " " + (existing.description or "")).lower()
+                    _e_comms = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _e_txt}
+                    _e_issues = {k for k in _BOARD_ISSUE_KWS if k in _e_txt}
+                    if (_cand_comms & _e_comms) and (_cand_issues & _e_issues):
+                        _board_topic_dup = True
+                        break
+            if _board_topic_dup:
+                continue
             if len(supply_items) < max_n:
                 supply_items.append(article)
                 inserted += 1
