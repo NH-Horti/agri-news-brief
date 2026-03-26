@@ -5060,6 +5060,8 @@ _COMMODITY_SUPPORT_KEEP_TERMS = (
 )
 _COMMODITY_CONSUMER_GUIDE_TERMS = (
     "알뜰장보기", "구매 타이밍", "다이어트", "비타민", "드세요", "한입", "더 달콤", "1인 가구", "효자",
+    "항산화", "혈관", "면역", "효능", "영양가", "영양소", "건강에 좋",
+    "슈퍼푸드", "웰빙", "피부미용", "노화방지", "항암",
 )
 _COMMODITY_CONSUMER_GUIDE_KEEP_TERMS = (
     "가격", "시세", "수급", "경락", "경매", "반입", "도매시장", "공판장", "가락시장", "저장", "재고", "출하", "작황", "생육",
@@ -16741,8 +16743,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     # 요소수/석유제품 관련 기사는 원예 맥락 없으면 제외
     if section_key == "supply":
         _UREA_KWS = ("요소수", "요소 가격", "요소 수급")
+        ttl_lower = (a.title or "").lower()
         if any(kw in text for kw in _UREA_KWS):
-            if not any(h in text for h in ("농업", "농기계", "농가", "시설원예", "원예", "비료")):
+            # 제목에 원예/농업 키워드가 없으면 제외 (description만 농업 맥락이어도 불충분)
+            if not any(h in ttl_lower for h in ("농업", "농기계", "농가", "시설원예", "원예", "비료", "면세유")):
                 return "urea_not_agri"
     if section_key in ("supply", "policy") and is_title_livestock_dominant_context(a.title or "", a.description or ""):
         return "livestock_title_dominant"
