@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-26T17:47:55+09:00",
-  "build_tag": "3ddc1d4",
+  "generated_at_kst": "2026-03-26T18:26:51+09:00",
+  "build_tag": "528da11",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13074,28 +13074,28 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 23.12,
-          "tier": 3,
-          "press": "매일경제",
-          "domain": "mk.co.kr",
-          "title": "가락시장 중앙청과 ‘가격급락’ 샤인머스켓 농가에 비용 보전",
-          "url": "https://www.mk.co.kr/article/11996655",
+          "score": 27.36,
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "구미시, 양파 주산지 공식 지정···생산·유통· 가격안정 체계 구축 전...",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402816",
           "reason": "",
-          "fit_score": 2.56,
+          "fit_score": 2.49,
           "selection_stage": "core_final",
-          "selection_note": "grape",
-          "origin_section": "dist",
-          "reassigned_from": "dist",
-          "source_query": "농산물 출하비용 보전",
+          "selection_note": "onion",
+          "origin_section": "policy",
+          "reassigned_from": "policy",
+          "source_query": "농산물 가격안정 지원사업",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.95,
-            "market_hits": 4,
-            "strength": 6,
+            "market_hits": 0,
+            "strength": 4,
             "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 3,
-            "press_weight": 5.5
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         }
       ],
@@ -13203,7 +13203,7 @@
       "tail_cut": 31.34,
       "core_min": 29.14,
       "total_candidates": 81,
-      "total_selected": 4,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
@@ -13719,7 +13719,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 27.36,
           "tier": 2,
@@ -13727,9 +13727,9 @@
           "domain": "agrinet.co.kr",
           "title": "구미시, 양파 주산지 공식 지정···생산·유통· 가격안정 체계 구축 전...",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=402816",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 2.49,
-          "selection_stage": "underfill",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -14926,16 +14926,16 @@
       ]
     },
     "dist": {
-      "threshold": 11.11,
-      "tail_cut": 16.71,
-      "core_min": 11.11,
+      "threshold": 10.91,
+      "tail_cut": 16.51,
+      "core_min": 10.91,
       "total_candidates": 23,
       "total_selected": 2,
       "top": [
         {
           "selected": false,
           "is_core": false,
-          "score": 24.11,
+          "score": 23.91,
           "tier": 2,
           "press": "한국농어민신문",
           "domain": "agrinet.co.kr",
@@ -16230,7 +16230,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.11,
+          "score": 21.91,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
@@ -16608,7 +16608,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.63,
+          "score": 10.43,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
