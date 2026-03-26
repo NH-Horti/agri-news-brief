@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-03-23T22:49:12+09:00",
+  "generated_at": "2026-03-27T00:43:07+09:00",
   "collection": {
     "tracking_enabled": false,
     "last_event_at": "",
     "tracking_build_id": ""
   },
   "pipeline": {
-    "last_success_at": "2026-03-23T22:49:12+09:00",
+    "last_success_at": "2026-03-27T00:43:07+09:00",
     "status": "warning"
   },
   "warnings": [
-    "GA4_PROPERTY_ID is not configured."
+    "GA4 credentials are not configured. Set GA4_ACCESS_TOKEN or GA4_SERVICE_ACCOUNT_JSON."
   ]
 }
