@@ -5779,9 +5779,9 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
     managed_count = int(_managed_commodity_match_summary(title or "", "").get("count") or 0)
     market_hits = count_any(ttl_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
     desc_horti_hits = count_any(desc_l, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(desc_l, HORTI_ITEM_TERMS_L)
-    macro_mix_keep = desc_horti_hits >= 1 and (
+    macro_mix_keep = desc_horti_hits >= 2 and (
         is_broad_macro_price_context(title or "", desc or "")
-        or count_any(f"{ttl} {desc_l}", [w.lower() for w in ("농축산물", "물가", "수급", "안정", "할인지원", "성수품")]) >= 1
+        or count_any(f"{ttl} {desc_l}", [w.lower() for w in ("물가", "수급", "안정", "할인지원", "성수품")]) >= 1
     )
     return (
         livestock_core_in_title
@@ -10943,6 +10943,11 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             if has_any(title_l, ["대목장", "대목", "현장", "어땠나", "판매", "시장", "반응"]):
                 score += 3.2
 
+        # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
+        _COOP_REFORM_SCORE_KWS = ("농협개혁", "농협 개혁", "조직개편", "조직 개편", "거버넌스", "임원 선임", "인사 개편",
+                                   "농협중앙회 회장", "농협 회장", "대의원", "농협법 개정")
+        if any(kw in text for kw in _COOP_REFORM_SCORE_KWS):
+            score -= 8.0
         # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
         if is_local_brief_text(title, desc, "dist"):
             score -= 3.5
@@ -12175,7 +12180,7 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
                 break
 
     best = _selection_reference_score(candidates_sorted, section_key)
-    margin = 10.0 if section_key == "policy" else (13.0 if section_key == "dist" else (10.0 if section_key == "supply" else 7.0))
+    margin = 10.0 if section_key == "policy" else (13.0 if section_key == "dist" else (12.0 if section_key == "supply" else 7.0))
     thr = max(BASE_MIN_SCORE.get(section_key, 6.0), best - margin)
 
     unique_candidates = _dedupe_by_event_key(list(candidates_sorted), section_key)
@@ -16759,6 +16764,14 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
         if is_policy_budget_drive_noise_context(a.title or "", a.description or ""):
             return "policy_budget_drive_noise"
     if section_key == "dist":
+        # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
+        _ttl_dist = (a.title or "").lower()
+        _COOP_REFORM_KWS = ("농협개혁", "농협 개혁", "조직개편", "조직 개편", "거버넌스", "임원 선임", "인사 개편",
+                            "농협중앙회 회장", "농협 회장", "선거관리위원회", "대의원", "농협법 개정")
+        if any(kw in _ttl_dist for kw in _COOP_REFORM_KWS):
+            _DIST_ANCHOR_RESCUE = ("도매시장", "공판장", "경매", "경락", "물류", "유통센터", "산지유통", "apc", "직거래")
+            if not any(da in (a.title or "").lower() + " " + (a.description or "").lower() for da in _DIST_ANCHOR_RESCUE):
+                return "dist_coop_reform_noise"
         if is_dist_political_visit_context(a.title or "", a.description or ""):
             return "dist_political_visit"
         if is_local_agri_infra_designation_context(a.title or "", a.description or ""):
