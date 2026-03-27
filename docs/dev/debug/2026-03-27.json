@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-27T09:23:56+09:00",
-  "build_tag": "abac166",
+  "generated_at_kst": "2026-03-27T09:57:50+09:00",
+  "build_tag": "588f89b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -12714,7 +12714,7 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_only",
+      "reason": "livestock_title_dominant",
       "press": "경향신문",
       "domain": "khan.co.kr",
       "title": "계란·돼지고기 담합 땐 지원금 못 받는다",
@@ -13605,9 +13605,9 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 21.46,
+      "threshold": 19.46,
       "tail_cut": 23.86,
-      "core_min": 21.46,
+      "core_min": 19.46,
       "total_candidates": 244,
       "total_selected": 5,
       "top": [
@@ -13890,9 +13890,9 @@
           "domain": "view.asiae.co.kr",
           "title": "장성군 \"농업인 월급제 3월까지 신청하세요\"",
           "url": "https://view.asiae.co.kr/article/2026032616270691277",
-          "reason": "below_threshold",
+          "reason": "tail_cut",
           "fit_score": 2.4,
-          "selection_stage": "below_threshold",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13917,9 +13917,9 @@
           "domain": "dailian.co.kr",
           "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
           "url": "https://www.dailian.co.kr/news/view/1626012/?sc=Naver",
-          "reason": "below_threshold",
+          "reason": "tail_cut",
           "fit_score": 1.7,
-          "selection_stage": "below_threshold",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -15428,9 +15428,9 @@
           "domain": "khan.co.kr",
           "title": "계란·돼지고기 담합 땐 지원금 못 받는다",
           "url": "https://www.khan.co.kr/article/202603262138005",
-          "reason": "similar_story",
-          "fit_score": 2.39,
-          "selection_stage": "similar_story",
+          "reason": "headline_gate",
+          "fit_score": 0.99,
+          "selection_stage": "headline_gate",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
