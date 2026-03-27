@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-27T08:22:59+09:00",
-  "build_tag": "456da4d",
+  "generated_at_kst": "2026-03-27T09:23:56+09:00",
+  "build_tag": "abac166",
   "filter_rejects": [
     {
       "section": "policy",
@@ -12323,6 +12323,386 @@
       "source_channel": "naver_api"
     },
     {
+      "section": "dist",
+      "reason": "dist_wholesale_ambiguous_no_agri",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
+      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
+      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "데일리안",
+      "domain": "dailian.co.kr",
+      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
+      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_wholesale_ambiguous_no_agri",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "뉴데일리경제",
+      "domain": "biz.newdaily.co.kr",
+      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
+      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_wholesale_ambiguous_no_agri",
+      "press": "뉴스토마토",
+      "domain": "newstomato.com",
+      "title": "휘발유 최고 공급가 '1934원'…나프타 수출통제 '전격 시행'",
+      "url": "https://newstomato.com/ReadNews.aspx?no=1295736&inflow=N",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "팜&마켓",
+      "domain": "farmnmarket.com",
+      "title": "단호박 유기 재배 단호박 가루이와 총채벌레",
+      "url": "https://farmnmarket.com/news/article.html?no=25932",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "팜&마켓",
+      "domain": "farmnmarket.com",
+      "title": "단호박 유기 재배 단호박 가루이와 총채벌레",
+      "url": "https://farmnmarket.com/news/article.html?no=25932",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "품종 선택이 중요한 오이 정식기…경농, 'PMR춘향1542' 추천",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=317264",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "품종 선택이 중요한 오이 정식기…경농, 'PMR춘향1542' 추천",
+      "url": "https://aflnews.co.kr/news/articleView.html?idxno=317264",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_ops_only_generic",
+      "press": "뉴스토마토",
+      "domain": "newstomato.com",
+      "title": "공급망 차질·물류비 급등…수출기업도 'K자형 양극화'",
+      "url": "https://newstomato.com/ReadNews.aspx?no=1295758&inflow=N",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "MBN",
+      "domain": "mbn.co.kr",
+      "title": "\"벌레 한 마리도 안 돼요\" 깐깐한 검역 거쳐 수출 효자 된 K-농산물",
+      "url": "https://mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "MBN",
+      "domain": "mbn.co.kr",
+      "title": "\"벌레 한 마리도 안 돼요\" 깐깐한 검역 거쳐 수출 효자 된 K-농산물",
+      "url": "https://mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "시민일보",
+      "domain": "siminilbo.co.kr",
+      "title": "생활개선의왕시연합회, 감자 나눔위한 농장포 조성",
+      "url": "https://siminilbo.co.kr/news/newsview.php?ncode=1160291223150017",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "시민일보",
+      "domain": "siminilbo.co.kr",
+      "title": "생활개선의왕시연합회, 감자 나눔위한 농장포 조성",
+      "url": "https://siminilbo.co.kr/news/newsview.php?ncode=1160291223150017",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_non_horti_anchorless",
+      "press": "popcornnews",
+      "domain": "popcornnews.net",
+      "title": "[오늘(27일)의 경제·산업 주요 일정·행사] '진해 군항제' 개막 등",
+      "url": "https://popcornnews.net/news/articleView.html?idxno=116415",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "WOLYO",
+      "domain": "wolyo.co.kr",
+      "title": "크림브륄레에 고소함 더한 '파스퇴르 밀크브륄레' 출시",
+      "url": "https://wolyo.co.kr/news/articleView.html?idxno=310269",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "WOLYO",
+      "domain": "wolyo.co.kr",
+      "title": "크림브륄레에 고소함 더한 '파스퇴르 밀크브륄레' 출시",
+      "url": "https://wolyo.co.kr/news/articleView.html?idxno=310269",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "경남 함양농협, 양파 재배 기술 교육 시행",
+      "url": "https://nongmin.com/article/20260325500435",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "경남 함양농협, 양파 재배 기술 교육 시행",
+      "url": "https://nongmin.com/article/20260325500435",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "dist_non_horti_anchorless",
+      "press": "PPSS",
+      "domain": "ppss.kr",
+      "title": "박성현 5차 공약, 광양 민생경제 정조준…농민·소상공인·근로자 챙겼...",
+      "url": "https://ppss.kr/news/articleView.html?idxno=289755",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "제천시, 제19기 농업인대학 2개과정 개강",
+      "url": "https://breaknews.com/1195456",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "제천시, 제19기 농업인대학 2개과정 개강",
+      "url": "https://breaknews.com/1195456",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "제천시, 제19기 농업인대학 개강식 열어",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411410",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "제천시, 제19기 농업인대학 개강식 열어",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411410",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "동양일보",
+      "domain": "dynews.co.kr",
+      "title": "제천시, 19기 농업인대학 개강식 개최",
+      "url": "https://dynews.co.kr/news/articleView.html?idxno=844019",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "동양일보",
+      "domain": "dynews.co.kr",
+      "title": "제천시, 19기 농업인대학 개강식 개최",
+      "url": "https://dynews.co.kr/news/articleView.html?idxno=844019",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "충청타임즈",
+      "domain": "cctimes.kr",
+      "title": "제천시, 제19기 농업인대학 개강식 개최",
+      "url": "https://cctimes.kr/news/articleView.html?idxno=898435",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "충청타임즈",
+      "domain": "cctimes.kr",
+      "title": "제천시, 제19기 농업인대학 개강식 개최",
+      "url": "https://cctimes.kr/news/articleView.html?idxno=898435",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "충청일보",
+      "domain": "ccdailynews.com",
+      "title": "전문 농업인 양성, '제19기 제천시농업인대학' 개강",
+      "url": "https://ccdailynews.com/news/articleView.html?idxno=2405894",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "충청일보",
+      "domain": "ccdailynews.com",
+      "title": "전문 농업인 양성, '제19기 제천시농업인대학' 개강",
+      "url": "https://ccdailynews.com/news/articleView.html?idxno=2405894",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "금강일보",
+      "domain": "ggilbo.com",
+      "title": "제천시, '제19기 농업인대학 개강식' 개최",
+      "url": "https://ggilbo.com/news/articleView.html?idxno=1149029",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "금강일보",
+      "domain": "ggilbo.com",
+      "title": "제천시, '제19기 농업인대학 개강식' 개최",
+      "url": "https://ggilbo.com/news/articleView.html?idxno=1149029",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "고흥군, 노지스마트농업 육성지구 사업설명회 개최",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411119",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "이뉴스투데이",
+      "domain": "enewstoday.co.kr",
+      "title": "고흥군, 노지스마트농업 육성지구 사업설명회 개최",
+      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411119",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "브릿지경제",
+      "domain": "viva100.com",
+      "title": "제천시, 농업인대학 개강으로 농업 경쟁력 강화",
+      "url": "https://viva100.com/article/20260325501523",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "브릿지경제",
+      "domain": "viva100.com",
+      "title": "제천시, 농업인대학 개강으로 농업 경쟁력 강화",
+      "url": "https://viva100.com/article/20260325501523",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "supply",
       "reason": "supply_macro_official_shock",
       "press": "경향신문",
@@ -13073,386 +13453,6 @@
       "source_channel": ""
     },
     {
-      "section": "dist",
-      "reason": "dist_wholesale_ambiguous_no_agri",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
-      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
-      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정",
-      "url": "https://dailian.co.kr/news/view/1626012/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_wholesale_ambiguous_no_agri",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴데일리경제",
-      "domain": "biz.newdaily.co.kr",
-      "title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특...",
-      "url": "https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_wholesale_ambiguous_no_agri",
-      "press": "뉴스토마토",
-      "domain": "newstomato.com",
-      "title": "휘발유 최고 공급가 '1934원'…나프타 수출통제 '전격 시행'",
-      "url": "https://newstomato.com/ReadNews.aspx?no=1295736&inflow=N",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "팜&마켓",
-      "domain": "farmnmarket.com",
-      "title": "단호박 유기 재배 단호박 가루이와 총채벌레",
-      "url": "https://farmnmarket.com/news/article.html?no=25932",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "팜&마켓",
-      "domain": "farmnmarket.com",
-      "title": "단호박 유기 재배 단호박 가루이와 총채벌레",
-      "url": "https://farmnmarket.com/news/article.html?no=25932",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "품종 선택이 중요한 오이 정식기…경농, 'PMR춘향1542' 추천",
-      "url": "https://aflnews.co.kr/news/articleView.html?idxno=317264",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "품종 선택이 중요한 오이 정식기…경농, 'PMR춘향1542' 추천",
-      "url": "https://aflnews.co.kr/news/articleView.html?idxno=317264",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_ops_only_generic",
-      "press": "뉴스토마토",
-      "domain": "newstomato.com",
-      "title": "공급망 차질·물류비 급등…수출기업도 'K자형 양극화'",
-      "url": "https://newstomato.com/ReadNews.aspx?no=1295758&inflow=N",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "MBN",
-      "domain": "mbn.co.kr",
-      "title": "\"벌레 한 마리도 안 돼요\" 깐깐한 검역 거쳐 수출 효자 된 K-농산물",
-      "url": "https://mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "MBN",
-      "domain": "mbn.co.kr",
-      "title": "\"벌레 한 마리도 안 돼요\" 깐깐한 검역 거쳐 수출 효자 된 K-농산물",
-      "url": "https://mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "시민일보",
-      "domain": "siminilbo.co.kr",
-      "title": "생활개선의왕시연합회, 감자 나눔위한 농장포 조성",
-      "url": "https://siminilbo.co.kr/news/newsview.php?ncode=1160291223150017",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "시민일보",
-      "domain": "siminilbo.co.kr",
-      "title": "생활개선의왕시연합회, 감자 나눔위한 농장포 조성",
-      "url": "https://siminilbo.co.kr/news/newsview.php?ncode=1160291223150017",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_non_horti_anchorless",
-      "press": "popcornnews",
-      "domain": "popcornnews.net",
-      "title": "[오늘(27일)의 경제·산업 주요 일정·행사] '진해 군항제' 개막 등",
-      "url": "https://popcornnews.net/news/articleView.html?idxno=116415",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "WOLYO",
-      "domain": "wolyo.co.kr",
-      "title": "크림브륄레에 고소함 더한 '파스퇴르 밀크브륄레' 출시",
-      "url": "https://wolyo.co.kr/news/articleView.html?idxno=310269",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "WOLYO",
-      "domain": "wolyo.co.kr",
-      "title": "크림브륄레에 고소함 더한 '파스퇴르 밀크브륄레' 출시",
-      "url": "https://wolyo.co.kr/news/articleView.html?idxno=310269",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경남 함양농협, 양파 재배 기술 교육 시행",
-      "url": "https://nongmin.com/article/20260325500435",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경남 함양농협, 양파 재배 기술 교육 시행",
-      "url": "https://nongmin.com/article/20260325500435",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "dist",
-      "reason": "dist_non_horti_anchorless",
-      "press": "PPSS",
-      "domain": "ppss.kr",
-      "title": "박성현 5차 공약, 광양 민생경제 정조준…농민·소상공인·근로자 챙겼...",
-      "url": "https://ppss.kr/news/articleView.html?idxno=289755",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "제천시, 제19기 농업인대학 2개과정 개강",
-      "url": "https://breaknews.com/1195456",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "제천시, 제19기 농업인대학 2개과정 개강",
-      "url": "https://breaknews.com/1195456",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "제천시, 제19기 농업인대학 개강식 열어",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411410",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "제천시, 제19기 농업인대학 개강식 열어",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411410",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "동양일보",
-      "domain": "dynews.co.kr",
-      "title": "제천시, 19기 농업인대학 개강식 개최",
-      "url": "https://dynews.co.kr/news/articleView.html?idxno=844019",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "동양일보",
-      "domain": "dynews.co.kr",
-      "title": "제천시, 19기 농업인대학 개강식 개최",
-      "url": "https://dynews.co.kr/news/articleView.html?idxno=844019",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "충청타임즈",
-      "domain": "cctimes.kr",
-      "title": "제천시, 제19기 농업인대학 개강식 개최",
-      "url": "https://cctimes.kr/news/articleView.html?idxno=898435",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "충청타임즈",
-      "domain": "cctimes.kr",
-      "title": "제천시, 제19기 농업인대학 개강식 개최",
-      "url": "https://cctimes.kr/news/articleView.html?idxno=898435",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "충청일보",
-      "domain": "ccdailynews.com",
-      "title": "전문 농업인 양성, '제19기 제천시농업인대학' 개강",
-      "url": "https://ccdailynews.com/news/articleView.html?idxno=2405894",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "충청일보",
-      "domain": "ccdailynews.com",
-      "title": "전문 농업인 양성, '제19기 제천시농업인대학' 개강",
-      "url": "https://ccdailynews.com/news/articleView.html?idxno=2405894",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "금강일보",
-      "domain": "ggilbo.com",
-      "title": "제천시, '제19기 농업인대학 개강식' 개최",
-      "url": "https://ggilbo.com/news/articleView.html?idxno=1149029",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "금강일보",
-      "domain": "ggilbo.com",
-      "title": "제천시, '제19기 농업인대학 개강식' 개최",
-      "url": "https://ggilbo.com/news/articleView.html?idxno=1149029",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "고흥군, 노지스마트농업 육성지구 사업설명회 개최",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411119",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "이뉴스투데이",
-      "domain": "enewstoday.co.kr",
-      "title": "고흥군, 노지스마트농업 육성지구 사업설명회 개최",
-      "url": "https://enewstoday.co.kr/news/articleView.html?idxno=2411119",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "브릿지경제",
-      "domain": "viva100.com",
-      "title": "제천시, 농업인대학 개강으로 농업 경쟁력 강화",
-      "url": "https://viva100.com/article/20260325501523",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "브릿지경제",
-      "domain": "viva100.com",
-      "title": "제천시, 농업인대학 개강으로 농업 경쟁력 강화",
-      "url": "https://viva100.com/article/20260325501523",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "MBN",
@@ -13612,21 +13612,21 @@
       "total_selected": 5,
       "top": [
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 31.46,
           "tier": 2,
           "press": "농수축산신문",
           "domain": "aflnews.co.kr",
           "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317253",
-          "reason": "",
+          "reason": "supply_policy_like",
           "fit_score": 4.37,
-          "selection_stage": "core",
+          "selection_stage": "supply_policy_like",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "봄배추 가격 안정",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "무 가격",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 2.52,
@@ -13636,6 +13636,33 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 29.47,
+          "tier": 1,
+          "press": "한국농업신문",
+          "domain": "newsfarm.co.kr",
+          "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
+          "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100639",
+          "reason": "",
+          "fit_score": 1.05,
+          "selection_stage": "core",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 2,
+            "strength": 5,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -13987,33 +14014,6 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 17.97,
-          "tier": 1,
-          "press": "한국농업신문",
-          "domain": "newsfarm.co.kr",
-          "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
-          "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100639",
-          "reason": "below_threshold",
-          "fit_score": 0.95,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "농산물 유통 구조 개선",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
           }
         },
         {
@@ -15234,6 +15234,33 @@
         {
           "selected": true,
           "is_core": true,
+          "score": 7.8,
+          "tier": 1,
+          "press": "세이프타임즈",
+          "domain": "safetimes.co.kr",
+          "title": "농식품부 , 봄배추 수급 점검 … '중동발 비료' 수급 대응",
+          "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=241181",
+          "reason": "",
+          "fit_score": 0.93,
+          "selection_stage": "core_final",
+          "selection_note": "napa_cabbage",
+          "origin_section": "policy",
+          "reassigned_from": "policy",
+          "source_query": "농식품부 수급 점검",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.8,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
           "score": 9.57,
           "tier": 1,
           "press": "경북일보",
@@ -15257,67 +15284,40 @@
             "press_tier": 1,
             "press_weight": -1.5
           }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 8.66,
-          "tier": 1,
-          "press": "뉴스토마토",
-          "domain": "newstomato.com",
-          "title": "‘286%’ 뛴 D램…삼성·SK, 1분기도 ‘쾌청’",
-          "url": "http://www.newstomato.com/ReadNews.aspx?no=1295673&inflow=N",
-          "reason": "",
-          "fit_score": 0.75,
-          "selection_stage": "supply_board_bridge",
-          "selection_note": "tomato",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "토마토 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
         }
       ],
       "coverage_ledger": [
         {
-          "seed": "배추",
-          "rep": "배추",
-          "hits": 36,
+          "seed": "무",
+          "rep": "무",
+          "hits": 14,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
         },
         {
-          "seed": "감자",
-          "rep": "감자",
-          "hits": 5,
-          "selected_hits": 1,
+          "seed": "딸기",
+          "rep": "딸기",
+          "hits": 17,
+          "selected_hits": 2,
           "missing": false,
           "sample_title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄"
         },
         {
-          "seed": "포도",
-          "rep": "포도",
-          "hits": 6,
-          "selected_hits": 1,
+          "seed": "감귤",
+          "rep": "감귤",
+          "hits": 2,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "가락시장 ‘출하비용 보전사업’ 속속 안착"
+          "sample_title": "성산지역 키위특화단지 조성사업 '지지부진'"
         },
         {
-          "seed": "사과",
-          "rep": "사과",
-          "hits": 22,
-          "selected_hits": 1,
+          "seed": "토마토",
+          "rep": "토마토",
+          "hits": 12,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "“이웃 농부들과 함께하는 삶”…지역 농산물로 반려동물 간식 만드는 ..."
+          "sample_title": "“난방비 월 1000만원 증가”… 전남 시설재배 농가 ‘유가 쇼크’"
         },
         {
           "seed": "애호박",
@@ -15347,7 +15347,7 @@
           "seed": "양배추",
           "rep": "양배추",
           "hits": 3,
-          "selected_hits": 1,
+          "selected_hits": 0,
           "missing": false,
           "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
         },
@@ -19699,5 +19699,9 @@
         "budget_total": 12
       }
     }
+  },
+  "replay": {
+    "enabled": true,
+    "snapshot_path": "/home/runner/work/agri-news-brief/agri-news-brief/.agri_replay/2026-03-27.snapshot.json"
   }
 }
