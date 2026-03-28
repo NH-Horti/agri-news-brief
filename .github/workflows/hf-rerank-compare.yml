@@ -1,0 +1,88 @@
+name: agri-news-brief (HF rerank compare)
+
+on:
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: "Replay snapshot date to compare (YYYY-MM-DD)"
+        required: true
+        type: string
+      snapshot_source:
+        description: "Which replay snapshot to use"
+        required: false
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+          - auto
+      mode:
+        description: "selection = fast section-only compare, full = exact slower compare"
+        required: false
+        default: "selection"
+        type: choice
+        options:
+          - selection
+          - full
+      sections:
+        description: "Space-separated sections to compare (for example: supply dist)"
+        required: false
+        default: "supply dist"
+        type: string
+      candidate_cap:
+        description: "Top candidate cap per section for selection mode"
+        required: false
+        default: "40"
+        type: string
+      max_items:
+        description: "Selected item count per section"
+        required: false
+        default: "5"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    if: github.ref_name == 'dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run HF rerank compare
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SEMANTIC_MODEL: intfloat/multilingual-e5-large
+        run: |
+          mkdir -p .hf-compare
+          python scripts/compare_hf_rerank.py \
+            --report-date "${{ inputs.report_date }}" \
+            --snapshot-source "${{ inputs.snapshot_source }}" \
+            --mode "${{ inputs.mode }}" \
+            --sections ${{ inputs.sections }} \
+            --candidate-cap "${{ inputs.candidate_cap }}" \
+            --max-items "${{ inputs.max_items }}" \
+            --output-json .hf-compare/report.json \
+            --output-text .hf-compare/report.txt
+          cat .hf-compare/report.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload compare artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hf-rerank-compare-${{ inputs.report_date }}
+          path: .hf-compare/
