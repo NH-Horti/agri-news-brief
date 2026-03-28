@@ -850,6 +850,10 @@ OPINION_BAN_TERMS = [
     "일기", "농막일기", "수필", "에세이", "연재", "기행",
     "만평", "데스크칼럼", "횡설수설", "기자의 시선", "논단",
     "촉석루", "[촉석루]", "경제이야기",
+    # 추가 칼럼/코너명
+    "길섶에서", "[길섶에서]", "시론", "[시론]", "여적", "[여적]",
+    "세상만사", "아침햇발", "삶의향기", "삶의 향기", "세설",
+    "여의도포럼", "경제시평", "[경제시평]", "바깥에서 본 한국",
 ]
 
 # 지역 동정/기부/장학/발전기금 등 커뮤니티성 기사 제외용(특히 ○○농협 + 기금전달류 오탐 방지)
@@ -1960,6 +1964,12 @@ SUPPLY_CONTEXT_QUERIES = [
     "산불 과수",
     "기후변화 과수",
     "과수 농가 울상",
+    # 투입비용·농자재 압박
+    "농자재 가격 농가",
+    "비닐 가격 농가",
+    "농자재 비용 부담",
+    "시설원예 난방비 부담",
+    "농가 생산비 부담",
 ]
 SUPPLY_TITLE_FOCUS_TERMS_L = [
     term.lower()
@@ -2004,6 +2014,9 @@ POLICY_MAJOR_ISSUE_QUERIES = [
     "농업용 면세유 대책",
     "농업용 면세유 가격 대책",
     "농산물 생산비 지원 대책",
+    "농산물 유통 구조 개선 연구",
+    "농산물 가격 결정 구조 산지정보",
+    "AI 선별 농산물 품질 등급",
     "농산물 특별관리 품목",
     "농산물 광역 수급 관리센터",
     "농산물 광역수급관리센터",
@@ -7239,6 +7252,7 @@ _OIL_ENERGY_AGRI_DIRECT_TERMS = (
     "농산물", "농식품", "원예", "과수", "과일", "채소", "화훼", "청과",
     "사과", "배", "감귤", "딸기", "포도", "참외", "토마토", "파프리카", "오이",
     "수급", "출하", "경락", "도매시장", "가락시장", "공판장", "산지유통",
+    "농가", "농민", "재배", "하우스", "시설원예", "비닐", "멀칭",
 )
 
 def is_oil_energy_primary_macro_context(title: str, desc: str) -> bool:
@@ -10021,6 +10035,13 @@ def is_strong_horti_opinion_context(title: str, desc: str, dom: str = "", press:
         return False
     if count_any(ttl.lower(), [w.lower() for w in ("인터뷰", "행사", "간담회", "세미나", "포럼", "개최")]) >= 1:
         return False
+    # 수급/가격 실무 신호가 하나도 없으면 에세이/칼럼으로 판단(제목에만 품목명 있는 경우 방지)
+    _supply_signal_hits = count_any(txt, [w.lower() for w in (
+        "수급", "출하", "경락", "도매시장", "가격", "반입", "산지유통",
+        "생산량", "작황", "재배면적", "수확량", "도매가격",
+    )])
+    if _supply_signal_hits == 0:
+        return False
 
     if section_key == "policy":
         return analysis_hits >= 3 and count_any(txt, [w.lower() for w in ("정책", "제도", "대책", "개선")]) >= 1
@@ -10103,6 +10124,12 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         _path = urlparse(url).path.lower()
     except Exception:
         _path = ""
+
+    # URL 경로에 오피니언/칼럼/사설 세그먼트가 포함된 경우 차단(제목에 칼럼명이 없어도 URL로 판별)
+    _OPINION_URL_SEGMENTS = ("opinion", "editorial", "column", "editopinion", "wayside", "columnist")
+    if _path and any(seg in _path for seg in _OPINION_URL_SEGMENTS):
+        if not is_strong_horti_opinion_context(ttl, desc, dom, press, key):
+            return _reject("url_path_opinion")
 
     # dist(유통/현장)에서 대형 유통(백화점/마트) 프로모션성 기사 차단
     # - '도매시장/공판장/경락' 같은 도매 맥락이 없으면 유통(도매) 섹션과 무관하므로 제외
@@ -11052,6 +11079,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 4.8
         if policy_export_support_brief:
             score += 10.0
+        # 유통 구조·가격 결정 구조 개선 연구/제도 제안 기사
+        _dist_struct_reform_hits = count_any(text, [w.lower() for w in (
+            "유통 구조", "유통구조", "가격 결정 구조", "가격결정구조", "산지정보", "산지 정보",
+            "선별 기준", "등급 체계", "등급체계", "품질 기준", "품질기준",
+        )])
+        if _dist_struct_reform_hits >= 2 and count_any(text, [w.lower() for w in ("개선", "개혁", "혁신", "제안", "보고서", "연구", "과제")]) >= 1:
+            score += 4.0
         # 공식 정책 소스 추가 가점
         if normalize_host(dom) in OFFICIAL_HOSTS or press in ("농식품부", "정책브리핑"):
             score += 3.0
@@ -18380,7 +18414,7 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     story_priority = float(story_metrics.get("priority_score") or 0.0)
     board_score = (
         (focus_score * 24.0)
-        + (float(getattr(article, "score", 0.0) or 0.0) * 0.28)
+        + (float(getattr(article, "score", 0.0) or 0.0) * 0.55)
         + (title_primary_hits * 18.0)
         + (title_context_hits * 8.0)
         + (body_primary_hits * 6.0)
@@ -19105,15 +19139,26 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_program_items = 0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
+        _all_repr_metrics = [
+            (article, _commodity_board_item_article_representative_metrics(payload, article))
+            for article in articles
+        ]
         qualified_articles = [
             article
-            for article in articles
-            if _commodity_board_article_is_active_candidate(
-                payload,
-                article,
-                _commodity_board_item_article_representative_metrics(payload, article),
-            )
+            for article, m in _all_repr_metrics
+            if _commodity_board_article_is_active_candidate(payload, article, m)
         ]
+        # fallback: 정규 active 후보가 없지만 board_eligible + rank>=0 기사가 있으면 최고 board_score 1건 연결
+        # program_core 품목은 품질 기준이 엄격하므로 fallback 대상에서 제외
+        if not qualified_articles and articles and not bool(payload.get("program_core")):
+            _fallback_candidates = [
+                (article, m)
+                for article, m in _all_repr_metrics
+                if bool(m.get("board_eligible")) and int(m.get("representative_rank", -1)) >= 0
+            ]
+            if _fallback_candidates:
+                _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
+                qualified_articles = [_fallback_candidates[0][0]]
         payload["articles"] = articles
         payload["article_count"] = len(articles)
         payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
@@ -19180,6 +19225,19 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
                 "article_count": sum(int(item.get("article_count") or 0) for item in active_group_items),
             }
         )
+
+    # 진단: 미연결 품목 로그(DEBUG_REPORT 모드에서만 출력)
+    if DEBUG_REPORT:
+        for payload in item_state.values():
+            _ik = str(payload.get("key") or "")
+            _il = str(payload.get("label") or "")
+            _ac = int(payload.get("article_count") or 0)
+            _qc = int(payload.get("qualified_article_count") or 0)
+            if not payload.get("active"):
+                if _ac == 0:
+                    print(f"[BOARD] unlinked: {_ik} ({_il}) — no articles matched")
+                else:
+                    print(f"[BOARD] unlinked: {_ik} ({_il}) — {_ac} matched, {_qc} qualified (fallback may apply)")
 
     return {
         "groups": groups,
