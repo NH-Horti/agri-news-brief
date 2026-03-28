@@ -34,7 +34,13 @@ function Get-PythonCommand([string]$RepoRoot) {
     if (Test-Path $venvPython) {
         return $venvPython
     }
-    return "python"
+    if (Get-Command python -ErrorAction SilentlyContinue) {
+        return "python"
+    }
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        return "py"
+    }
+    throw "Neither python nor py was found on PATH."
 }
 
 function Ensure-GitHubToken {
