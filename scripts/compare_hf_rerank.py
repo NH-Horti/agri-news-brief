@@ -181,6 +181,44 @@ def _run_full_mode(
     }
 
 
+def _board_item_summary(item_payload: dict[str, Any]) -> dict[str, Any]:
+    top_article = item_payload.get("top_article")
+    top_metrics = {}
+    if isinstance(top_article, main.Article):
+        top_metrics = main._commodity_board_item_article_representative_metrics(item_payload, top_article)
+    return {
+        "key": str(item_payload.get("key") or ""),
+        "label": str(item_payload.get("label") or ""),
+        "active": bool(item_payload.get("active")),
+        "article_count": int(item_payload.get("article_count") or 0),
+        "qualified_article_count": int(item_payload.get("qualified_article_count") or 0),
+        "top_id": _article_id(top_article) if isinstance(top_article, main.Article) else "",
+        "top_title": str(getattr(top_article, "title", "") or "")[:200] if isinstance(top_article, main.Article) else "",
+        "top_section": str(getattr(top_article, "section", "") or "") if isinstance(top_article, main.Article) else "",
+        "top_representative_score": round(float(top_metrics.get("representative_score") or 0.0), 3) if top_metrics else 0.0,
+        "top_board_score": round(float(top_metrics.get("board_score") or 0.0), 3) if top_metrics else 0.0,
+        "top_semantic_boost": round(float(top_metrics.get("semantic_boost") or 0.0), 6) if top_metrics else 0.0,
+        "top_semantic_similarity": round(float(top_metrics.get("semantic_similarity") or 0.0), 6) if top_metrics else 0.0,
+    }
+
+
+def _run_board_mode(raw_by_section: dict[str, list[Any]]) -> dict[str, Any]:
+    board_source_by_section = main.build_managed_commodity_board_source_by_section(raw_by_section)
+    board_ctx = main.build_managed_commodity_board_context(board_source_by_section)
+    items: dict[str, dict[str, Any]] = {}
+    for group in board_ctx.get("groups", []) or []:
+        for item_payload in list(group.get("active_items") or []) + list(group.get("inactive_items") or []):
+            item_key = str(item_payload.get("key") or "").strip()
+            if not item_key:
+                continue
+            items[item_key] = _board_item_summary(item_payload)
+    return {
+        "active_total": int(board_ctx.get("active_total") or 0),
+        "active_program_total": int(board_ctx.get("active_program_total") or 0),
+        "items": items,
+    }
+
+
 def _run_once(
     *,
     snapshot_text: str,
@@ -206,6 +244,7 @@ def _run_once(
                 sections=sections,
                 candidate_cap=candidate_cap,
             )
+        board = _run_board_mode(raw_by_section)
         metrics = METRICS.snapshot()
     finally:
         METRICS.clear()
@@ -220,6 +259,7 @@ def _run_once(
     return {
         "snapshot_path": "<temporary>",
         "sections": section_rows,
+        "board": board,
         "metrics": metrics,
         "metrics_grouped": _group_metric_keys(metrics),
         "nonzero_boost_articles": nonzero_boost_articles,
@@ -272,6 +312,50 @@ def _compare_sections(
     }
 
 
+def _compare_board_items(
+    baseline_items: dict[str, dict[str, Any]],
+    hf_items: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    changed_items: list[dict[str, Any]] = []
+    boosted_items: list[dict[str, Any]] = []
+    all_keys = sorted(set(baseline_items) | set(hf_items))
+    for item_key in all_keys:
+        baseline = dict(baseline_items.get(item_key) or {})
+        hf_item = dict(hf_items.get(item_key) or {})
+        if (
+            bool(baseline.get("active")) != bool(hf_item.get("active"))
+            or str(baseline.get("top_id") or "") != str(hf_item.get("top_id") or "")
+        ):
+            changed_items.append(
+                {
+                    "key": item_key,
+                    "label": str(hf_item.get("label") or baseline.get("label") or item_key),
+                    "baseline_active": bool(baseline.get("active")),
+                    "hf_active": bool(hf_item.get("active")),
+                    "baseline_title": str(baseline.get("top_title") or ""),
+                    "hf_title": str(hf_item.get("top_title") or ""),
+                }
+            )
+        if abs(float(hf_item.get("top_semantic_boost") or 0.0)) > 0.0:
+            boosted_items.append(
+                {
+                    "key": item_key,
+                    "label": str(hf_item.get("label") or item_key),
+                    "title": str(hf_item.get("top_title") or ""),
+                    "semantic_boost": float(hf_item.get("top_semantic_boost") or 0.0),
+                    "semantic_similarity": float(hf_item.get("top_semantic_similarity") or 0.0),
+                    "active": bool(hf_item.get("active")),
+                }
+            )
+    return {
+        "changed": bool(changed_items),
+        "changed_items": changed_items,
+        "changed_item_count": len(changed_items),
+        "boosted_items": boosted_items,
+        "boosted_item_count": len(boosted_items),
+    }
+
+
 def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     snapshot_text, snapshot_ref = _fetch_snapshot_text(
         args.repo,
@@ -319,6 +403,10 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         )
         for section_key in target_sections
     }
+    board_diff = _compare_board_items(
+        baseline["board"].get("items", {}),
+        hf_run["board"].get("items", {}),
+    )
     changed_sections = [key for key, diff in per_section.items() if diff.get("changed")]
     changed_slots = sum(len(diff.get("slot_changes") or []) for diff in per_section.values())
 
@@ -347,10 +435,14 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
             "changed_sections": changed_sections,
             "changed_section_count": len(changed_sections),
             "changed_slots": changed_slots,
+            "changed_board_items": int(board_diff.get("changed_item_count") or 0),
         },
         "sections": per_section,
+        "board": board_diff,
         "baseline": baseline["sections"],
         "hf_run": hf_run["sections"],
+        "baseline_board": baseline["board"],
+        "hf_board": hf_run["board"],
     }
 
 
@@ -360,7 +452,7 @@ def _render_text(report: dict[str, Any]) -> str:
         f"snapshot={report['snapshot']['source']} ref={report['snapshot']['ref']} path={report['snapshot']['remote_path']}",
         f"hf_token_present={report['hf']['token_present']} model={report['hf']['model'] or '-'}",
         f"hf_metrics={json.dumps(report['hf']['run_metrics_grouped'], ensure_ascii=False, sort_keys=True)}",
-        f"changed_sections={report['summary']['changed_section_count']} changed_slots={report['summary']['changed_slots']}",
+        f"changed_sections={report['summary']['changed_section_count']} changed_slots={report['summary']['changed_slots']} changed_board_items={report['summary']['changed_board_items']}",
         "",
     ]
     for section_key in report.get("sections_requested", []):
@@ -379,6 +471,21 @@ def _render_text(report: dict[str, Any]) -> str:
                 f"title={boosted['title'][:90]}"
             )
         lines.append("")
+    board = report.get("board", {})
+    lines.append(
+        f"[commodity-board] changed={board.get('changed')} changed_items={board.get('changed_item_count')} boosted_items={board.get('boosted_item_count')}"
+    )
+    for change in board.get("changed_items", [])[:8]:
+        lines.append(
+            f"  item={change['label']} active={change['baseline_active']}->{change['hf_active']} "
+            f"baseline={change['baseline_title'][:60]} | hf={change['hf_title'][:60]}"
+        )
+    for boosted in board.get("boosted_items", [])[:8]:
+        lines.append(
+            f"  item={boosted['label']} boost={boosted['semantic_boost']:.6f} "
+            f"sim={boosted['semantic_similarity']:.6f} title={boosted['title'][:80]}"
+        )
+    lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
 

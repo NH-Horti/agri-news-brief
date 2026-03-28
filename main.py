@@ -61,6 +61,8 @@ from collector import (
 from hf_semantics import (
     HFSemanticConfig,
     SemanticAdjustment,
+    build_article_passage,
+    score_profile_passages as _hf_score_profile_passages,
     score_section_candidates as _hf_score_section_candidates,
 )
 from io_github import (
@@ -825,6 +827,15 @@ HF_SEMANTIC_MAX_CANDIDATES = int((os.getenv("HF_SEMANTIC_MAX_CANDIDATES", "12") 
 HF_SEMANTIC_MAX_CANDIDATES = max(2, min(HF_SEMANTIC_MAX_CANDIDATES, 30))
 HF_SEMANTIC_MAX_BOOST = float((os.getenv("HF_SEMANTIC_MAX_BOOST", "0.9") or "0.9").strip() or 0.9)
 HF_SEMANTIC_MAX_BOOST = max(0.2, min(HF_SEMANTIC_MAX_BOOST, 2.0))
+_HF_COMMODITY_BOARD_RERANK_RAW = os.getenv("HF_COMMODITY_BOARD_RERANK_ENABLED", "").strip().lower()
+if _HF_COMMODITY_BOARD_RERANK_RAW:
+    HF_COMMODITY_BOARD_RERANK_ENABLED = _HF_COMMODITY_BOARD_RERANK_RAW in ("1", "true", "yes", "y")
+else:
+    HF_COMMODITY_BOARD_RERANK_ENABLED = HF_SEMANTIC_RERANK_ENABLED
+HF_COMMODITY_BOARD_MAX_CANDIDATES = int((os.getenv("HF_COMMODITY_BOARD_MAX_CANDIDATES", "6") or "6").strip() or 6)
+HF_COMMODITY_BOARD_MAX_CANDIDATES = max(2, min(HF_COMMODITY_BOARD_MAX_CANDIDATES, 12))
+HF_COMMODITY_BOARD_MAX_BOOST = float((os.getenv("HF_COMMODITY_BOARD_MAX_BOOST", "8.0") or "8.0").strip() or 8.0)
+HF_COMMODITY_BOARD_MAX_BOOST = max(1.0, min(HF_COMMODITY_BOARD_MAX_BOOST, 20.0))
 
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
@@ -18467,6 +18478,73 @@ def _commodity_board_term_hits(text: str, terms: Sequence[str]) -> int:
     return hits
 
 
+def _build_managed_commodity_board_profile(item: dict[str, Any]) -> str:
+    label = str(item.get("label") or item.get("short_label") or item.get("key") or "품목").strip()
+    short_label = str(item.get("short_label") or label).strip()
+    group_title = str(item.get("group_title") or "").strip()
+    base_terms = _managed_commodity_base_terms(item, limit=4)
+    match_terms = _ordered_unique_terms(item.get("match_terms") or [])[:8]
+    context_terms = _ordered_unique_terms(item.get("context_terms") or [])[:10]
+    registry_topics = _ordered_unique_terms(item.get("registry_topics") or [])
+    intent = "품목 보드에서 수급, 가격, 출하, 반입, 경락, 저장, 유통, 병해충, 생육 같은 운영 이슈를 대표하는 기사"
+    if bool(item.get("program_core")):
+        intent += "와 정부·농협 수급사업과 직접 연결되는 현장 이슈"
+    parts = [
+        f"query: {label} 품목 보드 대표 기사",
+        f"의도: {intent}",
+    ]
+    if group_title:
+        parts.append(f"품목군: {group_title}")
+    if short_label and short_label != label:
+        parts.append(f"대표 품목명: {short_label}")
+    if registry_topics:
+        parts.append("관련 품목: " + ", ".join(registry_topics[:4]))
+    if base_terms:
+        parts.append("핵심 품목 표현: " + ", ".join(base_terms))
+    if match_terms:
+        parts.append("직접 매칭 신호: " + ", ".join(match_terms))
+    if context_terms:
+        parts.append("운영 이슈 맥락: " + ", ".join(context_terms))
+    parts.append("약한 기사 유형: 행사성, 홍보성, 관광성, 일반 소비 가이드, 인터뷰 단독")
+    return ". ".join(part for part in parts if part).strip()
+
+
+def _commodity_board_semantic_cache(article: Article) -> dict[str, dict[str, Any]]:
+    cache = getattr(article, "_commodity_board_semantic", None)
+    if isinstance(cache, dict):
+        return cache
+    cache = {}
+    setattr(article, "_commodity_board_semantic", cache)
+    return cache
+
+
+def _commodity_board_semantic_state_for_article(article: Article, item_key: str) -> dict[str, Any]:
+    cache = getattr(article, "_commodity_board_semantic", None)
+    if not isinstance(cache, dict):
+        return {"similarity": 0.0, "boost": 0.0, "model": ""}
+    state = cache.get(str(item_key or "").strip())
+    if not isinstance(state, dict):
+        return {"similarity": 0.0, "boost": 0.0, "model": ""}
+    return {
+        "similarity": float(state.get("similarity") or 0.0),
+        "boost": float(state.get("boost") or 0.0),
+        "model": str(state.get("model") or ""),
+    }
+
+
+def _set_commodity_board_semantic_state(
+    article: Article,
+    item_key: str,
+    adjustment: SemanticAdjustment | None,
+) -> None:
+    cache = _commodity_board_semantic_cache(article)
+    cache[str(item_key or "").strip()] = {
+        "similarity": float(getattr(adjustment, "similarity", 0.0) or 0.0),
+        "boost": float(getattr(adjustment, "boost", 0.0) or 0.0),
+        "model": str(getattr(adjustment, "model", "") or ""),
+    }
+
+
 def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any]) -> bool:
     issue_bucket = str(article_metrics.get("issue_bucket") or "")
     feature_kind = str(article_metrics.get("feature_kind") or "")
@@ -18499,7 +18577,12 @@ def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any
     )
 
 
-def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
+def _commodity_board_item_article_metrics(
+    item: dict[str, Any],
+    article: Article,
+    *,
+    include_semantic: bool = True,
+) -> dict[str, Any]:
     item_key = str(item.get("key") or "").strip()
     title = str(getattr(article, "title", "") or "")
     desc = str(getattr(article, "description", "") or "")
@@ -18529,6 +18612,13 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         focus_metrics=board_metrics,
     )
     story_priority = float(story_metrics.get("priority_score") or 0.0)
+    if include_semantic:
+        semantic_state = _commodity_board_semantic_state_for_article(article, item_key)
+    else:
+        semantic_state = {"similarity": 0.0, "boost": 0.0, "model": ""}
+    semantic_similarity = float(semantic_state.get("similarity") or 0.0)
+    semantic_boost = float(semantic_state.get("boost") or 0.0)
+    semantic_model = str(semantic_state.get("model") or "")
     board_score = (
         (focus_score * 24.0)
         + (float(getattr(article, "score", 0.0) or 0.0) * 0.55)
@@ -18543,6 +18633,7 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
         + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
         + story_priority
+        + semantic_boost
         - (max(0, match_count - 1) * 8.0)
         - board_penalty
     )
@@ -18564,6 +18655,9 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
         "board_eligible": board_eligible,
         "board_penalty": board_penalty,
         "story_priority": story_priority,
+        "semantic_similarity": semantic_similarity,
+        "semantic_boost": semantic_boost,
+        "semantic_model": semantic_model,
         "story_bonus": float(story_metrics.get("story_bonus") or 0.0),
         "story_penalty": float(story_metrics.get("story_penalty") or 0.0),
         "issue_bucket": str(story_metrics.get("issue_bucket") or ""),
@@ -18581,8 +18675,13 @@ def _commodity_board_item_article_metrics(item: dict[str, Any], article: Article
     }
 
 
-def _commodity_board_item_article_representative_metrics(item: dict[str, Any], article: Article) -> dict[str, Any]:
-    metrics = dict(_commodity_board_item_article_metrics(item, article))
+def _commodity_board_item_article_representative_metrics(
+    item: dict[str, Any],
+    article: Article,
+    *,
+    include_semantic: bool = True,
+) -> dict[str, Any]:
+    metrics = dict(_commodity_board_item_article_metrics(item, article, include_semantic=include_semantic))
     title = str(getattr(article, "title", "") or "")
     desc = str(getattr(article, "description", "") or "")
     dom = str(getattr(article, "domain", "") or "")
@@ -18885,11 +18984,85 @@ def _commodity_board_article_is_supply_bridge_candidate(
     )
 
 
+def _commodity_board_item_article_base_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
+    metrics = _commodity_board_item_article_representative_metrics(item, article, include_semantic=False)
+    return (
+        int(metrics.get("representative_rank", -1)),
+        float(metrics.get("representative_score", 0.0)),
+        float(metrics["board_score"]),
+        float(metrics.get("story_priority", 0.0)),
+        float(metrics["focus_score"]),
+        int(metrics["title_primary_hits"]),
+        int(metrics["primary_focus"]),
+        int(metrics["strong_focus"]),
+        int(metrics["single_focus"]),
+        int(metrics["body_primary_hits"]),
+        1 if getattr(article, "is_core", False) else 0,
+        int(metrics["section_rank"]),
+        float(getattr(article, "score", 0.0) or 0.0),
+        getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+    )
+
+
+def _hf_semantic_commodity_board_adjustments(
+    item: dict[str, Any],
+    articles: list[Article],
+) -> dict[str, SemanticAdjustment]:
+    if (not HF_COMMODITY_BOARD_RERANK_ENABLED) or (not HF_API_TOKEN):
+        return {}
+
+    item_key = str(item.get("key") or "").strip()
+    ranked = [article for article in articles if isinstance(article, Article)]
+    ranked = sorted(
+        ranked,
+        key=lambda article: _commodity_board_item_article_base_sort_key(item, article),
+        reverse=True,
+    )
+    ranked = ranked[:HF_COMMODITY_BOARD_MAX_CANDIDATES]
+    if len(ranked) < 2:
+        return {}
+
+    cfg = HFSemanticConfig(
+        api_token=HF_API_TOKEN,
+        model=HF_SEMANTIC_MODEL,
+        timeout_sec=HF_SEMANTIC_TIMEOUT_SEC,
+        max_candidates=HF_COMMODITY_BOARD_MAX_CANDIDATES,
+        max_boost=HF_COMMODITY_BOARD_MAX_BOOST,
+        min_candidates=2,
+    )
+
+    profile = _build_managed_commodity_board_profile(item)
+    passages = [build_article_passage(article) for article in ranked]
+    try:
+        adjustments = _hf_score_profile_passages(
+            profile,
+            passages,
+            cfg=cfg,
+            session_factory=http_session,
+        )
+    except Exception as exc:
+        log.warning("[HF] commodity board semantic rerank skipped for %s: %s", item_key or "unknown", exc)
+        metric_inc("hf.commodity_board.error", item=item_key or "unknown", reason=type(exc).__name__)
+        return {}
+
+    out: dict[str, SemanticAdjustment] = {}
+    for article, adjustment in zip(ranked, adjustments):
+        article_key = _article_selection_identity(article)
+        if not article_key:
+            continue
+        out[article_key] = adjustment
+
+    if out:
+        metric_inc("hf.commodity_board.success", item=item_key or "unknown", count=str(len(out)))
+    return out
+
+
 def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Article) -> tuple[Any, ...]:
     metrics = _commodity_board_item_article_representative_metrics(item, article)
     return (
         int(metrics.get("representative_rank", -1)),
         float(metrics.get("representative_score", 0.0)),
+        float(metrics.get("semantic_similarity", 0.0)),
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
         float(metrics["focus_score"]),
@@ -19256,6 +19429,20 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_program_items = 0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
+        item_key = str(payload.get("key") or "").strip()
+        semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
+        for article in articles:
+            _set_commodity_board_semantic_state(
+                article,
+                item_key,
+                semantic_adjustments.get(_article_selection_identity(article)),
+            )
+        if semantic_adjustments:
+            articles = sorted(
+                articles,
+                key=lambda article: _commodity_board_item_article_sort_key(payload, article),
+                reverse=True,
+            )
         _all_repr_metrics = [
             (article, _commodity_board_item_article_representative_metrics(payload, article))
             for article in articles
@@ -19352,9 +19539,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _qc = int(payload.get("qualified_article_count") or 0)
             if not payload.get("active"):
                 if _ac == 0:
-                    print(f"[BOARD] unlinked: {_ik} ({_il}) — no articles matched")
+                    print(f"[BOARD] unlinked: {_ik} ({_il}) - no articles matched")
                 else:
-                    print(f"[BOARD] unlinked: {_ik} ({_il}) — {_ac} matched, {_qc} qualified (fallback may apply)")
+                    print(f"[BOARD] unlinked: {_ik} ({_il}) - {_ac} matched, {_qc} qualified (fallback may apply)")
 
     return {
         "groups": groups,

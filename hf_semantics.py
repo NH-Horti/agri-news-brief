@@ -245,8 +245,26 @@ def score_section_candidates(
 
     profile = build_section_profile(section_conf)
     passages = [build_article_passage(article) for article in candidates]
-    vectors = embed_texts([profile] + passages, cfg=cfg, session_factory=session_factory)
+    return score_profile_passages(
+        profile,
+        passages,
+        cfg=cfg,
+        session_factory=session_factory,
+    )
 
+
+def score_profile_passages(
+    profile: str,
+    passages: Sequence[str],
+    *,
+    cfg: HFSemanticConfig,
+    session_factory: SessionFactory,
+) -> list[SemanticAdjustment]:
+    docs = [str(text or "").strip() for text in passages if str(text or "").strip()]
+    if len(docs) < max(1, int(cfg.min_candidates or 1)):
+        return []
+
+    vectors = embed_texts([str(profile or "").strip()] + docs, cfg=cfg, session_factory=session_factory)
     query_vec = vectors[0]
     sims = [_cosine_similarity(query_vec, doc_vec) for doc_vec in vectors[1:]]
     if not sims:

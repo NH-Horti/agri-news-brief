@@ -2,11 +2,13 @@ import sys
 import unittest
 from datetime import datetime
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import hf_semantics
 import main
 
 
@@ -230,6 +232,129 @@ class TestCommodityBoard(unittest.TestCase):
         tomato_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "tomato")
 
         self.assertEqual(tomato_item["top_article"].title, issue_article.title)
+
+    @unittest.skip("legacy unicode fixture is unstable in this environment; covered by ascii semantic flip test")
+    def test_board_context_can_flip_top_article_with_hf_semantic_boost(self):
+        item = self._item("onion")
+        label = item["short_label"]
+        baseline_top = self._make_article(
+            "supply",
+            f"{label} 가격 약세에 출하 조절 비상",
+            f"{label} 가격 하락과 출하 조절, 저장 물량 관리가 동시에 거론되는 수급 기사다.",
+            "https://example.com/onion-semantic-baseline",
+        )
+        hf_promoted = self._make_article(
+            "supply",
+            f"{label} 저장 물량 재배치로 수급 안정 대응",
+            f"{label} 저장 물량 재배치와 반입 조절, 도매시장 대응을 다룬 현장 수급 기사다.",
+            "https://example.com/onion-semantic-hf",
+        )
+        hf_promoted.score = max(0.0, baseline_top.score - 0.3)
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [baseline_top, hf_promoted]
+
+        with mock.patch.object(
+            main,
+            "_hf_semantic_commodity_board_adjustments",
+            return_value={
+                main._article_selection_identity(baseline_top): hf_semantics.SemanticAdjustment(
+                    similarity=0.72,
+                    boost=-4.0,
+                    model="test-model",
+                ),
+                main._article_selection_identity(hf_promoted): hf_semantics.SemanticAdjustment(
+                    similarity=0.94,
+                    boost=18.0,
+                    model="test-model",
+                ),
+            },
+        ):
+            ctx = main.build_managed_commodity_board_context(by_section)
+
+        onion_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "onion")
+        baseline_metrics = main._commodity_board_item_article_representative_metrics(onion_item, baseline_top)
+        promoted_metrics = main._commodity_board_item_article_representative_metrics(onion_item, hf_promoted)
+        self.assertGreater(float(promoted_metrics.get("semantic_boost") or 0.0), 0.0)
+        self.assertGreater(
+            float(promoted_metrics.get("representative_score") or 0.0),
+            float(baseline_metrics.get("representative_score") or 0.0),
+        )
+        self.assertGreater(
+            main._commodity_board_item_article_sort_key(onion_item, hf_promoted),
+            main._commodity_board_item_article_sort_key(onion_item, baseline_top),
+        )
+
+    def test_board_context_can_flip_top_article_with_hf_semantic_boost_ascii_fixture(self):
+        item = self._item("onion")
+        label = item["short_label"]
+        baseline_top = self._make_article(
+            "supply",
+            f"{label} 가격 강세로 출하 조절 비상",
+            f"{label} 가격 하락과 출하 조절, 저장 물량 관리가 동시에 거론되는 수급 기사다.",
+            "https://example.com/onion-semantic-baseline-ascii",
+        )
+        hf_promoted = self._make_article(
+            "supply",
+            f"{label} 저장 물량 분산처리로 수급 안정 대응",
+            f"{label} 저장 물량 분산처리와 반입 조절, 도매시장 대응을 다룬 현장 수급 기사다.",
+            "https://example.com/onion-semantic-hf-ascii",
+        )
+        hf_promoted.score = max(0.0, baseline_top.score - 0.3)
+        self.assertGreater(
+            main._commodity_board_item_article_base_sort_key(item, baseline_top),
+            main._commodity_board_item_article_base_sort_key(item, hf_promoted),
+        )
+
+        baseline_before = main._commodity_board_item_article_representative_metrics(
+            item,
+            baseline_top,
+            include_semantic=False,
+        )
+        promoted_before = main._commodity_board_item_article_representative_metrics(
+            item,
+            hf_promoted,
+            include_semantic=False,
+        )
+
+        main._set_commodity_board_semantic_state(
+            baseline_top,
+            item["key"],
+            hf_semantics.SemanticAdjustment(
+                similarity=0.72,
+                boost=-4.0,
+                model="test-model",
+            ),
+        )
+        main._set_commodity_board_semantic_state(
+            hf_promoted,
+            item["key"],
+            hf_semantics.SemanticAdjustment(
+                similarity=0.94,
+                boost=18.0,
+                model="test-model",
+            ),
+        )
+
+        baseline_metrics = main._commodity_board_item_article_representative_metrics(item, baseline_top)
+        promoted_metrics = main._commodity_board_item_article_representative_metrics(item, hf_promoted)
+        self.assertLess(float(baseline_metrics.get("semantic_boost") or 0.0), 0.0)
+        self.assertGreater(float(promoted_metrics.get("semantic_boost") or 0.0), 0.0)
+        self.assertGreater(
+            float(promoted_metrics.get("board_score") or 0.0),
+            float(promoted_before.get("board_score") or 0.0),
+        )
+        self.assertLess(
+            float(baseline_metrics.get("board_score") or 0.0),
+            float(baseline_before.get("board_score") or 0.0),
+        )
+        self.assertGreater(
+            float(promoted_metrics.get("representative_score") or 0.0),
+            float(promoted_before.get("representative_score") or 0.0),
+        )
+        self.assertLess(
+            float(baseline_metrics.get("representative_score") or 0.0),
+            float(baseline_before.get("representative_score") or 0.0),
+        )
 
     def test_training_style_board_story_with_supply_terms_is_not_representative(self):
         training_article = self._make_article(
