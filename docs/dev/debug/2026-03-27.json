@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-28T18:21:28+09:00",
-  "build_tag": "0e6bf7f",
+  "generated_at_kst": "2026-03-28T20:44:23+09:00",
+  "build_tag": "72f078b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -14235,7 +14235,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.71,
+          "score": 15.51,
           "tier": 3,
           "press": "한국경제",
           "domain": "hankyung.com",
@@ -15153,33 +15153,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.25,
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "농산자조금법 제정 본격화…정부 \"안정성 확보\"·농업계 \"자율성 우려\"",
-          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317306",
-          "reason": "below_threshold",
-          "fit_score": 0.2,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "농산물 수급 동향",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 10.18,
           "tier": 2,
           "press": "뉴시스",
@@ -15229,6 +15202,33 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 10.05,
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "농산자조금법 제정 본격화…정부 \"안정성 확보\"·농업계 \"자율성 우려\"",
+          "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317306",
+          "reason": "below_threshold",
+          "fit_score": 0.2,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "policy",
+          "source_query": "농산물 수급 동향",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -15293,68 +15293,68 @@
           "sample_title": "“난방비 월 1000만원 증가”… 전남 시설재배 농가 ‘유가 쇼크’"
         },
         {
-          "seed": "배추",
-          "rep": "배추",
-          "hits": 36,
+          "seed": "애호박",
+          "rep": "애호박",
+          "hits": 2,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "경기농협, 애호박 생산조직 교육…출하량 확대 추진"
+        },
+        {
+          "seed": "오이",
+          "rep": "오이",
+          "hits": 14,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "하나證 “ 오이 솔루션, 주가 상승 초입 국면…하반기 흑자 전환 기대”"
+        },
+        {
+          "seed": "양파",
+          "rep": "양파",
+          "hits": 2,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "경남 함양농협, 양파 재배 기술 교육 시행"
+        },
+        {
+          "seed": "파프리카",
+          "rep": "파프리카",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
+        },
+        {
+          "seed": "양배추",
+          "rep": "양배추",
+          "hits": 3,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
         },
         {
-          "seed": "화훼",
-          "rep": "화훼",
-          "hits": 11,
+          "seed": "복숭아",
+          "rep": "복숭아",
+          "hits": 2,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "장성군 \"이달 말까지 '농업인 월급제' 신청하세요"
+        },
+        {
+          "seed": "가지",
+          "rep": "가지",
+          "hits": 5,
           "selected_hits": 1,
           "missing": false,
-          "sample_title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄"
+          "sample_title": "“이웃 농부들과 함께하는 삶”…지역 농산물로 반려동물 간식 만드는 ..."
         },
         {
-          "seed": "당근",
-          "rep": "당근",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
-        },
-        {
-          "seed": "가락시장",
-          "rep": "가락시장",
+          "seed": "멜론",
+          "rep": "멜론",
           "hits": 4,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "가락시장 ‘출하비용 보전사업’ 속속 안착"
-        },
-        {
-          "seed": "마늘",
-          "rep": "마늘",
-          "hits": 3,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "정부 '중동전쟁 물가대응팀' 만든다 … 택배비·외식비·학원비까지 특..."
-        },
-        {
-          "seed": "참외",
-          "rep": "참외",
-          "hits": 1,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "중동 유가 불안에 경북 시설농가 '직격탄'…난방비 급등에 생산비 압박"
-        },
-        {
-          "seed": "동향",
-          "rep": "동향",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
-        },
-        {
-          "seed": "과수",
-          "rep": "과수",
-          "hits": 6,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "수원특례시, 2026년 과수공원 체험 프로그램 참가자 모집"
+          "sample_title": "“난방비 월 1000만원 증가”… 전남 시설재배 농가 ‘유가 쇼크’"
         }
       ]
     },
@@ -15557,7 +15557,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.96,
+          "score": 31.76,
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
@@ -15773,7 +15773,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.86,
+          "score": 24.66,
           "tier": 1,
           "press": "경남도민신문",
           "domain": "gndomin.com",
@@ -15854,7 +15854,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.94,
+          "score": 23.74,
           "tier": 3,
           "press": "헤럴드경제",
           "domain": "biz.heraldcorp.com",
@@ -15989,33 +15989,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.94,
-          "tier": 1,
-          "press": "경남도민신문",
-          "domain": "gndomin.com",
-          "title": "밀양시 '2027년도 스마트과수원 특화단지 조성사업' 신청 접수",
-          "url": "http://www.gndomin.com/news/articleView.html?idxno=470116",
-          "reason": "below_threshold",
-          "fit_score": 1.71,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 21.85,
           "tier": 3,
           "press": "이데일리",
@@ -16038,6 +16011,33 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.74,
+          "tier": 1,
+          "press": "경남도민신문",
+          "domain": "gndomin.com",
+          "title": "밀양시 '2027년도 스마트과수원 특화단지 조성사업' 신청 접수",
+          "url": "http://www.gndomin.com/news/articleView.html?idxno=470116",
+          "reason": "below_threshold",
+          "fit_score": 1.71,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -17004,12 +17004,12 @@
           "sample_title": ""
         },
         {
-          "seed": "전반",
-          "rep": "전반",
-          "hits": 9,
-          "selected_hits": 0,
+          "seed": "특별관리",
+          "rep": "특별관리",
+          "hits": 17,
+          "selected_hits": 3,
           "missing": false,
-          "sample_title": "[중동사태 한달] 휘발유 리터당 1934원…총력전 나선 정부"
+          "sample_title": "계란·돼지고기 ‘담합’하면 지원금 배제 검토···중동전쟁 특별관리..."
         },
         {
           "seed": "오이",
@@ -17036,12 +17036,12 @@
           "sample_title": "중동 에너지 쇼크에 화성시 기업 86% '조업 차질'…정명근, 긴급 점검"
         },
         {
-          "seed": "대책",
-          "rep": "대책",
-          "hits": 97,
-          "selected_hits": 7,
+          "seed": "양파",
+          "rep": "양파",
+          "hits": 7,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "계란·돼지고기 ‘담합’하면 지원금 배제 검토···중동전쟁 특별관리..."
+          "sample_title": "창녕군, 농작업 안전재해예방 지원체계 구축 시범사업 설명회 개최"
         },
         {
           "seed": "사과",
@@ -17068,20 +17068,20 @@
           "sample_title": "정부, 물가 관리품목 43개로 확대…계란 수입·할인 총동원"
         },
         {
-          "seed": "현장",
-          "rep": "현장",
-          "hits": 14,
+          "seed": "관리센터",
+          "rep": "관리센터",
+          "hits": 0,
           "selected_hits": 0,
-          "missing": false,
-          "sample_title": "창녕군, 농작업 안전재해예방 지원체계 구축 시범사업 설명회 개최"
+          "missing": true,
+          "sample_title": ""
         },
         {
-          "seed": "가지",
-          "rep": "가지",
-          "hits": 10,
+          "seed": "원예",
+          "rep": "원예",
+          "hits": 2,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "[유통 브리핑] 이마트, 롯데웰푸드, BBQ"
+          "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
         }
       ]
     },
