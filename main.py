@@ -604,16 +604,18 @@ REPORT_DATE_OVERRIDE = os.getenv("REPORT_DATE_OVERRIDE", "").strip()
 # Debug report data (embedded into HTML when DEBUG_REPORT=1)
 _DEBUG_LOCK = threading.Lock()
 _DEBUG_QUERY_CONTEXT = threading.local()
+_HF_COMPARE_ACTIVE = False
 DEBUG_DATA: JsonDict = {
     "generated_at_kst": None,
     "build_tag": os.getenv("BUILD_TAG", ""),
     "filter_rejects": [],  # list[{section, reason, press, domain, title, url}]
     "sections": {},        # section_key -> {threshold, core_min, total_candidates, total_selected, top: [...]}
     "collections": {},     # section_key -> {queries, hits, paging, recall, ...}
+    "hf_compare": {},
 }
 
 def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str) -> None:
-    if not DEBUG_REPORT:
+    if (not DEBUG_REPORT) or _HF_COMPARE_ACTIVE:
         return
     try:
         item = {
@@ -650,7 +652,7 @@ def dbg_clear_current_query() -> None:
 
 
 def dbg_set_section(section: str, payload: JsonDict) -> None:
-    if not DEBUG_REPORT:
+    if (not DEBUG_REPORT) or _HF_COMPARE_ACTIVE:
         return
     try:
         with _DEBUG_LOCK:
@@ -661,11 +663,21 @@ def dbg_set_section(section: str, payload: JsonDict) -> None:
 
 def dbg_set_collection(section: str, payload: JsonDict) -> None:
     """수집 단계 메타(쿼리/페이지/히트/리콜)를 디버그 리포트에 저장."""
-    if not DEBUG_REPORT:
+    if (not DEBUG_REPORT) or _HF_COMPARE_ACTIVE:
         return
     try:
         with _DEBUG_LOCK:
             DEBUG_DATA["collections"][section] = payload
+    except Exception:
+        pass
+
+
+def dbg_set_hf_compare(payload: JsonDict) -> None:
+    if not DEBUG_REPORT:
+        return
+    try:
+        with _DEBUG_LOCK:
+            DEBUG_DATA["hf_compare"] = payload if isinstance(payload, dict) else {}
     except Exception:
         pass
 
@@ -680,6 +692,7 @@ def reset_debug_report() -> None:
             DEBUG_DATA["filter_rejects"] = []
             DEBUG_DATA["sections"] = {}
             DEBUG_DATA["collections"] = {}
+            DEBUG_DATA["hf_compare"] = {}
     except Exception:
         pass
 
@@ -855,6 +868,13 @@ DEV_SINGLE_PAGE_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_URL_PATH", "").strip() or
 DEV_SINGLE_PAGE_VERSION_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_PATH", "").strip() or "")
 DEV_SINGLE_PAGE_VERSION_URL_PATH = (os.getenv("DEV_SINGLE_PAGE_VERSION_URL_PATH", "").strip() or "")
 DEV_PREVIEW_ASSET_BASE_URL = (os.getenv("DEV_PREVIEW_ASSET_BASE_URL", "").strip() or "").rstrip("/")
+_HF_COMPARE_REPORT_RAW = os.getenv("HF_COMPARE_REPORT_ENABLED", "").strip().lower()
+if _HF_COMPARE_REPORT_RAW:
+    HF_COMPARE_REPORT_ENABLED = _HF_COMPARE_REPORT_RAW in ("1", "true", "yes", "y")
+else:
+    HF_COMPARE_REPORT_ENABLED = DEBUG_REPORT and DEV_SINGLE_PAGE_MODE and bool(HF_API_TOKEN)
+HF_COMPARE_CANDIDATE_CAP = int((os.getenv("HF_COMPARE_CANDIDATE_CAP", "40") or "40").strip() or 40)
+HF_COMPARE_CANDIDATE_CAP = max(10, min(HF_COMPARE_CANDIDATE_CAP, 120))
 
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
@@ -18267,6 +18287,7 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
             "build_tag": DEBUG_DATA.get("build_tag"),
             "filter_rejects": list(DEBUG_DATA.get("filter_rejects", [])),
             "sections": dict(DEBUG_DATA.get("sections", {})),
+            "hf_compare": dict(DEBUG_DATA.get("hf_compare", {})) if isinstance(DEBUG_DATA.get("hf_compare"), dict) else {},
         }
 
     # 요약(사유 카운트)
@@ -18364,6 +18385,29 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
     if json_href:
         link_line = f"<div class='dbgLinks'><a href='{esc(json_href)}' target='_blank' rel='noopener'>debug json 보기</a></div>"
 
+    hf_compare_html = ""
+    hf_compare = data.get("hf_compare") if isinstance(data.get("hf_compare"), dict) else {}
+    if hf_compare:
+        hf_summary = hf_compare.get("summary") or {}
+        hf_changed = [
+            f"<li><b>{esc(display_section_title(sec_key))}</b> slot {int(change.get('position') or 0)}: {esc(str(change.get('baseline_title') or ''))} → {esc(str(change.get('hf_title') or ''))}</li>"
+            for sec_key, diff in (hf_compare.get("sections") or {}).items()
+            for change in (diff.get("slot_changes") or [])[:3]
+        ]
+        hf_changed += [
+            f"<li><b>{esc(str(item.get('label') or '품목'))}</b>: {esc(str(item.get('baseline_title') or ''))} → {esc(str(item.get('hf_title') or ''))}</li>"
+            for item in ((hf_compare.get("board") or {}).get("changed_items") or [])[:4]
+        ]
+        hf_compare_html = f"""
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>HF on/off 비교</b>
+            <span class="muted">sections={int(hf_summary.get('changed_section_count') or 0)} slots={int(hf_summary.get('changed_slots') or 0)} board={int(hf_summary.get('changed_board_items') or 0)}</span>
+          </div>
+          <ul class="dbgList">{''.join(hf_changed) or '<li class="muted">바뀐 top 항목이 없습니다.</li>'}</ul>
+        </div>
+        """
+
     return f"""
     <style>
       details.dbgWrap {{ margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }}
@@ -18379,6 +18423,7 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
       table.dbgTable th {{ background:#f9fafb; }}
       .dbgTable .c {{ text-align:center; white-space:nowrap; }}
       .dbgTable .r {{ text-align:right; white-space:nowrap; }}
+      .dbgList {{ margin:10px 0 0; padding-left:18px; font-size:12px; line-height:1.6; }}
       .muted {{ color:var(--muted); }}
     </style>
     <details class="dbgWrap">
@@ -18386,6 +18431,7 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
       {link_line}
       <div class="dbgMeta">{meta_line}</div>
       <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: {esc(reason_line)}</div>
+      {hf_compare_html}
       {''.join(sec_blocks)}
       <div class="dbgSec">
         <div class="dbgSecHead"><b>필터링 제외(샘플)</b><span class="muted">최대 60건 표시</span></div>
@@ -18397,6 +18443,297 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         </div>
       </div>
     </details>
+    """
+
+
+def _hf_compare_article_row(article: Article) -> JsonDict:
+    return {
+        "id": _article_selection_identity(article),
+        "title": str(getattr(article, "title", "") or "")[:200],
+        "press": str(getattr(article, "press", "") or ""),
+        "score": round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        "semantic_boost": round(float(getattr(article, "semantic_boost", 0.0) or 0.0), 6),
+        "semantic_similarity": round(float(getattr(article, "semantic_similarity", 0.0) or 0.0), 6),
+    }
+
+
+def _hf_compare_select_rows(
+    candidate_source_by_section: dict[str, list[Article]],
+    *,
+    max_items: int,
+    candidate_cap: int,
+) -> dict[str, list[JsonDict]]:
+    out: dict[str, list[JsonDict]] = {}
+    cloned = _clone_articles_by_section(candidate_source_by_section)
+    for sec in SECTIONS:
+        section_key = str(sec.get("key") or "").strip()
+        if not section_key:
+            continue
+        candidates = list(cloned.get(section_key, []) or [])
+        if candidate_cap > 0:
+            candidates = sorted(candidates, key=_sort_key_major_first, reverse=True)[:candidate_cap]
+        picked = select_top_articles(candidates, section_key, max_items)
+        out[section_key] = [_hf_compare_article_row(article) for article in picked]
+    return out
+
+
+def _hf_compare_section_diff(
+    baseline_rows: list[JsonDict],
+    hf_rows: list[JsonDict],
+) -> JsonDict:
+    baseline_ids = [str(row.get("id") or "") for row in baseline_rows]
+    hf_ids = [str(row.get("id") or "") for row in hf_rows]
+    max_len = max(len(baseline_rows), len(hf_rows))
+    slot_changes: list[JsonDict] = []
+    for idx in range(max_len):
+        baseline = baseline_rows[idx] if idx < len(baseline_rows) else {}
+        hf_row = hf_rows[idx] if idx < len(hf_rows) else {}
+        if str(baseline.get("id") or "") == str(hf_row.get("id") or ""):
+            continue
+        slot_changes.append(
+            {
+                "position": idx + 1,
+                "baseline_title": str(baseline.get("title") or ""),
+                "hf_title": str(hf_row.get("title") or ""),
+            }
+        )
+
+    boosted_selected = [
+        {
+            "title": str(row.get("title") or ""),
+            "semantic_boost": float(row.get("semantic_boost") or 0.0),
+            "semantic_similarity": float(row.get("semantic_similarity") or 0.0),
+        }
+        for row in hf_rows
+        if abs(float(row.get("semantic_boost") or 0.0)) > 0.0
+    ]
+    return {
+        "changed": baseline_ids != hf_ids,
+        "slot_changes": slot_changes,
+        "boosted_selected": boosted_selected,
+        "boosted_selected_count": len(boosted_selected),
+    }
+
+
+def _hf_compare_board_item_summary(item_payload: dict[str, Any]) -> JsonDict:
+    top_article = item_payload.get("top_article")
+    top_metrics: dict[str, Any] = {}
+    if isinstance(top_article, Article):
+        top_metrics = _commodity_board_item_article_representative_metrics(item_payload, top_article)
+    return {
+        "key": str(item_payload.get("key") or ""),
+        "label": str(item_payload.get("label") or ""),
+        "active": bool(item_payload.get("active")),
+        "top_id": _article_selection_identity(top_article) if isinstance(top_article, Article) else "",
+        "top_title": str(getattr(top_article, "title", "") or "")[:200] if isinstance(top_article, Article) else "",
+        "top_semantic_boost": round(float(top_metrics.get("semantic_boost") or 0.0), 6) if top_metrics else 0.0,
+        "top_semantic_similarity": round(float(top_metrics.get("semantic_similarity") or 0.0), 6) if top_metrics else 0.0,
+    }
+
+
+def _hf_compare_board_state(board_ctx: dict[str, Any]) -> JsonDict:
+    items: dict[str, JsonDict] = {}
+    for group in board_ctx.get("groups", []) or []:
+        for item_payload in list(group.get("active_items") or []) + list(group.get("inactive_items") or []):
+            item_key = str(item_payload.get("key") or "").strip()
+            if not item_key:
+                continue
+            items[item_key] = _hf_compare_board_item_summary(item_payload)
+    return {"items": items}
+
+
+def _hf_compare_board_diff(
+    baseline_items: dict[str, JsonDict],
+    hf_items: dict[str, JsonDict],
+) -> JsonDict:
+    changed_items: list[JsonDict] = []
+    boosted_items: list[JsonDict] = []
+    for item_key in sorted(set(baseline_items) | set(hf_items)):
+        baseline = dict(baseline_items.get(item_key) or {})
+        hf_item = dict(hf_items.get(item_key) or {})
+        if (
+            bool(baseline.get("active")) != bool(hf_item.get("active"))
+            or str(baseline.get("top_id") or "") != str(hf_item.get("top_id") or "")
+        ):
+            changed_items.append(
+                {
+                    "key": item_key,
+                    "label": str(hf_item.get("label") or baseline.get("label") or item_key),
+                    "baseline_title": str(baseline.get("top_title") or ""),
+                    "hf_title": str(hf_item.get("top_title") or ""),
+                }
+            )
+        if abs(float(hf_item.get("top_semantic_boost") or 0.0)) > 0.0:
+            boosted_items.append(
+                {
+                    "key": item_key,
+                    "label": str(hf_item.get("label") or item_key),
+                    "title": str(hf_item.get("top_title") or ""),
+                    "semantic_boost": float(hf_item.get("top_semantic_boost") or 0.0),
+                    "semantic_similarity": float(hf_item.get("top_semantic_similarity") or 0.0),
+                }
+            )
+    return {
+        "changed": bool(changed_items),
+        "changed_items": changed_items,
+        "changed_item_count": len(changed_items),
+        "boosted_items": boosted_items,
+        "boosted_item_count": len(boosted_items),
+    }
+
+
+def _build_hf_compare_report(
+    report_date: str,
+    candidate_source_by_section: dict[str, list[Article]],
+    current_board_ctx: dict[str, Any],
+) -> JsonDict:
+    global _HF_COMPARE_ACTIVE, HF_SEMANTIC_RERANK_ENABLED, HF_COMMODITY_BOARD_RERANK_ENABLED
+
+    if (
+        (not HF_COMPARE_REPORT_ENABLED)
+        or (not HF_API_TOKEN)
+        or (not (HF_SEMANTIC_RERANK_ENABLED or HF_COMMODITY_BOARD_RERANK_ENABLED))
+    ):
+        return {}
+
+    candidate_source = {
+        str(sec.get("key") or "").strip(): [article for article in (candidate_source_by_section.get(str(sec.get("key") or "").strip(), []) or []) if isinstance(article, Article)]
+        for sec in SECTIONS
+        if str(sec.get("key") or "").strip()
+    }
+    if not any(candidate_source.values()):
+        return {}
+
+    prev_section_flag = bool(HF_SEMANTIC_RERANK_ENABLED)
+    prev_board_flag = bool(HF_COMMODITY_BOARD_RERANK_ENABLED)
+    prev_last_source = _get_last_commodity_board_source()
+    _HF_COMPARE_ACTIVE = True
+    try:
+        hf_rows = _hf_compare_select_rows(
+            candidate_source,
+            max_items=MAX_PER_SECTION,
+            candidate_cap=HF_COMPARE_CANDIDATE_CAP,
+        )
+        hf_board = _hf_compare_board_state(current_board_ctx)
+
+        HF_SEMANTIC_RERANK_ENABLED = False
+        HF_COMMODITY_BOARD_RERANK_ENABLED = False
+
+        baseline_rows = _hf_compare_select_rows(
+            candidate_source,
+            max_items=MAX_PER_SECTION,
+            candidate_cap=HF_COMPARE_CANDIDATE_CAP,
+        )
+        baseline_board_ctx = build_managed_commodity_board_context(_clone_articles_by_section(candidate_source))
+        baseline_board = _hf_compare_board_state(baseline_board_ctx)
+    finally:
+        HF_SEMANTIC_RERANK_ENABLED = prev_section_flag
+        HF_COMMODITY_BOARD_RERANK_ENABLED = prev_board_flag
+        _set_last_commodity_board_source(prev_last_source)
+        _HF_COMPARE_ACTIVE = False
+
+    per_section = {
+        section_key: _hf_compare_section_diff(
+            baseline_rows.get(section_key, []),
+            hf_rows.get(section_key, []),
+        )
+        for section_key in candidate_source.keys()
+    }
+    changed_sections = [key for key, diff in per_section.items() if diff.get("changed")]
+    changed_slots = sum(len(diff.get("slot_changes") or []) for diff in per_section.values())
+    board_diff = _hf_compare_board_diff(
+        baseline_board.get("items", {}),
+        hf_board.get("items", {}),
+    )
+    return {
+        "report_date": report_date,
+        "mode": "selection",
+        "candidate_cap": int(HF_COMPARE_CANDIDATE_CAP),
+        "summary": {
+            "changed_sections": changed_sections,
+            "changed_section_count": len(changed_sections),
+            "changed_slots": changed_slots,
+            "changed_board_items": int(board_diff.get("changed_item_count") or 0),
+        },
+        "sections": per_section,
+        "board": board_diff,
+    }
+
+
+def _render_hf_compare_summary_html(compare_report: JsonDict) -> str:
+    if not isinstance(compare_report, dict):
+        return ""
+    summary = compare_report.get("summary") or {}
+    sections = compare_report.get("sections") or {}
+    board = compare_report.get("board") or {}
+    changed_section_items = [
+        f"""
+        <li>
+          <b>{esc(display_section_title(section_key))}</b>
+          <span class="hfCompareMuted">slot {int(change.get('position') or 0)}</span>
+          <div class="hfCompareChange">{esc(str(change.get('baseline_title') or ''))}</div>
+          <div class="hfCompareArrow">→</div>
+          <div class="hfCompareChange">{esc(str(change.get('hf_title') or ''))}</div>
+        </li>
+        """
+        for section_key, diff in sections.items()
+        for change in (diff.get("slot_changes") or [])[:3]
+    ]
+    board_changed_items = [
+        f"""
+        <li>
+          <b>{esc(str(item.get('label') or '품목'))}</b>
+          <div class="hfCompareChange">{esc(str(item.get('baseline_title') or ''))}</div>
+          <div class="hfCompareArrow">→</div>
+          <div class="hfCompareChange">{esc(str(item.get('hf_title') or ''))}</div>
+        </li>
+        """
+        for item in (board.get("changed_items") or [])[:4]
+    ]
+    boosted_section_items = [
+        f"<li><b>{esc(display_section_title(section_key))}</b> HF {float(boosted.get('semantic_boost') or 0.0):+.2f} · {esc(str(boosted.get('title') or ''))}</li>"
+        for section_key, diff in sections.items()
+        for boosted in (diff.get("boosted_selected") or [])[:2]
+    ]
+    boosted_board_items = [
+        f"<li><b>{esc(str(item.get('label') or '품목'))}</b> HF {float(item.get('semantic_boost') or 0.0):+.2f} · {esc(str(item.get('title') or ''))}</li>"
+        for item in (board.get("boosted_items") or [])[:6]
+    ]
+    changed_summary = (
+        f"섹션 {int(summary.get('changed_section_count') or 0)}개 · 슬롯 {int(summary.get('changed_slots') or 0)}개 · 품목 카드 {int(summary.get('changed_board_items') or 0)}개 변경"
+        if (
+            int(summary.get("changed_section_count") or 0)
+            or int(summary.get("changed_slots") or 0)
+            or int(summary.get("changed_board_items") or 0)
+        )
+        else "이번 빌드에서는 최종 top 카드 교체는 없고, HF 보정만 들어갔습니다."
+    )
+    return f"""
+    <section class="hfComparePanel" aria-labelledby="hfCompareTitle">
+      <div class="hfCompareHead">
+        <div>
+          <div class="hfCompareEyebrow">HF on/off 비교</div>
+          <h2 id="hfCompareTitle">이번 dev 페이지에서 HF가 바꾼 것</h2>
+          <div class="hfCompareLead">{esc(changed_summary)}</div>
+        </div>
+        <div class="hfCompareStats">
+          <span class="hfCompareStat">변경 섹션 <strong>{int(summary.get('changed_section_count') or 0)}</strong></span>
+          <span class="hfCompareStat">변경 슬롯 <strong>{int(summary.get('changed_slots') or 0)}</strong></span>
+          <span class="hfCompareStat">변경 품목 카드 <strong>{int(summary.get('changed_board_items') or 0)}</strong></span>
+          <span class="hfCompareStat">보드 boost <strong>{int(board.get('boosted_item_count') or 0)}</strong></span>
+        </div>
+      </div>
+      <div class="hfCompareGrid">
+        <div class="hfCompareCard">
+          <div class="hfCompareCardTitle">실제 교체된 항목</div>
+          <ul class="hfCompareList">{''.join(changed_section_items + board_changed_items) or '<li class="hfCompareEmpty">바뀐 top 항목이 없습니다.</li>'}</ul>
+        </div>
+        <div class="hfCompareCard">
+          <div class="hfCompareCardTitle">HF 보정이 들어간 대표 기사</div>
+          <ul class="hfCompareList">{''.join(boosted_section_items + boosted_board_items) or '<li class="hfCompareEmpty">semantic boost가 없습니다.</li>'}</ul>
+        </div>
+      </div>
+    </section>
     """
 
 
@@ -19531,7 +19868,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         )
 
     # 진단: 미연결 품목 로그(DEBUG_REPORT 모드에서만 출력)
-    if DEBUG_REPORT:
+    if DEBUG_REPORT and (not _HF_COMPARE_ACTIVE):
         for payload in item_state.values():
             _ik = str(payload.get("key") or "")
             _il = str(payload.get("label") or "")
@@ -19587,6 +19924,17 @@ def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
 def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
     groups = list(board_ctx.get("groups") or [])
     group_blocks: list[str] = []
+
+    def _commodity_semantic_badge(item_payload: dict[str, Any], article: Article | None) -> str:
+        if (not DEV_SINGLE_PAGE_MODE) or (not DEBUG_REPORT) or (not isinstance(article, Article)):
+            return ""
+        metrics = _commodity_board_item_article_representative_metrics(item_payload, article)
+        boost = float(metrics.get("semantic_boost") or 0.0)
+        if abs(boost) <= 0.0:
+            return ""
+        cls = "isPos" if boost > 0 else "isNeg"
+        return f'<span class="hfDelta {cls}">HF {boost:+.2f}</span>'
+
     for group in groups:
         group_color = str(group.get("color") or "#475569")
         group_soft_bg = _hex_to_rgba(group_color, 0.07)
@@ -19603,6 +19951,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
             secondary_articles = [article for article in (item.get("secondary_articles") or []) if isinstance(article, Article)]
             extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
             if primary_article:
+                primary_semantic_badge = _commodity_semantic_badge(item, primary_article)
                 primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
                 primary_press_label = normalize_press_label(str(getattr(primary_article, "press", "") or "").strip(), str(getattr(primary_article, "url", "") or ""))
                 primary_meta_terms = [
@@ -19654,7 +20003,10 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 story_html = f"""
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      {primary_semantic_badge}
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
                     <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
                   </div>
@@ -19825,8 +20177,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         '</div>'
         '</div>'
     )
-    commodity_board_ctx = build_managed_commodity_board_context(board_source_by_section or _get_last_commodity_board_source() or by_section)
+    candidate_source_for_page = board_source_by_section or _get_last_commodity_board_source() or by_section
+    commodity_board_ctx = build_managed_commodity_board_context(candidate_source_for_page)
     commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
+    hf_compare_report: JsonDict = {}
+    if HF_COMPARE_REPORT_ENABLED:
+        try:
+            hf_compare_report = _build_hf_compare_report(report_date, candidate_source_for_page, commodity_board_ctx)
+        except Exception as exc:
+            log.warning("[HF] compare report skipped: %s", exc)
+            hf_compare_report = {}
+    dbg_set_hf_compare(hf_compare_report)
+    hf_compare_html = _render_hf_compare_summary_html(hf_compare_report) if hf_compare_report else ""
     briefing_active_sections = sum(1 for sec in SECTIONS if by_section.get(sec["key"]))
     briefing_core_total = sum(
         1
@@ -19893,12 +20255,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
             url = a.originallink or a.link
             summary_html = "<br>".join(esc(a.summary).splitlines())
             core_badge = '<span class="badgeCore">핵심</span>' if is_core else ""
+            semantic_badge = ""
+            if is_dev_preview and DEBUG_REPORT:
+                semantic_boost = float(getattr(a, "semantic_boost", 0.0) or 0.0)
+                if abs(semantic_boost) > 0.0:
+                    semantic_badge = f'<span class="hfDelta {"isPos" if semantic_boost > 0 else "isNeg"}">HF {semantic_boost:+.2f}</span>'
             press_label = normalize_press_label(a.press, url)
             return f"""
             <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\">
               <div class=\"cardTop\">
                 <div class=\"meta\">
                   {core_badge}
+                  {semantic_badge}
                   <span class=\"press\">{esc(press_label)}</span>
                   <span class=\"dot\">·</span>
                   <span class=\"time\">{esc(fmt_dt(a.pub_dt_kst))}</span>
@@ -20131,6 +20499,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commoditySig.muted{{background:#f8fafc;color:#94a3b8}}
     .commodityStoryCluster{{display:flex;flex-direction:column;gap:10px;height:100%}}
     .commodityPrimaryCard{{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);min-height:124px}}
+    .commodityPrimaryHead{{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}}
     .commodityPrimaryKicker{{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}}
     .commodityPrimaryStory{{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}}
     .commodityPrimaryStory:hover{{text-decoration:underline}}
@@ -20197,6 +20566,26 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       background:#111827; color:#fff; font-size:11px; font-weight:900;
       margin-right:2px;
     }}
+    .hfDelta{{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 8px;border-radius:999px;border:1px solid #dbe4ee;background:#f8fafc;color:#334155;font-size:10.5px;font-weight:900;letter-spacing:.01em;white-space:nowrap}}
+    .hfDelta.isPos{{background:#ecfdf5;border-color:#86efac;color:#166534}}
+    .hfDelta.isNeg{{background:#fff7ed;border-color:#fdba74;color:#b45309}}
+    .hfComparePanel{{margin-top:16px;padding:18px;border:1px solid #bfdbfe;border-radius:22px;background:linear-gradient(135deg,#eff6ff 0%,#ffffff 54%,#f8fafc 100%);box-shadow:0 16px 36px rgba(29,78,216,.10)}}
+    .hfCompareHead{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:flex-start}}
+    .hfCompareEyebrow{{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .hfComparePanel h2{{margin:10px 0 0;font-size:26px;line-height:1.1;letter-spacing:-0.6px}}
+    .hfCompareLead{{margin-top:8px;max-width:760px;color:#334155;font-size:13px;line-height:1.6}}
+    .hfCompareStats{{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}}
+    .hfCompareStat{{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #dbe4ee;background:rgba(255,255,255,.9);color:#1e293b;font-size:12px;font-weight:800}}
+    .hfCompareStat strong{{font-size:13px}}
+    .hfCompareGrid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}}
+    .hfCompareCard{{padding:14px;border:1px solid #dbe4ee;border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.05)}}
+    .hfCompareCardTitle{{font-size:13px;font-weight:900;color:#0f172a}}
+    .hfCompareList{{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:10px;color:#0f172a;font-size:12.5px;line-height:1.6}}
+    .hfCompareList li{{margin:0}}
+    .hfCompareChange{{margin-top:2px;color:#334155}}
+    .hfCompareArrow{{margin:3px 0;color:#1d4ed8;font-weight:900}}
+    .hfCompareMuted{{display:inline-flex;margin-left:6px;color:#64748b;font-size:11px;font-weight:800}}
+    .hfCompareEmpty{{color:#64748b;list-style:disc}}
 
     .btnOpen{{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
@@ -20263,6 +20652,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .briefingHeroStatLabel{{font-size:10px}}
       .briefingHeroStat strong{{margin-top:4px;font-size:18px}}
       .briefingChipbar{{margin:12px 0 18px}}
+      .hfComparePanel{{margin-top:12px;padding:14px;border-radius:18px}}
+      .hfCompareHead{{grid-template-columns:1fr}}
+      .hfComparePanel h2{{font-size:22px;letter-spacing:-0.5px}}
+      .hfCompareLead{{margin-top:7px;font-size:12.5px;line-height:1.55}}
+      .hfCompareStats{{justify-content:flex-start}}
+      .hfCompareGrid{{grid-template-columns:1fr;gap:10px}}
+      .hfCompareCard{{padding:12px;border-radius:16px}}
+      .hfCompareList{{font-size:12px}}
       .commodityBoardNav{{margin:10px 0 16px}}
       .chipDock{{display:none}}
       .chipbar{{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}}
@@ -20331,6 +20728,19 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .viewTab.isActive{{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);border-color:#1d4ed8}}
       .viewTabDesc{{color:#94a3b8}}
       .viewTabStat{{background:rgba(255,255,255,.08);color:#e2e8f0}}
+      .hfDelta{{background:#1e293b;border-color:#475569;color:#cbd5e1}}
+      .hfDelta.isPos{{background:rgba(20,83,45,.28);border-color:#22c55e;color:#bbf7d0}}
+      .hfDelta.isNeg{{background:rgba(124,45,18,.28);border-color:#fb923c;color:#fed7aa}}
+      .hfComparePanel{{background:linear-gradient(135deg,#1e293b 0%,#0f172a 54%,#1e293b 100%);border-color:#1d4ed8;box-shadow:0 16px 36px rgba(0,0,0,.24)}}
+      .hfCompareEyebrow{{background:#1e3a5f;color:#93c5fd}}
+      .hfCompareLead{{color:#cbd5e1}}
+      .hfCompareStat{{background:rgba(30,41,59,.9);border-color:var(--line);color:#e2e8f0}}
+      .hfCompareCard{{background:rgba(30,41,59,.92);border-color:var(--line)}}
+      .hfCompareCardTitle{{color:#f8fafc}}
+      .hfCompareList{{color:#e2e8f0}}
+      .hfCompareChange{{color:#cbd5e1}}
+      .hfCompareArrow{{color:#60a5fa}}
+      .hfCompareMuted,.hfCompareEmpty{{color:#94a3b8}}
       .briefingHero{{background:linear-gradient(135deg,#1e293b 0%,#0f172a 56%,#1e293b 100%);border-color:var(--line)}}
       .briefingHeroStat{{background:rgba(30,41,59,.92);border-color:var(--line)}}
       .briefingHeroStat strong{{color:#e2e8f0}}
@@ -20418,6 +20828,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
   <div class=\"wrap\">
     {view_tabs_html}
+    {hf_compare_html}
     <section id=\"view-briefing\" class=\"viewPane briefingPane isActive\" data-view-pane=\"briefing\" role=\"tabpanel\">
       {briefing_hero_html}
       {briefing_nav_html}
