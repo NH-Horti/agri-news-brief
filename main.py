@@ -69,6 +69,7 @@ from io_github import (
     github_list_dir as _io_github_list_dir,
     github_put_file as _io_github_put_file,
 )
+from observability import metric_inc
 from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
