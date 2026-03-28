@@ -58,6 +58,11 @@ from collector import (
     naver_news_search_paged as _collector_naver_news_search_paged,
     naver_web_search as _collector_naver_web_search,
 )
+from hf_semantics import (
+    HFSemanticConfig,
+    SemanticAdjustment,
+    score_section_candidates as _hf_score_section_candidates,
+)
 from io_github import (
     github_api_headers as _io_github_api_headers,
     github_get_file as _io_github_get_file,
@@ -315,6 +320,62 @@ def http_session() -> requests.Session:
     except Exception:
         pass
     return SESSION
+
+
+def _article_selection_key(article: Any) -> str:
+    return str(
+        getattr(article, "canon_url", "")
+        or getattr(article, "norm_key", "")
+        or getattr(article, "title_key", "")
+        or ""
+    ).strip()
+
+
+def _hf_semantic_selection_adjustments(
+    section_key: str,
+    section_conf: JsonDict,
+    candidates: list["Article"],
+) -> dict[str, SemanticAdjustment]:
+    if (not HF_SEMANTIC_RERANK_ENABLED) or (not HF_API_TOKEN):
+        return {}
+
+    ranked = [a for a in candidates if isinstance(a, Article)]
+    ranked = sorted(ranked, key=_sort_key_major_first, reverse=True)
+    ranked = ranked[:HF_SEMANTIC_MAX_CANDIDATES]
+    if len(ranked) < 2:
+        return {}
+
+    cfg = HFSemanticConfig(
+        api_token=HF_API_TOKEN,
+        model=HF_SEMANTIC_MODEL,
+        timeout_sec=HF_SEMANTIC_TIMEOUT_SEC,
+        max_candidates=HF_SEMANTIC_MAX_CANDIDATES,
+        max_boost=HF_SEMANTIC_MAX_BOOST,
+        min_candidates=2,
+    )
+
+    try:
+        adjustments = _hf_score_section_candidates(
+            section_conf,
+            ranked,
+            cfg=cfg,
+            session_factory=http_session,
+        )
+    except Exception as exc:
+        log.warning("[HF] semantic rerank skipped for %s: %s", section_key, exc)
+        metric_inc("hf.semantic.error", section=section_key, reason=type(exc).__name__)
+        return {}
+
+    out: dict[str, SemanticAdjustment] = {}
+    for article, adjustment in zip(ranked, adjustments):
+        key = _article_selection_key(article)
+        if not key:
+            continue
+        out[key] = adjustment
+
+    if out:
+        metric_inc("hf.semantic.success", section=section_key, count=str(len(out)))
+    return out
 
 
 # -----------------------------
@@ -745,6 +806,24 @@ OPENAI_SUMMARY_CACHE_MAX = int((os.getenv("OPENAI_SUMMARY_CACHE_MAX", "2000") or
 OPENAI_SUMMARY_CACHE_MAX = max(200, min(OPENAI_SUMMARY_CACHE_MAX, 20000))
 OPENAI_RETRY_MAX = int((os.getenv("OPENAI_RETRY_MAX", "3") or "3").strip() or 3)
 OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
+
+HF_API_TOKEN = (
+    os.getenv("HF_TOKEN", "").strip()
+    or os.getenv("HUGGINGFACEHUB_API_TOKEN", "").strip()
+    or os.getenv("HUGGINGFACE_API_KEY", "").strip()
+)
+_HF_SEMANTIC_RERANK_RAW = os.getenv("HF_SEMANTIC_RERANK_ENABLED", "").strip().lower()
+if _HF_SEMANTIC_RERANK_RAW:
+    HF_SEMANTIC_RERANK_ENABLED = _HF_SEMANTIC_RERANK_RAW in ("1", "true", "yes", "y")
+else:
+    HF_SEMANTIC_RERANK_ENABLED = bool(HF_API_TOKEN)
+HF_SEMANTIC_MODEL = os.getenv("HF_SEMANTIC_MODEL", "intfloat/multilingual-e5-large").strip() or "intfloat/multilingual-e5-large"
+HF_SEMANTIC_TIMEOUT_SEC = float((os.getenv("HF_SEMANTIC_TIMEOUT_SEC", "20") or "20").strip() or 20.0)
+HF_SEMANTIC_TIMEOUT_SEC = max(3.0, min(HF_SEMANTIC_TIMEOUT_SEC, 60.0))
+HF_SEMANTIC_MAX_CANDIDATES = int((os.getenv("HF_SEMANTIC_MAX_CANDIDATES", "12") or "12").strip() or 12)
+HF_SEMANTIC_MAX_CANDIDATES = max(2, min(HF_SEMANTIC_MAX_CANDIDATES, 30))
+HF_SEMANTIC_MAX_BOOST = float((os.getenv("HF_SEMANTIC_MAX_BOOST", "0.9") or "0.9").strip() or 0.9)
+HF_SEMANTIC_MAX_BOOST = max(0.2, min(HF_SEMANTIC_MAX_BOOST, 2.0))
 
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
@@ -12259,14 +12338,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.selection_stage = ""
         a.selection_note = ""
         a.selection_fit_score = 0.0
+        setattr(a, "semantic_similarity", 0.0)
+        setattr(a, "semantic_boost", 0.0)
+        setattr(a, "semantic_model", "")
 
-    candidates_sorted = sorted(candidates, key=_sort_key_major_first, reverse=True)
+    candidates_sorted_raw = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
     # 동적 임계치: 상위권 점수가 낮은 날은 더 엄격하게 컷하여 '억지 채움'을 막는다
-    thr = _dynamic_threshold(candidates_sorted, section_key)
+    thr = _dynamic_threshold(candidates_sorted_raw, section_key)
 
     # 임계치 이상 후보만 사용(없으면 빈 리스트)
-    pool = [a for a in candidates_sorted if a.score >= thr]
+    pool = [a for a in candidates_sorted_raw if a.score >= thr]
 
 
     # dist/supply: 동일 이슈(APC 준공, 공급비용 압박 후속 리포트 등)가 여러 건 반복될 때
@@ -12294,6 +12376,30 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             fit_filtered.append(a)
     if fit_filtered:
         pool = fit_filtered
+
+    semantic_adjustments = _hf_semantic_selection_adjustments(section_key, sec_conf, pool)
+    for a in candidates:
+        adjustment = semantic_adjustments.get(_article_selection_key(a))
+        if not adjustment:
+            continue
+        setattr(a, "semantic_similarity", float(adjustment.similarity or 0.0))
+        setattr(a, "semantic_boost", float(adjustment.boost or 0.0))
+        setattr(a, "semantic_model", str(adjustment.model or ""))
+
+    def _semantic_adjusted_score(a: Article) -> float:
+        return float(getattr(a, "score", 0.0) or 0.0) + float(getattr(a, "semantic_boost", 0.0) or 0.0)
+
+    def _selection_sort_key(a: Article) -> Any:
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        return (
+            _semantic_adjusted_score(a),
+            float(getattr(a, "semantic_similarity", 0.0) or 0.0),
+            round(float(fit_sc or 0.0), 3),
+            getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        )
+
+    candidates_sorted = sorted(candidates, key=_selection_sort_key, reverse=True)
+    pool = sorted(pool, key=_selection_sort_key, reverse=True)
 
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
@@ -12501,7 +12607,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             key=lambda a: (
                 float(supply_board_bridge_boosts.get(_dup_key(a)) or 0.0),
                 _supply_core_priority_score(a),
-                float(getattr(a, "score", 0.0) or 0.0),
+                _semantic_adjusted_score(a),
+                float(getattr(a, "semantic_similarity", 0.0) or 0.0),
                 section_fit_score(a.title or "", a.description or "", sec_conf),
                 getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
             ),
@@ -14225,7 +14332,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             key=lambda a: (
                 1 if getattr(a, "is_core", False) else 0,
                 _supply_core_priority_score(a),
-                float(getattr(a, "score", 0.0) or 0.0),
+                _semantic_adjusted_score(a),
+                float(getattr(a, "semantic_similarity", 0.0) or 0.0),
                 getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
             ),
             reverse=True,
@@ -14314,6 +14422,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     "selected": bool(sel),
                     "is_core": bool(getattr(a, "is_core", False)) if sel else False,
                     "score": round(a.score, 2),
+                    "semantic_similarity": round(float(getattr(a, "semantic_similarity", 0.0) or 0.0), 4),
+                    "semantic_boost": round(float(getattr(a, "semantic_boost", 0.0) or 0.0), 3),
+                    "semantic_model": str(getattr(a, "semantic_model", "") or ""),
                     "tier": press_priority(a.press, a.domain),
                     "press": a.press,
                     "domain": a.domain,
@@ -14334,6 +14445,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 "threshold": round(thr, 2),
                 "tail_cut": round(tail_cut, 2),
                 "core_min": round(core_min, 2),
+                "hf_semantic_enabled": bool(semantic_adjustments),
+                "hf_semantic_hits": len(semantic_adjustments),
                 "total_candidates": len(candidates),
                 "total_selected": len(selected_final),
                 "top": top_rows,
@@ -16876,6 +16989,9 @@ def _debug_row_from_article(a: "Article", section_key: str, section_conf: JsonDi
         "selected": bool(selected),
         "is_core": bool(getattr(a, "is_core", False)) if selected else False,
         "score": round(float(getattr(a, "score", 0.0) or 0.0), 2),
+        "semantic_similarity": round(float(getattr(a, "semantic_similarity", 0.0) or 0.0), 4),
+        "semantic_boost": round(float(getattr(a, "semantic_boost", 0.0) or 0.0), 3),
+        "semantic_model": str(getattr(a, "semantic_model", "") or ""),
         "tier": press_priority(a.press, a.domain),
         "press": a.press,
         "domain": a.domain,

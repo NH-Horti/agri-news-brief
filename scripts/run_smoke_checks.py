@@ -19,6 +19,7 @@ COMPILE_TARGETS = [
     "orchestrator.py",
     "observability.py",
     "replay.py",
+    "hf_semantics.py",
 ]
 
 SMOKE_PATTERNS = [
@@ -31,6 +32,7 @@ SMOKE_PATTERNS = [
     "test_retry_utils.py",
     "test_commodity_board.py",
     "test_replay.py",
+    "test_hf_semantics.py",
 ]
 
 

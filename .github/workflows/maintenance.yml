@@ -92,6 +92,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-5.4
           OPENAI_REASONING_EFFORT: low
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SEMANTIC_MODEL: intfloat/multilingual-e5-large
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main

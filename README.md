@@ -5,10 +5,32 @@
 Run local checks manually:
 
 ```bash
-python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py
+python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py
 python -m mypy --config-file mypy.ini
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+## Optional Hugging Face semantic reranking
+
+The final article selection stage can optionally add a small semantic boost using Hugging Face embeddings.
+
+- Purpose: improve ordering among close candidates without removing the existing rule-based filters
+- Default: off
+- Recommended model: `intfloat/multilingual-e5-large`
+- Required env:
+  - `HF_TOKEN=...`
+- Optional env:
+  - `HF_SEMANTIC_RERANK_ENABLED` (`true` / `false`, omitted = auto-enable when `HF_TOKEN` exists)
+  - `HF_SEMANTIC_MODEL`
+  - `HF_SEMANTIC_MAX_CANDIDATES`
+  - `HF_SEMANTIC_MAX_BOOST`
+  - `HF_SEMANTIC_TIMEOUT_SEC`
+
+Behavior:
+
+- thresholding and hard filters still use the existing rule-based system
+- Hugging Face only nudges ranking among already-eligible candidates
+- if the token is missing or the API call fails, the pipeline falls back to the original behavior
 
 ## Local Rebuild
 
