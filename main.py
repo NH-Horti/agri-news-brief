@@ -1352,7 +1352,7 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
         "color": "#1d4ed8",
         "items": [
             {"key": "apple", "label": "사과", "short_label": "사과", "program_core": True, "registry_topics": ["사과"]},
-            {"key": "pear", "label": "배", "short_label": "배", "program_core": True, "registry_topics": ["배"]},
+            {"key": "pear", "label": "배", "short_label": "배", "program_core": True, "registry_topics": ["배"], "aliases": ["신고배", "나주배"], "context_terms": ["배 과일 가격", "배 과일 수급", "배 과일 작황", "배 과일 출하"]},
             {"key": "persimmon", "label": "감/곶감", "short_label": "감", "program_core": False, "registry_topics": ["감/곶감"], "aliases": ["떫은감", "곶감", "반건시"], "context_terms": ["감 가격", "감 수급", "감 작황"]},
             {"key": "sweet_persimmon", "label": "단감", "short_label": "단감", "program_core": True, "registry_topics": ["단감"]},
             {"key": "peach", "label": "복숭아", "short_label": "복숭아", "program_core": False, "registry_topics": ["복숭아"]},
@@ -1361,7 +1361,7 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
             {"key": "maesil", "label": "매실", "short_label": "매실", "program_core": False, "registry_topics": ["매실"]},
             {"key": "citron", "label": "유자", "short_label": "유자", "program_core": False, "registry_topics": ["유자"]},
             {"key": "kiwifruit", "label": "참다래", "short_label": "참다래", "program_core": False, "registry_topics": ["키위"], "aliases": ["참다래"]},
-            {"key": "chestnut", "label": "밤", "short_label": "밤", "program_core": False, "registry_topics": ["밤"]},
+            {"key": "chestnut", "label": "밤", "short_label": "밤", "program_core": False, "registry_topics": ["밤"], "aliases": ["알밤"], "context_terms": ["알밤 가격", "알밤 수급", "알밤 작황"]},
             {"key": "flowers", "label": "화훼", "short_label": "화훼", "program_core": False, "registry_topics": ["화훼"]},
             {"key": "plum", "label": "자두", "short_label": "자두", "program_core": False, "registry_topics": ["자두"]},
         ],
@@ -2176,7 +2176,6 @@ NON_ITEM_COMMODITY_TOPICS = [
     ("정책", ["대책", "지원", "보도자료", "브리핑", "할당관세", "할인지원", "원산지", "단속", "고시", "개정"]),
     ("병해충", ["병해충", "방제", "예찰", "약제", "살포", "과수화상병", "탄저병", "노균병", "냉해", "동해", "저온피해", "생육"]),
 ]
-COMMODITY_TOPICS = list(ITEM_COMMODITY_TOPICS) + list(NON_ITEM_COMMODITY_TOPICS)
 COMMODITY_TOPICS = list(ALL_ITEM_COMMODITY_TOPICS) + list(NON_ITEM_COMMODITY_TOPICS)
 
 # Alias for generalized topic signals & fallback query generation
@@ -7650,6 +7649,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
         txt,
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "온라인 도매시장")],
     )
+    macro_policy = is_macro_policy_issue(txt)
+    policy_export_support = is_policy_export_support_brief_context(title, desc)
     if key == "policy":
         if is_title_livestock_dominant_context(title, desc):
             base -= 1.4
@@ -7657,7 +7658,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
             base -= 1.2
         if is_policy_budget_drive_noise_context(title, desc):
             base -= 1.1
-        if is_macro_policy_issue(txt):
+        if macro_policy:
             base += 0.9
             if broad_macro_price:
                 base += 0.6
@@ -7667,13 +7668,13 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
                 base += 0.95
         if policy_major_issue:
             base += 1.05
-        if is_policy_export_support_brief_context(title, desc):
+        if policy_export_support:
             base += 0.85
         if is_dist_export_field_context(title, desc):
             base -= 0.9
         if dist_field_market_response:
             base -= 0.85
-        if managed_count and (is_macro_policy_issue(txt) or policy_stabilization or policy_market_brief or policy_major_issue or is_policy_export_support_brief_context(title, desc)):
+        if managed_count and (macro_policy or policy_stabilization or policy_market_brief or policy_major_issue or policy_export_support):
             base += min(0.56, 0.12 * managed_count)
             base += min(0.36, 0.16 * program_core_count)
     elif key == "dist":
@@ -10867,40 +10868,46 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         # 지자체 정책 프로그램(출하비용 보전/시범사업 등)은 supply보다 policy 성격이 강함
         if is_local_agri_policy_program_context(text):
             score -= 4.0
+        # 정책/거시성 감점은 상호 배타적 → 가장 큰 1개만 적용(중복 누적 방지)
+        _supply_policy_penalties: list[float] = []
         if policy_stabilization:
-            score -= 5.4
+            _supply_policy_penalties.append(5.4)
         if policy_market_brief:
-            score -= 6.2
+            _supply_policy_penalties.append(6.2)
         if supply_macro_official_shock:
-            score -= 8.8
+            _supply_policy_penalties.append(8.8)
         if supply_processed_consumer_panic:
-            score -= 10.2
+            _supply_policy_penalties.append(10.2)
         if supply_official_support_response:
-            score -= 7.8
+            _supply_policy_penalties.append(7.8)
         if supply_processed_price_roundup:
-            score -= 10.4
+            _supply_policy_penalties.append(10.4)
         if supply_accusatory_quote:
-            score -= 8.6
+            _supply_policy_penalties.append(8.6)
         if supply_program_brand_action:
-            score -= 7.6
+            _supply_policy_penalties.append(7.6)
         if supply_price_support_event:
-            score -= 8.2
+            _supply_policy_penalties.append(8.2)
+        if _supply_policy_penalties:
+            score -= max(_supply_policy_penalties)
+        # 유통/현장성 감점도 상호 배타적 → 가장 큰 1개만 적용
+        _supply_dist_penalties: list[float] = []
         if local_org_feature:
-            score -= 4.8
+            _supply_dist_penalties.append(4.8)
         if dist_market_ops:
-            score -= 4.2
+            _supply_dist_penalties.append(4.2)
         if dist_supply_center:
-            score -= 4.4
+            _supply_dist_penalties.append(4.4)
         if dist_sales_channel_ops:
-            score -= 7.4
             sales_channel_signature_hits = count_any(
                 text,
                 [t.lower() for t in ("연합판매사업", "직거래", "직거래 장터", "온라인 판매", "온라인 판로", "온라인 도매시장", "거래처 다변화", "공동사업법인", "유통채널")],
             )
-            if sales_channel_signature_hits >= 2:
-                score -= 4.0
+            _supply_dist_penalties.append(7.4 + (4.0 if sales_channel_signature_hits >= 2 else 0.0))
         if dist_field_market_response:
-            score -= 9.0
+            _supply_dist_penalties.append(9.0)
+        if _supply_dist_penalties:
+            score -= max(_supply_dist_penalties)
         if is_dist_export_shipping_context(title, desc) and supply_issue_bucket != "export_recovery":
             score -= 5.0
         if dist_export_field and supply_issue_bucket != "export_recovery":
@@ -10961,7 +10968,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 10.6
         if dist_unanchored_agritech_noise:
             score -= 10.2
-        elif dist_local_field_profile:
+        if dist_local_field_profile:
             score += 2.2
         if dist_market_ops:
             score += 8.8
@@ -11096,8 +11103,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score -= 4.2
         # 양곡(벼) 방제는 제외: 남아있더라도 강하게 감점
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
-        horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
-        if rice_hits >= 1 and horti_hits == 0:
+        pest_horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS])
+        if rice_hits >= 1 and pest_horti_hits == 0:
             title_pest_hits = count_any(title_l, [t.lower() for t in ("병해충", "방제", "예찰", "약제", "과수화상병", "탄저병")])
             # 벼 기사라도 병해충/방제가 제목·본문에서 명확하면 완전 배제하지 않고 보수 감점
             score -= 2.6 if title_pest_hits >= 1 else 7.0
@@ -11256,7 +11263,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score -= 12.0
 
     # 점수 하한: 다수 감점 누적에 의한 극단적 음수 방지
-    score = max(score, -5.0)
+    # "약한 적합"(-5~0)과 "완전 부적합"(-10 이하)을 구분할 수 있도록 하한을 -10으로 확대
+    score = max(score, -10.0)
 
     return round(score, 3)
 def _token_set(s: str) -> set[str]:
@@ -12169,15 +12177,6 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
     """
     if not candidates_sorted:
         return BASE_MIN_SCORE.get(section_key, 6.0)
-
-    best_article = candidates_sorted[0]
-    if section_key == "policy":
-        for cand in candidates_sorted:
-            d = normalize_host(getattr(cand, "domain", "") or "")
-            p = (getattr(cand, "press", "") or "").strip()
-            if (p not in LOW_QUALITY_PRESS) and (d not in LOW_QUALITY_DOMAINS):
-                best_article = cand
-                break
 
     best = _selection_reference_score(candidates_sorted, section_key)
     margin = 10.0 if section_key == "policy" else (13.0 if section_key == "dist" else (12.0 if section_key == "supply" else 7.0))
@@ -15868,8 +15867,11 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
         pass
 
     # Optional RSS candidates (신뢰 소스 보강)
+    # RSS 기사도 메인 _local_dedupe를 거쳐 API/RSS 경로 간 중복을 방지
     try:
-        items.extend(collect_rss_candidates(section_conf, start_kst, end_kst))
+        for rss_art in collect_rss_candidates(section_conf, start_kst, end_kst):
+            if _local_dedupe.add_and_check(rss_art.canon_url, rss_art.press, rss_art.title_key, rss_art.norm_key):
+                items.append(rss_art)
     except Exception:
         pass
 
@@ -16346,6 +16348,9 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     a.section = target
                     a.score = best_alt_score
                 new_by.setdefault(target, []).append(a)
+            else:
+                # dedupe 실패 시 원래 섹션(pest)에 유지하여 기사 소실 방지
+                new_by.setdefault("pest", []).append(a)
             continue
 
         txt = ((a.title or "") + " " + (a.description or "")).lower()
@@ -16567,6 +16572,12 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         di = local_dedupe_by.get(target)
         if di and di.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
             new_by.setdefault(target, []).append(a)
+        elif target != cur:
+            # 이동 대상 섹션에서 dedupe 실패 시 원래 섹션에 복원하여 기사 소실 방지
+            a.section = cur
+            di_orig = local_dedupe_by.get(cur)
+            if di_orig and di_orig.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                new_by.setdefault(cur, []).append(a)
 
     # write back
     for k in list(raw_by_section.keys()):
@@ -17314,6 +17325,13 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
 
             # 그 외(정책성 강 + 품목 직접성 약)는 policy로 이동
             a.section = "policy"
+            # policy 기준으로 재스코어링 (원래 섹션 점수가 policy 선정에 오용되는 것을 방지)
+            try:
+                _p_conf = next((s for s in SECTIONS if s.get("key") == "policy"), None)
+                if _p_conf:
+                    a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, _p_conf, p)
+            except Exception:
+                pass
             raw_by_section.setdefault("policy", []).append(a)
             moved_topic += 1
             continue
