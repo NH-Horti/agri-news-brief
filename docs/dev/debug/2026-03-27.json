@@ -1,5 +1,5 @@
 {
-  "generated_at_kst": "2026-03-28T20:44:23+09:00",
+  "generated_at_kst": "2026-03-28T23:27:23+09:00",
   "build_tag": "72f078b",
   "filter_rejects": [
     {
@@ -15611,7 +15611,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.79,
+          "score": 30.59,
           "tier": 2,
           "press": "아주경제",
           "domain": "ajunews.com",
@@ -15908,33 +15908,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.87,
-          "tier": 1,
-          "press": "디티뉴스24",
-          "domain": "dtnews24.com",
-          "title": "장성군, 농업인 월급제 신청 접수… 월 최대 250만 원 지원",
-          "url": "http://www.dtnews24.com/news/articleView.html?idxno=809303",
-          "reason": "below_threshold",
-          "fit_score": 2.95,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "사과 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.44,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 22.86,
           "tier": 3,
           "press": "농민신문",
@@ -15957,6 +15930,33 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 6.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.67,
+          "tier": 1,
+          "press": "디티뉴스24",
+          "domain": "dtnews24.com",
+          "title": "장성군, 농업인 월급제 신청 접수… 월 최대 250만 원 지원",
+          "url": "http://www.dtnews24.com/news/articleView.html?idxno=809303",
+          "reason": "below_threshold",
+          "fit_score": 2.95,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "사과 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.44,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -16313,7 +16313,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.54,
+          "score": 17.34,
           "tier": 3,
           "press": "KBS",
           "domain": "news.kbs.co.kr",
