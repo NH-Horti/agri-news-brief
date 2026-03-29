@@ -1182,6 +1182,21 @@ class TestClassifierBehavior(unittest.TestCase):
         )
         self.assertFalse(main._headline_gate_relaxed(interview, "supply"))
 
+    def test_hard_opinion_column_marker_rejects_chodongsigak_column(self):
+        column = self._make_article(
+            "dist",
+            "[초동시각]정쟁에 갇힌 새벽배송",
+            "새벽배송 규제와 정쟁을 다룬 칼럼성 기사다.",
+            "https://www.edaily.co.kr/News/Read?newsId=01234567890123456",
+        )
+        self.assertTrue(main._has_hard_opinion_column_marker(column.title))
+        self.assertFalse(main._headline_gate_relaxed(column, "dist"))
+
+    def test_dist_political_visit_context_does_not_treat_city_mayor_title_as_market_venue(self):
+        title = "박성현 광양시장 예비후보···‘일하는 사람이 잘사는 광양’ 선언"
+        desc = "예비후보가 지역 비전과 공약을 발표한 정치 기사다."
+        self.assertFalse(main.is_dist_political_visit_context(title, desc))
+
     def test_supply_selection_does_not_backfill_interview_feature_story(self):
         cabbage = self._make_article(
             "supply",
@@ -2867,6 +2882,33 @@ class TestClassifierBehavior(unittest.TestCase):
             msg=str([(x.link, x.score, x.title) for x in picked]),
         )
 
+    def test_pest_selection_dedupes_exact_same_title_from_different_links(self):
+        first = self._make_article(
+            "pest",
+            "보은군, 과수화상병 예방 총력",
+            "보은군이 과수화상병 확산 차단을 위해 예찰과 약제 지원, 현장 지도를 강화한다.",
+            "https://example.com/pest-boeun-a",
+        )
+        second = self._make_article(
+            "pest",
+            "보은군, 과수화상병 예방 총력",
+            "보은군이 과수화상병 예방 총력전을 벌이며 예찰과 방제 지원을 확대했다.",
+            "https://example.com/pest-boeun-b",
+        )
+        other = self._make_article(
+            "pest",
+            "산청군, 드론 활용 동계 정밀 방제 … 선제적 차단",
+            "산청군이 사과 주산지 중심으로 드론 활용 동계 정밀 방제를 실시해 병해충 확산을 차단하고 있다.",
+            "https://example.com/pest-sancheong-drone",
+        )
+        first.score = 24.8
+        second.score = 24.7
+        other.score = 25.5
+
+        picked = main.select_top_articles([first, second, other], "pest", 5)
+        boeun_titles = [x for x in picked if x.title == first.title]
+        self.assertEqual(len(boeun_titles), 1, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
         story = self._make_article(
             "supply",
@@ -3426,6 +3468,92 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         selected = main.select_top_articles([apple_a, apple_b, onion], "supply", max_n=2)
         self.assertEqual([article.title for article in selected], [apple_a.title, onion.title])
 
+    def test_supply_selection_keeps_acreage_intent_story_and_drops_price_support_program(self):
+        acreage = self._make_article(
+            "supply",
+            "전남도, 봄무·봄양배추 재배 의향면적 조사",
+            "봄무와 봄양배추 재배 의향면적을 조사해 선제 수급 관리와 생산량 전망에 활용한다.",
+            "https://www.jeonnam.go.kr/M7116/boardView.do?seq=1954321",
+        )
+        strong_anchor = self._make_article(
+            "supply",
+            "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+            "나프타 수급 불안으로 시설하우스 비닐 가격이 올라 봄 작기 농가 부담이 커졌다.",
+            "https://www.kwnews.co.kr/page/view/2026032600001",
+        )
+        price_support = self._make_article(
+            "supply",
+            "가락시장 ‘출하비용 보전사업’ 속속 안착",
+            "서울시와 도매법인이 출하농가 경락 손실을 보전하는 지원사업이 현장에 안착하고 있다.",
+            "https://biz.heraldcorp.com/article/10683302",
+        )
+        macro_policy = self._make_article(
+            "supply",
+            "민생물가 특별관리품목 23→43개 확대…택배·외식비 등도 집중관리",
+            "정부가 민생물가 특별관리품목을 확대하고 외식비와 택배비 등 생활 물가 전반을 집중 관리한다고 밝혔다.",
+            "https://www.newsis.com/view/NISX20260327_0004000100",
+        )
+        launchy_org = self._make_article(
+            "supply",
+            "함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’",
+            "함덕농협이 스타루비 자몽을 첫 출시하며 브랜드와 판로 확대 성과를 강조했다.",
+            "https://www.jejuilbo.net/news/articleView.html?idxno=999999",
+        )
+        acreage.score = 31.4
+        strong_anchor.score = 28.0
+        price_support.score = 30.6
+        macro_policy.score = 23.9
+        launchy_org.score = 24.3
+
+        picked = main.select_top_articles([price_support, acreage, strong_anchor, macro_policy, launchy_org], "supply", max_n=5)
+        picked_titles = [article.title for article in picked]
+        self.assertIn(acreage.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(price_support.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(macro_policy.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(launchy_org.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+
+    def test_supply_selection_drops_market_support_program_even_with_direct_supply_terms(self):
+        anchor = self._make_article(
+            "supply",
+            "청송 사과 면적 감소 전환…산불 이후 농업 구조 재편 신호",
+            "청송 사과 주산지에서 재배 면적 감소와 작목 전환이 이어지며 산지 공급 구조 변화가 감지된다.",
+            "https://example.com/supply-apple-area-shift",
+        )
+        market_support = self._make_article(
+            "supply",
+            "가락시장 ‘출하비용 보전사업’ 속속 안착",
+            "가락시장 도매법인과 출하 농가를 대상으로 출하비용 보전사업이 시행되며 유통 지원 성격의 정책 효과가 확산되고 있다.",
+            "https://example.com/supply-garak-support",
+        )
+        acreage = self._make_article(
+            "supply",
+            "전남도, 봄무·봄양배추 재배 의향면적 조사",
+            "봄무와 봄양배추 재배 의향면적 조사를 통해 수급과 생산량 변화를 사전 점검하고 있다.",
+            "https://example.com/supply-acreage-intent",
+        )
+        anchor.score = 24.2
+        market_support.score = 26.5
+        acreage.score = 25.9
+
+        self.assertTrue(main.is_supply_market_support_program_context(market_support.title, market_support.description))
+
+        picked = main.select_top_articles([market_support, anchor, acreage], "supply", max_n=5)
+        picked_titles = [article.title for article in picked]
+        self.assertIn(anchor.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertIn(acreage.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(market_support.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+
+    def test_supply_board_bridge_candidate_rejects_market_support_program(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "grape")
+        article = self._make_article(
+            "supply",
+            "가락시장 ‘출하비용 보전사업’ 속속 안착",
+            "가락시장 도매법인과 출하 농가를 대상으로 출하비용 보전사업이 시행되며 유통 지원 성격의 정책 효과가 확산되고 있다.",
+            "https://example.com/supply-garak-support-bridge",
+        )
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+        self.assertFalse(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+
     def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
         query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]
         topic_seed_terms = []
@@ -3591,6 +3719,67 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertTrue(main.is_dist_local_crop_strategy_noise_context(title, desc))
         self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["dist"], press))
+
+    def test_dist_selection_rejects_governance_reform_and_opinion_column(self):
+        governance = self._make_article(
+            "dist",
+            "농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표",
+            "농협개혁위가 회장 출마시 조합장 사퇴 의무화와 지배구조 개편 등 13개 과제를 발표했다.",
+            "https://www.yna.co.kr/view/AKR20260326000000000",
+        )
+        center = self._make_article(
+            "dist",
+            "충북 음성 화훼 유통센터 10년…수도권 쏠림 현상 바꿨다",
+            "화훼 유통센터가 선별과 물류 기능을 키워 수도권 쏠림을 줄이고 산지 유통 경쟁력을 높였다.",
+            "https://www.ccdn.co.kr/news/articleView.html?idxno=1020304",
+        )
+        ops = self._make_article(
+            "dist",
+            "벼 육묘장·농산물 유통센터 ‘문 활짝’",
+            "농산물 유통센터 개장으로 선별과 물류 처리 효율이 높아지고 출하 동선이 개선됐다.",
+            "https://www.kado.net/news/articleView.html?idxno=1234567",
+        )
+        column = self._make_article(
+            "dist",
+            "[초동시각]정쟁에 갇힌 새벽배송",
+            "새벽배송 규제와 정쟁을 다룬 칼럼성 기사다.",
+            "https://www.edaily.co.kr/News/Read?newsId=01234567890123456",
+        )
+        livestock_policy = self._make_article(
+            "dist",
+            "2030년까지 계란 생산 10% 증량…계란·돼지고기 담합 시 지원금 배제",
+            "정부가 계란과 돼지고기 생산 확대, 담합 적발 시 지원금 배제 등 축산 대책을 발표했다.",
+            "https://www.yna.co.kr/view/AKR20260327000000001",
+        )
+        mayor_statement = self._make_article(
+            "dist",
+            "박성현 광양시장 예비후보···‘일하는 사람이 잘사는 광양’ 선언",
+            "예비후보가 광양 미래 비전과 민생 공약을 발표한 정치 기사다.",
+            "https://www.pressian.com/pages/articles/20260327000000002",
+        )
+        org_performance = self._make_article(
+            "dist",
+            "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성",
+            "밀양농협이 조합원 복지와 판로 확대 성과를 바탕으로 종합경영평가 1등급을 달성했다.",
+            "https://www.knnews.co.kr/news/articleView.php?idxno=1500000",
+        )
+        governance.score = 23.2
+        center.score = 18.2
+        ops.score = 20.0
+        column.score = 17.9
+        livestock_policy.score = 14.9
+        mayor_statement.score = 11.6
+        org_performance.score = 5.7
+
+        picked = main.select_top_articles([governance, center, ops, column, livestock_policy, mayor_statement, org_performance], "dist", 5)
+        picked_titles = [article.title for article in picked]
+        self.assertIn(center.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertIn(ops.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(governance.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(column.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(livestock_policy.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(mayor_statement.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(org_performance.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
 
     def test_policy_small_pool_relaxes_source_cap_for_tier2_articles(self):
         articles = [
