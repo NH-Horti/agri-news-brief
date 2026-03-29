@@ -363,6 +363,14 @@ _HARD_OPINION_COLUMN_MARKERS = (
     "[시론]",
     "횡설수설",
     "만물상",
+    "초동시각",
+    "[초동시각]",
+    "기자의 시선",
+    "[기자의 시선]",
+    "데스크칼럼",
+    "[데스크칼럼]",
+    "논단",
+    "[논단]",
 )
 
 
@@ -5889,6 +5897,93 @@ def is_dist_sales_channel_ops_context(title: str, desc: str) -> bool:
     )
 
 
+def is_dist_governance_policy_noise_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not txt:
+        return False
+
+    governance_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "농협개혁",
+                "농협 개혁",
+                "농협개혁위",
+                "개혁위",
+                "조직개편",
+                "조직 개편",
+                "거버넌스",
+                "지배구조",
+                "임원 선임",
+                "인사 개편",
+                "회장 출마",
+                "출마시",
+                "출마 시",
+                "조합장 사퇴",
+                "사퇴 의무화",
+                "선거관리위원회",
+                "대의원",
+                "농협법 개정",
+                "개혁안",
+                "전면 손질",
+                "전면손질",
+                "준법감시위원회",
+                "개혁 과제",
+                "개혁과제",
+            )
+        ],
+    )
+    if governance_hits == 0:
+        return False
+
+    policy_hits = count_any(
+        txt,
+        [w.lower() for w in ("발표", "과제", "의무화", "개정", "정관", "위원회", "선거", "회의")],
+    )
+    hard_anchor_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "가락시장",
+                "도매시장",
+                "공영도매시장",
+                "공판장",
+                "경락",
+                "경매",
+                "반입",
+                "온라인 도매시장",
+                "산지유통",
+                "산지유통센터",
+                "유통센터",
+                "apc",
+                "공동선별",
+                "선별",
+                "저온",
+                "저온저장",
+                "저장고",
+                "물류",
+                "직거래",
+                "공동판매",
+                "출하",
+            )
+        ],
+    )
+    strong_ops = (
+        is_dist_market_ops_context(title, desc, dom, press)
+        or is_dist_supply_management_center_context(title, desc)
+        or is_dist_sales_channel_ops_context(title, desc)
+        or is_dist_field_market_response_context(title, desc, dom, press)
+        or is_dist_export_support_hub_context(title, desc, dom, press)
+    )
+    if strong_ops or hard_anchor_hits >= 2:
+        return False
+
+    return governance_hits >= 2 and policy_hits >= 1
+
+
 def is_horti_market_action_context(title: str, desc: str) -> bool:
     txt = f"{title or ''} {desc or ''}".lower()
     if not txt:
@@ -6114,7 +6209,22 @@ def is_dist_political_visit_context(title: str, desc: str) -> bool:
     txt = f"{ttl} {desc or ''}".lower()
     if not txt:
         return False
-    venue_hits = count_any(ttl, [w.lower() for w in ("가락시장", "도매시장", "공판장", "시장")])
+    venue_hits = count_any(
+        ttl,
+        [
+            w.lower()
+            for w in (
+                "가락시장",
+                "도매시장",
+                "공영도매시장",
+                "공판장",
+                "농산물시장",
+                "농산물 시장",
+                "청과시장",
+                "청과 시장",
+            )
+        ],
+    )
     if venue_hits == 0:
         return False
     actor_hits = count_any(ttl, [w.lower() for w in _DIST_POLITICAL_VISIT_TITLE_TERMS])
@@ -7024,6 +7134,55 @@ def is_supply_official_support_response_context(title: str, desc: str) -> bool:
     return title_action_hits >= 1 or action_hits >= 2
 
 
+def is_supply_acreage_intent_context(title: str, desc: str) -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return False
+
+    acreage_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "의향면적",
+                "의향 면적",
+                "재배의향",
+                "재배 의향",
+                "재배면적",
+                "재배 면적",
+                "파종면적",
+                "파종 면적",
+                "정식면적",
+                "정식 면적",
+                "작부면적",
+                "작부 면적",
+                "면적 조사",
+            )
+        ],
+    )
+    if acreage_hits == 0:
+        return False
+
+    survey_hits = count_any(
+        txt,
+        [w.lower() for w in ("조사", "실태조사", "전수조사", "집계", "전망", "관측", "예상", "예측")],
+    )
+    supply_hits = count_any(
+        txt,
+        [w.lower() for w in ("수급", "생산량", "출하량", "출하", "작황", "생육", "파종", "정식", "재배")],
+    )
+    managed_hits = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    item_hits = count_any(txt, HORTI_ITEM_TERMS_L) + managed_hits
+    horti_sc = best_horti_score(ttl, desc or "")
+
+    if item_hits == 0 and horti_sc < 1.8:
+        return False
+    if survey_hits == 0 and supply_hits < 2:
+        return False
+    return True
+
+
 def is_supply_processed_price_roundup_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
@@ -7115,6 +7274,9 @@ def is_supply_weak_tail_context(title: str, desc: str) -> bool:
     if is_commodity_broad_price_roundup_context(title, desc):
         return True
     if is_supply_org_promo_feature_context(title, desc):
+        launchy_org_hits = count_any(ttl_l, [w.lower() for w in ("첫선", "첫 결실", "첫결실", "첫 출하", "첫출하", "선보여", "선봬")])
+        if launchy_org_hits >= 1:
+            return True
         return False
 
     title_core_hits = count_any(ttl_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS])
@@ -7272,6 +7434,8 @@ def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: st
         return False
     if is_remote_foreign_trade_brief_context(ttl, desc or "", dom):
         return False
+    if is_commodity_political_statement_context(title, desc):
+        return False
     if dom_norm in POLICY_BRIEF_ONLY_DOMAINS and count_any(txt, [w.lower() for w in _POLICY_EXPORT_SUPPORT_TERMS]) >= 2:
         return False
     if is_policy_market_brief_context(txt, dom, press) or is_supply_stabilization_policy_context(txt, dom, press):
@@ -7290,10 +7454,26 @@ def is_dist_export_field_context(title: str, desc: str, dom: str = "", press: st
     response_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_RESPONSE_TERMS])
     title_signature_hits = count_any((ttl or "").lower(), [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_SIGNATURE_TERMS])
     macro_barrier_hits = count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_MACRO_POLICY_TERMS])
+    export_execution_hits = count_any(
+        txt,
+        [w.lower() for w in ("검역", "통관", "선적", "선적식", "바이어", "공동선별", "공선출하", "산지유통센터", "apc", "물류")],
+    )
+    political_promise_hits = count_any(
+        txt,
+        [w.lower() for w in ("예비후보", "후보", "공약", "선언", "비전", "플랫폼 구축", "구축", "납품 확대", "육성", "추진")],
+    )
+    org_performance_hits = count_any(
+        txt,
+        [w.lower() for w in ("경영평가", "종합경영평가", "1등급", "우수", "연속 달성", "연속", "성과", "실적")],
+    )
 
     if export_hits == 0 or market_hits == 0:
         return False
     if agri_hits == 0 and org_hits == 0:
+        return False
+    if political_promise_hits >= 2 and response_hits == 0 and export_execution_hits == 0:
+        return False
+    if is_local_agri_org_feature_context(title, desc) and org_performance_hits >= 2 and response_hits == 0 and export_execution_hits == 0:
         return False
     if title_signature_hits >= 2 and managed_count == 0 and item_hits == 0 and response_hits < 2:
         return False
@@ -12908,6 +13088,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _is_supply_weak_tail_story(a: Article) -> bool:
         if section_key != "supply":
             return False
+        title_local = (a.title or "").lower()
+        launchy_hits = count_any(title_local, [w.lower() for w in ("첫선", "첫 결실", "첫결실", "첫 출하", "첫출하", "선보여", "선봬")])
+        if launchy_hits >= 1 and (not is_supply_feature_article(a.title or "", a.description or "")) and (not is_supply_price_outlook_context(a.title or "", a.description or "")):
+            try:
+                if section_fit_score(a.title or "", a.description or "", sec_conf) < 1.0:
+                    return True
+            except Exception:
+                return True
         return is_supply_weak_tail_context(a.title or "", a.description or "") or _is_supply_low_value_macro_brief(a)
 
     def _supply_feature_topic_repeat(a: Article, selected: list[Article]) -> bool:
@@ -12938,6 +13126,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
         if issue_bucket:
             return False
+        if is_supply_acreage_intent_context(a.title or "", a.description or ""):
+            return False
         strong_item_context = (
             count_any(title_local, HORTI_ITEM_TERMS_L) >= 1
             or best_horti_score(a.title or "", "") >= 1.2
@@ -12950,6 +13140,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         trade_impact_hits = count_any(txt_local, [w.lower() for w in _SUPPLY_FEATURE_ISSUE_TRADE_IMPACT_TERMS])
         if strong_item_context and title_trade_hits >= 1 and hard_trade_hits >= 1 and trade_hits >= 1 and trade_impact_hits >= 1:
             return False
+        if (
+            (is_macro_policy_issue(txt_local) or is_policy_announcement_issue(txt_local, dom_local, pr_local))
+            and count_any(title_local, HORTI_ITEM_TERMS_L) == 0
+            and best_horti_score(a.title or "", "") < 1.2
+        ):
+            return True
+        if is_macro_policy_issue(txt_local) and (not strong_item_context) and (not has_direct_supply_chain_signal(txt_local)):
+            return True
+        if is_policy_announcement_issue(txt_local, dom_local, pr_local) and (not strong_item_context) and (not has_direct_supply_chain_signal(txt_local)):
+            return True
+        if is_policy_local_price_support_context(a.title or "", a.description or ""):
+            return True
+        if is_local_agri_policy_program_context(txt_local):
+            return True
         if is_supply_stabilization_policy_context(txt_local, dom_local, pr_local):
             return True
         if is_policy_market_brief_context(txt_local, dom_local, pr_local):
@@ -12971,7 +13175,50 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _is_dist_weak_tail_story(a: Article) -> bool:
         if section_key != "dist":
             return False
-        if is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+        txt_local = ((a.title or "") + " " + (a.description or "")).lower()
+        dom_local = normalize_host(a.domain or "")
+        pr_local = (a.press or "").strip()
+        strong_dist_signal = (
+            is_dist_market_ops_context(a.title or "", a.description or "", dom_local, pr_local)
+            or is_dist_supply_management_center_context(a.title or "", a.description or "")
+            or is_dist_sales_channel_ops_context(a.title or "", a.description or "")
+            or is_dist_field_market_response_context(a.title or "", a.description or "", dom_local, pr_local)
+            or is_dist_market_disruption_context(a.title or "", a.description or "")
+            or is_dist_export_shipping_context(a.title or "", a.description or "")
+            or is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
+            or is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local)
+        )
+        if _has_hard_opinion_column_marker(a.title or ""):
+            return True
+        if is_commodity_political_statement_context(a.title or "", a.description or ""):
+            return True
+        if is_title_livestock_dominant_context(a.title or "", a.description or ""):
+            return True
+        if is_dist_governance_policy_noise_context(a.title or "", a.description or "", dom_local, pr_local):
+            return True
+        org_performance_noise = (
+            is_local_agri_org_feature_context(a.title or "", a.description or "")
+            and count_any(
+                txt_local,
+                [w.lower() for w in ("경영평가", "종합경영평가", "1등급", "우수", "연속 달성", "연속", "성과", "실적", "복지 증진")],
+            ) >= 2
+            and count_any(
+                txt_local,
+                [w.lower() for w in ("검역", "통관", "선적", "선적식", "바이어", "공동선별", "공선출하", "산지유통센터", "apc", "물류")],
+            ) == 0
+        )
+        if org_performance_noise:
+            return True
+        if (
+            is_policy_market_brief_context(txt_local, dom_local, pr_local)
+            or is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
+            or is_policy_announcement_issue(txt_local, dom_local, pr_local)
+            or is_policy_local_price_support_context(a.title or "", a.description or "")
+            or is_local_agri_policy_program_context(txt_local)
+            or is_macro_policy_issue(txt_local)
+        ) and (not strong_dist_signal):
+            return True
+        if is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local):
             has_stronger_ops_alt = any(
                 (b is not a)
                 and (
@@ -13130,8 +13377,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 or export_field
                 or export_support_hub
                 or strong_local_org
-                or market_anchor_hits >= 2
-                or (fit_sc >= 1.6 and market_anchor_hits >= 1)
+                or (market_anchor_hits >= 2 and fit_sc >= 1.1 and best_horti_score(a.title or "", a.description or "") >= 1.8)
             ):
                 return None
             return (
@@ -13615,6 +13861,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             text = (a.title + " " + a.description).lower()
             local_org_feature = is_local_agri_org_feature_context(a.title or "", a.description or "")
             local_field_profile = is_dist_local_field_profile_context(a.title or "", a.description or "")
+            market_ops = is_dist_market_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+            supply_center = is_dist_supply_management_center_context(a.title or "", a.description or "")
+            sales_channel_ops = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
             field_market_response = is_dist_field_market_response_context(
                 a.title or "",
                 a.description or "",
@@ -13624,6 +13873,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             strong_local_org = local_field_profile or (local_org_feature and has_apc_agri_context(text))
             has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or strong_local_org or field_market_response
             if not has_anchor:
+                continue
+            fit_sc_anchor = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
+            if fit_sc_anchor <= 0.0:
+                try:
+                    fit_sc_anchor = float(section_fit_score(a.title or "", a.description or "", sec_conf))
+                except Exception:
+                    fit_sc_anchor = 0.0
+            strong_ops_anchor = market_ops or supply_center or sales_channel_ops or field_market_response or strong_local_org
+            if (not strong_ops_anchor) and fit_sc_anchor < 1.6:
                 continue
             # 추가 안전장치: 농산물/원예 앵커가 약하면 '일반 물류/경제'로 보고 제외
             agri_anchor_hits = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
@@ -13829,6 +14087,24 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_dist_weak_tail_story(a):
                 continue
+            fit_sc_underfill = 0.0
+            try:
+                fit_sc_underfill = float(section_fit_score(a.title or "", a.description or "", sec_conf) or 0.0)
+            except Exception:
+                fit_sc_underfill = 0.0
+            strong_dist_signal = (
+                is_dist_market_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+                or is_dist_supply_management_center_context(a.title or "", a.description or "")
+                or is_dist_sales_channel_ops_context(a.title or "", a.description or "")
+                or is_dist_field_market_response_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+                or is_dist_market_disruption_context(a.title or "", a.description or "")
+                or is_dist_export_shipping_context(a.title or "", a.description or "")
+                or is_dist_export_field_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+                or is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+                or is_dist_local_field_profile_context(a.title or "", a.description or "")
+            )
+            if (not strong_dist_signal) and fit_sc_underfill < 1.0:
+                continue
             if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                 continue
             if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
@@ -13911,6 +14187,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 flower_trend = is_flower_consumer_trend_context(txt2)
                 if feature_kind is None and not flower_trend:
                     continue
+                issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
+                fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf)
+                direct_supply_feature = has_direct_supply_chain_signal(txt2)
+                if issue_bucket == "commodity_issue" and fit_sc_feature < 1.0:
+                    continue
+                if issue_bucket != "commodity_issue" and fit_sc_feature < 2.0:
+                    continue
+                if (not direct_supply_feature) and issue_bucket != "commodity_issue":
+                    continue
                 topic_name = (a.topic or "").strip()
                 if prefer_unseen_topic and topic_name and topic_name in selected_topics:
                     continue
@@ -13962,6 +14247,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     if a.score < relax_cut:
                         continue
                     if not is_supply_feature_article(a.title or "", a.description or ""):
+                        continue
+                    issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
+                    fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf)
+                    direct_supply_feature = has_direct_supply_chain_signal(((a.title or "") + " " + (a.description or "")).lower())
+                    if issue_bucket == "commodity_issue" and fit_sc_feature < 1.0:
+                        continue
+                    if issue_bucket != "commodity_issue" and fit_sc_feature < 2.0:
+                        continue
+                    if (not direct_supply_feature) and issue_bucket != "commodity_issue":
                         continue
                     topic_name = (a.topic or "").strip()
                     if prefer_unseen_topic and topic_name and topic_name in selected_topics:
