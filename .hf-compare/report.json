@@ -1,0 +1,361 @@
+{
+  "report_date": "2026-03-27",
+  "mode": "selection",
+  "max_items": 5,
+  "candidate_cap": 20,
+  "sections_requested": [
+    "supply",
+    "dist"
+  ],
+  "snapshot": {
+    "source": "dev-preview",
+    "ref": "codex/dev-preview",
+    "remote_path": "docs/dev/replay/2026-03-27.snapshot.json",
+    "url": "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/replay/2026-03-27.snapshot.json"
+  },
+  "hf": {
+    "token_present": true,
+    "model": "intfloat/multilingual-e5-large",
+    "baseline_metrics": {},
+    "baseline_metrics_grouped": {},
+    "run_metrics": {
+      "hf.semantic.success|count=12,section=supply": 1,
+      "hf.semantic.success|count=12,section=dist": 1
+    },
+    "run_metrics_grouped": {
+      "hf.semantic.success": 2
+    },
+    "nonzero_boost_articles": 10
+  },
+  "summary": {
+    "changed_sections": [],
+    "changed_section_count": 0,
+    "changed_slots": 0
+  },
+  "sections": {
+    "supply": {
+      "changed": false,
+      "baseline_ids": [
+        "https://newsfarm.co.kr/news/articleView.html?idxno=100639",
+        "https://aflnews.co.kr/news/articleView.html?idxno=317253",
+        "https://yna.co.kr/view/AKR20260326136400062?input=1195m",
+        "https://nongmin.com/article/20260325500394",
+        "https://mt.co.kr/economy/2026/03/27/2026032610501864130"
+      ],
+      "hf_ids": [
+        "https://newsfarm.co.kr/news/articleView.html?idxno=100639",
+        "https://aflnews.co.kr/news/articleView.html?idxno=317253",
+        "https://yna.co.kr/view/AKR20260326136400062?input=1195m",
+        "https://nongmin.com/article/20260325500394",
+        "https://mt.co.kr/economy/2026/03/27/2026032610501864130"
+      ],
+      "slot_changes": [],
+      "boosted_selected": [
+        {
+          "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
+          "semantic_boost": 0.648,
+          "semantic_similarity": 0.868942
+        },
+        {
+          "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
+          "semantic_boost": 0.242669,
+          "semantic_similarity": 0.848219
+        },
+        {
+          "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+          "semantic_boost": 0.25354,
+          "semantic_similarity": 0.848775
+        },
+        {
+          "title": "함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’",
+          "semantic_boost": -0.086121,
+          "semantic_similarity": 0.831409
+        },
+        {
+          "title": "민생물가 특별관리품목 23→43개 확대…택배·외식비 등도 집중관리",
+          "semantic_boost": 0.008492,
+          "semantic_similarity": 0.836247
+        }
+      ],
+      "boosted_selected_count": 5
+    },
+    "dist": {
+      "changed": false,
+      "baseline_ids": [
+        "https://nongmin.com/article/20260325500662",
+        "https://view.asiae.co.kr/article/2026032609140035572",
+        "https://aflnews.co.kr/news/articleView.html?idxno=317262",
+        "https://biz.heraldcorp.com/article/10703537",
+        "https://ajunews.com/view/20260326201450633"
+      ],
+      "hf_ids": [
+        "https://nongmin.com/article/20260325500662",
+        "https://view.asiae.co.kr/article/2026032609140035572",
+        "https://aflnews.co.kr/news/articleView.html?idxno=317262",
+        "https://biz.heraldcorp.com/article/10703537",
+        "https://ajunews.com/view/20260326201450633"
+      ],
+      "slot_changes": [],
+      "boosted_selected": [
+        {
+          "title": "벼 육묘장·농산물 유통센터 ‘문 활짝’",
+          "semantic_boost": -0.047526,
+          "semantic_similarity": 0.836532
+        },
+        {
+          "title": "[초동시각]정쟁에 갇힌 새벽배송",
+          "semantic_boost": 0.648,
+          "semantic_similarity": 0.853145
+        },
+        {
+          "title": "농협개혁위, 회장 출마 시 조합장직 사퇴 등 13개 개혁과제 확정",
+          "semantic_boost": -0.35,
+          "semantic_similarity": 0.818749
+        },
+        {
+          "title": "계란·돼지고기 가격 담합·불투명 거래 손본다...담합 땐 지원금 배제",
+          "semantic_boost": 0.476814,
+          "semantic_similarity": 0.849056
+        },
+        {
+          "title": "2030년까지 계란 생산 10% 증량…계란·돼지고기 담합 시 지원금 배제",
+          "semantic_boost": -0.35,
+          "semantic_similarity": 0.826321
+        }
+      ],
+      "boosted_selected_count": 5
+    }
+  },
+  "baseline": {
+    "supply": [
+      {
+        "id": "https://newsfarm.co.kr/news/articleView.html?idxno=100639",
+        "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
+        "press": "한국농업신문",
+        "score": 29.467,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://aflnews.co.kr/news/articleView.html?idxno=317253",
+        "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
+        "press": "농수축산신문",
+        "score": 31.46,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://yna.co.kr/view/AKR20260326136400062?input=1195m",
+        "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+        "press": "연합뉴스",
+        "score": 28.028,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "tail"
+      },
+      {
+        "id": "https://nongmin.com/article/20260325500394",
+        "title": "함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’",
+        "press": "농민신문",
+        "score": 24.31,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "tail"
+      },
+      {
+        "id": "https://mt.co.kr/economy/2026/03/27/2026032610501864130",
+        "title": "민생물가 특별관리품목 23→43개 확대…택배·외식비 등도 집중관리",
+        "press": "머니투데이",
+        "score": 23.9,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "tail"
+      }
+    ],
+    "dist": [
+      {
+        "id": "https://nongmin.com/article/20260325500662",
+        "title": "벼 육묘장·농산물 유통센터 ‘문 활짝’",
+        "press": "농민신문",
+        "score": 19.99,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://view.asiae.co.kr/article/2026032609140035572",
+        "title": "[초동시각]정쟁에 갇힌 새벽배송",
+        "press": "아시아경제",
+        "score": 18.26,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://aflnews.co.kr/news/articleView.html?idxno=317262",
+        "title": "농협개혁위, 회장 출마 시 조합장직 사퇴 등 13개 개혁과제 확정",
+        "press": "농수축산신문",
+        "score": 19.27,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "dist_anchor_backfill"
+      },
+      {
+        "id": "https://biz.heraldcorp.com/article/10703537",
+        "title": "계란·돼지고기 가격 담합·불투명 거래 손본다...담합 땐 지원금 배제",
+        "press": "헤럴드경제",
+        "score": 15.02,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "dist_anchor_backfill"
+      },
+      {
+        "id": "https://ajunews.com/view/20260326201450633",
+        "title": "2030년까지 계란 생산 10% 증량…계란·돼지고기 담합 시 지원금 배제",
+        "press": "아주경제",
+        "score": 14.84,
+        "semantic_boost": 0.0,
+        "semantic_similarity": 0.0,
+        "semantic_model": "",
+        "is_core": false,
+        "selection_stage": "underfill"
+      }
+    ]
+  },
+  "hf_run": {
+    "supply": [
+      {
+        "id": "https://newsfarm.co.kr/news/articleView.html?idxno=100639",
+        "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
+        "press": "한국농업신문",
+        "score": 29.467,
+        "semantic_boost": 0.648,
+        "semantic_similarity": 0.868942,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://aflnews.co.kr/news/articleView.html?idxno=317253",
+        "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
+        "press": "농수축산신문",
+        "score": 31.46,
+        "semantic_boost": 0.242669,
+        "semantic_similarity": 0.848219,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://yna.co.kr/view/AKR20260326136400062?input=1195m",
+        "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+        "press": "연합뉴스",
+        "score": 28.028,
+        "semantic_boost": 0.25354,
+        "semantic_similarity": 0.848775,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "tail"
+      },
+      {
+        "id": "https://nongmin.com/article/20260325500394",
+        "title": "함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’",
+        "press": "농민신문",
+        "score": 24.31,
+        "semantic_boost": -0.086121,
+        "semantic_similarity": 0.831409,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "tail"
+      },
+      {
+        "id": "https://mt.co.kr/economy/2026/03/27/2026032610501864130",
+        "title": "민생물가 특별관리품목 23→43개 확대…택배·외식비 등도 집중관리",
+        "press": "머니투데이",
+        "score": 23.9,
+        "semantic_boost": 0.008492,
+        "semantic_similarity": 0.836247,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "tail"
+      }
+    ],
+    "dist": [
+      {
+        "id": "https://nongmin.com/article/20260325500662",
+        "title": "벼 육묘장·농산물 유통센터 ‘문 활짝’",
+        "press": "농민신문",
+        "score": 19.99,
+        "semantic_boost": -0.047526,
+        "semantic_similarity": 0.836532,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://view.asiae.co.kr/article/2026032609140035572",
+        "title": "[초동시각]정쟁에 갇힌 새벽배송",
+        "press": "아시아경제",
+        "score": 18.26,
+        "semantic_boost": 0.648,
+        "semantic_similarity": 0.853145,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": true,
+        "selection_stage": "core"
+      },
+      {
+        "id": "https://aflnews.co.kr/news/articleView.html?idxno=317262",
+        "title": "농협개혁위, 회장 출마 시 조합장직 사퇴 등 13개 개혁과제 확정",
+        "press": "농수축산신문",
+        "score": 19.27,
+        "semantic_boost": -0.35,
+        "semantic_similarity": 0.818749,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "dist_anchor_backfill"
+      },
+      {
+        "id": "https://biz.heraldcorp.com/article/10703537",
+        "title": "계란·돼지고기 가격 담합·불투명 거래 손본다...담합 땐 지원금 배제",
+        "press": "헤럴드경제",
+        "score": 15.02,
+        "semantic_boost": 0.476814,
+        "semantic_similarity": 0.849056,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "dist_anchor_backfill"
+      },
+      {
+        "id": "https://ajunews.com/view/20260326201450633",
+        "title": "2030년까지 계란 생산 10% 증량…계란·돼지고기 담합 시 지원금 배제",
+        "press": "아주경제",
+        "score": 14.84,
+        "semantic_boost": -0.35,
+        "semantic_similarity": 0.826321,
+        "semantic_model": "intfloat/multilingual-e5-large",
+        "is_core": false,
+        "selection_stage": "underfill"
+      }
+    ]
+  }
+}

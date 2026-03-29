@@ -1,0 +1,19 @@
+HF rerank compare report_date=2026-03-27 mode=selection max_items=5 candidate_cap=20
+snapshot=dev-preview ref=codex/dev-preview path=docs/dev/replay/2026-03-27.snapshot.json
+hf_token_present=True model=intfloat/multilingual-e5-large
+hf_metrics={"hf.semantic.success": 2}
+changed_sections=0 changed_slots=0
+
+[supply] changed=False boosted_selected=5
+  boost=0.648000 sim=0.868942 title=[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...
+  boost=0.242669 sim=0.848219 title=전남도, 봄무·봄양배추 재배 의향면적 조사
+  boost=0.253540 sim=0.848775 title=나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄
+  boost=-0.086121 sim=0.831409 title=함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’
+  boost=0.008492 sim=0.836247 title=민생물가 특별관리품목 23→43개 확대…택배·외식비 등도 집중관리
+
+[dist] changed=False boosted_selected=5
+  boost=-0.047526 sim=0.836532 title=벼 육묘장·농산물 유통센터 ‘문 활짝’
+  boost=0.648000 sim=0.853145 title=[초동시각]정쟁에 갇힌 새벽배송
+  boost=-0.350000 sim=0.818749 title=농협개혁위, 회장 출마 시 조합장직 사퇴 등 13개 개혁과제 확정
+  boost=0.476814 sim=0.849056 title=계란·돼지고기 가격 담합·불투명 거래 손본다...담합 땐 지원금 배제
+  boost=-0.350000 sim=0.826321 title=2030년까지 계란 생산 10% 증량…계란·돼지고기 담합 시 지원금 배제
