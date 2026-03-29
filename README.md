@@ -98,6 +98,16 @@ Recommended fast iteration loop:
 3. Run `run-local-dryrun.ps1` again only when you want a fresh scrape
 4. Use `run-local-rebuild.ps1` only for final dev/prod publish
 
+## Admin Dashboard / GA4
+
+The static admin dashboard lives under `docs/admin/`.
+
+- Beginner setup guide: `docs/admin-dashboard-setup.md`
+- Event / IA design doc: `docs/admin-dashboard-design.md`
+- Local export: `powershell -ExecutionPolicy Bypass -File scripts/run-local-admin-dashboard.ps1 -Strict`
+- Auto-register custom dimensions: `powershell -ExecutionPolicy Bypass -File scripts/run-local-register-ga4-custom-dimensions.ps1 -DryRun`
+- Scheduled export workflow: `.github/workflows/admin-dashboard.yml`
+
 ## Pre-Push Hook
 
 This repo includes `.githooks/pre-push`.

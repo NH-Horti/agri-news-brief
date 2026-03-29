@@ -55,12 +55,30 @@ Operational recommendation:
 
 - start with property-level `Viewer` access for the service account
 - if your organization uses stricter reporting permissions and export fails, raise it to `Analyst`
+- if you want to auto-register custom dimensions with the Admin API, temporarily raise the service account to `Editor` or `Administrator`
 
 The repo currently expects this JSON in GitHub Actions as `GA4_SERVICE_ACCOUNT_JSON`.
+
+For local development, the recommended setup is different:
+
+- save the downloaded service-account JSON file under `.secrets/ga4-service-account.json`
+- set `GA4_SERVICE_ACCOUNT_FILE=.secrets/ga4-service-account.json` in `.env.final.local`
+- `.secrets/` is ignored by git, so the raw key file does not get committed by accident
+
+If you want to auto-register custom dimensions:
+
+- also enable the `Google Analytics Admin API`
+- the export dashboard script uses the Data API
+- the custom-dimension registration script uses the Admin API
 
 ### 1.4 Register custom dimensions
 
 Register the event-scoped custom dimensions listed in section 3 before expecting full dashboard data.
+
+You can do this either:
+
+- manually in `Admin > Custom definitions > Create custom dimensions`
+- automatically with `scripts/register_ga4_custom_dimensions.py`
 
 Important:
 
@@ -124,6 +142,35 @@ Register these event-scoped custom dimensions in GA4 before expecting full dashb
 - `to_date`
 
 The dashboard will still render without them, but the export job will return warnings and sparse data.
+
+Automatic registration:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-local-register-ga4-custom-dimensions.ps1 -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/run-local-register-ga4-custom-dimensions.ps1 -PropertyId 529705878 -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/run-local-register-ga4-custom-dimensions.ps1
+```
+
+Notes:
+
+- the auto-registration script creates only missing dimensions
+- it uses the Google Analytics Admin API, not the Data API export path
+- the service account must have edit-level property access while the script runs
+- after registration is complete, you can lower the service account back to `Viewer` or `Analyst` for normal export jobs
+
+Recommended local env example:
+
+```dotenv
+GA4_MEASUREMENT_ID=G-M5Y1GRYB0J
+GA4_PROPERTY_ID=529705878
+GA4_SERVICE_ACCOUNT_FILE=.secrets/ga4-service-account.json
+```
+
+If you really need to inline the JSON instead of using a file path:
+
+- use `GA4_SERVICE_ACCOUNT_JSON`
+- keep the entire JSON on one line
+- do not paste multi-line JSON directly into `.env.final.local`
 
 Suggested display names:
 
@@ -209,3 +256,6 @@ Behavior:
 - User roles and permissions: <https://support.google.com/analytics/answer/9305587>
 - Google Analytics Data API basics: <https://developers.google.com/analytics/devguides/reporting/data/v1/basics>
 - Data API Python quickstart: <https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart-client-libraries>
+- Google Analytics Admin API overview: <https://developers.google.com/analytics/devguides/config/admin/v1>
+- Create custom dimensions via Admin API: <https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/properties.customDimensions/create>
+- Create and manage service accounts: <https://cloud.google.com/iam/docs/creating-managing-service-accounts>
