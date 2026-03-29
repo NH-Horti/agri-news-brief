@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T18:00:44+09:00",
-  "build_tag": "d175ee7",
+  "generated_at_kst": "2026-03-29T20:52:26+09:00",
+  "build_tag": "cd32f02",
   "filter_rejects": [
     {
       "section": "policy",
@@ -20570,22 +20570,22 @@
         "boosted_selected": [
           {
             "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
-            "semantic_boost": 0.661962,
+            "semantic_boost": 0.52685,
             "semantic_similarity": 0.868942
           },
           {
             "title": "비닐 대란… 감자 농사 힘드네",
-            "semantic_boost": 0.305778,
+            "semantic_boost": 0.207581,
             "semantic_similarity": 0.82472
           },
           {
             "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
-            "semantic_boost": 0.350255,
+            "semantic_boost": 0.247448,
             "semantic_similarity": 0.848219
           },
           {
             "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
-            "semantic_boost": 0.595592,
+            "semantic_boost": 0.467359,
             "semantic_similarity": 0.848775
           }
         ],
@@ -20594,19 +20594,8 @@
       "policy": {
         "changed": false,
         "slot_changes": [],
-        "boosted_selected": [
-          {
-            "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
-            "semantic_boost": 0.7533,
-            "semantic_similarity": 0.837303
-          },
-          {
-            "title": "\"한 사람의 나눔이 아이에게 영양을, 농가에는 희망을\"",
-            "semantic_boost": -0.6417,
-            "semantic_similarity": 0.835649
-          }
-        ],
-        "boosted_selected_count": 2
+        "boosted_selected": [],
+        "boosted_selected_count": 0
       },
       "dist": {
         "changed": false,
@@ -20697,22 +20686,15 @@
           "key": "grape",
           "label": "포도(샤인머스캣)",
           "title": "가락시장 ‘출하비용 보전사업’ 속속 안착",
-          "semantic_boost": 0.892721,
+          "semantic_boost": 0.892741,
           "semantic_similarity": 0.846264
-        },
-        {
-          "key": "napa_cabbage",
-          "label": "배추",
-          "title": "농식품부, 봄배추 수급 점검 … '중동발 비료' 수급 대응",
-          "semantic_boost": 5.602855,
-          "semantic_similarity": 0.844423
         },
         {
           "key": "strawberry",
           "label": "딸기",
           "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
-          "semantic_boost": 1.665693,
-          "semantic_similarity": 0.821108
+          "semantic_boost": 1.665664,
+          "semantic_similarity": 0.821107
         },
         {
           "key": "tomato",
@@ -20722,7 +20704,7 @@
           "semantic_similarity": 0.830696
         }
       ],
-      "boosted_item_count": 8
+      "boosted_item_count": 7
     }
   },
   "replay": {
