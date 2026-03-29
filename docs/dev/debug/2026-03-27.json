@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T12:17:21+09:00",
-  "build_tag": "2cbd0e5",
+  "generated_at_kst": "2026-03-29T15:57:10+09:00",
+  "build_tag": "513b138",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13444,6 +13444,26 @@
     },
     {
       "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성",
+      "url": "https://nongmin.com/article/20260325500529",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "경남도민신문",
+      "domain": "gndomin.com",
+      "title": "밀양농협 '종합경영평가 1등급' 7년 연속 달성",
+      "url": "https://gndomin.com/news/articleView.html?idxno=470127",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
       "reason": "must_terms_fail",
       "press": "브레이크뉴스",
       "domain": "breaknews.com",
@@ -13489,16 +13509,6 @@
       "domain": "ajunews.com",
       "title": "K-물류, 베트남 농업 거인과 맞손... 롯데·떤롱 '농식품 물류 동맹' 결...",
       "url": "https://ajunews.com/view/20260325221511737",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성",
-      "url": "https://nongmin.com/article/20260325500529",
       "source_query": "",
       "source_channel": ""
     },
@@ -13585,16 +13595,6 @@
     {
       "section": "supply",
       "reason": "supply_context_gate",
-      "press": "경남도민신문",
-      "domain": "gndomin.com",
-      "title": "밀양농협 '종합경영평가 1등급' 7년 연속 달성",
-      "url": "https://gndomin.com/news/articleView.html?idxno=470127",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
       "press": "이뉴스투데이",
       "domain": "enewstoday.co.kr",
       "title": "경남농협, 농업인 실익 증진 위한 직원 역량 강화",
@@ -13611,11 +13611,11 @@
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
       "total_candidates": 242,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
-          "selected": false,
-          "is_core": false,
+          "selected": true,
+          "is_core": true,
           "score": 31.46,
           "semantic_similarity": 0.8482,
           "semantic_noise_similarity": 0.8023,
@@ -13627,9 +13627,9 @@
           "domain": "aflnews.co.kr",
           "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317253",
-          "reason": "supply_policy_like",
+          "reason": "",
           "fit_score": 4.37,
-          "selection_stage": "supply_policy_like",
+          "selection_stage": "core_final",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13742,7 +13742,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 24.31,
           "semantic_similarity": 0.8314,
@@ -13755,9 +13755,9 @@
           "domain": "nongmin.com",
           "title": "함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’",
           "url": "https://www.nongmin.com/article/20260325500394",
-          "reason": "",
+          "reason": "weak_tail",
           "fit_score": 0.85,
-          "selection_stage": "tail",
+          "selection_stage": "weak_tail",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13819,9 +13819,9 @@
           "domain": "imnews.imbc.com",
           "title": "최고 가격 제로 일단 한숨 덜었지만‥앞으로가 걱정인 멸치잡이 배· 딸기 ...",
           "url": "https://imnews.imbc.com/replay/2026/nwdesk/article/6810553_37004.html",
-          "reason": "postbuild_pruned",
+          "reason": "tail_cut",
           "fit_score": 0.83,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13979,9 +13979,9 @@
           "domain": "nongmin.com",
           "title": "“이웃 농부들과 함께하는 삶”…지역 농산물로 반려동물 간식 만드는 ...",
           "url": "https://www.nongmin.com/article/20260326500248",
-          "reason": "postbuild_pruned",
+          "reason": "tail_cut",
           "fit_score": 1.84,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -14606,8 +14606,8 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 14.7,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -14619,10 +14619,10 @@
           "domain": "safetimes.co.kr",
           "title": "농식품부, 봄배추 수급 점검 … '중동발 비료' 수급 대응",
           "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=241181",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 1.03,
-          "selection_stage": "core_final",
-          "selection_note": "napa_cabbage",
+          "selection_stage": "below_threshold",
+          "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "dist",
           "source_query": "도매시장 수급",
@@ -15577,7 +15577,7 @@
           "seed": "딸기",
           "rep": "딸기",
           "hits": 17,
-          "selected_hits": 2,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄"
         },
@@ -15633,7 +15633,7 @@
           "seed": "양배추",
           "rep": "양배추",
           "hits": 3,
-          "selected_hits": 0,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
         },
@@ -15649,7 +15649,7 @@
           "seed": "가지",
           "rep": "가지",
           "hits": 5,
-          "selected_hits": 1,
+          "selected_hits": 0,
           "missing": false,
           "sample_title": "“이웃 농부들과 함께하는 삶”…지역 농산물로 반려동물 간식 만드는 ..."
         },
@@ -15669,7 +15669,7 @@
       "core_min": 26.53,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
-      "total_candidates": 128,
+      "total_candidates": 130,
       "total_selected": 5,
       "top": [
         {
@@ -17147,6 +17147,38 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 13.62,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성",
+          "url": "https://www.nongmin.com/article/20260325500529",
+          "reason": "below_threshold",
+          "fit_score": 0.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 판로 확대",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 13.33,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -17559,38 +17591,6 @@
             "press_tier": 1,
             "press_weight": -2.5
           }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 11.44,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "브릿지경제",
-          "domain": "viva100.com",
-          "title": "창녕군, 농업인 안전사고 예방에 박차",
-          "url": "https://www.viva100.com/article/20260326501171",
-          "reason": "below_threshold",
-          "fit_score": 1.61,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
         }
       ],
       "coverage_ledger": [
@@ -17637,7 +17637,7 @@
         {
           "seed": "대책",
           "rep": "대책",
-          "hits": 97,
+          "hits": 99,
           "selected_hits": 7,
           "missing": false,
           "sample_title": "계란·돼지고기 ‘담합’하면 지원금 배제 검토···중동전쟁 특별관리..."
@@ -17667,28 +17667,28 @@
           "sample_title": "정부, 계란 '후장기' 제도 뜯어 고친다…돼지고기 경매 물량 10%까지 확..."
         },
         {
-          "seed": "딸기",
-          "rep": "딸기",
-          "hits": 7,
-          "selected_hits": 1,
-          "missing": false,
-          "sample_title": "정부, 물가 관리품목 43개로 확대…계란 수입·할인 총동원"
-        },
-        {
-          "seed": "관리센터",
-          "rep": "관리센터",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
-        },
-        {
-          "seed": "원예",
-          "rep": "원예",
-          "hits": 2,
+          "seed": "판로",
+          "rep": "판로",
+          "hits": 3,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "전남도, 봄무·봄양배추 재배 의향면적 조사"
+          "sample_title": "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성"
+        },
+        {
+          "seed": "현장",
+          "rep": "현장",
+          "hits": 16,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "창녕군, 농작업 안전재해예방 지원체계 구축 시범사업 설명회 개최"
+        },
+        {
+          "seed": "가지",
+          "rep": "가지",
+          "hits": 10,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "[유통 브리핑] 이마트, 롯데웰푸드, BBQ"
         }
       ]
     },
@@ -17698,11 +17698,11 @@
       "core_min": 10.17,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
-      "total_candidates": 28,
-      "total_selected": 4,
+      "total_candidates": 26,
+      "total_selected": 2,
       "top": [
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 23.17,
           "semantic_similarity": 0.8261,
@@ -17715,9 +17715,9 @@
           "domain": "nongmin.com",
           "title": "농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표",
           "url": "https://www.nongmin.com/article/20260325500641",
-          "reason": "",
+          "reason": "dist_local_org_profile",
           "fit_score": 0.38,
-          "selection_stage": "dist_anchor_backfill",
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -17779,9 +17779,9 @@
           "domain": "aflnews.co.kr",
           "title": "농협개혁위, 회장 출마 시 조합장직 사퇴 등 13개 개혁과제 확정",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317262",
-          "reason": "similar_story",
+          "reason": "dist_local_org_profile",
           "fit_score": 0.38,
-          "selection_stage": "similar_story",
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -17813,7 +17813,7 @@
           "url": "https://www.nongmin.com/article/20260325500414",
           "reason": "",
           "fit_score": 0.98,
-          "selection_stage": "dist_anchor_backfill",
+          "selection_stage": "tail",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
@@ -17862,7 +17862,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 17.86,
           "semantic_similarity": 0.8531,
@@ -17875,9 +17875,9 @@
           "domain": "view.asiae.co.kr",
           "title": "[초동시각]정쟁에 갇힌 새벽배송",
           "url": "https://view.asiae.co.kr/article/2026032609140035572",
-          "reason": "",
+          "reason": "headline_gate",
           "fit_score": 1.04,
-          "selection_stage": "tail",
+          "selection_stage": "headline_gate",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "policy",
@@ -18100,7 +18100,7 @@
           "title": "박성현 광양시장 예비후보···‘일하는 사람이 잘사는 광양’ 선언",
           "url": "https://www.seoul.co.kr/news/politics/2026/03/26/20260326500177?wlog_tag3=naver",
           "reason": "tail_cut",
-          "fit_score": 1.51,
+          "fit_score": 0.46,
           "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "dist",
@@ -18179,38 +18179,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 5.7,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "경남 밀양농협 ‘종합경영평가 1등급’ 7년 연속 달성",
-          "url": "https://www.nongmin.com/article/20260325500529",
-          "reason": "below_threshold",
-          "fit_score": 1.4,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
           }
         },
         {
@@ -18504,38 +18472,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -1.45,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "경남도민신문",
-          "domain": "gndomin.com",
-          "title": "밀양농협 '종합경영평가 1등급' 7년 연속 달성",
-          "url": "http://www.gndomin.com/news/articleView.html?idxno=470127",
-          "reason": "below_threshold",
-          "fit_score": 1.4,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": -4.93,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -18611,7 +18547,7 @@
           "seed": "apc",
           "rep": "apc",
           "hits": 8,
-          "selected_hits": 2,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "벼 육묘장·농산물 유통센터 ‘문 활짝’"
         },
@@ -18627,7 +18563,7 @@
           "seed": "가락시장",
           "rep": "가락시장",
           "hits": 8,
-          "selected_hits": 3,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표"
         },
@@ -18650,7 +18586,7 @@
         {
           "seed": "현장",
           "rep": "현장",
-          "hits": 5,
+          "hits": 3,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "박성현 광양시장 예비후보···‘일하는 사람이 잘사는 광양’ 선언"
@@ -18667,15 +18603,15 @@
           "seed": "산지",
           "rep": "산지",
           "hits": 10,
-          "selected_hits": 3,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표"
         },
         {
           "seed": "농협",
           "rep": "농협",
-          "hits": 13,
-          "selected_hits": 2,
+          "hits": 11,
+          "selected_hits": 1,
           "missing": false,
           "sample_title": "농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표"
         },
@@ -20643,12 +20579,17 @@
             "semantic_similarity": 0.832029
           },
           {
+            "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
+            "semantic_boost": 0.350255,
+            "semantic_similarity": 0.848219
+          },
+          {
             "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
             "semantic_boost": 0.595592,
             "semantic_similarity": 0.848775
           }
         ],
-        "boosted_selected_count": 3
+        "boosted_selected_count": 4
       },
       "policy": {
         "changed": false,
