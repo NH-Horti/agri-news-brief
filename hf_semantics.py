@@ -1,11 +1,45 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 import math
+import threading
 from typing import Any, Callable, Sequence
 
 
 SessionFactory = Callable[[], Any]
+
+# 클라이언트 측 임베딩 캐시: 동일 텍스트가 섹션/품목보드에서 중복 임베딩되는 것을 방지한다.
+# 키: (model, text_hash), 값: embedding vector
+_EMBED_CACHE: dict[tuple[str, str], list[float]] = {}
+_EMBED_CACHE_LOCK = threading.Lock()
+_EMBED_CACHE_MAX = 500
+
+
+def _text_cache_key(model: str, text: str) -> tuple[str, str]:
+    return (model, hashlib.sha256(text.encode("utf-8")).hexdigest()[:24])
+
+
+def _embed_cache_get(model: str, text: str) -> list[float] | None:
+    key = _text_cache_key(model, text)
+    with _EMBED_CACHE_LOCK:
+        return _EMBED_CACHE.get(key)
+
+
+def _embed_cache_put(model: str, text: str, vector: list[float]) -> None:
+    key = _text_cache_key(model, text)
+    with _EMBED_CACHE_LOCK:
+        if len(_EMBED_CACHE) >= _EMBED_CACHE_MAX:
+            # 단순 FIFO 퇴거: 가장 오래된 1/4 삭제
+            evict = len(_EMBED_CACHE) // 4
+            for old_key in list(_EMBED_CACHE.keys())[:evict]:
+                del _EMBED_CACHE[old_key]
+        _EMBED_CACHE[key] = vector
+
+
+def clear_embed_cache() -> None:
+    with _EMBED_CACHE_LOCK:
+        _EMBED_CACHE.clear()
 
 
 @dataclass(frozen=True)
@@ -223,8 +257,27 @@ def embed_texts(
     if not texts:
         return []
 
+    all_texts = list(texts)
+    model = cfg.model
+
+    # 클라이언트 캐시에서 이미 임베딩된 텍스트를 분리하여 API 호출을 줄인다.
+    cached_results: dict[int, list[float]] = {}
+    uncached_indices: list[int] = []
+    for idx, text in enumerate(all_texts):
+        cached = _embed_cache_get(model, text)
+        if cached is not None:
+            cached_results[idx] = cached
+        else:
+            uncached_indices.append(idx)
+
+    # 모든 텍스트가 캐시에 있으면 API 호출 없이 반환
+    if not uncached_indices:
+        return [cached_results[i] for i in range(len(all_texts))]
+
+    uncached_texts = [all_texts[i] for i in uncached_indices]
+
     payload = {
-        "inputs": list(texts),
+        "inputs": uncached_texts,
         "parameters": {
             "normalize": True,
             "truncate": True,
@@ -254,8 +307,8 @@ def embed_texts(
         raise RuntimeError(f"Hugging Face embedding request failed ({getattr(response, 'status_code', '?')}): {detail[:300]}")
 
     data = response.json()
-    vectors = _coerce_batch_vectors(data, len(texts))
-    if len(vectors) != len(texts):
+    vectors = _coerce_batch_vectors(data, len(uncached_texts))
+    if len(vectors) != len(uncached_texts):
         shape_hint = ""
         if isinstance(data, dict):
             shape_hint = f" keys={list(data.keys())[:6]}"
@@ -264,9 +317,15 @@ def embed_texts(
         else:
             shape_hint = f" type={type(data).__name__}"
         raise RuntimeError(
-            f"Unexpected embedding response shape: expected {len(texts)}, got {len(vectors)}.{shape_hint}"
+            f"Unexpected embedding response shape: expected {len(uncached_texts)}, got {len(vectors)}.{shape_hint}"
         )
-    return vectors
+
+    # 새로 받은 임베딩을 캐시에 저장
+    for idx, vec in zip(uncached_indices, vectors):
+        _embed_cache_put(model, all_texts[idx], vec)
+        cached_results[idx] = vec
+
+    return [cached_results[i] for i in range(len(all_texts))]
 
 
 def score_section_candidates(

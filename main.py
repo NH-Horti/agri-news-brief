@@ -410,7 +410,10 @@ def _hf_semantic_selection_adjustments(
 
     ranked = [a for a in candidates if isinstance(a, Article)]
     ranked = sorted(ranked, key=_sort_key_major_first, reverse=True)
-    ranked = ranked[:HF_SEMANTIC_MAX_CANDIDATES]
+    # threshold 이전 pre_pool에서 호출되므로 후보가 더 넓다.
+    # 기본 12건에 여유분 4건을 추가해 threshold 직하 기사도 평가 대상에 포함한다.
+    effective_cap = min(len(ranked), HF_SEMANTIC_MAX_CANDIDATES + 4)
+    ranked = ranked[:effective_cap]
     if len(ranked) < 2:
         return {}
 
@@ -1896,6 +1899,8 @@ def _pick_rotated_item_queries(
     order: int,
     count: int,
     phase: int = 0,
+    *,
+    pin_first: bool = False,
 ) -> list[str]:
     normalized = _ordered_unique_terms(
         str(query or "").strip()
@@ -1906,6 +1911,13 @@ def _pick_rotated_item_queries(
         return []
     if count >= len(normalized):
         return list(normalized)
+    # pin_first: 첫 번째 쿼리(핵심 쿼리)를 항상 포함하고 나머지에서 로테이션
+    if pin_first and len(normalized) > 1:
+        first = normalized[0]
+        rest = list(normalized[1:])
+        start = (seed + (order * 5) + (phase * 7)) % len(rest)
+        ordered = rest[start:] + rest[:start]
+        return [first] + ordered[: max(1, count - 1)]
     start = (seed + (order * 5) + (phase * 7)) % len(normalized)
     ordered = list(normalized[start:]) + list(normalized[:start])
     return ordered[:count]
@@ -2036,14 +2048,15 @@ def build_managed_section_recall_queries(section_key: str, anchor_dt: datetime |
         balanced_queries: list[str] = []
         for item in items:
             order = int(item.get("order") or 0)
+            is_core = bool(item.get("program_core"))
             buckets = _managed_commodity_supply_query_buckets(item)
             balanced_queries.extend(
-                _pick_rotated_item_queries(buckets.get("market") or [], seed, order, 1, phase=0)
+                _pick_rotated_item_queries(buckets.get("market") or [], seed, order, 1, phase=0, pin_first=is_core)
             )
             balanced_queries.extend(
-                _pick_rotated_item_queries(buckets.get("field") or [], seed, order, 1, phase=1)
+                _pick_rotated_item_queries(buckets.get("field") or [], seed, order, 1, phase=1, pin_first=is_core)
             )
-            if item.get("program_core"):
+            if is_core:
                 balanced_queries.extend(
                     _pick_rotated_item_queries(buckets.get("response") or [], seed, order, 1, phase=2)
                 )
@@ -2057,7 +2070,7 @@ def build_managed_section_recall_queries(section_key: str, anchor_dt: datetime |
     for item in items:
         order = int(item.get("order") or 0)
         balanced_queries.extend(
-            _pick_rotated_item_queries(builder(item), seed, order, 1, phase=0)
+            _pick_rotated_item_queries(builder(item), seed, order, 1, phase=0, pin_first=bool(item.get("program_core")))
         )
 
     if section_key in ("policy", "dist"):
@@ -12760,38 +12773,26 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 동적 임계치: 상위권 점수가 낮은 날은 더 엄격하게 컷하여 '억지 채움'을 막는다
     thr = _dynamic_threshold(candidates_sorted_raw, section_key)
 
-    # 임계치 이상 후보만 사용(없으면 빈 리스트)
-    pool = [a for a in candidates_sorted_raw if a.score >= thr]
+    # HF 시맨틱 조정을 threshold cut 이전에 적용한다.
+    # threshold 바로 아래 기사도 HF boost로 구제될 수 있도록,
+    # max_boost 마진만큼 넓은 pre-pool에서 HF를 먼저 실행한다.
+    sec_conf = next((x for x in SECTIONS if x.get("key") == section_key), {})
 
+    hf_pre_margin = float(HF_SEMANTIC_MAX_BOOST) + 0.5 if HF_SEMANTIC_RERANK_ENABLED else 0.0
+    pre_pool = [a for a in candidates_sorted_raw if a.score >= (thr - hf_pre_margin)]
 
     # dist/supply: 동일 이슈(APC 준공, 공급비용 압박 후속 리포트 등)가 여러 건 반복될 때
     # '이벤트 키'로 먼저 1차 클러스터링하여 중복으로 핵심이 밀리는 문제를 완화한다.
     if section_key in _EVENT_KEY_SECTIONS:
-        pool = _dedupe_by_event_key(pool, section_key)
+        pre_pool = _dedupe_by_event_key(pre_pool, section_key)
 
-    if not pool:
+    if not pre_pool:
         return []
 
-    # 섹션 적합도(section-fit)가 매우 낮은 후보는 상단 선발에서 제외(단, 점수가 충분히 높으면 유지)
-    sec_conf = next((x for x in SECTIONS if x.get("key") == section_key), {})
-    def _record_selection(a: Article, stage: str, note: str = "") -> None:
-        a.selection_stage = str(stage or "")
-        a.selection_note = str(note or "")
-        try:
-            a.selection_fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""), 3)
-        except Exception:
-            a.selection_fit_score = 0.0
-
-    fit_filtered: list[Article] = []
-    for a in pool:
-        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
-        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
-            fit_filtered.append(a)
-    if fit_filtered:
-        pool = fit_filtered
-
-    semantic_adjustments = _hf_semantic_selection_adjustments(section_key, sec_conf, pool)
-    for a in pool:
+    # HF 시맨틱 조정: threshold cut 전에 실행하여 boost가 threshold 판단에 반영되도록 한다
+    semantic_adjustments = _hf_semantic_selection_adjustments(section_key, sec_conf, pre_pool)
+    _hf_succeeded = bool(semantic_adjustments)
+    for a in pre_pool:
         adjustment = semantic_adjustments.get(_article_selection_key(a))
         if not adjustment:
             continue
@@ -12800,6 +12801,34 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.semantic_margin = float(getattr(adjustment, "margin", 0.0) or 0.0)
         a.semantic_boost = float(adjustment.boost or 0.0)
         a.semantic_model = str(adjustment.model or "")
+
+    # semantic boost를 반영한 adjusted score로 threshold 적용
+    # HF API 장애 시(adjustments 비어 있음) boost=0이므로 순수 keyword score 기반으로 fallback된다.
+    # 이때 pre_pool 마진 확장 대상은 자연히 탈락하여 no-HF baseline과 동일하게 동작한다.
+    pool = [a for a in pre_pool if (a.score + a.semantic_boost) >= thr]
+
+    if not pool:
+        return []
+
+    if (not _hf_succeeded) and HF_SEMANTIC_RERANK_ENABLED:
+        metric_inc("hf.semantic.fallback", section=section_key)
+
+    def _record_selection(a: Article, stage: str, note: str = "") -> None:
+        a.selection_stage = str(stage or "")
+        a.selection_note = str(note or "")
+        try:
+            a.selection_fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""), 3)
+        except Exception:
+            a.selection_fit_score = 0.0
+
+    # 섹션 적합도(section-fit)가 매우 낮은 후보는 상단 선발에서 제외(단, 점수가 충분히 높으면 유지)
+    fit_filtered: list[Article] = []
+    for a in pool:
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
+        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
+            fit_filtered.append(a)
+    if fit_filtered:
+        pool = fit_filtered
 
     def _semantic_adjusted_score(a: Article) -> float:
         return float(getattr(a, "score", 0.0) or 0.0) + float(getattr(a, "semantic_boost", 0.0) or 0.0)
@@ -14444,6 +14473,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
+            if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
+                continue
             rank = _underfill_candidate_rank(a)
             if rank is None:
                 continue
@@ -14510,6 +14541,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if not _headline_gate_relaxed(a, section_key):
                     continue
+                if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
+                    continue
                 if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                     continue
                 if any(_is_similar_story(a, b, section_key) for b in final):
@@ -14573,6 +14606,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _is_policy_weak_tail_story(a):
                 continue
             if not _headline_gate_relaxed(a, section_key):
+                continue
+            if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
