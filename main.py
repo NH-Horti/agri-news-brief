@@ -24056,6 +24056,27 @@ def _build_sections_for_report(
         end_kst = snap_end
         _restore_debug_from_snapshot(snapshot_debug, snapshot_path)
         log.info("[REPLAY] loaded snapshot: %s", snapshot_path)
+
+        # ── 리플레이 재스코어링: 스냅샷에 저장된 구(舊) 점수를 현재 scoring 로직으로 갱신 ──
+        _sec_conf_map: dict[str, JsonDict] = {
+            str(s.get("key") or "").strip(): s
+            for s in SECTIONS if str(s.get("key") or "").strip()
+        }
+        _rescore_count = 0
+        for _rs_key, _rs_articles in raw_by_section.items():
+            _rs_conf = _sec_conf_map.get(_rs_key, {})
+            for _rs_a in _rs_articles:
+                try:
+                    _old_sc = float(getattr(_rs_a, "score", 0.0) or 0.0)
+                    _new_sc = compute_rank_score(
+                        _rs_a.title or "", _rs_a.description or "",
+                        _rs_a.domain or "", _rs_a.pub_dt_kst, _rs_conf, _rs_a.press or "",
+                    )
+                    _rs_a.score = _new_sc
+                    _rescore_count += 1
+                except Exception:
+                    pass
+        log.info("[REPLAY] rescored %d article(s) with current scoring logic", _rescore_count)
     else:
         raw_by_section = collect_raw_sections(start_kst, end_kst)
         raw_snapshot = _clone_articles_by_section(raw_by_section)
