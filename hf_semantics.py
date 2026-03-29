@@ -283,7 +283,7 @@ def embed_texts(
             "truncate": True,
         },
         "options": {
-            "wait_for_model": True,
+            "wait_for_model": False,
             "use_cache": True,
         },
     }
@@ -291,12 +291,14 @@ def embed_texts(
         "Authorization": f"Bearer {cfg.api_token}",
         "Content-Type": "application/json",
     }
+    # connect timeout 5초, read timeout은 설정된 값
+    _read_timeout = max(3.0, float(cfg.timeout_sec))
 
     response = session_factory().post(
         cfg.endpoint_url(),
         headers=headers,
         json=payload,
-        timeout=max(3.0, float(cfg.timeout_sec)),
+        timeout=(5.0, _read_timeout),
     )
     if not getattr(response, "ok", False):
         detail = ""
