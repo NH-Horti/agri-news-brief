@@ -664,6 +664,51 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertFalse(cucumber["active"])
         self.assertEqual(cucumber["article_count"], 1)
         self.assertIsNone(cucumber["top_article"])
+        self.assertEqual(len(cucumber["extra_articles"]), 0)
+
+    def test_board_rejects_corporate_stock_story_for_cucumber(self):
+        article = self._make_article(
+            "dist",
+            "하나證 “오이솔루션, 주가 상승 초입 국면…하반기 흑자 전환 기대”",
+            "하나증권은 오이솔루션에 대해 주파수 경매와 레이저다이오드 칩 내재화를 통한 흑자 전환을 예상했다.",
+            "https://biz.chosun.com/stock/stock_general/2026/03/26/V3JW4QSIVZHZ5BKSK45QJFPBHQ/",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["dist"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        cucumber = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "cucumber"
+        )
+
+        self.assertFalse(cucumber["active"])
+        self.assertEqual(cucumber["article_count"], 0)
+        self.assertEqual(len(cucumber["extra_articles"]), 0)
+
+    def test_board_rejects_foodservice_dinner_story_for_napa_cabbage(self):
+        article = self._make_article(
+            "dist",
+            "서울신라호텔 ‘라연’ 정관스님과 토종 식재료 갈라 디너",
+            "서울신라호텔 한식당 라연이 사찰음식 명장 정관스님과 협업해 구억배추·들깨·토종쌀 등 토종 식재료를 소개하는 갈라 디너를 진행했다.",
+            "https://www.newsclaim.co.kr/news/articleView.html?idxno=3059121",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["dist"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        napa_cabbage = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "napa_cabbage"
+        )
+
+        self.assertFalse(napa_cabbage["active"])
+        self.assertEqual(napa_cabbage["article_count"], 0)
+        self.assertEqual(len(napa_cabbage["extra_articles"]), 0)
 
     def test_generic_category_watch_story_is_not_representative_for_program_core_item(self):
         title = "채소값 곤두박질…공급·소비·정책 삼중고"

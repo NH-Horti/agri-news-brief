@@ -3317,6 +3317,35 @@ _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "폭락", "급락", "강세", "약세", "불안", "위기", "비상", "부담", "생산비", "난방비",
     "감소", "증가", "과잉", "부족", "산업", "무너질라", "모니터링",
 )
+_COMMODITY_BOARD_MARKET_KEEP_TERMS = tuple(
+    w.lower()
+    for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "출하", "수급", "도매가격", "시세")
+)
+_COMMODITY_BOARD_DIRECT_AGRI_KEEP_TERMS = tuple(
+    w.lower()
+    for w in ("농산물", "원예", "과수", "과일", "채소", "농가", "재배", "산지", "병해충", "도매시장", "가락시장", "공판장", "출하", "작황", "생육", "하우스")
+)
+_COMMODITY_CORPORATE_STOCK_TERMS = tuple(
+    w.lower()
+    for w in (
+        "증권", "리포트", "목표주가", "투자의견", "매수", "매도", "상향", "하향", "실적", "영업이익",
+        "주가", "주식", "코스피", "코스닥", "밸류에이션", "per", "pbr", "roe", "시총", "상장",
+        "흑자", "적자", "매출", "회사", "기업", "업체", "대표이사", "솔루션", "테크", "칩", "반도체", "장비",
+        "5g", "6g", "레이저다이오드", "주파수",
+    )
+)
+_COMMODITY_FOODSERVICE_HOSPITALITY_TERMS = tuple(
+    w.lower()
+    for w in (
+        "호텔", "호텔신라", "레스토랑", "한식당", "셰프", "쉐프", "갈라 디너", "갈라디너", "디너", "런치",
+        "코스", "미식", "사찰음식", "명장", "포핸즈", "협업", "팜투테이블", "farm to table", "farm-to-table",
+        "식탁", "테이블", "파인다이닝", "fine dining", "미쉐린",
+    )
+)
+_COMMODITY_FOODSERVICE_FOOD_TERMS = tuple(
+    w.lower()
+    for w in ("식재료", "토종 식재료", "메뉴", "요리", "조리", "풍미", "다이닝", "갈라", "재료")
+)
 
 
 def _nfkc_lower(text: str) -> str:
@@ -3374,6 +3403,41 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
     return False
 
 
+def is_commodity_corporate_stock_context(title: str, desc: str) -> bool:
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not txt:
+        return False
+    keep_hits = count_any(txt, list(_COMMODITY_BOARD_DIRECT_AGRI_KEEP_TERMS))
+    if keep_hits >= 1:
+        return False
+    finance_hits = count_any(txt, list(_COMMODITY_CORPORATE_STOCK_TERMS))
+    corp_title_hits = count_any(ttl, list(_COMMODITY_CORPORATE_STOCK_TERMS))
+    company_suffix_hit = re.search(
+        r"[가-힣a-z0-9]{2,}(?:솔루션|테크|전자|바이오|시스템|홀딩스|통신|네트웍스|네트워크|장비|반도체|모빌리티|미디어|로보틱스)",
+        ttl,
+    ) is not None
+    explicit_finance_title_hit = re.search(
+        r"(?:목표주가|투자의견|매수|매도|실적|영업이익|주가|증권|상향|하향|밸류에이션)",
+        ttl,
+    ) is not None
+    return company_suffix_hit or explicit_finance_title_hit or finance_hits >= 2 or (finance_hits >= 1 and corp_title_hits >= 1)
+
+
+def is_commodity_foodservice_lifestyle_context(title: str, desc: str) -> bool:
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not txt:
+        return False
+    keep_hits = count_any(txt, list(_COMMODITY_BOARD_MARKET_KEEP_TERMS))
+    if keep_hits >= 1 or has_direct_supply_chain_signal(txt):
+        return False
+    hospitality_hits = count_any(txt, list(_COMMODITY_FOODSERVICE_HOSPITALITY_TERMS))
+    food_hits = count_any(txt, list(_COMMODITY_FOODSERVICE_FOOD_TERMS))
+    title_hits = count_any(ttl, list(_COMMODITY_FOODSERVICE_HOSPITALITY_TERMS))
+    return (title_hits >= 1 and hospitality_hits >= 2 and food_hits >= 1) or (hospitality_hits >= 3 and food_hits >= 2)
+
+
 def _managed_commodity_focus_metrics(
     item: dict[str, Any],
     title: str,
@@ -3403,6 +3467,8 @@ def _managed_commodity_focus_metrics(
     if not text_l or not key:
         return empty
 
+    if is_commodity_corporate_stock_context(title, desc):
+        return empty
     if key == "carrot" and "당근" in text_l and not is_edible_carrot_context(text_l):
         return empty
     if key == "potato" and "감자" in text_l and not is_fresh_potato_context(text_l):
@@ -3671,6 +3737,10 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
     issue_anchor_hits = int(metrics.get("issue_anchor_hits") or 0)
     focus_score = float(metrics.get("focus_score") or 0.0)
 
+    if is_commodity_corporate_stock_context(title, desc):
+        return metrics
+    if is_commodity_foodservice_lifestyle_context(title, desc):
+        return metrics
     if key == "potato" and not is_fresh_potato_context(text_l):
         return metrics
     if key == "eggplant" and not is_edible_eggplant_context(text_l):
@@ -19306,6 +19376,10 @@ def _commodity_board_article_is_active_candidate(
     _cb_desc = getattr(article, "description", "") or ""
     if is_processed_food_lifestyle_context(_cb_title, _cb_desc):
         return False
+    if is_commodity_corporate_stock_context(_cb_title, _cb_desc):
+        return False
+    if is_commodity_foodservice_lifestyle_context(_cb_title, _cb_desc):
+        return False
     _cb_text_l = (_cb_title + " " + _cb_desc).lower()
     _WINE_BRAND_KWS = ("와인", "wine", "소믈리에", "빈티지", "수도사", "양조장", "와이너리", "winery", "브랜드 언박싱")
     _wine_hits = sum(1 for w in _WINE_BRAND_KWS if w in _cb_text_l)
@@ -19857,11 +19931,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
         payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
         payload["secondary_article_count"] = len(payload["secondary_articles"])
-        # qualified 이후 잔여 + qualified 안 된 일반 articles도 "관련 기사 보기"에 포함
+        # 품목 보드 노이즈를 줄이기 위해 "관련 기사 보기"는 active 후보로 통과한 기사만 노출한다.
         _extra_qualified = qualified_articles[1 + secondary_preview_limit :]
-        _shown_urls = {getattr(a, "url", "") for a in qualified_articles[: 1 + secondary_preview_limit]}
-        _extra_unqualified = [a for a in articles if getattr(a, "url", "") not in _shown_urls and a not in _extra_qualified]
-        payload["extra_articles"] = _extra_qualified + _extra_unqualified
+        payload["extra_articles"] = _extra_qualified
         payload["more_article_count"] = len(payload["extra_articles"])
         payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
         if payload["active"]:
