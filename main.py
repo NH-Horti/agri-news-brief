@@ -14566,10 +14566,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 4.6b) 지역 농업 단신 filler:
     # - 섹션이 매우 빈약(≤2)하고 underfill로도 채워지지 않을 때, 농업 맥락이 있는 지역 단신 1건 하단 허용
-    if need > 0 and len(final) <= 2:
+    _regional_need = max_n - len(final)
+    if _regional_need > 0 and len(final) <= 2:
         _regional_fill_cut = max(BASE_MIN_SCORE.get(section_key, 4.0), thr - 8.0)
         for a in candidates_sorted:
-            if need <= 0 or len(final) >= max_n:
+            if len(final) >= max_n:
                 break
             if a in final or _already_used(a):
                 continue
@@ -14586,7 +14587,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             final.append(a)
             _mark_used(a)
             _source_take(a)
-            need -= 1
             break  # 최대 1건만
 
     # 4.7) policy 수출지원 단신 보강:
