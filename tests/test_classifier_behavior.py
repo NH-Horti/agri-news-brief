@@ -2882,6 +2882,33 @@ class TestClassifierBehavior(unittest.TestCase):
             msg=str([(x.link, x.score, x.title) for x in picked]),
         )
 
+    def test_pest_selection_dedupes_exact_same_title_from_different_links(self):
+        first = self._make_article(
+            "pest",
+            "보은군, 과수화상병 예방 총력",
+            "보은군이 과수화상병 확산 차단을 위해 예찰과 약제 지원, 현장 지도를 강화한다.",
+            "https://example.com/pest-boeun-a",
+        )
+        second = self._make_article(
+            "pest",
+            "보은군, 과수화상병 예방 총력",
+            "보은군이 과수화상병 예방 총력전을 벌이며 예찰과 방제 지원을 확대했다.",
+            "https://example.com/pest-boeun-b",
+        )
+        other = self._make_article(
+            "pest",
+            "산청군, 드론 활용 동계 정밀 방제 … 선제적 차단",
+            "산청군이 사과 주산지 중심으로 드론 활용 동계 정밀 방제를 실시해 병해충 확산을 차단하고 있다.",
+            "https://example.com/pest-sancheong-drone",
+        )
+        first.score = 24.8
+        second.score = 24.7
+        other.score = 25.5
+
+        picked = main.select_top_articles([first, second, other], "pest", 5)
+        boeun_titles = [x for x in picked if x.title == first.title]
+        self.assertEqual(len(boeun_titles), 1, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_supply_trade_pressure_story_with_policy_topic_is_selected(self):
         story = self._make_article(
             "supply",
@@ -3484,6 +3511,37 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         self.assertNotIn(price_support.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
         self.assertNotIn(macro_policy.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
         self.assertNotIn(launchy_org.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+
+    def test_supply_selection_drops_market_support_program_even_with_direct_supply_terms(self):
+        anchor = self._make_article(
+            "supply",
+            "청송 사과 면적 감소 전환…산불 이후 농업 구조 재편 신호",
+            "청송 사과 주산지에서 재배 면적 감소와 작목 전환이 이어지며 산지 공급 구조 변화가 감지된다.",
+            "https://example.com/supply-apple-area-shift",
+        )
+        market_support = self._make_article(
+            "supply",
+            "가락시장 ‘출하비용 보전사업’ 속속 안착",
+            "가락시장 도매법인과 출하 농가를 대상으로 출하비용 보전사업이 시행되며 유통 지원 성격의 정책 효과가 확산되고 있다.",
+            "https://example.com/supply-garak-support",
+        )
+        acreage = self._make_article(
+            "supply",
+            "전남도, 봄무·봄양배추 재배 의향면적 조사",
+            "봄무와 봄양배추 재배 의향면적 조사를 통해 수급과 생산량 변화를 사전 점검하고 있다.",
+            "https://example.com/supply-acreage-intent",
+        )
+        anchor.score = 24.2
+        market_support.score = 26.5
+        acreage.score = 25.9
+
+        self.assertTrue(main.is_supply_market_support_program_context(market_support.title, market_support.description))
+
+        picked = main.select_top_articles([market_support, anchor, acreage], "supply", max_n=5)
+        picked_titles = [article.title for article in picked]
+        self.assertIn(anchor.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertIn(acreage.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(market_support.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
 
     def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
         query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]

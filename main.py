@@ -7183,6 +7183,54 @@ def is_supply_acreage_intent_context(title: str, desc: str) -> bool:
     return True
 
 
+def is_supply_market_support_program_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+
+    market_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "가락시장",
+                "도매시장",
+                "공영도매시장",
+                "농산물시장",
+                "공판장",
+                "도매법인",
+                "유통센터",
+                "유통 센터",
+            )
+        ],
+    )
+    if market_hits == 0:
+        return False
+
+    support_hits = count_any(
+        txt,
+        [w.lower() for w in ("출하비용", "보전사업", "지원사업", "손실보전", "물류비 지원", "물류비", "지원금")],
+    )
+    ops_hits = count_any(
+        txt,
+        [w.lower() for w in ("출하", "유통", "경매", "반입", "물류", "도매", "시장 출하")],
+    )
+    policy_hits = count_any(
+        txt,
+        [w.lower() for w in ("시행", "운영", "확대", "지원", "사업", "정책", "점검")],
+    )
+    title_market_hits = count_any(ttl_l, [w.lower() for w in ("가락시장", "도매시장", "공판장", "유통센터")])
+    title_support_hits = count_any(ttl_l, [w.lower() for w in ("출하비용", "보전사업", "지원사업", "손실보전")])
+
+    return (
+        (title_market_hits >= 1 and title_support_hits >= 1)
+        or ("출하비용 보전사업" in txt and ops_hits >= 1)
+        or (support_hits >= 2 and ops_hits >= 1 and policy_hits >= 1)
+    )
+
+
 def is_supply_processed_price_roundup_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
@@ -13165,6 +13213,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
+        if is_supply_market_support_program_context(a.title or "", a.description or "", dom_local, pr_local):
+            return True
         if has_direct_supply_chain_signal(txt_local):
             return False
         issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
@@ -14678,15 +14728,24 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         deduped = dist_unique
 
     if section_key == "pest":
+        def _pest_exact_title_key(article: Article) -> str:
+            return re.sub(r"\s+", " ", _nfkc_lower(article.title or "")).strip()
+
         pest_unique: list[Article] = []
         selected_footprints: set[str] = set()
+        selected_exact_titles: set[str] = set()
         for a in deduped:
+            exact_title_key = _pest_exact_title_key(a)
+            if exact_title_key and exact_title_key in selected_exact_titles:
+                continue
             footprint_tokens = set(_pest_story_footprint_tokens(a))
             if footprint_tokens and (footprint_tokens & selected_footprints):
                 continue
             if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                 continue
             pest_unique.append(a)
+            if exact_title_key:
+                selected_exact_titles.add(exact_title_key)
             selected_footprints.update(footprint_tokens)
 
         target = min(4, max_n)
@@ -14703,6 +14762,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if float(getattr(a, "score", 0.0) or 0.0) < refill_cut:
                     return None
                 if any((a.canon_url or _dup_key(a)) == (b.canon_url or _dup_key(b)) for b in pest_unique):
+                    return None
+                exact_title_key = _pest_exact_title_key(a)
+                if exact_title_key and exact_title_key in selected_exact_titles:
                     return None
                 if any(_is_similar_title(a.title_key, b.title_key) for b in pest_unique):
                     return None
@@ -14757,6 +14819,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     if any((a.canon_url or _dup_key(a)) == (b.canon_url or _dup_key(b)) for b in pest_unique):
                         continue
+                    exact_title_key = _pest_exact_title_key(a)
+                    if exact_title_key and exact_title_key in selected_exact_titles:
+                        continue
                     if any(_is_similar_title(a.title_key, b.title_key) for b in pest_unique):
                         continue
                     if any(_is_similar_story(a, b, "pest") for b in pest_unique):
@@ -14765,6 +14830,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     _record_selection(a, "pest_diversity_backfill")
                     pest_unique.append(a)
+                    if exact_title_key:
+                        selected_exact_titles.add(exact_title_key)
                     if region_key:
                         selected_regions.add(region_key)
                     selected_commodity_keys.update(commodity_keys)
