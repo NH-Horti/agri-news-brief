@@ -18668,36 +18668,58 @@ def _render_hf_compare_summary_html(compare_report: JsonDict) -> str:
     board = compare_report.get("board") or {}
     changed_section_items = [
         f"""
-        <li>
-          <b>{esc(display_section_title(section_key))}</b>
-          <span class="hfCompareMuted">slot {int(change.get('position') or 0)}</span>
-          <div class="hfCompareChange">{esc(str(change.get('baseline_title') or ''))}</div>
-          <div class="hfCompareArrow">→</div>
-          <div class="hfCompareChange">{esc(str(change.get('hf_title') or ''))}</div>
+        <li class="hfCompareItem">
+          <div class="hfCompareItemHead">
+            <b>{esc(display_section_title(section_key))}</b>
+            <span class="hfCompareMuted">slot {int(change.get('position') or 0)}</span>
+          </div>
+          <div class="hfCompareSwap">
+            <div class="hfCompareLine hfCompareBefore"><span class="hfCompareLabel">기존</span><span class="hfCompareChange">{esc(str(change.get('baseline_title') or ''))}</span></div>
+            <div class="hfCompareLine hfCompareAfter"><span class="hfCompareLabel">HF</span><span class="hfCompareChange">{esc(str(change.get('hf_title') or ''))}</span></div>
+          </div>
         </li>
         """
         for section_key, diff in sections.items()
-        for change in (diff.get("slot_changes") or [])[:3]
+        for change in (diff.get("slot_changes") or [])[:4]
     ]
     board_changed_items = [
         f"""
-        <li>
-          <b>{esc(str(item.get('label') or '품목'))}</b>
-          <div class="hfCompareChange">{esc(str(item.get('baseline_title') or ''))}</div>
-          <div class="hfCompareArrow">→</div>
-          <div class="hfCompareChange">{esc(str(item.get('hf_title') or ''))}</div>
+        <li class="hfCompareItem">
+          <div class="hfCompareItemHead">
+            <b>{esc(str(item.get('label') or '품목'))}</b>
+          </div>
+          <div class="hfCompareSwap">
+            <div class="hfCompareLine hfCompareBefore"><span class="hfCompareLabel">기존</span><span class="hfCompareChange">{esc(str(item.get('baseline_title') or ''))}</span></div>
+            <div class="hfCompareLine hfCompareAfter"><span class="hfCompareLabel">HF</span><span class="hfCompareChange">{esc(str(item.get('hf_title') or ''))}</span></div>
+          </div>
         </li>
         """
-        for item in (board.get("changed_items") or [])[:4]
+        for item in (board.get("changed_items") or [])[:6]
     ]
     boosted_section_items = [
-        f"<li><b>{esc(display_section_title(section_key))}</b> HF {float(boosted.get('semantic_boost') or 0.0):+.2f} · {esc(str(boosted.get('title') or ''))}</li>"
+        f"""
+        <li class="hfCompareItem">
+          <div class="hfCompareItemHead">
+            <b>{esc(display_section_title(section_key))}</b>
+            <span class="hfDelta {'isPos' if float(boosted.get('semantic_boost') or 0.0) > 0 else 'isNeg'}">HF {float(boosted.get('semantic_boost') or 0.0):+.2f}</span>
+          </div>
+          <div class="hfCompareChange">{esc(str(boosted.get('title') or ''))}</div>
+        </li>
+        """
         for section_key, diff in sections.items()
-        for boosted in (diff.get("boosted_selected") or [])[:2]
+        for boosted in (diff.get("boosted_selected") or [])[:3]
     ]
     boosted_board_items = [
-        f"<li><b>{esc(str(item.get('label') or '품목'))}</b> HF {float(item.get('semantic_boost') or 0.0):+.2f} · {esc(str(item.get('title') or ''))}</li>"
-        for item in (board.get("boosted_items") or [])[:6]
+        f"""
+        <li class="hfCompareItem">
+          <div class="hfCompareItemHead">
+            <b>{esc(str(item.get('label') or '품목'))}</b>
+            <span class="hfDelta {'isPos' if float(item.get('semantic_boost') or 0.0) > 0 else 'isNeg'}">HF {float(item.get('semantic_boost') or 0.0):+.2f}</span>
+          </div>
+          <div class="hfCompareChange">{esc(str(item.get('title') or ''))}</div>
+        </li>
+        """
+        for item in (board.get("boosted_items") or [])[:8]
     ]
     changed_summary = (
         f"섹션 {int(summary.get('changed_section_count') or 0)}개 · 슬롯 {int(summary.get('changed_slots') or 0)}개 · 품목 카드 {int(summary.get('changed_board_items') or 0)}개 변경"
@@ -18726,11 +18748,29 @@ def _render_hf_compare_summary_html(compare_report: JsonDict) -> str:
       <div class="hfCompareGrid">
         <div class="hfCompareCard">
           <div class="hfCompareCardTitle">실제 교체된 항목</div>
-          <ul class="hfCompareList">{''.join(changed_section_items + board_changed_items) or '<li class="hfCompareEmpty">바뀐 top 항목이 없습니다.</li>'}</ul>
+          <div class="hfCompareGroups">
+            <details class="hfCompareDetails" open>
+              <summary class="hfCompareSummary">브리핑 섹션 변경 <span>{len(changed_section_items)}건</span></summary>
+              <ul class="hfCompareList">{''.join(changed_section_items) or '<li class="hfCompareEmpty">브리핑 top 변경이 없습니다.</li>'}</ul>
+            </details>
+            <details class="hfCompareDetails" open>
+              <summary class="hfCompareSummary">품목 보드 변경 <span>{len(board_changed_items)}건</span></summary>
+              <ul class="hfCompareList">{''.join(board_changed_items) or '<li class="hfCompareEmpty">품목 카드 교체는 없습니다.</li>'}</ul>
+            </details>
+          </div>
         </div>
         <div class="hfCompareCard">
           <div class="hfCompareCardTitle">HF 보정이 들어간 대표 기사</div>
-          <ul class="hfCompareList">{''.join(boosted_section_items + boosted_board_items) or '<li class="hfCompareEmpty">semantic boost가 없습니다.</li>'}</ul>
+          <div class="hfCompareGroups">
+            <details class="hfCompareDetails" open>
+              <summary class="hfCompareSummary">브리핑 기사 boost <span>{len(boosted_section_items)}건</span></summary>
+              <ul class="hfCompareList">{''.join(boosted_section_items) or '<li class="hfCompareEmpty">브리핑 semantic boost가 없습니다.</li>'}</ul>
+            </details>
+            <details class="hfCompareDetails" open>
+              <summary class="hfCompareSummary">품목 보드 boost <span>{len(boosted_board_items)}건</span></summary>
+              <ul class="hfCompareList">{''.join(boosted_board_items) or '<li class="hfCompareEmpty">품목 보드 semantic boost가 없습니다.</li>'}</ul>
+            </details>
+          </div>
         </div>
       </div>
     </section>
@@ -20580,10 +20620,23 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .hfCompareGrid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}}
     .hfCompareCard{{padding:14px;border:1px solid #dbe4ee;border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.05)}}
     .hfCompareCardTitle{{font-size:13px;font-weight:900;color:#0f172a}}
-    .hfCompareList{{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:10px;color:#0f172a;font-size:12.5px;line-height:1.6}}
+    .hfCompareGroups{{display:flex;flex-direction:column;gap:10px;margin-top:10px}}
+    .hfCompareDetails{{border:1px solid #dbe4ee;border-radius:14px;background:#fff;overflow:hidden}}
+    .hfCompareSummary{{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;padding:10px 12px;font-size:12px;font-weight:900;color:#0f172a;background:#f8fafc}}
+    .hfCompareSummary::-webkit-details-marker{{display:none}}
+    .hfCompareSummary span{{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900}}
+    .hfCompareList{{margin:0;padding:12px 12px 12px 28px;display:flex;flex-direction:column;gap:12px;color:#0f172a;font-size:12.5px;line-height:1.6}}
     .hfCompareList li{{margin:0}}
-    .hfCompareChange{{margin-top:2px;color:#334155}}
-    .hfCompareArrow{{margin:3px 0;color:#1d4ed8;font-weight:900}}
+    .hfCompareItem{{display:flex;flex-direction:column;gap:7px}}
+    .hfCompareItemHead{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}}
+    .hfCompareSwap{{display:flex;flex-direction:column;gap:8px}}
+    .hfCompareLine{{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:12px;border:1px solid #dbe4ee}}
+    .hfCompareBefore{{background:#fff7ed;border-color:#fdba74}}
+    .hfCompareAfter{{background:#ecfdf5;border-color:#86efac}}
+    .hfCompareLabel{{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:38px;min-height:22px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:900;letter-spacing:.01em}}
+    .hfCompareBefore .hfCompareLabel{{background:#ffedd5;color:#9a3412}}
+    .hfCompareAfter .hfCompareLabel{{background:#dcfce7;color:#166534}}
+    .hfCompareChange{{margin-top:2px;color:#334155;min-width:0}}
     .hfCompareMuted{{display:inline-flex;margin-left:6px;color:#64748b;font-size:11px;font-weight:800}}
     .hfCompareEmpty{{color:#64748b;list-style:disc}}
 
@@ -20660,6 +20713,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .hfCompareGrid{{grid-template-columns:1fr;gap:10px}}
       .hfCompareCard{{padding:12px;border-radius:16px}}
       .hfCompareList{{font-size:12px}}
+      .hfCompareSummary{{padding:10px 11px}}
+      .hfCompareLine{{padding:8px 9px}}
       .commodityBoardNav{{margin:10px 0 16px}}
       .chipDock{{display:none}}
       .chipbar{{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}}
@@ -20736,8 +20791,16 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .hfCompareLead{{color:#cbd5e1}}
       .hfCompareStat{{background:rgba(30,41,59,.9);border-color:var(--line);color:#e2e8f0}}
       .hfCompareCard{{background:rgba(30,41,59,.92);border-color:var(--line)}}
+      .hfCompareDetails{{background:#0f172a;border-color:#475569}}
+      .hfCompareSummary{{background:#1e293b;color:#f8fafc}}
+      .hfCompareSummary span{{background:#1e3a5f;color:#93c5fd}}
       .hfCompareCardTitle{{color:#f8fafc}}
       .hfCompareList{{color:#e2e8f0}}
+      .hfCompareLine{{border-color:#475569}}
+      .hfCompareBefore{{background:rgba(124,45,18,.18);border-color:#ea580c}}
+      .hfCompareAfter{{background:rgba(20,83,45,.18);border-color:#22c55e}}
+      .hfCompareBefore .hfCompareLabel{{background:rgba(154,52,18,.32);color:#fed7aa}}
+      .hfCompareAfter .hfCompareLabel{{background:rgba(21,128,61,.32);color:#bbf7d0}}
       .hfCompareChange{{color:#cbd5e1}}
       .hfCompareArrow{{color:#60a5fa}}
       .hfCompareMuted,.hfCompareEmpty{{color:#94a3b8}}
