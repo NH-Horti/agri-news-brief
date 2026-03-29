@@ -1,5 +1,5 @@
 {
-  "generated_at_kst": "2026-03-30T07:54:33+09:00",
+  "generated_at_kst": "2026-03-30T08:43:04+09:00",
   "build_tag": "75c7849",
   "filter_rejects": [
     {
@@ -19171,7 +19171,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.0,
+          "score": 17.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21040,7 +21040,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -2.58,
+          "score": -2.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
