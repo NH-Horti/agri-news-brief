@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T15:57:10+09:00",
-  "build_tag": "513b138",
+  "generated_at_kst": "2026-03-29T16:58:00+09:00",
+  "build_tag": "63872d9",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13611,7 +13611,7 @@
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
       "total_candidates": 242,
-      "total_selected": 4,
+      "total_selected": 5,
       "top": [
         {
           "selected": true,
@@ -13710,7 +13710,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 25.71,
           "semantic_similarity": 0.8247,
@@ -13723,9 +13723,9 @@
           "domain": "yna.co.kr",
           "title": "비닐 대란… 감자 농사 힘드네",
           "url": "https://www.yna.co.kr/view/PYH20260326156200062?input=1196m",
-          "reason": "not_selected",
+          "reason": "",
           "fit_score": 1.15,
-          "selection_stage": "not_selected",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -13789,8 +13789,8 @@
           "url": "https://www.nongmin.com/article/20260325500678",
           "reason": "",
           "fit_score": 0.95,
-          "selection_stage": "core",
-          "selection_note": "",
+          "selection_stage": "supply_board_bridge",
+          "selection_note": "grape",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "샤인머스캣 가격",
@@ -20574,9 +20574,9 @@
             "semantic_similarity": 0.868942
           },
           {
-            "title": "가락시장 ‘출하비용 보전사업’ 속속 안착",
-            "semantic_boost": 0.34524,
-            "semantic_similarity": 0.832029
+            "title": "비닐 대란… 감자 농사 힘드네",
+            "semantic_boost": 0.305778,
+            "semantic_similarity": 0.82472
           },
           {
             "title": "전남도, 봄무·봄양배추 재배 의향면적 조사",
