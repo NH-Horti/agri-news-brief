@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="456da4d" />
+  <meta name="agri-build" content="fb66baf" />
 
   <title>[2026-03-27 농산물 뉴스 Brief]</title>
   <style>
@@ -152,6 +152,7 @@
     .commoditySig.muted{background:#f8fafc;color:#94a3b8}
     .commodityStoryCluster{display:flex;flex-direction:column;gap:10px;height:100%}
     .commodityPrimaryCard{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);min-height:124px}
+    .commodityPrimaryHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
     .commodityPrimaryKicker{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}
     .commodityPrimaryStory{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}
     .commodityPrimaryStory:hover{text-decoration:underline}
@@ -218,6 +219,39 @@
       background:#111827; color:#fff; font-size:11px; font-weight:900;
       margin-right:2px;
     }
+    .hfDelta{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 8px;border-radius:999px;border:1px solid #dbe4ee;background:#f8fafc;color:#334155;font-size:10.5px;font-weight:900;letter-spacing:.01em;white-space:nowrap}
+    .hfDelta.isPos{background:#ecfdf5;border-color:#86efac;color:#166534}
+    .hfDelta.isNeg{background:#fff7ed;border-color:#fdba74;color:#b45309}
+    .hfComparePanel{margin-top:16px;padding:18px;border:1px solid #bfdbfe;border-radius:22px;background:linear-gradient(135deg,#eff6ff 0%,#ffffff 54%,#f8fafc 100%);box-shadow:0 16px 36px rgba(29,78,216,.10)}
+    .hfCompareHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:flex-start}
+    .hfCompareEyebrow{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .hfComparePanel h2{margin:10px 0 0;font-size:26px;line-height:1.1;letter-spacing:-0.6px}
+    .hfCompareLead{margin-top:8px;max-width:760px;color:#334155;font-size:13px;line-height:1.6}
+    .hfCompareStats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .hfCompareStat{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #dbe4ee;background:rgba(255,255,255,.9);color:#1e293b;font-size:12px;font-weight:800}
+    .hfCompareStat strong{font-size:13px}
+    .hfCompareGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+    .hfCompareCard{padding:14px;border:1px solid #dbe4ee;border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.05)}
+    .hfCompareCardTitle{font-size:13px;font-weight:900;color:#0f172a}
+    .hfCompareGroups{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .hfCompareDetails{border:1px solid #dbe4ee;border-radius:14px;background:#fff;overflow:hidden}
+    .hfCompareSummary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;padding:10px 12px;font-size:12px;font-weight:900;color:#0f172a;background:#f8fafc}
+    .hfCompareSummary::-webkit-details-marker{display:none}
+    .hfCompareSummary span{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900}
+    .hfCompareList{margin:0;padding:12px 12px 12px 28px;display:flex;flex-direction:column;gap:12px;color:#0f172a;font-size:12.5px;line-height:1.6}
+    .hfCompareList li{margin:0}
+    .hfCompareItem{display:flex;flex-direction:column;gap:7px}
+    .hfCompareItemHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .hfCompareSwap{display:flex;flex-direction:column;gap:8px}
+    .hfCompareLine{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:12px;border:1px solid #dbe4ee}
+    .hfCompareBefore{background:#fff7ed;border-color:#fdba74}
+    .hfCompareAfter{background:#ecfdf5;border-color:#86efac}
+    .hfCompareLabel{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:38px;min-height:22px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:900;letter-spacing:.01em}
+    .hfCompareBefore .hfCompareLabel{background:#ffedd5;color:#9a3412}
+    .hfCompareAfter .hfCompareLabel{background:#dcfce7;color:#166534}
+    .hfCompareChange{margin-top:2px;color:#334155;min-width:0}
+    .hfCompareMuted{display:inline-flex;margin-left:6px;color:#64748b;font-size:11px;font-weight:800}
+    .hfCompareEmpty{color:#64748b;list-style:disc}
 
     .btnOpen{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
@@ -284,6 +318,16 @@
       .briefingHeroStatLabel{font-size:10px}
       .briefingHeroStat strong{margin-top:4px;font-size:18px}
       .briefingChipbar{margin:12px 0 18px}
+      .hfComparePanel{margin-top:12px;padding:14px;border-radius:18px}
+      .hfCompareHead{grid-template-columns:1fr}
+      .hfComparePanel h2{font-size:22px;letter-spacing:-0.5px}
+      .hfCompareLead{margin-top:7px;font-size:12.5px;line-height:1.55}
+      .hfCompareStats{justify-content:flex-start}
+      .hfCompareGrid{grid-template-columns:1fr;gap:10px}
+      .hfCompareCard{padding:12px;border-radius:16px}
+      .hfCompareList{font-size:12px}
+      .hfCompareSummary{padding:10px 11px}
+      .hfCompareLine{padding:8px 9px}
       .commodityBoardNav{margin:10px 0 16px}
       .chipDock{display:none}
       .chipbar{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
@@ -352,6 +396,27 @@
       .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);border-color:#1d4ed8}
       .viewTabDesc{color:#94a3b8}
       .viewTabStat{background:rgba(255,255,255,.08);color:#e2e8f0}
+      .hfDelta{background:#1e293b;border-color:#475569;color:#cbd5e1}
+      .hfDelta.isPos{background:rgba(20,83,45,.28);border-color:#22c55e;color:#bbf7d0}
+      .hfDelta.isNeg{background:rgba(124,45,18,.28);border-color:#fb923c;color:#fed7aa}
+      .hfComparePanel{background:linear-gradient(135deg,#1e293b 0%,#0f172a 54%,#1e293b 100%);border-color:#1d4ed8;box-shadow:0 16px 36px rgba(0,0,0,.24)}
+      .hfCompareEyebrow{background:#1e3a5f;color:#93c5fd}
+      .hfCompareLead{color:#cbd5e1}
+      .hfCompareStat{background:rgba(30,41,59,.9);border-color:var(--line);color:#e2e8f0}
+      .hfCompareCard{background:rgba(30,41,59,.92);border-color:var(--line)}
+      .hfCompareDetails{background:#0f172a;border-color:#475569}
+      .hfCompareSummary{background:#1e293b;color:#f8fafc}
+      .hfCompareSummary span{background:#1e3a5f;color:#93c5fd}
+      .hfCompareCardTitle{color:#f8fafc}
+      .hfCompareList{color:#e2e8f0}
+      .hfCompareLine{border-color:#475569}
+      .hfCompareBefore{background:rgba(124,45,18,.18);border-color:#ea580c}
+      .hfCompareAfter{background:rgba(20,83,45,.18);border-color:#22c55e}
+      .hfCompareBefore .hfCompareLabel{background:rgba(154,52,18,.32);color:#fed7aa}
+      .hfCompareAfter .hfCompareLabel{background:rgba(21,128,61,.32);color:#bbf7d0}
+      .hfCompareChange{color:#cbd5e1}
+      .hfCompareArrow{color:#60a5fa}
+      .hfCompareMuted,.hfCompareEmpty{color:#94a3b8}
       .briefingHero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 56%,#1e293b 100%);border-color:var(--line)}
       .briefingHeroStat{background:rgba(30,41,59,.92);border-color:var(--line)}
       .briefingHeroStat strong{color:#e2e8f0}
@@ -396,74 +461,74 @@
     <div class="topin">
       <div>
         <h1>[2026-03-27 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-03-26 07:00 ~ 2026-03-27 07:00 · 기사 18건</div>
+        <div class="sub">기간: 2026-03-26 07:00 ~ 2026-03-27 07:00 · 기사 16건</div>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-26.html">◀ 이전</a>
-        <div class="dateSelWrap">
-          <select id="dateSelect" aria-label="날짜 선택">
-            <option value="/agri-news-brief/archive/2026-03-27.html" selected>26-03-27 (금)</option>
-<option value="/agri-news-brief/archive/2026-03-26.html">26-03-26 (목)</option>
-<option value="/agri-news-brief/archive/2026-03-25.html">26-03-25 (수)</option>
-<option value="/agri-news-brief/archive/2026-03-24.html">26-03-24 (화)</option>
-<option value="/agri-news-brief/archive/2026-03-23.html">26-03-23 (월)</option>
-<option value="/agri-news-brief/archive/2026-03-20.html">26-03-20 (금)</option>
-<option value="/agri-news-brief/archive/2026-03-19.html">26-03-19 (목)</option>
-<option value="/agri-news-brief/archive/2026-03-18.html">26-03-18 (수)</option>
-<option value="/agri-news-brief/archive/2026-03-17.html">26-03-17 (화)</option>
-<option value="/agri-news-brief/archive/2026-03-16.html">26-03-16 (월)</option>
-<option value="/agri-news-brief/archive/2026-03-13.html">26-03-13 (금)</option>
-<option value="/agri-news-brief/archive/2026-03-12.html">26-03-12 (목)</option>
-<option value="/agri-news-brief/archive/2026-03-11.html">26-03-11 (수)</option>
-<option value="/agri-news-brief/archive/2026-03-10.html">26-03-10 (화)</option>
-<option value="/agri-news-brief/archive/2026-03-09.html">26-03-09 (월)</option>
-<option value="/agri-news-brief/archive/2026-03-06.html">26-03-06 (금)</option>
-<option value="/agri-news-brief/archive/2026-03-05.html">26-03-05 (목)</option>
-<option value="/agri-news-brief/archive/2026-03-04.html">26-03-04 (수)</option>
-<option value="/agri-news-brief/archive/2026-03-03.html">26-03-03 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-27.html">26-02-27 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-26.html">26-02-26 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-25.html">26-02-25 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-24.html">26-02-24 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-23.html">26-02-23 (월)</option>
-<option value="/agri-news-brief/archive/2026-02-20.html">26-02-20 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-19.html">26-02-19 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-13.html">26-02-13 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-12.html">26-02-12 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-11.html">26-02-11 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-10.html">26-02-10 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-09.html">26-02-09 (월)</option>
-<option value="/agri-news-brief/archive/2026-02-06.html">26-02-06 (금)</option>
-<option value="/agri-news-brief/archive/2026-02-05.html">26-02-05 (목)</option>
-<option value="/agri-news-brief/archive/2026-02-04.html">26-02-04 (수)</option>
-<option value="/agri-news-brief/archive/2026-02-03.html">26-02-03 (화)</option>
-<option value="/agri-news-brief/archive/2026-02-02.html">26-02-02 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-30.html">26-01-30 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-29.html">26-01-29 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-28.html">26-01-28 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-27.html">26-01-27 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-26.html">26-01-26 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-23.html">26-01-23 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-22.html">26-01-22 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-21.html">26-01-21 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-20.html">26-01-20 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-19.html">26-01-19 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-16.html">26-01-16 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-15.html">26-01-15 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-14.html">26-01-14 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-13.html">26-01-13 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-12.html">26-01-12 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-09.html">26-01-09 (금)</option>
-<option value="/agri-news-brief/archive/2026-01-08.html">26-01-08 (목)</option>
-<option value="/agri-news-brief/archive/2026-01-07.html">26-01-07 (수)</option>
-<option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
-<option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
-<option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-          </select>
-        </div>
-        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
-      </div>
+  <a class="navBtn navArchive" data-nav="archive" href="docs" title="날짜별 아카이브 목록">아카이브</a>
+  <a class="navBtn" data-nav="prev" href="docs/archive/2026-03-26.html">◀ 이전</a>
+  <div class="dateSelWrap">
+    <select id="dateSelect" aria-label="날짜 선택">
+      <option value="docs/archive/2026-03-27.html" selected>26-03-27 (금)</option>
+<option value="docs/archive/2026-03-26.html">26-03-26 (목)</option>
+<option value="docs/archive/2026-03-25.html">26-03-25 (수)</option>
+<option value="docs/archive/2026-03-24.html">26-03-24 (화)</option>
+<option value="docs/archive/2026-03-23.html">26-03-23 (월)</option>
+<option value="docs/archive/2026-03-20.html">26-03-20 (금)</option>
+<option value="docs/archive/2026-03-19.html">26-03-19 (목)</option>
+<option value="docs/archive/2026-03-18.html">26-03-18 (수)</option>
+<option value="docs/archive/2026-03-17.html">26-03-17 (화)</option>
+<option value="docs/archive/2026-03-16.html">26-03-16 (월)</option>
+<option value="docs/archive/2026-03-13.html">26-03-13 (금)</option>
+<option value="docs/archive/2026-03-12.html">26-03-12 (목)</option>
+<option value="docs/archive/2026-03-11.html">26-03-11 (수)</option>
+<option value="docs/archive/2026-03-10.html">26-03-10 (화)</option>
+<option value="docs/archive/2026-03-09.html">26-03-09 (월)</option>
+<option value="docs/archive/2026-03-06.html">26-03-06 (금)</option>
+<option value="docs/archive/2026-03-05.html">26-03-05 (목)</option>
+<option value="docs/archive/2026-03-04.html">26-03-04 (수)</option>
+<option value="docs/archive/2026-03-03.html">26-03-03 (화)</option>
+<option value="docs/archive/2026-02-27.html">26-02-27 (금)</option>
+<option value="docs/archive/2026-02-26.html">26-02-26 (목)</option>
+<option value="docs/archive/2026-02-25.html">26-02-25 (수)</option>
+<option value="docs/archive/2026-02-24.html">26-02-24 (화)</option>
+<option value="docs/archive/2026-02-23.html">26-02-23 (월)</option>
+<option value="docs/archive/2026-02-20.html">26-02-20 (금)</option>
+<option value="docs/archive/2026-02-19.html">26-02-19 (목)</option>
+<option value="docs/archive/2026-02-13.html">26-02-13 (금)</option>
+<option value="docs/archive/2026-02-12.html">26-02-12 (목)</option>
+<option value="docs/archive/2026-02-11.html">26-02-11 (수)</option>
+<option value="docs/archive/2026-02-10.html">26-02-10 (화)</option>
+<option value="docs/archive/2026-02-09.html">26-02-09 (월)</option>
+<option value="docs/archive/2026-02-06.html">26-02-06 (금)</option>
+<option value="docs/archive/2026-02-05.html">26-02-05 (목)</option>
+<option value="docs/archive/2026-02-04.html">26-02-04 (수)</option>
+<option value="docs/archive/2026-02-03.html">26-02-03 (화)</option>
+<option value="docs/archive/2026-02-02.html">26-02-02 (월)</option>
+<option value="docs/archive/2026-01-30.html">26-01-30 (금)</option>
+<option value="docs/archive/2026-01-29.html">26-01-29 (목)</option>
+<option value="docs/archive/2026-01-28.html">26-01-28 (수)</option>
+<option value="docs/archive/2026-01-27.html">26-01-27 (화)</option>
+<option value="docs/archive/2026-01-26.html">26-01-26 (월)</option>
+<option value="docs/archive/2026-01-23.html">26-01-23 (금)</option>
+<option value="docs/archive/2026-01-22.html">26-01-22 (목)</option>
+<option value="docs/archive/2026-01-21.html">26-01-21 (수)</option>
+<option value="docs/archive/2026-01-20.html">26-01-20 (화)</option>
+<option value="docs/archive/2026-01-19.html">26-01-19 (월)</option>
+<option value="docs/archive/2026-01-16.html">26-01-16 (금)</option>
+<option value="docs/archive/2026-01-15.html">26-01-15 (목)</option>
+<option value="docs/archive/2026-01-14.html">26-01-14 (수)</option>
+<option value="docs/archive/2026-01-13.html">26-01-13 (화)</option>
+<option value="docs/archive/2026-01-12.html">26-01-12 (월)</option>
+<option value="docs/archive/2026-01-09.html">26-01-09 (금)</option>
+<option value="docs/archive/2026-01-08.html">26-01-08 (목)</option>
+<option value="docs/archive/2026-01-07.html">26-01-07 (수)</option>
+<option value="docs/archive/2026-01-06.html">26-01-06 (화)</option>
+<option value="docs/archive/2026-01-05.html">26-01-05 (월)</option>
+<option value="docs/archive/2026-01-02.html">26-01-02 (금)</option>
+    </select>
+  </div>
+  <button class="navBtn disabled" type="button" data-nav="next" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
+</div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
@@ -487,6 +552,15 @@
       <div id="mobileQuickNavBody" class="mobileQuickNavBody"></div>
     </section>
   </div>
+    <div class="chipbar" data-swipe-ignore="1">
+      <div class="chipwrap">
+        <div class="chips" data-swipe-ignore="1"><a class="chip" style="border-color:#0f766e;" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
+<a class="chip" style="border-color:#1d4ed8;" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
+<a class="chip" style="border-color:#6d28d9;" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">3</span></a>
+<a class="chip" style="border-color:#b45309;" href="#sec-pest"><span class="chipTitle">생육 리스크 및 방제</span><span class="chipN">4</span></a></div>
+      </div>
+    </div>
+
 
   <div class="wrap">
     
@@ -497,7 +571,7 @@
           <span class="viewTabDesc">섹션별 핵심 기사와 바로가기를 한눈에 확인합니다.</span>
           <span class="viewTabStats">
             <span class="viewTabStat"><strong>4</strong>개 섹션</span>
-            <span class="viewTabStat"><strong>18</strong>건 기사</span>
+            <span class="viewTabStat"><strong>16</strong>건 기사</span>
           </span>
         </button>
         <button class="viewTab" data-view-tab="commodity" type="button" role="tab" aria-selected="false" aria-controls="view-commodity">
@@ -505,11 +579,12 @@
           <span class="viewTabTitle">전체 품목 보드</span>
           <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
           <span class="viewTabStats">
-            <span class="viewTabStat"><strong>16</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>18</strong>개 연결 품목</span>
             <span class="viewTabStat"><strong>12</strong>개 수급사업</span>
           </span>
         </button>
       </div>
+    
     
     <section id="view-briefing" class="viewPane briefingPane isActive" data-view-pane="briefing" role="tabpanel">
       
@@ -526,7 +601,7 @@
         </div>
         <div class="briefingHeroStat">
           <span class="briefingHeroStatLabel">기사</span>
-          <strong>18건</strong>
+          <strong>16건</strong>
         </div>
         <div class="briefingHeroStat">
           <span class="briefingHeroStatLabel">핵심</span>
@@ -535,9 +610,9 @@
       </div>
     </section>
     
-      <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="--chip-color:#0f766e;--chip-soft:rgba(15,118,110,0.120);--chip-border:rgba(15,118,110,0.360);" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
+      <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="--chip-color:#0f766e;--chip-soft:rgba(15,118,110,0.120);--chip-border:rgba(15,118,110,0.360);" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">4</span></a>
 <a class="chip" style="--chip-color:#1d4ed8;--chip-soft:rgba(29,78,216,0.120);--chip-border:rgba(29,78,216,0.360);" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
-<a class="chip" style="--chip-color:#6d28d9;--chip-soft:rgba(109,40,217,0.120);--chip-border:rgba(109,40,217,0.360);" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">4</span></a>
+<a class="chip" style="--chip-color:#6d28d9;--chip-soft:rgba(109,40,217,0.120);--chip-border:rgba(109,40,217,0.360);" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">3</span></a>
 <a class="chip" style="--chip-color:#b45309;--chip-soft:rgba(180,83,9,0.120);--chip-border:rgba(180,83,9,0.360);" href="#sec-pest"><span class="chipTitle">생육 리스크 및 방제</span><span class="chipN">4</span></a></div></div></div>
       
             <section id="sec-supply" class="sec" style="--sec-color:#0f766e">
@@ -546,23 +621,24 @@
                   <span class="dotColor" style="background:#0f766e"></span>
                   품목 및 수급 동향
                 </div>
-                <div class="secCount">5건</div>
+                <div class="secCount">4건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#0f766e" data-href="http://www.aflnews.co.kr/news/articleView.html?idxno=317253">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">농수축산신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 11:26</span>
                   <span class="dot">·</span>
-                  <span class="topic">무</span>
+                  <span class="topic">정책</span>
                 </div>
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317253" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">전남도, 봄무·봄양배추 재배 의향면적 조사</div>
-              <div class="sum">전남도가 봄무·봄양배추 재배 의향면적 조사를 실시해 예상 생산량을 사전 파악하기로 했다. 조사 결과는 가격과 수급 안정을 위한 선제적 대책 수립의 기초자료로 활용된다.</div>
+              <div class="sum">정원진 전남도 식량원예과장은 &quot;봄배추 등 재배 의향조사는 예상 생산량을 예측할 수 있어 가격 과 수급 안정을 위한 중요한 자료로 활용된다&quot;며 &quot;재배 면적과 생산량을 사전에 파악해 선제적 수급안정 대책을 마련하고...</div>
             </div>
             
 
@@ -570,6 +646,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">경북일보</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 16:00</span>
@@ -579,58 +656,43 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4068112" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">청송 사과 면적 감소 전환…산불 이후 농업 구조 재편 신호</div>
-              <div class="sum">청송 사과 재배면적이 산불 이후 감소세로 전환되며 지역 농업 구조 재편 신호가 나타났다는 내용이다. 산불 피해 농가는 불탄 과원을 정리하고 재식재 중이지만 원상 회복까지 수년이 걸릴 전망이다.</div>
+              <div class="sum">파천면에서 30년째 사과 농사를 짓고 있는 김 모 씨는 수십 년간 가꿔온 과수 원이 하루아침에 잿더미가 된 상황을 전하며 &quot;불에 탄 나무를 모조리 베어내고 새 묘목 을 심고는 있지만 원상태로 회복하는 데만 수년이...</div>
             </div>
             
 
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.nongmin.com/article/20260325500394">
+            <div class="card" style="border-left-color:#0f766e" data-href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100639">
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">농민신문</span>
+                  
+                  <span class="press">한국농업신문</span>
                   <span class="dot">·</span>
-                  <span class="time">03/26 13:13</span>
+                  <span class="time">03/26 10:12</span>
                   <span class="dot">·</span>
-                  <span class="topic">기타</span>
+                  <span class="topic">사과</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500394" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100639" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">함덕농협, 제주산 ‘스타루비’ 자몽 첫선…4년 노력 ‘첫 결실’</div>
-              <div class="sum">함덕농협이 제주산 ‘스타루비’ 자몽을 처음 선보였고, 올해부터 전국 출하가 가능할 정도로 생산량이 늘었다. 2024년 첫 수확 이후 올해 생산량은 33t으로, 현장에서는 만감류 재배 경험이 큰 도움이 됐다고 밝혔다.</div>
+              <div class="ttl">[뉴스팜리포트] 농산물 가격전쟁 종식, &#x27;산지 정보&#x27;와 &#x27;AI 등급제&#x27; 달렸...</div>
+              <div class="sum">특히 사과 ·배 가격 폭등 사례는 단순한 기후 영향이 아닌, 구조적 문제에서 비롯됐다는 분석이 힘을 얻는다.... 현재 도매시장 단계에서는 반입량과 가격 정보가 비교적 투명하게 공개되지만, 생산·저장· 출하 정보는...</div>
             </div>
             
 
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.seoul.co.kr/news/editOpinion/wayside-column/2026/03/27/20260327026003?wlog_tag3=naver">
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.yna.co.kr/view/PYH20260326155800062?input=1196m">
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">서울신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/27 05:13</span>
-                  <span class="dot">·</span>
-                  <span class="topic">포도</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.seoul.co.kr/news/editOpinion/wayside-column/2026/03/27/20260327026003?wlog_tag3=naver" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">[길섶에서] 샤인머스캣 속사정</div>
-              <div class="sum">샤인머스캣이 높은 가격과 재배 편의성으로 대안 품종으로 확산됐지만, 재배면적 증가로 수확 후에도 판매가 어려운 상황이 나타났다는 칼럼이다. 품종 전환이 반복되며 공급 과잉의 이면을 짚었다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e" data-href="http://www.newstomato.com/ReadNews.aspx?no=1295673&amp;inflow=N">
-              <div class="cardTop">
-                <div class="meta">
                   
-                  <span class="press">뉴스토마토</span>
+                  <span class="press">연합뉴스</span>
                   <span class="dot">·</span>
-                  <span class="time">03/26 15:06</span>
+                  <span class="time">03/26 14:39</span>
                   <span class="dot">·</span>
-                  <span class="topic">토마토</span>
+                  <span class="topic">감자</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="http://www.newstomato.com/ReadNews.aspx?no=1295673&amp;inflow=N" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.yna.co.kr/view/PYH20260326155800062?input=1196m" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">‘286%’ 뛴 D램…삼성·SK, 1분기도 ‘쾌청’</div>
-              <div class="sum">AI 산업 성장으로 메모리 수요가 늘면서 지난달 D램 수출금액이 급증했고, 삼성전자와 SK하이닉스의 1분기 실적 기대도 커졌다는 기사다. HBM 중심 생산능력 집중으로 D램 수급도 타이트한 상황으로 전해졌다.</div>
+              <div class="ttl">비닐 대란… 감자 농사 힘드네</div>
+              <div class="sum">26일 강원 춘천시 서면의 감자 밭에서 한 농민이 농업용 멀칭 비닐을 이랑에 씌우고 있다. 농가에 따르면 나프타 수급 불안정으로 인해 멀칭 비닐 1롤 가격이 30%가량 급등해 농사에 어려움을 겪고 있다. 2026.3.26</div>
             </div>
             </div>
             </section>
@@ -649,6 +711,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">데일리안</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 20:02</span>
@@ -658,7 +721,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.dailian.co.kr/news/view/1626012/?sc=Naver" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정</div>
-              <div class="sum">정부가 유가발 물가 확산을 막기 위해 특별관리 품목을 20개 추가 지정했다. 할당관세 도입 이후 수입 과일 가격은 하락세를 보였고, 시설농산물과 외식서비스 등도 관리 대상에 포함됐다.</div>
+              <div class="sum">지난달 할당관세 도입 이후 수입 과일의 가격 도 하락 세를 보이고 있다. 지난 2월 100g당 345원이었던... 명태·조기·오징어·시설 농산물 8종이, 외식서비스는 자장면, 치킨, 햄버거, 피자, 김밥 등 외식서비스 전반 으로...</div>
             </div>
             
 
@@ -666,6 +729,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">헤럴드경제</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 20:01</span>
@@ -675,13 +739,14 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://biz.heraldcorp.com/article/10703520" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">정부, 물가 관리품목 43개로 확대…계란 수입·할인 총동원</div>
-              <div class="sum">정부가 민생물가 특별관리품목을 기존 23개에서 43개로 확대하고 계란 수입과 할인 지원 등을 추진하기로 했다. 오이·토마토·고추·딸기 등 시설농산물이 추가돼 가격을 집중 관리할 방침이다.</div>
+              <div class="sum">민생물가 특별관리품목 을 20개 추가하기로 했다. 현행 23개에서 20개를 늘려 43개 품목 의 가격을 집중... 높은 품목 과 ▷오이 ▷토마토 ▷고추 ▷상추 ▷깻잎 ▷시금치 ▷딸기 ▷호박 등 시설 농산물 이 추가된다....</div>
             </div>
             
 
             <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.khan.co.kr/article/202603262000001">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">경향신문</span>
                   <span class="dot">·</span>
@@ -692,13 +757,14 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202603262000001" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">계란·돼지고기 ‘담합’하면 지원금 배제 검토···중동전쟁 특별관리...</div>
-              <div class="sum">정부가 중동전쟁 여파에 대응해 특별관리 품목을 확대하고, 계란 산지가격 담합을 주도한 업체·협회에는 지원금 배제를 검토한다. 시설농산물 8종과 외식서비스, 일부 공산품까지 관리 대상이 넓어졌다.</div>
+              <div class="sum">분야 유통구조 개선 방안을 발표했다. 정부는 우선 계란 산지가격 담합을 주도한 업체·협회는... 시설 농산물 8종이 추가된다. 자장면·치킨·및 외식서비스, 랩과 같은 가정용 비닐 등 공산품 품목도 지정을 확대한다. 또...</div>
             </div>
             
 
             <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.nongmin.com/article/20260325500582">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
@@ -709,13 +775,14 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500582" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">비료값 급등 우려…“추경에 지원금 반영을”</div>
-              <div class="sum">농협경제지주가 무기질비료 수급 동향 특별팀 회의를 열고 비료값 급등 우려에 대응했다. 현장에서는 추경에 비료 지원금을 반영하지 않으면 농산물 가격 하락과 겹쳐 농가 부담이 커질 수 있다고 지적했다.</div>
+              <div class="sum">농협경제지주는 25일 서울 중구 농협중앙회 신관에서 ‘제3차 무기질비료 수급 동향 특별팀(TF) 회의’를... 경기까지 둔화되면 농산물 가격 하락이 겹치면서 농가가 이중·삼중의 어려움에 직면할 수 있다”고 강조했다.</div>
             </div>
             
 
             <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.yna.co.kr/view/AKR20260326136400062?input=1195m">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">연합뉴스</span>
                   <span class="dot">·</span>
@@ -726,7 +793,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260326136400062?input=1195m" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄</div>
-              <div class="sum">나프타 수급 불안으로 비닐 가격이 급등해 강원 지역 시설재배 농가의 부담이 커지고 있다. 지자체는 난방비와 농자재·면세유 지원 등 기존 사업을 이어가며 가격 추이를 봐 추가 대책을 검토할 계획이다.</div>
+              <div class="sum">앞서 이달 11일 춘천지역 시설재배 농민들은 난방비 지원 대책을 촉구하고 나섰다. 춘천시 농산물 품목연합회... 농자재·면세유 지원 확대 등 기존 사업 을 이어가고, 가격 추이를 살피면서 추가 지원 책을 마련할 방침&quot;이라고...</div>
             </div>
             </div>
             </section>
@@ -738,13 +805,14 @@
                   <span class="dotColor" style="background:#6d28d9"></span>
                   유통 및 현장 (도매시장/APC/수출)
                 </div>
-                <div class="secCount">4건</div>
+                <div class="secCount">3건</div>
               </div>
               <div class="secBody">
             <div class="card" style="border-left-color:#6d28d9" data-href="https://www.nongmin.com/article/20260325500662">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 05:01</span>
@@ -754,30 +822,14 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500662" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">벼 육묘장·농산물 유통센터 ‘문 활짝’</div>
-              <div class="sum">벼 육묘장과 농산물 유통센터가 문을 열며 영농 편의와 산지유통 기능 강화가 기대된다는 소식이다. 유통센터는 선별·유통 경쟁력 제고를 통해 농가소득 증대에 기여할 전망이다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.nongmin.com/article/20260325500641">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  <span class="press">농민신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">03/26 08:01</span>
-                  <span class="dot">·</span>
-                  <span class="topic">도매시장</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500641" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">농협 회장 출마시 조합장 사퇴 의무화…농협개혁위, 13개 과제 발표</div>
-              <div class="sum">농협개혁위원회가 농협 회장 출마 시 조합장 사퇴 의무화 등 13개 개혁 과제를 발표했다. 생산·유통시설 디지털화, 농작업 대행 확대, 온라인도매시장·로컬푸드직매장 활성화도 과제에 포함됐다.</div>
+              <div class="sum">농산물 유통센터 는 농산물 선별과 유통 기능을 강화해 변화하는 유통 환경에 대응하고 산지유통 경쟁력 제고와 농가소득 증대에 기여할 전망이다. 정 조합장은 “시설 준공 을 계기로 조합원 영농편의를 높이고...</div>
             </div>
             
 
             <div class="card" style="border-left-color:#6d28d9" data-href="https://www.nongmin.com/article/20260325500414">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
@@ -788,24 +840,25 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500414" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">충북 음성 화훼 유통센터 10년…수도권 쏠림 현상 바꿨다</div>
-              <div class="sum">한국화훼농협이 운영하는 충북 음성화훼유통센터가 개장 10주년을 맞아 중부권 대표 화훼 경매장으로 자리잡았다는 내용이다. 2016년 첫 경매 이후 현재 전국 분화류 경매의 중심 축 역할을 하고 있다.</div>
+              <div class="sum">한국화훼농협(조합장 유석룡)이 운영하는 충북 음성화훼유통센터가 올해 개장 10주년을 맞아 중부권 대표 화훼 경매 장으로 자리매김하고 있다. 2016년 1월4일 첫 경매를 시작한 음성화훼유통센터는 현재 전국 분화류 경매...</div>
             </div>
             
 
-            <div class="card" style="border-left-color:#6d28d9" data-href="http://www.bizwnews.com/news/articleView.html?idxno=131072">
+            <div class="card" style="border-left-color:#6d28d9" data-href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152">
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">bizwnews</span>
+                  
+                  <span class="press">MBN</span>
                   <span class="dot">·</span>
-                  <span class="time">03/26 14:50</span>
+                  <span class="time">03/26 11:29</span>
                   <span class="dot">·</span>
-                  <span class="topic">도매시장</span>
+                  <span class="topic">수출/검역</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="http://www.bizwnews.com/news/articleView.html?idxno=131072" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5184152" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">농협, 개혁안 나왔다…선거·지배구조·사업 &#x27;전면 손질&#x27;</div>
-              <div class="sum">농협 개혁안으로 선거·지배구조·사업 전반의 손질 방향이 제시됐다. 산지 시설 디지털화와 농작업 대행 확대, 온라인 도매시장 활성화 등으로 유통 구조를 개선하겠다는 내용이 담겼다.</div>
+              <div class="ttl">&quot;벌레 한 마리도 안 돼요&quot; 깐깐한 검역 거쳐 수출 효자 된 K- 농산물</div>
+              <div class="sum">우리 농산물 도 해외에서 반응이 뜨겁죠. 그런데 수출 전에 까다로운 검역 절차를 거쳐야 하는데, 농가들의 철저한 준비로 수출 효자로 거듭나고 있다고 합니다. 홍지호 기자가 수출 을 준비 중인 농가에 다녀왔습니다....</div>
             </div>
             </div>
             </section>
@@ -824,6 +877,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">뉴시스</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 10:49</span>
@@ -833,7 +887,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260326_0003564837" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">산청군, 드론 활용 동계 정밀 방제 …&quot;선제적 차단&quot;</div>
-              <div class="sum">산청군이 과수화상병 유입을 선제 차단하기 위해 사과 주산지에서 드론 활용 동계 정밀 방제를 실시하고 있다. 대상 지역은 차황면과 삼장면 일원이며, 국가검역병 예방 차원의 조치다.</div>
+              <div class="sum">경남 산청군은 국가검역병인 과수화상병 유입을 선제적으로 차단하기 위해 &#x27;드론 활용 동계 정밀 방제 &#x27;를 실시하고 있다고 26일 밝혔다. 지역내 사과 주요 생산지인 차황면과 삼장면 일원에서 실시하는 이번 방제 는 지난...</div>
             </div>
             
 
@@ -841,6 +895,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  
                   <span class="press">경남도민신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 18:35</span>
@@ -850,24 +905,25 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.gndomin.com/news/articleView.html?idxno=470122" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">경남농기원, 3월 단감 병해충 관리 &#x27;적기&#x27;…석회유황합제 살포 중요</div>
-              <div class="sum">경남농업기술원이 3월 단감 병해충 관리 적기로 보고 석회유황합제 살포의 중요성을 강조했다. 지난해 피해 과원은 깍지벌레 방제를 철저히 하고, 탄저병·둥근무늬낙엽병 초기 억제도 함께 추진해야 한다고 밝혔다.</div>
+              <div class="sum">▲ 단감 깍지벌레 /경남농업기술원 작년 피해 과원, 나무껍질 틈새까지 꼼꼼한 방제 필요 2월 기계유유제... 병해인 탄저병 과 둥근무늬낙엽병의 초기 발생도 함께 억제할 수 있다. 약효를 높이기 위해서는 나무껍질...</div>
             </div>
             
 
-            <div class="card" style="border-left-color:#b45309" data-href="https://www.newsis.com/view/NISX20260326_0003564758">
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.newstown.co.kr/news/articleView.html?idxno=698420">
               <div class="cardTop">
                 <div class="meta">
                   
-                  <span class="press">뉴시스</span>
+                  
+                  <span class="press">newstown</span>
                   <span class="dot">·</span>
-                  <span class="time">03/26 10:46</span>
+                  <span class="time">03/26 23:46</span>
                   <span class="dot">·</span>
                   <span class="topic">단감</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260326_0003564758" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.newstown.co.kr/news/articleView.html?idxno=698420" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">단감 &#x27;깍지벌레류&#x27; 급증…&quot;지금 방제 &quot; 약제 살포 어떻게?</div>
-              <div class="sum">경남농업기술원이 지난해 장기 고온 등 영향으로 단감 깍지벌레류가 급증했다며 지금 방제를 당부했다. 약제 살포 시 나무껍질 틈새까지 꼼꼼히 처리하면 탄저병과 둥근무늬낙엽병 초기 억제에도 도움이 된다.</div>
+              <div class="ttl">경남도 단감 과수원 병해충 증가 선제 방제 당부 강화</div>
+              <div class="sum">이 시기에는 석회유황합제를 활용한 방제 가 효과적이다. 해당 약제를 살포하면 깍지벌레와 응애류뿐 아니라 탄저병 과 둥근무늬낙엽병 등 주요 병해의 초기 발생을 동시에 억제할 수 있다. 약효를 높이기 위해서는...</div>
             </div>
             
 
@@ -875,16 +931,17 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  
                   <span class="press">팜&amp;마켓</span>
                   <span class="dot">·</span>
                   <span class="time">03/26 17:50</span>
                   <span class="dot">·</span>
-                  <span class="topic">사과</span>
+                  <span class="topic">병해충</span>
                 </div>
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25972" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">보은군, 과수화상병 예방 총력</div>
-              <div class="sum">보은군농업기술센터가 과수화상병 예방을 위해 군내 모든 사과·배 재배 농가에 방제 약제 공급을 완료했다. 과수화상병의 선제 차단으로 농가 피해를 줄이기 위한 조치다.</div>
+              <div class="sum">특히 개화기 방제 는 과수화상병 감염 위험이 가장 높은 핵심 구간이다. 이에 따라 농가는 과수화상병 예측정보시스템을 수시로 확인하여 위험경보가 발생할 경우, 발생 전후 2일 이내에 신속하게 약제를 살포하는 것이...</div>
             </div>
             </div>
             </section>
@@ -906,7 +963,7 @@
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">오늘 연결</span>
-            <strong>16개</strong>
+            <strong>18개</strong>
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">수급사업 연결</span>
@@ -914,7 +971,7 @@
           </div>
         </div>
       </div>
-      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>4</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>4</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>6</span></a></div></div></div>
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>4</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>3</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>4</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>7</span></a></div></div></div>
       
             <section id="commodity-group-root_leaf" class="commodityGroupBlock" style="--commodity-group-color:#0f766e;--commodity-group-soft:rgba(15,118,110,0.070);--commodity-group-border:rgba(15,118,110,0.220);">
               <div class="commodityGroupHead">
@@ -932,15 +989,18 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 31건</span>
+                    <span>기사 5건</span>
                     <span>핵심 1건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.safetimes.co.kr/news/articleView.html?idxno=241181" target="_top" rel="noopener">농식품부 , 봄배추 수급 점검 … &#x27;중동발 비료&#x27; 수급 대응</a>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.safetimes.co.kr/news/articleView.html?idxno=241181" target="_top" rel="noopener">농식품부, 봄배추 수급 점검 … &#x27;중동발 비료&#x27; 수급 대응</a>
                     <div class="commodityPrimaryMeta">수급 · 세이프타임즈 · 03/26 16:52</div>
                   </div>
                   
@@ -961,7 +1021,7 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 28건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
                       <div class="commodityMoreList">
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://kstar.kbs.co.kr/list_view.html?idx=396707" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
@@ -971,136 +1031,6 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ikbc.co.kr/article/view/kbc202603260013" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">전남도 봄무·봄양배추 재배 의향면적 조사</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsclaim.co.kr/news/articleView.html?idxno=3059121" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27; 정관스님과 토종 식재료 갈라 디너</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://woman.chosun.com/news/articleView.html?idxno=125350" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 한식당 &#x27;라연&#x27;, 정관스님과 특별 디너 만석 기록</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ajunews.com/view/20260326083331818" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 사찰음식 명장 정관스님과 &#x27;미식 향연&#x27;…토종 식재...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260326_0003564406" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 정관스님과 토종 식재료 우수성 알리기 나서</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.thepowernews.co.kr/view.php?ud=202603261336234702de3f0aa1be_7" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔, 정관스님과 토종 식재료 알리기 나서</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.insightkorea.co.kr/news/articleView.html?idxno=243525" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 정관스님과 협업…사찰음식 접목 디너 선봬</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.worktoday.co.kr/news/articleView.html?idxno=83060" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 손잡고 토종 식재료 우수성 알리기 나...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.thefirstmedia.net/news/articleView.html?idxno=196477" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 사찰음식 명장 정관스님과 토종 식재료 우수성 알...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.startuptoday.co.kr/news/articleView.html?idxno=604908" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 손잡고 토종 식재료 우수성 알려</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.sisacast.kr/news/articleView.html?idxno=94198" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔, 라연 정관스님과 &#x27;토종 식재료 우수성 알리기&#x27; 전개</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.catchnews.kr/news/articleView.html?idxno=122050" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27; 정관스님과 선뵌 갈라 디너 &#x27;흥행 성공&#x27;</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.techholic.co.kr/news/articleView.html?idxno=220520" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 토종 식재료 우수성 알린 &#x27;갈라 디너...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.queen.co.kr/news/articleView.html?idxno=453829" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 손잡고 토종 식재료 우수성 알리기 나...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.cstimes.com/news/articleView.html?idxno=699444" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 토종 식재료 우수성 알리기 나서</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newslock.co.kr/news/articleView.html?idxno=127549" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, &#x27;사찰음식 명장&#x27; 정관스님과 협업... 토종 식재료 우...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.businessplus.kr/news/articleView.html?idxno=109506" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 손잡고 토종 식재료 우수성 알리기 나...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kpinews.kr/newsView/1065577359521683" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 토종 식재료 우수성 알리기 나서</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsworks.co.kr/news/articleView.html?idxno=835522" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 정관스님과 토종 식재료 우수성 알렸다</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.econovill.com/news/articleView.html?idxno=734867" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님 손잡고 토종 식재료 우수성 알리기 나서</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.womentimes.co.kr/news/articleView.html?idxno=101562" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 포핸즈 갈라 디너 선봬</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.thebigdata.co.kr/view.php?ud=202603260826194996bbceadc3c9_23" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 ‘라연’, 정관스님과 손잡고 토종 식재료 우수성 알린다</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.financialreview.co.kr/news/articleView.html?idxno=41206" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[오늘의 호텔] 롯데호텔앤리조트·서울신라호텔</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.the-pr.co.kr/news/articleView.html?idxno=60932" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 정관스님과 손잡고 &#x27;토종 식재료&#x27; 가치 알린다</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.edaily.co.kr/news/newspath.asp?newsid=04332886645387256" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 ‘라연’, 정관스님과 토종 식재료 알렸다</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.ttlnews.com/news/articleView.html?idxno=3092556" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 라연, 정관스님과 &#x27;명상적 미식 경험&#x27; 공유</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.lcnews.co.kr/news/articleView.html?idxno=126173" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">서울신라호텔 &#x27;라연&#x27;, 정관스님과 협업…토종 식재료 갈라 디너 공개</span>
                     </a>
                     </div>
                     </details>
@@ -1122,7 +1052,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317253" target="_top" rel="noopener">전남도, 봄무·봄양배추 재배 의향면적 조사</a>
                     <div class="commodityPrimaryMeta">수급 · 농수축산신문 · 03/26 11:26</div>
                   </div>
@@ -1155,7 +1088,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160291223150017" target="_top" rel="noopener">생활개선의왕시연합회, 감자 나눔위한 농장포 조성</a>
                     <div class="commodityPrimaryMeta">수급 · 시민일보 · 03/26 16:46</div>
                   </div>
@@ -1176,21 +1112,6 @@
                     </div>
                     
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260326136400062?input=1195m" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.edaily.co.kr/news/newspath.asp?newsid=01941766645387584" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">정책</span>
-                      <span class="commoditySupportText">&quot;한 사람의 나눔이 아이에게 영양을, 농가에는 희망을&quot;</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1208,7 +1129,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.jejudomin.co.kr/news/articleView.html?idxno=317877" target="_top" rel="noopener">제주농협, 양배추 샐러드 나눔으로 건강한 출근길 응원</a>
                     <div class="commodityPrimaryMeta">수급 · jejudomin · 03/26 10:18</div>
                   </div>
@@ -1234,9 +1158,9 @@
                   <span class="commodityGroupDot" style="background:#b45309"></span>
                   <h3>양념채소류</h3>
                 </div>
-                <div class="commodityGroupMeta">활성 품목 2 / 5 · 수급사업 2 / 4</div>
+                <div class="commodityGroupMeta">활성 품목 3 / 5 · 수급사업 2 / 4</div>
               </div>
-              <div class="commodityGrid isDuo">
+              <div class="commodityGrid">
                 
                 <article id="commodity-green_onion" class="commodityTile isActive">
                   <div class="commodityTileTop">
@@ -1251,7 +1175,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003218342&amp;CMPT_CD=P0010" target="_top" rel="noopener">요즘 쪽파는 보약... 파김치를 세 번이나 담갔습니다</a>
                     <div class="commodityPrimaryMeta">수급 · 오마이뉴스 · 03/26 11:16</div>
                   </div>
@@ -1274,27 +1201,41 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.sentv.co.kr/article/view/sentv202603260146" target="_top" rel="noopener">영천시, 영천 마늘 활용한 가공기술 민간이전... 산업 화·시장 확대 전환...</a>
                     <div class="commodityPrimaryMeta">수급 · 서울경제TV · 03/26 22:14</div>
                   </div>
                   
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dailian.co.kr/news/view/1626012/?sc=Naver" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정</span>
-                    </a>
+                </div>
+                
+                </article>
+                
+                <article id="commodity-ginger" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">생강</div>
                     
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">정부 &#x27;중동전쟁 물가대응팀&#x27; 만든다 … 택배비·외식비·학원비까지 특...</span>
-                    </a>
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 1건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
                     </div>
-                    </details>
-                    
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.kbsm.net/news/view.php?idx=513346" target="_top" rel="noopener">경북도농기원, 씨 생강 뿌리썩음병 예방 당부...3단계 관리 철저</a>
+                    <div class="commodityPrimaryMeta">수급 · 경북신문 · 03/26 11:10</div>
+                  </div>
+                  
+                  
                 </div>
                 
                 </article>
@@ -1302,8 +1243,8 @@
               </div>
               
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">미연결 품목 3개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">양파  ·수급</span><span class="commodityMiniChip isCore">건고추  ·수급</span><span class="commodityMiniChip">생강</span></div>
+              <div class="commodityInactiveTitle">미연결 품목 2개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">양파  ·수급</span><span class="commodityMiniChip isCore">건고추  ·수급</span></div>
             </div>
             
               
@@ -1325,14 +1266,17 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 7건</span>
+                    <span>기사 6건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span><span class="commoditySig" data-section="supply">수급</span></div>
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.inews24.com/view/1953811" target="_top" rel="noopener">진안군, 토마토 농장 &#x27; 토마토뿔나방 &#x27; 방제 비상</a>
                     <div class="commodityPrimaryMeta">리스크 · inews24 · 03/26 16:12</div>
                   </div>
@@ -1340,11 +1284,6 @@
                     <div class="commoditySupportList">
                       <div class="commoditySupportTitle">추가 기사</div>
                       
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.newstomato.com/ReadNews.aspx?no=1295673&amp;inflow=N" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">‘286%’ 뛴 D램…삼성·SK, 1분기도 ‘쾌청’</span>
-                    </a>
-                    
                     <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.viva100.com/article/20260326500575" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">[오늘의 신상] 저속노화·토마토 코어 반영…이랜드이츠 애슐리퀸즈, ‘...</span>
@@ -1353,31 +1292,6 @@
                     </div>
                     
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.edaily.co.kr/news/newspath.asp?newsid=01941766645387584" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">정책</span>
-                      <span class="commoditySupportText">&quot;한 사람의 나눔이 아이에게 영양을, 농가에는 희망을&quot;</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://andongmbc.co.kr/adboard/NewsView81523" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[R] &quot;난방비만 월 300만 원&quot;.. 기름값 급등에 농민 한숨</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.seoul.co.kr/news/publicnews/local_govern/news_local/2026/03/27/20260327019006?wlog_tag3=naver" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">“난방비 월 1000만원 증가”… 전남 시설재배 농가 ‘유가 쇼크’</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.metroseoul.co.kr/article/20260326500100" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">봉화군 스마트팜, 판로까지 설계한다...청년농과 유통기업 한자리에</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1388,69 +1302,22 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 9건</span>
+                    <span>기사 4건</span>
                     <span>핵심 0건</span>
                   </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span><span class="commoditySig" data-section="supply">수급</span></div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span></div>
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160287588210241" target="_top" rel="noopener">안성시 서부농업기술상담소, 기후변화 대응 시설 오이 병해충 방제 전문...</a>
                     <div class="commodityPrimaryMeta">리스크 · 시민일보 · 03/26 16:46</div>
                   </div>
                   
-                    <div class="commoditySupportList">
-                      <div class="commoditySupportTitle">추가 기사</div>
-                      
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://biz.chosun.com/stock/stock_general/2026/03/26/V3JW4QSIVZHZ5BKSK45QJFPBHQ/" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">하나證 “ 오이 솔루션, 주가 상승 초입 국면…하반기 흑자 전환 기대”</span>
-                    </a>
-                    
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.joongangenews.com/news/articleView.html?idxno=506264" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">오이 솔루션 주가, 3월 26일 장중 40,200원 기록 3.37% 하락</span>
-                    </a>
-                    
-                    </div>
-                    
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 6건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.hellot.net/news/article.html?no=111660" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[헬로스톡] 3월 26일 주목할 종목: 알테오젠· 오이 솔루션·SK스퀘어·한솔...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.mt.co.kr/stock/2026/03/26/2026032608552456704" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">오이 솔루션, 하반기 흑자전환 예상…목표가 6만원으로 상향-하나</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.irobotnews.com/news/articleView.html?idxno=45549" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">中 로봇핸드 기업 &#x27; 오이 모션&#x27;, 300억원 대 투자 유치</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4068200" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">중동 유가 불안에 경북 시설농가 &#x27;직격탄&#x27;…난방비 급등에 생산비 압박</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317264" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">품종 선택이 중요한 오이 정식기…경농, &#x27;PMR춘향1542&#x27; 추천</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsam.co.kr/news/article.html?no=42433" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">오이 정식기, 품종 선택이 수량을 좌우한다!</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1468,27 +1335,15 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.ppss.kr/news/articleView.html?idxno=289755" target="_top" rel="noopener">박성현 5차 공약, 광양 민생경제 정조준…농민·소상공인·근로자 챙겼...</a>
                     <div class="commodityPrimaryMeta">수급 · PPSS · 03/26 13:42</div>
                   </div>
                   
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2410806" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">경기농협, 애호박 생산조직 교육…출하량 확대 추진</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.gnmaeil.com/news/articleView.html?idxno=583271" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">이 대통령 잦은 경남 방문 &quot;혹 선거용&quot;</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1506,7 +1361,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.yna.co.kr/view/AKR20260326136400062?input=1195m" target="_top" rel="noopener">나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄</a>
                     <div class="commodityPrimaryMeta">수급 · 연합뉴스 · 03/26 15:14</div>
                   </div>
@@ -1527,31 +1385,6 @@
                     </div>
                     
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.huffingtonpost.kr/article/256148" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">&#x27;논산 딸기 축제&#x27;서 볼 수 있는 딸기 인형 &#x27;스윗벨&#x27; : 인기 폭발이지만...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4068200" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">중동 유가 불안에 경북 시설농가 &#x27;직격탄&#x27;…난방비 급등에 생산비 압박</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ytn.co.kr/_ln/0115_202603270139414363" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">볕 양 따라 비료 공급...비룟값 상승 돌파구 &#x27;주목&#x27;</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.seoul.co.kr/news/publicnews/local_govern/news_local/2026/03/27/20260327019006?wlog_tag3=naver" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">“난방비 월 1000만원 증가”… 전남 시설재배 농가 ‘유가 쇼크’</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1572,7 +1405,7 @@
                   <span class="commodityGroupDot" style="background:#1d4ed8"></span>
                   <h3>과수화훼류</h3>
                 </div>
-                <div class="commodityGroupMeta">활성 품목 6 / 13 · 수급사업 4 / 5</div>
+                <div class="commodityGroupMeta">활성 품목 7 / 13 · 수급사업 4 / 5</div>
               </div>
               <div class="commodityGrid">
                 
@@ -1589,7 +1422,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4068112" target="_top" rel="noopener">청송 사과 면적 감소 전환…산불 이후 농업 구조 재편 신호</a>
                     <div class="commodityPrimaryMeta">수급 · 경북일보 · 03/26 16:00</div>
                   </div>
@@ -1597,22 +1433,27 @@
                     <div class="commoditySupportList">
                       <div class="commoditySupportTitle">추가 기사</div>
                       
+                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100639" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">수급</span>
+                      <span class="commoditySupportText">[뉴스팜리포트] 농산물 가격전쟁 종식, &#x27;산지 정보&#x27;와 &#x27;AI 등급제&#x27; 달렸...</span>
+                    </a>
+                    
                     <a class="commoditySupportStory" data-swipe-ignore="1" href="https://www.kpinews.kr/newsView/1065574663526783" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">리스크</span>
                       <span class="commoditySupportText">[산청군 소식] 사과 주산지 &#x27;드론 방제 &#x27;-웰니스 광역시티투어 운영</span>
-                    </a>
-                    
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="http://www.gnmaeil.com/news/articleView.html?idxno=583328" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">리스크</span>
-                      <span class="commoditySupportText">산청군, 지역 명품사과 드론으로 지킨다</span>
                     </a>
                     
                     </div>
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 16건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
                       <div class="commodityMoreList">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.gnmaeil.com/news/articleView.html?idxno=583328" target="_top" rel="noopener">
+                      <span class="commoditySupportLabel">리스크</span>
+                      <span class="commoditySupportText">산청군, 지역 명품사과 드론으로 지킨다</span>
+                    </a>
+                    
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.gndomin.com/news/articleView.html?idxno=470120" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">리스크</span>
                       <span class="commoditySupportText">산청군, 명품사과 드론으로 지킨다</span>
@@ -1626,71 +1467,6 @@
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.breaknews.com/1195503" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">리스크</span>
                       <span class="commoditySupportText">산청군, 명품사과 드론으로 지킨다</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsworks.co.kr/news/articleView.html?idxno=835619" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[수원시 소식] &quot;쓰레기 종량제 봉투 물량 8월까지 충분&quot;·&#x27;모바일 음성 ...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dailian.co.kr/news/view/1626012/?sc=Naver" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">정부, 유가발 물가 확산 차단…특별관리 품목 20개 추가 지정</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://biz.newdaily.co.kr/site/data/html/2026/03/26/2026032600437.html" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">정부 &#x27;중동전쟁 물가대응팀&#x27; 만든다 … 택배비·외식비·학원비까지 특...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100639" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[뉴스팜리포트] 농산물 가격전쟁 종식, &#x27;산지 정보&#x27;와 &#x27;AI 등급제&#x27; 달렸...</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25972" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">리스크</span>
-                      <span class="commoditySupportText">보은군, 과수화상병 예방 총력</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.kbmaeil.com/article/20260326500243" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">문경시, 올해 상반기 외국인 계절근로자 147명 현장 투입</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.dynews.co.kr/news/articleView.html?idxno=844019" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">제천시, 19기 농업인대학 개강식 개최</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.cctimes.kr/news/articleView.html?idxno=898435" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">제천시, 제19기 농업인대학 개강식 개최</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ccdailynews.com/news/articleView.html?idxno=2405894" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">전문 농업인 양성, &#x27;제19기 제천시농업인대학&#x27; 개강</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ggilbo.com/news/articleView.html?idxno=1149029" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">제천시, &#x27;제19기 농업인대학 개강식&#x27; 개최</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.viva100.com/article/20260325501523" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">제천시, 농업인대학 개강으로 농업 경쟁력 강화</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.dkilbo.com/news/articleView.html?idxno=538663" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">(사)한국여성농업인청송군연합회, &#x27;2026년 리더십 교육&#x27; 성료</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.breaknews.com/1195456" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">제천시, 제19기 농업인대학 2개과정 개강</span>
                     </a>
                     </div>
                     </details>
@@ -1712,7 +1488,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.gndomin.com/news/articleView.html?idxno=470122" target="_top" rel="noopener">경남농기원, 3월 단감 병해충 관리 &#x27;적기&#x27;…석회유황합제 살포 중요</a>
                     <div class="commodityPrimaryMeta">리스크 · 경남도민신문 · 03/26 18:35</div>
                   </div>
@@ -1733,16 +1512,6 @@
                     </div>
                     
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.newstown.co.kr/news/articleView.html?idxno=698420" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">리스크</span>
-                      <span class="commoditySupportText">경남도 단감 과수 원 병해충 증가 선제 방제 당부 강화</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1753,14 +1522,17 @@
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 3건</span>
+                    <span>기사 4건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500678" target="_top" rel="noopener">가락시장 ‘출하비용 보전사업’ 속속 안착</a>
                     <div class="commodityPrimaryMeta">수급 · 농민신문 · 03/27 05:01</div>
                   </div>
@@ -1776,16 +1548,6 @@
                     </div>
                     
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.newsworks.co.kr/news/articleView.html?idxno=835619" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">[수원시 소식] &quot;쓰레기 종량제 봉투 물량 8월까지 충분&quot;·&#x27;모바일 음성 ...</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1803,22 +1565,15 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.nocutnews.co.kr/news/6491574" target="_top" rel="noopener">위성곤 &quot;제주 AX 대전환·기초자치권 부활 완성하겠다&quot;</a>
                     <div class="commodityPrimaryMeta">수급 · 노컷뉴스 · 03/26 13:59</div>
                   </div>
                   
                   
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
-                      <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.jejumaeil.net/news/articleView.html?idxno=356792" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">성산지역 키위특화단지 조성사업 &#x27;지지부진&#x27;</span>
-                    </a>
-                    </div>
-                    </details>
-                    
                 </div>
                 
                 </article>
@@ -1829,14 +1584,17 @@
                     
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 14건</span>
+                    <span>기사 13건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span><span class="commoditySig" data-section="dist">유통</span></div>
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.fntoday.co.kr/news/articleView.html?idxno=380807" target="_top" rel="noopener">이재명 정부 25일 &#x27;비상경제상황실&#x27; 가동에 &#x27;제조기업 수 1위&#x27; 화성특례...</a>
                     <div class="commodityPrimaryMeta">수급 · fntoday · 03/26 16:26</div>
                   </div>
@@ -1858,7 +1616,7 @@
                     
                   
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 11건 더 보기</summary>
+                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 8건 더 보기</summary>
                       <div class="commodityMoreList">
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003218549&amp;CMPT_CD=P0010" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">정책</span>
@@ -1895,24 +1653,9 @@
                       <span class="commoditySupportText">정명근 화성특례시장, 에너지수급 불안에 긴급 민생현장 점검</span>
                     </a>
                     
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160283430438174" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">화성특례시, 관내 기업 및 농장 긴급 현장 점검</span>
-                    </a>
-                    
                     <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2411139" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
                       <span class="commoditySupportText">화성특례시, 보온재 제조 공장 및 화훼 농장 긴급 현장점검</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202603261508001" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">정명근 화성시장, ‘에너지 수급 불안’ 지역 기업·농장 긴급 점검</span>
-                    </a>
-                    
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="http://www.edaily.co.kr/news/newspath.asp?newsid=04831446645387256" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">&quot;민생수혈 선봉&quot; 정명근 화성시장, 추경에 &#x27;골든타임 자금&#x27; 편성 지시</span>
                     </a>
                     </div>
                     </details>
@@ -1934,9 +1677,38 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.jejumaeil.net/news/articleView.html?idxno=356792" target="_top" rel="noopener">성산지역 키위특화단지 조성사업 &#x27;지지부진&#x27;</a>
                     <div class="commodityPrimaryMeta">수급 · jejumaeil · 03/26 13:56</div>
+                  </div>
+                  
+                  
+                </div>
+                
+                </article>
+                
+                <article id="commodity-chestnut" class="commodityTile isActive">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">밤</div>
+                    
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>기사 1건</span>
+                    <span>핵심 0건</span>
+                  </div>
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+                  
+                <div class="commodityStoryCluster">
+                  <div class="commodityPrimaryCard">
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.financialreview.co.kr/news/articleView.html?idxno=41214" target="_top" rel="noopener">[오늘의 편의점] CU·세븐일레븐·이마트24</a>
+                    <div class="commodityPrimaryMeta">수급 · financialreview · 03/26 14:10</div>
                   </div>
                   
                   
@@ -1947,8 +1719,8 @@
               </div>
               
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">미연결 품목 7개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">배  ·수급</span><span class="commodityMiniChip">감/곶감</span><span class="commodityMiniChip">복숭아</span><span class="commodityMiniChip">매실</span><span class="commodityMiniChip">유자</span><span class="commodityMiniChip">밤</span><span class="commodityMiniChip">자두</span></div>
+              <div class="commodityInactiveTitle">미연결 품목 6개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">배  ·수급</span><span class="commodityMiniChip">감/곶감</span><span class="commodityMiniChip">복숭아</span><span class="commodityMiniChip">매실</span><span class="commodityMiniChip">유자</span><span class="commodityMiniChip">자두</span></div>
             </div>
             
               
@@ -1996,7 +1768,7 @@
         }
       });
       var isDevPreviewPage = false;
-      var devLoaderHref = "/agri-news-brief/";
+      var devLoaderHref = "docs";
       var devArchiveManifestUrl = "";
       var currentReportDate = "2026-03-27";
       var rootEl = document.documentElement;
@@ -2839,7 +2611,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: 456da4d -->
+  <!-- build: fb66baf -->
 
 </body>
 </html>
