@@ -23025,7 +23025,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
             for (var i = 0; i < archiveCards.length; i++) {{
               var c = archiveCards[i];
               var href = c.getAttribute("href") || "";
-              var m = href.match(/(\d{{4}}-\d{{2}}-\d{{2}})\.html/);
+              var m = href.match(/(\\d{{4}}-\\d{{2}}-\\d{{2}})\\.html/);
               if (m && dateCounts[m[1]]) {{
                 var badge = document.createElement("span");
                 badge.className = "cardBadge";
