@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T16:58:00+09:00",
-  "build_tag": "63872d9",
+  "generated_at_kst": "2026-03-29T18:00:44+09:00",
+  "build_tag": "d175ee7",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13611,7 +13611,7 @@
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
       "total_candidates": 242,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -13774,7 +13774,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 23.7,
           "semantic_similarity": 0.832,
@@ -13787,10 +13787,10 @@
           "domain": "nongmin.com",
           "title": "가락시장 ‘출하비용 보전사업’ 속속 안착",
           "url": "https://www.nongmin.com/article/20260325500678",
-          "reason": "",
+          "reason": "tail_cut",
           "fit_score": 0.95,
-          "selection_stage": "supply_board_bridge",
-          "selection_note": "grape",
+          "selection_stage": "tail_cut",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "샤인머스캣 가격",
