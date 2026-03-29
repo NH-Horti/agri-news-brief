@@ -6,71 +6,109 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Agri Brief Admin Dashboard</title>
+  <title>Agri Brief Data Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./assets/admin.css" />
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
   <div class="shell">
-    <header class="hero">
-      <div class="heroMain">
-        <p class="eyebrow">Operations</p>
-        <h1>Agri Brief Dashboard</h1>
-        <p class="lede">Track visits, article clicks, search activity, and navigation signals from the static brief.</p>
+    <header class="masthead">
+      <div class="brandBlock">
+        <p class="eyebrow">admin telemetry</p>
+        <h1>Agri Brief Data Room</h1>
+        <p class="lede">A premium operations view for visits, article consumption, search intent, and collection health.</p>
       </div>
-      <div class="heroMeta">
+      <div class="mastheadMeta">
         <div class="metaCard">
-          <span class="metaLabel">Status</span>
-          <strong id="statusBadge">Loading</strong>
+          <span class="metaLabel">collection status</span>
+          <strong id="statusBadge" class="statusPill statusIdle">idle</strong>
         </div>
         <div class="metaCard">
-          <span class="metaLabel">Last Updated</span>
+          <span class="metaLabel">last refresh</span>
           <strong id="lastUpdated">-</strong>
         </div>
-        <a class="heroLink" href="../index.html">Open Public Brief</a>
+        <a class="heroLink" href="../index.html">Open public brief</a>
       </div>
     </header>
 
+    <section class="signalStrip">
+      <article class="signalCard">
+        <span class="signalLabel">signal 01</span>
+        <strong>Check whether incoming traffic converts into article opens.</strong>
+        <p>Sessions, pageviews, article clicks, and CTR should move together when the brief is landing well.</p>
+      </article>
+      <article class="signalCard">
+        <span class="signalLabel">signal 02</span>
+        <strong>Watch which section is pulling the most attention right now.</strong>
+        <p>Section click concentration tells you where readers are leaning without digging into every row.</p>
+      </article>
+      <article class="signalCard">
+        <span class="signalLabel">signal 03</span>
+        <strong>Look for friction in search, jumps, and archive navigation.</strong>
+        <p>Navigation behavior reveals whether users are scanning smoothly or forcing themselves through the UI.</p>
+      </article>
+    </section>
+
     <section class="toolbar">
-      <div class="toolbarBlock">
-        <span class="toolbarLabel">Range</span>
-        <div class="pillRow">
-          <button class="pill isActive" type="button" data-range="7">7d</button>
-          <button class="pill" type="button" data-range="30">30d</button>
-          <button class="pill" type="button" data-range="90">90d</button>
-          <button class="pill" type="button" data-range="custom">Custom</button>
+      <div class="toolbarMain">
+        <div class="toolbarBlock">
+          <span class="toolbarLabel">window</span>
+          <div class="pillRow">
+            <button class="pill isActive" type="button" data-range="7">Last 7D</button>
+            <button class="pill" type="button" data-range="30">Last 30D</button>
+            <button class="pill" type="button" data-range="90">Last 90D</button>
+            <button class="pill" type="button" data-range="custom">Custom</button>
+          </div>
+        </div>
+
+        <div class="toolbarBlock">
+          <span class="toolbarLabel">filters</span>
+          <div class="controlRow">
+            <label class="toggle">
+              <input id="compareToggle" type="checkbox" checked />
+              <span>Compare previous window</span>
+            </label>
+            <select id="sectionFilter" class="control">
+              <option value="">All sections</option>
+            </select>
+            <select id="surfaceFilter" class="control">
+              <option value="">All surfaces</option>
+            </select>
+            <input id="fromDate" class="control" type="date" />
+            <input id="toDate" class="control" type="date" />
+            <button id="applyCustomRange" class="ghostBtn" type="button">Apply</button>
+          </div>
         </div>
       </div>
 
-      <div class="toolbarBlock">
-        <span class="toolbarLabel">Filters</span>
-        <div class="controlRow">
-          <label class="toggle">
-            <input id="compareToggle" type="checkbox" checked />
-            <span>Compare previous period</span>
-          </label>
-          <select id="sectionFilter" class="control">
-            <option value="">All sections</option>
-          </select>
-          <select id="surfaceFilter" class="control">
-            <option value="">All surfaces</option>
-          </select>
-          <input id="fromDate" class="control" type="date" />
-          <input id="toDate" class="control" type="date" />
-          <button id="applyCustomRange" class="ghostBtn" type="button">Apply</button>
-        </div>
+      <div class="toolbarSummary">
+        <span class="toolbarLabel">active window</span>
+        <strong id="rangeLabel">-</strong>
       </div>
     </section>
 
-    <section id="kpiGrid" class="kpiGrid"></section>
+    <section class="workspaceSection">
+      <div class="sectionHead">
+        <div>
+          <p class="sectionKick">selected kpis</p>
+          <h2>Primary operating metrics</h2>
+        </div>
+        <p class="sectionNote">This layer is tuned for quick monitoring, not reporting. Every card reflects the live filter state.</p>
+      </div>
+      <section id="kpiGrid" class="kpiGrid"></section>
+    </section>
 
     <section class="contentGrid">
       <article class="panel panelWide">
         <div class="panelHead">
           <div>
-            <p class="panelEyebrow">Trend</p>
-            <h2>Visits vs Article Clicks</h2>
+            <p class="panelEyebrow">traffic shape</p>
+            <h2>Sessions vs article opens</h2>
           </div>
-          <p id="rangeLabel" class="panelNote">-</p>
+          <p class="panelNote">A compact read on demand generation and content pull over time.</p>
         </div>
         <div id="trendChart" class="chartFrame"></div>
       </article>
@@ -78,9 +116,10 @@
       <article class="panel">
         <div class="panelHead">
           <div>
-            <p class="panelEyebrow">Interest</p>
-            <h2>Clicks by Section</h2>
+            <p class="panelEyebrow">section pulse</p>
+            <h2>Section click share</h2>
           </div>
+          <p class="panelNote">Which editorial lane is attracting the most article intent.</p>
         </div>
         <div id="sectionBars" class="barStack"></div>
       </article>
@@ -90,8 +129,8 @@
       <article class="panel tablePanel">
         <div class="panelHead">
           <div>
-            <p class="panelEyebrow">Content</p>
-            <h2>Top Articles</h2>
+            <p class="panelEyebrow">content ranking</p>
+            <h2>Top articles</h2>
           </div>
           <p id="articleSummary" class="panelNote">-</p>
         </div>
@@ -99,13 +138,13 @@
           <table>
             <thead>
               <tr>
-                <th>#</th>
+                <th>Rank</th>
                 <th>Article</th>
                 <th>Date</th>
                 <th>Section</th>
                 <th>Clicks</th>
                 <th>Users</th>
-                <th>Surface</th>
+                <th>Primary surface</th>
                 <th>Links</th>
               </tr>
             </thead>
@@ -118,9 +157,10 @@
         <article class="panel">
           <div class="panelHead">
             <div>
-              <p class="panelEyebrow">Navigation</p>
-              <h2>Interaction Mix</h2>
+              <p class="panelEyebrow">navigation mix</p>
+              <h2>Interaction balance</h2>
             </div>
+            <p class="panelNote">A compressed read on how people move once they arrive.</p>
           </div>
           <div id="navigationMetrics" class="metricList"></div>
         </article>
@@ -128,9 +168,10 @@
         <article class="panel">
           <div class="panelHead">
             <div>
-              <p class="panelEyebrow">Search</p>
-              <h2>Top Queries</h2>
+              <p class="panelEyebrow">search intent</p>
+              <h2>Top queries</h2>
             </div>
+            <p class="panelNote">The cleanest signal for what readers are trying to find next.</p>
           </div>
           <div id="searchTerms" class="listStack"></div>
         </article>
@@ -138,9 +179,10 @@
         <article class="panel">
           <div class="panelHead">
             <div>
-              <p class="panelEyebrow">Health</p>
-              <h2>Collection State</h2>
+              <p class="panelEyebrow">pipeline health</p>
+              <h2>Collection state</h2>
             </div>
+            <p class="panelNote">Tracking, last event, and dashboard pipeline health in one place.</p>
           </div>
           <div id="healthState" class="healthBox"></div>
         </article>
