@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T00:56:41+09:00",
-  "build_tag": "c58a24d",
+  "generated_at_kst": "2026-03-29T10:10:56+09:00",
+  "build_tag": "56d1ef0",
   "filter_rejects": [
     {
       "section": "policy",
@@ -16245,36 +16245,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.85,
-          "semantic_similarity": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "이데일리",
-          "domain": "edaily.co.kr",
-          "title": "\"한 사람의 나눔이 아이에게 영양을, 농가에는 희망을\"",
-          "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=01941766645387584",
-          "reason": "below_threshold",
-          "fit_score": 2.17,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "감자 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.4,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 21.74,
           "semantic_similarity": 0.0,
           "semantic_boost": 0.0,
@@ -16300,6 +16270,36 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.65,
+          "semantic_similarity": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "이데일리",
+          "domain": "edaily.co.kr",
+          "title": "\"한 사람의 나눔이 아이에게 영양을, 농가에는 희망을\"",
+          "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=01941766645387584",
+          "reason": "below_threshold",
+          "fit_score": 2.17,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "감자 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.4,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
@@ -16575,7 +16575,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.54,
+          "score": 17.34,
           "semantic_similarity": 0.0,
           "semantic_boost": 0.0,
           "semantic_model": "",
@@ -16995,36 +16995,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.22,
-          "semantic_similarity": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "이데일리",
-          "domain": "edaily.co.kr",
-          "title": "산불피해 복구, 취약층 지원…지역 사회 문제 해결사 역할 톡톡",
-          "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=01689206645387584",
-          "reason": "below_threshold",
-          "fit_score": 0.78,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감자 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 13.03,
           "semantic_similarity": 0.0,
           "semantic_boost": 0.0,
@@ -17050,6 +17020,36 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.02,
+          "semantic_similarity": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "이데일리",
+          "domain": "edaily.co.kr",
+          "title": "산불피해 복구, 취약층 지원…지역 사회 문제 해결사 역할 톡톡",
+          "url": "http://www.edaily.co.kr/news/newspath.asp?newsid=01689206645387584",
+          "reason": "below_threshold",
+          "fit_score": 0.78,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감자 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
@@ -17554,7 +17554,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.07,
+          "score": 18.87,
           "semantic_similarity": 0.8177,
           "semantic_boost": -0.35,
           "semantic_model": "intfloat/multilingual-e5-large",
@@ -20285,6 +20285,169 @@
         "budget_used": 6,
         "budget_total": 12
       }
+    }
+  },
+  "hf_compare": {
+    "report_date": "2026-03-27",
+    "mode": "selection",
+    "candidate_cap": 40,
+    "summary": {
+      "changed_sections": [
+        "pest"
+      ],
+      "changed_section_count": 1,
+      "changed_slots": 3,
+      "changed_board_items": 1
+    },
+    "sections": {
+      "supply": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [
+          {
+            "title": "[뉴스팜리포트] 농산물 가격전쟁 종식, '산지 정보'와 'AI 등급제' 달렸...",
+            "semantic_boost": 0.648,
+            "semantic_similarity": 0.868942
+          },
+          {
+            "title": "[길섶에서] 샤인머스캣 속사정",
+            "semantic_boost": -0.35,
+            "semantic_similarity": 0.79532
+          },
+          {
+            "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+            "semantic_boost": 0.25354,
+            "semantic_similarity": 0.848775
+          }
+        ],
+        "boosted_selected_count": 3
+      },
+      "policy": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [],
+        "boosted_selected_count": 0
+      },
+      "dist": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [],
+        "boosted_selected_count": 0
+      },
+      "pest": {
+        "changed": true,
+        "slot_changes": [
+          {
+            "position": 1,
+            "baseline_title": "경남농기원, 3월 단감 병해충 관리 '적기'…석회유황합제 살포 중요",
+            "hf_title": "경남도 단감 과수원 병해충 증가 선제 방제 당부 강화"
+          },
+          {
+            "position": 2,
+            "baseline_title": "단감 '깍지벌레류' 급증…\"지금 방제 \" 약제 살포 어떻게?",
+            "hf_title": "[산청군 소식] 사과 주산지 '드론 방제 '-웰니스 광역시티투어 운영"
+          },
+          {
+            "position": 3,
+            "baseline_title": "[산청군 소식] 사과 주산지 '드론 방제 '-웰니스 광역시티투어 운영",
+            "hf_title": "단감 '깍지벌레류' 급증…\"지금 방제 \" 약제 살포 어떻게?"
+          }
+        ],
+        "boosted_selected": [
+          {
+            "title": "경남도 단감 과수원 병해충 증가 선제 방제 당부 강화",
+            "semantic_boost": 0.648,
+            "semantic_similarity": 0.864171
+          },
+          {
+            "title": "[산청군 소식] 사과 주산지 '드론 방제 '-웰니스 광역시티투어 운영",
+            "semantic_boost": -0.35,
+            "semantic_similarity": 0.843432
+          },
+          {
+            "title": "단감 '깍지벌레류' 급증…\"지금 방제 \" 약제 살포 어떻게?",
+            "semantic_boost": 0.148471,
+            "semantic_similarity": 0.856977
+          },
+          {
+            "title": "보은군, 과수화상병 예방 총력",
+            "semantic_boost": 0.206877,
+            "semantic_similarity": 0.857818
+          }
+        ],
+        "boosted_selected_count": 4
+      }
+    },
+    "board": {
+      "changed": true,
+      "changed_items": [
+        {
+          "key": "flowers",
+          "label": "화훼",
+          "baseline_title": "이재명 정부 25일 '비상경제상황실' 가동에 '제조기업 수 1위' 화성특례...",
+          "hf_title": "이재명 정부 지난 25일 '비상경제상황실' 가동에 제조기업 수 1위 화성특..."
+        }
+      ],
+      "changed_item_count": 1,
+      "boosted_items": [
+        {
+          "key": "apple",
+          "label": "사과",
+          "title": "청송 사과 면적 감소 전환…산불 이후 농업 구조 재편 신호",
+          "semantic_boost": -0.35,
+          "semantic_similarity": 0.834345
+        },
+        {
+          "key": "citrus",
+          "label": "감귤(만감류)",
+          "title": "위성곤 \"제주 AX 대전환·기초자치권 부활 완성하겠다\"",
+          "semantic_boost": -0.35,
+          "semantic_similarity": 0.819425
+        },
+        {
+          "key": "cucumber",
+          "label": "오이",
+          "title": "안성시 서부농업기술상담소, 기후변화 대응 시설 오이 병해충 방제 전문...",
+          "semantic_boost": 3.271482,
+          "semantic_similarity": 0.833246
+        },
+        {
+          "key": "flowers",
+          "label": "화훼",
+          "title": "이재명 정부 지난 25일 '비상경제상황실' 가동에 제조기업 수 1위 화성특...",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.837053
+        },
+        {
+          "key": "grape",
+          "label": "포도(샤인머스캣)",
+          "title": "가락시장 ‘출하비용 보전사업’ 속속 안착",
+          "semantic_boost": 0.892721,
+          "semantic_similarity": 0.846264
+        },
+        {
+          "key": "napa_cabbage",
+          "label": "배추",
+          "title": "농식품부, 봄배추 수급 점검 … '중동발 비료' 수급 대응",
+          "semantic_boost": 5.602855,
+          "semantic_similarity": 0.844423
+        },
+        {
+          "key": "strawberry",
+          "label": "딸기",
+          "title": "나프타 수급 불안에 비닐값 껑충…강원 농가 직격탄",
+          "semantic_boost": 1.665693,
+          "semantic_similarity": 0.821108
+        },
+        {
+          "key": "tomato",
+          "label": "토마토",
+          "title": "진안군, 토마토 농장 ' 토마토뿔나방 ' 방제 비상",
+          "semantic_boost": 0.530024,
+          "semantic_similarity": 0.830696
+        }
+      ],
+      "boosted_item_count": 8
     }
   },
   "replay": {
