@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="f83cd3d" />
-  <meta name="agri-rendered-at-kst" content="2026-03-29T07:39:20+09:00" />
+  <meta name="agri-build" content="56d1ef0" />
+  <meta name="agri-rendered-at-kst" content="2026-03-29T08:55:24+09:00" />
   <meta name="agri-dev-version-url" content="https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json" />
   <title>[2026-03-29 농산물 뉴스 Brief] [DEV]</title>
   <style>
@@ -153,6 +153,7 @@
     .commoditySig.muted{background:#f8fafc;color:#94a3b8}
     .commodityStoryCluster{display:flex;flex-direction:column;gap:10px;height:100%}
     .commodityPrimaryCard{padding:12px;border:1px solid #dbe4ee;border-radius:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);min-height:124px}
+    .commodityPrimaryHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
     .commodityPrimaryKicker{display:inline-flex;align-items:center;justify-content:center;min-height:22px;padding:0 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:10px;font-weight:900;letter-spacing:.02em}
     .commodityPrimaryStory{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;color:#0f172a;font-size:14px;font-weight:900;line-height:1.52;text-decoration:none}
     .commodityPrimaryStory:hover{text-decoration:underline}
@@ -219,6 +220,26 @@
       background:#111827; color:#fff; font-size:11px; font-weight:900;
       margin-right:2px;
     }
+    .hfDelta{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 8px;border-radius:999px;border:1px solid #dbe4ee;background:#f8fafc;color:#334155;font-size:10.5px;font-weight:900;letter-spacing:.01em;white-space:nowrap}
+    .hfDelta.isPos{background:#ecfdf5;border-color:#86efac;color:#166534}
+    .hfDelta.isNeg{background:#fff7ed;border-color:#fdba74;color:#b45309}
+    .hfComparePanel{margin-top:16px;padding:18px;border:1px solid #bfdbfe;border-radius:22px;background:linear-gradient(135deg,#eff6ff 0%,#ffffff 54%,#f8fafc 100%);box-shadow:0 16px 36px rgba(29,78,216,.10)}
+    .hfCompareHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:flex-start}
+    .hfCompareEyebrow{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .hfComparePanel h2{margin:10px 0 0;font-size:26px;line-height:1.1;letter-spacing:-0.6px}
+    .hfCompareLead{margin-top:8px;max-width:760px;color:#334155;font-size:13px;line-height:1.6}
+    .hfCompareStats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .hfCompareStat{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #dbe4ee;background:rgba(255,255,255,.9);color:#1e293b;font-size:12px;font-weight:800}
+    .hfCompareStat strong{font-size:13px}
+    .hfCompareGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+    .hfCompareCard{padding:14px;border:1px solid #dbe4ee;border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.05)}
+    .hfCompareCardTitle{font-size:13px;font-weight:900;color:#0f172a}
+    .hfCompareList{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:10px;color:#0f172a;font-size:12.5px;line-height:1.6}
+    .hfCompareList li{margin:0}
+    .hfCompareChange{margin-top:2px;color:#334155}
+    .hfCompareArrow{margin:3px 0;color:#1d4ed8;font-weight:900}
+    .hfCompareMuted{display:inline-flex;margin-left:6px;color:#64748b;font-size:11px;font-weight:800}
+    .hfCompareEmpty{color:#64748b;list-style:disc}
 
     .btnOpen{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
              height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--btn);
@@ -285,6 +306,14 @@
       .briefingHeroStatLabel{font-size:10px}
       .briefingHeroStat strong{margin-top:4px;font-size:18px}
       .briefingChipbar{margin:12px 0 18px}
+      .hfComparePanel{margin-top:12px;padding:14px;border-radius:18px}
+      .hfCompareHead{grid-template-columns:1fr}
+      .hfComparePanel h2{font-size:22px;letter-spacing:-0.5px}
+      .hfCompareLead{margin-top:7px;font-size:12.5px;line-height:1.55}
+      .hfCompareStats{justify-content:flex-start}
+      .hfCompareGrid{grid-template-columns:1fr;gap:10px}
+      .hfCompareCard{padding:12px;border-radius:16px}
+      .hfCompareList{font-size:12px}
       .commodityBoardNav{margin:10px 0 16px}
       .chipDock{display:none}
       .chipbar{border:none;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
@@ -353,6 +382,19 @@
       .viewTab.isActive{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);border-color:#1d4ed8}
       .viewTabDesc{color:#94a3b8}
       .viewTabStat{background:rgba(255,255,255,.08);color:#e2e8f0}
+      .hfDelta{background:#1e293b;border-color:#475569;color:#cbd5e1}
+      .hfDelta.isPos{background:rgba(20,83,45,.28);border-color:#22c55e;color:#bbf7d0}
+      .hfDelta.isNeg{background:rgba(124,45,18,.28);border-color:#fb923c;color:#fed7aa}
+      .hfComparePanel{background:linear-gradient(135deg,#1e293b 0%,#0f172a 54%,#1e293b 100%);border-color:#1d4ed8;box-shadow:0 16px 36px rgba(0,0,0,.24)}
+      .hfCompareEyebrow{background:#1e3a5f;color:#93c5fd}
+      .hfCompareLead{color:#cbd5e1}
+      .hfCompareStat{background:rgba(30,41,59,.9);border-color:var(--line);color:#e2e8f0}
+      .hfCompareCard{background:rgba(30,41,59,.92);border-color:var(--line)}
+      .hfCompareCardTitle{color:#f8fafc}
+      .hfCompareList{color:#e2e8f0}
+      .hfCompareChange{color:#cbd5e1}
+      .hfCompareArrow{color:#60a5fa}
+      .hfCompareMuted,.hfCompareEmpty{color:#94a3b8}
       .briefingHero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 56%,#1e293b 100%);border-color:var(--line)}
       .briefingHeroStat{background:rgba(30,41,59,.92);border-color:var(--line)}
       .briefingHeroStat strong{color:#e2e8f0}
@@ -397,7 +439,7 @@
     <div class="topin">
       <div>
         <h1>[2026-03-29 농산물 뉴스 Brief] [DEV]<span class="envBadge">DEV</span></h1>
-        <div class="sub">기간: 2026-03-27 07:00 ~ 2026-03-29 07:00 · 기사 17건 · 개발 버전 미리보기 · build f83cd3d</div>
+        <div class="sub">기간: 2026-03-27 07:00 ~ 2026-03-29 07:00 · 기사 17건 · 개발 버전 미리보기 · build 56d1ef0</div>
       </div>
       <div class="navRow">
         <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/dev/index.html" title="날짜별 아카이브 목록" target="_top">DEV 미리보기</a>
@@ -480,6 +522,33 @@
         </button>
       </div>
     
+    
+    <section class="hfComparePanel" aria-labelledby="hfCompareTitle">
+      <div class="hfCompareHead">
+        <div>
+          <div class="hfCompareEyebrow">HF on/off 비교</div>
+          <h2 id="hfCompareTitle">이번 dev 페이지에서 HF가 바꾼 것</h2>
+          <div class="hfCompareLead">이번 빌드에서는 최종 top 카드 교체는 없고, HF 보정만 들어갔습니다.</div>
+        </div>
+        <div class="hfCompareStats">
+          <span class="hfCompareStat">변경 섹션 <strong>0</strong></span>
+          <span class="hfCompareStat">변경 슬롯 <strong>0</strong></span>
+          <span class="hfCompareStat">변경 품목 카드 <strong>0</strong></span>
+          <span class="hfCompareStat">보드 boost <strong>7</strong></span>
+        </div>
+      </div>
+      <div class="hfCompareGrid">
+        <div class="hfCompareCard">
+          <div class="hfCompareCardTitle">실제 교체된 항목</div>
+          <ul class="hfCompareList"><li class="hfCompareEmpty">바뀐 top 항목이 없습니다.</li></ul>
+        </div>
+        <div class="hfCompareCard">
+          <div class="hfCompareCardTitle">HF 보정이 들어간 대표 기사</div>
+          <ul class="hfCompareList"><li><b>supply</b> HF +0.17 · 양파 가격 회복세?…불안요소 &#x27;여전&#x27;</li><li><b>supply</b> HF -0.35 · 섬이라서 사료비도 면세유도 들썩들썩… “제주도 고유가 파고 넘어라”</li><li><b>policy</b> HF -0.35 · &quot;비료 줄여도 수확량 그대로&quot; 제주 표준시비 사업 확대</li><li><b>policy</b> HF -0.35 · 상추 ·쌀·조기 ‘高高한 밥상’…왜 계속 오를까 [Deep Spot]</li><li><b>dist</b> HF +0.01 · 가락시장 첫 경매현장 가보니 …‘제주산 햇조생 양파 ’ 1㎏당 1055원</li><li><b>dist</b> HF +0.28 · 고경농협, 종합자재·산지유통센터 준공…“조합원 소득 증대 앞장”</li><li><b>유자</b> HF +5.76 · 고흥 유자 막걸리, 대한민국 주류대상 &#x27;대상&#x27; 수상</li><li><b>마늘</b> HF +5.76 · 이선희 청도군수 예비후보 ‘광역철도 연장’ 승부수…“동대구 20분 시...</li><li><b>포도(샤인머스캣)</b> HF +5.76 · 고경농협, 종합자재·산지유통센터 준공…“조합원 소득 증대 앞장”</li><li><b>배추</b> HF +5.76 · 김종구 농식품부 차관, 봄 배추 수급 점검...&quot;비료 등 관계부처 지원 강...</li><li><b>양파</b> HF +5.76 · 양파 가격 회복세?…불안요소 &#x27;여전&#x27;</li><li><b>감자</b> HF +5.76 · 김제 광활 명품 햇 감자 수확 본격화… &#x27;봄의 전령사&#x27; 상륙</li></ul>
+        </div>
+      </div>
+    </section>
+    
     <section id="view-briefing" class="viewPane briefingPane isActive" data-view-pane="briefing" role="tabpanel">
       
     <section class="briefingHero" aria-labelledby="briefingHeroTitle">
@@ -522,6 +591,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isPos">HF +0.28</span>
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 21:19</span>
@@ -539,6 +609,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isPos">HF +0.06</span>
                   <span class="press">한국농정신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 17:24</span>
@@ -556,6 +627,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isNeg">HF -0.35</span>
                   <span class="press">서울신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 17:32</span>
@@ -573,6 +645,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  
                   <span class="press">뉴데일리경제</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 13:20</span>
@@ -589,6 +662,7 @@
             <div class="card" style="border-left-color:#0f766e" data-href="https://www.yna.co.kr/view/AKR20260327071400054?input=1195m">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">연합뉴스</span>
                   <span class="dot">·</span>
@@ -618,6 +692,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isPos">HF +0.33</span>
                   <span class="press">정책브리핑</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 11:07</span>
@@ -635,6 +710,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isPos">HF +0.65</span>
                   <span class="press">아시아경제</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 10:35</span>
@@ -651,6 +727,7 @@
             <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.smartbizn.com/news/articleView.html?idxno=140608">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">스마트비즈니스</span>
                   <span class="dot">·</span>
@@ -680,6 +757,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isPos">HF +0.01</span>
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/28 20:01</span>
@@ -697,6 +775,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isPos">HF +0.27</span>
                   <span class="press">LCNEWS</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 16:14</span>
@@ -714,6 +793,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isPos">HF +0.25</span>
                   <span class="press">한국농업신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/28 18:50</span>
@@ -731,6 +811,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isPos">HF +0.24</span>
                   <span class="press">농수축산신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 19:54</span>
@@ -759,6 +840,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isNeg">HF -0.35</span>
                   <span class="press">연합뉴스</span>
                   <span class="dot">·</span>
                   <span class="time">03/28 08:00</span>
@@ -776,6 +858,7 @@
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
+                  <span class="hfDelta isPos">HF +0.65</span>
                   <span class="press">농수축산신문</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 19:36</span>
@@ -793,6 +876,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  <span class="hfDelta isNeg">HF -0.35</span>
                   <span class="press">충남일보</span>
                   <span class="dot">·</span>
                   <span class="time">03/27 14:30</span>
@@ -810,6 +894,7 @@
               <div class="cardTop">
                 <div class="meta">
                   
+                  
                   <span class="press">ttlnews</span>
                   <span class="dot">·</span>
                   <span class="time">03/28 13:02</span>
@@ -826,6 +911,7 @@
             <div class="card" style="border-left-color:#b45309" data-href="https://gj.newdaily.co.kr/site/data/html/2026/03/27/2026032700286.html">
               <div class="cardTop">
                 <div class="meta">
+                  
                   
                   <span class="press">뉴데일리경제</span>
                   <span class="dot">·</span>
@@ -891,7 +977,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.econonews.co.kr/news/articleView.html?idxno=433162" target="_top" rel="noopener">김종구 농식품부 차관, 봄 배추 수급 점검...&quot;비료 등 관계부처 지원 강...</a>
                     <div class="commodityPrimaryMeta">정책 · 이코노뉴스 · 03/28 20:06</div>
                   </div>
@@ -949,7 +1038,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.pointdaily.co.kr/news/articleView.html?idxno=298621" target="_top" rel="noopener">김제 광활 명품 햇 감자 수확 본격화… &#x27;봄의 전령사&#x27; 상륙</a>
                     <div class="commodityPrimaryMeta">수급 · 포인트데일리 · 03/28 16:00</div>
                   </div>
@@ -997,7 +1089,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.news1.kr/world/northeast-asia/6117160" target="_top" rel="noopener">&quot;전생에 토끼였나&quot;…中여성, 이빨로 당근 깎아 만리장성 모형 제작</a>
                     <div class="commodityPrimaryMeta">수급 · 뉴스1 · 03/28 11:51</div>
                   </div>
@@ -1035,7 +1130,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100642" target="_top" rel="noopener">제주 양배추 캐나다행…대아청과, 수급 물꼬 해외로</a>
                     <div class="commodityPrimaryMeta">수급 · 한국농업신문 · 03/28 18:50</div>
                   </div>
@@ -1078,7 +1176,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=69974" target="_top" rel="noopener">양파 가격 회복세?…불안요소 &#x27;여전&#x27;</a>
                     <div class="commodityPrimaryMeta">수급 · 한국농정신문 · 03/27 17:24</div>
                   </div>
@@ -1131,7 +1232,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://tk.newdaily.co.kr/site/data/html/2026/03/27/2026032700167.html" target="_top" rel="noopener">이선희 청도군수 예비후보 ‘광역철도 연장’ 승부수…“동대구 20분 시...</a>
                     <div class="commodityPrimaryMeta">수급 · 뉴데일리경제 · 03/27 13:20</div>
                   </div>
@@ -1209,7 +1313,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.jeollailbo.com/news/articleView.html?idxno=795871" target="_top" rel="noopener">진안군, 외래해충 &#x27; 토마토 뿔나방&#x27; 선제 방제… 농가 보호 총력</a>
                     <div class="commodityPrimaryMeta">리스크 · 전라일보 · 03/27 12:50</div>
                   </div>
@@ -1297,7 +1404,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.pinpointnews.co.kr/news/articleView.html?idxno=440707" target="_top" rel="noopener">하나증권 &quot; 오이 솔루션, 이제 시작…통신 투자 사이클 최대 수혜주 부상...</a>
                     <div class="commodityPrimaryMeta">수급 · pinpointnews · 03/28 12:06</div>
                   </div>
@@ -1320,7 +1430,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.ttlnews.com/news/articleView.html?idxno=3093445" target="_top" rel="noopener">함평군, &#x27;세대 공감 농업인상담소&#x27; 가동…현장 중심 영농 지원 본격화</a>
                     <div class="commodityPrimaryMeta">리스크 · ttlnews · 03/28 13:02</div>
                   </div>
@@ -1388,7 +1501,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.youngnong.co.kr/news/articleView.html?idxno=58317" target="_top" rel="noopener">영암낭주농협, &#x27;케이 멜론 공선 출하 회&#x27; 본격 가동…산지 유통 혁신 박차</a>
                     <div class="commodityPrimaryMeta">수급 · 한국영농신문 · 03/28 23:46</div>
                   </div>
@@ -1411,7 +1527,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://biz.heraldcorp.com/article/10704150" target="_top" rel="noopener">상추 ·쌀·조기 ‘高高한 밥상’…왜 계속 오를까 [Deep Spot]</a>
                     <div class="commodityPrimaryMeta">정책 · 헤럴드경제 · 03/27 11:21</div>
                   </div>
@@ -1434,7 +1553,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.busan.com/view/busan/view.php?code=2026032715045779613" target="_top" rel="noopener">나프타 대란에 농업용 비닐도 끊겼다…울산 농가 ‘발동동’</a>
                     <div class="commodityPrimaryMeta">수급 · 부산일보 · 03/27 15:59</div>
                   </div>
@@ -1512,7 +1634,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2411905" target="_top" rel="noopener">기후 위기 앞의 &#x27;청송 사과 &#x27;, 배움으로 생존의 길 찾다</a>
                     <div class="commodityPrimaryMeta">수급 · 이뉴스투데이 · 03/27 18:20</div>
                   </div>
@@ -1575,7 +1700,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260327500442" target="_top" rel="noopener">고경농협, 종합자재·산지유통센터 준공…“조합원 소득 증대 앞장”</a>
                     <div class="commodityPrimaryMeta">수급 · 농민신문 · 03/27 21:19</div>
                   </div>
@@ -1633,7 +1761,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      <span class="hfDelta isPos">HF +5.76</span>
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://view.asiae.co.kr/article/2026032708392642983" target="_top" rel="noopener">고흥 유자 막걸리, 대한민국 주류대상 &#x27;대상&#x27; 수상</a>
                     <div class="commodityPrimaryMeta">수급 · 아시아경제 · 03/27 10:21</div>
                   </div>
@@ -1666,7 +1797,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.nongup.net/news/articleView.html?idxno=32778" target="_top" rel="noopener">제주농기원, &#x27;골드키위 기계수분 생력화 모델&#x27; 실증 추진</a>
                     <div class="commodityPrimaryMeta">수급 · 농업정보신문 · 03/27 10:46</div>
                   </div>
@@ -1689,7 +1823,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.newscj.com/news/articleView.html?idxno=3388958" target="_top" rel="noopener">화성특례시, 비상경제 대응 &#x27;선제 점검&#x27;… 기업·농가 현장 긴급 대응</a>
                     <div class="commodityPrimaryMeta">정책 · 천지일보 · 03/27 07:54</div>
                   </div>
@@ -1727,7 +1864,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="http://www.newsfarm.co.kr/news/articleView.html?idxno=100640" target="_top" rel="noopener">정지태 회장 선출… 복숭아 산업 &#x27;구조개선&#x27; 본격화</a>
                     <div class="commodityPrimaryMeta">수급 · 한국농업신문 · 03/27 16:32</div>
                   </div>
@@ -1750,7 +1890,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.mt.co.kr/policy/2026/03/27/2026032716595130765" target="_top" rel="noopener">창원특례시 나무 나눔으로 범시민 나무심기 확산</a>
                     <div class="commodityPrimaryMeta">수급 · 머니투데이 · 03/27 17:05</div>
                   </div>
@@ -1773,7 +1916,10 @@
                   
                 <div class="commodityStoryCluster">
                   <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryKicker">대표 기사</div>
+                    <div class="commodityPrimaryHead">
+                      <div class="commodityPrimaryKicker">대표 기사</div>
+                      
+                    </div>
                     <a class="commodityPrimaryStory" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260326500377" target="_top" rel="noopener">로컬푸드 하나로마트, 경제사업 성장 ‘견인’…제주 조천농협 ‘상복...</a>
                     <div class="commodityPrimaryMeta">수급 · 농민신문 · 03/27 15:15</div>
                   </div>
@@ -1797,13 +1943,13 @@
     
     </section>
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
-    <div class="footer footerMeta">* DEV build f83cd3d · 생성 2026-03-29T07:39:20+09:00</div>
+    <div class="footer footerMeta">* DEV build 56d1ef0 · 생성 2026-03-29T08:55:24+09:00</div>
   </div>
 
   <script>
     (function() {
 
-      var currentBuild = "f83cd3d";
+      var currentBuild = "56d1ef0";
       var devVersionUrl = "https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/version.json";
       function syncLatestDevBuild() {
         if (window.top && window.top !== window) return;
@@ -2688,7 +2834,7 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
-  <!-- build: f83cd3d -->
+  <!-- build: 56d1ef0 -->
 
     <style>
       details.dbgWrap { margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }
@@ -2704,13 +2850,23 @@ try { _ensureDates(); } catch (e) {}
       table.dbgTable th { background:#f9fafb; }
       .dbgTable .c { text-align:center; white-space:nowrap; }
       .dbgTable .r { text-align:right; white-space:nowrap; }
+      .dbgList { margin:10px 0 0; padding-left:18px; font-size:12px; line-height:1.6; }
       .muted { color:var(--muted); }
     </style>
     <details class="dbgWrap">
       <summary>디버그 리포트 (선정/필터 로그)</summary>
       <div class='dbgLinks'><a href='https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/2026-03-29.json' target='_blank' rel='noopener'>debug json 보기</a></div>
-      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> f83cd3d</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-29T07:39:20+09:00</span></div>
+      <div class="dbgMeta"><span class='dbgkv'><b>DEBUG_REPORT:</b> 1</span> <span class='dbgkv'><b>BUILD_TAG:</b> 56d1ef0</span> <span class='dbgkv'><b>generated_at_kst:</b> 2026-03-29T08:55:24+09:00</span></div>
       <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: must_terms_fail(237), supply_context_gate(157), carrot_non_edible_context(113), pest_partial_mention(86), dist_program_event_noise(61), supply_macro_official_shock(47), potato_non_fresh_context(42), supply_macro_price_watch(42), apple_non_edible_context(38), finance_strict_no_agri_context(33), fishery_only(31), policy_macro_general_economy(25)</div>
+      
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>HF on/off 비교</b>
+            <span class="muted">sections=0 slots=0 board=0</span>
+          </div>
+          <ul class="dbgList"><li class="muted">바뀐 top 항목이 없습니다.</li></ul>
+        </div>
+        
       
         <div class="dbgSec">
           <div class="dbgSecHead">
