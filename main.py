@@ -331,6 +331,8 @@ def _article_selection_key(article: Any) -> str:
         getattr(article, "canon_url", "")
         or getattr(article, "norm_key", "")
         or getattr(article, "title_key", "")
+        or getattr(article, "originallink", "")
+        or getattr(article, "link", "")
         or ""
     ).strip()
 
@@ -2451,6 +2453,11 @@ class Article:
     selection_note: str = ""
     selection_fit_score: float = 0.0
     reassigned_from: str = ""
+    semantic_similarity: float = 0.0
+    semantic_noise_similarity: float = 0.0
+    semantic_margin: float = 0.0
+    semantic_boost: float = 0.0
+    semantic_model: str = ""
 
     @property
     def url(self) -> str:
@@ -8110,7 +8117,7 @@ def keyword_strength(text: str, section_conf: JsonDict) -> int:
     must = _section_must_terms_lower(section_conf)
     return count_any(text, must) + agri_strength_score(text)
 
-def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
+def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = "", press: str = "") -> float:
     """해당 기사가 섹션 의도와 얼마나 맞는지(0+).
     - must_terms 텍스트 히트 + 제목 히트(가중)
     - 원예 핵심 신호를 약하게 추가해 완전 비관련 기사 상단 배치를 줄임
@@ -8125,15 +8132,15 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict) -> float:
     base += 0.10 * min(6, agri_strength_score(txt))
     key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
     broad_macro_price = is_broad_macro_price_context(title, desc)
-    policy_stabilization = is_supply_stabilization_policy_context(txt)
-    policy_market_brief = is_policy_market_brief_context(txt)
-    policy_major_issue = is_policy_major_issue_context(title, desc)
+    policy_stabilization = is_supply_stabilization_policy_context(txt, dom, press)
+    policy_market_brief = is_policy_market_brief_context(txt, dom, press)
+    policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
     dist_supply_center = is_dist_supply_management_center_context(title, desc)
     dist_sales_channel_ops = is_dist_sales_channel_ops_context(title, desc)
-    dist_field_market_response = is_dist_field_market_response_context(title, desc)
+    dist_field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
     dist_anchor_hits = count_any(
         txt,
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "온라인 도매시장")],
@@ -12742,11 +12749,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.selection_stage = ""
         a.selection_note = ""
         a.selection_fit_score = 0.0
-        setattr(a, "semantic_similarity", 0.0)
-        setattr(a, "semantic_noise_similarity", 0.0)
-        setattr(a, "semantic_margin", 0.0)
-        setattr(a, "semantic_boost", 0.0)
-        setattr(a, "semantic_model", "")
+        a.semantic_similarity = 0.0
+        a.semantic_noise_similarity = 0.0
+        a.semantic_margin = 0.0
+        a.semantic_boost = 0.0
+        a.semantic_model = ""
 
     candidates_sorted_raw = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
@@ -12771,34 +12778,34 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.selection_stage = str(stage or "")
         a.selection_note = str(note or "")
         try:
-            a.selection_fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf), 3)
+            a.selection_fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""), 3)
         except Exception:
             a.selection_fit_score = 0.0
 
     fit_filtered: list[Article] = []
     for a in pool:
-        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
             fit_filtered.append(a)
     if fit_filtered:
         pool = fit_filtered
 
     semantic_adjustments = _hf_semantic_selection_adjustments(section_key, sec_conf, pool)
-    for a in candidates:
+    for a in pool:
         adjustment = semantic_adjustments.get(_article_selection_key(a))
         if not adjustment:
             continue
-        setattr(a, "semantic_similarity", float(adjustment.similarity or 0.0))
-        setattr(a, "semantic_noise_similarity", float(getattr(adjustment, "negative_similarity", 0.0) or 0.0))
-        setattr(a, "semantic_margin", float(getattr(adjustment, "margin", 0.0) or 0.0))
-        setattr(a, "semantic_boost", float(adjustment.boost or 0.0))
-        setattr(a, "semantic_model", str(adjustment.model or ""))
+        a.semantic_similarity = float(adjustment.similarity or 0.0)
+        a.semantic_noise_similarity = float(getattr(adjustment, "negative_similarity", 0.0) or 0.0)
+        a.semantic_margin = float(getattr(adjustment, "margin", 0.0) or 0.0)
+        a.semantic_boost = float(adjustment.boost or 0.0)
+        a.semantic_model = str(adjustment.model or "")
 
     def _semantic_adjusted_score(a: Article) -> float:
         return float(getattr(a, "score", 0.0) or 0.0) + float(getattr(a, "semantic_boost", 0.0) or 0.0)
 
     def _selection_sort_key(a: Article) -> Any:
-        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         return (
             _semantic_adjusted_score(a),
             float(getattr(a, "semantic_similarity", 0.0) or 0.0),
@@ -13017,7 +13024,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 _supply_core_priority_score(a),
                 _semantic_adjusted_score(a),
                 float(getattr(a, "semantic_similarity", 0.0) or 0.0),
-                section_fit_score(a.title or "", a.description or "", sec_conf),
+                section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""),
                 getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
             ),
             reverse=True,
@@ -13043,9 +13050,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if not same_primary:
             return False
         best_same_score = max(float(getattr(b, "score", 0.0) or 0.0) for b in same_primary)
-        best_same_fit = max(section_fit_score(b.title or "", b.description or "", sec_conf) for b in same_primary)
+        best_same_fit = max(section_fit_score(b.title or "", b.description or "", sec_conf, b.domain or "", b.press or "") for b in same_primary)
         score_gap = float(getattr(a, "score", 0.0) or 0.0) - best_same_score
-        fit_gap = section_fit_score(a.title or "", a.description or "", sec_conf) - best_same_fit
+        fit_gap = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "") - best_same_fit
         gap_need = score_gap_override
         if gap_need is None:
             gap_need = 1.8 if section_key == "supply" else 1.4 if section_key in ("dist", "policy") else 1.2
@@ -13140,7 +13147,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         launchy_hits = count_any(title_local, [w.lower() for w in ("첫선", "첫 결실", "첫결실", "첫 출하", "첫출하", "선보여", "선봬")])
         if launchy_hits >= 1 and (not is_supply_feature_article(a.title or "", a.description or "")) and (not is_supply_price_outlook_context(a.title or "", a.description or "")):
             try:
-                if section_fit_score(a.title or "", a.description or "", sec_conf) < 1.0:
+                if section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "") < 1.0:
                     return True
             except Exception:
                 return True
@@ -13340,7 +13347,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
-        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         tier = press_priority(a.press, a.domain)
         pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
         if section_key == "supply":
@@ -13720,7 +13727,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
                 if (not has_direct_supply_chain_signal(mix)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.8):
                     continue
-        fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+        fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         if fit_sc_core < core_fit_min and a.score < (core_min + 1.8):
             continue
         if not _headline_gate(a, section_key):
@@ -13817,7 +13824,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             agri_anchor_hits_local = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
             if ops_hits >= 1 and market_anchor_hits == 0 and (not apc_ctx_local) and agri_anchor_hits_local == 0 and best_horti_score(a.title or "", a.description or "") < 1.9:
                 continue
-            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
             if fit_sc_core < (core_fit_min - 0.1) and a.score < (core_min + 1.2):
                 continue
             if not _headline_gate_relaxed(a, section_key):
@@ -13858,7 +13865,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_low_core_source(a) or press_priority(a.press, a.domain) < 2:
                 continue
-            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf)
+            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
             if fit_sc_core < (core_fit_min - 0.2) and a.score < max(thr, core_min - 0.8):
                 continue
             if not _headline_gate_relaxed(a, section_key):
@@ -13927,7 +13934,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             fit_sc_anchor = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
             if fit_sc_anchor <= 0.0:
                 try:
-                    fit_sc_anchor = float(section_fit_score(a.title or "", a.description or "", sec_conf))
+                    fit_sc_anchor = float(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""))
                 except Exception:
                     fit_sc_anchor = 0.0
             strong_ops_anchor = market_ops or supply_center or sales_channel_ops or field_market_response or strong_local_org
@@ -14139,7 +14146,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             fit_sc_underfill = 0.0
             try:
-                fit_sc_underfill = float(section_fit_score(a.title or "", a.description or "", sec_conf) or 0.0)
+                fit_sc_underfill = float(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "") or 0.0)
             except Exception:
                 fit_sc_underfill = 0.0
             strong_dist_signal = (
@@ -14238,7 +14245,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if feature_kind is None and not flower_trend:
                     continue
                 issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
-                fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf)
+                fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
                 direct_supply_feature = has_direct_supply_chain_signal(txt2)
                 if issue_bucket == "commodity_issue" and fit_sc_feature < 1.0:
                     continue
@@ -14299,7 +14306,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     if not is_supply_feature_article(a.title or "", a.description or ""):
                         continue
                     issue_bucket = supply_issue_context_bucket(a.title or "", a.description or "")
-                    fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf)
+                    fit_sc_feature = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
                     direct_supply_feature = has_direct_supply_chain_signal(((a.title or "") + " " + (a.description or "")).lower())
                     if issue_bucket == "commodity_issue" and fit_sc_feature < 1.0:
                         continue
@@ -14339,7 +14346,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         key=lambda i: (
                             float(getattr(final[i], "score", 0.0) or 0.0),
                             1 if has_direct_supply_chain_signal(((final[i].title or "") + " " + (final[i].description or "")).lower()) else 0,
-                            section_fit_score(final[i].title or "", final[i].description or "", sec_conf),
+                            section_fit_score(final[i].title or "", final[i].description or "", sec_conf, final[i].domain or "", final[i].press or ""),
                         ),
                     )
                     victim = final[repl_idx]
@@ -14507,7 +14514,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if any(_is_similar_story(a, b, section_key) for b in final):
                     continue
-                fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+                fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
                 tier = press_priority(a.press, a.domain)
                 pub_sort = getattr(a, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
                 ranked_policy_tail.append((
@@ -14571,7 +14578,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if any(_is_similar_story(a, b, section_key) for b in final):
                 continue
-            fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf)
+            fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
             tier = press_priority(a.press, a.domain)
             local_price_support = is_policy_local_price_support_context(a.title or "", a.description or "")
             price_collapse_issue = is_policy_price_collapse_issue_context(a.title or "", a.description or "")
@@ -14970,7 +14977,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 fit_score = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
                 if fit_score <= 0.0:
                     try:
-                        fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf), 3)
+                        fit_score = round(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""), 3)
                     except Exception:
                         fit_score = 0.0
                 top_rows.append({
@@ -17065,7 +17072,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         cur_score = float(getattr(a, "score", 0.0) or 0.0)
         best_key = cur
         best_score = cur_score
-        cur_fit = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}))
+        cur_fit = section_fit_score(a.title, a.description, conf_by_key.get(cur, {}), a.domain or "", a.press or "")
         best_fit_key = cur
         best_fit_score = float(cur_fit)
         cand_scores: dict[str, float] = {cur: cur_score}
@@ -17157,7 +17164,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if not is_relevant(a.title, a.description, dom, url, conf, press):
                     continue
                 sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
-                fit_new = section_fit_score(a.title, a.description, conf)
+                fit_new = section_fit_score(a.title, a.description, conf, dom, press)
             except Exception:
                 continue
 
@@ -17536,7 +17543,7 @@ def _debug_row_from_article(a: "Article", section_key: str, section_conf: JsonDi
     fit_score = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
     if fit_score <= 0.0:
         try:
-            fit_score = round(section_fit_score(a.title or "", a.description or "", section_conf or {}), 3)
+            fit_score = round(section_fit_score(a.title or "", a.description or "", section_conf or {}, getattr(a, "domain", "") or "", getattr(a, "press", "") or ""), 3)
         except Exception:
             fit_score = 0.0
     stage = str(getattr(a, "selection_stage", "") or "")
@@ -17679,8 +17686,8 @@ def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Ar
             continue
         if is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", dom, press):
             continue
-        fit_dist = section_fit_score(a.title or "", a.description or "", dist_conf)
-        fit_supply = section_fit_score(a.title or "", a.description or "", supply_conf)
+        fit_dist = section_fit_score(a.title or "", a.description or "", dist_conf, dom, press)
+        fit_supply = section_fit_score(a.title or "", a.description or "", supply_conf, dom, press)
         market_ops = is_dist_market_ops_context(a.title or "", a.description or "", dom, press)
         supply_center = is_dist_supply_management_center_context(a.title or "", a.description or "")
         sales_channel = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
@@ -19132,7 +19139,8 @@ def _build_hf_compare_report(
     prev_section_flag = bool(HF_SEMANTIC_RERANK_ENABLED)
     prev_board_flag = bool(HF_COMMODITY_BOARD_RERANK_ENABLED)
     prev_last_source = _get_last_commodity_board_source()
-    _HF_COMPARE_ACTIVE = True
+    with _DEBUG_LOCK:
+        _HF_COMPARE_ACTIVE = True
     try:
         hf_rows = _hf_compare_select_rows(
             candidate_source,
@@ -19155,7 +19163,8 @@ def _build_hf_compare_report(
         HF_SEMANTIC_RERANK_ENABLED = prev_section_flag
         HF_COMMODITY_BOARD_RERANK_ENABLED = prev_board_flag
         _set_last_commodity_board_source(prev_last_source)
-        _HF_COMPARE_ACTIVE = False
+        with _DEBUG_LOCK:
+            _HF_COMPARE_ACTIVE = False
 
     per_section = {
         section_key: _hf_compare_section_diff(

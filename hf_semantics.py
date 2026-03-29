@@ -96,7 +96,10 @@ def _mean_pool(matrix: Sequence[Any]) -> list[float]:
     if not rows:
         return []
 
-    width = min(len(row) for row in rows if all(_is_number(v) for v in row))
+    valid_rows = [row for row in rows if all(_is_number(v) for v in row)]
+    if not valid_rows:
+        return []
+    width = min(len(row) for row in valid_rows)
     if width <= 0:
         return []
 
@@ -253,7 +256,16 @@ def embed_texts(
     data = response.json()
     vectors = _coerce_batch_vectors(data, len(texts))
     if len(vectors) != len(texts):
-        raise RuntimeError(f"Unexpected embedding response shape for {len(texts)} texts")
+        shape_hint = ""
+        if isinstance(data, dict):
+            shape_hint = f" keys={list(data.keys())[:6]}"
+        elif isinstance(data, list):
+            shape_hint = f" list_len={len(data)}"
+        else:
+            shape_hint = f" type={type(data).__name__}"
+        raise RuntimeError(
+            f"Unexpected embedding response shape: expected {len(texts)}, got {len(vectors)}.{shape_hint}"
+        )
     return vectors
 
 
