@@ -64,6 +64,7 @@ from hf_semantics import (
     build_article_passage,
     score_profile_passages as _hf_score_profile_passages,
     score_section_candidates as _hf_score_section_candidates,
+    score_section_candidates_with_noise as _hf_score_section_candidates_with_noise,
 )
 from io_github import (
     github_api_headers as _io_github_api_headers,
@@ -334,6 +335,61 @@ def _article_selection_key(article: Any) -> str:
     ).strip()
 
 
+_HF_SECTION_NOISE_PROFILES: dict[str, tuple[str, ...]] = {
+    "supply": (
+        "오피니언, 칼럼, 수필, 에세이, 회고, 감상형 기사. 품목명이 있어도 가격·수급·출하·작황보다 개인 서사와 해설이 중심인 기사.",
+        "맛집, 디저트, 레스토랑, 메뉴, 라이프스타일, 관광, 축제, 홍보, 판촉 기사. 농산물 수급과 직접 연결되지 않는 소비자 체험 기사.",
+    ),
+    "policy": (
+        "오피니언, 칼럼, 수필, 에세이, 개인 논평 기사. 농정 실행보다 해설과 주장 중심의 기사.",
+        "정치 동정, 행사 브리핑, 인사, 선언, 캠페인, 지역 일반행정 기사. 농산물 정책 집행과 직접 거리가 있는 기사.",
+    ),
+    "dist": (
+        "오피니언, 칼럼, 수필, 에세이, 감상형 기사. 유통 실무보다 개인 논평이 중심인 기사.",
+        "브랜드 홍보, 신제품 소개, 맛집, 메뉴, 소비 트렌드, 판촉 행사 기사. 도매시장·APC·물류·수출 유통과 직접 관련 없는 기사.",
+    ),
+    "pest": (
+        "오피니언, 칼럼, 수필, 에세이, 체험 수기 기사. 병해충 대응보다 감상과 서사가 중심인 기사.",
+        "마케팅, 홍보, 제품 소개, 행사, 관광, 생활 일반 기사. 병해충·기상·방제 리스크와 직접 관련 없는 기사.",
+    ),
+}
+
+_HARD_OPINION_COLUMN_MARKERS = (
+    "길섶에서",
+    "[길섶에서]",
+    "여적",
+    "[여적]",
+    "시론",
+    "[시론]",
+    "횡설수설",
+    "만물상",
+)
+
+
+def _has_hard_opinion_column_marker(title: str) -> bool:
+    title_l = unicodedata.normalize("NFKC", str(title or "")).lower()
+    if not title_l:
+        return False
+    return any(unicodedata.normalize("NFKC", marker).lower() in title_l for marker in _HARD_OPINION_COLUMN_MARKERS)
+
+
+def _hf_semantic_noise_blocks_top_selection(article: "Article", section_key: str, *, relaxed: bool = False) -> bool:
+    if str(section_key or "").strip() not in ("supply", "policy", "dist", "pest"):
+        return False
+    negative_similarity = float(getattr(article, "semantic_noise_similarity", 0.0) or 0.0)
+    margin = float(getattr(article, "semantic_margin", 0.0) or 0.0)
+    boost = float(getattr(article, "semantic_boost", 0.0) or 0.0)
+    if negative_similarity <= 0.0:
+        return False
+    if negative_similarity >= 0.82 and margin <= -0.035:
+        return True
+    if (not relaxed) and negative_similarity >= 0.88 and margin < 0.015 and boost <= -0.28:
+        return True
+    if relaxed and negative_similarity >= 0.90 and margin < -0.005 and boost <= -0.20:
+        return True
+    return False
+
+
 def _hf_semantic_selection_adjustments(
     section_key: str,
     section_conf: JsonDict,
@@ -358,12 +414,22 @@ def _hf_semantic_selection_adjustments(
     )
 
     try:
-        adjustments = _hf_score_section_candidates(
-            section_conf,
-            ranked,
-            cfg=cfg,
-            session_factory=http_session,
-        )
+        negative_profiles = _HF_SECTION_NOISE_PROFILES.get(section_key, ())
+        if negative_profiles:
+            adjustments = _hf_score_section_candidates_with_noise(
+                section_conf,
+                negative_profiles,
+                ranked,
+                cfg=cfg,
+                session_factory=http_session,
+            )
+        else:
+            adjustments = _hf_score_section_candidates(
+                section_conf,
+                ranked,
+                cfg=cfg,
+                session_factory=http_session,
+            )
     except Exception as exc:
         log.warning("[HF] semantic rerank skipped for %s: %s", section_key, exc)
         metric_inc("hf.semantic.error", section=section_key, reason=type(exc).__name__)
@@ -11968,6 +12034,10 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     text = (a.title + " " + a.description).lower()
     if section_key == "dist" and is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
         return True
+    if _has_hard_opinion_column_marker(a.title or ""):
+        return False
+    if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=False):
+        return False
 
     # (핵심) 코어2는 "정말 핵심"만 올리기 위해, 품목/도매/원예 신호를 재확인
     horti_sc = best_horti_score(a.title or "", a.description or "")
@@ -12150,6 +12220,10 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
     text = (a.title + " " + a.description).lower()
     if section_key == "dist" and is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
         return True
+    if _has_hard_opinion_column_marker(a.title or ""):
+        return False
+    if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
+        return False
 
     # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
@@ -12441,6 +12515,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.selection_note = ""
         a.selection_fit_score = 0.0
         setattr(a, "semantic_similarity", 0.0)
+        setattr(a, "semantic_noise_similarity", 0.0)
+        setattr(a, "semantic_margin", 0.0)
         setattr(a, "semantic_boost", 0.0)
         setattr(a, "semantic_model", "")
 
@@ -12485,6 +12561,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if not adjustment:
             continue
         setattr(a, "semantic_similarity", float(adjustment.similarity or 0.0))
+        setattr(a, "semantic_noise_similarity", float(getattr(adjustment, "negative_similarity", 0.0) or 0.0))
+        setattr(a, "semantic_margin", float(getattr(adjustment, "margin", 0.0) or 0.0))
         setattr(a, "semantic_boost", float(adjustment.boost or 0.0))
         setattr(a, "semantic_model", str(adjustment.model or ""))
 
@@ -14467,6 +14545,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             def _best_effort_reason(a: Article) -> str:
                 if a.score < thr:
                     return "below_threshold"
+                if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
+                    return "hf_semantic_noise"
                 if not _headline_gate_relaxed(a, section_key):
                     return "headline_gate"
                 if a.score < tail_cut:
@@ -14525,6 +14605,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     "is_core": bool(getattr(a, "is_core", False)) if sel else False,
                     "score": round(a.score, 2),
                     "semantic_similarity": round(float(getattr(a, "semantic_similarity", 0.0) or 0.0), 4),
+                    "semantic_noise_similarity": round(float(getattr(a, "semantic_noise_similarity", 0.0) or 0.0), 4),
+                    "semantic_margin": round(float(getattr(a, "semantic_margin", 0.0) or 0.0), 4),
                     "semantic_boost": round(float(getattr(a, "semantic_boost", 0.0) or 0.0), 3),
                     "semantic_model": str(getattr(a, "semantic_model", "") or ""),
                     "tier": press_priority(a.press, a.domain),

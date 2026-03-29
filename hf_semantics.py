@@ -27,6 +27,8 @@ class SemanticAdjustment:
     similarity: float
     boost: float
     model: str
+    negative_similarity: float = 0.0
+    margin: float = 0.0
 
 
 _SECTION_INTENTS: dict[str, str] = {
@@ -186,6 +188,29 @@ def _similarity_to_boost(similarity: float, minimum: float, maximum: float, max_
     return _clip(centered * (max_boost * 1.6), -max_penalty, max_boost)
 
 
+def _margin_to_boost(
+    margin: float,
+    minimum: float,
+    maximum: float,
+    max_boost: float,
+    *,
+    negative_similarity: float,
+) -> float:
+    spread = maximum - minimum
+    boost = 0.0
+    if spread >= 0.012:
+        ratio = (margin - minimum) / spread
+        centered = ratio - 0.46
+        boost = centered * (max_boost * 1.55)
+
+    if margin < 0.0:
+        boost -= min(max_boost, 0.24 + (abs(margin) * 4.0) + max(0.0, negative_similarity - 0.82) * 1.2)
+    elif margin < 0.02 and negative_similarity >= 0.84:
+        boost -= min(max_boost * 0.55, (0.02 - margin) * 6.0)
+
+    return _clip(boost, -max_boost, max_boost)
+
+
 def embed_texts(
     texts: Sequence[str],
     *,
@@ -253,6 +278,29 @@ def score_section_candidates(
     )
 
 
+def score_section_candidates_with_noise(
+    section_conf: dict[str, Any],
+    negative_profiles: Sequence[str],
+    articles: Sequence[Any],
+    *,
+    cfg: HFSemanticConfig,
+    session_factory: SessionFactory,
+) -> list[SemanticAdjustment]:
+    candidates = list(articles[: max(1, int(cfg.max_candidates or 1))])
+    if len(candidates) < max(1, int(cfg.min_candidates or 1)):
+        return []
+
+    profile = build_section_profile(section_conf)
+    passages = [build_article_passage(article) for article in candidates]
+    return score_profile_passages_with_noise(
+        profile,
+        negative_profiles,
+        passages,
+        cfg=cfg,
+        session_factory=session_factory,
+    )
+
+
 def score_profile_passages(
     profile: str,
     passages: Sequence[str],
@@ -279,4 +327,57 @@ def score_profile_passages(
             model=cfg.model,
         )
         for sim in sims
+    ]
+
+
+def score_profile_passages_with_noise(
+    profile: str,
+    negative_profiles: Sequence[str],
+    passages: Sequence[str],
+    *,
+    cfg: HFSemanticConfig,
+    session_factory: SessionFactory,
+) -> list[SemanticAdjustment]:
+    docs = [str(text or "").strip() for text in passages if str(text or "").strip()]
+    if len(docs) < max(1, int(cfg.min_candidates or 1)):
+        return []
+
+    negatives = [str(text or "").strip() for text in negative_profiles if str(text or "").strip()]
+    if not negatives:
+        return score_profile_passages(profile, docs, cfg=cfg, session_factory=session_factory)
+
+    vectors = embed_texts([str(profile or "").strip()] + negatives + docs, cfg=cfg, session_factory=session_factory)
+    query_vec = vectors[0]
+    negative_vecs = vectors[1 : 1 + len(negatives)]
+    doc_vecs = vectors[1 + len(negatives) :]
+    if not doc_vecs:
+        return []
+
+    positive_sims = [_cosine_similarity(query_vec, doc_vec) for doc_vec in doc_vecs]
+    negative_sims = [
+        max(_cosine_similarity(negative_vec, doc_vec) for negative_vec in negative_vecs)
+        for doc_vec in doc_vecs
+    ]
+    margins = [positive - negative for positive, negative in zip(positive_sims, negative_sims)]
+    min_margin = min(margins)
+    max_margin = max(margins)
+
+    return [
+        SemanticAdjustment(
+            similarity=round(float(positive), 6),
+            boost=round(
+                _margin_to_boost(
+                    float(margin),
+                    min_margin,
+                    max_margin,
+                    float(cfg.max_boost or 0.0),
+                    negative_similarity=float(negative),
+                ),
+                6,
+            ),
+            model=cfg.model,
+            negative_similarity=round(float(negative), 6),
+            margin=round(float(margin), 6),
+        )
+        for positive, negative, margin in zip(positive_sims, negative_sims, margins)
     ]

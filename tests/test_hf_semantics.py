@@ -92,6 +92,38 @@ class TestHFSemanticsModule(unittest.TestCase):
         self.assertEqual(session.calls[0]["url"], cfg.endpoint_url())
         self.assertEqual(session.calls[0]["headers"]["Authorization"], "Bearer hf_test_token")
 
+    def test_score_profile_passages_with_noise_penalizes_noise_like_passage(self):
+        cfg = hf_semantics.HFSemanticConfig(
+            api_token="hf_test_token",
+            model="intfloat/multilingual-e5-large",
+            max_candidates=4,
+            max_boost=0.9,
+        )
+        session = _FakeSession(
+            [
+                [[1.0, 0.0], [1.0, 0.0]],
+                [[0.0, 1.0], [0.0, 1.0]],
+                [[0.98, 0.02], [0.98, 0.02]],
+                [[0.28, 0.72], [0.28, 0.72]],
+            ]
+        )
+
+        adjustments = hf_semantics.score_profile_passages_with_noise(
+            "query: 샤인머스캣 수급과 가격 기사",
+            ["오피니언 칼럼과 수필, 개인 서사 중심 기사"],
+            [
+                "passage: 샤인머스캣 가격 하락과 폐원 논의가 이어지고 출하 조절 대책이 거론된다.",
+                "passage: 샤인머스캣을 떠올리며 농가의 시간을 회상하는 수필 형식의 글이다.",
+            ],
+            cfg=cfg,
+            session_factory=lambda: session,
+        )
+
+        self.assertEqual(len(adjustments), 2)
+        self.assertLess(adjustments[0].negative_similarity, adjustments[1].negative_similarity)
+        self.assertGreater(adjustments[0].margin, adjustments[1].margin)
+        self.assertGreater(adjustments[0].boost, adjustments[1].boost)
+
 
 class TestHFSemanticsSelectionIntegration(unittest.TestCase):
     @classmethod
@@ -158,6 +190,93 @@ class TestHFSemanticsSelectionIntegration(unittest.TestCase):
         self.assertEqual(len(picked), 1)
         self.assertEqual(picked[0].title, tomato_moth.title)
         self.assertGreater(float(getattr(picked[0], "semantic_boost", 0.0) or 0.0), 0.0)
+
+    def test_select_top_articles_can_drop_noise_story_with_semantic_margin(self):
+        essay_story = self._make_article(
+            "supply",
+            "샤인머스캣 속사정",
+            "샤인머스캣 가격 하락과 재배 면적 확대를 돌아보는 글로 농가의 회한과 감상을 담았다.",
+            "https://example.com/shine-muscat-essay",
+            score=22.1,
+        )
+        issue_story = self._make_article(
+            "supply",
+            "샤인머스캣 가격 하락에 폐원 논의…농가 대책 촉구",
+            "샤인머스캣 가격 약세와 재배 면적 조정, 폐원 지원 요구가 이어지고 있다.",
+            "https://example.com/shine-muscat-issue",
+            score=21.7,
+        )
+        onion_story = self._make_article(
+            "supply",
+            "양파 출하 조절 총력…산지 가격 반등 모색",
+            "양파 산지에서 출하 조절과 저장 관리로 가격 반등을 모색하고 있다.",
+            "https://example.com/onion-issue",
+            score=21.1,
+        )
+
+        with mock.patch.object(
+            main,
+            "_hf_semantic_selection_adjustments",
+            return_value={
+                main._article_selection_key(essay_story): hf_semantics.SemanticAdjustment(
+                    similarity=0.81,
+                    boost=-0.9,
+                    model="test-model",
+                    negative_similarity=0.93,
+                    margin=-0.12,
+                ),
+                main._article_selection_key(issue_story): hf_semantics.SemanticAdjustment(
+                    similarity=0.89,
+                    boost=0.42,
+                    model="test-model",
+                    negative_similarity=0.38,
+                    margin=0.51,
+                ),
+                main._article_selection_key(onion_story): hf_semantics.SemanticAdjustment(
+                    similarity=0.86,
+                    boost=0.18,
+                    model="test-model",
+                    negative_similarity=0.33,
+                    margin=0.53,
+                ),
+            },
+        ):
+            picked = main.select_top_articles([essay_story, issue_story, onion_story], "supply", 2)
+
+        picked_titles = {article.title for article in picked}
+        self.assertIn(issue_story.title, picked_titles)
+        self.assertIn(onion_story.title, picked_titles)
+        self.assertNotIn(essay_story.title, picked_titles)
+
+    def test_select_top_articles_skips_obvious_column_marker_story(self):
+        column_story = self._make_article(
+            "supply",
+            "[길섶에서] 샤인머스캣 속사정",
+            "샤인머스캣 가격 하락을 되짚는 칼럼 형식의 글이다.",
+            "https://example.com/shine-muscat-column",
+            score=22.1,
+        )
+        issue_story = self._make_article(
+            "supply",
+            "샤인머스캣 가격 하락에 폐원 논의…농가 대책 촉구",
+            "샤인머스캣 가격 약세와 재배 면적 조정, 폐원 지원 요구가 이어지고 있다.",
+            "https://example.com/shine-muscat-issue-core",
+            score=21.5,
+        )
+        tomato_story = self._make_article(
+            "supply",
+            "토마토 작황 부진에 출하량 감소…도매가격 강세",
+            "시설 토마토 작황 부진으로 출하량이 줄며 도매가격이 강세를 보이고 있다.",
+            "https://example.com/tomato-supply-core",
+            score=21.2,
+        )
+
+        picked = main.select_top_articles([column_story, issue_story, tomato_story], "supply", 2)
+        picked_titles = {article.title for article in picked}
+
+        self.assertIn(issue_story.title, picked_titles)
+        self.assertIn(tomato_story.title, picked_titles)
+        self.assertNotIn(column_story.title, picked_titles)
 
 
 if __name__ == "__main__":
