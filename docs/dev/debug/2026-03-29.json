@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-03-29T08:09:53+09:00",
-  "build_tag": "f83cd3d",
+  "generated_at_kst": "2026-03-29T09:28:30+09:00",
+  "build_tag": "56d1ef0",
   "filter_rejects": [
     {
       "section": "policy",
@@ -16885,12 +16885,12 @@
           "sample_title": "진도군, 미생물 배양시설 가동"
         },
         {
-          "seed": "구조",
-          "rep": "구조",
-          "hits": 5,
+          "seed": "마늘",
+          "rep": "마늘",
+          "hits": 10,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "재정지출 효율화 관점에서 본 농안기금 개편 방향"
+          "sample_title": "'비료 줄여도 수확량 그대로'...제주도, '표준시비' 사업 확대"
         },
         {
           "seed": "생강",
@@ -20712,6 +20712,153 @@
         "budget_used": 8,
         "budget_total": 12
       }
+    }
+  },
+  "hf_compare": {
+    "report_date": "2026-03-29",
+    "mode": "selection",
+    "candidate_cap": 40,
+    "summary": {
+      "changed_sections": [],
+      "changed_section_count": 0,
+      "changed_slots": 0,
+      "changed_board_items": 0
+    },
+    "sections": {
+      "supply": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [
+          {
+            "title": "양파 가격 회복세?…불안요소 '여전'",
+            "semantic_boost": 0.168752,
+            "semantic_similarity": 0.839394
+          },
+          {
+            "title": "섬이라서 사료비도 면세유도 들썩들썩… “제주도 고유가 파고 넘어라”",
+            "semantic_boost": -0.35,
+            "semantic_similarity": 0.817519
+          }
+        ],
+        "boosted_selected_count": 2
+      },
+      "policy": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [
+          {
+            "title": "\"비료 줄여도 수확량 그대로\" 제주 표준시비 사업 확대",
+            "semantic_boost": -0.35,
+            "semantic_similarity": 0.820396
+          },
+          {
+            "title": "상추 ·쌀·조기 ‘高高한 밥상’…왜 계속 오를까 [Deep Spot]",
+            "semantic_boost": -0.35,
+            "semantic_similarity": 0.828093
+          },
+          {
+            "title": "김종구 농식품부 차관, 봄 배추 수급 점검...\"비료 등 관계부처 지원 강...",
+            "semantic_boost": -0.258261,
+            "semantic_similarity": 0.829997
+          },
+          {
+            "title": "함평군, 농업인 소통 창구 확대",
+            "semantic_boost": 0.648,
+            "semantic_similarity": 0.8463
+          }
+        ],
+        "boosted_selected_count": 4
+      },
+      "dist": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [
+          {
+            "title": "가락시장 첫 경매현장 가보니 …‘제주산 햇조생 양파 ’ 1㎏당 1055원",
+            "semantic_boost": 0.007647,
+            "semantic_similarity": 0.826729
+          },
+          {
+            "title": "고경농협, 종합자재·산지유통센터 준공…“조합원 소득 증대 앞장”",
+            "semantic_boost": 0.278576,
+            "semantic_similarity": 0.835672
+          },
+          {
+            "title": "NH 농협 무역 이재호 신임 대표 첫 행보…농가와 APC 현장 살피다",
+            "semantic_boost": 0.269088,
+            "semantic_similarity": 0.835359
+          },
+          {
+            "title": "제주 양배추 캐나다행…대아청과, 수급 물꼬 해외로",
+            "semantic_boost": 0.249022,
+            "semantic_similarity": 0.834697
+          }
+        ],
+        "boosted_selected_count": 4
+      },
+      "pest": {
+        "changed": false,
+        "slot_changes": [],
+        "boosted_selected": [],
+        "boosted_selected_count": 0
+      }
+    },
+    "board": {
+      "changed": false,
+      "changed_items": [],
+      "changed_item_count": 0,
+      "boosted_items": [
+        {
+          "key": "citron",
+          "label": "유자",
+          "title": "고흥 유자 막걸리, 대한민국 주류대상 '대상' 수상",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.819076
+        },
+        {
+          "key": "garlic",
+          "label": "마늘",
+          "title": "이선희 청도군수 예비후보 ‘광역철도 연장’ 승부수…“동대구 20분 시...",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.850997
+        },
+        {
+          "key": "grape",
+          "label": "포도(샤인머스캣)",
+          "title": "고경농협, 종합자재·산지유통센터 준공…“조합원 소득 증대 앞장”",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.842608
+        },
+        {
+          "key": "napa_cabbage",
+          "label": "배추",
+          "title": "김종구 농식품부 차관, 봄 배추 수급 점검...\"비료 등 관계부처 지원 강...",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.847259
+        },
+        {
+          "key": "onion",
+          "label": "양파",
+          "title": "양파 가격 회복세?…불안요소 '여전'",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.854792
+        },
+        {
+          "key": "potato",
+          "label": "감자",
+          "title": "김제 광활 명품 햇 감자 수확 본격화… '봄의 전령사' 상륙",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.844139
+        },
+        {
+          "key": "tomato",
+          "label": "토마토",
+          "title": "진안군, 외래해충 ' 토마토 뿔나방' 선제 방제… 농가 보호 총력",
+          "semantic_boost": 5.76,
+          "semantic_similarity": 0.833357
+        }
+      ],
+      "boosted_item_count": 7
     }
   },
   "replay": {
