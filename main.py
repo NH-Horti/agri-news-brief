@@ -365,8 +365,6 @@ _HARD_OPINION_COLUMN_MARKERS = (
     "[시론]",
     "횡설수설",
     "만물상",
-    "초동시각",
-    "[초동시각]",
     "기자의 시선",
     "[기자의 시선]",
     "데스크칼럼",
@@ -374,6 +372,8 @@ _HARD_OPINION_COLUMN_MARKERS = (
     "논단",
     "[논단]",
 )
+# 하드블록 대신 소프트 페널티로 전환된 칼럼 마커 (내용이 충실하면 통과 가능)
+_SOFT_OPINION_COLUMN_MARKERS = ("초동시각", "[초동시각]")
 
 
 def _has_hard_opinion_column_marker(title: str) -> bool:
@@ -6221,7 +6221,7 @@ def is_policy_budget_drive_noise_context(title: str, desc: str) -> bool:
         txt,
         [w.lower() for w in ("가격안정", "가격 안정", "수급", "출하비용", "보전", "최소가격", "할인지원", "검역", "원산지", "단속", "도매시장", "공판장", "가락시장", "농산물", "원예", "과수", "과일", "채소")],
     ) + managed_count
-    return keep_hits < 3 and _LOCAL_GEO_PATTERN.search(ttl) is not None
+    return keep_hits < 3 and _local_geo_match(ttl)
 
 
 def is_dist_political_visit_context(title: str, desc: str) -> bool:
@@ -7712,7 +7712,7 @@ def is_policy_general_macro_tail_context(title: str, desc: str, dom: str = "", p
         return False
     if agri_hits >= 3 and (title_agri_hits >= 1 or horti_sc >= 1.8):
         return False
-    if _LOCAL_GEO_PATTERN.search(ttl) and agri_hits < 3:
+    if _local_geo_match(ttl) and agri_hits < 3:
         return True
     if count_any(ttl.lower(), [w.lower() for w in ("부·울·경", "부울경", "긴급 대응", "빨간불")]) >= 2 and title_agri_hits == 0 and market_hits == 0:
         return True
@@ -8260,6 +8260,13 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
         if managed_count:
             base += min(0.72, 0.15 * managed_count)
             base += min(0.48, 0.22 * program_core_count)
+        # 시장 인프라 기사 (가락시장 출하비용 보전 등)는 supply에서도 유효
+        _supply_market_infra = ("가락시장", "도매시장", "공판장", "출하비용", "보전사업")
+        _smi_hits = count_any(txt, [t.lower() for t in _supply_market_infra])
+        if _smi_hits >= 2:
+            base += 0.85
+        elif _smi_hits >= 1:
+            base += 0.45
     elif key == "pest":
         if is_pest_input_marketing_noise_context(title, desc):
             base -= 1.3
@@ -8355,6 +8362,8 @@ DIST_WEIGHT_MAP = {
     '공원묘원': 0.7,
     '소비촉진': 1.0,
     '캠페인': 0.5,
+    '채소': 1.2,
+    '과일': 1.0,
 }
 
 POLICY_WEIGHT_MAP = {
@@ -9524,6 +9533,24 @@ def local_coop_penalty(text: str, press: str, domain: str, section_key: str) -> 
     return 2.0 if section_key in ("supply", "dist", "policy") else 1.2
 
 
+def _is_regional_agri_brief_fillable(title: str, desc: str) -> bool:
+    """지역 농협/농업조직 단신이지만, 농업 맥락이 있어 빈칸 채우기에 적합한지 판별."""
+    t = ((title or "") + " " + (desc or "")).lower()
+    if not _LOCAL_COOP_RX.search(t):
+        return False
+    # 농업 실무 맥락 필수
+    agri_fill_terms = ("농산물", "원예", "과수", "과일", "채소", "화훼", "출하", "수급",
+                       "유통", "공판장", "도매시장", "apc", "선별", "저온", "산지유통",
+                       "수출", "검역", "방제", "병해충", "가격", "시세")
+    if not any(term in t for term in agri_fill_terms):
+        return False
+    # 순수 행사/이벤트성은 제외
+    event_ban = ("기부", "후원", "봉사", "시상", "간담회", "축제", "발대식", "선포식", "체험")
+    if any(term in t for term in event_ban):
+        return False
+    return True
+
+
 def _sort_key_major_first(a: Article) -> Any:
     # 점수(관련성/품질)를 1순위로, 매체 티어는 2순위로 반영
     return _ranking_sort_key_major_first(a, press_priority)
@@ -10467,7 +10494,24 @@ def policy_domain_override(dom: str, text: str) -> bool:
         return has_any(text, [k.lower() for k in AGRI_POLICY_KEYWORDS])
     return False
 
-_LOCAL_GEO_PATTERN = re.compile(r"[가-힣]{2,6}(군|시|구|도)\b")
+_LOCAL_GEO_PATTERN_RAW = re.compile(r"[가-힣]{2,6}(군|시|구|도)\b")
+# 조사·수사 등으로 인한 오탐 방지 (예: "한 마리도", "거리도", "나라시")
+_LOCAL_GEO_FALSE_POSITIVES = frozenset({
+    "마리도", "거리도", "자리도", "머리도", "나리도", "모리도",
+    "마리시", "거리시", "나라시", "모리시", "머리시",
+    "나라도", "사리도", "소리도", "누리도",
+    "가리시", "바리시", "다리도", "다리시",
+})
+
+def _local_geo_match(text: str) -> bool:
+    """_LOCAL_GEO_PATTERN 매칭 + 오탐 제외."""
+    for m in _LOCAL_GEO_PATTERN_RAW.finditer(text):
+        if m.group() not in _LOCAL_GEO_FALSE_POSITIVES:
+            return True
+    return False
+
+# 하위 호환: 기존 .search() 호출을 대체
+_LOCAL_GEO_PATTERN = _LOCAL_GEO_PATTERN_RAW
 
 
 
@@ -11085,7 +11129,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         # 정책 섹션: 지방 행사성/지역 단신을 강하게 배제(주요 매체는 일부 허용)
         is_major = press_priority(press, dom) >= 2
-        if (not is_major) and _LOCAL_GEO_PATTERN.search(ttl):
+        if (not is_major) and _local_geo_match(ttl):
             return _reject("policy_local_minor")
 
     # 유통/현장(dist): '농산물/원예 유통' 맥락이 없는 일반 물류/유통/브랜드 기사는 강하게 차단
@@ -11194,7 +11238,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             return _reject("dist_ops_only_generic")
 
         # 방송/종합지 지역단신이 dist로 유입되는 경우 추가 차단(실제 도매/APC/수출 현장 신호가 약할 때)
-        if ((press or "").strip() in BROADCAST_PRESS and _LOCAL_GEO_PATTERN.search(ttl)):
+        if ((press or "").strip() in BROADCAST_PRESS and _local_geo_match(ttl)):
             if market_hits == 0 and (not apc_ctx) and horti_sc < 2.1 and title_market_hits == 0 and title_ops_hits <= 1:
                 return _reject("dist_local_broadcast_weak")
 
@@ -11472,11 +11516,17 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             if has_any(title_l, ["대목장", "대목", "현장", "어땠나", "판매", "시장", "반응"]):
                 score += 3.2
 
-        # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
+        # 농협개혁/조직개편/거버넌스 기사: 부정 인사 기사는 강하게, 일반 제도개혁은 완화
         _COOP_REFORM_SCORE_KWS = ("농협개혁", "농협 개혁", "조직개편", "조직 개편", "거버넌스", "임원 선임", "인사 개편",
                                    "농협중앙회 회장", "농협 회장", "대의원", "농협법 개정")
         if any(kw in text for kw in _COOP_REFORM_SCORE_KWS):
-            score -= 8.0
+            if is_nh_internal_negative(title, desc):
+                score -= 8.0
+            else:
+                score -= 3.0
+        # 소프트 오피니언 칼럼 (초동시각 등): 하드블록 대신 감점
+        if any(m.lower() in title_l for m in _SOFT_OPINION_COLUMN_MARKERS):
+            score -= 2.0
         # dist에서 '지자체 공지/지역 단신'으로 판정되면 점수 감점(후순위/빈칸메우기용)
         if is_local_brief_text(title, desc, "dist"):
             score -= 3.5
@@ -11492,6 +11542,12 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 10.2
         if dist_local_field_profile:
             score += 2.2
+        # 농업자원 활용/혁신 기사 보너스 (못난이 채소, 규격외 농산물 자원화 등)
+        _AGRI_RESOURCE_UTIL_KWS = ("못난이", "비상품", "규격외", "자원화", "사료화", "퇴비화", "부산물 활용", "부산물활용")
+        if any(kw in text for kw in _AGRI_RESOURCE_UTIL_KWS):
+            _agri_anchor_local = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼")
+            if any(t in text for t in _agri_anchor_local):
+                score += 2.5
         if dist_market_ops:
             score += 8.8
         if dist_supply_center:
@@ -12420,7 +12476,7 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
             return False
 
         # 방송사 지역기사의 '부분 언급' 누수 방지(KBS/SBS 등)
-        if ((a.press or "").strip() in BROADCAST_PRESS and _LOCAL_GEO_PATTERN.search(a.title or "")):
+        if ((a.press or "").strip() in BROADCAST_PRESS and _local_geo_match(a.title or "")):
             title_market_hits = count_any(title, [t.lower() for t in ("가락시장", "도매시장", "공판장", "공영도매시장",
                                                                       "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
             if title_market_hits == 0 and (not apc_ctx) and horti_sc < 2.2 and horti_title_sc < 1.6:
@@ -12627,7 +12683,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
             return False
 
         # 방송사 지역기사의 약한 유통 문맥은 제외
-        if ((a.press or "").strip() in BROADCAST_PRESS and _LOCAL_GEO_PATTERN.search(a.title or "")):
+        if ((a.press or "").strip() in BROADCAST_PRESS and _local_geo_match(a.title or "")):
             title_market_hits = count_any(title, [t.lower() for t in ("가락시장", "도매시장", "공판장", "공영도매시장",
                                                                       "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
             if title_market_hits == 0 and (not apc_ctx) and horti_sc < 2.1 and horti_title_sc < 1.5:
@@ -14507,6 +14563,31 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 break
             if not picked_any:
                 break
+
+    # 4.6b) 지역 농업 단신 filler:
+    # - 섹션이 매우 빈약(≤2)하고 underfill로도 채워지지 않을 때, 농업 맥락이 있는 지역 단신 1건 하단 허용
+    if need > 0 and len(final) <= 2:
+        _regional_fill_cut = max(BASE_MIN_SCORE.get(section_key, 4.0), thr - 8.0)
+        for a in candidates_sorted:
+            if need <= 0 or len(final) >= max_n:
+                break
+            if a in final or _already_used(a):
+                continue
+            if float(getattr(a, "score", 0.0) or 0.0) < _regional_fill_cut:
+                continue
+            if not _is_regional_agri_brief_fillable(a.title or "", a.description or ""):
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in final):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in final):
+                continue
+            a.is_core = False
+            _record_selection(a, "regional_agri_filler")
+            final.append(a)
+            _mark_used(a)
+            _source_take(a)
+            need -= 1
+            break  # 최대 1건만
 
     # 4.7) policy 수출지원 단신 보강:
     # - 정책 섹션이 비는 날에는 수출지원 정책 단신 1건을 하단에만 제한적으로 허용한다.
@@ -17526,7 +17607,11 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
         _COOP_REFORM_KWS = ("농협개혁", "농협 개혁", "조직개편", "조직 개편", "거버넌스", "임원 선임", "인사 개편",
                             "농협중앙회 회장", "농협 회장", "선거관리위원회", "대의원", "농협법 개정")
         if any(kw in _ttl_dist for kw in _COOP_REFORM_KWS):
-            _DIST_ANCHOR_RESCUE = ("도매시장", "공판장", "경매", "경락", "물류", "유통센터", "산지유통", "apc", "직거래")
+            # 부정 인사 기사는 강하게 차단, 일반 제도개혁은 rescue 허용 범위 확대
+            if is_nh_internal_negative(a.title or "", a.description or ""):
+                return "dist_coop_reform_noise"
+            _DIST_ANCHOR_RESCUE = ("도매시장", "공판장", "경매", "경락", "물류", "유통센터", "산지유통", "apc", "직거래",
+                                    "개혁과제", "개혁위", "의무화", "경제사업", "유통구조")
             if not any(da in (a.title or "").lower() + " " + (a.description or "").lower() for da in _DIST_ANCHOR_RESCUE):
                 return "dist_coop_reform_noise"
         if is_dist_political_visit_context(a.title or "", a.description or ""):
