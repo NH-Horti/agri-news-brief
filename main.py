@@ -14857,6 +14857,18 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         non_forced_selected = [a for a in deduped if (a.canon_url or _dup_key(a)) not in forced_keys]
         deduped = forced_selected + non_forced_selected
 
+    if section_key == "pest":
+        pest_exact_seen: set[str] = set()
+        pest_exact_deduped: list[Article] = []
+        for article in deduped:
+            exact_title_key = re.sub(r"\s+", " ", _nfkc_lower(article.title or "")).strip()
+            if exact_title_key and exact_title_key in pest_exact_seen:
+                continue
+            if exact_title_key:
+                pest_exact_seen.add(exact_title_key)
+            pest_exact_deduped.append(article)
+        deduped = pest_exact_deduped
+
     if section_key == "supply":
         core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
         if core_count < min(2, len(deduped)):
@@ -19866,6 +19878,13 @@ def _commodity_board_article_is_supply_bridge_candidate(
 ) -> bool:
     article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
     if not _commodity_board_article_is_active_candidate(item, article, article_metrics):
+        return False
+    if is_supply_market_support_program_context(
+        getattr(article, "title", "") or "",
+        getattr(article, "description", "") or "",
+        normalize_host(getattr(article, "domain", "") or ""),
+        str(getattr(article, "press", "") or "").strip(),
+    ):
         return False
     if int(article_metrics.get("representative_rank", -1)) < 3:
         return False

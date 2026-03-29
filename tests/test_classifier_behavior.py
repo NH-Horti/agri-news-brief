@@ -3543,6 +3543,17 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         self.assertIn(acreage.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
         self.assertNotIn(market_support.title, picked_titles, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
 
+    def test_supply_board_bridge_candidate_rejects_market_support_program(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "grape")
+        article = self._make_article(
+            "supply",
+            "가락시장 ‘출하비용 보전사업’ 속속 안착",
+            "가락시장 도매법인과 출하 농가를 대상으로 출하비용 보전사업이 시행되며 유통 지원 성격의 정책 효과가 확산되고 있다.",
+            "https://example.com/supply-garak-support-bridge",
+        )
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+        self.assertFalse(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+
     def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
         query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]
         topic_seed_terms = []
