@@ -6,7 +6,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="d0e109f" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5Y1GRYB0J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-M5Y1GRYB0J", { send_page_view: false });
+  </script>
+  <meta name="agri-build" content="  <meta name="agri-build" content="d0e109f" />
   
   <title>농산물 뉴스 브리핑</title>
   <style>
@@ -521,6 +528,122 @@
   </div>
 
   <script>
+    (function() {
+      if (window.__agriIndexTrackingInstalled) return;
+      window.__agriIndexTrackingInstalled = true;
+
+      var buildId = (document.querySelector('meta[name="agri-build"]') || {}).content || "";
+      var lastSearchKey = "";
+      var sectionLabelMap = {
+        "수급": "supply",
+        "정책": "policy",
+        "유통": "dist",
+        "병해충": "pest",
+        "리스크": "pest"
+      };
+
+      function track(eventName, params) {
+        try {
+          if (typeof window.gtag !== "function") return;
+          window.gtag("event", eventName, Object.assign({
+            build_id: buildId,
+            page_type: "home",
+            transport_type: "beacon"
+          }, params || {}));
+        } catch (_trackErr) {}
+      }
+
+      function getSectionKey(text) {
+        var raw = String(text || "").trim();
+        return sectionLabelMap[raw] || raw;
+      }
+
+      track("page_view", {
+        page_type: "home",
+        view_mode: "",
+        page_title: document.title || "",
+        page_path: window.location.pathname || "",
+        page_location: window.location.href || ""
+      });
+
+      document.addEventListener("click", function(event) {
+        var navLink = event.target.closest && event.target.closest(".btn[href], .grid .card[href]");
+        if (navLink) {
+          var href = navLink.getAttribute("href") || "";
+          var match = href.match(/(\d{4}-\d{2}-\d{2})\.html/);
+          track("archive_nav", {
+            nav_type: navLink.classList.contains("btn") ? "latest_brief" : "archive_card",
+            from_date: "",
+            to_date: match ? match[1] : ""
+          });
+        }
+
+        var articleLink = event.target.closest && event.target.closest("#results .rLinks a[target='_blank']");
+        if (articleLink) {
+          var result = articleLink.closest(".result");
+          var chips = result ? result.querySelectorAll(".chip") : [];
+          var reportDate = chips.length ? (chips[0].textContent || "").trim() : "";
+          var sectionText = chips.length > 1 ? (chips[1].textContent || "").trim() : "";
+          var titleEl = result ? result.querySelector(".rTitle") : null;
+          var host = "";
+          try {
+            host = articleLink.href ? (new URL(articleLink.href, window.location.href).hostname || "") : "";
+          } catch (_urlErr) {}
+          track("article_open", {
+            article_id: "",
+            article_title: titleEl ? (titleEl.textContent || "").trim() : "",
+            report_date: reportDate,
+            section: getSectionKey(sectionText),
+            surface: "search_result",
+            target_domain: host
+          });
+        }
+      });
+
+      function trackSearchState() {
+        var input = document.getElementById("q");
+        var secSel = document.getElementById("secSel");
+        var sortSel = document.getElementById("sortSel");
+        var fromDate = document.getElementById("fromDate");
+        var toDate = document.getElementById("toDate");
+        var groupToggle = document.getElementById("groupToggle");
+        var box = document.getElementById("results");
+        if (!input || !box) return;
+        var q = String(input.value || "").trim();
+        if (q.length < 2) return;
+        var resultCount = box.querySelectorAll(".result").length;
+        var eventKey = [
+          q,
+          secSel ? (secSel.value || "") : "",
+          sortSel ? (sortSel.value || "") : "",
+          fromDate ? (fromDate.value || "") : "",
+          toDate ? (toDate.value || "") : "",
+          groupToggle && groupToggle.checked ? "date" : "flat",
+          resultCount
+        ].join("|");
+        if (eventKey === lastSearchKey) return;
+        lastSearchKey = eventKey;
+        track("search_submit", {
+          query: q,
+          query_length: q.length,
+          result_count: resultCount,
+          section_filter: secSel ? (secSel.value || "") : "",
+          sort_mode: sortSel ? (sortSel.value || "") : "",
+          group_mode: groupToggle && groupToggle.checked ? "date" : "flat"
+        });
+      }
+
+      var results = document.getElementById("results");
+      if (results && typeof MutationObserver !== "undefined") {
+        var observer = new MutationObserver(function() {
+          window.setTimeout(trackSearchState, 0);
+        });
+        observer.observe(results, { childList: true, subtree: true });
+      }
+    })();
+  </script>
+  <script>
+    (function() {  <script>
     (function() {
       
       var agriAnalyticsCtx = {

@@ -6,7 +6,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="a496b36" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5Y1GRYB0J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-M5Y1GRYB0J", { send_page_view: false });
+  </script>
+  <meta name="agri-build" content="  <meta name="agri-build" content="a496b36" />
 
   <title>[2026-03-20 농산물 뉴스 Brief]</title>
   <style>
@@ -2856,6 +2863,175 @@
   </div>
 
   <script>
+    (function() {
+      if (window.__agriArchiveTrackingInstalled) return;
+      window.__agriArchiveTrackingInstalled = true;
+
+      var reportDate = '2026-03-20';
+      var buildId = (document.querySelector('meta[name="agri-build"]') || {}).content || "";
+      var sectionLabelMap = {
+        "수급": "supply",
+        "정책": "policy",
+        "유통": "dist",
+        "병해충": "pest",
+        "리스크": "pest"
+      };
+
+      function track(eventName, params) {
+        try {
+          if (typeof window.gtag !== "function") return;
+          var payload = Object.assign({
+            build_id: buildId,
+            report_date: reportDate,
+            transport_type: "beacon"
+          }, params || {});
+          window.gtag("event", eventName, payload);
+        } catch (_trackErr) {}
+      }
+
+      function getViewMode() {
+        var active = document.querySelector('.viewPane.isActive[data-view-pane]');
+        if (active) return active.getAttribute('data-view-pane') || '';
+        var url = new URL(window.location.href);
+        var view = (url.searchParams.get('view') || '').toLowerCase();
+        return view === 'commodity' ? 'commodity' : 'briefing';
+      }
+
+      function getSectionKeyFromText(text) {
+        var raw = String(text || '').trim();
+        return sectionLabelMap[raw] || raw;
+      }
+
+      function getArticleParams(target, surface) {
+        var href = '';
+        var title = '';
+        var section = '';
+        if (!target) return null;
+        if (target.matches('.btnOpen')) {
+          href = target.getAttribute('href') || '';
+          var card = target.closest('.card');
+          title = card && card.querySelector('.ttl') ? (card.querySelector('.ttl').textContent || '').trim() : '';
+          section = card && card.closest('section[id^="sec-"]') ? ((card.closest('section[id^="sec-"]').id || '').replace(/^sec-/, '')) : '';
+        } else if (target.matches('.commodityPrimaryStory')) {
+          href = target.getAttribute('href') || '';
+          title = (target.textContent || '').trim();
+          var meta = target.parentElement && target.parentElement.querySelector('.commodityPrimaryMeta');
+          var firstMeta = meta ? String(meta.textContent || '').split('·')[0].trim() : '';
+          section = getSectionKeyFromText(firstMeta);
+        } else if (target.matches('.commoditySupportStory, .commodityMoreStory')) {
+          href = target.getAttribute('href') || '';
+          title = target.querySelector('.commoditySupportText') ? (target.querySelector('.commoditySupportText').textContent || '').trim() : (target.textContent || '').trim();
+          var label = target.querySelector('.commoditySupportLabel');
+          section = getSectionKeyFromText(label ? label.textContent : '');
+        } else if (target.matches('.card[data-href]')) {
+          href = target.getAttribute('data-href') || '';
+          title = target.querySelector('.ttl') ? (target.querySelector('.ttl').textContent || '').trim() : '';
+          section = target.closest('section[id^="sec-"]') ? ((target.closest('section[id^="sec-"]').id || '').replace(/^sec-/, '')) : '';
+        }
+        if (!href && !title) return null;
+        var host = '';
+        try {
+          host = href ? (new URL(href, window.location.href).hostname || '') : '';
+        } catch (_urlErr) {}
+        return {
+          article_id: "",
+          article_title: title,
+          section: section,
+          surface: surface,
+          target_domain: host
+        };
+      }
+
+      track('page_view', {
+        page_type: 'archive',
+        view_mode: getViewMode(),
+        page_title: document.title || '',
+        page_path: window.location.pathname || '',
+        page_location: window.location.href || ''
+      });
+
+      document.addEventListener('click', function(event) {
+        var card = event.target.closest && event.target.closest('.card[data-href]');
+        if (card && !event.target.closest('a,button,select,input,textarea,.topic')) {
+          var cardParams = getArticleParams(card, 'briefing_card');
+          if (cardParams) track('article_open', cardParams);
+        }
+
+        var articleLink = event.target.closest && event.target.closest('.btnOpen, .commodityPrimaryStory, .commoditySupportStory, .commodityMoreStory');
+        if (articleLink) {
+          var surface = articleLink.matches('.btnOpen') ? 'briefing_open' :
+            (articleLink.matches('.commodityPrimaryStory') ? 'commodity_primary' :
+            (articleLink.matches('.commoditySupportStory') ? 'commodity_support' : 'commodity_more'));
+          var articleParams = getArticleParams(articleLink, surface);
+          if (articleParams) track('article_open', articleParams);
+        }
+
+        var jumpLink = event.target.closest && event.target.closest('.chip[href^="#sec-"], .commodityGroupChip[href^="#commodity-group-"]');
+        if (jumpLink) {
+          var href = jumpLink.getAttribute('href') || '';
+          track('section_jump', {
+            section: href.replace(/^#(?:sec-|commodity-group-)/, ''),
+            surface: jumpLink.classList.contains('commodityGroupChip') ? 'commodity_group_chip' : 'briefing_chip'
+          });
+        }
+
+        var topic = event.target.closest && event.target.closest('.topic');
+        if (topic) {
+          track('section_jump', {
+            section: (topic.textContent || '').trim(),
+            surface: 'topic_badge'
+          });
+        }
+
+        var viewTab = event.target.closest && event.target.closest('.viewTab[data-view-tab]');
+        if (viewTab) {
+          var currentActive = document.querySelector('.viewPane.isActive[data-view-pane]');
+          var fromView = currentActive ? (currentActive.getAttribute('data-view-pane') || '') : '';
+          var toView = viewTab.getAttribute('data-view-tab') || '';
+          if (fromView && toView && fromView !== toView) {
+            track('view_tab_switch', {
+              from_view: fromView,
+              to_view: toView
+            });
+          }
+        }
+
+        var navLink = event.target.closest && event.target.closest('.navRow a[data-nav]');
+        if (navLink) {
+          var navKey = navLink.getAttribute('data-nav') || '';
+          var navType = navKey === 'prev' ? 'prev_date' : (navKey === 'next' ? 'next_date' : 'archive_index');
+          var toDate = '';
+          try {
+            var match = (navLink.getAttribute('href') || '').match(/(\d{4}-\d{2}-\d{2})\.html/);
+            if (match) toDate = match[1];
+          } catch (_navErr) {}
+          track('archive_nav', {
+            nav_type: navType,
+            from_date: reportDate,
+            to_date: toDate
+          });
+        }
+      });
+
+      var dateSelect = document.getElementById('dateSelect');
+      if (dateSelect) {
+        dateSelect.addEventListener('change', function() {
+          var toDate = '';
+          try {
+            var match = String(dateSelect.value || '').match(/(\d{4}-\d{2}-\d{2})\.html/);
+            if (match) toDate = match[1];
+          } catch (_dateErr) {}
+          track('archive_nav', {
+            nav_type: 'select_date',
+            from_date: reportDate,
+            to_date: toDate
+          });
+        });
+      }
+    })();
+  </script>
+  <script>
+    (function() {  <script>
     (function() {
 
       var isDevPreviewPage = false;
