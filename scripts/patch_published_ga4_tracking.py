@@ -5,7 +5,10 @@ import re
 from pathlib import Path
 
 
-HEAD_MARKER = '<meta name="agri-build" content="'
+BUILD_META_RE = re.compile(r'(?m)^  <meta name="agri-build" content="([^"\n]*)" />\s*$')
+BROKEN_BUILD_META_RE = re.compile(
+    r'(?m)^  <meta name="agri-build" content="\s*<meta name="agri-build" content="([^"\n]*)" />\s*$'
+)
 INDEX_SCRIPT_MARKER = '  <script>\n    (function() {'
 ARCHIVE_SCRIPT_MARKER = '  <script>\n    (function() {'
 
@@ -319,10 +322,28 @@ def inject_once(text: str, marker: str, snippet: str, sentinel: str) -> str:
     return text.replace(marker, snippet + marker, 1)
 
 
+def normalize_build_meta(text: str) -> str:
+    return BROKEN_BUILD_META_RE.sub(
+        lambda match: f'  <meta name="agri-build" content="{match.group(1)}" />',
+        text,
+        count=1,
+    )
+
+
+def inject_head_once(text: str, measurement_id: str) -> str:
+    updated = normalize_build_meta(text)
+    if f'googletagmanager.com/gtag/js?id={measurement_id}' in updated:
+        return updated
+    match = BUILD_META_RE.search(updated)
+    if not match:
+        return updated
+    return updated[: match.end()] + "\n" + head_snippet(measurement_id) + updated[match.end() :]
+
+
 def patch_index(path: Path, measurement_id: str) -> bool:
     original = path.read_text(encoding="utf-8")
     updated = original
-    updated = inject_once(updated, '  <meta name="agri-build" content="', head_snippet(measurement_id) + '  <meta name="agri-build" content="', "window.__agriIndexTrackingInstalled")
+    updated = inject_head_once(updated, measurement_id)
     updated = inject_once(updated, INDEX_SCRIPT_MARKER, index_tracking_snippet() + INDEX_SCRIPT_MARKER, "window.__agriIndexTrackingInstalled")
     if updated == original:
         return False
@@ -333,7 +354,7 @@ def patch_index(path: Path, measurement_id: str) -> bool:
 def patch_archive(path: Path, measurement_id: str) -> bool:
     original = path.read_text(encoding="utf-8")
     updated = original
-    updated = inject_once(updated, '  <meta name="agri-build" content="', head_snippet(measurement_id) + '  <meta name="agri-build" content="', "window.__agriArchiveTrackingInstalled")
+    updated = inject_head_once(updated, measurement_id)
     updated = inject_once(updated, ARCHIVE_SCRIPT_MARKER, archive_tracking_snippet(path.stem) + ARCHIVE_SCRIPT_MARKER, "window.__agriArchiveTrackingInstalled")
     if updated == original:
         return False
