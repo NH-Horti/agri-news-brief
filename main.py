@@ -464,7 +464,7 @@ def _hf_semantic_selection_adjustments(
 # Config
 # -----------------------------
 KST = timezone(timedelta(hours=9))
-REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "7")))
+REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST", os.getenv("RUN_HOUR_KST", "6")))
 WINDOW_MIN_HOURS = int(os.getenv("WINDOW_MIN_HOURS", "0"))  # 최소 후보 수집 윈도우(시간, 기본 0=윈도우 확장 없음)
 CROSSDAY_DEDUPE_DAYS = int(os.getenv("CROSSDAY_DEDUPE_DAYS", "7"))  # 최근 N일 URL/사건키 중복 방지
 CROSSDAY_DEDUPE_ENABLED_ENV = (os.getenv("CROSSDAY_DEDUPE_ENABLED", "true").strip().lower() == "true")
@@ -23265,9 +23265,12 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
 
     order = list(KAKAO_MESSAGE_SECTION_ORDER) if isinstance(KAKAO_MESSAGE_SECTION_ORDER, list) else ["supply", "policy", "dist", "pest"]
     parts: list[str] = []
+    env_label = "[개발]" if DEV_SINGLE_PAGE_MODE else "[운영]"
     header = f"농산물 뉴스 브리핑 ({report_date})"
     if DEV_SINGLE_PAGE_MODE:
         header = "[DEV] " + header + " - 개발 테스트 버전(운영 아님)"
+    header = re.sub(r"^\[[^\]]+\]\s*", "", header)
+    header = f"{env_label} {header}"
     parts.append(header)
 
     for key in order:

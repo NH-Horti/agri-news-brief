@@ -84,6 +84,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("def _write_kakao_send_status", self.text)
         self.assertIn('_write_kakao_send_status("not_attempted")', self.text)
 
+    def test_default_report_hour_moves_to_6am(self):
+        self.assertIn('RUN_HOUR_KST", "6"', self.text)
+        self.assertIn('REPORT_HOUR_KST = int(os.getenv("REPORT_HOUR_KST"', self.text)
+
     def test_main_uses_ux_patch_module_builder(self):
         self.assertIn("from ux_patch import build_archive_ux_html", self.text)
         self.assertIn("html_new = build_archive_ux_html(", self.text)
@@ -165,7 +169,7 @@ class TestRegressions(unittest.TestCase):
 
     def test_dev_verify_does_not_extend_window(self):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
-        self.assertIn("cron: '0 22 * * *'", self.dev_verify_text)
+        self.assertIn("cron: '0 21 * * 0-4'", self.dev_verify_text)
         self.assertIn("if: github.event_name == 'schedule' || github.ref_name == 'dev'", self.dev_verify_text)
         self.assertIn("ref: ${{ github.event_name == 'schedule' && 'dev' || github.ref_name }}", self.dev_verify_text)
         self.assertIn("GH_CONTENT_REF: ${{ steps.vars.outputs.content_ref }}", self.dev_verify_text)
@@ -215,6 +219,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
 
     def test_prod_workflows_do_not_extend_window(self):
+        self.assertIn("cron: '0 21 * * 0-4'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)

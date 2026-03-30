@@ -2,7 +2,8 @@ name: agri-news-brief (dev verify rebuild)
 
 on:
   schedule:
-    - cron: '0 22 * * *'
+    # KST 06:00 on weekdays (Mon-Fri) == UTC 21:00 on Sun-Thu
+    - cron: '0 21 * * 0-4'
   workflow_dispatch:
     inputs:
       report_date:
