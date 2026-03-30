@@ -128,6 +128,7 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
+          GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main

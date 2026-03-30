@@ -939,6 +939,7 @@ MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lo
 
 PAGES_BASE_URL_OVERRIDE = os.getenv("PAGES_BASE_URL", "").strip()
 BRIEF_VIEW_URL = os.getenv("BRIEF_VIEW_URL", "").strip()
+GA4_MEASUREMENT_ID = os.getenv("GA4_MEASUREMENT_ID", "").strip()
 
 # Dev verification mode: overwrite a fixed preview page instead of creating dated archives.
 DEV_SINGLE_PAGE_MODE = os.getenv("DEV_SINGLE_PAGE_MODE", "false").strip().lower() in ("1", "true", "yes", "y")
@@ -10382,6 +10383,161 @@ def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]
                 "press_tier": tier,
             })
     return items
+
+
+def _analytics_article_id(report_date: str, section_key: str, url: str, title: str) -> str:
+    raw_date = str(report_date or "").strip()
+    raw_section = str(section_key or "").strip()
+    raw_url = str(url or "").strip()
+    raw_title = str(title or "").strip()
+    if not raw_date or not raw_section or (not raw_url and not raw_title):
+        return ""
+    return hashlib.md5(f"{raw_date}|{raw_section}|{raw_url}|{raw_title}".encode("utf-8")).hexdigest()[:12]
+
+
+def _analytics_target_domain(url: str) -> str:
+    try:
+        return (urlparse(str(url or "").strip()).netloc or "").strip().lower()
+    except Exception:
+        return ""
+
+
+def _analytics_article_attrs_html(
+    report_date: str,
+    *,
+    section_key: str,
+    url: str,
+    title: str,
+    surface: str,
+    rank: int | None = None,
+) -> str:
+    attrs: list[tuple[str, str]] = [
+        ("track", "article"),
+        ("article-id", _analytics_article_id(report_date, section_key, url, title)),
+        ("article-title", str(title or "").strip()),
+        ("report-date", str(report_date or "").strip()),
+        ("section", str(section_key or "").strip()),
+        ("surface", str(surface or "").strip()),
+        ("target-domain", _analytics_target_domain(url)),
+    ]
+    if rank is not None:
+        try:
+            attrs.append(("article-rank", str(int(rank))))
+        except Exception:
+            pass
+    rendered: list[str] = []
+    for name, value in attrs:
+        if not str(value or "").strip():
+            continue
+        rendered.append(f' data-{name}="{esc(str(value))}"')
+    return "".join(rendered)
+
+
+def _render_ga4_head_html() -> str:
+    measurement_id = str(GA4_MEASUREMENT_ID or "").strip()
+    if not measurement_id:
+        return ""
+    return (
+        f'  <script async src="https://www.googletagmanager.com/gtag/js?id={esc(measurement_id)}"></script>\n'
+        "  <script>\n"
+        "    window.dataLayer = window.dataLayer || [];\n"
+        "    window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };\n"
+        '    window.gtag("js", new Date());\n'
+        f'    window.gtag("config", {json.dumps(measurement_id)}, {{ send_page_view: false }});\n'
+        "  </script>"
+    )
+
+
+def _render_analytics_bootstrap_js(page_type: str, report_date: str, default_view_mode: str = "") -> str:
+    analytics_enabled = bool(str(GA4_MEASUREMENT_ID or "").strip())
+    return f"""
+      var agriAnalyticsCtx = {{
+        enabled: {json.dumps(analytics_enabled)},
+        measurementId: {json.dumps(str(GA4_MEASUREMENT_ID or "").strip())},
+        buildId: {json.dumps(BUILD_TAG)},
+        pageType: {json.dumps(str(page_type or "").strip())},
+        reportDate: {json.dumps(str(report_date or "").strip())},
+        viewMode: {json.dumps(str(default_view_mode or "").strip())}
+      }};
+      function agriMergeParams(base, extra) {{
+        var out = {{}};
+        var sources = [base || {{}}, extra || {{}}];
+        for (var si = 0; si < sources.length; si++) {{
+          var src = sources[si];
+          for (var key in src) {{
+            if (!Object.prototype.hasOwnProperty.call(src, key)) continue;
+            var value = src[key];
+            if (value === undefined || value === null || value === "") continue;
+            out[key] = value;
+          }}
+        }}
+        return out;
+      }}
+      function agriTrack(eventName, params) {{
+        try {{
+          if (!agriAnalyticsCtx.enabled || typeof window.gtag !== "function") return;
+          var payload = agriMergeParams({{
+            build_id: agriAnalyticsCtx.buildId || "",
+            page_type: agriAnalyticsCtx.pageType || "",
+            report_date: agriAnalyticsCtx.reportDate || ""
+          }}, params || {{}});
+          window.gtag("event", eventName, payload);
+        }} catch (_agriTrackErr) {{}}
+      }}
+      function agriPageView(viewMode) {{
+        if (typeof viewMode === "string" && viewMode) {{
+          agriAnalyticsCtx.viewMode = viewMode;
+        }}
+        agriTrack("page_view", {{
+          page_type: agriAnalyticsCtx.pageType || "",
+          report_date: agriAnalyticsCtx.reportDate || "",
+          view_mode: agriAnalyticsCtx.viewMode || "",
+          page_title: document.title || "",
+          page_path: window.location.pathname || "",
+          page_location: window.location.href || ""
+        }});
+      }}
+      function agriTrackArticleFromElement(el, overrides) {{
+        if (!el) return;
+        var data = el.dataset || {{}};
+        agriTrack("article_open", agriMergeParams({{
+          article_id: data.articleId || "",
+          article_title: data.articleTitle || "",
+          report_date: data.reportDate || agriAnalyticsCtx.reportDate || "",
+          section: data.section || "",
+          surface: data.surface || "",
+          target_domain: data.targetDomain || "",
+          article_rank: data.articleRank || ""
+        }}, overrides || {{}}));
+      }}
+      function agriTrackThenNavigate(eventName, params, url) {{
+        if (!url) return;
+        if (!agriAnalyticsCtx.enabled || typeof window.gtag !== "function") {{
+          if (typeof navigateToUrl === "function") navigateToUrl(url);
+          else window.location.href = url;
+          return;
+        }}
+        var done = false;
+        function finish() {{
+          if (done) return;
+          done = true;
+          if (typeof navigateToUrl === "function") navigateToUrl(url);
+          else window.location.href = url;
+        }}
+        agriTrack(eventName, agriMergeParams(params || {{}}, {{
+          transport_type: "beacon",
+          event_callback: finish
+        }}));
+        window.setTimeout(finish, 180);
+      }}
+      window.agriAnalytics = {{
+        ctx: agriAnalyticsCtx,
+        track: agriTrack,
+        pageView: agriPageView,
+        trackArticle: agriTrackArticleFromElement,
+        trackThenNavigate: agriTrackThenNavigate
+      }};
+"""
 
 def update_search_index(existing: JsonDict, report_date: str, by_section: dict[str, list[Any]], site_path: str) -> JsonDict:
     if not isinstance(existing, dict):
@@ -20624,7 +20780,7 @@ def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
     )
 
 
-def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
+def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: str) -> str:
     groups = list(board_ctx.get("groups") or [])
     group_blocks: list[str] = []
 
@@ -20668,7 +20824,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 ]
                 secondary_links = "".join(
                     f"""
-                    <a class="commoditySupportStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
+                    <a class="commoditySupportStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=str(getattr(article, "section", "") or "").strip(), url=str(getattr(article, "url", "") or ""), title=str(getattr(article, "title", "") or ""), surface="commodity_support")} href="{esc(article.url)}" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
                       <span class="commoditySupportText">{esc(article.title)}</span>
                     </a>
@@ -20677,7 +20833,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                 )
                 extra_links = "".join(
                     f"""
-                    <a class="commodityMoreStory" data-swipe-ignore="1" href="{esc(article.url)}" target="_top" rel="noopener">
+                    <a class="commodityMoreStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=str(getattr(article, "section", "") or "").strip(), url=str(getattr(article, "url", "") or ""), title=str(getattr(article, "title", "") or ""), surface="commodity_more")} href="{esc(article.url)}" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
                       <span class="commoditySupportText">{esc(article.title)}</span>
                     </a>
@@ -20710,7 +20866,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any]) -> str:
                       <div class="commodityPrimaryKicker">대표 기사</div>
                       {primary_semantic_badge}
                     </div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1" href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=primary_section_key, url=str(getattr(primary_article, "url", "") or ""), title=str(getattr(primary_article, "title", "") or ""), surface="commodity_primary")} href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
                     <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
                   </div>
                   {secondary_html}
@@ -20882,7 +21038,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     )
     candidate_source_for_page = board_source_by_section or _get_last_commodity_board_source() or by_section
     commodity_board_ctx = build_managed_commodity_board_context(candidate_source_for_page)
-    commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx)
+    commodity_board_html = render_managed_commodity_board_html(commodity_board_ctx, report_date)
     hf_compare_report: JsonDict = {}
     if HF_COMPARE_REPORT_ENABLED:
         try:
@@ -20964,8 +21120,24 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 if abs(semantic_boost) > 0.0:
                     semantic_badge = f'<span class="hfDelta {"isPos" if semantic_boost > 0 else "isNeg"}">HF {semantic_boost:+.2f}</span>'
             press_label = normalize_press_label(a.press, url)
+            card_attrs = _analytics_article_attrs_html(
+                report_date,
+                section_key=key,
+                url=str(url or ""),
+                title=str(getattr(a, "title", "") or ""),
+                surface="briefing_card",
+                rank=getattr(a, "rank", None),
+            )
+            button_attrs = _analytics_article_attrs_html(
+                report_date,
+                section_key=key,
+                url=str(url or ""),
+                title=str(getattr(a, "title", "") or ""),
+                surface="briefing_open",
+                rank=getattr(a, "rank", None),
+            )
             return f"""
-            <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\">
+            <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\"{card_attrs}>
               <div class=\"cardTop\">
                 <div class=\"meta\">
                   {core_badge}
@@ -20976,7 +21148,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                   <span class=\"dot\">·</span>
                   <span class=\"topic\">{esc(a.topic)}</span>
                 </div>
-              <a class=\"btnOpen\" data-swipe-ignore=\"1\" href=\"{esc(url)}\" target=\"_top\" rel=\"noopener\">원문 열기</a>
+              <a class=\"btnOpen\" data-swipe-ignore=\"1\" href=\"{esc(url)}\"{button_attrs} target=\"_top\" rel=\"noopener\">원문 열기</a>
               </div>
               <div class=\"ttl\">{esc(a.title)}</div>
               <div class=\"sum\">{summary_html}</div>
@@ -21039,6 +21211,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     home_href = preview_href if is_dev_preview else site_path
     nav_target_attr = ' target="_top"' if is_dev_preview else ""
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
+    ga4_head_html = _render_ga4_head_html()
+    archive_analytics_js = _render_analytics_bootstrap_js("archive", report_date, "briefing")
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}"{nav_target_attr}>{esc(label)}</a>'
@@ -21057,6 +21231,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <meta http-equiv=\"Pragma\" content=\"no-cache\" />
   <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
+{ga4_head_html}
 {dev_meta_html}
   <title>{esc(page_title)}</title>
   <style>
@@ -21570,13 +21745,38 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <script>
     (function() {{
 {dev_refresh_js}
+{archive_analytics_js}
       // card click-to-open
       document.addEventListener("click", function(e) {{
         var card = e.target.closest && e.target.closest(".card[data-href]");
         if (!card) return;
         if (e.target.closest("a,button,select,input,textarea,.topic")) return;
         var href = card.getAttribute("data-href");
-        if (href) window.open(href, "_top", "noopener");
+        if (href) {{
+          if (window.agriAnalytics && typeof window.agriAnalytics.trackArticle === "function") {{
+            window.agriAnalytics.trackArticle(card);
+          }}
+          window.open(href, "_top", "noopener");
+        }}
+      }});
+      document.addEventListener("click", function(e) {{
+        var articleLink = e.target.closest && e.target.closest('a[data-track="article"]');
+        if (!articleLink) return;
+        if (window.agriAnalytics && typeof window.agriAnalytics.trackArticle === "function") {{
+          window.agriAnalytics.trackArticle(articleLink);
+        }}
+      }});
+      document.addEventListener("click", function(e) {{
+        var jumpLink = e.target.closest && e.target.closest('.chip[href^="#sec-"], .commodityGroupChip[href^="#commodity-group-"]');
+        if (!jumpLink) return;
+        var href = jumpLink.getAttribute("href") || "";
+        var targetKey = href.replace(/^#(?:sec-|commodity-group-)/, "");
+        if (window.agriAnalytics && typeof window.agriAnalytics.track === "function") {{
+          window.agriAnalytics.track("section_jump", {{
+            section: targetKey,
+            surface: jumpLink.classList.contains("commodityGroupChip") ? "commodity_group_chip" : "briefing_chip"
+          }});
+        }}
       }});
       // topic badge click -> jump to commodity board item
       document.addEventListener("click", function(e) {{
@@ -21584,6 +21784,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if (!topicEl) return;
         var name = (topicEl.textContent || "").trim();
         if (!name) return;
+        if (window.agriAnalytics && typeof window.agriAnalytics.track === "function") {{
+          window.agriAnalytics.track("section_jump", {{
+            section: name,
+            surface: "topic_badge"
+          }});
+        }}
         // find matching commodity tile
         var tiles = document.querySelectorAll(".commodityTileName");
         for (var i = 0; i < tiles.length; i++) {{
@@ -21788,7 +21994,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           if (v) {{
             var ld = document.getElementById("navLoading");
             if (ld) ld.classList.add("show");
-            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.");
+            gotoUrlChecked(v, "해당 날짜의 브리핑이 없습니다.", "select_date");
           }}
         }});
       }}
@@ -21808,6 +22014,13 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
       function activateView(viewKey, opts) {{
         opts = opts || {{}};
+        var previousView = "";
+        for (var vi = 0; vi < viewPanes.length; vi++) {{
+          if (viewPanes[vi].classList.contains("isActive")) {{
+            previousView = viewPanes[vi].getAttribute("data-view-pane") || "";
+            break;
+          }}
+        }}
         viewPanes.forEach(function(pane) {{
           var active = pane.getAttribute("data-view-pane") === viewKey;
           pane.classList.toggle("isActive", active);
@@ -21822,6 +22035,14 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         syncFloatingChipbar();
         syncMobileQuickNav();
         closeMobileQuickNavSheet();
+        if (!opts.skipTracking && previousView && previousView !== viewKey) {{
+          if (window.agriAnalytics && typeof window.agriAnalytics.track === "function") {{
+            window.agriAnalytics.track("view_tab_switch", {{
+              from_view: previousView,
+              to_view: viewKey
+            }});
+          }}
+        }}
 
         if (opts.skipHistory) return;
         try {{
@@ -21895,7 +22116,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
         if ((ev.key || "") === "Escape") closeMobileQuickNavSheet();
       }});
 
-      activateView(resolveInitialView(), {{ skipHistory: true }});
+      var initialView = resolveInitialView();
+      activateView(initialView, {{ skipHistory: true, skipTracking: true }});
+      if (window.agriAnalytics && typeof window.agriAnalytics.pageView === "function") {{
+        window.agriAnalytics.pageView(initialView);
+      }}
 
       // ✅ (4) 모바일 좌/우 스와이프로 이전/다음 날짜 이동 (기사 영역 우선 / topbar 제스처 차단)
       var navRow = document.querySelector(".navRow");
@@ -21918,18 +22143,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       var navLoading = document.getElementById("navLoading");
       var isNavigating = false;
 
-      function _bindNavClick(el, delta, msg) {{
+      function _bindNavClick(el, delta, msg, navType) {{
         if (!el || !el.addEventListener) return;
         try {{ el.setAttribute && el.setAttribute("data-swipe-ignore", "1"); }} catch (e) {{}}
         try {{
           el.addEventListener("click", function(ev) {{
             try {{ ev.preventDefault(); }} catch (e2) {{}}
-            try {{ gotoByOffset(delta, msg); }} catch (e3) {{}}
+            try {{ gotoByOffset(delta, msg, navType); }} catch (e3) {{}}
           }});
         }} catch (e4) {{}}
       }}
-      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.");
-      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.");
+      _bindNavClick(prevNav, +1, "이전 브리핑이 없습니다.", "prev_date");
+      _bindNavClick(nextNav, -1, "다음 브리핑이 없습니다.", "next_date");
 
       function hasHref(el) {{
         return !!(el && el.tagName && el.tagName.toLowerCase() === "a" && (el.getAttribute("href") || ""));
@@ -21971,6 +22196,17 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           if (href) {{
             isNavigating = true;
             showNavLoading();
+            if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+              var navKey = el.getAttribute("data-nav") || "";
+              var navType = navKey === "prev" ? "prev_date" : (navKey === "next" ? "next_date" : (navKey === "archive" ? "archive_index" : "archive_link"));
+              var toDate = navType === "archive_index" ? "" : (_extractDate(href) || "");
+              window.agriAnalytics.trackThenNavigate("archive_nav", {{
+                nav_type: navType,
+                from_date: _currentDateIso(),
+                to_date: toDate
+              }}, href);
+              return;
+            }}
             navigateToUrl(href);
             return;
           }}
@@ -22106,7 +22342,7 @@ async function _urlExists(url) {{
   return false;
 }}
 
-async function gotoUrlChecked(url, msg) {{
+async function gotoUrlChecked(url, msg, navType) {{
   if (!url || isNavigating) return;
   var dates = await _ensureDates();
   var d = _extractDate(url);
@@ -22121,6 +22357,14 @@ async function gotoUrlChecked(url, msg) {{
   if (isDevPreviewPage) {{
     isNavigating = true;
     showNavLoading();
+    if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+      window.agriAnalytics.trackThenNavigate("archive_nav", {{
+        nav_type: navType || "date_select",
+        from_date: _currentDateIso(),
+        to_date: d || ""
+      }}, url);
+      return;
+    }}
     navigateToUrl(url);
     return;
   }}
@@ -22129,6 +22373,14 @@ async function gotoUrlChecked(url, msg) {{
   if (ok) {{
     isNavigating = true;
     showNavLoading();
+    if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+      window.agriAnalytics.trackThenNavigate("archive_nav", {{
+        nav_type: navType || "date_select",
+        from_date: _currentDateIso(),
+        to_date: d || ""
+      }}, url);
+      return;
+    }}
     navigateToUrl(url);
     return;
   }}
@@ -22146,7 +22398,7 @@ async function gotoUrlChecked(url, msg) {{
   }} catch (e) {{}}
 }}
 
-async function gotoByOffset(delta, msg) {{
+async function gotoByOffset(delta, msg, navType) {{
   var dates = await _ensureDates();
   if (!dates || !dates.length) {{ showNoBrief(null, msg || "이동할 브리핑이 없습니다."); return; }}
   var cur = _currentDateIso();
@@ -22161,6 +22413,14 @@ async function gotoByOffset(delta, msg) {{
       if (isNavigating) return;
       isNavigating = true;
       showNavLoading();
+      if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+        window.agriAnalytics.trackThenNavigate("archive_nav", {{
+          nav_type: navType || (delta > 0 ? "prev_date" : "next_date"),
+          from_date: cur,
+          to_date: d
+        }}, url);
+        return;
+      }}
       navigateToUrl(url);
       return;
     }}
@@ -22170,6 +22430,14 @@ async function gotoByOffset(delta, msg) {{
       if (isNavigating) return;
       isNavigating = true;
       showNavLoading();
+      if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+        window.agriAnalytics.trackThenNavigate("archive_nav", {{
+          nav_type: navType || (delta > 0 ? "prev_date" : "next_date"),
+          from_date: cur,
+          to_date: d
+        }}, url);
+        return;
+      }}
       navigateToUrl(url);
       return;
     }}
@@ -22180,6 +22448,24 @@ async function gotoByOffset(delta, msg) {{
 
 // non-blocking: try to load manifest & prune date list
 try {{ _ensureDates(); }} catch (e) {{}}
+      var archiveHomeLink = document.querySelector('.navRow a[data-nav="archive"]');
+      if (archiveHomeLink) {{
+        archiveHomeLink.setAttribute("data-swipe-ignore", "1");
+        archiveHomeLink.addEventListener("click", function(ev) {{
+          try {{ ev.preventDefault(); }} catch (_archiveNavErr) {{}}
+          var targetUrl = archiveHomeLink.getAttribute("href") || "";
+          if (!targetUrl) return;
+          if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+            window.agriAnalytics.trackThenNavigate("archive_nav", {{
+              nav_type: "archive_index",
+              from_date: _currentDateIso(),
+              to_date: ""
+            }}, targetUrl);
+            return;
+          }}
+          navigateToUrl(targetUrl);
+        }});
+      }}
 
       function resetNavRowFeedback() {{
         if (!navRow) return;
@@ -22484,7 +22770,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         href = build_site_url(site_path, f"archive/{d}.html")
         wd = weekday_label(d)
         cards.append(f"""
-          <a class="card" href="{esc(href)}">
+          <a class="card" href="{esc(href)}" data-nav-type="archive_card" data-from-date="{esc(latest or '')}" data-to-date="{esc(d)}">
             <div class="dt">{esc(pretty_date_kr(d))}</div>
             <div class="meta">{esc(d)} · {esc(wd)}요일</div>
           </a>
@@ -22493,12 +22779,14 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     cards_html = "\n".join(cards) if cards else '<div class="empty">아카이브가 아직 없습니다.</div>'
 
     latest_btn_html = (
-        f'<a class="btn" href="{esc(latest_link)}">최신 브리핑 열기</a>'
+        f'<a class="btn" href="{esc(latest_link)}" data-nav-type="latest_brief" data-from-date="" data-to-date="{esc(latest or "")}">최신 브리핑 열기</a>'
         if latest_link
         else '<button class="btn disabled" type="button" data-msg="최신 브리핑이 아직 없습니다.">최신 브리핑 열기</button>'
     )
 
     search_json_url = build_site_url(site_path, "search_index.json")
+    ga4_head_html = _render_ga4_head_html()
+    home_analytics_js = _render_analytics_bootstrap_js("home", "", "")
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -22509,6 +22797,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="{BUILD_TAG}" />
+  {ga4_head_html}
   <title>농산물 뉴스 브리핑</title>
   <style>
     :root {{
@@ -22676,6 +22965,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
   <script>
     (function() {{
+      {home_analytics_js}
       // disabled latest button -> alert
       var b = document.querySelector("button.btn.disabled[data-msg]");
       if (b) {{
@@ -22683,6 +22973,28 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           alert(b.getAttribute("data-msg") || "이동할 페이지가 없습니다.");
         }});
       }}
+
+      document.addEventListener("click", function(e) {{
+        var navLink = e.target.closest && e.target.closest("a[data-nav-type]");
+        if (!navLink) return;
+        var targetUrl = navLink.getAttribute("href") || "";
+        if (!targetUrl) return;
+        if (window.agriAnalytics && typeof window.agriAnalytics.trackThenNavigate === "function") {{
+          e.preventDefault();
+          window.agriAnalytics.trackThenNavigate("archive_nav", {{
+            nav_type: navLink.getAttribute("data-nav-type") || "",
+            from_date: navLink.getAttribute("data-from-date") || "",
+            to_date: navLink.getAttribute("data-to-date") || ""
+          }}, targetUrl);
+        }}
+      }});
+      document.addEventListener("click", function(e) {{
+        var articleLink = e.target.closest && e.target.closest('a[data-track="article"]');
+        if (!articleLink) return;
+        if (window.agriAnalytics && typeof window.agriAnalytics.trackArticle === "function") {{
+          window.agriAnalytics.trackArticle(articleLink);
+        }}
+      }});
 
       var input = document.getElementById("q");
       var clearBtn = document.getElementById("clearBtn");
@@ -22706,6 +23018,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
       var PAGE_SIZE = 20;
       var PAGE = 1;
+      var lastSearchEventKey = "";
 
       function escHtml(s) {{
         return (s || "").replace(/[&<>"']/g, function(c) {{
@@ -22713,6 +23026,52 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         }});
       }}
       function norm(s) {{ return (s || "").toLowerCase(); }}
+      function buildArticleTrackingAttrs(item, surface) {{
+        if (!item) return "";
+        var attrs = [];
+        function pushAttr(name, value) {{
+          if (value === undefined || value === null || value === "") return;
+          attrs.push(" data-" + name + "='" + escHtml(String(value)) + "'");
+        }}
+        pushAttr("track", "article");
+        pushAttr("article-id", item.id || "");
+        pushAttr("article-title", item.title || "");
+        pushAttr("report-date", item.date || "");
+        pushAttr("section", item.section || "");
+        pushAttr("surface", surface || "");
+        try {{
+          var origin = item.url ? new URL(item.url).hostname : "";
+          pushAttr("target-domain", origin || "");
+        }} catch (_trackUrlErr) {{}}
+        pushAttr("article-rank", item.rank || "");
+        return attrs.join("");
+      }}
+      function trackSearchSubmit(resultCount, source) {{
+        var q = (input && input.value ? input.value : "").trim();
+        if (!q || q.length < 2) return;
+        var eventKey = [
+          q,
+          secSel ? (secSel.value || "") : "",
+          sortSel ? (sortSel.value || "") : "",
+          fromDate ? (fromDate.value || "") : "",
+          toDate ? (toDate.value || "") : "",
+          groupToggle && groupToggle.checked ? "grouped" : "flat",
+          source || ""
+        ].join("|");
+        if (eventKey === lastSearchEventKey) return;
+        lastSearchEventKey = eventKey;
+        if (window.agriAnalytics && typeof window.agriAnalytics.track === "function") {{
+          window.agriAnalytics.track("search_submit", {{
+            query: q,
+            query_length: q.length,
+            result_count: resultCount || 0,
+            section_filter: secSel ? (secSel.value || "") : "",
+            sort_mode: sortSel ? (sortSel.value || "") : "",
+            group_mode: groupToggle && groupToggle.checked ? "date" : "flat",
+            surface: source || "search_box"
+          }});
+        }}
+      }}
 
       function escapeRegExp(s) {{
         return (s || "").replace(/[.*+?^${{}}()|[\\]\\\\]/g, "\\\\$&");
@@ -22929,6 +23288,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
           var aHref = r.archive || "";
           var uHref = r.url || "";
+          var articleAttrs = buildArticleTrackingAttrs(r, "search_result");
 
           var tier = parseInt(r.press_tier||0,10)||0;
           var tierLabel = tier>=4 ? "공식" : (tier>=3 ? "주요" : (tier>=2 ? "지역/전문" : "기타"));
@@ -22943,7 +23303,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
                +  (sum ? "<div class='rSum'>" + sum + "</div>" : "")
                +  "<div class='rLinks'>"
                +    (aHref ? "<a href='" + aHref + "'>브리핑 보기</a>" : "")
-               +    (uHref ? "<a href='" + uHref + "' target='_blank' rel='noopener'>원문 열기</a>" : "")
+               +    (uHref ? "<a href='" + uHref + "'" + articleAttrs + " target='_blank' rel='noopener'>원문 열기</a>" : "")
                +  "</div>"
                + "</div>";
         }}
@@ -22981,6 +23341,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
             var sum = highlight(r.summary || "", tokens);
             var aHref = r.archive || "";
             var uHref = r.url || "";
+            var articleAttrs = buildArticleTrackingAttrs(r, "search_result");
             var tier = parseInt(r.press_tier||0,10)||0;
             var tierLabel = tier>=4 ? "공식" : (tier>=3 ? "주요" : (tier>=2 ? "지역/전문" : "기타"));
 
@@ -22994,7 +23355,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
                  +  (sum ? "<div class='rSum'>" + sum + "</div>" : "")
                  +  "<div class='rLinks'>"
                  +    (aHref ? "<a href='" + aHref + "'>브리핑 보기</a>" : "")
-                 +    (uHref ? "<a href='" + uHref + "' target='_blank' rel='noopener'>원문 열기</a>" : "")
+                 +    (uHref ? "<a href='" + uHref + "'" + articleAttrs + " target='_blank' rel='noopener'>원문 열기</a>" : "")
                  +  "</div>"
                  + "</div>";
           }}
@@ -23005,7 +23366,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         setMeta(tokens, res.length, slice.length);
       }}
 
-      function runSearch() {{
+      function runSearch(triggerSource) {{
         var q = (input.value || "").trim();
         if (!q || q.length < 2) {{
           box.innerHTML = "";
@@ -23029,6 +23390,9 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
         if (groupToggle && groupToggle.checked) renderGrouped(res, tokens);
         else renderList(res, tokens);
+        if (triggerSource && triggerSource !== "typing") {{
+          trackSearchSubmit(res.length, triggerSource);
+        }}
       }}
 
       function resetAll() {{
@@ -23135,27 +23499,30 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         input.addEventListener("input", debounce(function() {{
           ensureData();
           PAGE = 1;
-          runSearch();
+          runSearch("typing");
         }}, 160));
         input.addEventListener("keydown", function(ev) {{
           if (ev.key === "Enter") {{
             ensureData();
             PAGE = 1;
-            runSearch();
+            runSearch("enter");
           }}
         }});
       }}
       if (clearBtn) clearBtn.addEventListener("click", function() {{ resetAll(); }});
-      if (secSel) secSel.addEventListener("change", function() {{ PAGE = 1; runSearch(); }});
-      if (sortSel) sortSel.addEventListener("change", function() {{ PAGE = 1; runSearch(); }});
-      if (fromDate) fromDate.addEventListener("change", function() {{ PAGE = 1; runSearch(); }});
-      if (toDate) toDate.addEventListener("change", function() {{ PAGE = 1; runSearch(); }});
-      if (groupToggle) groupToggle.addEventListener("change", function() {{ PAGE = 1; runSearch(); }});
+      if (secSel) secSel.addEventListener("change", function() {{ PAGE = 1; runSearch("section_filter"); }});
+      if (sortSel) sortSel.addEventListener("change", function() {{ PAGE = 1; runSearch("sort_change"); }});
+      if (fromDate) fromDate.addEventListener("change", function() {{ PAGE = 1; runSearch("date_filter"); }});
+      if (toDate) toDate.addEventListener("change", function() {{ PAGE = 1; runSearch("date_filter"); }});
+      if (groupToggle) groupToggle.addEventListener("change", function() {{ PAGE = 1; runSearch("group_toggle"); }});
 
-      if (quick7) quick7.addEventListener("click", function() {{ ensureData(); setQuickRange(7); PAGE=1; runSearch(); }});
-      if (quick30) quick30.addEventListener("click", function() {{ ensureData(); setQuickRange(30); PAGE=1; runSearch(); }});
-      if (quick90) quick90.addEventListener("click", function() {{ ensureData(); setQuickRange(90); PAGE=1; runSearch(); }});
-      if (quickAll) quickAll.addEventListener("click", function() {{ ensureData(); setQuickRange(null); PAGE=1; runSearch(); }});
+      if (quick7) quick7.addEventListener("click", function() {{ ensureData(); setQuickRange(7); PAGE=1; runSearch("quick_7d"); }});
+      if (quick30) quick30.addEventListener("click", function() {{ ensureData(); setQuickRange(30); PAGE=1; runSearch("quick_30d"); }});
+      if (quick90) quick90.addEventListener("click", function() {{ ensureData(); setQuickRange(90); PAGE=1; runSearch("quick_90d"); }});
+      if (quickAll) quickAll.addEventListener("click", function() {{ ensureData(); setQuickRange(null); PAGE=1; runSearch("quick_all"); }});
+      if (window.agriAnalytics && typeof window.agriAnalytics.pageView === "function") {{
+        window.agriAnalytics.pageView("");
+      }}
     }})();
   </script>
 </body>

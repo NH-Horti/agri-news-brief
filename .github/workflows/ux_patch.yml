@@ -46,6 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GH_CONTENT_REF: 'main'
           GH_CONTENT_BRANCH: 'main'
+          GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
           PUBLISH_MODE: github_pages
           PAGES_BRANCH: main
