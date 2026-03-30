@@ -2,8 +2,8 @@ name: agri-news-brief (daily)
 
 on:
   schedule:
-    # KST 07:00 on weekdays (Mon-Fri) == UTC 22:00 on Sun-Thu
-    - cron: '0 22 * * 0-4'
+    # KST 06:00 on weekdays (Mon-Fri) == UTC 21:00 on Sun-Thu
+    - cron: '0 21 * * 0-4'
   workflow_dispatch: {}
 
 permissions:
