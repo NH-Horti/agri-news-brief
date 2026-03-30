@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-03-30T11:07:40.891521+09:00",
+  "updated_at": "2026-03-30T21:18:29.420486+09:00",
   "items": [
     {
       "id": "f2f66feb39c1",
@@ -27,7 +27,7 @@
       "summary": "최근 과수화상병 등 외래 병해충 유입까지 늘어나며 병해충은 농업 진입의 큰 장벽이 됐다. 귀농인... 목표는 사후 방제 중심에서 예찰-예측- 방제 -현장 확산으로 이어지는 ‘전 주기 통합관리체계’로의 대전환이다. 이를...",
       "url": "https://n.news.naver.com/mnews/article/662/0000091691?sid=110",
       "archive": "docs/archive/2026-03-30.html#sec-pest",
-      "score": 34.33,
+      "score": 33.93,
       "press_tier": 3
     },
     {
@@ -41,7 +41,7 @@
       "summary": "제주산 햇조생 양파 가격 형성을 위해선 앞으로 10여일이 중요하다는 반응도 나왔다. 가락시장 관계자 A씨는 “올해 육지 조생양파 중 첫물량인 전남 고흥산이 4월7∼8일께 가락시장에 반입될 것으로 예상된다”며...",
       "url": "https://n.news.naver.com/mnews/article/662/0000091659?sid=101",
       "archive": "docs/archive/2026-03-30.html#sec-dist",
-      "score": 31.35,
+      "score": 31.15,
       "press_tier": 3
     },
     {
@@ -97,7 +97,7 @@
       "summary": "인근 토마토 농가들이 모인다. 이 자리에선 시세 흐름과 품질관리 방법, 환경 제어 방식, 판로 확대방안까지 다양한 이야기가 오간다. 이씨는 온라인 판매 비중을 높여 농산물공판장과 견줘 좀더 안정적인 가격 으로...",
       "url": "https://n.news.naver.com/mnews/article/662/0000091706?sid=103",
       "archive": "docs/archive/2026-03-30.html#sec-supply",
-      "score": 26.68,
+      "score": 26.28,
       "press_tier": 3
     },
     {
@@ -115,31 +115,31 @@
       "press_tier": 2
     },
     {
-      "id": "3dee340d4705",
-      "date": "2026-03-30",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
-      "title": "제주 양배추 캐나다행…대아청과, 수급 물꼬 해외로",
-      "press": "한국농업신문",
-      "summary": "한국농업신문, NEWSFARM 62톤 수출...국내 가격 안정 정조준 소비촉진 행사·온라인 도매시장 연계 물량 분산... 산지 출하 물량이 한꺼번에 몰리며 농가 부담이 커진 만큼, 국내 소비 확대만으로는 수급 조절에 한계가 있다는...",
-      "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100642",
-      "archive": "docs/archive/2026-03-30.html#sec-dist",
-      "score": 24.8,
-      "press_tier": 2
-    },
-    {
       "id": "06a172276901",
       "date": "2026-03-30",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 4,
+      "rank": 3,
       "title": "가락시장 시범휴업 원안 추진···오는 6·7월 수요일",
       "press": "농수축산신문",
       "summary": "서울시농수산식품공사는 26일 '2026년 제1차 가락시장 시장 관리 운영 위원회'를 열고 ' 가락시장 개장일 탄력적 운영 4차 시범사업'을 통과시켰다고 밝혔다. 서울시공사는 지속가능한 도매 시장 환경을 조성하고 산지와...",
       "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=317312",
       "archive": "docs/archive/2026-03-30.html#sec-dist",
       "score": 24.77,
+      "press_tier": 2
+    },
+    {
+      "id": "3dee340d4705",
+      "date": "2026-03-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "제주 양배추 캐나다행…대아청과, 수급 물꼬 해외로",
+      "press": "한국농업신문",
+      "summary": "한국농업신문, NEWSFARM 62톤 수출...국내 가격 안정 정조준 소비촉진 행사·온라인 도매시장 연계 물량 분산... 산지 출하 물량이 한꺼번에 몰리며 농가 부담이 커진 만큼, 국내 소비 확대만으로는 수급 조절에 한계가 있다는...",
+      "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=100642",
+      "archive": "docs/archive/2026-03-30.html#sec-dist",
+      "score": 24.6,
       "press_tier": 2
     },
     {
@@ -153,7 +153,7 @@
       "summary": "민생물가 분야에서는 착한 가격 업소 확대를 지속 추진하고 있으며, 상반기 중 착한 가격 업소 활성화... 농식품 유통 분야에서도 공공급식 지역 농산물 수급 상황을 모니터링하고 학교급식지원센터 운영상황을 점검했으며...",
       "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1070332",
       "archive": "docs/archive/2026-03-30.html#sec-policy",
-      "score": 32.86,
+      "score": 32.66,
       "press_tier": 1
     },
     {
@@ -209,7 +209,7 @@
       "summary": "한국농촌경제연구원 전망에 따르면 봄 배추 재배면적은 평년보다 늘지만 지난해 가격 하락 영향으로 전년보다는 감소할 것으로 예상된다. 이에 따라 향후 공급 불안 가능성도 제기된다. 정부는 수급 안정 을 위해 대응...",
       "url": "http://www.econonews.co.kr/news/articleView.html?idxno=433162",
       "archive": "docs/archive/2026-03-30.html#sec-supply",
-      "score": 23.48,
+      "score": 23.28,
       "press_tier": 1
     },
     {
@@ -223,7 +223,7 @@
       "summary": "군은 오는 4월 초 과수 저온 피해 예방을 위한 현장 예찰 활동을 강화하고, 시설하우스의 곰팡이병 등 주요 병해에 대한 사전 방제 예찰 활동을 집중 추진할 계획이다. 이와 함께 애호박· 딸기 ·포도 등 지역 맞춤형 전략작목...",
       "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000028176",
       "archive": "docs/archive/2026-03-30.html#sec-pest",
-      "score": 13.41,
+      "score": 13.21,
       "press_tier": 1
     },
     {
@@ -237,7 +237,7 @@
       "summary": "함평군은 4월 초 과수 저온 피해 예방을 위한 현장 예찰 활동을 강화하고, 시설하우스의 곰팡이병 등 주요 병해에 대한 사전 방제 예찰 활동을 집중 추진한다. 이와 함께 애호박· 딸기 ·포도 등 지역 맞춤형 전략작목 육성을...",
       "url": "http://www.ttlnews.com/news/articleView.html?idxno=3093445",
       "archive": "docs/archive/2026-03-30.html#sec-pest",
-      "score": 13.21,
+      "score": 13.01,
       "press_tier": 1
     },
     {
@@ -265,7 +265,7 @@
       "summary": "실제로 2024년 겨울철에 잦은 강수와 이상고온이 나타나면서 제주도 월동무 와 당근의 생산량이 전년보다 20% 이상 감소했고 이로 인해 도매 가격 이 올라 전국 물가상승에 영향을 미쳤다. 해외에서도 폭염과 가뭄으로...",
       "url": "https://www.jemin.com/news/articleView.html?idxno=835259",
       "archive": "docs/archive/2026-03-30.html#sec-supply",
-      "score": 12.0,
+      "score": 11.8,
       "press_tier": 1
     },
     {
