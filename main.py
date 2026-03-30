@@ -18868,7 +18868,7 @@ def _rebuild_missing_chipbar_from_sections(html_text: str) -> str:
     """
     if not html_text:
         return html_text
-    if ('class="chipbar"' in html_text and 'class="chips"' in html_text):
+    if ('class="chipbar' in html_text and 'class="chips"' in html_text):
         return html_text
 
     try:
