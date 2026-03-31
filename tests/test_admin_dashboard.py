@@ -1,4 +1,5 @@
 import json
+import hashlib
 import importlib.util
 import os
 import sys
@@ -24,12 +25,22 @@ def _load_build_admin_module():
     return module
 
 
+def _load_register_dimensions_module():
+    path = ROOT / "scripts" / "register_ga4_custom_dimensions.py"
+    spec = importlib.util.spec_from_file_location("register_ga4_custom_dimensions", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class TestAdminDashboard(unittest.TestCase):
     def test_article_analytics_id_matches_search_index_generation(self):
         report_date = "2026-03-23"
         url = "https://example.com/article-1"
         title = "Tracked article"
-        expected = main._article_analytics_id(report_date, "supply", url, title)
+        expected = hashlib.md5(f"{report_date}|supply|{url}|{title}".encode("utf-8")).hexdigest()[:12]
 
         items = main._make_search_items_for_day(
             report_date,
@@ -110,6 +121,22 @@ class TestAdminDashboard(unittest.TestCase):
             self.assertEqual(exit_code, 1)
             health = json.loads((output_dir / "health.json").read_text(encoding="utf-8"))
             self.assertIn("GA4_PROPERTY_ID is not configured.", health["warnings"])
+
+    def test_register_script_has_expected_unique_dimension_specs(self):
+        module = _load_register_dimensions_module()
+        specs = list(module.CUSTOM_DIMENSIONS)
+
+        self.assertEqual(len(specs), 21)
+
+        parameter_names = [spec.parameter_name for spec in specs]
+        display_names = [spec.display_name for spec in specs]
+
+        self.assertEqual(len(parameter_names), len(set(parameter_names)))
+        self.assertEqual(len(display_names), len(set(display_names)))
+        self.assertIn("page_type", parameter_names)
+        self.assertIn("article_id", parameter_names)
+        self.assertIn("query", parameter_names)
+        self.assertIn("nav_type", parameter_names)
 
 
 if __name__ == "__main__":

@@ -13,4 +13,5 @@ tmp_dev_*.html
 .env
 .env.local
 .env.*.local
+.secrets/
 .local-builds/
