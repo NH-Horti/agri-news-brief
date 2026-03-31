@@ -7986,6 +7986,12 @@ def _is_overseas_livestock_story(title: str, desc: str) -> bool:
     foreign_hits = sum(1 for w in _foreign_kws if w in txt_l)
     if foreign_hits == 0:
         return False
+    # 제목에 축산 키워드 + 가격 시그널이 함께 있으면 축산 가격 기사 가능성 높음
+    _price_signal = ("값", "가격", "시세", "최저가", "최고가", "급락", "급등", "폭락", "폭등", "하락", "상승")
+    title_price_hits = sum(1 for w in _price_signal if w in ttl_l)
+    # 제목에 축산+가격 조합이면 원예 품목이 비교 대상으로만 등장할 가능성이 높다
+    if livestock_hits >= 1 and title_price_hits >= 1:
+        return True
     # 국내 원예 수급 시그널이 있으면 통과
     _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추", "마늘 가격", "마늘 수급",
                    "마늘 출하", "양파", "고추", "오이", "가락시장", "도매시장")
