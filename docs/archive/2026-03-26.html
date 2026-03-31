@@ -2764,7 +2764,8 @@ async function gotoUrlChecked(url, msg) {
     return;
   }
 
-  var ok = await _urlExists(url);
+  var inManifest = d && dates && dates.length && dates.indexOf(d) >= 0;
+  var ok = inManifest || (await _urlExists(url));
   if (ok) {
     isNavigating = true;
     showNavLoading();
@@ -2803,8 +2804,9 @@ async function gotoByOffset(delta, msg) {
       navigateToUrl(url);
       return;
     }
-    // Always verify existence (manifest can be stale; Pages deploy can lag)
-    var ok = await _urlExists(url);
+    // 매니페스트에 날짜가 있으면 HEAD 요청 없이 바로 이동
+    var inManifest = dates.indexOf(d) >= 0;
+    var ok = inManifest || (await _urlExists(url));
     if (ok) {
       if (isNavigating) return;
       isNavigating = true;
