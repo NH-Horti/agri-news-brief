@@ -6,21 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="local-prod-20260331" />
-  
-  <meta name="application-name" content="농산물 뉴스 브리프" />
-  <meta name="apple-mobile-web-app-title" content="농산물 뉴스 브리프" />
-  <meta name="description" content="농산물 뉴스 브리핑을 홈 화면에 설치해 앱처럼 바로 확인하세요." />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="format-detection" content="telephone=no" />
-  <link rel="manifest" href="/agri-news-brief/manifest.webmanifest" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/agri-news-brief/icons/icon-512.png" />
-  <link rel="apple-touch-icon" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
-
+  <meta name="agri-build" content="d11ae27" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5Y1GRYB0J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -101,30 +87,6 @@
 
     .groupHdr{margin-top:8px;font-weight:900;font-size:13px;color:#111827}
     .groupWrap{display:flex;flex-direction:column;gap:10px}
-
-    .topbarMain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
-    .homeHeader{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin:-26px -16px 18px;padding:16px 16px 14px;background:rgba(243,247,251,.84);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid rgba(229,231,235,.85)}
-    .homeHeaderText{min-width:0}
-    .homeHeader .sub{margin-top:6px}
-    .installAction{display:none !important}
-    .installAction:hover{transform:translateY(-1px);box-shadow:0 22px 36px rgba(29,78,216,.24);filter:brightness(1.02)}
-    .installAction.isHidden{display:none !important}
-    .installActionIcon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);flex:0 0 auto}
-    .installActionIcon svg{width:16px;height:16px;display:block}
-    .installActionCopy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.05;white-space:nowrap}
-    .installActionCopy strong{font-size:13px}
-    .installActionCopy span{font-size:11px;font-weight:700;opacity:.82}
-    @media (max-width: 840px){
-      .homeHeader{margin:-26px -16px 16px;padding:14px 16px 12px}
-    }
-    @media (max-width: 640px){
-      .topbarMain,.homeHeader{grid-template-columns:1fr;align-items:stretch}
-      .installAction{width:100%;justify-content:center}
-      .installActionCopy{align-items:center;text-align:center}
-      .installActionCopy span{white-space:normal}
-    }
-    @media print {.installAction,.homeHeader{display:none !important}}
-
     @media (prefers-color-scheme: dark) {
       :root {--bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--btn:#3b82f6;--btnHover:#2563eb;--chip:#334155;--mark:#854d0e}
       body{background:var(--bg);color:var(--text)}
@@ -152,27 +114,12 @@
     }
   </style>
 </head>
-<body class="pageHome">
+<body>
   <div class="wrap">
-    <div class="homeHeader">
-      <div class="homeHeaderText">
-        <h1>농산물 뉴스 브리핑</h1>
-        <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
-      </div>
-      <button id="installAppButton" class="installAction isHidden" type="button">
-        <span class="installActionIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 3v10m0 0l4-4m-4 4-4-4M5 17.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5v1c0 1.4-1.1 2.5-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="installActionCopy">
-          <strong>앱 설치</strong>
-          <span>카톡 없이 바로 열기</span>
-        </span>
-      </button>
-    </div>
+    <h1>농산물 뉴스 브리핑</h1>
+    <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
 
-    <a class="btn" href="/agri-news-brief/archive/2026-03-31.html" data-nav-type="latest_brief" data-from-date="" data-to-date="2026-03-31">최신 브리핑 열기</a>
+    <a class="btn" href="/agri-news-brief/archive/2026-04-01.html" data-nav-type="latest_brief" data-from-date="" data-to-date="2026-04-01">최신 브리핑 열기</a>
 
     <div class="panel">
       <div class="panelTitle">
@@ -228,355 +175,361 @@
       <div class="panelTitle">날짜별 아카이브</div>
       <div class="grid">
         
-          <a class="card" href="/agri-news-brief/archive/2026-03-31.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-31">
+          <a class="card" href="/agri-news-brief/archive/2026-04-01.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-04-01">
+            <div class="dt">2026년 4월 1일</div>
+            <div class="meta">2026-04-01 · 수요일</div>
+          </a>
+        
+
+          <a class="card" href="/agri-news-brief/archive/2026-03-31.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-31">
             <div class="dt">2026년 3월 31일</div>
             <div class="meta">2026-03-31 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-30.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-30">
+          <a class="card" href="/agri-news-brief/archive/2026-03-30.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-30">
             <div class="dt">2026년 3월 30일</div>
             <div class="meta">2026-03-30 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-27.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-27">
+          <a class="card" href="/agri-news-brief/archive/2026-03-27.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-27">
             <div class="dt">2026년 3월 27일</div>
             <div class="meta">2026-03-27 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-26.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-26">
+          <a class="card" href="/agri-news-brief/archive/2026-03-26.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-26">
             <div class="dt">2026년 3월 26일</div>
             <div class="meta">2026-03-26 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-25.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-25">
+          <a class="card" href="/agri-news-brief/archive/2026-03-25.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-25">
             <div class="dt">2026년 3월 25일</div>
             <div class="meta">2026-03-25 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-24.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-24">
+          <a class="card" href="/agri-news-brief/archive/2026-03-24.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-24">
             <div class="dt">2026년 3월 24일</div>
             <div class="meta">2026-03-24 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-23.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-23">
+          <a class="card" href="/agri-news-brief/archive/2026-03-23.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-23">
             <div class="dt">2026년 3월 23일</div>
             <div class="meta">2026-03-23 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-20.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-20">
+          <a class="card" href="/agri-news-brief/archive/2026-03-20.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-20">
             <div class="dt">2026년 3월 20일</div>
             <div class="meta">2026-03-20 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-19.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-19">
+          <a class="card" href="/agri-news-brief/archive/2026-03-19.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-19">
             <div class="dt">2026년 3월 19일</div>
             <div class="meta">2026-03-19 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-18.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-18">
+          <a class="card" href="/agri-news-brief/archive/2026-03-18.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-18">
             <div class="dt">2026년 3월 18일</div>
             <div class="meta">2026-03-18 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-17.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-17">
+          <a class="card" href="/agri-news-brief/archive/2026-03-17.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-17">
             <div class="dt">2026년 3월 17일</div>
             <div class="meta">2026-03-17 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-16.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-16">
+          <a class="card" href="/agri-news-brief/archive/2026-03-16.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-16">
             <div class="dt">2026년 3월 16일</div>
             <div class="meta">2026-03-16 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-13.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-13">
+          <a class="card" href="/agri-news-brief/archive/2026-03-13.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-13">
             <div class="dt">2026년 3월 13일</div>
             <div class="meta">2026-03-13 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-12.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-12">
+          <a class="card" href="/agri-news-brief/archive/2026-03-12.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-12">
             <div class="dt">2026년 3월 12일</div>
             <div class="meta">2026-03-12 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-11.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-11">
+          <a class="card" href="/agri-news-brief/archive/2026-03-11.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-11">
             <div class="dt">2026년 3월 11일</div>
             <div class="meta">2026-03-11 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-10.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-10">
+          <a class="card" href="/agri-news-brief/archive/2026-03-10.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-10">
             <div class="dt">2026년 3월 10일</div>
             <div class="meta">2026-03-10 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-09.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-09">
+          <a class="card" href="/agri-news-brief/archive/2026-03-09.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-09">
             <div class="dt">2026년 3월 9일</div>
             <div class="meta">2026-03-09 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-06.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-06">
+          <a class="card" href="/agri-news-brief/archive/2026-03-06.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-06">
             <div class="dt">2026년 3월 6일</div>
             <div class="meta">2026-03-06 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-05.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-05">
+          <a class="card" href="/agri-news-brief/archive/2026-03-05.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-05">
             <div class="dt">2026년 3월 5일</div>
             <div class="meta">2026-03-05 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-04.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-04">
+          <a class="card" href="/agri-news-brief/archive/2026-03-04.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-04">
             <div class="dt">2026년 3월 4일</div>
             <div class="meta">2026-03-04 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-03-03.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-03-03">
+          <a class="card" href="/agri-news-brief/archive/2026-03-03.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-03-03">
             <div class="dt">2026년 3월 3일</div>
             <div class="meta">2026-03-03 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-27.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-27">
+          <a class="card" href="/agri-news-brief/archive/2026-02-27.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-27">
             <div class="dt">2026년 2월 27일</div>
             <div class="meta">2026-02-27 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-26.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-26">
+          <a class="card" href="/agri-news-brief/archive/2026-02-26.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-26">
             <div class="dt">2026년 2월 26일</div>
             <div class="meta">2026-02-26 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-25.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-25">
+          <a class="card" href="/agri-news-brief/archive/2026-02-25.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-25">
             <div class="dt">2026년 2월 25일</div>
             <div class="meta">2026-02-25 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-24.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-24">
+          <a class="card" href="/agri-news-brief/archive/2026-02-24.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-24">
             <div class="dt">2026년 2월 24일</div>
             <div class="meta">2026-02-24 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-23.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-23">
+          <a class="card" href="/agri-news-brief/archive/2026-02-23.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-23">
             <div class="dt">2026년 2월 23일</div>
             <div class="meta">2026-02-23 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-20.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-20">
+          <a class="card" href="/agri-news-brief/archive/2026-02-20.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-20">
             <div class="dt">2026년 2월 20일</div>
             <div class="meta">2026-02-20 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-19.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-19">
+          <a class="card" href="/agri-news-brief/archive/2026-02-19.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-19">
             <div class="dt">2026년 2월 19일</div>
             <div class="meta">2026-02-19 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-13.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-13">
+          <a class="card" href="/agri-news-brief/archive/2026-02-13.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-13">
             <div class="dt">2026년 2월 13일</div>
             <div class="meta">2026-02-13 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-12.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-12">
+          <a class="card" href="/agri-news-brief/archive/2026-02-12.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-12">
             <div class="dt">2026년 2월 12일</div>
             <div class="meta">2026-02-12 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-11.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-11">
+          <a class="card" href="/agri-news-brief/archive/2026-02-11.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-11">
             <div class="dt">2026년 2월 11일</div>
             <div class="meta">2026-02-11 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-10.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-10">
+          <a class="card" href="/agri-news-brief/archive/2026-02-10.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-10">
             <div class="dt">2026년 2월 10일</div>
             <div class="meta">2026-02-10 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-09.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-09">
+          <a class="card" href="/agri-news-brief/archive/2026-02-09.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-09">
             <div class="dt">2026년 2월 9일</div>
             <div class="meta">2026-02-09 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-06.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-06">
+          <a class="card" href="/agri-news-brief/archive/2026-02-06.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-06">
             <div class="dt">2026년 2월 6일</div>
             <div class="meta">2026-02-06 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-05.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-05">
+          <a class="card" href="/agri-news-brief/archive/2026-02-05.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-05">
             <div class="dt">2026년 2월 5일</div>
             <div class="meta">2026-02-05 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-04.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-04">
+          <a class="card" href="/agri-news-brief/archive/2026-02-04.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-04">
             <div class="dt">2026년 2월 4일</div>
             <div class="meta">2026-02-04 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-03.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-03">
+          <a class="card" href="/agri-news-brief/archive/2026-02-03.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-03">
             <div class="dt">2026년 2월 3일</div>
             <div class="meta">2026-02-03 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-02-02.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-02-02">
+          <a class="card" href="/agri-news-brief/archive/2026-02-02.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-02-02">
             <div class="dt">2026년 2월 2일</div>
             <div class="meta">2026-02-02 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-30.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-30">
+          <a class="card" href="/agri-news-brief/archive/2026-01-30.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-30">
             <div class="dt">2026년 1월 30일</div>
             <div class="meta">2026-01-30 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-29.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-29">
+          <a class="card" href="/agri-news-brief/archive/2026-01-29.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-29">
             <div class="dt">2026년 1월 29일</div>
             <div class="meta">2026-01-29 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-28.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-28">
+          <a class="card" href="/agri-news-brief/archive/2026-01-28.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-28">
             <div class="dt">2026년 1월 28일</div>
             <div class="meta">2026-01-28 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-27.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-27">
+          <a class="card" href="/agri-news-brief/archive/2026-01-27.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-27">
             <div class="dt">2026년 1월 27일</div>
             <div class="meta">2026-01-27 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-26.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-26">
+          <a class="card" href="/agri-news-brief/archive/2026-01-26.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-26">
             <div class="dt">2026년 1월 26일</div>
             <div class="meta">2026-01-26 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-23.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-23">
+          <a class="card" href="/agri-news-brief/archive/2026-01-23.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-23">
             <div class="dt">2026년 1월 23일</div>
             <div class="meta">2026-01-23 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-22.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-22">
+          <a class="card" href="/agri-news-brief/archive/2026-01-22.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-22">
             <div class="dt">2026년 1월 22일</div>
             <div class="meta">2026-01-22 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-21.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-21">
+          <a class="card" href="/agri-news-brief/archive/2026-01-21.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-21">
             <div class="dt">2026년 1월 21일</div>
             <div class="meta">2026-01-21 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-20.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-20">
+          <a class="card" href="/agri-news-brief/archive/2026-01-20.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-20">
             <div class="dt">2026년 1월 20일</div>
             <div class="meta">2026-01-20 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-19.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-19">
+          <a class="card" href="/agri-news-brief/archive/2026-01-19.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-19">
             <div class="dt">2026년 1월 19일</div>
             <div class="meta">2026-01-19 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-16.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-16">
+          <a class="card" href="/agri-news-brief/archive/2026-01-16.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-16">
             <div class="dt">2026년 1월 16일</div>
             <div class="meta">2026-01-16 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-15.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-15">
+          <a class="card" href="/agri-news-brief/archive/2026-01-15.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-15">
             <div class="dt">2026년 1월 15일</div>
             <div class="meta">2026-01-15 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-14.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-14">
+          <a class="card" href="/agri-news-brief/archive/2026-01-14.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-14">
             <div class="dt">2026년 1월 14일</div>
             <div class="meta">2026-01-14 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-13.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-13">
+          <a class="card" href="/agri-news-brief/archive/2026-01-13.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-13">
             <div class="dt">2026년 1월 13일</div>
             <div class="meta">2026-01-13 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-12.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-12">
+          <a class="card" href="/agri-news-brief/archive/2026-01-12.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-12">
             <div class="dt">2026년 1월 12일</div>
             <div class="meta">2026-01-12 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-09.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-09">
+          <a class="card" href="/agri-news-brief/archive/2026-01-09.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-09">
             <div class="dt">2026년 1월 9일</div>
             <div class="meta">2026-01-09 · 금요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-08.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-08">
+          <a class="card" href="/agri-news-brief/archive/2026-01-08.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-08">
             <div class="dt">2026년 1월 8일</div>
             <div class="meta">2026-01-08 · 목요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-07.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-07">
+          <a class="card" href="/agri-news-brief/archive/2026-01-07.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-07">
             <div class="dt">2026년 1월 7일</div>
             <div class="meta">2026-01-07 · 수요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-06.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-06">
+          <a class="card" href="/agri-news-brief/archive/2026-01-06.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-06">
             <div class="dt">2026년 1월 6일</div>
             <div class="meta">2026-01-06 · 화요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-05.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-05">
+          <a class="card" href="/agri-news-brief/archive/2026-01-05.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-05">
             <div class="dt">2026년 1월 5일</div>
             <div class="meta">2026-01-05 · 월요일</div>
           </a>
         
 
-          <a class="card" href="/agri-news-brief/archive/2026-01-02.html" data-nav-type="archive_card" data-from-date="2026-03-31" data-to-date="2026-01-02">
+          <a class="card" href="/agri-news-brief/archive/2026-01-02.html" data-nav-type="archive_card" data-from-date="2026-04-01" data-to-date="2026-01-02">
             <div class="dt">2026년 1월 2일</div>
             <div class="meta">2026-01-02 · 금요일</div>
           </a>
@@ -584,14 +537,14 @@
       </div>
     </div>
   </div>
-  
+
   <script>
     (function() {
       
       var agriAnalyticsCtx = {
         enabled: true,
         measurementId: "G-M5Y1GRYB0J",
-        buildId: "local-prod-20260331",
+        buildId: "d11ae27",
         pageType: "home",
         reportDate: "",
         viewMode: ""
@@ -1234,46 +1187,5 @@
       }
     })();
   </script>
-  
-  <script>
-    (function() {
-      var swUrl = "/agri-news-brief/sw.js";
-      var swScope = "/agri-news-brief/";
-      var latestHref = "/agri-news-brief/archive/2026-03-31.html";
-
-      function isStandalone() {
-        try {
-          return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
-        } catch (e) {
-          return false;
-        }
-      }
-
-      function maybeOpenLatestBriefing() {
-        if (!latestHref || !isStandalone()) return;
-        try {
-          var targetUrl = new URL(latestHref, window.location.href);
-          var currentUrl = new URL(window.location.href);
-          if (targetUrl.pathname === currentUrl.pathname && targetUrl.search === currentUrl.search) return;
-          window.location.replace(targetUrl.toString());
-        } catch (e) {
-          console.warn("[PWA] latest briefing redirect skipped", e);
-        }
-      }
-
-      if ("serviceWorker" in navigator && window.isSecureContext) {
-        window.addEventListener("load", function() {
-          navigator.serviceWorker.register(swUrl, { scope: swScope, updateViaCache: "none" }).catch(function(err) {
-            console.warn("[PWA] service worker registration failed", err);
-          });
-        });
-      }
-
-      window.addEventListener("load", function() {
-        window.setTimeout(maybeOpenLatestBriefing, 30);
-      });
-    })();
-  </script>
-
 </body>
 </html>
