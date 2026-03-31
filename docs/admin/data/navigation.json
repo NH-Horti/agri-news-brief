@@ -1,6 +1,108 @@
 {
-  "generated_at": "2026-03-31T00:42:35+09:00",
-  "section_jump": [],
-  "view_switch": [],
-  "archive_nav": []
+  "generated_at": "2026-04-01T00:38:04+09:00",
+  "section_jump": [
+    {
+      "date": "2026-03-31",
+      "count": 3,
+      "section": "supply",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 2,
+      "section": "policy",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "section": "dist",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "section": "pest",
+      "surface": "briefing_chip"
+    }
+  ],
+  "view_switch": [
+    {
+      "date": "2026-03-31",
+      "count": 8,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 2,
+      "from_view": "commodity",
+      "to_view": "briefing"
+    }
+  ],
+  "archive_nav": [
+    {
+      "date": "2026-03-31",
+      "count": 17,
+      "nav_type": "prev_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-30"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 3,
+      "nav_type": "archive_index",
+      "from_date": "2026-03-31",
+      "to_date": ""
+    },
+    {
+      "date": "2026-03-31",
+      "count": 2,
+      "nav_type": "select_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-26"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "latest_brief",
+      "from_date": "",
+      "to_date": "2026-03-31"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-03-23",
+      "to_date": "2026-03-17"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-03-27",
+      "to_date": "2026-03-16"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-11"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-13"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-19"
+    }
+  ]
 }
