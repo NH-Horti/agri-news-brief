@@ -19200,29 +19200,16 @@ def _render_pwa_install_css() -> str:
     .homeHeader{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin:-26px -16px 18px;padding:16px 16px 14px;background:rgba(243,247,251,.84);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid rgba(229,231,235,.85)}
     .homeHeaderText{min-width:0}
     .homeHeader .sub{margin-top:6px}
-    .installAction{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 16px;border-radius:999px;border:1px solid rgba(15,23,42,.08);background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;text-decoration:none;font-size:13px;font-weight:900;letter-spacing:-0.02em;box-shadow:0 18px 32px rgba(29,78,216,.18);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
-    .installAction:hover{transform:translateY(-1px);box-shadow:0 22px 36px rgba(29,78,216,.24);filter:brightness(1.02)}
-    .installAction.isHidden{display:none !important}
-    .installActionIcon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);flex:0 0 auto}
-    .installActionIcon svg{width:16px;height:16px;display:block}
-    .installActionCopy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.05;white-space:nowrap}
-    .installActionCopy strong{font-size:13px}
-    .installActionCopy span{font-size:11px;font-weight:700;opacity:.82}
+    .installAction{display:none !important}
     @media (max-width: 840px){
       .homeHeader{margin:-26px -16px 16px;padding:14px 16px 12px}
     }
     @media (max-width: 640px){
       .topbarMain,.homeHeader{grid-template-columns:1fr;align-items:stretch}
-      .installAction{width:100%;justify-content:center}
-      .installActionCopy{align-items:center;text-align:center}
-      .installActionCopy span{white-space:normal}
     }
     @media print {.installAction,.homeHeader{display:none !important}}
     @media (prefers-color-scheme: dark){
       .homeHeader{background:rgba(15,23,42,.86);border-bottom-color:#334155}
-      .installAction{border-color:rgba(96,165,250,.26);background:linear-gradient(135deg,#1d4ed8 0%,#0f172a 100%);box-shadow:0 18px 34px rgba(2,6,23,.36)}
-      .installAction:hover{box-shadow:0 24px 42px rgba(2,6,23,.44)}
-      .installActionIcon{background:rgba(255,255,255,.12)}
     }
     """
 
@@ -19243,20 +19230,16 @@ def _render_pwa_prompt_html() -> str:
 """
 
 
-def _render_pwa_bootstrap_html(site_path: str) -> str:
+def _render_pwa_bootstrap_html(site_path: str, latest_href: str = "") -> str:
     sw_url = json.dumps(build_site_url(site_path, "sw.js"))
     sw_scope = json.dumps(site_path if site_path.endswith("/") else site_path + "/")
-    manual_install_msg = json.dumps(
-        "카카오톡 내장 브라우저를 사용 중이면 메뉴에서 Chrome으로 연 뒤 '홈 화면에 추가'를 선택해 주세요.",
-        ensure_ascii=False,
-    )
+    latest_href_json = json.dumps(latest_href or "")
     return f"""
   <script>
     (function() {{
       var swUrl = {sw_url};
       var swScope = {sw_scope};
-      var installButton = document.getElementById("installAppButton");
-      var deferredPrompt = null;
+      var latestHref = {latest_href_json};
 
       function isStandalone() {{
         try {{
@@ -19266,31 +19249,16 @@ def _render_pwa_bootstrap_html(site_path: str) -> str:
         }}
       }}
 
-      function isAndroid() {{
+      function maybeOpenLatestBriefing() {{
+        if (!latestHref || !isStandalone()) return;
         try {{
-          return /Android/i.test(window.navigator.userAgent || "");
+          var targetUrl = new URL(latestHref, window.location.href);
+          var currentUrl = new URL(window.location.href);
+          if (targetUrl.pathname === currentUrl.pathname && targetUrl.search === currentUrl.search) return;
+          window.location.replace(targetUrl.toString());
         }} catch (e) {{
-          return false;
+          console.warn("[PWA] latest briefing redirect skipped", e);
         }}
-      }}
-
-      function isKakaoInApp() {{
-        try {{
-          return /KAKAOTALK/i.test(window.navigator.userAgent || "");
-        }} catch (e) {{
-          return false;
-        }}
-      }}
-
-      function shouldShowInstallButton() {{
-        if (!installButton || isStandalone()) return false;
-        if (deferredPrompt) return true;
-        return isAndroid();
-      }}
-
-      function refreshInstallUi() {{
-        if (!installButton) return;
-        installButton.classList.toggle("isHidden", !shouldShowInstallButton());
       }}
 
       if ("serviceWorker" in navigator && window.isSecureContext) {{
@@ -19301,43 +19269,8 @@ def _render_pwa_bootstrap_html(site_path: str) -> str:
         }});
       }}
 
-      window.addEventListener("beforeinstallprompt", function(event) {{
-        event.preventDefault();
-        deferredPrompt = event;
-        refreshInstallUi();
-      }});
-
-      window.addEventListener("appinstalled", function() {{
-        deferredPrompt = null;
-        refreshInstallUi();
-      }});
-
-      if (installButton) {{
-        installButton.addEventListener("click", function() {{
-          if (deferredPrompt && typeof deferredPrompt.prompt === "function") {{
-            deferredPrompt.prompt();
-            Promise.resolve(deferredPrompt.userChoice).catch(function() {{
-            }}).finally(function() {{
-              deferredPrompt = null;
-              refreshInstallUi();
-            }});
-            return;
-          }}
-          if (isKakaoInApp()) {{
-            window.alert({manual_install_msg});
-            return;
-          }}
-          if (isAndroid()) {{
-            window.alert("브라우저 메뉴에서 '홈 화면에 추가'를 선택하면 앱처럼 사용할 수 있습니다.");
-            return;
-          }}
-          window.alert("Chrome이나 Edge에서 설치가 가능할 때 버튼이 활성화됩니다. 브라우저 메뉴도 함께 확인해 주세요.");
-        }});
-      }}
-
       window.addEventListener("load", function() {{
-        refreshInstallUi();
-        window.setTimeout(refreshInstallUi, 300);
+        window.setTimeout(maybeOpenLatestBriefing, 30);
       }});
     }})();
   </script>
@@ -23187,7 +23120,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     )
     pwa_install_css = _render_pwa_install_css()
     pwa_prompt_html = _render_pwa_prompt_html()
-    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path)
+    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path, latest_link or "")
 
     return f"""<!doctype html>
 <html lang="ko">
