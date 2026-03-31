@@ -1056,6 +1056,8 @@ OPINION_BAN_TERMS = [
     "길섶에서", "[길섶에서]", "시론", "[시론]", "여적", "[여적]",
     "세상만사", "아침햇발", "삶의향기", "삶의 향기", "세설",
     "여의도포럼", "경제시평", "[경제시평]", "바깥에서 본 한국",
+    # 업종 브리핑 묶음 기사
+    "fc 브리핑", "[fc 브리핑]", "유통 브리핑", "[유통 브리핑]", "프랜차이즈 브리핑",
 ]
 
 # 지역 동정/기부/장학/발전기금 등 커뮤니티성 기사 제외용(특히 ○○농협 + 기금전달류 오탐 방지)
@@ -7934,6 +7936,39 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     return None
 
 
+def _is_local_branding_event_story(title: str, desc: str) -> bool:
+    """로컬 브랜딩/스포츠/골프 이벤트: 농산물 수급과 무관한 지역 행사."""
+    ttl_l = (title or "").lower()
+    _event_kws = ("골프", "파크골프", "마라톤", "대회 개최", "토너먼트", "브랜딩", "로컬 브랜딩")
+    event_hits = sum(1 for w in _event_kws if w in ttl_l)
+    if event_hits == 0:
+        return False
+    _supply_keep = ("가격", "시세", "수급", "출하", "반입", "경락", "경매", "도매시장")
+    supply_hits = sum(1 for w in _supply_keep if w in ttl_l)
+    return supply_hits == 0
+
+
+def _is_overseas_livestock_story(title: str, desc: str) -> bool:
+    """해외 축산(돼지고기/소고기 등) 시세 기사: 국내 원예 수급과 무관."""
+    ttl_l = (title or "").lower()
+    txt_l = f"{ttl_l} {(desc or '').lower()}"
+    _livestock_kws = ("돼지고기", "소고기", "한우", "한돈", "축산", "축산물", "계란", "달걀", "육류")
+    _foreign_kws = ("중국", "中", "미국", "일본", "베트남", "태국", "호주", "브라질", "유럽", "수입육", "수입산")
+    livestock_hits = sum(1 for w in _livestock_kws if w in ttl_l)
+    if livestock_hits == 0:
+        return False
+    foreign_hits = sum(1 for w in _foreign_kws if w in txt_l)
+    if foreign_hits == 0:
+        return False
+    # 국내 원예 수급 시그널이 있으면 통과
+    _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추", "마늘 가격", "마늘 수급",
+                   "마늘 출하", "양파", "고추", "오이", "가락시장", "도매시장")
+    horti_keep = sum(1 for w in _horti_keep if w in txt_l)
+    if horti_keep >= 1:
+        return False
+    return True
+
+
 def _is_admin_consulting_story(title: str, desc: str) -> bool:
     """지자체 행정 컨설팅/기술지도: 수급 기사가 아닌 행정 서비스 기사 감지."""
     ttl_l = (title or "").lower()
@@ -7994,6 +8029,12 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
         return None
     # 지자체 컨설팅/기술지도는 수급 기사가 아니므로 feature 판정에서 제외
     if _is_admin_consulting_story(title, desc):
+        return None
+    # 해외 축산 시세는 수급 기사가 아님
+    if _is_overseas_livestock_story(title, desc):
+        return None
+    # 로컬 브랜딩/스포츠 이벤트는 수급 기사가 아님
+    if _is_local_branding_event_story(title, desc):
         return None
 
     horti_sc = best_horti_score(ttl, desc or "")
@@ -8326,6 +8367,12 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
         # 유가/에너지 primary 기사: 품목 수급과 무관하므로 큰 감점
         if is_oil_energy_primary_macro_context(title, desc):
             base -= 4.0
+        # 해외 축산(중국 돼지고기 등): 국내 원예 수급과 무관
+        if _is_overseas_livestock_story(title, desc):
+            base -= 4.0
+        # 로컬 브랜딩/스포츠 이벤트: 수급과 무관
+        if _is_local_branding_event_story(title, desc):
+            base -= 3.0
         if managed_count:
             base += min(0.72, 0.15 * managed_count)
             base += min(0.48, 0.22 * program_core_count)
@@ -8559,7 +8606,7 @@ POLICY_TITLE_CORE_TERMS = (
     '대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료','물가','가격','성수품','차례상','소비자물가','물가지수','통계','kosis',
     '협의체','위원회','출범','특별관리','최소가격','보전제','제도개선','제도 개선','구조개선','구조 개선',
 )
-PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약')
+PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약','무름병','시들음병','미생물')
 _SECTION_TITLE_CORE_TERMS_MAP = {
     "supply": SUPPLY_TITLE_CORE_TERMS,
     "dist": DIST_TITLE_CORE_TERMS,
@@ -10762,6 +10809,10 @@ PEST_STRICT_TERMS = [
     "해충", "진딧물", "응애", "노린재", "나방", "총채벌레", "선충", "깍지벌레",
     # 방제/예찰/약제
     "병해충", "방제", "예찰", "방제약", "약제", "농약", "살포", "살충", "살균", "훈증",
+    # 병명 추가
+    "무름병", "시들음병", "줄기썩음병", "뿌리혹병",
+    # 미생물/바이오 방제
+    "미생물", "바실러스", "길항균",
 ]
 PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해"]
 PEST_AGRI_CONTEXT_TERMS = [
@@ -12566,6 +12617,10 @@ _HEADLINE_STOPWORDS = [
     "인물", "동정", "취임", "인사", "부고", "결혼", "개업",
     # 인물/현장 르포·하이라이트 시리즈: 수급 핵심이 아니라 인물/생활 중심
     "하이라이트", "nbs 하이라이트", "현장르포",
+    # 업종 브리핑·라운드업: 프랜차이즈/유통 업종 뉴스 묶음
+    "fc 브리핑", "유통 브리핑", "프랜차이즈 브리핑",
+    # 골프·스포츠 이벤트: 농산물 수급과 무관
+    "파크골프", "골프 대회", "골프대회",
 ]
 
 def _headline_gate(a: "Article", section_key: str) -> bool:
@@ -13299,6 +13354,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return True
         # 지자체 컨설팅/기술지도: 수급 기사가 아니라 행정 서비스 기사
         if _is_admin_consulting_story(title, desc):
+            return True
+        # 해외 축산 시세: 국내 원예 수급과 무관
+        if _is_overseas_livestock_story(title, desc):
+            return True
+        # 로컬 브랜딩/스포츠 이벤트: 수급과 무관
+        if _is_local_branding_event_story(title, desc):
             return True
         if is_supply_org_promo_feature_context(title, desc) and issue_bucket != "commodity_issue" and not field_market_response:
             return True
