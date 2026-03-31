@@ -3865,6 +3865,15 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         return metrics
     if key in _FRUIT_TREE_COMMODITY_KEYS and is_fruit_blossom_tourism_context(title, desc):
         return metrics
+    # 해외 축산 기사: 제목에 품목명이 부수적으로 등장해도 해당 품목 보드에 연결하지 않음
+    if _is_overseas_livestock_story(title, desc):
+        return metrics
+    # 지자체 행정 컨설팅/기술지도: 수급 기사가 아닌 행정 서비스
+    if _is_admin_consulting_story(title, desc):
+        return metrics
+    # 로컬 브랜딩/스포츠 이벤트: 농산물 수급과 무관
+    if _is_local_branding_event_story(title, desc):
+        return metrics
 
     body_operational_match = bool(
         title_focus_hits == 0
