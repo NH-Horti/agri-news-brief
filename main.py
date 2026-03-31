@@ -6111,6 +6111,8 @@ _TITLE_HORTI_DIRECT_TERMS = (
 _AGRI_TRAINING_RECRUITMENT_TERMS = (
     "농업대학", "농업 대학", "농민대학", "귀농대학", "아카데미",
     "신입생 모집", "교육생 모집", "수강생 모집", "과정 모집", "교육 과정",
+    # 현장 컨설팅·기술지도: 지자체 행정 서비스이지 수급 기사가 아님
+    "컨설팅", "현장 컨설팅", "영농현장 컨설팅", "기술지도", "찾아가는",
 )
 _AGRI_ORG_RENAME_TERMS = (
     "명칭 변경", "명칭변경", "사명 변경", "사명변경",
@@ -7932,6 +7934,30 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     return None
 
 
+def _is_admin_consulting_story(title: str, desc: str) -> bool:
+    """지자체 행정 컨설팅/기술지도: 수급 기사가 아닌 행정 서비스 기사 감지."""
+    ttl_l = (title or "").lower()
+    _consulting_kws = (
+        "컨설팅", "현장 컨설팅", "기술지도", "찾아가는",
+        "현장교육", "현장 교육", "기술보급", "기술 보급",
+    )
+    _admin_actor_kws = ("군", "시", "도", "농업기술센터", "농촌진흥청", "농기센터")
+    consulting_hits = sum(1 for w in _consulting_kws if w in ttl_l)
+    if consulting_hits == 0:
+        return False
+    # 제목에 수급 핵심 시그널이 있으면 통과
+    _supply_keep = ("가격", "시세", "수급", "출하", "반입", "경락", "경매", "폭락", "급등", "강세", "약세")
+    supply_hits = sum(1 for w in _supply_keep if w in ttl_l)
+    if supply_hits >= 1:
+        return False
+    actor_hits = sum(1 for w in _admin_actor_kws if w in ttl_l)
+    if consulting_hits >= 1 and actor_hits >= 1:
+        return True
+    if consulting_hits >= 2:
+        return True
+    return False
+
+
 def _is_profile_feature_story(title: str, desc: str) -> bool:
     """인물/르포/하이라이트 시리즈: 수급 핵심이 아닌 인물 중심 스토리 감지."""
     ttl_l = (title or "").lower()
@@ -7965,6 +7991,9 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
         return None
     # 인물/르포/하이라이트 시리즈는 수급 기사가 아니므로 feature 판정에서 제외
     if _is_profile_feature_story(title, desc):
+        return None
+    # 지자체 컨설팅/기술지도는 수급 기사가 아니므로 feature 판정에서 제외
+    if _is_admin_consulting_story(title, desc):
         return None
 
     horti_sc = best_horti_score(ttl, desc or "")
@@ -8271,6 +8300,11 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
             base += 0.38
         if is_local_agri_org_feature_context(title, desc):
             base -= 1.0
+        # 컨설팅/기술지도/교육: 지자체 행정이지 수급 기사가 아님
+        if is_agri_training_recruitment_context(title, desc):
+            base -= 1.8
+        if _is_admin_consulting_story(title, desc):
+            base -= 2.0
         if is_dist_export_shipping_context(title, desc):
             base -= 1.45
         if dist_supply_center:
@@ -13262,6 +13296,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         )
         # 인물/르포/하이라이트 시리즈: 수급 핵심이 아니라 인물 중심 스토리
         if _is_profile_feature_story(title, desc):
+            return True
+        # 지자체 컨설팅/기술지도: 수급 기사가 아니라 행정 서비스 기사
+        if _is_admin_consulting_story(title, desc):
             return True
         if is_supply_org_promo_feature_context(title, desc) and issue_bucket != "commodity_issue" and not field_market_response:
             return True
