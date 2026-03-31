@@ -84,7 +84,7 @@
 
     .briefingHero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}
     .briefingHeroMain{min-width:0}
-    .briefingEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em;vertical-align:middle;margin-left:10px;position:relative;top:-2px}
+    .briefingEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em;vertical-align:middle;margin-left:10px;position:relative;top:-2px}
     .briefingHero h2{margin:0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}
     .briefingLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
     .briefingHeroStats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
@@ -142,7 +142,7 @@
     .commodityHeadMain{position:relative;z-index:1;min-width:0}
     .commodityHead h2{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}
     .commodityLead{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}
-    .commodityEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}
+    .commodityEyebrow{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em;vertical-align:middle;margin-left:10px;position:relative;top:-2px}
     .commodityHeadStats{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .commodityHeadStat{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}
     .commodityHeadStatLabel{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}
@@ -950,8 +950,7 @@
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
       <div class="commodityHead">
         <div class="commodityHeadMain">
-          <div class="commodityEyebrow">원예수급부 전체 관리 품목</div>
-          <h2 id="commodityBoardTitle">전체 품목 보드</h2>
+          <h2 id="commodityBoardTitle">전체 품목 보드 <span class="commodityEyebrow">원예수급부 관리 품목</span></h2>
           <div class="commodityLead">품목별 관련 기사 풀을 먼저 넓게 모아 보여줍니다. 오늘의 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
         </div>
         <div class="commodityHeadStats" aria-label="품목 보드 요약">

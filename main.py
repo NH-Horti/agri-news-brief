@@ -19189,6 +19189,19 @@ def _rebuild_missing_chipbar_from_sections(html_text: str) -> str:
     """
     if not html_text:
         return html_text
+    # 모던 페이지(briefingChipbar)에 레거시 chipbar가 남아 있으면 제거
+    if "briefingChipbar" in html_text and '<div class="chipbar" data-swipe-ignore="1">' in html_text:
+        html_text = re.sub(
+            r'\s*<div class="chipbar" data-swipe-ignore="1">\s*'
+            r'<div class="chipwrap">\s*'
+            r'<div class="chips"[^>]*>.*?</div>\s*'
+            r'</div>\s*'
+            r'</div>',
+            "",
+            html_text,
+            count=1,
+            flags=re.S,
+        )
     if ('class="chipbar' in html_text and 'class="chips"' in html_text):
         return html_text
 
@@ -21099,8 +21112,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
       <div class="commodityHead">
         <div class="commodityHeadMain">
-          <div class="commodityEyebrow">원예수급부 전체 관리 품목</div>
-          <h2 id="commodityBoardTitle">전체 품목 보드</h2>
+          <h2 id="commodityBoardTitle">전체 품목 보드 <span class="commodityEyebrow">원예수급부 관리 품목</span></h2>
           <div class="commodityLead">품목별 관련 기사 풀을 먼저 넓게 모아 보여줍니다. 오늘의 브리핑은 이 기사 풀 안에서 선발되며, 수급사업 품목은 별도 배지로 강조합니다.</div>
         </div>
         <div class="commodityHeadStats" aria-label="품목 보드 요약">
@@ -21223,8 +21235,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     briefing_hero_html = f"""
     <section class="briefingHero" aria-labelledby="briefingHeroTitle">
       <div class="briefingHeroMain">
-        <div class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</div>
-        <h2 id="briefingHeroTitle">오늘의 브리핑</h2>
+        <h2 id="briefingHeroTitle">오늘의 브리핑 <span class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</span></h2>
         <div class="briefingLead">섹션별 핵심 기사를 한 번에 훑고 바로 원문으로 이동할 수 있게 정리했습니다. 아래 섹션 칩을 누르면 원하는 영역으로 즉시 이동합니다.</div>
       </div>
       <div class="briefingHeroStats" aria-label="브리핑 요약">
@@ -21468,8 +21479,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
 
     .briefingHero{{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:flex-start;margin-top:14px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:radial-gradient(circle at top left, rgba(191,219,254,.75), transparent 34%),linear-gradient(135deg,#eff6ff 0%,#ffffff 56%,#f8fafc 100%);box-shadow:0 14px 34px rgba(15,23,42,.08)}}
     .briefingHeroMain{{min-width:0}}
-    .briefingEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em}}
-    .briefingHero h2{{margin:10px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}}
+    .briefingEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em;vertical-align:middle;margin-left:10px;position:relative;top:-2px}}
+    .briefingHero h2{{margin:0;font-size:30px;line-height:1.05;letter-spacing:-0.8px}}
     .briefingLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
     .briefingHeroStats{{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
     .briefingHeroStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
@@ -21526,7 +21537,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityHeadMain{{position:relative;z-index:1;min-width:0}}
     .commodityHead h2{{margin:8px 0 0;font-size:30px;line-height:1.05;letter-spacing:-0.7px}}
     .commodityLead{{margin-top:10px;max-width:720px;color:#334155;font-size:14px;line-height:1.65}}
-    .commodityEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em}}
+    .commodityEyebrow{{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:#ecfeff;border:1px solid #99f6e4;color:#115e59;font-size:11px;font-weight:900;letter-spacing:.02em;vertical-align:middle;margin-left:10px;position:relative;top:-2px}}
     .commodityHeadStats{{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}}
     .commodityHeadStat{{display:flex;flex-direction:column;justify-content:center;min-width:110px;min-height:82px;padding:14px 16px;border-radius:18px;border:1px solid rgba(148,163,184,.24);background:rgba(255,255,255,.95);box-shadow:0 10px 24px rgba(15,23,42,.06)}}
     .commodityHeadStatLabel{{color:#64748b;font-size:11px;font-weight:900;letter-spacing:.04em}}
@@ -21701,6 +21712,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .briefingPane,.commodityPane{{margin-top:12px}}
       .briefingHero{{grid-template-columns:1fr;padding:0;border:none;border-radius:0;gap:10px;background:transparent;box-shadow:none}}
       .briefingEyebrow,.commodityEyebrow{{min-height:22px;padding:0 8px;font-size:10px}}
+      .briefingEyebrow{{margin-left:8px;top:-1px}}
       .briefingHero h2{{font-size:26px;letter-spacing:-0.6px}}
       .briefingLead,.commodityLead{{margin-top:8px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
       .briefingHeroStats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;justify-content:flex-start}}
@@ -22534,7 +22546,8 @@ async function gotoUrlChecked(url, msg, navType) {{
     return;
   }}
 
-  var ok = await _urlExists(url);
+  var inManifest = d && dates && dates.length && dates.indexOf(d) >= 0;
+  var ok = inManifest || (await _urlExists(url));
   if (ok) {{
     isNavigating = true;
     showNavLoading();
@@ -22589,8 +22602,9 @@ async function gotoByOffset(delta, msg, navType) {{
       navigateToUrl(url);
       return;
     }}
-    // Always verify existence (manifest can be stale; Pages deploy can lag)
-    var ok = await _urlExists(url);
+    // 매니페스트에 날짜가 있으면 HEAD 요청 없이 바로 이동 (딜레이 최소화)
+    var inManifest = dates.indexOf(d) >= 0;
+    var ok = inManifest || (await _urlExists(url));
     if (ok) {{
       if (isNavigating) return;
       isNavigating = true;
