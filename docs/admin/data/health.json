@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-03-30T21:54:11+09:00",
+  "generated_at": "2026-03-31T00:42:35+09:00",
   "collection": {
-    "tracking_enabled": false,
-    "last_event_at": "",
+    "tracking_enabled": true,
+    "last_event_at": "2026-03-30",
     "tracking_build_id": ""
   },
   "pipeline": {
-    "last_success_at": "2026-03-30T21:54:11+09:00",
+    "last_success_at": "2026-03-31T00:42:35+09:00",
     "status": "ok"
   },
   "warnings": []
