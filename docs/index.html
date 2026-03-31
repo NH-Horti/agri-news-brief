@@ -7,6 +7,20 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="local-prod-20260331" />
+  
+  <meta name="application-name" content="농산물 뉴스 브리프" />
+  <meta name="apple-mobile-web-app-title" content="농산물 뉴스 브리프" />
+  <meta name="description" content="농산물 뉴스 브리핑을 홈 화면에 설치해 앱처럼 바로 확인하세요." />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="/agri-news-brief/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/agri-news-brief/icons/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5Y1GRYB0J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -87,6 +101,38 @@
 
     .groupHdr{margin-top:8px;font-weight:900;font-size:13px;color:#111827}
     .groupWrap{display:flex;flex-direction:column;gap:10px}
+
+    .installPrompt[hidden]{display:none !important}
+    .installPrompt{position:fixed;left:16px;right:16px;bottom:18px;z-index:24;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .2s ease,transform .2s ease}
+    .installPrompt.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .pageArchive .installPrompt{bottom:84px}
+    .installPromptCard{max-width:680px;margin:0 auto;padding:14px 16px;border:1px solid #cbd5e1;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 18px 42px rgba(15,23,42,.22);backdrop-filter:saturate(180%) blur(14px);display:flex;gap:14px;align-items:center;justify-content:space-between}
+    .installPromptCopy{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .installPromptCopy strong{font-size:14px;letter-spacing:-0.2px}
+    .installPromptCopy span{color:#475569;font-size:12.5px;line-height:1.5}
+    .installPromptActions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+    .installPromptBtn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font-size:13px;font-weight:900;cursor:pointer}
+    .installPromptBtn:hover{border-color:#94a3b8}
+    .installPromptBtn.primary{border-color:#0f172a;background:#0f172a;color:#fff}
+    .installPromptBtn.primary:hover{background:#1d4ed8;border-color:#1d4ed8}
+    @media (min-width: 901px){.pageArchive .installPrompt{bottom:18px}}
+    @media (max-width: 640px){
+      .installPrompt{left:12px;right:12px}
+      .installPromptCard{padding:14px;gap:12px;border-radius:18px;flex-direction:column;align-items:stretch}
+      .installPromptActions{width:100%}
+      .installPromptBtn{flex:1}
+    }
+    @media print {.installPrompt{display:none !important}}
+    @media (prefers-color-scheme: dark){
+      .installPromptCard{border-color:#334155;background:rgba(15,23,42,.96);box-shadow:0 20px 48px rgba(0,0,0,.42)}
+      .installPromptCopy strong{color:#f8fafc}
+      .installPromptCopy span{color:#cbd5e1}
+      .installPromptBtn{border-color:#475569;background:#1e293b;color:#e2e8f0}
+      .installPromptBtn:hover{border-color:#64748b}
+      .installPromptBtn.primary{border-color:#3b82f6;background:#3b82f6;color:#fff}
+      .installPromptBtn.primary:hover{background:#2563eb;border-color:#2563eb}
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {--bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--btn:#3b82f6;--btnHover:#2563eb;--chip:#334155;--mark:#854d0e}
       body{background:var(--bg);color:var(--text)}
@@ -114,7 +160,7 @@
     }
   </style>
 </head>
-<body>
+<body class="pageHome">
   <div class="wrap">
     <h1>농산물 뉴스 브리핑</h1>
     <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
@@ -531,6 +577,20 @@
       </div>
     </div>
   </div>
+  
+  <div id="installPrompt" class="installPrompt" hidden>
+    <div class="installPromptCard">
+      <div class="installPromptCopy">
+        <strong>앱처럼 바로 열기</strong>
+        <span>홈 화면에 추가하면 카카오톡 없이 브리핑을 바로 열 수 있습니다.</span>
+      </div>
+      <div class="installPromptActions">
+        <button id="installPromptInstall" class="installPromptBtn primary" type="button">홈 화면에 추가</button>
+        <button id="installPromptDismiss" class="installPromptBtn" type="button">나중에</button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     (function() {
@@ -1181,5 +1241,107 @@
       }
     })();
   </script>
+  
+  <script>
+    (function() {
+      var swUrl = "/agri-news-brief/sw.js";
+      var swScope = "/agri-news-brief/";
+      var installPrompt = document.getElementById("installPrompt");
+      var installButton = document.getElementById("installPromptInstall");
+      var dismissButton = document.getElementById("installPromptDismiss");
+      var dismissKey = "agri:pwa-install-dismissed:v1";
+      var deferredPrompt = null;
+
+      function isStandalone() {
+        try {
+          return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isDismissed() {
+        try {
+          return sessionStorage.getItem(dismissKey) === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function rememberDismiss() {
+        try {
+          sessionStorage.setItem(dismissKey, "1");
+        } catch (e) {}
+      }
+
+      function showInstallPrompt() {
+        if (!installPrompt || installPrompt.classList.contains("show") || isStandalone() || isDismissed()) return;
+        installPrompt.hidden = false;
+        window.requestAnimationFrame(function() {
+          installPrompt.classList.add("show");
+        });
+      }
+
+      function hideInstallPrompt(persist) {
+        if (!installPrompt) return;
+        installPrompt.classList.remove("show");
+        installPrompt.hidden = true;
+        if (persist) rememberDismiss();
+      }
+
+      if ("serviceWorker" in navigator && window.isSecureContext) {
+        window.addEventListener("load", function() {
+          navigator.serviceWorker.register(swUrl, { scope: swScope, updateViaCache: "none" }).catch(function(err) {
+            console.warn("[PWA] service worker registration failed", err);
+          });
+        });
+      }
+
+      window.addEventListener("beforeinstallprompt", function(event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        showInstallPrompt();
+      });
+
+      window.addEventListener("appinstalled", function() {
+        deferredPrompt = null;
+        hideInstallPrompt(true);
+      });
+
+      if (installButton) {
+        installButton.addEventListener("click", function() {
+          if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
+            deferredPrompt.prompt();
+            Promise.resolve(deferredPrompt.userChoice).then(function(choice) {
+              if (choice && choice.outcome === "accepted") {
+                hideInstallPrompt(true);
+              }
+            }).catch(function() {
+            }).finally(function() {
+              deferredPrompt = null;
+            });
+            return;
+          }
+          window.alert("브라우저 메뉴의 '설치' 또는 '홈 화면에 추가'를 선택하면 앱처럼 사용할 수 있습니다.");
+        });
+      }
+
+      if (dismissButton) {
+        dismissButton.addEventListener("click", function() {
+          hideInstallPrompt(true);
+        });
+      }
+
+      window.addEventListener("load", function() {
+        window.setTimeout(function() {
+          var ua = window.navigator.userAgent || "";
+          if (/Android/i.test(ua) && !isStandalone()) {
+            showInstallPrompt();
+          }
+        }, 1800);
+      });
+    })();
+  </script>
+
 </body>
 </html>
