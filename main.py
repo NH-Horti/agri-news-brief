@@ -19168,6 +19168,181 @@ def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False, r
 def esc(s: str) -> str:
     return html.escape(s or "")
 
+PWA_APP_TITLE = "농산물 뉴스 브리프"
+PWA_SHORT_TITLE = "농산물 브리프"
+PWA_THEME_COLOR = "#0f172a"
+PWA_BG_COLOR = "#f8fafc"
+
+
+def _render_pwa_head_html(site_path: str, *, title: str, description: str) -> str:
+    manifest_href = build_site_url(site_path, "manifest.webmanifest")
+    icon_192_href = build_site_url(site_path, "icons/icon-192.png")
+    icon_512_href = build_site_url(site_path, "icons/icon-512.png")
+    return f"""
+  <meta name="application-name" content="{esc(title)}" />
+  <meta name="apple-mobile-web-app-title" content="{esc(title)}" />
+  <meta name="description" content="{esc(description)}" />
+  <meta name="theme-color" content="{PWA_THEME_COLOR}" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="{esc(manifest_href)}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{esc(icon_192_href)}" />
+  <link rel="icon" type="image/png" sizes="512x512" href="{esc(icon_512_href)}" />
+  <link rel="apple-touch-icon" sizes="192x192" href="{esc(icon_192_href)}" />
+"""
+
+
+def _render_pwa_install_css() -> str:
+    return """
+    .topbarMain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+    .homeHeader{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin:-26px -16px 18px;padding:16px 16px 14px;background:rgba(243,247,251,.84);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid rgba(229,231,235,.85)}
+    .homeHeaderText{min-width:0}
+    .homeHeader .sub{margin-top:6px}
+    .installAction{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 16px;border-radius:999px;border:1px solid rgba(15,23,42,.08);background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#fff;text-decoration:none;font-size:13px;font-weight:900;letter-spacing:-0.02em;box-shadow:0 18px 32px rgba(29,78,216,.18);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+    .installAction:hover{transform:translateY(-1px);box-shadow:0 22px 36px rgba(29,78,216,.24);filter:brightness(1.02)}
+    .installAction.isHidden{display:none !important}
+    .installActionIcon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);flex:0 0 auto}
+    .installActionIcon svg{width:16px;height:16px;display:block}
+    .installActionCopy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.05;white-space:nowrap}
+    .installActionCopy strong{font-size:13px}
+    .installActionCopy span{font-size:11px;font-weight:700;opacity:.82}
+    @media (max-width: 840px){
+      .homeHeader{margin:-26px -16px 16px;padding:14px 16px 12px}
+    }
+    @media (max-width: 640px){
+      .topbarMain,.homeHeader{grid-template-columns:1fr;align-items:stretch}
+      .installAction{width:100%;justify-content:center}
+      .installActionCopy{align-items:center;text-align:center}
+      .installActionCopy span{white-space:normal}
+    }
+    @media print {.installAction,.homeHeader{display:none !important}}
+    @media (prefers-color-scheme: dark){
+      .homeHeader{background:rgba(15,23,42,.86);border-bottom-color:#334155}
+      .installAction{border-color:rgba(96,165,250,.26);background:linear-gradient(135deg,#1d4ed8 0%,#0f172a 100%);box-shadow:0 18px 34px rgba(2,6,23,.36)}
+      .installAction:hover{box-shadow:0 24px 42px rgba(2,6,23,.44)}
+      .installActionIcon{background:rgba(255,255,255,.12)}
+    }
+    """
+
+
+def _render_pwa_prompt_html() -> str:
+    return """
+  <button id="installAppButton" class="installAction isHidden" type="button">
+    <span class="installActionIcon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3v10m0 0l4-4m-4 4-4-4M5 17.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5v1c0 1.4-1.1 2.5-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="installActionCopy">
+      <strong>앱 설치</strong>
+      <span>카톡 없이 바로 열기</span>
+    </span>
+  </button>
+"""
+
+
+def _render_pwa_bootstrap_html(site_path: str) -> str:
+    sw_url = json.dumps(build_site_url(site_path, "sw.js"))
+    sw_scope = json.dumps(site_path if site_path.endswith("/") else site_path + "/")
+    manual_install_msg = json.dumps(
+        "카카오톡 내장 브라우저를 사용 중이면 메뉴에서 Chrome으로 연 뒤 '홈 화면에 추가'를 선택해 주세요.",
+        ensure_ascii=False,
+    )
+    return f"""
+  <script>
+    (function() {{
+      var swUrl = {sw_url};
+      var swScope = {sw_scope};
+      var installButton = document.getElementById("installAppButton");
+      var deferredPrompt = null;
+
+      function isStandalone() {{
+        try {{
+          return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+        }} catch (e) {{
+          return false;
+        }}
+      }}
+
+      function isAndroid() {{
+        try {{
+          return /Android/i.test(window.navigator.userAgent || "");
+        }} catch (e) {{
+          return false;
+        }}
+      }}
+
+      function isKakaoInApp() {{
+        try {{
+          return /KAKAOTALK/i.test(window.navigator.userAgent || "");
+        }} catch (e) {{
+          return false;
+        }}
+      }}
+
+      function shouldShowInstallButton() {{
+        if (!installButton || isStandalone()) return false;
+        if (deferredPrompt) return true;
+        return isAndroid();
+      }}
+
+      function refreshInstallUi() {{
+        if (!installButton) return;
+        installButton.classList.toggle("isHidden", !shouldShowInstallButton());
+      }}
+
+      if ("serviceWorker" in navigator && window.isSecureContext) {{
+        window.addEventListener("load", function() {{
+          navigator.serviceWorker.register(swUrl, {{ scope: swScope, updateViaCache: "none" }}).catch(function(err) {{
+            console.warn("[PWA] service worker registration failed", err);
+          }});
+        }});
+      }}
+
+      window.addEventListener("beforeinstallprompt", function(event) {{
+        event.preventDefault();
+        deferredPrompt = event;
+        refreshInstallUi();
+      }});
+
+      window.addEventListener("appinstalled", function() {{
+        deferredPrompt = null;
+        refreshInstallUi();
+      }});
+
+      if (installButton) {{
+        installButton.addEventListener("click", function() {{
+          if (deferredPrompt && typeof deferredPrompt.prompt === "function") {{
+            deferredPrompt.prompt();
+            Promise.resolve(deferredPrompt.userChoice).catch(function() {{
+            }}).finally(function() {{
+              deferredPrompt = null;
+              refreshInstallUi();
+            }});
+            return;
+          }}
+          if (isKakaoInApp()) {{
+            window.alert({manual_install_msg});
+            return;
+          }}
+          if (isAndroid()) {{
+            window.alert("브라우저 메뉴에서 '홈 화면에 추가'를 선택하면 앱처럼 사용할 수 있습니다.");
+            return;
+          }}
+          window.alert("Chrome이나 Edge에서 설치가 가능할 때 버튼이 활성화됩니다. 브라우저 메뉴도 함께 확인해 주세요.");
+        }});
+      }}
+
+      window.addEventListener("load", function() {{
+        refreshInstallUi();
+        window.setTimeout(refreshInstallUi, 300);
+      }});
+    }})();
+  </script>
+"""
+
 def display_section_title(title: str) -> str:
     # 표준화: 과거 페이지의 섹션 표기를 최신 포맷으로 통일
     if not title:
@@ -21410,6 +21585,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
     ga4_head_html = _render_ga4_head_html()
     archive_analytics_js = _render_analytics_bootstrap_js("archive", report_date, "briefing")
+    pwa_head_html = (
+        _render_pwa_head_html(
+            site_path,
+            title=PWA_APP_TITLE,
+            description=f"{report_date} 농산물 뉴스 브리핑을 홈 화면에서 앱처럼 바로 확인하세요.",
+        )
+        if not is_dev_preview
+        else ""
+    )
+    pwa_install_css = _render_pwa_install_css() if not is_dev_preview else ""
+    pwa_prompt_html = _render_pwa_prompt_html() if not is_dev_preview else ""
+    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path) if not is_dev_preview else ""
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}"{nav_target_attr}>{esc(label)}</a>'
@@ -21428,6 +21615,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <meta http-equiv=\"Pragma\" content=\"no-cache\" />
   <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
+{pwa_head_html}
 {ga4_head_html}
 {dev_meta_html}
   <title>{esc(page_title)}</title>
@@ -21683,6 +21871,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
     .footer{{margin-top:18px;color:var(--muted);font-size:12px}}
     .footerMeta{{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}}
+{pwa_install_css}
     .swipeHint{{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}}
     .swipeHint.show{{display:flex}}
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
@@ -21879,12 +22068,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
   </style>
 </head>
-<body>
+<body class=\"pageArchive\">
   <div class=\"topbar\">
     <div class=\"topin\">
-      <div>
-        <h1>{esc(page_title)}{dev_badge_html}</h1>
-        <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
+      <div class=\"topbarMain\">
+        <div>
+          <h1>{esc(page_title)}{dev_badge_html}</h1>
+          <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
+        </div>
+        {pwa_prompt_html}
       </div>
       <div class=\"navRow\">
         <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\"{nav_target_attr}>{esc(home_label)}</a>
@@ -22931,6 +23123,7 @@ try {{ _ensureDates(); }} catch (e) {{}}
       }})();
 }})();
   </script>
+{pwa_bootstrap_html}
   <!-- build: {BUILD_TAG} -->
 {debug_html}
 </body>
@@ -22987,6 +23180,14 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     search_json_url = build_site_url(site_path, "search_index.json")
     ga4_head_html = _render_ga4_head_html()
     home_analytics_js = _render_analytics_bootstrap_js("home", "", "")
+    pwa_head_html = _render_pwa_head_html(
+        site_path,
+        title=PWA_APP_TITLE,
+        description="농산물 뉴스 브리핑을 홈 화면에 설치해 앱처럼 바로 확인하세요.",
+    )
+    pwa_install_css = _render_pwa_install_css()
+    pwa_prompt_html = _render_pwa_prompt_html()
+    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path)
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -22997,6 +23198,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="{BUILD_TAG}" />
+  {pwa_head_html}
   {ga4_head_html}
   <title>농산물 뉴스 브리핑</title>
   <style>
@@ -23071,6 +23273,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
     .groupHdr{{margin-top:8px;font-weight:900;font-size:13px;color:#111827}}
     .groupWrap{{display:flex;flex-direction:column;gap:10px}}
+{pwa_install_css}
     @media (prefers-color-scheme: dark) {{
       :root {{--bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--btn:#3b82f6;--btnHover:#2563eb;--chip:#334155;--mark:#854d0e}}
       body{{background:var(--bg);color:var(--text)}}
@@ -23098,10 +23301,15 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     }}
   </style>
 </head>
-<body>
+<body class="pageHome">
   <div class="wrap">
-    <h1>농산물 뉴스 브리핑</h1>
-    <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
+    <div class="homeHeader">
+      <div class="homeHeaderText">
+        <h1>농산물 뉴스 브리핑</h1>
+        <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
+      </div>
+      {pwa_prompt_html}
+    </div>
 
     {latest_btn_html}
 
@@ -23725,6 +23933,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       }}
     }})();
   </script>
+  {pwa_bootstrap_html}
 </body>
 </html>
 """
