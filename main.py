@@ -944,15 +944,6 @@ KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").st
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
 MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
 
-# Telegram bot settings
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
-TELEGRAM_SEND_ENABLED = os.getenv("TELEGRAM_SEND_ENABLED", "").strip().lower()
-if TELEGRAM_SEND_ENABLED:
-    TELEGRAM_SEND_ENABLED = TELEGRAM_SEND_ENABLED in ("1", "true", "yes", "y")
-else:
-    TELEGRAM_SEND_ENABLED = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
-
 PAGES_BASE_URL_OVERRIDE = os.getenv("PAGES_BASE_URL", "").strip()
 BRIEF_VIEW_URL = os.getenv("BRIEF_VIEW_URL", "").strip()
 GA4_MEASUREMENT_ID = os.getenv("GA4_MEASUREMENT_ID", "").strip()
@@ -24016,113 +24007,6 @@ def kakao_send_to_me(text: str, web_url: str) -> None:
         raise last_exc
     raise RuntimeError("Kakao send failed without response")
 
-
-# -----------------------------
-# Telegram Bot API
-# -----------------------------
-def build_telegram_message(report_date: str, by_section: dict[str, list["Article"]], web_url: str) -> str:
-    """텔레그램 그룹방용 메시지 생성 (Markdown V2 형식)."""
-    def _shorten(s: str, n: int = 72) -> str:
-        s = (s or "").strip()
-        s = re.sub(r"\s+", " ", s)
-        if len(s) <= n:
-            return s
-        return s[: max(0, n - 1)].rstrip() + "…"
-
-    def _escape_md(s: str) -> str:
-        """Escape Telegram MarkdownV2 special characters."""
-        for ch in r"\_*[]()~`>#+-=|{}.!":
-            s = s.replace(ch, f"\\{ch}")
-        return s
-
-    order = list(KAKAO_MESSAGE_SECTION_ORDER) if isinstance(KAKAO_MESSAGE_SECTION_ORDER, list) else ["supply", "policy", "dist", "pest"]
-    parts: list[str] = []
-
-    # 헤더
-    header = f"🌾 *농산물 뉴스 브리핑* \\({_escape_md(report_date)}\\)"
-    parts.append(header)
-
-    for key in order:
-        conf = _get_section_conf(key)
-        sec_title = conf.get("title") if isinstance(conf, dict) else key
-        parts.append(f"\n*\\[{_escape_md(sec_title)}\\]*")
-
-        lst = by_section.get(key, []) if isinstance(by_section, dict) else []
-        picks = _kakao_pick_core2(lst)
-
-        if not picks:
-            parts.append("\\- \\(해당 없음\\)")
-            continue
-
-        for i, a in enumerate(picks, start=1):
-            press = (getattr(a, "press", "") or "").strip() or press_name_from_url(getattr(a, "originallink", "") or getattr(a, "link", ""))
-            press = press or "미상"
-            title = _shorten(getattr(a, "title", ""), 72)
-            link = getattr(a, "originallink", "") or getattr(a, "link", "") or ""
-            if link:
-                parts.append(f"{i}\\. \\({_escape_md(press)}\\) [{_escape_md(title)}]({link})")
-            else:
-                parts.append(f"{i}\\. \\({_escape_md(press)}\\) {_escape_md(title)}")
-
-    # 브리핑 링크
-    if web_url:
-        parts.append(f"\n📋 [브리핑 전체보기]({web_url})")
-
-    out = "\n".join(parts).strip()
-    out = re.sub(r"\n{3,}", "\n\n", out)
-    return out
-
-
-def telegram_send_message(text: str, web_url: str = "") -> None:
-    """텔레그램 그룹방에 메시지 전송."""
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        raise RuntimeError("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set")
-
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-
-    max_try = 3
-    last_exc = None
-
-    for attempt in range(max_try):
-        payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": text,
-            "parse_mode": "MarkdownV2",
-            "disable_web_page_preview": False,
-        }
-
-        try:
-            r = http_session().post(url, json=payload, timeout=30)
-        except Exception as exc:
-            last_exc = exc
-            backoff = exponential_backoff(attempt, base=1.0, cap=10.0, jitter=0.3)
-            log.warning("[TELEGRAM] network error (attempt %d/%d): %s -> sleep %.1fs", attempt + 1, max_try, exc, backoff)
-            time.sleep(backoff)
-            continue
-
-        if r.ok:
-            log.info("[TELEGRAM] message sent successfully to chat_id=%s", TELEGRAM_CHAT_ID)
-            return
-
-        if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
-            backoff = retry_after_or_backoff(r.headers, attempt, base=1.0, cap=10.0, jitter=0.3)
-            log.warning("[TELEGRAM] transient HTTP %s (attempt %d/%d) -> sleep %.1fs", r.status_code, attempt + 1, max_try, backoff)
-            time.sleep(backoff)
-            continue
-
-        # Non-retryable error
-        detail = ""
-        try:
-            detail = str(r.json().get("description", ""))
-        except Exception:
-            detail = r.text[:200] if r.text else ""
-        raise RuntimeError(f"Telegram send failed (HTTP {r.status_code}): {detail}")
-
-    if last_exc is not None:
-        raise last_exc
-    raise RuntimeError("Telegram send failed after retries")
-
-
 # -----------------------------
 # Window calculation
 # -----------------------------
@@ -24875,14 +24759,6 @@ def _publish_maintenance_report(
                     _log_kakao_fail_open(e)
                 else:
                     raise
-            # Telegram (single-page mode)
-            if TELEGRAM_SEND_ENABLED:
-                try:
-                    tg_text = build_telegram_message(report_date, by_section, daily_url)
-                    telegram_send_message(tg_text, daily_url)
-                    log.info("[OK] Telegram message sent (%s, single-page). chat_id=%s", action_label, TELEGRAM_CHAT_ID)
-                except Exception as e:
-                    log.warning("[TELEGRAM FAIL-OPEN] %s", e)
         return
 
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
@@ -24958,14 +24834,6 @@ def _publish_maintenance_report(
                 _log_kakao_fail_open(e)
             else:
                 raise
-        # Telegram (maintenance replay/rebuild)
-        if TELEGRAM_SEND_ENABLED:
-            try:
-                tg_text = build_telegram_message(report_date, by_section, daily_url)
-                telegram_send_message(tg_text, daily_url)
-                log.info("[OK] Telegram message sent (%s). chat_id=%s", action_label, TELEGRAM_CHAT_ID)
-            except Exception as e:
-                log.warning("[TELEGRAM FAIL-OPEN] %s", e)
 
 
 def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:
@@ -25519,15 +25387,6 @@ def main() -> None:
             _log_kakao_fail_open(e)
         else:
             raise
-
-    # Telegram message (카카오와 병행, fail-open)
-    if TELEGRAM_SEND_ENABLED:
-        try:
-            tg_text = build_telegram_message(report_date, by_section, daily_url)
-            telegram_send_message(tg_text, daily_url)
-            log.info("[OK] Telegram message sent. chat_id=%s", TELEGRAM_CHAT_ID)
-        except Exception as e:
-            log.warning("[TELEGRAM FAIL-OPEN] %s", e)
 
 
 
