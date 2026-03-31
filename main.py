@@ -377,9 +377,10 @@ _HARD_OPINION_COLUMN_MARKERS = (
     "[데스크칼럼]",
     "논단",
     "[논단]",
+    "초동시각",
+    "[초동시각]",
 )
-# 하드블록 대신 소프트 페널티로 전환된 칼럼 마커 (내용이 충실하면 통과 가능)
-_SOFT_OPINION_COLUMN_MARKERS = ("초동시각", "[초동시각]")
+_SOFT_OPINION_COLUMN_MARKERS: tuple[str, ...] = ()
 
 
 def _has_hard_opinion_column_marker(title: str) -> bool:
@@ -5814,6 +5815,10 @@ def is_dist_local_field_profile_context(title: str, desc: str) -> bool:
     txt = f"{title or ''} {desc or ''}".lower()
     if not txt:
         return False
+    # PR/feature titles that highlight organizational achievements are NOT field profiles
+    _PR_TITLE_PATTERNS = ("농가실익 증진", "농가실익증진", "활발한 경제사업", "활발한경제사업")
+    if any(p in ttl for p in _PR_TITLE_PATTERNS) or any(p in ttl_compact for p in _PR_TITLE_PATTERNS):
+        return False
 
     org_hit = (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(title or "") is not None) or (_LOCAL_AGRI_ORG_IN_TITLE_RX.search(ttl_compact) is not None) or (
         count_any(txt, [w.lower() for w in _LOCAL_AGRI_ORG_TERMS]) >= 1
@@ -6440,12 +6445,20 @@ def is_dist_program_event_noise_context(title: str, desc: str, dom: str = "", pr
     # Strong promo/program titles should not survive just because the body also mentions channels or logistics.
     if strong_title_hits >= 1 and hard_keep_title_hits == 0 and (actor_hits >= 1 or managed_count >= 1 or local_gov_named):
         return True
+    # NOTE: is_dist_export_field_context is NOT called here to avoid a mutual
+    # recursion cycle (is_dist_export_field_context → is_commodity_political_statement_context
+    # → is_dist_field_market_response_context → is_dist_program_event_noise_context → …).
+    # Instead, we inline the core export-field signal check.
+    _inline_export_field = (
+        count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_TERMS]) >= 2
+        and count_any(txt, [w.lower() for w in _DIST_EXPORT_FIELD_MARKET_TERMS]) >= 1
+    )
     if (
         is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
         or is_dist_supply_management_center_context(ttl, desc or "")
         or is_dist_sales_channel_ops_context(ttl, desc or "")
         or is_dist_export_shipping_context(ttl, desc or "")
-        or is_dist_export_field_context(ttl, desc or "", dom_norm, press_norm)
+        or _inline_export_field
         or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, press_norm)
         or is_dist_market_disruption_context(ttl, desc or "")
     ):
@@ -14898,6 +14911,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if float(getattr(a, "score", 0.0) or 0.0) < _regional_fill_cut:
                 continue
             if not _is_regional_agri_brief_fillable(a.title or "", a.description or ""):
+                continue
+            if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
@@ -23811,12 +23826,11 @@ def build_kakao_message(report_date: str, by_section: dict[str, list["Article"]]
 
     order = list(KAKAO_MESSAGE_SECTION_ORDER) if isinstance(KAKAO_MESSAGE_SECTION_ORDER, list) else ["supply", "policy", "dist", "pest"]
     parts: list[str] = []
-    env_label = "[개발]" if DEV_SINGLE_PAGE_MODE else "[운영]"
     header = f"농산물 뉴스 브리핑 ({report_date})"
     if DEV_SINGLE_PAGE_MODE:
-        header = "[DEV] " + header + " - 개발 테스트 버전(운영 아님)"
-    header = re.sub(r"^\[[^\]]+\]\s*", "", header)
-    header = f"{env_label} {header}"
+        header = f"[DEV] {header} - 개발 테스트 버전(운영 아님)"
+    else:
+        header = f"[운영] {header}"
     parts.append(header)
 
     for key in order:
