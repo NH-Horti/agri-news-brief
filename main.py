@@ -341,6 +341,8 @@ _HF_SECTION_NOISE_PROFILES: dict[str, tuple[str, ...]] = {
     "supply": (
         "오피니언, 칼럼, 수필, 에세이, 회고, 감상형 기사. 품목명이 있어도 가격·수급·출하·작황보다 개인 서사와 해설이 중심인 기사.",
         "맛집, 디저트, 레스토랑, 메뉴, 라이프스타일, 관광, 축제, 홍보, 판촉 기사. 농산물 수급과 직접 연결되지 않는 소비자 체험 기사.",
+        "인물 프로필, NBS 하이라이트, 현장르포, 농가 탐방, 귀농 성공기, 재배 명인, 공생 이야기. 품목명과 재배 정보가 있어도 인물·서사 중심이며 시장 수급·가격·출하 동향과 무관한 기사.",
+        "비료, 농자재, 유가, 나프타, 에너지 가격, 연료비, 전기요금 등 투입비용 매크로 기사. 특정 품목 수급 영향보다 범용 원가 압박만 다루는 기사.",
     ),
     "policy": (
         "오피니언, 칼럼, 수필, 에세이, 개인 논평 기사. 농정 실행보다 해설과 주장 중심의 기사.",
@@ -444,7 +446,7 @@ def _hf_semantic_selection_adjustments(
                 session_factory=http_session,
             )
     except Exception as exc:
-        log.warning("[HF] semantic rerank skipped for %s: %s", section_key, exc)
+        log.warning("[HF] semantic rerank FAILED for section=%s: %s (type=%s)", section_key, exc, type(exc).__name__)
         metric_inc("hf.semantic.error", section=section_key, reason=type(exc).__name__)
         return {}
 
@@ -956,6 +958,15 @@ else:
 HF_COMPARE_CANDIDATE_CAP = int((os.getenv("HF_COMPARE_CANDIDATE_CAP", "40") or "40").strip() or 40)
 HF_COMPARE_CANDIDATE_CAP = max(10, min(HF_COMPARE_CANDIDATE_CAP, 120))
 
+
+# HF 시스템 시작 시 상태 로깅 — 사후 진단을 위해
+log.info(
+    "[HF-INIT] token=%s rerank=%s board_rerank=%s model=%s",
+    "SET" if HF_API_TOKEN else "MISSING",
+    HF_SEMANTIC_RERANK_ENABLED,
+    HF_COMMODITY_BOARD_RERANK_ENABLED,
+    HF_SEMANTIC_MODEL,
+)
 
 FORCE_REPORT_DATE = os.getenv("FORCE_REPORT_DATE", "").strip()  # YYYY-MM-DD
 FORCE_RUN_ANYDAY = os.getenv("FORCE_RUN_ANYDAY", "false").strip().lower() in ("1", "true", "yes")
@@ -7921,6 +7932,23 @@ def supply_issue_context_bucket(title: str, desc: str) -> str | None:
     return None
 
 
+def _is_profile_feature_story(title: str, desc: str) -> bool:
+    """인물/르포/하이라이트 시리즈: 수급 핵심이 아닌 인물 중심 스토리 감지."""
+    ttl_l = (title or "").lower()
+    _profile_title_kws = (
+        "하이라이트", "nbs", "현장르포", "르포", "공생", "사람들",
+        "이야기", "동행", "성공기", "일대기", "귀농",
+    )
+    _profile_name_pattern_kws = ("씨", "대표", "명인", "농부", "위원장")
+    title_profile_hits = sum(1 for w in _profile_title_kws if w in ttl_l)
+    name_hits = sum(1 for w in _profile_name_pattern_kws if w in ttl_l)
+    if title_profile_hits >= 1 and name_hits >= 1:
+        return True
+    if title_profile_hits >= 2:
+        return True
+    return False
+
+
 def supply_feature_context_kind(title: str, desc: str) -> str | None:
     """품목 중심 현장/품질/제철 feature 기사 판정."""
     ttl = title or ""
@@ -7934,6 +7962,9 @@ def supply_feature_context_kind(title: str, desc: str) -> str | None:
     if is_agri_org_rename_context(title, desc):
         return None
     if is_supply_tourism_event_context(title, desc):
+        return None
+    # 인물/르포/하이라이트 시리즈는 수급 기사가 아니므로 feature 판정에서 제외
+    if _is_profile_feature_story(title, desc):
         return None
 
     horti_sc = best_horti_score(ttl, desc or "")
@@ -8229,6 +8260,9 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
             base += 0.78
         if is_title_livestock_dominant_context(title, desc):
             base -= 1.3
+        # 인물/르포/하이라이트 시리즈는 수급 기사가 아니므로 큰 감점
+        if _is_profile_feature_story(title, desc):
+            base -= 2.0
         if feature_kind == "field":
             base += 0.55
         elif feature_kind == "quality":
@@ -9675,8 +9709,22 @@ def _clone_articles_by_section(by_section: dict[str, list["Article"]] | None) ->
 
 
 def _snapshot_debug_payload() -> JsonDict:
+    # HF 상태는 항상 기록(DEBUG_REPORT 여부와 무관) — 사후 진단을 위해
+    hf_state: JsonDict = {
+        "hf_semantic_rerank_enabled": bool(HF_SEMANTIC_RERANK_ENABLED),
+        "hf_api_token_set": bool(HF_API_TOKEN),
+        "hf_semantic_model": HF_SEMANTIC_MODEL,
+        "hf_commodity_board_rerank_enabled": bool(HF_COMMODITY_BOARD_RERANK_ENABLED),
+    }
+    try:
+        from observability import METRICS
+        metrics_snap = METRICS.snapshot()
+        hf_metrics = {k: v for k, v in metrics_snap.items() if "hf." in k}
+        hf_state["metrics"] = hf_metrics
+    except Exception:
+        pass
     if not DEBUG_REPORT:
-        return {}
+        return {"hf_state": hf_state}
     try:
         with _DEBUG_LOCK:
             return json.loads(
@@ -9684,12 +9732,13 @@ def _snapshot_debug_payload() -> JsonDict:
                     {
                         "collections": DEBUG_DATA.get("collections", {}) or {},
                         "filter_rejects": DEBUG_DATA.get("filter_rejects", []) or [],
+                        "hf_state": hf_state,
                     },
                     ensure_ascii=False,
                 )
             )
     except Exception:
-        return {}
+        return {"hf_state": hf_state}
 
 
 def _restore_debug_from_snapshot(payload: Any, snapshot_path: Path | None = None) -> None:
@@ -12481,6 +12530,8 @@ _HEADLINE_STOPWORDS = [
     "포토", "화보", "영상", "스케치", "행사", "축제", "기념", "시상",
     "봉사", "후원", "기부", "캠페인", "발대식", "선포식", "협약", "mou",
     "인물", "동정", "취임", "인사", "부고", "결혼", "개업",
+    # 인물/현장 르포·하이라이트 시리즈: 수급 핵심이 아니라 인물/생활 중심
+    "하이라이트", "nbs", "현장르포", "르포", "사람들", "공생",
 ]
 
 def _headline_gate(a: "Article", section_key: str) -> bool:
@@ -13209,6 +13260,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _nfkc_lower(title),
             [w.lower() for w in _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS],
         )
+        # 인물/르포/하이라이트 시리즈: 수급 핵심이 아니라 인물 중심 스토리
+        if _is_profile_feature_story(title, desc):
+            return True
         if is_supply_org_promo_feature_context(title, desc) and issue_bucket != "commodity_issue" and not field_market_response:
             return True
         if (
