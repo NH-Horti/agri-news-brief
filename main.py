@@ -11493,7 +11493,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
     # 유통/현장(dist): '농산물/원예 유통' 맥락이 없는 일반 물류/유통/브랜드 기사는 강하게 차단
     if key == "dist":
-        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_terms = ("농산물", "농업", "농식품", "농식품부", "농림축산식품부", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
         if is_dist_political_visit_context(ttl, desc):
             return _reject("dist_political_visit")
@@ -12722,7 +12722,7 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
     if has_apc_agri_context(text):
         market_hits += 1
 
-    agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+    agri_anchor_terms = ("농산물", "농업", "농식품", "농식품부", "농림축산식품부", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
     agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
 
     # 공통: 칼럼/기고/인물/행사성은 코어에서 제외
@@ -12978,7 +12978,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         if is_title_livestock_dominant_context(a.title or "", a.description or ""):
             return False
         # supply는 '품목/농산물 앵커' + '수급 신호' 결합이 약한 기사(단순 언급)를 하단으로 밀기 위해 더 보수적으로 본다.
-        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_terms = ("농산물", "농업", "농식품", "농식품부", "농림축산식품부", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
         signal_terms = ("가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "경매")
         supply_feature_kind = supply_feature_context_kind(a.title or "", a.description or "")
@@ -13019,7 +13019,7 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         if is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
             return True
         # dist는 is_relevant가 있어도 '일반 물류/유통/단속' 누수가 있어, 완화 게이트에서도 맥락을 한 번 더 본다.
-        agri_anchor_terms = ("농산물", "농업", "농식품", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
+        agri_anchor_terms = ("농산물", "농업", "농식품", "농식품부", "농림축산식품부", "원예", "과수", "과일", "채소", "화훼", "절화", "청과")
         agri_anchor_hits = count_any(text, [t.lower() for t in agri_anchor_terms])
         dist_hard = ("가락시장", "도매시장", "공판장", "공영도매시장", "청과", "경락", "경매", "반입",
                      "중도매인", "시장도매인", "온라인 도매시장",
@@ -21053,6 +21053,23 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     active_items = 0
     active_program_items = 0
     _hf_board_available = True  # HF API 상태 플래그: 첫 실패 시 나머지 품목 스킵
+    # 품목보드 HF 호출 전 warm-up ping: 모델이 cold 상태이면 미리 로딩시킨다
+    if HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
+        try:
+            from hf_semantics import embed_texts, HFSemanticConfig
+            _warmup_cfg = HFSemanticConfig(
+                api_token=HF_API_TOKEN, model=HF_SEMANTIC_MODEL,
+                timeout_sec=HF_SEMANTIC_TIMEOUT_SEC, max_candidates=2, max_boost=0.0, min_candidates=1,
+            )
+            _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
+            if _warmup:
+                log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
+            else:
+                _hf_board_available = False
+                log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
+        except Exception as e:
+            _hf_board_available = False
+            log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
