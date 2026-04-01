@@ -12167,12 +12167,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트 가점:
     # 방송 보도는 본문 스크립트가 빈약해 텍스트 기반 점수가 낮지만,
     # 방송에서 다루었다는 것 자체가 이슈의 중요성을 나타냄.
+    # 방송사 영상 리포트는 네이버 API description이 짧아 텍스트 기반 점수가 구조적으로 낮다.
+    # 농업 맥락이 명확하면 최소 점수를 보장하여 핵심 후보에 포함되도록 한다.
     if (press or "").strip() in BROADCAST_PRESS:
-        _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장")])
+        _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장", "가격", "물가")])
         if _bc_agri_signal >= 2:
-            score += 4.0
+            _bc_floor = 26.0  # 농업 맥락 강한 방송 리포트의 최소 점수
+            if score < _bc_floor:
+                score = _bc_floor
         elif _bc_agri_signal >= 1:
-            score += 2.0
+            score += 3.0
 
     # 행사/동정성 패널티(실무 신호 약하면 감점)
     event_pen = eventy_penalty(text, title, key)
