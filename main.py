@@ -21064,6 +21064,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
             if _warmup:
                 log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
+                time.sleep(5.0)  # warm-up 후 rate limit 쿨다운
             else:
                 _hf_board_available = False
                 log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
