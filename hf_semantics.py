@@ -46,7 +46,7 @@ def clear_embed_cache() -> None:
 class HFSemanticConfig:
     api_token: str
     model: str = "intfloat/multilingual-e5-large"
-    endpoint_template: str = "https://api-inference.huggingface.co/models/{model}"
+    endpoint_template: str = "https://router.huggingface.co/hf-inference/models/{model}"
     timeout_sec: float = 20.0
     max_candidates: int = 12
     max_boost: float = 0.9
