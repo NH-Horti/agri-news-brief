@@ -283,7 +283,7 @@ def embed_texts(
             "truncate": True,
         },
         "options": {
-            "wait_for_model": False,
+            "wait_for_model": True,
             "use_cache": True,
         },
     }
