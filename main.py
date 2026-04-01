@@ -3483,6 +3483,30 @@ def _contains_compact_marker(text: str, markers: Sequence[str]) -> bool:
     return False
 
 
+# 2~3글자 짧은 품목명이 다른 단어 내부에서 오탐되는 것을 방지하는 FP 복합어 목록.
+# 예: "유자" in "보유자"(채권 보유자) → 오탐, "매실" in "판매실적" → 오탐
+# 해당 복합어를 텍스트에서 마스킹한 뒤 품목명이 여전히 남아있는지 확인한다.
+_SHORT_TERM_FALSE_POSITIVE_WORDS: dict[str, tuple[str, ...]] = {
+    "유자": ("보유자", "소유자", "점유자", "공유자", "전유자", "채유자",
+             "관유자", "임유자", "피보유자", "비소유자"),
+    "매실": ("판매실", "거래실", "매실적"),
+    "감자": ("투자감자", "감자본"),  # 주식 감자(감자본)
+}
+
+
+def _short_term_has_real_match(term: str, text: str) -> bool:
+    """짧은 품목명(2~3글자)의 FP 복합어를 마스킹한 뒤 실제 매칭 여부를 반환."""
+    if term not in text:
+        return False
+    fp_words = _SHORT_TERM_FALSE_POSITIVE_WORDS.get(term)
+    if not fp_words:
+        return True
+    masked = text
+    for fp in fp_words:
+        masked = masked.replace(fp, "\x00" * len(fp))
+    return term in masked
+
+
 def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
     txt = (text or "").lower()
     if not txt:
@@ -3502,8 +3526,12 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
             if re.search(r"(?<!양)배추", txt):
                 return True
             continue
-        if len(term_l) >= 2 and term_l in txt:
-            return True
+        if len(term_l) >= 2:
+            if len(term_l) <= 3:
+                if _short_term_has_real_match(term_l, txt):
+                    return True
+            elif term_l in txt:
+                return True
 
     for term in item.get("context_terms") or []:
         term_l = str(term or "").strip().lower()
@@ -7987,14 +8015,19 @@ def _is_overseas_livestock_story(title: str, desc: str) -> bool:
     if foreign_hits == 0:
         return False
     # 제목에 축산 키워드 + 가격 시그널이 함께 있으면 축산 가격 기사 가능성 높음
-    _price_signal = ("값", "가격", "시세", "최저가", "최고가", "급락", "급등", "폭락", "폭등", "하락", "상승")
+    _price_signal = ("값", "가격", "시세", "최저가", "최고가", "최저", "최고",
+                     "급락", "급등", "폭락", "폭등", "하락", "상승",
+                     "싸", "싼", "저렴", "비싸", "비싼", "사상")
     title_price_hits = sum(1 for w in _price_signal if w in ttl_l)
     # 제목에 축산+가격 조합이면 원예 품목이 비교 대상으로만 등장할 가능성이 높다
     if livestock_hits >= 1 and title_price_hits >= 1:
         return True
     # 국내 원예 수급 시그널이 있으면 통과
-    _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추", "마늘 가격", "마늘 수급",
-                   "마늘 출하", "양파", "고추", "오이", "가락시장", "도매시장")
+    _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추",
+                   "마늘 가격", "마늘 수급", "마늘 출하", "마늘 작황",
+                   "양파", "고추", "오이", "가락시장", "도매시장",
+                   "유자 가격", "유자 수급", "매실 가격", "매실 수급",
+                   "생강 가격", "생강 수급", "대파 가격", "대파 수급")
     horti_keep = sum(1 for w in _horti_keep if w in txt_l)
     if horti_keep >= 1:
         return False
@@ -19168,6 +19201,114 @@ def build_daily_url(base_url: str, report_date: str, cache_bust: bool = False, r
 def esc(s: str) -> str:
     return html.escape(s or "")
 
+PWA_APP_TITLE = "농산물 뉴스 브리프"
+PWA_SHORT_TITLE = "농산물 브리프"
+PWA_THEME_COLOR = "#0f172a"
+PWA_BG_COLOR = "#f8fafc"
+
+
+def _render_pwa_head_html(site_path: str, *, title: str, description: str) -> str:
+    manifest_href = build_site_url(site_path, "manifest.webmanifest")
+    icon_192_href = build_site_url(site_path, "icons/icon-192.png")
+    icon_512_href = build_site_url(site_path, "icons/icon-512.png")
+    return f"""
+  <meta name="application-name" content="{esc(title)}" />
+  <meta name="apple-mobile-web-app-title" content="{esc(title)}" />
+  <meta name="description" content="{esc(description)}" />
+  <meta name="theme-color" content="{PWA_THEME_COLOR}" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="{esc(manifest_href)}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{esc(icon_192_href)}" />
+  <link rel="icon" type="image/png" sizes="512x512" href="{esc(icon_512_href)}" />
+  <link rel="apple-touch-icon" sizes="192x192" href="{esc(icon_192_href)}" />
+"""
+
+
+def _render_pwa_install_css() -> str:
+    return """
+    .topbarMain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+    .homeHeader{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin:-26px -16px 18px;padding:16px 16px 14px;background:rgba(243,247,251,.84);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid rgba(229,231,235,.85)}
+    .homeHeaderText{min-width:0}
+    .homeHeader .sub{margin-top:6px}
+    .installAction{display:none !important}
+    @media (max-width: 840px){
+      .homeHeader{margin:-26px -16px 16px;padding:14px 16px 12px}
+    }
+    @media (max-width: 640px){
+      .topbarMain,.homeHeader{grid-template-columns:1fr;align-items:stretch}
+    }
+    @media print {.installAction,.homeHeader{display:none !important}}
+    @media (prefers-color-scheme: dark){
+      .homeHeader{background:rgba(15,23,42,.86);border-bottom-color:#334155}
+    }
+    """
+
+
+def _render_pwa_prompt_html() -> str:
+    return """
+  <button id="installAppButton" class="installAction isHidden" type="button">
+    <span class="installActionIcon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3v10m0 0l4-4m-4 4-4-4M5 17.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5v1c0 1.4-1.1 2.5-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="installActionCopy">
+      <strong>앱 설치</strong>
+      <span>카톡 없이 바로 열기</span>
+    </span>
+  </button>
+"""
+
+
+def _render_pwa_bootstrap_html(site_path: str, latest_href: str = "") -> str:
+    sw_url = json.dumps(build_site_url(site_path, "sw.js"))
+    sw_scope = json.dumps(site_path if site_path.endswith("/") else site_path + "/")
+    latest_href_json = json.dumps(latest_href or "")
+    return f"""
+  <script>
+    (function() {{
+      var swUrl = {sw_url};
+      var swScope = {sw_scope};
+      var latestHref = {latest_href_json};
+
+      function isStandalone() {{
+        try {{
+          return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+        }} catch (e) {{
+          return false;
+        }}
+      }}
+
+      function maybeOpenLatestBriefing() {{
+        if (!latestHref || !isStandalone()) return;
+        try {{
+          var targetUrl = new URL(latestHref, window.location.href);
+          var currentUrl = new URL(window.location.href);
+          if (targetUrl.pathname === currentUrl.pathname && targetUrl.search === currentUrl.search) return;
+          window.location.replace(targetUrl.toString());
+        }} catch (e) {{
+          console.warn("[PWA] latest briefing redirect skipped", e);
+        }}
+      }}
+
+      if ("serviceWorker" in navigator && window.isSecureContext) {{
+        window.addEventListener("load", function() {{
+          navigator.serviceWorker.register(swUrl, {{ scope: swScope, updateViaCache: "none" }}).catch(function(err) {{
+            console.warn("[PWA] service worker registration failed", err);
+          }});
+        }});
+      }}
+
+      window.addEventListener("load", function() {{
+        window.setTimeout(maybeOpenLatestBriefing, 30);
+      }});
+    }})();
+  </script>
+"""
+
 def display_section_title(title: str) -> str:
     # 표준화: 과거 페이지의 섹션 표기를 최신 포맷으로 통일
     if not title:
@@ -19859,7 +20000,10 @@ def _commodity_board_term_hits(text: str, terms: Sequence[str]) -> int:
         if len(term_l) < 2 or term_l in seen:
             continue
         seen.add(term_l)
-        if term_l in txt:
+        if len(term_l) <= 3:
+            if _short_term_has_real_match(term_l, txt):
+                hits += 1
+        elif term_l in txt:
             hits += 1
     return hits
 
@@ -21082,7 +21226,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                     {badge_html}
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 {int(item.get('article_count') or 0)}건</span>
+                    <span>기사 {int(item.get('qualified_article_count') or 0)}건</span>
                     <span>핵심 {int(item.get('core_count') or 0)}건</span>
                   </div>
                   <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
@@ -21410,6 +21554,18 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     home_label = "DEV 미리보기" if is_dev_preview else "아카이브"
     ga4_head_html = _render_ga4_head_html()
     archive_analytics_js = _render_analytics_bootstrap_js("archive", report_date, "briefing")
+    pwa_head_html = (
+        _render_pwa_head_html(
+            site_path,
+            title=PWA_APP_TITLE,
+            description=f"{report_date} 농산물 뉴스 브리핑을 홈 화면에서 앱처럼 바로 확인하세요.",
+        )
+        if not is_dev_preview
+        else ""
+    )
+    pwa_install_css = _render_pwa_install_css() if not is_dev_preview else ""
+    pwa_prompt_html = _render_pwa_prompt_html() if not is_dev_preview else ""
+    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path) if not is_dev_preview else ""
     def nav_btn(href: str | None, label: str, empty_msg: str, nav_key: str) -> str:
         if href:
             return f'<a class="navBtn" data-nav="{esc(nav_key)}" href="{esc(href)}"{nav_target_attr}>{esc(label)}</a>'
@@ -21428,6 +21584,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
   <meta http-equiv=\"Pragma\" content=\"no-cache\" />
   <meta http-equiv=\"Expires\" content=\"0\" />
   <meta name=\"agri-build\" content=\"{BUILD_TAG}\" />
+{pwa_head_html}
 {ga4_head_html}
 {dev_meta_html}
   <title>{esc(page_title)}</title>
@@ -21683,6 +21840,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .empty{{color:var(--muted);font-size:13px;padding:10px 2px}}
     .footer{{margin-top:18px;color:var(--muted);font-size:12px}}
     .footerMeta{{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}}
+{pwa_install_css}
     .swipeHint{{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}}
     .swipeHint.show{{display:flex}}
     .swipeHint.hide{{opacity:0;transform:translateY(-4px)}}
@@ -21879,12 +22037,15 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     }}
   </style>
 </head>
-<body>
+<body class=\"pageArchive\">
   <div class=\"topbar\">
     <div class=\"topin\">
-      <div>
-        <h1>{esc(page_title)}{dev_badge_html}</h1>
-        <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
+      <div class=\"topbarMain\">
+        <div>
+          <h1>{esc(page_title)}{dev_badge_html}</h1>
+          <div class=\"sub\">기간: {esc(period)} · 기사 {total}건{esc(dev_sub_text)}</div>
+        </div>
+        {pwa_prompt_html}
       </div>
       <div class=\"navRow\">
         <a class=\"navBtn navArchive\" data-nav=\"archive\" href=\"{esc(home_href)}\" title=\"날짜별 아카이브 목록\"{nav_target_attr}>{esc(home_label)}</a>
@@ -22931,6 +23092,7 @@ try {{ _ensureDates(); }} catch (e) {{}}
       }})();
 }})();
   </script>
+{pwa_bootstrap_html}
   <!-- build: {BUILD_TAG} -->
 {debug_html}
 </body>
@@ -22987,6 +23149,14 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     search_json_url = build_site_url(site_path, "search_index.json")
     ga4_head_html = _render_ga4_head_html()
     home_analytics_js = _render_analytics_bootstrap_js("home", "", "")
+    pwa_head_html = _render_pwa_head_html(
+        site_path,
+        title=PWA_APP_TITLE,
+        description="농산물 뉴스 브리핑을 홈 화면에 설치해 앱처럼 바로 확인하세요.",
+    )
+    pwa_install_css = _render_pwa_install_css()
+    pwa_prompt_html = _render_pwa_prompt_html()
+    pwa_bootstrap_html = _render_pwa_bootstrap_html(site_path, latest_link or "")
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -22997,6 +23167,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="{BUILD_TAG}" />
+  {pwa_head_html}
   {ga4_head_html}
   <title>농산물 뉴스 브리핑</title>
   <style>
@@ -23071,6 +23242,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
     .groupHdr{{margin-top:8px;font-weight:900;font-size:13px;color:#111827}}
     .groupWrap{{display:flex;flex-direction:column;gap:10px}}
+{pwa_install_css}
     @media (prefers-color-scheme: dark) {{
       :root {{--bg:#0f172a;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--btn:#3b82f6;--btnHover:#2563eb;--chip:#334155;--mark:#854d0e}}
       body{{background:var(--bg);color:var(--text)}}
@@ -23098,10 +23270,15 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     }}
   </style>
 </head>
-<body>
+<body class="pageHome">
   <div class="wrap">
-    <h1>농산물 뉴스 브리핑</h1>
-    <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
+    <div class="homeHeader">
+      <div class="homeHeaderText">
+        <h1>농산물 뉴스 브리핑</h1>
+        <div class="sub">최신 브리핑과 날짜별 아카이브를 제공합니다. (키워드 검색 · 기간/섹션 필터 · 정렬 지원)</div>
+      </div>
+      {pwa_prompt_html}
+    </div>
 
     {latest_btn_html}
 
@@ -23725,6 +23902,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       }}
     }})();
   </script>
+  {pwa_bootstrap_html}
 </body>
 </html>
 """

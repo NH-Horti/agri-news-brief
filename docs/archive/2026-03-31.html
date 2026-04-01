@@ -7,6 +7,20 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="agri-build" content="local-prod-20260331" />
+
+  <meta name="application-name" content="농산물 뉴스 브리프" />
+  <meta name="apple-mobile-web-app-title" content="농산물 뉴스 브리프" />
+  <meta name="description" content="2026-03-31 농산물 뉴스 브리핑을 홈 화면에서 앱처럼 바로 확인하세요." />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="/agri-news-brief/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/agri-news-brief/icons/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/agri-news-brief/icons/icon-192.png" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5Y1GRYB0J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -268,6 +282,29 @@
     .empty{color:var(--muted);font-size:13px;padding:10px 2px}
     .footer{margin-top:18px;color:var(--muted);font-size:12px}
     .footerMeta{margin-top:8px;font-family:ui-monospace, SFMono-Regular, Consolas, monospace}
+
+    .topbarMain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+    .installAction{display:none !important}
+    .installAction:hover{transform:translateY(-1px);box-shadow:0 22px 36px rgba(29,78,216,.24);filter:brightness(1.02)}
+    .installAction.isHidden{display:none !important}
+    .installActionIcon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);flex:0 0 auto}
+    .installActionIcon svg{width:16px;height:16px;display:block}
+    .installActionCopy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.05;white-space:nowrap}
+    .installActionCopy strong{font-size:13px}
+    .installActionCopy span{font-size:11px;font-weight:700;opacity:.82}
+    @media (max-width: 640px){
+      .topbarMain{grid-template-columns:1fr;align-items:stretch}
+      .installAction{width:100%;justify-content:center}
+      .installActionCopy{align-items:center;text-align:center}
+      .installActionCopy span{white-space:normal}
+    }
+    @media print {.installAction{display:none !important}}
+    @media (prefers-color-scheme: dark){
+      .installAction{border-color:rgba(96,165,250,.26);background:linear-gradient(135deg,#1d4ed8 0%,#0f172a 100%);box-shadow:0 18px 34px rgba(2,6,23,.36)}
+      .installAction:hover{box-shadow:0 24px 42px rgba(2,6,23,.44)}
+      .installActionIcon{background:rgba(255,255,255,.12)}
+    }
+
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -464,19 +501,33 @@
     }
   </style>
 </head>
-<body>
+<body class="pageArchive">
   <div class="topbar">
     <div class="topin">
-      <div>
-        <h1>[2026-03-31 농산물 뉴스 Brief]</h1>
-        <div class="sub">기간: 2026-03-30 06:00 ~ 2026-03-31 06:00 · 기사 18건</div>
+      <div class="topbarMain">
+        <div>
+          <h1>[2026-03-31 농산물 뉴스 Brief]</h1>
+          <div class="sub">기간: 2026-03-30 06:00 ~ 2026-03-31 06:00 · 기사 18건</div>
+        </div>
+        <button id="installAppButton" class="installAction isHidden" type="button">
+          <span class="installActionIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v10m0 0l4-4m-4 4-4-4M5 17.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5v1c0 1.4-1.1 2.5-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="installActionCopy">
+            <strong>앱 설치</strong>
+            <span>카톡 없이 바로 열기</span>
+          </span>
+        </button>
       </div>
       <div class="navRow">
-        <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
-        <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-30.html">◀ 이전</a>
-        <div class="dateSelWrap">
-          <select id="dateSelect" aria-label="날짜 선택">
-            <option value="/agri-news-brief/archive/2026-03-31.html" selected>26-03-31 (화)</option>
+  <a class="navBtn navArchive" data-nav="archive" href="/agri-news-brief/" title="날짜별 아카이브 목록">아카이브</a>
+  <a class="navBtn" data-nav="prev" href="/agri-news-brief/archive/2026-03-30.html">◀ 이전</a>
+  <div class="dateSelWrap">
+    <select id="dateSelect" aria-label="날짜 선택">
+      <option value="/agri-news-brief/archive/2026-04-01.html">26-04-01 (수)</option>
+<option value="/agri-news-brief/archive/2026-03-31.html" selected>26-03-31 (화)</option>
 <option value="/agri-news-brief/archive/2026-03-30.html">26-03-30 (월)</option>
 <option value="/agri-news-brief/archive/2026-03-27.html">26-03-27 (금)</option>
 <option value="/agri-news-brief/archive/2026-03-26.html">26-03-26 (목)</option>
@@ -535,10 +586,10 @@
 <option value="/agri-news-brief/archive/2026-01-06.html">26-01-06 (화)</option>
 <option value="/agri-news-brief/archive/2026-01-05.html">26-01-05 (월)</option>
 <option value="/agri-news-brief/archive/2026-01-02.html">26-01-02 (금)</option>
-          </select>
-        </div>
-        <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
-      </div>
+    </select>
+  </div>
+  <a class="navBtn" data-nav="next" href="/agri-news-brief/archive/2026-04-01.html">다음 ▶</a>
+</div>
 <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
@@ -580,8 +631,8 @@
           <span class="viewTabTitle">전체 품목 보드</span>
           <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
           <span class="viewTabStats">
-            <span class="viewTabStat"><strong>13</strong>개 연결 품목</span>
-            <span class="viewTabStat"><strong>7</strong>개 수급사업</span>
+            <span class="viewTabStat"><strong>11</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>6</strong>개 수급사업</span>
           </span>
         </button>
       </div>
@@ -638,7 +689,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://radio.ytn.co.kr/program/?f=2&amp;id=108064&amp;s_mcd=0206&amp;s_hcd=15" data-track="article" data-article-id="3fb21b3a22a3" data-article-title="오늘 장바구니 추천 농산물, 제철 양파·양배추·오이·참외·쑥" data-report-date="2026-03-31" data-section="supply" data-surface="briefing_open" data-target-domain="radio.ytn.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">오늘 장바구니 추천 농산물, 제철 양파·양배추·오이·참외·쑥</div>
-              <div class="sum">YTN이 제철 농산물로 양파·양배추·오이·참외·쑥을 소개했다. 하우스감귤은 출하 막바지로 10개 기준 지난주 가격이 9306원으로 전주보다 6.6% 올랐고, 참외는 물량 증가로 하락세를 보였다.</div>
+              <div class="sum">YTN은 제철 장바구니 품목으로 양파·양배추·오이·참외·쑥을 소개했다. 하우스 감귤은 출하 막바지로 10개 기준 지난주 가격이 9306원으로 전주 대비 6.6% 올랐고, 참외는 성출하기가 다가오며 물량이 늘어 하락세를 보였다.</div>
             </div>
             
 
@@ -656,7 +707,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71692" data-track="article" data-article-id="568ff9e4ace2" data-article-title="농진청, &#x27;순환식 수경재배&#x27;로 시설농가 경영 부담 낮춘다" data-report-date="2026-03-31" data-section="supply" data-surface="briefing_open" data-target-domain="www.amnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">농진청, &#x27;순환식 수경재배&#x27;로 시설농가 경영 부담 낮춘다</div>
-              <div class="sum">농진청이 충남 부여 시설토마토 농가를 찾아 경영 안정 대책을 논의했다. 에너지·농자재값 상승 부담을 덜기 위해 순환식 수경재배 등 에너지 절감 기술의 현장 확산을 추진하기로 했다.</div>
+              <div class="sum">농촌진흥청장이 27일 충남 부여의 시설 토마토 농가를 찾아 경영 안정 대책을 논의했다. 농진청은 에너지·농자재 가격 상승 부담을 덜기 위해 순환식 수경재배 등 에너지 절감 기술의 현장 확산을 추진한다.</div>
             </div>
             
 
@@ -674,7 +725,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=70005" data-track="article" data-article-id="2919b2049177" data-article-title="대아청과, 태양수출영농조합과 양배추 캐나다 수출" data-report-date="2026-03-31" data-section="supply" data-surface="briefing_open" data-target-domain="www.ikpnews.net" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">대아청과, 태양수출영농조합과 양배추 캐나다 수출</div>
-              <div class="sum">대아청과가 태양수출영농조합과 함께 양배추 캐나다 수출에 나섰다. 양배추·대파 등 채소류 공급 증가로 평년보다 낮은 시세가 형성된 가운데 판로 확대와 물량 분산으로 수급 안정을 지원하겠다고 밝혔다.</div>
+              <div class="sum">대아청과가 태양수출영농조합과 함께 양배추 캐나다 수출에 나섰다. 양배추·대파 등 주요 채소 공급 증가로 시세가 평년보다 낮아진 상황에서, 판로 확대와 물량 분산으로 수급 안정 및 출하자 지원을 추진한다.</div>
             </div>
             
 
@@ -692,7 +743,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.jndn.com/article.php?aid=1774864366429866005" data-track="article" data-article-id="612ee635f7d2" data-article-title="“영농철 코앞인데”…생산비 급등 우려에 농가 ‘초비상’" data-report-date="2026-03-31" data-section="supply" data-surface="briefing_open" data-target-domain="www.jndn.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“영농철 코앞인데”…생산비 급등 우려에 농가 ‘초비상’</div>
-              <div class="sum">호르무즈 해협 봉쇄 여파로 농업용 면세유 가격이 급등하고 나프타 수급 차질로 비료 공급망 불안이 커지며 농가에 비상이 걸렸다는 보도다. 딸기 재배 농가는 등유값 상승 시 연료비 부담이 커진다고 호소했다.</div>
+              <div class="sum">호르무즈 해협 봉쇄 여파로 농업용 면세유 가격이 급등하고 나프타 수급 차질로 비료 공급망 불안 우려가 커지고 있다. 영농철을 앞두고 딸기 등 시설재배 농가에서는 등유 가격 상승에 따른 연료비 부담 확대를 걱정하고 있다.</div>
             </div>
             
 
@@ -710,7 +761,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4068419" data-track="article" data-article-id="769b4f0001f5" data-article-title="산불 딛고 다시 뛴다…청송군 사과산업 현대화 본격화" data-report-date="2026-03-31" data-section="supply" data-surface="briefing_open" data-target-domain="www.kyongbuk.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">산불 딛고 다시 뛴다…청송군 사과산업 현대화 본격화</div>
-              <div class="sum">청송군이 산불 피해와 이상기후 여파 속에 사과산업 현대화를 본격화한다. 생산량은 2024년 7만5000t에서 2025년 7만1000t으로 감소한 것으로 제시됐다.</div>
+              <div class="sum">청송군이 산불 피해와 이상기후 여파 속에 사과산업 현대화를 본격화하고 있다. 지난해 산불로 과수원 소실과 복구 지연이 발생했고, 생산량은 2024년 7만5000t에서 2025년 7만1000t으로 감소했다.</div>
             </div>
             </div>
             </section>
@@ -739,7 +790,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.foodnews.co.kr/news/articleView.html?idxno=117886" data-track="article" data-article-id="cec6957eb733" data-article-title="중동 전쟁, 농산물 가격 영향 미미…가격 오른 축산물, 수입ㆍ할인지원..." data-report-date="2026-03-31" data-section="policy" data-surface="briefing_open" data-target-domain="www.foodnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">중동 전쟁, 농산물 가격 영향 미미…가격 오른 축산물, 수입ㆍ할인지원...</div>
-              <div class="sum">정부는 중동 전쟁이 농산물 가격에 미치는 영향은 현재까지 크지 않다고 밝혔다. 가격이 낮은 당근·양배추·양파는 수급안정대책과 할인지원을 병행하고, 쌀은 지난 13일부터 정부양곡 10만t 공급을 진행 중이다.</div>
+              <div class="sum">중동 전쟁의 농산물 가격 영향은 아직 미미하지만, 정부는 가격이 오른 축산물에 수입·할인지원을 추진하고 있다. 당근·양배추·양파 등 가격이 낮은 채소는 수급안정대책과 소비촉진을 병행하며, 쌀은 정부양곡 10만톤 공급을 진행 중이다.</div>
             </div>
             
 
@@ -757,7 +808,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://news.kbs.co.kr/news/pc/view/view.do?ncd=8521993" data-track="article" data-article-id="e8185bbab63a" data-article-title="“축산물 가격 상승세…비료 7월까지 공급 가능”" data-report-date="2026-03-31" data-section="policy" data-surface="briefing_open" data-target-domain="news.kbs.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“축산물 가격 상승세…비료 7월까지 공급 가능”</div>
-              <div class="sum">농식품부가 제11차 수급상황 점검회의를 열고 품목별 수급과 가격 동향을 점검했다. 채소류는 전년 대비 무 33.1%, 양파 36.9%, 양배추 37.1%, 당근 43.7% 수준의 가격을 보였고 비료는 7월까지 공급 가능하다고 밝혔다.</div>
+              <div class="sum">농식품부는 30일 제11차 수급 상황 점검회의를 열고 품목별 수급과 가격 동향을 점검했다. 채소류는 전년 대비 무 33.1%, 양파 36.9%, 양배추 37.1%, 당근 43.7% 수준의 가격을 보였고, 비료는 7월까지 공급 가능하다고 밝혔다.</div>
             </div>
             
 
@@ -775,7 +826,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.kyeonggi.com/article/20260330580058" data-track="article" data-article-id="01a0bb119bca" data-article-title="“파주쌀 쓰는 식당 쌀값 걱정 던다”... 차액 지원 3년만에 ‘두배’ ..." data-report-date="2026-03-31" data-section="policy" data-surface="briefing_open" data-target-domain="www.kyeonggi.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">“파주쌀 쓰는 식당 쌀값 걱정 던다”... 차액 지원 3년만에 ‘두배’ ...</div>
-              <div class="sum">파주시가 파주쌀을 사용하는 식당에 대한 쌀값 차액 지원을 3년 만에 두 배로 늘렸다. 지역 농가의 판로 확보, 파주쌀 브랜드 인지도 제고, 음식점 원가 부담 경감 등 지역경제 선순환 효과가 기대된다고 밝혔다.</div>
+              <div class="sum">파주시는 파주쌀을 사용하는 식당에 대한 쌀값 차액 지원 규모를 3년 만에 두배로 확대했다. 이 사업은 지역 농가 판로 확보, 파주쌀 브랜드 인지도 제고, 음식점 원가 부담 완화, 시민 대상 지역농산물 공급 효과를 겨냥한다.</div>
             </div>
             
 
@@ -793,7 +844,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=402914" data-track="article" data-article-id="4260753591e0" data-article-title="&#x27;비료 줄여도 수확량 그대로&#x27;···제주도, 표준시비 시범사업 확대" data-report-date="2026-03-31" data-section="policy" data-surface="briefing_open" data-target-domain="www.agrinet.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">&#x27;비료 줄여도 수확량 그대로&#x27;···제주도, 표준시비 시범사업 확대</div>
-              <div class="sum">제주도가 표준시비 시범사업을 확대해 비료를 줄여도 수확량을 유지하는 재배 방식을 확산한다. 대상은 양배추·브로콜리·마늘·양파 등 월동채소 400곳 이상이며, 신청은 8일까지 읍면동 주민센터에서 받는다.</div>
+              <div class="sum">제주도가 비료를 줄여도 수확량을 유지하는 표준시비 시범사업을 확대한다. 대상은 양배추·브로콜리·마늘·양파 등 월동채소 재배지 400곳 이상이며, 희망 농가는 8일까지 읍면동 주민센터에 신청할 수 있다.</div>
             </div>
             </div>
             </section>
@@ -822,7 +873,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.wonyesanup.co.kr/news/articleView.html?idxno=64149" data-track="article" data-article-id="902d7556169c" data-article-title="광양원예농협, &#x27;26년 스마트 APC 공모 사업 약 20억원 확정" data-report-date="2026-03-31" data-section="dist" data-surface="briefing_open" data-target-domain="www.wonyesanup.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">광양원예농협, &#x27;26년 스마트 APC 공모 사업 약 20억원 확정</div>
-              <div class="sum">광양원예농협이 농식품부의 2026년 스마트 APC 지원 공모에 선정돼 약 20억원을 확보했다. 애호박·토마토 등 시설원예 농산물 거점 APC를 구축해 선별·포장·출하·정산 전 과정을 자동화·데이터화할 계획이다.</div>
+              <div class="sum">광양원예농협이 농식품부의 2026년 스마트 APC 지원 공모에 선정돼 약 20억원 사업을 확보했다. 애호박·토마토 등 시설원예농산물 거점 APC에서 선별·포장·출하·정산 전 과정을 자동화·데이터화하는 구축에 착수한다.</div>
             </div>
             
 
@@ -840,7 +891,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.aflnews.co.kr/news/articleView.html?idxno=317518" data-track="article" data-article-id="52ad9cb1d5f0" data-article-title="대아청과 &#x27;공급과잉 양배추&#x27; 캐나다로 보낸다" data-report-date="2026-03-31" data-section="dist" data-surface="briefing_open" data-target-domain="www.aflnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">대아청과 &#x27;공급과잉 양배추&#x27; 캐나다로 보낸다</div>
-              <div class="sum">대아청과가 공급과잉 상태인 제주산 양배추를 캐나다로 수출한다. 수출을 통해 국내 물량을 분산하고 농산물 수급 안정과 출하자 지원에 힘쓰겠다고 밝혔다.</div>
+              <div class="sum">대아청과가 공급과잉 상태의 제주산 양배추를 캐나다로 수출한다. 이를 통해 양배추 수급 안정과 출하자 지원을 도모하며, 민감품목의 가격 안정 대응도 함께 추진할 계획이라고 밝혔다.</div>
             </div>
             
 
@@ -858,7 +909,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.kbsm.net/news/view.php?idx=513737" data-track="article" data-article-id="95a486748e9c" data-article-title="상주시, 신선 농산물 수출검역 요건 2차 교육 실시" data-report-date="2026-03-31" data-section="dist" data-surface="briefing_open" data-target-domain="www.kbsm.net" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">상주시, 신선 농산물 수출검역 요건 2차 교육 실시</div>
-              <div class="sum">상주시가 27일 서상주농협 산지유통센터에서 2026년 신선 농산물 수출검역 요건 2차 교육을 실시했다. 농림축산검역본부 구미사무소가 주관했으며, 강화되는 국가별 검역 기준에 대응한 교육이다.</div>
+              <div class="sum">상주시는 27일 서상주농협 산지유통센터에서 2026년 신선 농산물 수출검역 요건 2차 교육을 실시했다. 농림축산검역본부 구미사무소 주관으로 진행됐으며, 국가별 검역 기준 강화에 대응한 수출 실무 역량 제고가 목적이다.</div>
             </div>
             
 
@@ -876,7 +927,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.bokuennews.com/news/article.html?no=275908" data-track="article" data-article-id="a3a07f2882f4" data-article-title="NH 농협 무역 이재호 대표이사, 나주배 농가 방문" data-report-date="2026-03-31" data-section="dist" data-surface="briefing_open" data-target-domain="www.bokuennews.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">NH 농협 무역 이재호 대표이사, 나주배 농가 방문</div>
-              <div class="sum">NH농협무역 이재호 대표이사가 공식 임기 시작 후 전남 나주의 배 재배 농가를 방문했다. 배나무 생육 상태와 재배환경을 점검하고 산지유통 현장도 살피며 수출 기반을 확인했다.</div>
+              <div class="sum">NH농협무역 이재호 대표이사가 공식 임기 시작과 함께 전남 나주의 배 재배 농가를 방문했다. 배나무 생육 상태와 재배환경을 점검하고 원예농협 산지유통 현장을 살피며 수출 기반 강화 방안을 모색했다.</div>
             </div>
             </div>
             </section>
@@ -905,7 +956,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260325500129" data-track="article" data-article-id="332871f58384" data-article-title="농진청, 병해충 대응 민관 협의체 출범" data-report-date="2026-03-31" data-section="pest" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">농진청, 병해충 대응 민관 협의체 출범</div>
-              <div class="sum">농진청이 기후변화에 따른 병해충 확산에 대응하기 위해 민관 협의체를 출범했다. 협의체에서는 해외 과수화상병 방제 연구현황을 공유하고 병해충 연구 방향과 확산 방지 대책을 논의했다.</div>
+              <div class="sum">농촌진흥청이 기후변화에 따른 병해충 확산에 대응하기 위해 민관 협의체를 출범시켰다. 협의체에서는 해외 과수화상병 방제 연구현황이 발표됐고, 병해충 연구 방향과 확산 방지 대책에 대한 종합토론이 이뤄졌다.</div>
             </div>
             
 
@@ -923,7 +974,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.news1.kr/economy/agri-food/6119049" data-track="article" data-article-id="92b06221ce6c" data-article-title="&quot;꽃 피는 봄철, 과수화상병 방제 꼭&quot;…농진청, 과수 농가 약제 살포 당부" data-report-date="2026-03-31" data-section="pest" data-surface="briefing_open" data-target-domain="www.news1.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">&quot;꽃 피는 봄철, 과수화상병 방제 꼭&quot;…농진청, 과수 농가 약제 살포 당부</div>
-              <div class="sum">농진청이 봄철 사과·배 재배 농가에 과수화상병 방제를 위해 개화기 약제 살포를 당부했다. 과수화상병은 궤양에서 월동한 병원균이 개화기에 꽃으로 옮겨져 발병하므로 제때 방제가 가장 중요하다고 설명했다.</div>
+              <div class="sum">농촌진흥청이 꽃 피는 봄철 사과·배 농가에 과수화상병 방제를 위한 약제 적기 살포를 당부했다. 과수화상병은 개화기에 곤충 등을 통해 꽃으로 감염되기 쉬워, 약제 부작용 우려보다 제때 방제가 더 중요하다고 설명했다.</div>
             </div>
             
 
@@ -941,7 +992,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=71707" data-track="article" data-article-id="80cc45995ce1" data-article-title="&quot; 과수화상병 예방, 개화기 적기 방제 필수&quot;" data-report-date="2026-03-31" data-section="pest" data-surface="briefing_open" data-target-domain="www.amnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">&quot; 과수화상병 예방, 개화기 적기 방제 필수&quot;</div>
-              <div class="sum">농진청은 과수화상병 예방을 위해 개화기 예측 정보를 참고해 적기에 방제해야 한다고 강조했다. 정해진 약제를 2~3회 이상 살포하면 예방 효과가 높고, 관련 정보는 농업기술포털 ‘농사로’에서 확인할 수 있다고 밝혔다.</div>
+              <div class="sum">농진청은 과수화상병 예방을 위해 개화기 예측 정보를 참고한 적기 방제가 필수라고 강조했다. 정해진 약제를 2~3회 이상 살포하면 예방 효과를 높일 수 있으며, 농업기술포털 ‘농사로’에서 방제 동영상도 제공한다.</div>
             </div>
             
 
@@ -959,7 +1010,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.farmnmarket.com/news/article.html?no=25994" data-track="article" data-article-id="bbda84025029" data-article-title="개화기에 과수화상병 예측 정보 따라 전문 약제 살포" data-report-date="2026-03-31" data-section="pest" data-surface="briefing_open" data-target-domain="www.farmnmarket.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">개화기에 과수화상병 예측 정보 따라 전문 약제 살포</div>
-              <div class="sum">농진청은 과수화상병 예방을 위해 개화기 예측 정보에 따라 전문 약제를 2~3회 이상 살포해야 한다고 밝혔다. 무처리 대비 방제 효과가 확인됐다고 설명하며 개화기 적기 살포의 중요성을 강조했다.</div>
+              <div class="sum">농촌진흥청은 개화기 과수화상병 예측 정보를 활용해 전문 약제를 2~3회 이상 살포할 것을 권고했다. 국립농업과학원은 적기 약제 살포가 과수화상병 예방에 효과적이라고 설명했다.</div>
             </div>
             
 
@@ -977,7 +1028,7 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.jeollailbo.com/news/articleView.html?idxno=796141" data-track="article" data-article-id="3f1a6dc52b48" data-article-title="농진청 &quot; 과수화상병 , 개화기 예측 따라 2~3회 선제 살포해야&quot;" data-report-date="2026-03-31" data-section="pest" data-surface="briefing_open" data-target-domain="www.jeollailbo.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">농진청 &quot; 과수화상병 , 개화기 예측 따라 2~3회 선제 살포해야&quot;</div>
-              <div class="sum">농진청은 과수화상병 예측 시스템으로 꽃 감염 위험도를 분석해 지역별 적정 방제 시기를 안내하고 있다. 개화기 예측에 따라 약제를 2~3회 선제 살포하고, 방제약은 다른 농약·영양제와 혼용하지 말아야 한다고 당부했다.</div>
+              <div class="sum">농진청은 과수화상병 예방을 위해 개화기 예측에 따라 2~3회 선제적으로 약제를 살포해야 한다고 밝혔다. 방제 약제는 다른 농약·영양제와 섞지 말고 단독 사용해야 하며, 예측 시스템으로 지역별 적정 방제 시기를 안내하고 있다.</div>
             </div>
             </div>
             </section>
@@ -998,15 +1049,15 @@
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">오늘 연결</span>
-            <strong>13개</strong>
+            <strong>11개</strong>
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">수급사업 연결</span>
-            <strong>7개</strong>
+            <strong>6개</strong>
           </div>
         </div>
       </div>
-      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>3</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>3</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>5</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>2</span></a></div></div></div>
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>3</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>1</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>5</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>2</span></a></div></div></div>
       
             <section id="commodity-group-root_leaf" class="commodityGroupBlock" style="--commodity-group-color:#0f766e;--commodity-group-soft:rgba(15,118,110,0.070);--commodity-group-border:rgba(15,118,110,0.220);">
               <div class="commodityGroupHead">
@@ -1207,9 +1258,9 @@
                   <span class="commodityGroupDot" style="background:#b45309"></span>
                   <h3>양념채소류</h3>
                 </div>
-                <div class="commodityGroupMeta">활성 품목 3 / 5 · 수급사업 2 / 4</div>
+                <div class="commodityGroupMeta">활성 품목 1 / 5 · 수급사업 1 / 4</div>
               </div>
-              <div class="commodityGrid">
+              <div class="commodityGrid isSingle">
                 
                 <article id="commodity-onion" class="commodityTile isActive">
                   <div class="commodityTileTop">
@@ -1252,63 +1303,11 @@
                 
                 </article>
                 
-                <article id="commodity-garlic" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">마늘</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 3건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
-                <div class="commodityStoryCluster">
-                  <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryHead">
-                      <div class="commodityPrimaryKicker">대표 기사</div>
-                      
-                    </div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="65765748bc25" data-article-title="돼지고기 값 마늘, 생강보다 싸다고?…中 &#x27;사상 최저가&#x27;" data-report-date="2026-03-31" data-section="supply" data-surface="commodity_primary" data-target-domain="biz.sbs.co.kr" href="https://biz.sbs.co.kr/article_hub/20000300796?division=NAVER" target="_top" rel="noopener">돼지고기 값 마늘, 생강보다 싸다고?…中 &#x27;사상 최저가&#x27;</a>
-                    <div class="commodityPrimaryMeta">수급 · SBS · 03/30 17:28</div>
-                  </div>
-                  
-                  
-                </div>
-                
-                </article>
-                
-                <article id="commodity-ginger" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">생강</div>
-                    
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
-                <div class="commodityStoryCluster">
-                  <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryHead">
-                      <div class="commodityPrimaryKicker">대표 기사</div>
-                      
-                    </div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="65765748bc25" data-article-title="돼지고기 값 마늘, 생강보다 싸다고?…中 &#x27;사상 최저가&#x27;" data-report-date="2026-03-31" data-section="supply" data-surface="commodity_primary" data-target-domain="biz.sbs.co.kr" href="https://biz.sbs.co.kr/article_hub/20000300796?division=NAVER" target="_top" rel="noopener">돼지고기 값 마늘, 생강보다 싸다고?…中 &#x27;사상 최저가&#x27;</a>
-                    <div class="commodityPrimaryMeta">수급 · SBS · 03/30 17:28</div>
-                  </div>
-                  
-                  
-                </div>
-                
-                </article>
-                
               </div>
               
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">미연결 품목 2개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">건고추  ·수급</span><span class="commodityMiniChip isCore">대파  ·수급</span></div>
+              <div class="commodityInactiveTitle">미연결 품목 4개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">마늘  ·수급</span><span class="commodityMiniChip isCore">건고추  ·수급</span><span class="commodityMiniChip isCore">대파  ·수급</span><span class="commodityMiniChip">생강</span></div>
             </div>
             
               
@@ -1390,9 +1389,9 @@
                     <details class="commodityMoreWrap" data-swipe-ignore="1">
                       <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 1건 더 보기</summary>
                       <div class="commodityMoreList">
-                    <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="066a536b973b" data-article-title="쫄깃한 쭈꾸미와 대저 토마토 만남, 결과는 대성공입니다" data-report-date="2026-03-31" data-section="supply" data-surface="commodity_more" data-target-domain="www.ohmynews.com" href="https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003219554&amp;CMPT_CD=P0010" target="_top" rel="noopener">
+                    <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="a7e12060c914" data-article-title="쫄깃한 쭈꾸미와 대저토마토 만남, 결과는 대성공입니다" data-report-date="2026-03-31" data-section="supply" data-surface="commodity_more" data-target-domain="www.ohmynews.com" href="https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003219554&amp;CMPT_CD=P0010" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">수급</span>
-                      <span class="commoditySupportText">쫄깃한 쭈꾸미와 대저 토마토 만남, 결과는 대성공입니다</span>
+                      <span class="commoditySupportText">쫄깃한 쭈꾸미와 대저토마토 만남, 결과는 대성공입니다</span>
                     </a>
                     </div>
                     </details>
@@ -1617,7 +1616,7 @@
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
     
   </div>
-
+  
   <script>
     (function() {
 
@@ -2696,6 +2695,98 @@ try { _ensureDates(); } catch (e) {}
       })();
 })();
   </script>
+
+  <script>
+    (function() {
+      var swUrl = "/agri-news-brief/sw.js";
+      var swScope = "/agri-news-brief/";
+      var installButton = document.getElementById("installAppButton");
+      var deferredPrompt = null;
+
+      function isStandalone() {
+        try {
+          return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isAndroid() {
+        try {
+          return /Android/i.test(window.navigator.userAgent || "");
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isKakaoInApp() {
+        try {
+          return /KAKAOTALK/i.test(window.navigator.userAgent || "");
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function shouldShowInstallButton() {
+        if (!installButton || isStandalone()) return false;
+        if (deferredPrompt) return true;
+        return isAndroid();
+      }
+
+      function refreshInstallUi() {
+        if (!installButton) return;
+        installButton.classList.toggle("isHidden", !shouldShowInstallButton());
+      }
+
+      if ("serviceWorker" in navigator && window.isSecureContext) {
+        window.addEventListener("load", function() {
+          navigator.serviceWorker.register(swUrl, { scope: swScope, updateViaCache: "none" }).catch(function(err) {
+            console.warn("[PWA] service worker registration failed", err);
+          });
+        });
+      }
+
+      window.addEventListener("beforeinstallprompt", function(event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        refreshInstallUi();
+      });
+
+      window.addEventListener("appinstalled", function() {
+        deferredPrompt = null;
+        refreshInstallUi();
+      });
+
+      if (installButton) {
+        installButton.addEventListener("click", function() {
+          if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
+            deferredPrompt.prompt();
+            Promise.resolve(deferredPrompt.userChoice).catch(function() {
+            }).finally(function() {
+              deferredPrompt = null;
+              refreshInstallUi();
+            });
+            return;
+          }
+          if (isKakaoInApp()) {
+            window.alert("카카오톡 내장 브라우저를 사용 중이면 메뉴에서 Chrome으로 연 뒤 '홈 화면에 추가'를 선택해 주세요.");
+            return;
+          }
+          if (isAndroid()) {
+            window.alert("브라우저 메뉴에서 '홈 화면에 추가'를 선택하면 앱처럼 사용할 수 있습니다.");
+            return;
+          }
+          window.alert("Chrome이나 Edge에서 설치가 가능할 때 버튼이 활성화됩니다. 브라우저 메뉴도 함께 확인해 주세요.");
+        });
+      }
+
+      window.addEventListener("load", function() {
+        refreshInstallUi();
+        window.setTimeout(refreshInstallUi, 300);
+      });
+    })();
+  </script>
+
   <!-- build: local-prod-20260331 -->
 
 </body>

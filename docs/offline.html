@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>오프라인 상태</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --btn: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 32%),
+        linear-gradient(180deg, #eef2ff 0%, var(--bg) 48%, #f8fafc 100%);
+      color: var(--text);
+      font-family: "Noto Sans KR", "Segoe UI", system-ui, sans-serif;
+    }
+    .card {
+      width: min(100%, 420px);
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 22px 48px rgba(15, 23, 42, 0.12);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    h1 {
+      margin: 14px 0 0;
+      font-size: 28px;
+      letter-spacing: -0.4px;
+      line-height: 1.08;
+    }
+    p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn.primary {
+      border-color: var(--btn);
+      background: var(--btn);
+      color: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #020617;
+        --card: #0f172a;
+        --text: #e2e8f0;
+        --muted: #cbd5e1;
+        --line: #334155;
+        --btn: #3b82f6;
+      }
+      body {
+        background:
+          radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 30%),
+          linear-gradient(180deg, #0f172a 0%, #020617 60%, #020617 100%);
+      }
+      .card {
+        background: rgba(15, 23, 42, 0.94);
+        box-shadow: 0 24px 52px rgba(0, 0, 0, 0.34);
+      }
+      .btn {
+        background: #0f172a;
+        color: var(--text);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="eyebrow">Offline</span>
+    <h1>지금은 연결이 없어요</h1>
+    <p>네트워크가 다시 연결되면 최신 브리핑과 아카이브를 바로 불러올 수 있습니다.</p>
+    <div class="actions">
+      <button class="btn primary" type="button" onclick="window.location.reload()">다시 시도</button>
+      <a class="btn" href="./">홈으로</a>
+    </div>
+  </main>
+</body>
+</html>
