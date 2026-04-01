@@ -920,8 +920,8 @@ if _HF_SEMANTIC_RERANK_RAW:
 else:
     HF_SEMANTIC_RERANK_ENABLED = bool(HF_API_TOKEN)
 HF_SEMANTIC_MODEL = os.getenv("HF_SEMANTIC_MODEL", "intfloat/multilingual-e5-large").strip() or "intfloat/multilingual-e5-large"
-HF_SEMANTIC_TIMEOUT_SEC = float((os.getenv("HF_SEMANTIC_TIMEOUT_SEC", "20") or "20").strip() or 20.0)
-HF_SEMANTIC_TIMEOUT_SEC = max(3.0, min(HF_SEMANTIC_TIMEOUT_SEC, 60.0))
+HF_SEMANTIC_TIMEOUT_SEC = float((os.getenv("HF_SEMANTIC_TIMEOUT_SEC", "45") or "45").strip() or 45.0)
+HF_SEMANTIC_TIMEOUT_SEC = max(3.0, min(HF_SEMANTIC_TIMEOUT_SEC, 90.0))
 HF_SEMANTIC_MAX_CANDIDATES = int((os.getenv("HF_SEMANTIC_MAX_CANDIDATES", "12") or "12").strip() or 12)
 HF_SEMANTIC_MAX_CANDIDATES = max(2, min(HF_SEMANTIC_MAX_CANDIDATES, 30))
 HF_SEMANTIC_MAX_BOOST = float((os.getenv("HF_SEMANTIC_MAX_BOOST", "0.9") or "0.9").strip() or 0.9)
@@ -12147,7 +12147,13 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score -= 4.2
 
     # 농협(경제지주/공판장 등) 관련성 가점
-    score += nh_boost(text, key)
+    _nh_val = nh_boost(text, key)
+    score += _nh_val
+    # NH 행위자 + 메이저 매체 복합 boost: 구독자(농협 관계자)에게 가장 관련성 높은 기사 우선
+    if _nh_val > 0:
+        _nh_tier = press_tier(press, dom)
+        if _nh_tier >= 3:
+            score += min(3.0, _nh_val * 0.5)
 
     # 행사/동정성 패널티(실무 신호 약하면 감점)
     event_pen = eventy_penalty(text, title, key)
@@ -13267,6 +13273,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         nh_weak = any(k.lower() in text for k in NH_WEAK_TERMS)
         if not (nh_strong or nh_weak):
             return 0.0
+        # 농업 전문 인터넷 매체(trade press)는 이미 nh_boost 점수로 반영되므로 tiebreaker 제외
+        if (a.press or "").strip() in AGRI_TRADE_PRESS or normalize_host(a.domain or "") in AGRI_TRADE_HOSTS:
+            return 0.0
         broadcast = (a.press or "").strip() in BROADCAST_PRESS
         priority = 0.0
         if nh_strong:
@@ -14379,6 +14388,40 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _is_trade_press(a):
                 trade_core_count += 1
             break
+
+    # 2-b) 전 섹션 core 2건 보장: Phase 1~2에서 core < 2이면 pool 상위 기사 중 relaxed gate 통과하는 기사를 승격
+    # 단, weak tail / low-tier source는 제외하여 핵심 품질을 유지한다.
+    if len(core) < 2:
+        for a in pool:
+            if len(core) >= 2:
+                break
+            if _already_used(a):
+                continue
+            if not _headline_gate_relaxed(a, section_key):
+                continue
+            # 메이저 매체(tier 3+)만 core 보장 대상
+            if press_priority(a.press, a.domain) < 3:
+                continue
+            # 섹션별 weak tail 제외
+            if section_key == "dist" and _is_dist_weak_tail_story(a):
+                continue
+            if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
+            if section_key == "supply" and _is_supply_weak_tail_story(a):
+                continue
+            if section_key == "supply" and (a.topic or "").strip() == "정책":
+                continue
+            if any(_is_similar_title(a.title_key, b.title_key) for b in core):
+                continue
+            if any(_is_similar_story(a, b, section_key) for b in core):
+                continue
+            if not _source_ok_with_caps(a, tier1_cap + 1, tier2_cap + 1, source_cap + 1):
+                continue
+            a.is_core = True
+            _record_selection(a, "core_guarantee")
+            core.append(a)
+            _mark_used(a)
+            _source_take(a)
 
     # 3) 유통(dist) 섹션: 강한 현장 앵커(도매시장/공영도매/APC 준공/선별/저온/물류/원산지 단속/수출 검역 등) 0~2건 추가
     final: list[Article] = []
@@ -20997,10 +21040,17 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     active_items = 0
     active_program_items = 0
+    _hf_board_available = True  # HF API 상태 플래그: 첫 실패 시 나머지 품목 스킵
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
-        semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
+        if _hf_board_available:
+            semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
+            if not semantic_adjustments and articles and HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
+                _hf_board_available = False
+                log.warning("[HF] commodity board API unavailable after %s, skipping remaining items", item_key)
+        else:
+            semantic_adjustments = {}
         for article in articles:
             _set_commodity_board_semantic_state(
                 article,
