@@ -6210,12 +6210,13 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
     for phrase in LIVESTOCK_NEUTRAL_PHRASES:
         ttl_wo_neutral = ttl_wo_neutral.replace((phrase or "").lower(), "")
     title_livestock_hits = count_any(ttl_wo_neutral, [w.lower() for w in _TITLE_LIVESTOCK_CORE_TERMS])
-    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "닭고기", "계란", "달걀"))
+    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지", "돼지고기", "소고기", "닭고기", "닭", "계란", "달걀"))
     title_horti_hits = count_any(ttl, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(ttl, HORTI_ITEM_TERMS_L)
     managed_count = int(_managed_commodity_match_summary(title or "", "").get("count") or 0)
     market_hits = count_any(ttl_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
     desc_horti_hits = count_any(desc_l, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(desc_l, HORTI_ITEM_TERMS_L)
-    macro_mix_keep = desc_horti_hits >= 2 and (
+    # 제목에 축산 핵심 + 원예 0건이면, desc의 원예 비교 언급("배추·마늘처럼")은 무시
+    macro_mix_keep = desc_horti_hits >= 2 and title_horti_hits >= 1 and (
         is_broad_macro_price_context(title or "", desc or "")
         or count_any(f"{ttl} {desc_l}", [w.lower() for w in ("물가", "수급", "안정", "할인지원", "성수품")]) >= 1
     )
@@ -12780,6 +12781,14 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
 
         # 농산물 앵커가 충분히 있고 제목 품목 점수가 중간 이상이면 허용
         if agri_anchor_hits >= 2 and horti_title_sc >= 1.3:
+            return True
+
+        # NH 행위자 + 메이저 매체(tier3+): 본문에 원예 수급 신호가 충분하면
+        # 제목에 품목명이 없어도 코어 허용 (예: "농협·정부, 가격 잡는다")
+        _nh_gate_text = text
+        _nh_gate_val = nh_boost(_nh_gate_text, "supply")
+        _nh_gate_tier = press_tier(a.press, a.domain)
+        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
             return True
 
         return False
