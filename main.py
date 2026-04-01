@@ -9566,6 +9566,8 @@ def article_source_bucket_key(article: "Article") -> str:
 # 농업 전문/현장 매체(원예·유통 실무에서 참고 가치가 높음) — 너무 과도하게 밀어주진 않되, '하단 고착'을 방지
 AGRI_TRADE_PRESS = {"농민신문", "농수축산신문", "농업정보신문", "팜&마켓", "한국농어민신문"}
 AGRI_TRADE_HOSTS = {"afnews.co.kr", "agrinet.co.kr", "farmnmarket.com", "nongmin.com"}
+# 방송사: 영상 기사는 본문 스크립트가 빈약할 수 있으나, 보도 자체가 중요 이슈 시그널
+BROADCAST_PRESS = {"KBS", "MBC", "SBS", "YTN", "JTBC", "MBN", "TV조선", "채널A", "연합뉴스TV", "OBS"}
 # 중간: 농업 전문지/지방/중소/연구·지자체
 MID_PRESS_HINTS = (
     '농업', '팜', '축산', '유통', '식품', '경남', '전북', '전남', '충북', '충남', '강원', '제주',
@@ -13250,10 +13252,36 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _semantic_adjusted_score(a: Article) -> float:
         return float(getattr(a, "score", 0.0) or 0.0) + float(getattr(a, "semantic_boost", 0.0) or 0.0)
 
+    def _nh_major_core_priority(a: Article) -> float:
+        """NH 행위자 + 메이저 매체 복합 시그널 → core 정렬 tiebreaker.
+        구독자가 농협 관계자이므로, 농협이 주체인 기사를 메이저 매체가 보도한 경우
+        동일 점수대에서 core 선정 우선순위를 부여한다.
+        """
+        text = ((a.title or "") + " " + (a.description or "")).lower()
+        if any(k.lower() in text for k in NH_OFFTOPIC_TERMS):
+            return 0.0
+        tier = press_tier(a.press, a.domain)
+        if tier < 3:
+            return 0.0
+        nh_strong = any(k.lower() in text for k in NH_STRONG_TERMS)
+        nh_weak = any(k.lower() in text for k in NH_WEAK_TERMS)
+        if not (nh_strong or nh_weak):
+            return 0.0
+        broadcast = (a.press or "").strip() in BROADCAST_PRESS
+        priority = 0.0
+        if nh_strong:
+            priority = 4.0
+        elif nh_weak:
+            priority = 2.5
+        if broadcast:
+            priority += 1.0
+        return priority
+
     def _selection_sort_key(a: Article) -> Any:
         fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         return (
             _semantic_adjusted_score(a),
+            _nh_major_core_priority(a),
             float(getattr(a, "semantic_similarity", 0.0) or 0.0),
             round(float(fit_sc or 0.0), 3),
             getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
@@ -13480,6 +13508,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             key=lambda a: (
                 float(supply_board_bridge_boosts.get(_dup_key(a)) or 0.0),
                 _supply_core_priority_score(a),
+                _nh_major_core_priority(a),
                 _semantic_adjusted_score(a),
                 float(getattr(a, "semantic_similarity", 0.0) or 0.0),
                 section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""),
