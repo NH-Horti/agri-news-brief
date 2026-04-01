@@ -6210,7 +6210,7 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
     for phrase in LIVESTOCK_NEUTRAL_PHRASES:
         ttl_wo_neutral = ttl_wo_neutral.replace((phrase or "").lower(), "")
     title_livestock_hits = count_any(ttl_wo_neutral, [w.lower() for w in _TITLE_LIVESTOCK_CORE_TERMS])
-    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "계란", "달걀"))
+    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "닭고기", "계란", "달걀"))
     title_horti_hits = count_any(ttl, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(ttl, HORTI_ITEM_TERMS_L)
     managed_count = int(_managed_commodity_match_summary(title or "", "").get("count") or 0)
     market_hits = count_any(ttl_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
@@ -14402,9 +14402,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             # 저티어 매체(인터넷/지방 tier 1)는 core 승격 제외
             if press_priority(a.press, a.domain) < 2:
                 continue
-            # 농업 전문지(trade press)는 이미 Phase 1~2에서 trade_core_cap으로 관리
-            if _is_trade_press(a) and trade_core_count >= trade_core_cap:
-                continue
+            # NOTE: trade_core_cap은 Phase 3에서 적용하지 않음.
+            # Phase 3은 마지막 안전망이므로, 빈 core보다 trade press core가 낫다.
             # 섹션별 weak tail 제외
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
