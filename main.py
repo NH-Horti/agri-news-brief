@@ -920,8 +920,8 @@ if _HF_SEMANTIC_RERANK_RAW:
 else:
     HF_SEMANTIC_RERANK_ENABLED = bool(HF_API_TOKEN)
 HF_SEMANTIC_MODEL = os.getenv("HF_SEMANTIC_MODEL", "intfloat/multilingual-e5-large").strip() or "intfloat/multilingual-e5-large"
-HF_SEMANTIC_TIMEOUT_SEC = float((os.getenv("HF_SEMANTIC_TIMEOUT_SEC", "45") or "45").strip() or 45.0)
-HF_SEMANTIC_TIMEOUT_SEC = max(3.0, min(HF_SEMANTIC_TIMEOUT_SEC, 90.0))
+HF_SEMANTIC_TIMEOUT_SEC = float((os.getenv("HF_SEMANTIC_TIMEOUT_SEC", "90") or "90").strip() or 90.0)
+HF_SEMANTIC_TIMEOUT_SEC = max(3.0, min(HF_SEMANTIC_TIMEOUT_SEC, 180.0))
 HF_SEMANTIC_MAX_CANDIDATES = int((os.getenv("HF_SEMANTIC_MAX_CANDIDATES", "12") or "12").strip() or 12)
 HF_SEMANTIC_MAX_CANDIDATES = max(2, min(HF_SEMANTIC_MAX_CANDIDATES, 30))
 HF_SEMANTIC_MAX_BOOST = float((os.getenv("HF_SEMANTIC_MAX_BOOST", "0.9") or "0.9").strip() or 0.9)
@@ -6148,8 +6148,9 @@ def is_policy_livestock_dominant_context(title: str, desc: str, dom: str = "", p
 
 
 _TITLE_LIVESTOCK_CORE_TERMS = (
-    "축산물", "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "닭고기",
+    "축산물", "축산업", "한우", "한돈", "우육", "돈육", "소고기", "돼지고기", "돼지", "닭고기", "닭",
     "계란", "달걀", "우유", "낙농", "양돈", "양계", "축산법", "축산정책", "asf", "구제역", "조류인플루엔자",
+    "육가공", "육류",
 )
 _TITLE_HORTI_DIRECT_TERMS = (
     "농산물", "원예", "과수", "과일", "채소", "화훼", "청과",
