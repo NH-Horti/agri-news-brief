@@ -3483,6 +3483,30 @@ def _contains_compact_marker(text: str, markers: Sequence[str]) -> bool:
     return False
 
 
+# 2~3글자 짧은 품목명이 다른 단어 내부에서 오탐되는 것을 방지하는 FP 복합어 목록.
+# 예: "유자" in "보유자"(채권 보유자) → 오탐, "매실" in "판매실적" → 오탐
+# 해당 복합어를 텍스트에서 마스킹한 뒤 품목명이 여전히 남아있는지 확인한다.
+_SHORT_TERM_FALSE_POSITIVE_WORDS: dict[str, tuple[str, ...]] = {
+    "유자": ("보유자", "소유자", "점유자", "공유자", "전유자", "채유자",
+             "관유자", "임유자", "피보유자", "비소유자"),
+    "매실": ("판매실", "거래실", "매실적"),
+    "감자": ("투자감자", "감자본"),  # 주식 감자(감자본)
+}
+
+
+def _short_term_has_real_match(term: str, text: str) -> bool:
+    """짧은 품목명(2~3글자)의 FP 복합어를 마스킹한 뒤 실제 매칭 여부를 반환."""
+    if term not in text:
+        return False
+    fp_words = _SHORT_TERM_FALSE_POSITIVE_WORDS.get(term)
+    if not fp_words:
+        return True
+    masked = text
+    for fp in fp_words:
+        masked = masked.replace(fp, "\x00" * len(fp))
+    return term in masked
+
+
 def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str = "") -> bool:
     txt = (text or "").lower()
     if not txt:
@@ -3502,8 +3526,12 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
             if re.search(r"(?<!양)배추", txt):
                 return True
             continue
-        if len(term_l) >= 2 and term_l in txt:
-            return True
+        if len(term_l) >= 2:
+            if len(term_l) <= 3:
+                if _short_term_has_real_match(term_l, txt):
+                    return True
+            elif term_l in txt:
+                return True
 
     for term in item.get("context_terms") or []:
         term_l = str(term or "").strip().lower()
@@ -7987,14 +8015,19 @@ def _is_overseas_livestock_story(title: str, desc: str) -> bool:
     if foreign_hits == 0:
         return False
     # 제목에 축산 키워드 + 가격 시그널이 함께 있으면 축산 가격 기사 가능성 높음
-    _price_signal = ("값", "가격", "시세", "최저가", "최고가", "급락", "급등", "폭락", "폭등", "하락", "상승")
+    _price_signal = ("값", "가격", "시세", "최저가", "최고가", "최저", "최고",
+                     "급락", "급등", "폭락", "폭등", "하락", "상승",
+                     "싸", "싼", "저렴", "비싸", "비싼", "사상")
     title_price_hits = sum(1 for w in _price_signal if w in ttl_l)
     # 제목에 축산+가격 조합이면 원예 품목이 비교 대상으로만 등장할 가능성이 높다
     if livestock_hits >= 1 and title_price_hits >= 1:
         return True
     # 국내 원예 수급 시그널이 있으면 통과
-    _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추", "마늘 가격", "마늘 수급",
-                   "마늘 출하", "양파", "고추", "오이", "가락시장", "도매시장")
+    _horti_keep = ("사과", "배", "감귤", "딸기", "포도", "토마토", "양배추", "배추",
+                   "마늘 가격", "마늘 수급", "마늘 출하", "마늘 작황",
+                   "양파", "고추", "오이", "가락시장", "도매시장",
+                   "유자 가격", "유자 수급", "매실 가격", "매실 수급",
+                   "생강 가격", "생강 수급", "대파 가격", "대파 수급")
     horti_keep = sum(1 for w in _horti_keep if w in txt_l)
     if horti_keep >= 1:
         return False
@@ -19967,7 +20000,10 @@ def _commodity_board_term_hits(text: str, terms: Sequence[str]) -> int:
         if len(term_l) < 2 or term_l in seen:
             continue
         seen.add(term_l)
-        if term_l in txt:
+        if len(term_l) <= 3:
+            if _short_term_has_real_match(term_l, txt):
+                hits += 1
+        elif term_l in txt:
             hits += 1
     return hits
 
@@ -21190,7 +21226,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                     {badge_html}
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 {int(item.get('article_count') or 0)}건</span>
+                    <span>기사 {int(item.get('qualified_article_count') or 0)}건</span>
                     <span>핵심 {int(item.get('core_count') or 0)}건</span>
                   </div>
                   <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
