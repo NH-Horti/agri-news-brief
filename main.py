@@ -2189,6 +2189,13 @@ SUPPLY_CONTEXT_QUERIES = [
     "농자재 비용 부담",
     "시설원예 난방비 부담",
     "농가 생산비 부담",
+    # 거시 경제·물가·전쟁 여파 (방송사 리포트 수집 강화)
+    "물가 농어민 불안",
+    "농산물 물가 농가",
+    "전쟁 농자재 농가",
+    "중동 농자재 가격",
+    "농가 물가 부담",
+    "농업 생산비 급등",
 ]
 SUPPLY_TITLE_FOCUS_TERMS_L = [
     term.lower()
@@ -12157,6 +12164,16 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if _nh_tier >= 3:
             score += min(3.0, _nh_val * 0.5)
 
+    # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트 가점:
+    # 방송 보도는 본문 스크립트가 빈약해 텍스트 기반 점수가 낮지만,
+    # 방송에서 다루었다는 것 자체가 이슈의 중요성을 나타냄.
+    if (press or "").strip() in BROADCAST_PRESS:
+        _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장")])
+        if _bc_agri_signal >= 2:
+            score += 4.0
+        elif _bc_agri_signal >= 1:
+            score += 2.0
+
     # 행사/동정성 패널티(실무 신호 약하면 감점)
     event_pen = eventy_penalty(text, title, key)
     if key == "dist" and dist_local_field_profile:
@@ -12790,6 +12807,11 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         _nh_gate_val = nh_boost(_nh_gate_text, "supply")
         _nh_gate_tier = press_tier(a.press, a.domain)
         if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
+            return True
+
+        # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트: 본문이 짧아 horti_title_sc가 낮더라도
+        # 농업 맥락이 충분하면 코어 허용 (방송 보도 = 중요 이슈)
+        if (a.press or "").strip() in BROADCAST_PRESS and agri_anchor_hits >= 1 and horti_sc >= 1.4:
             return True
 
         return False
