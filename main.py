@@ -6210,12 +6210,13 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
     for phrase in LIVESTOCK_NEUTRAL_PHRASES:
         ttl_wo_neutral = ttl_wo_neutral.replace((phrase or "").lower(), "")
     title_livestock_hits = count_any(ttl_wo_neutral, [w.lower() for w in _TITLE_LIVESTOCK_CORE_TERMS])
-    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지고기", "소고기", "닭고기", "계란", "달걀"))
+    livestock_core_in_title = ("축산물" in ttl_wo_neutral) or ("축산" in ttl_wo_neutral) or any(w in ttl_wo_neutral for w in ("한우", "한돈", "돼지", "돼지고기", "소고기", "닭고기", "닭", "계란", "달걀"))
     title_horti_hits = count_any(ttl, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(ttl, HORTI_ITEM_TERMS_L)
     managed_count = int(_managed_commodity_match_summary(title or "", "").get("count") or 0)
     market_hits = count_any(ttl_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
     desc_horti_hits = count_any(desc_l, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(desc_l, HORTI_ITEM_TERMS_L)
-    macro_mix_keep = desc_horti_hits >= 2 and (
+    # 제목에 축산 핵심 + 원예 0건이면, desc의 원예 비교 언급("배추·마늘처럼")은 무시
+    macro_mix_keep = desc_horti_hits >= 2 and title_horti_hits >= 1 and (
         is_broad_macro_price_context(title or "", desc or "")
         or count_any(f"{ttl} {desc_l}", [w.lower() for w in ("물가", "수급", "안정", "할인지원", "성수품")]) >= 1
     )
