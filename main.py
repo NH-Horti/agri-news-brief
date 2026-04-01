@@ -21070,14 +21070,22 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         except Exception as e:
             _hf_board_available = False
             log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
+    _hf_board_call_count = 0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
-        if _hf_board_available:
+        if _hf_board_available and articles:
+            # rate limit 회피: 2번째 호출부터 5초 대기 (HF free tier throttle 방지)
+            if _hf_board_call_count > 0:
+                time.sleep(5.0)
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
-            if not semantic_adjustments and articles and HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
+            if semantic_adjustments:
+                _hf_board_call_count += 1
+            elif HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
                 _hf_board_available = False
                 log.warning("[HF] commodity board API unavailable after %s, skipping remaining items", item_key)
+        elif _hf_board_available and not articles:
+            semantic_adjustments = {}
         else:
             semantic_adjustments = {}
         for article in articles:
