@@ -12783,6 +12783,14 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         if agri_anchor_hits >= 2 and horti_title_sc >= 1.3:
             return True
 
+        # NH 행위자 + 메이저 매체(tier3+): 본문에 원예 수급 신호가 충분하면
+        # 제목에 품목명이 없어도 코어 허용 (예: "농협·정부, 가격 잡는다")
+        _nh_gate_text = text
+        _nh_gate_val = nh_boost(_nh_gate_text, "supply")
+        _nh_gate_tier = press_tier(a.press, a.domain)
+        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
+            return True
+
         return False
 
     if section_key == "policy":
