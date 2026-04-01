@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-01T00:38:04+09:00",
+  "generated_at": "2026-04-02T00:44:29+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -24,14 +24,32 @@
       "count": 1,
       "section": "pest",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-04-01",
+      "count": 1,
+      "section": "supply",
+      "surface": "briefing_chip"
     }
   ],
   "view_switch": [
     {
-      "date": "2026-03-31",
-      "count": 8,
+      "date": "2026-04-01",
+      "count": 13,
       "from_view": "briefing",
       "to_view": "commodity"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 9,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-04-01",
+      "count": 5,
+      "from_view": "commodity",
+      "to_view": "briefing"
     },
     {
       "date": "2026-03-31",
@@ -43,17 +61,17 @@
   "archive_nav": [
     {
       "date": "2026-03-31",
-      "count": 17,
+      "count": 19,
       "nav_type": "prev_date",
       "from_date": "2026-03-31",
       "to_date": "2026-03-30"
     },
     {
       "date": "2026-03-31",
-      "count": 3,
+      "count": 4,
       "nav_type": "archive_index",
       "from_date": "2026-03-31",
-      "to_date": ""
+      "to_date": "(not set)"
     },
     {
       "date": "2026-03-31",
@@ -63,10 +81,31 @@
       "to_date": "2026-03-26"
     },
     {
+      "date": "2026-04-01",
+      "count": 2,
+      "nav_type": "latest_brief",
+      "from_date": "",
+      "to_date": "2026-03-31"
+    },
+    {
+      "date": "2026-04-01",
+      "count": 2,
+      "nav_type": "latest_brief",
+      "from_date": "",
+      "to_date": "2026-04-01"
+    },
+    {
+      "date": "2026-04-01",
+      "count": 2,
+      "nav_type": "prev_date",
+      "from_date": "2026-03-31",
+      "to_date": "2026-03-30"
+    },
+    {
       "date": "2026-03-31",
       "count": 1,
       "nav_type": "latest_brief",
-      "from_date": "",
+      "from_date": "(not set)",
       "to_date": "2026-03-31"
     },
     {

@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-04-01T00:38:04+09:00",
+  "generated_at": "2026-04-02T00:44:29+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 29,
-        "users": 20,
-        "pageviews": 202,
-        "article_clicks": 8,
-        "article_ctr": 0.039604,
-        "avg_engagement_sec": 1558.24
+        "visits": 57,
+        "users": 26,
+        "pageviews": 323,
+        "article_clicks": 43,
+        "article_ctr": 0.133127,
+        "avg_engagement_sec": 647.03
       },
       "prev": {
         "visits": 0,
@@ -19,18 +19,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-26",
-        "to": "2026-04-01"
+        "from": "2026-03-27",
+        "to": "2026-04-02"
       }
     },
     "30": {
       "totals": {
-        "visits": 29,
-        "users": 20,
-        "pageviews": 202,
-        "article_clicks": 8,
-        "article_ctr": 0.039604,
-        "avg_engagement_sec": 1558.24
+        "visits": 57,
+        "users": 26,
+        "pageviews": 323,
+        "article_clicks": 43,
+        "article_ctr": 0.133127,
+        "avg_engagement_sec": 647.03
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-03",
-        "to": "2026-04-01"
+        "from": "2026-03-04",
+        "to": "2026-04-02"
       }
     },
     "90": {
       "totals": {
-        "visits": 29,
-        "users": 20,
-        "pageviews": 202,
-        "article_clicks": 8,
-        "article_ctr": 0.039604,
-        "avg_engagement_sec": 1558.24
+        "visits": 57,
+        "users": 26,
+        "pageviews": 323,
+        "article_clicks": 43,
+        "article_ctr": 0.133127,
+        "avg_engagement_sec": 647.03
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-02",
-        "to": "2026-04-01"
+        "from": "2026-01-03",
+        "to": "2026-04-02"
       }
     }
   }
