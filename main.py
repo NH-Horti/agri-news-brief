@@ -2710,19 +2710,18 @@ def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None
     workers = max_workers or _BODY_CRAWL_MAX_WORKERS
     enriched = 0
 
-    # 방송사 영상 기사는 HTML에 실제 스크립트가 없고 플레이어 UI 텍스트만 있어
-    # 크롤링하면 오히려 쓰레기 텍스트가 점수를 낮춤. Naver desc + 방송 floor로 대응.
-    _skip_press = BROADCAST_PRESS
-
     # 크롤링 본문 품질 검증: 비기사 텍스트(JS 안내, 저작권, 댓글 등) 비율이 높으면 거부
     _noise_markers = ("센스리더", "동영상플레이어", "저작권", "Copyright", "댓글 이용시",
                       "방향키는 시간이", "스페이스 바를 누르시면", "읽어주기 기능은")
 
     def _enrich_one(art: "Article") -> bool:
-        # 방송사 기사 스킵
-        if (getattr(art, "press", "") or "").strip() in _skip_press:
-            return False
-        url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
+        is_broadcast = (getattr(art, "press", "") or "").strip() in BROADCAST_PRESS
+        # 방송사: 원문 사이트에는 스크립트가 없으므로 네이버 뉴스 URL(link)로 크롤링
+        # 일반 매체: 원문 URL(originallink)로 크롤링 (네이버보다 본문이 풍부)
+        if is_broadcast:
+            url = getattr(art, "link", "") or getattr(art, "originallink", "") or ""
+        else:
+            url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
         if not url:
             return False
         body = _crawl_article_body(url)
