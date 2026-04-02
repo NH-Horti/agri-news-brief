@@ -12355,7 +12355,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     if (press or "").strip() in BROADCAST_PRESS:
         _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장", "가격", "물가")])
         if _bc_agri_signal >= 2:
-            _bc_floor = 26.0  # 농업 맥락 강한 방송 리포트의 최소 점수
+            _bc_floor = 32.0  # 농업 맥락 강한 방송 리포트의 최소 점수
             if score < _bc_floor:
                 score = _bc_floor
         elif _bc_agri_signal >= 1:
