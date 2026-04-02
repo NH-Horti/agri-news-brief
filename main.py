@@ -12946,9 +12946,12 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
 
 
     # 공통: 기사 전체가 '지자체 행정/인터뷰' 성격인데 품목이 일부 문단에만 등장하는 경우를 코어에서 제외
+    # 방송사 기사는 크롤링 본문에 "교육"/"행정" 등이 부수적으로 포함될 수 있으므로 제목 기준으로만 체크
     adminish = ("도청", "시청", "군청", "도의회", "시의회", "정무", "민선", "도정", "시정", "군정", "행정",
                 "관광", "복지", "청년", "교육", "교통", "SOC", "공약", "인사")
-    if any(w in title for w in adminish) or any(w in text for w in adminish):
+    _is_broadcast = (a.press or "").strip() in BROADCAST_PRESS
+    _adminish_match = any(w in title for w in adminish) if _is_broadcast else (any(w in title for w in adminish) or any(w in text for w in adminish))
+    if _adminish_match:
         # 제목에서 품목/원예 신호가 약한 행정/인터뷰성 기사는 (본문 일부 언급 오탐 가능) 코어에서 제외
         if horti_title_sc < 1.4 and market_hits == 0:
             return False
