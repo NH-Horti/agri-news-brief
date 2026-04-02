@@ -2629,7 +2629,7 @@ def _body_crawl_session() -> requests.Session:
 _BODY_ARTICLE_SELECTORS = [
     # 주요 뉴스사 본문 영역 패턴 (class/id)
     r'<article[^>]*>(.*?)</article>',
-    r'<div[^>]*(?:id|class)=["\'](?:article[_-]?[Bb]ody|news[_-]?[Cc]ontent|article[_-]?[Cc]ontent|newsView|articleText|article_txt|story_body|view_txt|viewConts|articeBody)["\'][^>]*>(.*?)</div>',
+    r'<div[^>]*(?:id|class)=["\'](?:article[_-]?[Bb]ody|news[_-]?[Cc]ontent|article[_-]?[Cc]ontent|newsView|articleText|article_txt|story_body|view_txt|view_cont|viewConts|articeBody|news_view)["\'][^>]*>(.*?)</div>',
 ]
 
 _BODY_EXCLUDE_TAGS_RE = re.compile(r'<(?:script|style|noscript|iframe|svg|nav|footer|header|aside)[^>]*>.*?</(?:script|style|noscript|iframe|svg|nav|footer|header|aside)>', re.I | re.S)
@@ -2732,15 +2732,24 @@ def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None
 
     def _enrich_one(art: "Article") -> bool:
         is_broadcast = (getattr(art, "press", "") or "").strip() in BROADCAST_PRESS
-        # 방송사: 원문 사이트에는 스크립트가 없으므로 네이버 뉴스 URL(link)로 크롤링
-        # 일반 매체: 원문 URL(originallink)로 크롤링 (네이버보다 본문이 풍부)
+        # 방송사: 네이버 뉴스 URL(link)로 크롤링 (원문에 스크립트 없음)
+        # 일반 매체: 원문 URL(originallink) 우선, 실패 시 네이버 URL(link) fallback
+        primary_url = ""
+        fallback_url = ""
         if is_broadcast:
-            url = getattr(art, "link", "") or getattr(art, "originallink", "") or ""
+            primary_url = getattr(art, "link", "") or ""
+            fallback_url = getattr(art, "originallink", "") or ""
         else:
-            url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
-        if not url:
+            primary_url = getattr(art, "originallink", "") or ""
+            fallback_url = getattr(art, "link", "") or ""
+        if not primary_url and not fallback_url:
             return False
-        body = _crawl_article_body(url)
+        body = _crawl_article_body(primary_url) if primary_url else ""
+        # 원문 실패/부족 시 네이버 URL로 fallback
+        if (not body or len(body) <= len(art.description or "")) and fallback_url and fallback_url != primary_url:
+            body_fb = _crawl_article_body(fallback_url)
+            if body_fb and len(body_fb) > len(body or ""):
+                body = body_fb
         if not body or len(body) <= len(art.description or ""):
             return False
         # 품질 검증: 노이즈 마커가 2개 이상이면 거부
@@ -9527,6 +9536,9 @@ ABBR_MAP = {
     "newsworker": "뉴스워커",
     "asiaa": "아시아A",
     "finomy": "피노미",
+    "hortitimes": "원예타임즈",
+    "businesskorea": "비즈니스코리아",
+    "veritas-a": "베리타스알파",
 }
 
 def press_name_from_url(url: str) -> str:
@@ -12355,7 +12367,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     if (press or "").strip() in BROADCAST_PRESS:
         _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장", "가격", "물가")])
         if _bc_agri_signal >= 2:
-            _bc_floor = 26.0  # 농업 맥락 강한 방송 리포트의 최소 점수
+            _bc_floor = 32.0  # 농업 맥락 강한 방송 리포트의 최소 점수
             if score < _bc_floor:
                 score = _bc_floor
         elif _bc_agri_signal >= 1:
@@ -12946,9 +12958,12 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
 
 
     # 공통: 기사 전체가 '지자체 행정/인터뷰' 성격인데 품목이 일부 문단에만 등장하는 경우를 코어에서 제외
+    # 방송사 기사는 크롤링 본문에 "교육"/"행정" 등이 부수적으로 포함될 수 있으므로 제목 기준으로만 체크
     adminish = ("도청", "시청", "군청", "도의회", "시의회", "정무", "민선", "도정", "시정", "군정", "행정",
                 "관광", "복지", "청년", "교육", "교통", "SOC", "공약", "인사")
-    if any(w in title for w in adminish) or any(w in text for w in adminish):
+    _is_broadcast = (a.press or "").strip() in BROADCAST_PRESS
+    _adminish_match = any(w in title for w in adminish) if _is_broadcast else (any(w in title for w in adminish) or any(w in text for w in adminish))
+    if _adminish_match:
         # 제목에서 품목/원예 신호가 약한 행정/인터뷰성 기사는 (본문 일부 언급 오탐 가능) 코어에서 제외
         if horti_title_sc < 1.4 and market_hits == 0:
             return False
@@ -18860,6 +18875,14 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             # ✅ 품목 영향이 충분히 강하면(토픽+원예점수) 섹션 이동 방지
             if bt and bs >= 2.4 and horti_sc >= 2.2:
                 a.topic = bt
+                keep_items.append(a)
+                continue
+
+            # 방송사 현장 리포트 + 농업 맥락이 있으면 supply 유지 (정책 이동 방지)
+            # 방송 리포트는 현장 취재 중심이라 거시 키워드가 도입부에 나와도 실제로는 품목 수급 기사
+            _bc_press = (a.press or "").strip() in BROADCAST_PRESS
+            _bc_nh = nh_boost(mix, _sec_key) > 0
+            if (_bc_press or _bc_nh) and horti_sc >= 1.4 and _sec_key == "supply":
                 keep_items.append(a)
                 continue
 
