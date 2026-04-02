@@ -2605,10 +2605,26 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
 # 원문 크롤링으로 충분한 텍스트를 확보할 수 있다.
 _BODY_CRAWL_ENABLED = os.getenv("BODY_CRAWL_ENABLED", "true").strip().lower() in ("1", "true", "yes", "y")
 _BODY_CRAWL_MAX_WORKERS = max(1, min(int(os.getenv("BODY_CRAWL_MAX_WORKERS", "10") or "10"), 20))
-_BODY_CRAWL_TIMEOUT = float(os.getenv("BODY_CRAWL_TIMEOUT", "10") or "10")
+_BODY_CRAWL_TIMEOUT = 5.0  # connect timeout (접속 불가 서버 빠른 탈락)
+_BODY_CRAWL_READ_TIMEOUT = 10.0  # read timeout (본문 수신)
 _BODY_CRAWL_MAX_CHARS = 2000
 _BODY_CACHE: dict[str, str] = {}
 _BODY_CACHE_LOCK = threading.Lock()
+
+# 크롤링 전용 세션: retry 1회 + 짧은 connect timeout (공용 http_session과 분리)
+_BODY_SESSION_LOCAL = threading.local()
+
+def _body_crawl_session() -> requests.Session:
+    s = getattr(_BODY_SESSION_LOCAL, "session", None)
+    if s is None:
+        s = requests.Session()
+        retry = Retry(total=1, connect=1, read=1, backoff_factor=0.3,
+                      status_forcelist=[429, 500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retry)
+        s.mount("https://", adapter)
+        s.mount("http://", adapter)
+        _BODY_SESSION_LOCAL.session = s
+    return s
 
 _BODY_ARTICLE_SELECTORS = [
     # 주요 뉴스사 본문 영역 패턴 (class/id)
@@ -2689,7 +2705,7 @@ def _crawl_article_body(url: str) -> str:
 
     body = ""
     try:
-        r = http_session().get(url, timeout=_BODY_CRAWL_TIMEOUT, headers={
+        r = _body_crawl_session().get(url, timeout=(_BODY_CRAWL_TIMEOUT, _BODY_CRAWL_READ_TIMEOUT), headers={
             "User-Agent": "Mozilla/5.0 (compatible; agri-news-brief/1.0)",
         })
         if r.ok:
@@ -2710,12 +2726,26 @@ def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None
     workers = max_workers or _BODY_CRAWL_MAX_WORKERS
     enriched = 0
 
+    # 크롤링 본문 품질 검증: 비기사 텍스트(JS 안내, 저작권, 댓글 등) 비율이 높으면 거부
+    _noise_markers = ("센스리더", "동영상플레이어", "저작권", "Copyright", "댓글 이용시",
+                      "방향키는 시간이", "스페이스 바를 누르시면", "읽어주기 기능은")
+
     def _enrich_one(art: "Article") -> bool:
-        url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
+        is_broadcast = (getattr(art, "press", "") or "").strip() in BROADCAST_PRESS
+        # 방송사: 원문 사이트에는 스크립트가 없으므로 네이버 뉴스 URL(link)로 크롤링
+        # 일반 매체: 원문 URL(originallink)로 크롤링 (네이버보다 본문이 풍부)
+        if is_broadcast:
+            url = getattr(art, "link", "") or getattr(art, "originallink", "") or ""
+        else:
+            url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
         if not url:
             return False
         body = _crawl_article_body(url)
         if not body or len(body) <= len(art.description or ""):
+            return False
+        # 품질 검증: 노이즈 마커가 2개 이상이면 거부
+        noise_count = sum(1 for m in _noise_markers if m.lower() in body.lower())
+        if noise_count >= 2:
             return False
         art.description = body
         return True
