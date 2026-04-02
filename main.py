@@ -14589,7 +14589,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not _headline_gate_relaxed(a, section_key):
                 continue
             # 저티어 매체(인터넷/지방 tier 1)는 core 승격 제외
-            if press_priority(a.press, a.domain) < 2:
+            # 단, score가 threshold 이상이면 허용 (pest 등 전문 매체가 적은 섹션 대응)
+            if press_priority(a.press, a.domain) < 2 and a.score < thr:
                 continue
             # NOTE: trade_core_cap은 Phase 3에서 적용하지 않음.
             # Phase 3은 마지막 안전망이므로, 빈 core보다 trade press core가 낫다.
@@ -15214,6 +15215,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _is_regional_agri_brief_fillable(a.title or "", a.description or ""):
                 continue
+            # supply 섹션에서 유통/직매장/직거래 중심 기사는 dist에 더 적합
+            if section_key == "supply":
+                _fill_text = ((a.title or "") + " " + (a.description or "")).lower()
+                if any(kw in _fill_text for kw in ("직매장", "로컬푸드", "직거래", "직판장", "유통센터")):
+                    continue
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
@@ -21275,7 +21281,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
             if _warmup:
                 log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
-                time.sleep(5.0)  # warm-up 후 rate limit 쿨다운
+                time.sleep(8.0)  # warm-up 후 rate limit 쿨다운
             else:
                 _hf_board_available = False
                 log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
@@ -21287,9 +21293,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
         if _hf_board_available and articles:
-            # rate limit 회피: 2번째 호출부터 5초 대기 (HF free tier throttle 방지)
+            # rate limit 회피: 2번째 호출부터 8초 대기 (HF free tier throttle 방지)
             if _hf_board_call_count > 0:
-                time.sleep(5.0)
+                time.sleep(8.0)
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
