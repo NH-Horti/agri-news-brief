@@ -2189,6 +2189,13 @@ SUPPLY_CONTEXT_QUERIES = [
     "농자재 비용 부담",
     "시설원예 난방비 부담",
     "농가 생산비 부담",
+    # 거시 경제·물가·전쟁 여파 (방송사 리포트 수집 강화)
+    "물가 농어민 불안",
+    "농산물 물가 농가",
+    "전쟁 농자재 농가",
+    "중동 농자재 가격",
+    "농가 물가 부담",
+    "농업 생산비 급등",
 ]
 SUPPLY_TITLE_FOCUS_TERMS_L = [
     term.lower()
@@ -2588,6 +2595,141 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
         return dt.astimezone(KST)
     except Exception:
         return datetime.min.replace(tzinfo=KST)
+
+
+# -----------------------------
+# Article Body Crawling (본문 보강)
+# -----------------------------
+# 네이버 API description(1-2문장 스니펫)을 원문 본문으로 보강하여
+# 점수 정확도를 높인다. 방송사 영상 리포트 등 스니펫이 짧은 기사도
+# 원문 크롤링으로 충분한 텍스트를 확보할 수 있다.
+_BODY_CRAWL_ENABLED = os.getenv("BODY_CRAWL_ENABLED", "true").strip().lower() in ("1", "true", "yes", "y")
+_BODY_CRAWL_MAX_WORKERS = max(1, min(int(os.getenv("BODY_CRAWL_MAX_WORKERS", "10") or "10"), 20))
+_BODY_CRAWL_TIMEOUT = float(os.getenv("BODY_CRAWL_TIMEOUT", "10") or "10")
+_BODY_CRAWL_MAX_CHARS = 2000
+_BODY_CACHE: dict[str, str] = {}
+_BODY_CACHE_LOCK = threading.Lock()
+
+_BODY_ARTICLE_SELECTORS = [
+    # 주요 뉴스사 본문 영역 패턴 (class/id)
+    r'<article[^>]*>(.*?)</article>',
+    r'<div[^>]*(?:id|class)=["\'](?:article[_-]?[Bb]ody|news[_-]?[Cc]ontent|article[_-]?[Cc]ontent|newsView|articleText|article_txt|story_body|view_txt|viewConts|articeBody)["\'][^>]*>(.*?)</div>',
+]
+
+_BODY_EXCLUDE_TAGS_RE = re.compile(r'<(?:script|style|noscript|iframe|svg|nav|footer|header|aside)[^>]*>.*?</(?:script|style|noscript|iframe|svg|nav|footer|header|aside)>', re.I | re.S)
+_BODY_TAG_RE = re.compile(r'<[^>]+>')
+_BODY_WHITESPACE_RE = re.compile(r'\s+')
+
+
+def _extract_body_from_html(html_text: str) -> str:
+    """HTML에서 기사 본문 텍스트를 추출. 실패 시 빈 문자열."""
+    if not html_text:
+        return ""
+
+    # 1순위: og:description (가장 안정적인 요약)
+    og_desc = ""
+    og_m = re.search(r'property=["\']og:description["\']\s*content=["\']([^"\']+)["\']', html_text, re.I)
+    if og_m:
+        og_desc = html.unescape(og_m.group(1)).strip()
+
+    # 2순위: article/본문 영역 내 텍스트
+    body_text = ""
+    for pattern in _BODY_ARTICLE_SELECTORS:
+        m = re.search(pattern, html_text, re.I | re.S)
+        if m:
+            raw = m.group(1)
+            raw = _BODY_EXCLUDE_TAGS_RE.sub(" ", raw)
+            raw = _BODY_TAG_RE.sub(" ", raw)
+            raw = html.unescape(raw)
+            raw = _BODY_WHITESPACE_RE.sub(" ", raw).strip()
+            if len(raw) >= 50:
+                body_text = raw
+                break
+
+    # 3순위: 전체 <p> 태그에서 50자 이상만 결합
+    if not body_text:
+        paragraphs = re.findall(r'<p[^>]*>(.*?)</p>', html_text, re.I | re.S)
+        parts = []
+        for p in paragraphs:
+            cleaned = _BODY_TAG_RE.sub(" ", p)
+            cleaned = html.unescape(cleaned)
+            cleaned = _BODY_WHITESPACE_RE.sub(" ", cleaned).strip()
+            if len(cleaned) >= 30:
+                parts.append(cleaned)
+        if parts:
+            body_text = " ".join(parts)
+
+    # og:description + body_text 결합 (중복 제거)
+    if og_desc and body_text:
+        if og_desc not in body_text:
+            combined = og_desc + " " + body_text
+        else:
+            combined = body_text
+    elif body_text:
+        combined = body_text
+    elif og_desc:
+        combined = og_desc
+    else:
+        return ""
+
+    return combined[:_BODY_CRAWL_MAX_CHARS].strip()
+
+
+def _crawl_article_body(url: str) -> str:
+    """기사 원문 URL에서 본문 텍스트 추출. 캐시 우선, 실패 시 빈 문자열."""
+    url = (url or "").strip()
+    if not url:
+        return ""
+
+    cache_key = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
+    with _BODY_CACHE_LOCK:
+        cached = _BODY_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    body = ""
+    try:
+        r = http_session().get(url, timeout=_BODY_CRAWL_TIMEOUT, headers={
+            "User-Agent": "Mozilla/5.0 (compatible; agri-news-brief/1.0)",
+        })
+        if r.ok:
+            body = _extract_body_from_html(r.text or "")
+    except Exception:
+        pass
+
+    with _BODY_CACHE_LOCK:
+        _BODY_CACHE[cache_key] = body
+    return body
+
+
+def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None = None) -> int:
+    """기사 목록의 description을 원문 본문으로 보강. 성공 건수 반환."""
+    if not _BODY_CRAWL_ENABLED or not articles:
+        return 0
+
+    workers = max_workers or _BODY_CRAWL_MAX_WORKERS
+    enriched = 0
+
+    def _enrich_one(art: "Article") -> bool:
+        url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
+        if not url:
+            return False
+        body = _crawl_article_body(url)
+        if not body or len(body) <= len(art.description or ""):
+            return False
+        art.description = body
+        return True
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futures = {ex.submit(_enrich_one, art): art for art in articles}
+        for fut in as_completed(futures):
+            try:
+                if fut.result():
+                    enriched += 1
+            except Exception:
+                pass
+
+    return enriched
 
 
 def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
@@ -6216,8 +6358,26 @@ def is_title_livestock_dominant_context(title: str, desc: str = "") -> bool:
     managed_count = int(_managed_commodity_match_summary(title or "", "").get("count") or 0)
     market_hits = count_any(ttl_wo_neutral, [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc")])
     desc_horti_hits = count_any(desc_l, [w.lower() for w in _TITLE_HORTI_DIRECT_TERMS]) + count_any(desc_l, HORTI_ITEM_TERMS_L)
-    # 제목에 축산 핵심 + 원예 0건이면, desc의 원예 비교 언급("배추·마늘처럼")은 무시
-    macro_mix_keep = desc_horti_hits >= 2 and title_horti_hits >= 1 and (
+    # 제목이 순수 축산 전용("닭고기값 급등", "돼지 육가공")이면 desc 원예 언급을 무시.
+    # 단, 거시 물가/수급 기사("2월 물가 축산물 들썩 + desc에 사과/쌀 수급")는 허용.
+    _title_macro_price = count_any(ttl, [w.lower() for w in ("물가", "성수품", "장바구니")]) >= 1
+    # desc에서 원예 품목이 자체 수급/가격 맥락으로 등장하는지 (단순 비교 나열이 아님)
+    # "배추·마늘처럼", "것과 마찬가지다" 같은 비교 표현이 있으면 비교 나열로 판단
+    _desc_comparison_markers = any(m in desc_l for m in ("처럼", "마찬가지", "것과 같", "비슷하게", "마찬가지로"))
+    _desc_horti_with_supply_ctx = (
+        desc_horti_hits >= 1
+        and not _desc_comparison_markers
+        and count_any(desc_l, [w.lower() for w in ("가격", "수급", "출하", "작황", "공급", "수확", "도매")]) >= 1
+        and any(
+            (h in desc_l and any(s in desc_l[max(0, desc_l.index(h)-30):desc_l.index(h)+30] for s in ("가격", "수급", "출하", "공급", "상승", "하락", "급등", "폭락")))
+            for h in [w.lower() for w in ("사과", "배추", "양파", "마늘", "고추", "딸기", "감귤", "포도", "토마토", "오이")]
+            if h in desc_l
+        )
+    )
+    _title_livestock_only = (title_livestock_hits >= 1 and title_horti_hits == 0
+                             and not _title_macro_price
+                             and not _desc_horti_with_supply_ctx)
+    macro_mix_keep = desc_horti_hits >= 2 and (not _title_livestock_only) and (
         is_broad_macro_price_context(title or "", desc or "")
         or count_any(f"{ttl} {desc_l}", [w.lower() for w in ("물가", "수급", "안정", "할인지원", "성수품")]) >= 1
     )
@@ -12157,6 +12317,20 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         if _nh_tier >= 3:
             score += min(3.0, _nh_val * 0.5)
 
+    # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트 가점:
+    # 방송 보도는 본문 스크립트가 빈약해 텍스트 기반 점수가 낮지만,
+    # 방송에서 다루었다는 것 자체가 이슈의 중요성을 나타냄.
+    # 방송사 영상 리포트는 네이버 API description이 짧아 텍스트 기반 점수가 구조적으로 낮다.
+    # 농업 맥락이 명확하면 최소 점수를 보장하여 핵심 후보에 포함되도록 한다.
+    if (press or "").strip() in BROADCAST_PRESS:
+        _bc_agri_signal = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "원예", "과수", "채소", "화훼", "농가", "농어민", "농자재", "수급", "출하", "도매시장", "가격", "물가")])
+        if _bc_agri_signal >= 2:
+            _bc_floor = 26.0  # 농업 맥락 강한 방송 리포트의 최소 점수
+            if score < _bc_floor:
+                score = _bc_floor
+        elif _bc_agri_signal >= 1:
+            score += 3.0
+
     # 행사/동정성 패널티(실무 신호 약하면 감점)
     event_pen = eventy_penalty(text, title, key)
     if key == "dist" and dist_local_field_profile:
@@ -12790,6 +12964,11 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         _nh_gate_val = nh_boost(_nh_gate_text, "supply")
         _nh_gate_tier = press_tier(a.press, a.domain)
         if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
+            return True
+
+        # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트: 본문이 짧아 horti_title_sc가 낮더라도
+        # 농업 맥락이 충분하면 코어 허용 (방송 보도 = 중요 이슈)
+        if (a.press or "").strip() in BROADCAST_PRESS and agri_anchor_hits >= 1 and horti_sc >= 1.4:
             return True
 
         return False
@@ -14410,7 +14589,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not _headline_gate_relaxed(a, section_key):
                 continue
             # 저티어 매체(인터넷/지방 tier 1)는 core 승격 제외
-            if press_priority(a.press, a.domain) < 2:
+            # 단, score가 threshold 이상이면 허용 (pest 등 전문 매체가 적은 섹션 대응)
+            if press_priority(a.press, a.domain) < 2 and a.score < thr:
                 continue
             # NOTE: trade_core_cap은 Phase 3에서 적용하지 않음.
             # Phase 3은 마지막 안전망이므로, 빈 core보다 trade press core가 낫다.
@@ -15035,6 +15215,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _is_regional_agri_brief_fillable(a.title or "", a.description or ""):
                 continue
+            # supply 섹션에서 유통/직매장/직거래 중심 기사는 dist에 더 적합
+            if section_key == "supply":
+                _fill_text = ((a.title or "") + " " + (a.description or "")).lower()
+                if any(kw in _fill_text for kw in ("직매장", "로컬푸드", "직거래", "직판장", "유통센터")):
+                    continue
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
@@ -18369,6 +18554,38 @@ def collect_raw_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     except Exception as e:
         log.warning("[WARN] report augmentation failed: %s", e)
 
+    # 본문 크롤링: 전체 기사의 description을 원문 본문으로 보강 후 재스코어링
+    if _BODY_CRAWL_ENABLED:
+        all_articles: list[Article] = []
+        for lst in raw_by_section.values():
+            all_articles.extend(lst)
+        # 중복 URL 제거 (같은 기사가 여러 섹션에 있을 수 있음)
+        seen_urls: set[str] = set()
+        unique_articles: list[Article] = []
+        for art in all_articles:
+            url = art.originallink or art.link or ""
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                unique_articles.append(art)
+            elif url in seen_urls:
+                # 이미 크롤링된 기사와 동일 URL → 캐시에서 가져옴
+                unique_articles.append(art)
+        enriched = _enrich_article_bodies(unique_articles)
+        log.info("[BODY-CRAWL] enriched %d/%d articles with full body text", enriched, len(unique_articles))
+
+        # 재스코어링: 보강된 description으로 점수 재계산
+        section_conf_map = {str(s.get("key") or "").strip(): s for s in SECTIONS}
+        rescored = 0
+        for art in all_articles:
+            sec_conf = section_conf_map.get(art.section)
+            if sec_conf:
+                dom = normalize_host(art.domain or "")
+                new_score = compute_rank_score(art.title, art.description, dom, art.pub_dt_kst, sec_conf, art.press)
+                if abs(new_score - art.score) > 0.01:
+                    rescored += 1
+                art.score = new_score
+        log.info("[BODY-CRAWL] rescored %d articles after body enrichment", rescored)
+
     return raw_by_section
 
 
@@ -21064,6 +21281,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
             if _warmup:
                 log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
+                time.sleep(8.0)  # warm-up 후 rate limit 쿨다운
             else:
                 _hf_board_available = False
                 log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
@@ -21075,9 +21293,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
         if _hf_board_available and articles:
-            # rate limit 회피: 2번째 호출부터 5초 대기 (HF free tier throttle 방지)
+            # rate limit 회피: 2번째 호출부터 8초 대기 (HF free tier throttle 방지)
             if _hf_board_call_count > 0:
-                time.sleep(5.0)
+                time.sleep(8.0)
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
