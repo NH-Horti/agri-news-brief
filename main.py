@@ -18863,6 +18863,14 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 keep_items.append(a)
                 continue
 
+            # 방송사 현장 리포트 + 농업 맥락이 있으면 supply 유지 (정책 이동 방지)
+            # 방송 리포트는 현장 취재 중심이라 거시 키워드가 도입부에 나와도 실제로는 품목 수급 기사
+            _bc_press = (a.press or "").strip() in BROADCAST_PRESS
+            _bc_nh = nh_boost(mix, _sec_key) > 0
+            if (_bc_press or _bc_nh) and horti_sc >= 1.4 and _sec_key == "supply":
+                keep_items.append(a)
+                continue
+
             # 그 외(정책성 강 + 품목 직접성 약)는 policy로 이동
             a.section = "policy"
             # policy 기준으로 재스코어링 (원래 섹션 점수가 policy 선정에 오용되는 것을 방지)
