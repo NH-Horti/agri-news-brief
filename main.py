@@ -2629,7 +2629,7 @@ def _body_crawl_session() -> requests.Session:
 _BODY_ARTICLE_SELECTORS = [
     # 주요 뉴스사 본문 영역 패턴 (class/id)
     r'<article[^>]*>(.*?)</article>',
-    r'<div[^>]*(?:id|class)=["\'](?:article[_-]?[Bb]ody|news[_-]?[Cc]ontent|article[_-]?[Cc]ontent|newsView|articleText|article_txt|story_body|view_txt|viewConts|articeBody)["\'][^>]*>(.*?)</div>',
+    r'<div[^>]*(?:id|class)=["\'](?:article[_-]?[Bb]ody|news[_-]?[Cc]ontent|article[_-]?[Cc]ontent|newsView|articleText|article_txt|story_body|view_txt|view_cont|viewConts|articeBody|news_view)["\'][^>]*>(.*?)</div>',
 ]
 
 _BODY_EXCLUDE_TAGS_RE = re.compile(r'<(?:script|style|noscript|iframe|svg|nav|footer|header|aside)[^>]*>.*?</(?:script|style|noscript|iframe|svg|nav|footer|header|aside)>', re.I | re.S)
@@ -2732,15 +2732,24 @@ def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None
 
     def _enrich_one(art: "Article") -> bool:
         is_broadcast = (getattr(art, "press", "") or "").strip() in BROADCAST_PRESS
-        # 방송사: 원문 사이트에는 스크립트가 없으므로 네이버 뉴스 URL(link)로 크롤링
-        # 일반 매체: 원문 URL(originallink)로 크롤링 (네이버보다 본문이 풍부)
+        # 방송사: 네이버 뉴스 URL(link)로 크롤링 (원문에 스크립트 없음)
+        # 일반 매체: 원문 URL(originallink) 우선, 실패 시 네이버 URL(link) fallback
+        primary_url = ""
+        fallback_url = ""
         if is_broadcast:
-            url = getattr(art, "link", "") or getattr(art, "originallink", "") or ""
+            primary_url = getattr(art, "link", "") or ""
+            fallback_url = getattr(art, "originallink", "") or ""
         else:
-            url = getattr(art, "originallink", "") or getattr(art, "link", "") or ""
-        if not url:
+            primary_url = getattr(art, "originallink", "") or ""
+            fallback_url = getattr(art, "link", "") or ""
+        if not primary_url and not fallback_url:
             return False
-        body = _crawl_article_body(url)
+        body = _crawl_article_body(primary_url) if primary_url else ""
+        # 원문 실패/부족 시 네이버 URL로 fallback
+        if (not body or len(body) <= len(art.description or "")) and fallback_url and fallback_url != primary_url:
+            body_fb = _crawl_article_body(fallback_url)
+            if body_fb and len(body_fb) > len(body or ""):
+                body = body_fb
         if not body or len(body) <= len(art.description or ""):
             return False
         # 품질 검증: 노이즈 마커가 2개 이상이면 거부
