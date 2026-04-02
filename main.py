@@ -9536,6 +9536,9 @@ ABBR_MAP = {
     "newsworker": "뉴스워커",
     "asiaa": "아시아A",
     "finomy": "피노미",
+    "hortitimes": "원예타임즈",
+    "businesskorea": "비즈니스코리아",
+    "veritas-a": "베리타스알파",
 }
 
 def press_name_from_url(url: str) -> str:
