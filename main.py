@@ -2605,10 +2605,26 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
 # 원문 크롤링으로 충분한 텍스트를 확보할 수 있다.
 _BODY_CRAWL_ENABLED = os.getenv("BODY_CRAWL_ENABLED", "true").strip().lower() in ("1", "true", "yes", "y")
 _BODY_CRAWL_MAX_WORKERS = max(1, min(int(os.getenv("BODY_CRAWL_MAX_WORKERS", "10") or "10"), 20))
-_BODY_CRAWL_TIMEOUT = float(os.getenv("BODY_CRAWL_TIMEOUT", "10") or "10")
+_BODY_CRAWL_TIMEOUT = 5.0  # connect timeout (접속 불가 서버 빠른 탈락)
+_BODY_CRAWL_READ_TIMEOUT = 10.0  # read timeout (본문 수신)
 _BODY_CRAWL_MAX_CHARS = 2000
 _BODY_CACHE: dict[str, str] = {}
 _BODY_CACHE_LOCK = threading.Lock()
+
+# 크롤링 전용 세션: retry 1회 + 짧은 connect timeout (공용 http_session과 분리)
+_BODY_SESSION_LOCAL = threading.local()
+
+def _body_crawl_session() -> requests.Session:
+    s = getattr(_BODY_SESSION_LOCAL, "session", None)
+    if s is None:
+        s = requests.Session()
+        retry = Retry(total=1, connect=1, read=1, backoff_factor=0.3,
+                      status_forcelist=[429, 500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retry)
+        s.mount("https://", adapter)
+        s.mount("http://", adapter)
+        _BODY_SESSION_LOCAL.session = s
+    return s
 
 _BODY_ARTICLE_SELECTORS = [
     # 주요 뉴스사 본문 영역 패턴 (class/id)
@@ -2689,7 +2705,7 @@ def _crawl_article_body(url: str) -> str:
 
     body = ""
     try:
-        r = http_session().get(url, timeout=_BODY_CRAWL_TIMEOUT, headers={
+        r = _body_crawl_session().get(url, timeout=(_BODY_CRAWL_TIMEOUT, _BODY_CRAWL_READ_TIMEOUT), headers={
             "User-Agent": "Mozilla/5.0 (compatible; agri-news-brief/1.0)",
         })
         if r.ok:
