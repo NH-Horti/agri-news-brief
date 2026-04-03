@@ -3343,6 +3343,22 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
             if a_issue and b_issue:
                 return True
 
+    # 인물명 + 기관명 + 이슈 키워드 기반 중복 감지:
+    # 다른 매체가 같은 인물의 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
+    _PERSON_NAME_RX = re.compile(r"[가-힣]{2,4}(?:\s+)(?:대표이사|대표|사장|회장|차관|장관|원장|본부장|이사|실장|부장)")
+    a_persons = set(_PERSON_NAME_RX.findall(a_txt))
+    b_persons = set(_PERSON_NAME_RX.findall(b_txt))
+    shared_persons = a_persons & b_persons
+    if shared_persons:
+        _ORG_KWS = ("농협", "농식품부", "농림축산식품부", "aT", "농관원", "한국농수산식품유통공사")
+        a_org = any(k in a_txt for k in _ORG_KWS)
+        b_org = any(k in b_txt for k in _ORG_KWS)
+        _ISSUE_PERSON_KWS = ("수급", "안정", "점검", "대책", "출하", "가격", "휴업", "개혁", "혁신", "방문")
+        a_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in a_txt)
+        b_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in b_txt)
+        if a_org and b_org and a_issue_p >= 1 and b_issue_p >= 1:
+            return True
+
     if section_key == "pest":
         a_region = _pest_region_or_fallback_key(a)
         b_region = _pest_region_or_fallback_key(b)
@@ -21342,6 +21358,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _hf_board_available = False
             log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
     _hf_board_call_count = 0
+    _hf_board_fail_count = 0
+    _HF_BOARD_MAX_RETRIES = 2  # 최대 재시도 횟수 (실패 → 쿨다운 → 재개)
+    _HF_BOARD_COOLDOWN_SEC = 30.0  # 실패 후 쿨다운 시간
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
@@ -21352,9 +21371,28 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
+                _hf_board_fail_count = 0  # 성공하면 실패 카운트 리셋
             elif HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
-                _hf_board_available = False
-                log.warning("[HF] commodity board API unavailable after %s, skipping remaining items", item_key)
+                _hf_board_fail_count += 1
+                if _hf_board_fail_count >= _HF_BOARD_MAX_RETRIES:
+                    _hf_board_available = False
+                    log.warning("[HF] commodity board API failed %d times, giving up after %s", _hf_board_fail_count, item_key)
+                else:
+                    # 쿨다운 후 re-warm-up하여 재개
+                    log.warning("[HF] commodity board failed at %s, cooldown %ds then retry (attempt %d/%d)",
+                                item_key, int(_HF_BOARD_COOLDOWN_SEC), _hf_board_fail_count, _HF_BOARD_MAX_RETRIES)
+                    time.sleep(_HF_BOARD_COOLDOWN_SEC)
+                    try:
+                        from hf_semantics import embed_texts as _re_embed
+                        _re_warmup = _re_embed(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
+                        if _re_warmup:
+                            log.info("[HF] commodity board re-warm-up OK after cooldown")
+                        else:
+                            _hf_board_available = False
+                            log.warning("[HF] commodity board re-warm-up empty, giving up")
+                    except Exception as _rwe:
+                        _hf_board_available = False
+                        log.warning("[HF] commodity board re-warm-up failed: %s, giving up", _rwe)
         elif _hf_board_available and not articles:
             semantic_adjustments = {}
         else:
