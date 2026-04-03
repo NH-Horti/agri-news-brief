@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-03T00:17:43+09:00",
+  "generated_at": "2026-04-04T00:04:11+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -36,6 +36,12 @@
       "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-04-03",
+      "count": 1,
+      "section": "pest",
+      "surface": "briefing_chip"
     }
   ],
   "view_switch": [
@@ -65,6 +71,12 @@
     },
     {
       "date": "2026-04-02",
+      "count": 2,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-04-03",
       "count": 2,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -172,7 +184,7 @@
       "date": "2026-04-02",
       "count": 1,
       "nav_type": "latest_brief",
-      "from_date": "",
+      "from_date": "(not set)",
       "to_date": "2026-04-02"
     }
   ]
