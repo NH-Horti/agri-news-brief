@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-04-03T00:17:43+09:00",
+  "generated_at": "2026-04-04T00:04:11+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 70,
+        "visits": 87,
         "users": 26,
-        "pageviews": 357,
-        "article_clicks": 69,
-        "article_ctr": 0.193277,
-        "avg_engagement_sec": 530.15
+        "pageviews": 394,
+        "article_clicks": 84,
+        "article_ctr": 0.213198,
+        "avg_engagement_sec": 453.51
       },
       "prev": {
         "visits": 0,
@@ -19,18 +19,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-28",
-        "to": "2026-04-03"
+        "from": "2026-03-29",
+        "to": "2026-04-04"
       }
     },
     "30": {
       "totals": {
-        "visits": 70,
+        "visits": 87,
         "users": 26,
-        "pageviews": 357,
-        "article_clicks": 69,
-        "article_ctr": 0.193277,
-        "avg_engagement_sec": 530.15
+        "pageviews": 394,
+        "article_clicks": 84,
+        "article_ctr": 0.213198,
+        "avg_engagement_sec": 453.51
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-05",
-        "to": "2026-04-03"
+        "from": "2026-03-06",
+        "to": "2026-04-04"
       }
     },
     "90": {
       "totals": {
-        "visits": 70,
+        "visits": 87,
         "users": 26,
-        "pageviews": 357,
-        "article_clicks": 69,
-        "article_ctr": 0.193277,
-        "avg_engagement_sec": 530.15
+        "pageviews": 394,
+        "article_clicks": 84,
+        "article_ctr": 0.213198,
+        "avg_engagement_sec": 453.51
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-04",
-        "to": "2026-04-03"
+        "from": "2026-01-05",
+        "to": "2026-04-04"
       }
     }
   }
