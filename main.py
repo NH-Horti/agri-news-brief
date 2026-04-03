@@ -3344,19 +3344,31 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
                 return True
 
     # 인물명 + 기관명 + 이슈 키워드 기반 중복 감지:
-    # 다른 매체가 같은 인물의 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
-    _PERSON_NAME_RX = re.compile(r"[가-힣]{2,4}(?:\s+)(?:대표이사|대표|사장|회장|차관|장관|원장|본부장|이사|실장|부장)")
-    a_persons = set(_PERSON_NAME_RX.findall(a_txt))
-    b_persons = set(_PERSON_NAME_RX.findall(b_txt))
-    shared_persons = a_persons & b_persons
-    if shared_persons:
-        _ORG_KWS = ("농협", "농식품부", "농림축산식품부", "aT", "농관원", "한국농수산식품유통공사")
-        a_org = any(k in a_txt for k in _ORG_KWS)
-        b_org = any(k in b_txt for k in _ORG_KWS)
-        _ISSUE_PERSON_KWS = ("수급", "안정", "점검", "대책", "출하", "가격", "휴업", "개혁", "혁신", "방문")
-        a_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in a_txt)
-        b_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in b_txt)
-        if a_org and b_org and a_issue_p >= 1 and b_issue_p >= 1:
+    # 다른 매체가 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
+    # 인물명이 아닌 "기관+행위+대상" 핵심 명사 조합으로 판단 (인물명만으로는 다른 이슈가 묶일 위험)
+    _DEDUP_ANCHOR_KWS = (
+        "농협", "농식품부", "농림축산식품부", "aT", "농관원", "경제지주", "농업경제",
+        "가락시장", "도매시장", "공판장", "산지유통", "온라인도매시장",
+        "농산물", "농축산물",
+    )
+    _DEDUP_ACTION_KWS = (
+        "수급", "안정", "점검", "대책", "출하", "가격", "휴업", "시범휴업",
+        "만전", "총력", "확대", "지원", "개혁", "혁신",
+    )
+    a_anchors = {k for k in _DEDUP_ANCHOR_KWS if k in a_txt}
+    b_anchors = {k for k in _DEDUP_ANCHOR_KWS if k in b_txt}
+    a_actions = {k for k in _DEDUP_ACTION_KWS if k in a_txt}
+    b_actions = {k for k in _DEDUP_ACTION_KWS if k in b_txt}
+    shared_anchors = a_anchors & b_anchors
+    shared_actions = a_actions & b_actions
+    # 기관 1개 이상 + 행위 1개 이상 겹치고, 각각 행위 2개 이상이면 동일 이슈
+    if len(shared_anchors) >= 1 and len(shared_actions) >= 1 and len(a_actions) >= 2 and len(b_actions) >= 2:
+        # 단, 품목이 다르면 다른 이슈 (예: "사과 수급 안정" vs "양파 가격 안정")
+        a_items = {t for t in HORTI_ITEM_TERMS_L if t in a_lower}
+        b_items = {t for t in HORTI_ITEM_TERMS_L if t in b_lower}
+        if a_items and b_items and not (a_items & b_items):
+            pass  # 품목이 다르면 다른 이슈 → 중복 아님
+        else:
             return True
 
     if section_key == "pest":
@@ -21338,29 +21350,39 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     active_items = 0
     active_program_items = 0
-    _hf_board_available = True  # HF API 상태 플래그: 첫 실패 시 나머지 품목 스킵
-    # 품목보드 HF 호출 전 warm-up ping: 모델이 cold 상태이면 미리 로딩시킨다
+    _hf_board_available = True
+    # 품목보드 HF 최적화: 모든 품목 profile을 한번에 배치 임베딩하여 캐시에 저장.
+    # 이후 품목별 score_profile_passages 호출 시 profile은 캐시 히트,
+    # article passage도 섹션 리랭킹에서 이미 캐시되어 있으므로 추가 API 호출 최소화.
     if HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
         try:
-            from hf_semantics import embed_texts, HFSemanticConfig
-            _warmup_cfg = HFSemanticConfig(
+            from hf_semantics import embed_texts as _board_embed, HFSemanticConfig as _BoardCfg
+            _board_cfg = _BoardCfg(
                 api_token=HF_API_TOKEN, model=HF_SEMANTIC_MODEL,
                 timeout_sec=HF_SEMANTIC_TIMEOUT_SEC, max_candidates=2, max_boost=0.0, min_candidates=1,
             )
-            _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
-            if _warmup:
-                log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
-                time.sleep(8.0)  # warm-up 후 rate limit 쿨다운
+            # 활성 품목의 profile 텍스트를 모두 수집
+            _active_profiles = []
+            for _item in MANAGED_COMMODITY_CATALOG:
+                _ik = str(_item.get("key") or "").strip()
+                if item_state.get(_ik, {}).get("articles"):
+                    _active_profiles.append(_build_managed_commodity_board_profile(_item))
+            if _active_profiles:
+                _pre = _board_embed(_active_profiles, cfg=_board_cfg, session_factory=http_session)
+                if _pre:
+                    log.info("[HF] commodity board pre-cached %d profiles (dim=%d)", len(_pre), len(_pre[0]))
+                else:
+                    _hf_board_available = False
+                    log.warning("[HF] commodity board profile pre-cache returned empty")
             else:
-                _hf_board_available = False
-                log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
+                log.info("[HF] commodity board: no active items, skipping pre-cache")
         except Exception as e:
             _hf_board_available = False
-            log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
+            log.warning("[HF] commodity board profile pre-cache failed: %s", e)
     _hf_board_call_count = 0
     _hf_board_fail_count = 0
-    _HF_BOARD_MAX_RETRIES = 2  # 최대 재시도 횟수 (실패 → 쿨다운 → 재개)
-    _HF_BOARD_COOLDOWN_SEC = 30.0  # 실패 후 쿨다운 시간
+    _HF_BOARD_MAX_RETRIES = 2
+    _HF_BOARD_COOLDOWN_SEC = 30.0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
