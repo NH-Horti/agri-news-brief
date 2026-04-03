@@ -2,9 +2,9 @@ name: agri-news-brief (daily)
 
 on:
   schedule:
-    # KST 05:40 on weekdays (Mon-Fri) == UTC 20:40 on Sun-Thu
-    # GitHub Actions cron은 5~20분 지연 가능하므로 여유를 두고 앞당김
-    - cron: '40 20 * * 0-4'
+    # KST 06:00 on weekdays (Mon-Fri) == UTC 21:00 on Sun-Thu
+    # Note: GitHub Actions cron has 5~20min delay, actual start ~06:10-06:20
+    - cron: '0 21 * * 0-4'
   workflow_dispatch: {}
 
 permissions:
