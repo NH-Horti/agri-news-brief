@@ -21350,29 +21350,39 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     active_items = 0
     active_program_items = 0
-    _hf_board_available = True  # HF API 상태 플래그: 첫 실패 시 나머지 품목 스킵
-    # 품목보드 HF 호출 전 warm-up ping: 모델이 cold 상태이면 미리 로딩시킨다
+    _hf_board_available = True
+    # 품목보드 HF 최적화: 모든 품목 profile을 한번에 배치 임베딩하여 캐시에 저장.
+    # 이후 품목별 score_profile_passages 호출 시 profile은 캐시 히트,
+    # article passage도 섹션 리랭킹에서 이미 캐시되어 있으므로 추가 API 호출 최소화.
     if HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
         try:
-            from hf_semantics import embed_texts, HFSemanticConfig
-            _warmup_cfg = HFSemanticConfig(
+            from hf_semantics import embed_texts as _board_embed, HFSemanticConfig as _BoardCfg
+            _board_cfg = _BoardCfg(
                 api_token=HF_API_TOKEN, model=HF_SEMANTIC_MODEL,
                 timeout_sec=HF_SEMANTIC_TIMEOUT_SEC, max_candidates=2, max_boost=0.0, min_candidates=1,
             )
-            _warmup = embed_texts(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
-            if _warmup:
-                log.info("[HF] commodity board warm-up OK (dim=%d)", len(_warmup[0]))
-                time.sleep(8.0)  # warm-up 후 rate limit 쿨다운
+            # 활성 품목의 profile 텍스트를 모두 수집
+            _active_profiles = []
+            for _item in MANAGED_COMMODITY_CATALOG:
+                _ik = str(_item.get("key") or "").strip()
+                if item_state.get(_ik, {}).get("articles"):
+                    _active_profiles.append(_build_managed_commodity_board_profile(_item))
+            if _active_profiles:
+                _pre = _board_embed(_active_profiles, cfg=_board_cfg, session_factory=http_session)
+                if _pre:
+                    log.info("[HF] commodity board pre-cached %d profiles (dim=%d)", len(_pre), len(_pre[0]))
+                else:
+                    _hf_board_available = False
+                    log.warning("[HF] commodity board profile pre-cache returned empty")
             else:
-                _hf_board_available = False
-                log.warning("[HF] commodity board warm-up returned empty, skipping board rerank")
+                log.info("[HF] commodity board: no active items, skipping pre-cache")
         except Exception as e:
             _hf_board_available = False
-            log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
+            log.warning("[HF] commodity board profile pre-cache failed: %s", e)
     _hf_board_call_count = 0
     _hf_board_fail_count = 0
-    _HF_BOARD_MAX_RETRIES = 2  # 최대 재시도 횟수 (실패 → 쿨다운 → 재개)
-    _HF_BOARD_COOLDOWN_SEC = 30.0  # 실패 후 쿨다운 시간
+    _HF_BOARD_MAX_RETRIES = 2
+    _HF_BOARD_COOLDOWN_SEC = 30.0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
