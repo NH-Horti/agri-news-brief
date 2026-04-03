@@ -2,9 +2,10 @@ name: agri-news-brief (daily)
 
 on:
   schedule:
-    # KST 05:50 trigger → GitHub 5~20min delay → actual start ~06:00-06:10
-    # REPORT_HOUR_KST=6이므로 06:00 이후 시작하면 윈도우가 당일 06:00으로 정확히 잡힘
-    - cron: '50 20 * * 0-4'
+    # KST 06:00 on weekdays (Mon-Fri) == UTC 21:00 on Sun-Thu
+    # REPORT_HOUR_KST=6이므로 반드시 06:00 이후에 시작해야 윈도우가 당일 06:00으로 잡힘
+    # GitHub cron 5~20분 지연 → 실제 시작 06:05~06:20
+    - cron: '0 21 * * 0-4'
   workflow_dispatch: {}
 
 permissions:
