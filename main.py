@@ -3343,6 +3343,22 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
             if a_issue and b_issue:
                 return True
 
+    # 인물명 + 기관명 + 이슈 키워드 기반 중복 감지:
+    # 다른 매체가 같은 인물의 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
+    _PERSON_NAME_RX = re.compile(r"[가-힣]{2,4}(?:\s+)(?:대표이사|대표|사장|회장|차관|장관|원장|본부장|이사|실장|부장)")
+    a_persons = set(_PERSON_NAME_RX.findall(a_txt))
+    b_persons = set(_PERSON_NAME_RX.findall(b_txt))
+    shared_persons = a_persons & b_persons
+    if shared_persons:
+        _ORG_KWS = ("농협", "농식품부", "농림축산식품부", "aT", "농관원", "한국농수산식품유통공사")
+        a_org = any(k in a_txt for k in _ORG_KWS)
+        b_org = any(k in b_txt for k in _ORG_KWS)
+        _ISSUE_PERSON_KWS = ("수급", "안정", "점검", "대책", "출하", "가격", "휴업", "개혁", "혁신", "방문")
+        a_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in a_txt)
+        b_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in b_txt)
+        if a_org and b_org and a_issue_p >= 1 and b_issue_p >= 1:
+            return True
+
     if section_key == "pest":
         a_region = _pest_region_or_fallback_key(a)
         b_region = _pest_region_or_fallback_key(b)
