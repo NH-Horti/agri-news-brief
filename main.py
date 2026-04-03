@@ -21342,6 +21342,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _hf_board_available = False
             log.warning("[HF] commodity board warm-up failed: %s, skipping board rerank", e)
     _hf_board_call_count = 0
+    _hf_board_fail_count = 0
+    _HF_BOARD_MAX_RETRIES = 2  # 최대 재시도 횟수 (실패 → 쿨다운 → 재개)
+    _HF_BOARD_COOLDOWN_SEC = 30.0  # 실패 후 쿨다운 시간
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
@@ -21352,9 +21355,28 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
+                _hf_board_fail_count = 0  # 성공하면 실패 카운트 리셋
             elif HF_COMMODITY_BOARD_RERANK_ENABLED and HF_API_TOKEN:
-                _hf_board_available = False
-                log.warning("[HF] commodity board API unavailable after %s, skipping remaining items", item_key)
+                _hf_board_fail_count += 1
+                if _hf_board_fail_count >= _HF_BOARD_MAX_RETRIES:
+                    _hf_board_available = False
+                    log.warning("[HF] commodity board API failed %d times, giving up after %s", _hf_board_fail_count, item_key)
+                else:
+                    # 쿨다운 후 re-warm-up하여 재개
+                    log.warning("[HF] commodity board failed at %s, cooldown %ds then retry (attempt %d/%d)",
+                                item_key, int(_HF_BOARD_COOLDOWN_SEC), _hf_board_fail_count, _HF_BOARD_MAX_RETRIES)
+                    time.sleep(_HF_BOARD_COOLDOWN_SEC)
+                    try:
+                        from hf_semantics import embed_texts as _re_embed
+                        _re_warmup = _re_embed(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
+                        if _re_warmup:
+                            log.info("[HF] commodity board re-warm-up OK after cooldown")
+                        else:
+                            _hf_board_available = False
+                            log.warning("[HF] commodity board re-warm-up empty, giving up")
+                    except Exception as _rwe:
+                        _hf_board_available = False
+                        log.warning("[HF] commodity board re-warm-up failed: %s, giving up", _rwe)
         elif _hf_board_available and not articles:
             semantic_adjustments = {}
         else:
