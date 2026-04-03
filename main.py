@@ -3344,19 +3344,31 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
                 return True
 
     # 인물명 + 기관명 + 이슈 키워드 기반 중복 감지:
-    # 다른 매체가 같은 인물의 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
-    _PERSON_NAME_RX = re.compile(r"[가-힣]{2,4}(?:\s+)(?:대표이사|대표|사장|회장|차관|장관|원장|본부장|이사|실장|부장)")
-    a_persons = set(_PERSON_NAME_RX.findall(a_txt))
-    b_persons = set(_PERSON_NAME_RX.findall(b_txt))
-    shared_persons = a_persons & b_persons
-    if shared_persons:
-        _ORG_KWS = ("농협", "농식품부", "농림축산식품부", "aT", "농관원", "한국농수산식품유통공사")
-        a_org = any(k in a_txt for k in _ORG_KWS)
-        b_org = any(k in b_txt for k in _ORG_KWS)
-        _ISSUE_PERSON_KWS = ("수급", "안정", "점검", "대책", "출하", "가격", "휴업", "개혁", "혁신", "방문")
-        a_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in a_txt)
-        b_issue_p = sum(1 for k in _ISSUE_PERSON_KWS if k in b_txt)
-        if a_org and b_org and a_issue_p >= 1 and b_issue_p >= 1:
+    # 다른 매체가 같은 이슈를 다른 제목으로 보도하는 경우 동일 이슈로 판정
+    # 인물명이 아닌 "기관+행위+대상" 핵심 명사 조합으로 판단 (인물명만으로는 다른 이슈가 묶일 위험)
+    _DEDUP_ANCHOR_KWS = (
+        "농협", "농식품부", "농림축산식품부", "aT", "농관원", "경제지주", "농업경제",
+        "가락시장", "도매시장", "공판장", "산지유통", "온라인도매시장",
+        "농산물", "농축산물",
+    )
+    _DEDUP_ACTION_KWS = (
+        "수급", "안정", "점검", "대책", "출하", "가격", "휴업", "시범휴업",
+        "만전", "총력", "확대", "지원", "개혁", "혁신",
+    )
+    a_anchors = {k for k in _DEDUP_ANCHOR_KWS if k in a_txt}
+    b_anchors = {k for k in _DEDUP_ANCHOR_KWS if k in b_txt}
+    a_actions = {k for k in _DEDUP_ACTION_KWS if k in a_txt}
+    b_actions = {k for k in _DEDUP_ACTION_KWS if k in b_txt}
+    shared_anchors = a_anchors & b_anchors
+    shared_actions = a_actions & b_actions
+    # 기관 1개 이상 + 행위 1개 이상 겹치고, 각각 행위 2개 이상이면 동일 이슈
+    if len(shared_anchors) >= 1 and len(shared_actions) >= 1 and len(a_actions) >= 2 and len(b_actions) >= 2:
+        # 단, 품목이 다르면 다른 이슈 (예: "사과 수급 안정" vs "양파 가격 안정")
+        a_items = {t for t in HORTI_ITEM_TERMS_L if t in a_lower}
+        b_items = {t for t in HORTI_ITEM_TERMS_L if t in b_lower}
+        if a_items and b_items and not (a_items & b_items):
+            pass  # 품목이 다르면 다른 이슈 → 중복 아님
+        else:
             return True
 
     if section_key == "pest":
