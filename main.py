@@ -24699,7 +24699,12 @@ def compute_end_kst() -> datetime:
     except Exception:
         pass
 
-    # 일반/스케줄 실행: 07:00 이전이면 직전 07:00, 이후면 오늘 07:00
+    # 일반/스케줄 실행: cutoff 이전이면 직전 cutoff, 이후면 오늘 cutoff
+    # 단, early-start margin 내(cutoff - 2시간 ~ cutoff)이면 오늘 cutoff 사용
+    # (주말/공휴일 후 월요일 빌드를 1시간 일찍 시작할 수 있도록)
+    _early_margin = timedelta(hours=2)
+    if n < cutoff_today and n >= (cutoff_today - _early_margin):
+        return cutoff_today
     if n < cutoff_today:
         return cutoff_today - timedelta(days=1)
     return cutoff_today
