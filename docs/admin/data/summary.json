@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-04-04T23:53:39+09:00",
+  "generated_at": "2026-04-05T23:55:35+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 87,
+        "visits": 88,
         "users": 26,
         "pageviews": 397,
         "article_clicks": 84,
         "article_ctr": 0.211587,
-        "avg_engagement_sec": 440.17
+        "avg_engagement_sec": 435.17
       },
       "prev": {
         "visits": 0,
@@ -19,18 +19,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-29",
-        "to": "2026-04-04"
+        "from": "2026-03-30",
+        "to": "2026-04-05"
       }
     },
     "30": {
       "totals": {
-        "visits": 87,
+        "visits": 88,
         "users": 26,
         "pageviews": 397,
         "article_clicks": 84,
         "article_ctr": 0.211587,
-        "avg_engagement_sec": 440.17
+        "avg_engagement_sec": 435.17
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-06",
-        "to": "2026-04-04"
+        "from": "2026-03-07",
+        "to": "2026-04-05"
       }
     },
     "90": {
       "totals": {
-        "visits": 87,
+        "visits": 88,
         "users": 26,
         "pageviews": 397,
         "article_clicks": 84,
         "article_ctr": 0.211587,
-        "avg_engagement_sec": 440.17
+        "avg_engagement_sec": 435.17
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-05",
-        "to": "2026-04-04"
+        "from": "2026-01-06",
+        "to": "2026-04-05"
       }
     }
   }
