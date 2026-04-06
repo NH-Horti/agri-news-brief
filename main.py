@@ -3931,6 +3931,15 @@ def _managed_commodity_focus_metrics(
         matched = False
     if key == "eggplant" and _contains_compact_marker(compact_text_l, list(_EGGPLANT_NON_EDIBLE_MARKERS)):
         matched = False
+    # 포도: 와인/경매/빈티지 기사는 원예 수급과 무관 (가공품/라이프스타일)
+    if key == "grape":
+        _GRAPE_WINE_KWS = ("와인", "wine", "소믈리에", "빈티지", "양조장", "와이너리", "winery",
+                           "낙찰", "경매 낙찰", "옥션", "auction", "로마네", "콩티", "샤토")
+        _grape_wine_hits = sum(1 for w in _GRAPE_WINE_KWS if w in text_l)
+        _grape_supply_kws = ("출하", "수급", "도매", "경락", "산지", "농가", "재배", "작황", "수확", "가격")
+        _grape_supply_hits = sum(1 for w in _grape_supply_kws if w in text_l)
+        if _grape_wine_hits >= 1 and _grape_supply_hits < 2:
+            matched = False
 
     return {
         "focus_score": round(float(score), 4),
