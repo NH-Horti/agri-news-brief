@@ -2788,7 +2788,7 @@ def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
             d = datetime.strptime(ds, "%Y%m%d").date()
             return datetime(d.year, d.month, d.day, 12, 0, 0, tzinfo=KST)
 
-        r = http_session().get(u, timeout=12)
+        r = _body_crawl_session().get(u, timeout=(_BODY_CRAWL_TIMEOUT, 10))
         if not r.ok:
             return None
         txt = r.text or ""
@@ -21406,7 +21406,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
                     time.sleep(_HF_BOARD_COOLDOWN_SEC)
                     try:
                         from hf_semantics import embed_texts as _re_embed
-                        _re_warmup = _re_embed(["warmup: 농산물 수급"], cfg=_warmup_cfg, session_factory=http_session)
+                        _re_warmup = _re_embed(["warmup: 농산물 수급"], cfg=_board_cfg, session_factory=http_session)
                         if _re_warmup:
                             log.info("[HF] commodity board re-warm-up OK after cooldown")
                         else:
