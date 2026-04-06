@@ -14514,18 +14514,28 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 _h = 0.0
             # ✅ 정책/통상성 강하고 품목 영향이 약한 기사(제도/통관/할당관세 등)는
             # supply '핵심2'를 잠식하지 않도록 제외한다. (policy 섹션에서 다룸)
-            if is_generic_import_item_context(mix):
-                continue
-            if is_supply_stabilization_policy_context(mix, dom, pr):
-                continue
-            if is_policy_market_brief_context(mix, dom, pr):
-                continue
-            if is_policy_announcement_issue(mix, dom, pr):
-                continue
-            if is_trade_policy_issue(mix) and _h < 2.2:
-                continue
-            if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and ((not has_direct_supply_chain_signal(mix)) or is_policy_market_brief_context(mix, dom, pr)):
-                continue
+            # 단, title에 품목+가격/수급 직접 신호가 있는 기사는 정책 판정을 무시 (수급 핵심)
+            _ttl_l_core = (a.title or "").lower()
+            _CORE_SUPPLY_DIRECT_KWS = ("가격", "시세", "값", "폭락", "급등", "급락", "강세", "약세",
+                                        "산지폐기", "폐기", "증산", "감산", "출하", "반입", "작황",
+                                        "재배면적", "생산량", "수급", "도매", "경락")
+            _core_supply_direct = sum(1 for w in _CORE_SUPPLY_DIRECT_KWS if w in _ttl_l_core) >= 1
+            _core_title_horti = best_horti_score(a.title or "", "") >= 0.8
+            _core_is_supply_direct = _core_supply_direct and _core_title_horti
+
+            if not _core_is_supply_direct:
+                if is_generic_import_item_context(mix):
+                    continue
+                if is_supply_stabilization_policy_context(mix, dom, pr):
+                    continue
+                if is_policy_market_brief_context(mix, dom, pr):
+                    continue
+                if is_policy_announcement_issue(mix, dom, pr):
+                    continue
+                if is_trade_policy_issue(mix) and _h < 2.2:
+                    continue
+                if is_macro_policy_issue(mix) and count_any(_ttl_l_core, [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and ((not has_direct_supply_chain_signal(mix)) or is_policy_market_brief_context(mix, dom, pr)):
+                    continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
                 continue
             if _is_supply_dist_like_tail_story(a):
@@ -14537,7 +14547,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if _is_supply_low_signal_feature_story(a):
                 continue
             # supply 핵심2는 품목 수급 중심으로 구성: topic이 정책이면 core에서 제외
-            if (a.topic or "").strip() == "정책":
+            # 단, title에 품목+가격/수급 직접 키워드가 있으면 허용
+            if (a.topic or "").strip() == "정책" and not _core_is_supply_direct:
                 continue
             if focus_max_local < _MANAGED_COMMODITY_FOCUS_MATCH_MIN and (not has_direct_supply_chain_signal(mix)) and _h < 2.2:
                 continue
@@ -14734,7 +14745,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "supply" and _is_supply_weak_tail_story(a):
                 continue
             if section_key == "supply" and (a.topic or "").strip() == "정책":
-                continue
+                _g_ttl = (a.title or "").lower()
+                _g_supply_kws = ("가격", "시세", "값", "폭락", "급등", "급락", "강세", "약세",
+                                  "산지폐기", "폐기", "증산", "감산", "출하", "반입", "작황",
+                                  "재배면적", "생산량", "수급", "도매", "경락")
+                _g_has_direct = sum(1 for w in _g_supply_kws if w in _g_ttl) >= 1 and best_horti_score(a.title or "", "") >= 0.8
+                if not _g_has_direct:
+                    continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in core):
                 continue
             if any(_is_similar_story(a, b, section_key) for b in core):
@@ -18966,13 +18983,27 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 continue
 
             # [P3] 수급 직접 이슈 키워드가 있으면 supply 유지 (policy 이동 방지)
-            # "산지폐기", "가격 폭락", "출하 급증" 등은 정책 키워드가 함께 있어도 supply 핵심
+            # "산지폐기", "가격 폭락", "출하 급증", "증산" 등은 정책 키워드가 함께 있어도 supply 핵심
             _SUPPLY_KEEP_ISSUE_KWS = ("산지폐기", "산지 폐기", "자율폐기", "자율 폐기", "밭갈이", "갈아엎",
                                       "가격 폭락", "가격 급락", "값 폭락", "값 급락",
+                                      "가격 상승", "가격 하락", "가격 급등", "값 급등",
                                       "출하 급증", "물량 과잉", "공급과잉", "공급 과잉",
-                                      "수급 불안", "시세 폭락", "시세 급락", "작황 부진", "생산 차질")
+                                      "수급 불안", "시세 폭락", "시세 급락", "작황 부진", "생산 차질",
+                                      "증산", "감산", "증가", "감소", "생산량", "작황",
+                                      "시세", "경락가", "도매가", "산지가격", "소비자가격")
             _keep_issue_hits = sum(1 for w in _SUPPLY_KEEP_ISSUE_KWS if w in mix)
             if _keep_issue_hits >= 1 and horti_sc >= 1.0 and _sec_key == "supply":
+                keep_items.append(a)
+                continue
+
+            # [P3-b] title에 품목 + 가격/수급 직접 신호가 동시에 있으면 supply 유지
+            # (topic이 "정책"이라도 실제 내용이 수급/가격 중심인 기사 보호)
+            _title_l = (a.title or "").lower()
+            _TITLE_SUPPLY_DIRECT_KWS = ("가격", "시세", "값", "폭락", "급등", "급락", "강세", "약세",
+                                         "산지폐기", "폐기", "증산", "출하", "반입", "재배면적", "작황")
+            _title_supply_hits = sum(1 for w in _TITLE_SUPPLY_DIRECT_KWS if w in _title_l)
+            _title_horti_sc = best_horti_score(a.title or "", "")
+            if _title_supply_hits >= 1 and _title_horti_sc >= 0.8 and _sec_key == "supply":
                 keep_items.append(a)
                 continue
 
