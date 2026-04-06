@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-05T23:55:35+09:00",
+  "generated_at": "2026-04-07T00:07:52+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -750,6 +750,58 @@
       "section": "policy",
       "surface": "commodity_support",
       "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-06",
+      "article_id": "cbc24df3d6aa",
+      "title": "겨울 대파 , 미루고 미루다 '산지폐기'…농가 후폭풍 심각",
+      "report_date": "2026-04-06",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-06.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70051"
+    },
+    {
+      "date": "2026-04-06",
+      "article_id": "cbc24df3d6aa",
+      "title": "겨울 대파 , 미루고 미루다 '산지폐기'…농가 후폭풍 심각",
+      "report_date": "2026-04-06",
+      "section": "policy",
+      "surface": "commodity_support",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-06.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70051"
+    },
+    {
+      "date": "2026-04-06",
+      "article_id": "f2fa0edac84a",
+      "title": "[취재수첩] 사과를 한바구니에 담으면 위험한 이유",
+      "report_date": "2026-04-06",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-06",
+      "article_id": "fd1d59b12191",
+      "title": "[인터뷰] 정지태 신임 복숭아생산자협의회장 \"비품 활용 방안 마련·수출...",
+      "report_date": "2026-04-06",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.agrinet.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",

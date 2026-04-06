@@ -11994,42 +11994,6 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         score += weighted_hits(text, SUPPLY_WEIGHT_MAP)
         score += min(2.2, 0.25 * key_strength)
         score += count_any(title_l, [t.lower() for t in SUPPLY_TITLE_CORE_TERMS]) * 1.2
-
-        # [P1] 수급 직접 이슈 키워드 가점: 가격 변동·산지폐기·작황 부진·출하 급증 등
-        _SUPPLY_DIRECT_ISSUE_KWS = ("가격 폭락", "가격 급락", "가격 급등", "가격 폭등", "값 폭락", "값 급락",
-                                    "산지폐기", "산지 폐기", "자율폐기", "자율 폐기", "밭갈이", "갈아엎",
-                                    "작황 부진", "생산 차질", "출하 급증", "출하 감소", "물량 과잉", "공급과잉",
-                                    "수급 불안", "수급 불균형", "시세 하락", "시세 급락", "시세 폭락",
-                                    "도매가격", "경락가", "반입량", "거래량", "재고량")
-        _supply_direct_hits = count_any(text, [w.lower() for w in _SUPPLY_DIRECT_ISSUE_KWS])
-        _supply_direct_title = count_any(title_l, [w.lower() for w in _SUPPLY_DIRECT_ISSUE_KWS])
-        if _supply_direct_title >= 1:
-            score += 6.0
-        elif _supply_direct_hits >= 2:
-            score += 4.0
-        elif _supply_direct_hits >= 1:
-            score += 2.0
-
-        # [P2] 재배기술/스마트팜/지원사업 감점: 수급 직접성 약함
-        _SUPPLY_TECH_SUBSIDY_KWS = ("스마트팜", "스마트 팜", "ai 재배", "ai 프로그램", "iot", "자동화 시스템",
-                                    "재배시설 지원", "비가림 재배시설", "시설 지원사업", "지원사업 신청", "추가 신청",
-                                    "시범사업 선정", "시범 사업 선정", "교육생 모집", "모집 공고")
-        _tech_subsidy_hits = count_any(text, [w.lower() for w in _SUPPLY_TECH_SUBSIDY_KWS])
-        _tech_subsidy_title = count_any(title_l, [w.lower() for w in _SUPPLY_TECH_SUBSIDY_KWS])
-        # 피해/병해충/냉해 맥락이면 감점 면제 (재배 위기 기사)
-        _crisis_rescue = any(w in text for w in ("피해", "병해충", "냉해", "동해", "폭염", "가뭄", "침수"))
-        if _tech_subsidy_title >= 1 and not _crisis_rescue and _supply_direct_hits == 0:
-            score -= 4.0
-        elif _tech_subsidy_hits >= 2 and not _crisis_rescue and _supply_direct_hits == 0:
-            score -= 2.5
-
-        # [P4] 유통센터/경매 실적·돌파 기사 감점: dist 섹션에 더 적합
-        _SUPPLY_DIST_LIKE_KWS = ("경매 돌파", "누적 경매", "경매 실적", "유통센터 준공", "유통센터 개소",
-                                  "물류센터 준공", "물류센터 개소", "유통 거점", "통합물류")
-        _dist_like_hits = count_any(text, [w.lower() for w in _SUPPLY_DIST_LIKE_KWS])
-        if _dist_like_hits >= 1 and _supply_direct_hits == 0:
-            score -= 5.0
-
         if managed_focus_max >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
             score += min(2.6, 0.42 * managed_focus_max)
         elif managed_focus_max >= _MANAGED_COMMODITY_FOCUS_MATCH_MIN:
@@ -13593,23 +13557,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             priority += 1.0
         return priority
 
-    # [P5] Supply 수급 직접성 점수: core 선정 시 가격/물량/작황 밀도 높은 기사 우선
-    _SUPPLY_DIRECTNESS_KWS = ("가격", "값", "시세", "수급", "출하", "반입", "경락", "도매가격",
-                              "작황", "생산량", "재고", "물량", "산지폐기", "폭락", "급등")
-    def _supply_directness_score(a: Article) -> float:
-        if section_key != "supply":
-            return 0.0
-        text_local = ((a.title or "") + " " + (a.description or "")).lower()
-        title_local = (a.title or "").lower()
-        title_hits = count_any(title_local, list(_SUPPLY_DIRECTNESS_KWS))
-        body_hits = count_any(text_local, list(_SUPPLY_DIRECTNESS_KWS))
-        return min(5.0, title_hits * 1.5 + body_hits * 0.3)
-
     def _selection_sort_key(a: Article) -> Any:
         fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
         return (
             _semantic_adjusted_score(a),
-            _supply_directness_score(a),
             _nh_major_core_priority(a),
             float(getattr(a, "semantic_similarity", 0.0) or 0.0),
             round(float(fit_sc or 0.0), 3),
@@ -13837,7 +13788,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             key=lambda a: (
                 float(supply_board_bridge_boosts.get(_dup_key(a)) or 0.0),
                 _supply_core_priority_score(a),
-                _supply_directness_score(a),
                 _nh_major_core_priority(a),
                 _semantic_adjusted_score(a),
                 float(getattr(a, "semantic_similarity", 0.0) or 0.0),
@@ -18965,18 +18915,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 keep_items.append(a)
                 continue
 
-            # [P3] 수급 직접 이슈 키워드가 있으면 supply 유지 (policy 이동 방지)
-            # "산지폐기", "가격 폭락", "출하 급증" 등은 정책 키워드가 함께 있어도 supply 핵심
-            _SUPPLY_KEEP_ISSUE_KWS = ("산지폐기", "산지 폐기", "자율폐기", "자율 폐기", "밭갈이", "갈아엎",
-                                      "가격 폭락", "가격 급락", "값 폭락", "값 급락",
-                                      "출하 급증", "물량 과잉", "공급과잉", "공급 과잉",
-                                      "수급 불안", "시세 폭락", "시세 급락", "작황 부진", "생산 차질")
-            _keep_issue_hits = sum(1 for w in _SUPPLY_KEEP_ISSUE_KWS if w in mix)
-            if _keep_issue_hits >= 1 and horti_sc >= 1.0 and _sec_key == "supply":
-                keep_items.append(a)
-                continue
-
             # 방송사 현장 리포트 + 농업 맥락이 있으면 supply 유지 (정책 이동 방지)
+            # 방송 리포트는 현장 취재 중심이라 거시 키워드가 도입부에 나와도 실제로는 품목 수급 기사
             _bc_press = (a.press or "").strip() in BROADCAST_PRESS
             _bc_nh = nh_boost(mix, _sec_key) > 0
             if (_bc_press or _bc_nh) and horti_sc >= 1.4 and _sec_key == "supply":
