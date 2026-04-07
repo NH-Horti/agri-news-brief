@@ -2610,6 +2610,7 @@ _BODY_CRAWL_READ_TIMEOUT = 10.0  # read timeout (본문 수신)
 _BODY_CRAWL_MAX_CHARS = 2000
 _BODY_CACHE: dict[str, str] = {}
 _BODY_CACHE_LOCK = threading.Lock()
+_BODY_CACHE_MAX = 2000  # evict all when exceeded to prevent OOM
 
 # 크롤링 전용 세션: retry 1회 + 짧은 connect timeout (공용 http_session과 분리)
 _BODY_SESSION_LOCAL = threading.local()
@@ -2710,10 +2711,13 @@ def _crawl_article_body(url: str) -> str:
         })
         if r.ok:
             body = _extract_body_from_html(r.text or "")
-    except Exception:
-        pass
+    except Exception as exc:
+        log.debug("[BODY CRAWL] failed url=%s: %s", url[:80], exc)
 
     with _BODY_CACHE_LOCK:
+        if len(_BODY_CACHE) >= _BODY_CACHE_MAX:
+            _BODY_CACHE.clear()
+            log.debug("[BODY CRAWL] cache evicted (limit=%d)", _BODY_CACHE_MAX)
         _BODY_CACHE[cache_key] = body
     return body
 
@@ -2961,10 +2965,68 @@ _POLICY_EVENT_ANCHOR_GROUPS = (
 )
 _EVENT_KEY_SECTIONS = frozenset({"supply", "dist", "policy"})
 
+# === Unified Horticultural Gate (모든 supply 필터/게이트가 참조하는 단일 소스) ===
+_SUPPLY_HORTI_GATE_ITEMS: tuple[str, ...] = (
+    # 과일
+    "사과", "배", "감귤", "딸기", "포도", "복숭아", "자두", "참외", "수박", "키위",
+    "참다래", "만감", "한라봉", "레드향", "천혜향", "샤인머스캣", "블루베리", "체리",
+    "감", "단감", "곶감", "대추", "매실", "파파야", "멜론", "앵두", "살구",
+    # 채소
+    "양파", "대파", "마늘", "고추", "건고추", "배추", "감자", "토마토", "오이",
+    "양배추", "당근", "생강", "파프리카", "시금치", "브로콜리", "상추", "부추",
+    "미나리", "콩나물", "무", "호박", "애호박", "가지", "피망", "깻잎",
+    # 화훼
+    "화훼", "절화", "국화", "장미", "백합", "수선화", "난",
+    # 일반
+    "과일", "과수", "채소", "원예", "청과", "시설채소", "하우스", "농산물",
+)
+_SUPPLY_HORTI_GATE_SET = frozenset(t.lower() for t in _SUPPLY_HORTI_GATE_ITEMS)
+
+_SUPPLY_LIVESTOCK_ITEMS: tuple[str, ...] = (
+    "계란", "달걀", "닭고기", "소고기", "돼지고기", "한우", "한돈", "축산물",
+    "양계", "양돈", "낙농", "우유", "치즈", "육류", "육우", "젖소",
+)
+
+_SUPPLY_MGMT_ITEMS: tuple[str, ...] = (
+    "회장", "취임", "임원", "인사", "창립", "전략", "돌파", "출범",
+    "50돌", "한마당", "기념식", "이사장", "선거", "조합장",
+)
+
+def _title_has_horti_item(title: str) -> bool:
+    """제목에 원예 품목명이 하나라도 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_HORTI_GATE_ITEMS)
+
+def _title_has_livestock_item(title: str) -> bool:
+    """제목에 축산 품목명이 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_LIVESTOCK_ITEMS)
+
+def _title_has_mgmt_item(title: str) -> bool:
+    """제목에 경영/인사/행사 키워드가 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_MGMT_ITEMS)
+
+# === Dedup Thresholds ===
+_DEDUP_JACCARD_THR_DIST = 0.35
+_DEDUP_JACCARD_THR_SUPPLY_POLICY = 0.40
+_DEDUP_JACCARD_THR_DEFAULT = 0.35
+_DEDUP_MIN_TITLE_KEY_LEN = 10
+_DEDUP_CONTAIN_RATIO_LONG = 0.55    # title_key >= 14 chars
+_DEDUP_CONTAIN_RATIO_SHORT = 0.78   # title_key < 14 chars
+_DEDUP_CONTAIN_RATIO_LEN_THR = 14
+_DEDUP_SEQ_RATIO_HIGH = 0.90
+_DEDUP_SEQ_RATIO_MID = 0.86
+_DEDUP_SEQ_MIN_LEN_FOR_BIGRAM = 18
+_DEDUP_BIGRAM_JACCARD_THR = 0.82
+
+_NORM_STORY_WS_RX = re.compile(r"\s+")
+_NORM_STORY_CHAR_RX = re.compile(r"[^0-9a-z가-힣 ]+")
+
 def _norm_story_text(title: str, desc: str) -> str:
     s = f"{title or ''} {desc or ''}".lower()
-    s = re.sub(r"\s+", " ", s).strip()
-    s = re.sub(r"[^0-9a-z가-힣 ]+", " ", s)
+    s = _NORM_STORY_WS_RX.sub(" ", s).strip()
+    s = _NORM_STORY_CHAR_RX.sub(" ", s)
     return s.replace(" ", "")
 
 def _trigrams(s: str) -> set[str]:
@@ -3407,15 +3469,15 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         # dist는 보도자료 중복이 많으므로 앵커 조건 완화 + Jaccard로 보강
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.35
+        thr = _DEDUP_JACCARD_THR_DIST
     elif section_key in ("supply", "policy"):
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.40
+        thr = _DEDUP_JACCARD_THR_SUPPLY_POLICY
     else:
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.35
+        thr = _DEDUP_JACCARD_THR_DEFAULT
 
     ta = getattr(a, "_story_tri", None)
     if ta is None:
@@ -3453,28 +3515,28 @@ def _is_similar_title(k1: str, k2: str) -> bool:
     shorter, longer = (a, b) if la <= lb else (b, a)
     ls, ll = len(shorter), len(longer)
 
-    if ls < 10:
+    if ls < _DEDUP_MIN_TITLE_KEY_LEN:
         # 10글자 미만은 사실상 제목 키로 신뢰하기 어려움
         return False
 
     # 포함관계: 짧은 키가 긴 키에 포함되면 동일 이슈로 봄
     # (짧은 키가 충분히 길면 길이 비율 완화 — 영암군 최저가격보장제 등)
-    contain_ratio_thr = 0.55 if ls >= 14 else 0.78
+    contain_ratio_thr = _DEDUP_CONTAIN_RATIO_LONG if ls >= _DEDUP_CONTAIN_RATIO_LEN_THR else _DEDUP_CONTAIN_RATIO_SHORT
     if shorter in longer and (ls / ll) >= contain_ratio_thr:
         return True
 
     # 문자열 유사도(SequenceMatcher)
     try:
         ratio = difflib.SequenceMatcher(None, a, b).ratio()
-        if ratio >= 0.90:
+        if ratio >= _DEDUP_SEQ_RATIO_HIGH:
             return True
         # 경계 영역은 바이그램 자카드로 추가 확인(긴 제목에서만)
-        if ratio >= 0.86 and min(la, lb) >= 18:
+        if ratio >= _DEDUP_SEQ_RATIO_MID and min(la, lb) >= _DEDUP_SEQ_MIN_LEN_FOR_BIGRAM:
             ba = _title_bigram_set(a)
             bb = _title_bigram_set(b)
             if ba and bb:
                 jac = len(ba & bb) / max(1, len(ba | bb))
-                if jac >= 0.82:
+                if jac >= _DEDUP_BIGRAM_JACCARD_THR:
                     return True
     except Exception:
         pass
@@ -4563,10 +4625,10 @@ def extract_topic(title: str, desc: str) -> str:
 
 def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
     if canon_url:
-        h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
+        h = hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32]
         return f"url:{h}"
     base = f"{(press or '').strip()}|{title_key}"
-    h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:16]
+    h = hashlib.sha256(base.encode("utf-8")).hexdigest()[:32]
     return f"pt:{h}"
 
 def has_any(text: str, words: list[str] | tuple[str, ...] | set[str]) -> bool:
@@ -9084,7 +9146,7 @@ class DedupeIndex:
         if norm_key in self.seen_norm:
             return False
         if canon_url:
-            h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
+            h = hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32]
             if h in self.seen_canon:
                 return False
         pt = f"{(press or '').strip()}|{title_key}"
@@ -9093,7 +9155,7 @@ class DedupeIndex:
 
         self.seen_norm.add(norm_key)
         if canon_url:
-            self.seen_canon.add(hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16])
+            self.seen_canon.add(hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32])
         self.seen_press_title.add(pt)
         return True
 
@@ -10547,14 +10609,31 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
 # State / archive manifest
 # -----------------------------
 
+def _validate_state(obj: JsonDict) -> JsonDict:
+    """Validate and fill defaults for state dict keys."""
+    if not isinstance(obj.get("recent_items"), list):
+        if obj.get("recent_items") is not None:
+            log.warning("[STATE] recent_items is not a list, resetting")
+        obj["recent_items"] = []
+    if "last_end_iso" not in obj:
+        obj["last_end_iso"] = None
+    if not isinstance(obj.get("recent_keep_days", 30), int):
+        log.warning("[STATE] recent_keep_days is not int, resetting to 30")
+        obj["recent_keep_days"] = 30
+    return obj
+
 def load_state(repo: str, token: str) -> JsonDict:
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     if not raw:
         return {"last_end_iso": None}
     try:
         obj = json.loads(raw)
-        return obj if isinstance(obj, dict) else {"last_end_iso": None}
-    except Exception:
+        if not isinstance(obj, dict):
+            log.warning("[STATE] state file is not a dict, resetting")
+            return {"last_end_iso": None}
+        return _validate_state(obj)
+    except Exception as exc:
+        log.warning("[STATE] failed to parse state file: %s", exc)
         return {"last_end_iso": None}
 
 def _parse_ymd(s: str) -> date | None:
@@ -10653,6 +10732,7 @@ def save_state(repo: str, token: str, last_end: datetime, recent_items: list[Jso
 
 # --- per-run cache: manifest dates (DESC) ---
 _MANIFEST_DATES_DESC_CACHE: dict[str, list[str]] = {}
+_MANIFEST_CACHE_LOCK = threading.Lock()
 
 def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     """Return archive dates DESC from archive manifest (.agri_archive.json).
@@ -10661,16 +10741,19 @@ def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     so navigation never points to non-existent (holiday) pages.
     """
     key = f"{repo}"
-    if key in _MANIFEST_DATES_DESC_CACHE:
-        return _MANIFEST_DATES_DESC_CACHE[key]
+    with _MANIFEST_CACHE_LOCK:
+        if key in _MANIFEST_DATES_DESC_CACHE:
+            return _MANIFEST_DATES_DESC_CACHE[key]
     try:
         manifest, _sha = load_archive_manifest(repo, token)
         manifest = _normalize_manifest(manifest)
         dates = manifest.get("dates", []) or []
         dates_desc = sorted(set(sanitize_dates(list(dates))), reverse=True)
-    except Exception:
+    except Exception as exc:
+        log.warning("[MANIFEST] failed to load archive manifest: %s", exc)
         dates_desc = []
-    _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
+    with _MANIFEST_CACHE_LOCK:
+        _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
     return dates_desc
 
 def load_archive_manifest(repo: str, token: str) -> tuple[JsonDict, str | None]:
@@ -10679,7 +10762,8 @@ def load_archive_manifest(repo: str, token: str) -> tuple[JsonDict, str | None]:
         return {"dates": []}, sha
     try:
         return _normalize_manifest(json.loads(raw)), sha
-    except Exception:
+    except Exception as exc:
+        log.warning("[MANIFEST] failed to parse archive manifest JSON: %s", exc)
         return {"dates": []}, sha
 
 def save_archive_manifest(repo: str, token: str, manifest: JsonDict, sha: str | None) -> None:
@@ -10688,7 +10772,8 @@ def save_archive_manifest(repo: str, token: str, manifest: JsonDict, sha: str | 
     github_put_file_if_changed(repo, ARCHIVE_MANIFEST_PATH, body, token,
                                "Update archive manifest", sha=sha, branch="main")
     # Keep per-run cache aligned with what we just saved.
-    _MANIFEST_DATES_DESC_CACHE[f"{repo}"] = sorted(set(sanitize_dates(list(manifest.get("dates", []) or []))), reverse=True)
+    with _MANIFEST_CACHE_LOCK:
+        _MANIFEST_DATES_DESC_CACHE[f"{repo}"] = sorted(set(sanitize_dates(list(manifest.get("dates", []) or []))), reverse=True)
 
 
 
@@ -11376,6 +11461,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
     policy_stabilization_keep = (key == "policy") and is_supply_stabilization_policy_context(text, dom, press)
     policy_market_brief_keep = (key == "policy") and policy_market_brief
+    # supply 섹션: 제목에 축산 있고 원예 없으면 무조건 차단 (horti_sc 임계값 불문)
+    if key == "supply" and livestock_core and not _title_has_horti_item(ttl):
+        return _reject("livestock_only_supply")
     if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep) and (not policy_stabilization_keep) and (not policy_market_brief_keep):
         return _reject("livestock_only")
 
@@ -13019,20 +13107,30 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
             return False
         if is_title_livestock_dominant_context(a.title or "", a.description or ""):
             return False
+
+        # ✅ 하드게이트: supply 핵심은 반드시 제목에 원예 품목명이 있어야 함
+        # 축산(계란/닭고기 등), 인사(회장/취임 등)가 제목에 있으면 무조건 차단
+        _ttl_lower = (a.title or "").lower()
+        if _title_has_livestock_item(a.title):
+            return False
+        if _title_has_mgmt_item(a.title) and not _title_has_horti_item(a.title):
+            return False
+        if not _title_has_horti_item(a.title):
+            # 제목에 원예 품목명이 없으면 supply 핵심 불가
+            return False
+
         signal_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "반입", "물량", "재고", "경락", "경매"]
 
-        # ✅ 핵심2는 "제목(헤드라인)"에서 농산물/품목 맥락이 드러나야 한다.
-        # - 행정/인터뷰 기사(본문 한 문단 언급) 오탐을 막기 위해 title-only 품목 점수를 함께 본다.
         horti_title_sc = best_horti_score(a.title or "", "")
 
         if not has_any(text, [t.lower() for t in signal_terms]):
             return False
 
-        # 시장/도매 신호가 있으면 코어 가능(단, 제목 품질은 이미 위에서 걸러짐)
+        # 시장/도매 신호가 있으면 코어 가능
         if market_hits >= 1:
             return True
 
-        # 품목 점수가 강해도, 제목에서 품목/원예 신호가 약하면(=본문 일부 언급) 코어 불가
+        # 품목 점수가 강해도, 제목에서 품목/원예 신호가 약하면 코어 불가
         if horti_sc >= 2.3 and horti_title_sc >= 1.6:
             return True
 
@@ -13040,17 +13138,15 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         if agri_anchor_hits >= 2 and horti_title_sc >= 1.3:
             return True
 
-        # NH 행위자 + 메이저 매체(tier3+): 본문에 원예 수급 신호가 충분하면
-        # 제목에 품목명이 없어도 코어 허용 (예: "농협·정부, 가격 잡는다")
-        _nh_gate_text = text
-        _nh_gate_val = nh_boost(_nh_gate_text, "supply")
+        # NH 행위자 + 메이저 매체: 제목에 원예 품목이 이미 확인됨(위 하드게이트 통과)
+        # 본문에 수급 신호가 충분하면 허용
+        _nh_gate_val = nh_boost(text, "supply")
         _nh_gate_tier = press_tier(a.press, a.domain)
-        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
+        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0:
             return True
 
-        # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트: 본문이 짧아 horti_title_sc가 낮더라도
-        # 농업 맥락이 충분하면 코어 허용 (방송 보도 = 중요 이슈)
-        if (a.press or "").strip() in BROADCAST_PRESS and agri_anchor_hits >= 1 and horti_sc >= 1.4:
+        # 방송사 영상 리포트: 제목에 원예 품목이 이미 확인됨(위 하드게이트 통과)
+        if (a.press or "").strip() in BROADCAST_PRESS and horti_sc >= 1.4:
             return True
 
         return False
@@ -13985,25 +14081,22 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         """Supply 섹션에 들어오면 안 되는 비원예 기사 판정.
         - 축산 도미넌트 (계란/닭고기/소고기 등, 원예 품목 미포함)
         - 경영/인사/행사 (회장/임원/전략 등, 수급 키워드 미포함)
+        - 비원예 소비재/관광/엔터테인먼트
         """
         if section_key != "supply":
             return False
         ttl = (a.title or "").lower()
-        _livestock = ("계란", "닭고기", "소고기", "돼지고기", "한우", "한돈", "축산물", "양계", "양돈", "낙농", "우유")
-        _horti = ("양파", "대파", "사과", "배추", "감귤", "딸기", "포도", "토마토", "양배추",
-                  "고추", "감자", "마늘", "파프리카", "참외", "수박", "복숭아", "오이", "당근",
-                  "생강", "건고추", "만감", "브로콜리", "시금치", "과일", "과수", "채소", "원예", "농산물")
+        mix = ((a.title or "") + " " + (a.description or "")).lower()
         _supply_kw = ("가격", "시세", "출하", "수급", "산지", "증산", "작황", "반입", "경락", "도매", "폐기", "생산")
-        _mgmt = ("회장", "임원", "인사", "창립", "전략", "돌파", "출범", "취임", "50돌", "한마당")
-        livestock_hits = sum(1 for w in _livestock if w in ttl)
-        horti_hits = sum(1 for w in _horti if w in ttl)
         supply_hits = sum(1 for w in _supply_kw if w in ttl)
-        mgmt_hits = sum(1 for w in _mgmt if w in ttl)
-        # 축산 도미넌트: 축산 키워드 있고 원예 키워드 없음
-        if livestock_hits >= 1 and horti_hits == 0:
+        # 축산 도미넌트: 제목에 축산 + 원예 품목 없음 → 차단
+        if _title_has_livestock_item(a.title) and not _title_has_horti_item(a.title):
             return True
-        # 경영/인사/행사: 경영 키워드 있고 수급 키워드 없음
-        if mgmt_hits >= 1 and supply_hits == 0:
+        # 경영/인사/행사: 제목에 인사 키워드 + 수급 키워드 없음 → 차단
+        if _title_has_mgmt_item(a.title) and supply_hits == 0:
+            return True
+        # 제목+본문 모두에 원예 품목이 없으면 → 차단
+        if not _title_has_horti_item(a.title) and not any(w in mix for w in _SUPPLY_HORTI_GATE_ITEMS):
             return True
         return False
 
@@ -18780,13 +18873,10 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
 
                 # ── 원예 품목 + 수급/가격 직접 기사는 supply/dist 유지 (policy 이동 방지) ──
                 if move_to_policy and sk in ("supply", "dist"):
-                    _OR1_HORTI = ("양파","대파","사과","배추","감귤","딸기","포도","토마토","양배추",
-                        "고추","감자","마늘","파프리카","참외","수박","복숭아","오이","당근",
-                        "생강","건고추","만감","브로콜리","시금치","배","무")
                     _OR1_SUPPLY = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
                         "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가")
                     _or1_ttl = (a.title or "").lower()
-                    if any(w in _or1_ttl for w in _OR1_HORTI) and any(w in _or1_ttl for w in _OR1_SUPPLY):
+                    if _title_has_horti_item(a.title) and any(w in _or1_ttl for w in _OR1_SUPPLY):
                         move_to_policy = False
                         log.info("[OVERRIDE1] supply-horti-protect: kept in %s title=%s", sk, (a.title or "")[:80])
 
@@ -24708,7 +24798,10 @@ def kakao_send_to_me(text: str, web_url: str) -> None:
         if r.status_code in (401, 403):
             _raise_kakao_non_retryable_if_needed(r, "Kakao send auth failed")
             _log_http_error("[KAKAO SEND AUTH ERROR]", r)
-            access_token = kakao_refresh_access_token()
+            try:
+                access_token = kakao_refresh_access_token()
+            except Exception as exc:
+                log.warning("[KAKAO SEND] token refresh failed (attempt %d/%d): %s", attempt+1, max_try, exc)
             continue
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
@@ -25747,12 +25840,14 @@ def main() -> None:
         # 과거 아카이브 UI/UX 패치만 수행하고 종료(브리핑 생성/카톡 발송 없음)
         try:
             site_path = get_run_site_path(repo)
-        except Exception:
+        except Exception as exc:
+            log.warning("[MAIN] get_run_site_path failed, using '/': %s", exc)
             site_path = "/"
 
         try:
             base_d = _parse_force_report_date(FORCE_REPORT_DATE) if FORCE_REPORT_DATE else end_kst.date()
-        except Exception:
+        except Exception as exc:
+            log.warning("[MAIN] _parse_force_report_date failed: %s", exc)
             base_d = end_kst.date()
 
         days = int(UX_PATCH_DAYS or 0)

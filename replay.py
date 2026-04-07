@@ -88,6 +88,11 @@ def article_dict_to_kwargs(payload: Any) -> JsonDict:
         kw[f] = float(data.get(f, 0.0) or 0.0)
     for f in _ARTICLE_BOOL_FIELDS:
         kw[f] = bool(data.get(f, False))
+    # Warn on missing critical fields
+    if not kw.get("title") and not kw.get("link"):
+        log.warning("[REPLAY] article missing both title and link: %s", {k: kw.get(k) for k in ("section", "norm_key", "press")})
+    elif not kw.get("title"):
+        log.warning("[REPLAY] article missing title: link=%s", kw.get("link", "")[:80])
     return kw
 
 
@@ -285,11 +290,16 @@ def load_snapshot(
         if not key:
             continue
         rows = raw_payload.get(key, []) if isinstance(raw_payload, dict) else []
-        raw_by_section[key] = [
-            article_factory(article_dict_to_kwargs(item))
-            for item in rows
-            if isinstance(item, dict)
-        ]
+        articles = []
+        for item in rows:
+            if not isinstance(item, dict):
+                continue
+            kw = article_dict_to_kwargs(item)
+            if not kw.get("title") and not kw.get("link"):
+                log.warning("[REPLAY] skipping corrupt article (no title+link) in section=%s", key)
+                continue
+            articles.append(article_factory(kw))
+        raw_by_section[key] = articles
 
     # ── window ──────────────────────────────────────────────────────
     window = payload.get("window", {})

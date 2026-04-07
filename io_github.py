@@ -106,7 +106,8 @@ def github_put_file(
     max_try = max(2, min(max_try, 10))
 
     last_resp = None
-    refreshed_sha = False
+    sha_refresh_count = 0
+    _MAX_SHA_REFRESHES = 2
 
     for attempt in range(max_try):
         try:
@@ -130,7 +131,7 @@ def github_put_file(
 
         last_resp = r
 
-        if r.status_code == 409 and not refreshed_sha:
+        if r.status_code == 409 and sha_refresh_count < _MAX_SHA_REFRESHES:
             metric_inc("github.put.conflict")
             try:
                 _raw, latest_sha = github_get_file(
@@ -141,13 +142,16 @@ def github_put_file(
                     session_factory=session_factory,
                     log_http_error=log_http_error,
                 )
-            except Exception:
+            except Exception as exc:
+                logger.warning("[GitHub PUT] SHA refresh failed (attempt %d): %s", sha_refresh_count + 1, exc)
                 latest_sha = None
             if latest_sha:
                 payload["sha"] = latest_sha
-                refreshed_sha = True
+                sha_refresh_count += 1
                 metric_inc("github.put.conflict_refreshed")
                 continue
+            else:
+                logger.warning("[GitHub PUT] 409 conflict but SHA refresh returned None (attempt %d)", sha_refresh_count + 1)
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
             metric_inc("github.put.retry", reason="http", status=str(r.status_code))
