@@ -18778,8 +18778,19 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 if dist_export_field_like or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like:
                     move_to_policy = False
 
-                if move_to_policy:
+                # ── 원예 품목 + 수급/가격 직접 기사는 supply/dist 유지 (policy 이동 방지) ──
+                if move_to_policy and sk in ("supply", "dist"):
+                    _OR1_HORTI = ("양파","대파","사과","배추","감귤","딸기","포도","토마토","양배추",
+                        "고추","감자","마늘","파프리카","참외","수박","복숭아","오이","당근",
+                        "생강","건고추","만감","브로콜리","시금치","배","무")
+                    _OR1_SUPPLY = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
+                        "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가")
+                    _or1_ttl = (a.title or "").lower()
+                    if any(w in _or1_ttl for w in _OR1_HORTI) and any(w in _or1_ttl for w in _OR1_SUPPLY):
+                        move_to_policy = False
+                        log.info("[OVERRIDE1] supply-horti-protect: kept in %s title=%s", sk, (a.title or "")[:80])
 
+                if move_to_policy:
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
