@@ -13981,6 +13981,32 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if is_policy_market_brief_context(txt_local, dom_local, pr_local):
             return True
         return (a.topic or "").strip() == "정책"
+    def _is_supply_non_horti_noise(a: Article) -> bool:
+        """Supply 섹션에 들어오면 안 되는 비원예 기사 판정.
+        - 축산 도미넌트 (계란/닭고기/소고기 등, 원예 품목 미포함)
+        - 경영/인사/행사 (회장/임원/전략 등, 수급 키워드 미포함)
+        """
+        if section_key != "supply":
+            return False
+        ttl = (a.title or "").lower()
+        _livestock = ("계란", "닭고기", "소고기", "돼지고기", "한우", "한돈", "축산물", "양계", "양돈", "낙농", "우유")
+        _horti = ("양파", "대파", "사과", "배추", "감귤", "딸기", "포도", "토마토", "양배추",
+                  "고추", "감자", "마늘", "파프리카", "참외", "수박", "복숭아", "오이", "당근",
+                  "생강", "건고추", "만감", "브로콜리", "시금치", "과일", "과수", "채소", "원예", "농산물")
+        _supply_kw = ("가격", "시세", "출하", "수급", "산지", "증산", "작황", "반입", "경락", "도매", "폐기", "생산")
+        _mgmt = ("회장", "임원", "인사", "창립", "전략", "돌파", "출범", "취임", "50돌", "한마당")
+        livestock_hits = sum(1 for w in _livestock if w in ttl)
+        horti_hits = sum(1 for w in _horti if w in ttl)
+        supply_hits = sum(1 for w in _supply_kw if w in ttl)
+        mgmt_hits = sum(1 for w in _mgmt if w in ttl)
+        # 축산 도미넌트: 축산 키워드 있고 원예 키워드 없음
+        if livestock_hits >= 1 and horti_hits == 0:
+            return True
+        # 경영/인사/행사: 경영 키워드 있고 수급 키워드 없음
+        if mgmt_hits >= 1 and supply_hits == 0:
+            return True
+        return False
+
     def _is_supply_dist_like_tail_story(a: Article) -> bool:
         if section_key != "supply":
             return False
@@ -14134,7 +14160,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             broad_macro = is_broad_macro_price_context(a.title or "", a.description or "")
             horti_sc = best_horti_score(a.title or "", a.description or "")
             horti_title_sc = best_horti_score(a.title or "", "")
-            if _is_supply_policy_like_tail_story(a) or _is_supply_dist_like_tail_story(a) or _is_supply_weak_tail_story(a):
+            if _is_supply_non_horti_noise(a) or _is_supply_policy_like_tail_story(a) or _is_supply_dist_like_tail_story(a) or _is_supply_weak_tail_story(a):
                 return None
             if broad_macro and tier == 1 and (not direct_supply) and (not feature_like):
                 return None
@@ -14325,7 +14351,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         if section_key == "supply":
             return not (
-                _is_supply_policy_like_tail_story(a)
+                _is_supply_non_horti_noise(a)
+                or _is_supply_policy_like_tail_story(a)
                 or _is_supply_dist_like_tail_story(a)
                 or _is_supply_weak_tail_story(a)
                 or _is_supply_low_signal_feature_story(a)
@@ -14477,6 +14504,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if is_macro_policy_issue(mix) and count_any((a.title or "").lower(), [t.lower() for t in ("과일", "과수", "채소", "화훼", "농산물", "청과")]) == 0 and best_horti_score(a.title or "", "") < 1.6 and best_horti_score(a.title or "", a.description or "") < 1.8 and ((not has_direct_supply_chain_signal(mix)) or is_policy_market_brief_context(mix, dom, pr)):
                 continue
             if is_local_agri_org_feature_context(a.title or "", a.description or ""):
+                continue
+            if _is_supply_non_horti_noise(a):
                 continue
             if _is_supply_dist_like_tail_story(a):
                 continue
@@ -18977,19 +19006,43 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         _section_buffers[key] = valid
 
     # ✅ Phase 2: 여러 섹션에 동시 등장하는 기사 → 최고 점수 섹션에 배정
+    #   단, 원예 품목 + 가격/수급 직접 키워드가 title에 있는 기사는 supply 우선
     _article_sections: dict[str, dict[str, float]] = {}  # ident -> {section: score}
+    _article_titles: dict[str, str] = {}  # ident -> title (for supply priority check)
     for key, articles in _section_buffers.items():
         for a in articles:
             ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
             if ident not in _article_sections:
                 _article_sections[ident] = {}
             _article_sections[ident][key] = float(a.score)
+            if key == "supply" and ident not in _article_titles:
+                _article_titles[ident] = (a.title or "")
+
+    # 원예 품목 + 수급 직접 신호 판정 (title 기준)
+    _PHASE2_HORTI_TERMS = frozenset((
+        "양파", "대파", "사과", "배추", "무", "감귤", "딸기", "포도", "토마토", "양배추",
+        "고추", "감자", "마늘", "파프리카", "배", "참외", "수박", "복숭아", "오이", "당근",
+        "생강", "건고추", "만감", "브로콜리", "시금치",
+    ))
+    _PHASE2_SUPPLY_TERMS = frozenset((
+        "가격", "시세", "출하", "수급", "산지", "증산", "감산", "작황", "반입", "경락",
+        "도매", "폐기", "생산", "약세", "강세", "급등", "급락", "하락", "상승", "물가",
+    ))
+
+    def _is_horti_supply_direct(ident: str) -> bool:
+        ttl = _article_titles.get(ident, "").lower()
+        return (any(w in ttl for w in _PHASE2_HORTI_TERMS)
+                and any(w in ttl for w in _PHASE2_SUPPLY_TERMS))
 
     _blocked_idents: dict[str, set[str]] = {}  # section -> set of idents to skip
     for ident, sec_scores in _article_sections.items():
         if len(sec_scores) <= 1:
             continue
-        best_section = max(sec_scores, key=lambda k: sec_scores[k])
+        # 원예 품목 + 수급 직접 신호가 있으면 supply 우선 (점수 무관)
+        if "supply" in sec_scores and _is_horti_supply_direct(ident):
+            best_section = "supply"
+        else:
+            best_section = max(sec_scores, key=lambda k: sec_scores[k])
         for k in sec_scores:
             if k != best_section:
                 _blocked_idents.setdefault(k, set()).add(ident)
