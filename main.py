@@ -18132,6 +18132,10 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     best_fit_score = cur_fit
 
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
+        _is_reassign_target = ("양파" in (a.title or "") and "약세" in (a.title or ""))
+        if _is_reassign_target:
+            log.info("[REASSIGN-DEBUG] cur=%s best_key=%s best_score=%.2f cur_score=%.2f prefer_policy=%s title=%s",
+                     cur, best_key, best_score, cur_score, prefer_move_to_policy, (a.title or "")[:80])
         if force_move_to_pest:
             try:
                 pest_conf = conf_by_key["pest"]
