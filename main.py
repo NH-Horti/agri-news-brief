@@ -18132,10 +18132,6 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     best_fit_score = cur_fit
 
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
-        _is_reassign_target = ("양파" in (a.title or "") and "약세" in (a.title or ""))
-        if _is_reassign_target:
-            log.info("[REASSIGN-DEBUG] cur=%s best_key=%s best_score=%.2f cur_score=%.2f prefer_policy=%s title=%s",
-                     cur, best_key, best_score, cur_score, prefer_move_to_policy, (a.title or "")[:80])
         if force_move_to_pest:
             try:
                 pest_conf = conf_by_key["pest"]
@@ -18782,9 +18778,19 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 if dist_export_field_like or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like:
                     move_to_policy = False
 
+                # ── 원예 품목 + 수급/가격 직접 기사는 supply/dist 유지 (policy 이동 방지) ──
+                if move_to_policy and sk in ("supply", "dist"):
+                    _OR1_HORTI = ("양파","대파","사과","배추","감귤","딸기","포도","토마토","양배추",
+                        "고추","감자","마늘","파프리카","참외","수박","복숭아","오이","당근",
+                        "생강","건고추","만감","브로콜리","시금치","배","무")
+                    _OR1_SUPPLY = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
+                        "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가")
+                    _or1_ttl = (a.title or "").lower()
+                    if any(w in _or1_ttl for w in _OR1_HORTI) and any(w in _or1_ttl for w in _OR1_SUPPLY):
+                        move_to_policy = False
+                        log.info("[OVERRIDE1] supply-horti-protect: kept in %s title=%s", sk, (a.title or "")[:80])
+
                 if move_to_policy:
-                    if "양파" in (a.title or "") and "약세" in (a.title or ""):
-                        log.info("[OVERRIDE1-DEBUG] supply->policy sk=%s reason=policy_domain_override title=%s", sk, (a.title or "")[:80])
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
@@ -18889,8 +18895,6 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     # dist 기준으로도 통과할 때만 이동
                     try:
                         if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
-                            if "양파" in (a.title or "") and "약세" in (a.title or ""):
-                                log.info("[SUPPLY2DIST-DEBUG] supply->dist title=%s", (a.title or "")[:80])
                             a.section = "dist"
                             a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, dist_conf, p)
                             raw_by_section.setdefault("dist", []).append(a)
@@ -18984,9 +18988,6 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 continue
 
             # 그 외(정책성 강 + 품목 직접성 약)는 policy로 이동
-            if "양파" in (a.title or "") and "약세" in (a.title or ""):
-                log.info("[OVERRIDE2-DEBUG] topic_section->policy sec=%s policy_like=%s horti=%.2f bs=%.2f bt=%s title=%s",
-                         _sec_key, policy_like, horti_sc, bs, bt, (a.title or "")[:80])
             a.section = "policy"
             # policy 기준으로 재스코어링 (원래 섹션 점수가 policy 선정에 오용되는 것을 방지)
             try:
@@ -19075,8 +19076,6 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         # 원예 품목 + 수급 직접 신호가 있으면 supply 우선 (점수 무관)
         if "supply" in sec_scores and _is_horti_supply_direct(ident):
             best_section = "supply"
-            log.info("[PHASE2-DEBUG] horti+supply direct → supply: ident=%s scores=%s title=%s",
-                     ident, sec_scores, _article_titles.get(ident, "?")[:80])
         else:
             best_section = max(sec_scores, key=lambda k: sec_scores[k])
         for k in sec_scores:
@@ -19093,19 +19092,12 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         _picked_sigs: list[tuple[frozenset, frozenset]] = []  # (commodity_set, issue_set)
         for a in _section_buffers.get(key, []):
             ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
-            _is_target = ("양파" in (a.title or "") and "약세" in (a.title or ""))
             if ident in blocked:
-                if _is_target:
-                    log.info("[PHASE3-DEBUG] BLOCKED section=%s ident=%s title=%s", key, ident, (a.title or "")[:80])
                 continue
             if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
-                if _is_target:
-                    log.info("[PHASE3-DEBUG] DEDUP-FAIL section=%s ident=%s title=%s", key, ident, (a.title or "")[:80])
                 continue
             # title 유사도 체크 (같은 뉴스 다른 매체)
             if any(_is_similar_title(a.title_key or "", p.title_key or "") for p in picked):
-                if _is_target:
-                    log.info("[PHASE3-DEBUG] TITLE-SIM section=%s title=%s", key, (a.title or "")[:80])
                 continue
             # commodity+issue 중복 체크 (같은 품목+이슈 다른 기사, title만 사용)
             _a_txt = (a.title or "").lower()
@@ -19120,12 +19112,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     _topic_dup = True
                     break
             if _topic_dup:
-                if _is_target:
-                    log.info("[PHASE3-DEBUG] TOPIC-DUP section=%s title=%s", key, (a.title or "")[:80])
                 continue
             picked.append(a)
-            if _is_target:
-                log.info("[PHASE3-DEBUG] PICKED section=%s score=%.2f ident=%s title=%s", key, a.score, ident, (a.title or "")[:80])
             _picked_sigs.append((_a_comms, _a_issues))
             if len(picked) >= MAX_PER_SECTION:
                 break
