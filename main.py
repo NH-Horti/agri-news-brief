@@ -18107,6 +18107,30 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 best_fit_score = cur_fit
             prefer_move_to_policy = False
 
+        # ── 원예 품목 + 수급/가격 직접 기사는 supply 유지 (policy 이동 방지) ──
+        # '양파 가격 약세', '사과 증산', '대파 산지폐기' 등 supply 핵심 기사가
+        # policy 쿼리에서 더 높은 점수를 받아 supply→policy로 빠지는 것을 차단
+        _REASSIGN_HORTI_TERMS = frozenset((
+            "양파", "대파", "사과", "배추", "감귤", "딸기", "포도", "토마토", "양배추",
+            "고추", "감자", "마늘", "파프리카", "참외", "수박", "복숭아", "오이", "당근",
+            "생강", "건고추", "만감", "브로콜리", "시금치", "배", "무",
+        ))
+        _REASSIGN_SUPPLY_TERMS = frozenset((
+            "가격", "시세", "출하", "수급", "산지", "증산", "감산", "작황", "반입", "경락",
+            "도매", "폐기", "생산", "약세", "강세", "급등", "급락", "하락", "상승", "물가",
+        ))
+        if cur == "supply" and best_key == "policy":
+            _ttl_low = (a.title or "").lower()
+            _has_horti = any(w in _ttl_low for w in _REASSIGN_HORTI_TERMS)
+            _has_supply_sig = any(w in _ttl_low for w in _REASSIGN_SUPPLY_TERMS)
+            if _has_horti and _has_supply_sig:
+                best_key = cur
+                best_score = cur_score
+                prefer_move_to_policy = False
+                if best_fit_key == "policy":
+                    best_fit_key = cur
+                    best_fit_score = cur_fit
+
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
         if force_move_to_pest:
             try:
