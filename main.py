@@ -2965,6 +2965,48 @@ _POLICY_EVENT_ANCHOR_GROUPS = (
 )
 _EVENT_KEY_SECTIONS = frozenset({"supply", "dist", "policy"})
 
+# === Unified Horticultural Gate (모든 supply 필터/게이트가 참조하는 단일 소스) ===
+_SUPPLY_HORTI_GATE_ITEMS: tuple[str, ...] = (
+    # 과일
+    "사과", "배", "감귤", "딸기", "포도", "복숭아", "자두", "참외", "수박", "키위",
+    "참다래", "만감", "한라봉", "레드향", "천혜향", "샤인머스캣", "블루베리", "체리",
+    "감", "단감", "곶감", "대추", "매실", "파파야", "멜론", "앵두", "살구",
+    # 채소
+    "양파", "대파", "마늘", "고추", "건고추", "배추", "감자", "토마토", "오이",
+    "양배추", "당근", "생강", "파프리카", "시금치", "브로콜리", "상추", "부추",
+    "미나리", "콩나물", "무", "호박", "애호박", "가지", "피망", "깻잎",
+    # 화훼
+    "화훼", "절화", "국화", "장미", "백합", "수선화", "난",
+    # 일반
+    "과일", "과수", "채소", "원예", "청과", "시설채소", "하우스", "농산물",
+)
+_SUPPLY_HORTI_GATE_SET = frozenset(t.lower() for t in _SUPPLY_HORTI_GATE_ITEMS)
+
+_SUPPLY_LIVESTOCK_ITEMS: tuple[str, ...] = (
+    "계란", "달걀", "닭고기", "소고기", "돼지고기", "한우", "한돈", "축산물",
+    "양계", "양돈", "낙농", "우유", "치즈", "육류", "육우", "젖소",
+)
+
+_SUPPLY_MGMT_ITEMS: tuple[str, ...] = (
+    "회장", "취임", "임원", "인사", "창립", "전략", "돌파", "출범",
+    "50돌", "한마당", "기념식", "이사장", "선거", "조합장",
+)
+
+def _title_has_horti_item(title: str) -> bool:
+    """제목에 원예 품목명이 하나라도 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_HORTI_GATE_ITEMS)
+
+def _title_has_livestock_item(title: str) -> bool:
+    """제목에 축산 품목명이 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_LIVESTOCK_ITEMS)
+
+def _title_has_mgmt_item(title: str) -> bool:
+    """제목에 경영/인사/행사 키워드가 있는지 확인."""
+    ttl = (title or "").lower()
+    return any(w in ttl for w in _SUPPLY_MGMT_ITEMS)
+
 # === Dedup Thresholds ===
 _DEDUP_JACCARD_THR_DIST = 0.35
 _DEDUP_JACCARD_THR_SUPPLY_POLICY = 0.40
@@ -11419,6 +11461,9 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     livestock_core = ("축산물" in _t2) or any(w in _t2 for w in ("한우","한돈","우육","돈육","소고기","돼지고기","닭고기","계란","달걀","우유","낙농","양돈","양계"))
     policy_stabilization_keep = (key == "policy") and is_supply_stabilization_policy_context(text, dom, press)
     policy_market_brief_keep = (key == "policy") and policy_market_brief
+    # supply 섹션: 제목에 축산 있고 원예 없으면 무조건 차단 (horti_sc 임계값 불문)
+    if key == "supply" and livestock_core and not _title_has_horti_item(ttl):
+        return _reject("livestock_only_supply")
     if livestock_core and (livestock_hits >= 1) and (horti_hits_pre == 0) and (horti_sc_pre < 1.2) and (not policy_macro_keep) and (not policy_stabilization_keep) and (not policy_market_brief_keep):
         return _reject("livestock_only")
 
@@ -13062,20 +13107,30 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
             return False
         if is_title_livestock_dominant_context(a.title or "", a.description or ""):
             return False
+
+        # ✅ 하드게이트: supply 핵심은 반드시 제목에 원예 품목명이 있어야 함
+        # 축산(계란/닭고기 등), 인사(회장/취임 등)가 제목에 있으면 무조건 차단
+        _ttl_lower = (a.title or "").lower()
+        if _title_has_livestock_item(a.title):
+            return False
+        if _title_has_mgmt_item(a.title) and not _title_has_horti_item(a.title):
+            return False
+        if not _title_has_horti_item(a.title):
+            # 제목에 원예 품목명이 없으면 supply 핵심 불가
+            return False
+
         signal_terms = ["가격", "시세", "수급", "작황", "생산", "출하", "반입", "물량", "재고", "경락", "경매"]
 
-        # ✅ 핵심2는 "제목(헤드라인)"에서 농산물/품목 맥락이 드러나야 한다.
-        # - 행정/인터뷰 기사(본문 한 문단 언급) 오탐을 막기 위해 title-only 품목 점수를 함께 본다.
         horti_title_sc = best_horti_score(a.title or "", "")
 
         if not has_any(text, [t.lower() for t in signal_terms]):
             return False
 
-        # 시장/도매 신호가 있으면 코어 가능(단, 제목 품질은 이미 위에서 걸러짐)
+        # 시장/도매 신호가 있으면 코어 가능
         if market_hits >= 1:
             return True
 
-        # 품목 점수가 강해도, 제목에서 품목/원예 신호가 약하면(=본문 일부 언급) 코어 불가
+        # 품목 점수가 강해도, 제목에서 품목/원예 신호가 약하면 코어 불가
         if horti_sc >= 2.3 and horti_title_sc >= 1.6:
             return True
 
@@ -13083,17 +13138,15 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         if agri_anchor_hits >= 2 and horti_title_sc >= 1.3:
             return True
 
-        # NH 행위자 + 메이저 매체(tier3+): 본문에 원예 수급 신호가 충분하면
-        # 제목에 품목명이 없어도 코어 허용 (예: "농협·정부, 가격 잡는다")
-        _nh_gate_text = text
-        _nh_gate_val = nh_boost(_nh_gate_text, "supply")
+        # NH 행위자 + 메이저 매체: 제목에 원예 품목이 이미 확인됨(위 하드게이트 통과)
+        # 본문에 수급 신호가 충분하면 허용
+        _nh_gate_val = nh_boost(text, "supply")
         _nh_gate_tier = press_tier(a.press, a.domain)
-        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0 and agri_anchor_hits >= 1:
+        if _nh_gate_val > 0 and _nh_gate_tier >= 3 and horti_sc >= 2.0:
             return True
 
-        # 방송사(KBS/MBC/SBS/YTN 등) 영상 리포트: 본문이 짧아 horti_title_sc가 낮더라도
-        # 농업 맥락이 충분하면 코어 허용 (방송 보도 = 중요 이슈)
-        if (a.press or "").strip() in BROADCAST_PRESS and agri_anchor_hits >= 1 and horti_sc >= 1.4:
+        # 방송사 영상 리포트: 제목에 원예 품목이 이미 확인됨(위 하드게이트 통과)
+        if (a.press or "").strip() in BROADCAST_PRESS and horti_sc >= 1.4:
             return True
 
         return False
@@ -14028,25 +14081,22 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         """Supply 섹션에 들어오면 안 되는 비원예 기사 판정.
         - 축산 도미넌트 (계란/닭고기/소고기 등, 원예 품목 미포함)
         - 경영/인사/행사 (회장/임원/전략 등, 수급 키워드 미포함)
+        - 비원예 소비재/관광/엔터테인먼트
         """
         if section_key != "supply":
             return False
         ttl = (a.title or "").lower()
-        _livestock = ("계란", "닭고기", "소고기", "돼지고기", "한우", "한돈", "축산물", "양계", "양돈", "낙농", "우유")
-        _horti = ("양파", "대파", "사과", "배추", "감귤", "딸기", "포도", "토마토", "양배추",
-                  "고추", "감자", "마늘", "파프리카", "참외", "수박", "복숭아", "오이", "당근",
-                  "생강", "건고추", "만감", "브로콜리", "시금치", "과일", "과수", "채소", "원예", "농산물")
+        mix = ((a.title or "") + " " + (a.description or "")).lower()
         _supply_kw = ("가격", "시세", "출하", "수급", "산지", "증산", "작황", "반입", "경락", "도매", "폐기", "생산")
-        _mgmt = ("회장", "임원", "인사", "창립", "전략", "돌파", "출범", "취임", "50돌", "한마당")
-        livestock_hits = sum(1 for w in _livestock if w in ttl)
-        horti_hits = sum(1 for w in _horti if w in ttl)
         supply_hits = sum(1 for w in _supply_kw if w in ttl)
-        mgmt_hits = sum(1 for w in _mgmt if w in ttl)
-        # 축산 도미넌트: 축산 키워드 있고 원예 키워드 없음
-        if livestock_hits >= 1 and horti_hits == 0:
+        # 축산 도미넌트: 제목에 축산 + 원예 품목 없음 → 차단
+        if _title_has_livestock_item(a.title) and not _title_has_horti_item(a.title):
             return True
-        # 경영/인사/행사: 경영 키워드 있고 수급 키워드 없음
-        if mgmt_hits >= 1 and supply_hits == 0:
+        # 경영/인사/행사: 제목에 인사 키워드 + 수급 키워드 없음 → 차단
+        if _title_has_mgmt_item(a.title) and supply_hits == 0:
+            return True
+        # 제목+본문 모두에 원예 품목이 없으면 → 차단
+        if not _title_has_horti_item(a.title) and not any(w in mix for w in _SUPPLY_HORTI_GATE_ITEMS):
             return True
         return False
 
@@ -18823,13 +18873,10 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
 
                 # ── 원예 품목 + 수급/가격 직접 기사는 supply/dist 유지 (policy 이동 방지) ──
                 if move_to_policy and sk in ("supply", "dist"):
-                    _OR1_HORTI = ("양파","대파","사과","배추","감귤","딸기","포도","토마토","양배추",
-                        "고추","감자","마늘","파프리카","참외","수박","복숭아","오이","당근",
-                        "생강","건고추","만감","브로콜리","시금치","배","무")
                     _OR1_SUPPLY = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
                         "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가")
                     _or1_ttl = (a.title or "").lower()
-                    if any(w in _or1_ttl for w in _OR1_HORTI) and any(w in _or1_ttl for w in _OR1_SUPPLY):
+                    if _title_has_horti_item(a.title) and any(w in _or1_ttl for w in _OR1_SUPPLY):
                         move_to_policy = False
                         log.info("[OVERRIDE1] supply-horti-protect: kept in %s title=%s", sk, (a.title or "")[:80])
 
