@@ -2965,10 +2965,26 @@ _POLICY_EVENT_ANCHOR_GROUPS = (
 )
 _EVENT_KEY_SECTIONS = frozenset({"supply", "dist", "policy"})
 
+# === Dedup Thresholds ===
+_DEDUP_JACCARD_THR_DIST = 0.35
+_DEDUP_JACCARD_THR_SUPPLY_POLICY = 0.40
+_DEDUP_JACCARD_THR_DEFAULT = 0.35
+_DEDUP_MIN_TITLE_KEY_LEN = 10
+_DEDUP_CONTAIN_RATIO_LONG = 0.55    # title_key >= 14 chars
+_DEDUP_CONTAIN_RATIO_SHORT = 0.78   # title_key < 14 chars
+_DEDUP_CONTAIN_RATIO_LEN_THR = 14
+_DEDUP_SEQ_RATIO_HIGH = 0.90
+_DEDUP_SEQ_RATIO_MID = 0.86
+_DEDUP_SEQ_MIN_LEN_FOR_BIGRAM = 18
+_DEDUP_BIGRAM_JACCARD_THR = 0.82
+
+_NORM_STORY_WS_RX = re.compile(r"\s+")
+_NORM_STORY_CHAR_RX = re.compile(r"[^0-9a-z가-힣 ]+")
+
 def _norm_story_text(title: str, desc: str) -> str:
     s = f"{title or ''} {desc or ''}".lower()
-    s = re.sub(r"\s+", " ", s).strip()
-    s = re.sub(r"[^0-9a-z가-힣 ]+", " ", s)
+    s = _NORM_STORY_WS_RX.sub(" ", s).strip()
+    s = _NORM_STORY_CHAR_RX.sub(" ", s)
     return s.replace(" ", "")
 
 def _trigrams(s: str) -> set[str]:
@@ -3411,15 +3427,15 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         # dist는 보도자료 중복이 많으므로 앵커 조건 완화 + Jaccard로 보강
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.35
+        thr = _DEDUP_JACCARD_THR_DIST
     elif section_key in ("supply", "policy"):
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.40
+        thr = _DEDUP_JACCARD_THR_SUPPLY_POLICY
     else:
         if len(ah) < 2 or len(bh) < 2 or len(inter) < 2:
             return False
-        thr = 0.35
+        thr = _DEDUP_JACCARD_THR_DEFAULT
 
     ta = getattr(a, "_story_tri", None)
     if ta is None:
@@ -3457,28 +3473,28 @@ def _is_similar_title(k1: str, k2: str) -> bool:
     shorter, longer = (a, b) if la <= lb else (b, a)
     ls, ll = len(shorter), len(longer)
 
-    if ls < 10:
+    if ls < _DEDUP_MIN_TITLE_KEY_LEN:
         # 10글자 미만은 사실상 제목 키로 신뢰하기 어려움
         return False
 
     # 포함관계: 짧은 키가 긴 키에 포함되면 동일 이슈로 봄
     # (짧은 키가 충분히 길면 길이 비율 완화 — 영암군 최저가격보장제 등)
-    contain_ratio_thr = 0.55 if ls >= 14 else 0.78
+    contain_ratio_thr = _DEDUP_CONTAIN_RATIO_LONG if ls >= _DEDUP_CONTAIN_RATIO_LEN_THR else _DEDUP_CONTAIN_RATIO_SHORT
     if shorter in longer and (ls / ll) >= contain_ratio_thr:
         return True
 
     # 문자열 유사도(SequenceMatcher)
     try:
         ratio = difflib.SequenceMatcher(None, a, b).ratio()
-        if ratio >= 0.90:
+        if ratio >= _DEDUP_SEQ_RATIO_HIGH:
             return True
         # 경계 영역은 바이그램 자카드로 추가 확인(긴 제목에서만)
-        if ratio >= 0.86 and min(la, lb) >= 18:
+        if ratio >= _DEDUP_SEQ_RATIO_MID and min(la, lb) >= _DEDUP_SEQ_MIN_LEN_FOR_BIGRAM:
             ba = _title_bigram_set(a)
             bb = _title_bigram_set(b)
             if ba and bb:
                 jac = len(ba & bb) / max(1, len(ba | bb))
-                if jac >= 0.82:
+                if jac >= _DEDUP_BIGRAM_JACCARD_THR:
                     return True
     except Exception:
         pass
