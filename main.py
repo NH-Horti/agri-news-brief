@@ -10551,13 +10551,29 @@ def verify_recent_archive_dates(repo: str, token: str, dates_desc: list[str], re
 # State / archive manifest
 # -----------------------------
 
+def _validate_state(obj: JsonDict) -> JsonDict:
+    """Validate and fill defaults for state dict keys."""
+    if not isinstance(obj.get("recent_items"), list):
+        if obj.get("recent_items") is not None:
+            log.warning("[STATE] recent_items is not a list, resetting")
+        obj["recent_items"] = []
+    if "last_end_iso" not in obj:
+        obj["last_end_iso"] = None
+    if not isinstance(obj.get("recent_keep_days", 30), int):
+        log.warning("[STATE] recent_keep_days is not int, resetting to 30")
+        obj["recent_keep_days"] = 30
+    return obj
+
 def load_state(repo: str, token: str) -> JsonDict:
     raw, _sha = github_get_file(repo, STATE_FILE_PATH, token, ref="main")
     if not raw:
         return {"last_end_iso": None}
     try:
         obj = json.loads(raw)
-        return obj if isinstance(obj, dict) else {"last_end_iso": None}
+        if not isinstance(obj, dict):
+            log.warning("[STATE] state file is not a dict, resetting")
+            return {"last_end_iso": None}
+        return _validate_state(obj)
     except Exception as exc:
         log.warning("[STATE] failed to parse state file: %s", exc)
         return {"last_end_iso": None}
@@ -10658,6 +10674,7 @@ def save_state(repo: str, token: str, last_end: datetime, recent_items: list[Jso
 
 # --- per-run cache: manifest dates (DESC) ---
 _MANIFEST_DATES_DESC_CACHE: dict[str, list[str]] = {}
+_MANIFEST_CACHE_LOCK = threading.Lock()
 
 def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     """Return archive dates DESC from archive manifest (.agri_archive.json).
@@ -10666,8 +10683,9 @@ def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     so navigation never points to non-existent (holiday) pages.
     """
     key = f"{repo}"
-    if key in _MANIFEST_DATES_DESC_CACHE:
-        return _MANIFEST_DATES_DESC_CACHE[key]
+    with _MANIFEST_CACHE_LOCK:
+        if key in _MANIFEST_DATES_DESC_CACHE:
+            return _MANIFEST_DATES_DESC_CACHE[key]
     try:
         manifest, _sha = load_archive_manifest(repo, token)
         manifest = _normalize_manifest(manifest)
@@ -10676,7 +10694,8 @@ def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
     except Exception as exc:
         log.warning("[MANIFEST] failed to load archive manifest: %s", exc)
         dates_desc = []
-    _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
+    with _MANIFEST_CACHE_LOCK:
+        _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
     return dates_desc
 
 def load_archive_manifest(repo: str, token: str) -> tuple[JsonDict, str | None]:
@@ -10695,7 +10714,8 @@ def save_archive_manifest(repo: str, token: str, manifest: JsonDict, sha: str | 
     github_put_file_if_changed(repo, ARCHIVE_MANIFEST_PATH, body, token,
                                "Update archive manifest", sha=sha, branch="main")
     # Keep per-run cache aligned with what we just saved.
-    _MANIFEST_DATES_DESC_CACHE[f"{repo}"] = sorted(set(sanitize_dates(list(manifest.get("dates", []) or []))), reverse=True)
+    with _MANIFEST_CACHE_LOCK:
+        _MANIFEST_DATES_DESC_CACHE[f"{repo}"] = sorted(set(sanitize_dates(list(manifest.get("dates", []) or []))), reverse=True)
 
 
 
@@ -24715,7 +24735,10 @@ def kakao_send_to_me(text: str, web_url: str) -> None:
         if r.status_code in (401, 403):
             _raise_kakao_non_retryable_if_needed(r, "Kakao send auth failed")
             _log_http_error("[KAKAO SEND AUTH ERROR]", r)
-            access_token = kakao_refresh_access_token()
+            try:
+                access_token = kakao_refresh_access_token()
+            except Exception as exc:
+                log.warning("[KAKAO SEND] token refresh failed (attempt %d/%d): %s", attempt+1, max_try, exc)
             continue
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):

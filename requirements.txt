@@ -1,3 +1,4 @@
 requests>=2.31.0,<3.0
 holidays>=0.44,<1.0
+# google-auth: used by scripts/build_admin_analytics.py and scripts/register_ga4_custom_dimensions.py (not runtime)
 google-auth>=2.38.0,<3.0

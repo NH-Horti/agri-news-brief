@@ -44,21 +44,18 @@ jobs:
 
       - name: Syntax check
         id: syntax
-        continue-on-error: true
         run: |
           set -o pipefail
-          python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py 2>&1 | tee reports/py_compile.log
+          python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py 2>&1 | tee reports/py_compile.log
 
       - name: Type check (mypy strict modules)
         id: mypy
-        continue-on-error: true
         run: |
           set -o pipefail
           python -m mypy --config-file mypy.ini --show-error-codes 2>&1 | tee reports/mypy.log
 
       - name: Run regression tests
         id: tests
-        continue-on-error: true
         run: |
           set -o pipefail
           python -m unittest discover -s tests -p "test_*.py" 2>&1 | tee reports/unittest.log
@@ -71,64 +68,9 @@ jobs:
           echo "- Mypy: ${{ steps.mypy.outcome }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Tests: ${{ steps.tests.outcome }}" >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "${{ steps.syntax.outcome }}" = "failure" ]; then
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "### Syntax check (last 80 lines)" >> "$GITHUB_STEP_SUMMARY"
-            echo "\`\`\`text" >> "$GITHUB_STEP_SUMMARY"
-            tail -n 80 reports/py_compile.log >> "$GITHUB_STEP_SUMMARY" || true
-            echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-          if [ "${{ steps.mypy.outcome }}" = "failure" ]; then
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "### Mypy (last 120 lines)" >> "$GITHUB_STEP_SUMMARY"
-            echo "\`\`\`text" >> "$GITHUB_STEP_SUMMARY"
-            tail -n 120 reports/mypy.log >> "$GITHUB_STEP_SUMMARY" || true
-            echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "### Tests (last 120 lines)" >> "$GITHUB_STEP_SUMMARY"
-            echo "\`\`\`text" >> "$GITHUB_STEP_SUMMARY"
-            tail -n 120 reports/unittest.log >> "$GITHUB_STEP_SUMMARY" || true
-            echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
-          fi
-
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: ci-reports
           path: reports/
-
-      - name: Fail if any check failed
-        if: steps.syntax.outcome == 'failure' || steps.mypy.outcome == 'failure' || steps.tests.outcome == 'failure'
-        run: |
-          echo "CI checks failed."
-          echo "syntax=${{ steps.syntax.outcome }} mypy=${{ steps.mypy.outcome }} tests=${{ steps.tests.outcome }}"
-          echo "reports directory:"
-          ls -la reports || true
-
-          if [ "${{ steps.syntax.outcome }}" = "failure" ]; then
-            echo "----- Syntax log (head 40) -----"
-            head -n 40 reports/py_compile.log || true
-            echo "----- Syntax log (tail 120) -----"
-            tail -n 120 reports/py_compile.log || true
-          fi
-
-          if [ "${{ steps.mypy.outcome }}" = "failure" ]; then
-            echo "----- Mypy log (head 60) -----"
-            head -n 60 reports/mypy.log || true
-            echo "----- Mypy log (tail 160) -----"
-            tail -n 160 reports/mypy.log || true
-          fi
-
-          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
-            echo "----- Tests log (head 60) -----"
-            head -n 60 reports/unittest.log || true
-            echo "----- Tests log (tail 160) -----"
-            tail -n 160 reports/unittest.log || true
-          fi
-
-          exit 1
