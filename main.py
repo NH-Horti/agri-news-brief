@@ -3538,6 +3538,15 @@ def _is_similar_title(k1: str, k2: str) -> bool:
                 jac = len(ba & bb) / max(1, len(ba | bb))
                 if jac >= _DEDUP_BIGRAM_JACCARD_THR:
                     return True
+        # 중간 유사도(0.75~0.90) + 트라이그램 자카드가 높으면 동일 기사로 판정
+        # (같은 이슈를 다른 언론사가 어순/접미사만 바꿔 보도하는 패턴 포착)
+        if ratio >= 0.75 and min(la, lb) >= 12:
+            ta = _trigrams(a)
+            tb = _trigrams(b)
+            if ta and tb:
+                tri_jac = len(ta & tb) / max(1, len(ta | tb))
+                if tri_jac >= 0.55:
+                    return True
     except Exception:
         pass
 
@@ -19034,9 +19043,17 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             policy_major_issue_like = is_policy_major_issue_context(a.title or "", a.description or "", d, p)
             remote_foreign_trade_like = is_remote_foreign_trade_brief_context(a.title or "", a.description or "", d)
 
+            # 인사/거버넌스 기사: 제목에 인사 키워드 + 원예 품목 없음 → supply에서 제거
+            _is_governance = (
+                _sec_key == "supply"
+                and _title_has_mgmt_item(a.title)
+                and not _title_has_horti_item(a.title)
+            )
+
             # 정책/통상/관세·통관 이슈 판정(빠른 판정)
             policy_like = (
-                (tpc == "정책")
+                _is_governance
+                or (tpc == "정책")
                 or is_generic_import_item_context(mix)
                 or is_supply_stabilization_policy_context(mix, d, p)
                 or (is_trade_policy_issue(mix) and (not dist_export_field_like))
@@ -19065,7 +19082,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 horti_sc = 0.0
 
             # ✅ 품목 영향이 충분히 강하면(토픽+원예점수) 섹션 이동 방지
-            if bt and bs >= 2.4 and horti_sc >= 2.2:
+            # 단, 인사/거버넌스 기사는 품목 점수와 무관하게 이동 (기사 성격이 인사)
+            if bt and bs >= 2.4 and horti_sc >= 2.2 and not _is_governance:
                 a.topic = bt
                 keep_items.append(a)
                 continue
