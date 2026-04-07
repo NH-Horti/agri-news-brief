@@ -19065,6 +19065,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         # 원예 품목 + 수급 직접 신호가 있으면 supply 우선 (점수 무관)
         if "supply" in sec_scores and _is_horti_supply_direct(ident):
             best_section = "supply"
+            log.info("[PHASE2-DEBUG] horti+supply direct → supply: ident=%s scores=%s title=%s",
+                     ident, sec_scores, _article_titles.get(ident, "?")[:80])
         else:
             best_section = max(sec_scores, key=lambda k: sec_scores[k])
         for k in sec_scores:
@@ -19081,12 +19083,19 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         _picked_sigs: list[tuple[frozenset, frozenset]] = []  # (commodity_set, issue_set)
         for a in _section_buffers.get(key, []):
             ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
+            _is_target = ("양파" in (a.title or "") and "약세" in (a.title or ""))
             if ident in blocked:
+                if _is_target:
+                    log.info("[PHASE3-DEBUG] BLOCKED section=%s ident=%s title=%s", key, ident, (a.title or "")[:80])
                 continue
             if not global_dedupe.add_and_check(a.canon_url, a.press, a.title_key, a.norm_key):
+                if _is_target:
+                    log.info("[PHASE3-DEBUG] DEDUP-FAIL section=%s ident=%s title=%s", key, ident, (a.title or "")[:80])
                 continue
             # title 유사도 체크 (같은 뉴스 다른 매체)
             if any(_is_similar_title(a.title_key or "", p.title_key or "") for p in picked):
+                if _is_target:
+                    log.info("[PHASE3-DEBUG] TITLE-SIM section=%s title=%s", key, (a.title or "")[:80])
                 continue
             # commodity+issue 중복 체크 (같은 품목+이슈 다른 기사, title만 사용)
             _a_txt = (a.title or "").lower()
@@ -19101,8 +19110,12 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     _topic_dup = True
                     break
             if _topic_dup:
+                if _is_target:
+                    log.info("[PHASE3-DEBUG] TOPIC-DUP section=%s title=%s", key, (a.title or "")[:80])
                 continue
             picked.append(a)
+            if _is_target:
+                log.info("[PHASE3-DEBUG] PICKED section=%s score=%.2f ident=%s title=%s", key, a.score, ident, (a.title or "")[:80])
             _picked_sigs.append((_a_comms, _a_issues))
             if len(picked) >= MAX_PER_SECTION:
                 break
