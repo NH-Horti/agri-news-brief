@@ -2610,6 +2610,7 @@ _BODY_CRAWL_READ_TIMEOUT = 10.0  # read timeout (본문 수신)
 _BODY_CRAWL_MAX_CHARS = 2000
 _BODY_CACHE: dict[str, str] = {}
 _BODY_CACHE_LOCK = threading.Lock()
+_BODY_CACHE_MAX = 2000  # evict all when exceeded to prevent OOM
 
 # 크롤링 전용 세션: retry 1회 + 짧은 connect timeout (공용 http_session과 분리)
 _BODY_SESSION_LOCAL = threading.local()
@@ -2710,10 +2711,13 @@ def _crawl_article_body(url: str) -> str:
         })
         if r.ok:
             body = _extract_body_from_html(r.text or "")
-    except Exception:
-        pass
+    except Exception as exc:
+        log.debug("[BODY CRAWL] failed url=%s: %s", url[:80], exc)
 
     with _BODY_CACHE_LOCK:
+        if len(_BODY_CACHE) >= _BODY_CACHE_MAX:
+            _BODY_CACHE.clear()
+            log.debug("[BODY CRAWL] cache evicted (limit=%d)", _BODY_CACHE_MAX)
         _BODY_CACHE[cache_key] = body
     return body
 
@@ -4563,10 +4567,10 @@ def extract_topic(title: str, desc: str) -> str:
 
 def make_norm_key(canon_url: str, press: str, title_key: str) -> str:
     if canon_url:
-        h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
+        h = hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32]
         return f"url:{h}"
     base = f"{(press or '').strip()}|{title_key}"
-    h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:16]
+    h = hashlib.sha256(base.encode("utf-8")).hexdigest()[:32]
     return f"pt:{h}"
 
 def has_any(text: str, words: list[str] | tuple[str, ...] | set[str]) -> bool:
@@ -9084,7 +9088,7 @@ class DedupeIndex:
         if norm_key in self.seen_norm:
             return False
         if canon_url:
-            h = hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16]
+            h = hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32]
             if h in self.seen_canon:
                 return False
         pt = f"{(press or '').strip()}|{title_key}"
@@ -9093,7 +9097,7 @@ class DedupeIndex:
 
         self.seen_norm.add(norm_key)
         if canon_url:
-            self.seen_canon.add(hashlib.sha1(canon_url.encode("utf-8")).hexdigest()[:16])
+            self.seen_canon.add(hashlib.sha256(canon_url.encode("utf-8")).hexdigest()[:32])
         self.seen_press_title.add(pt)
         return True
 
@@ -10554,7 +10558,8 @@ def load_state(repo: str, token: str) -> JsonDict:
     try:
         obj = json.loads(raw)
         return obj if isinstance(obj, dict) else {"last_end_iso": None}
-    except Exception:
+    except Exception as exc:
+        log.warning("[STATE] failed to parse state file: %s", exc)
         return {"last_end_iso": None}
 
 def _parse_ymd(s: str) -> date | None:
@@ -10668,7 +10673,8 @@ def _get_manifest_dates_desc_cached(repo: str, token: str) -> list[str]:
         manifest = _normalize_manifest(manifest)
         dates = manifest.get("dates", []) or []
         dates_desc = sorted(set(sanitize_dates(list(dates))), reverse=True)
-    except Exception:
+    except Exception as exc:
+        log.warning("[MANIFEST] failed to load archive manifest: %s", exc)
         dates_desc = []
     _MANIFEST_DATES_DESC_CACHE[key] = dates_desc
     return dates_desc
@@ -10679,7 +10685,8 @@ def load_archive_manifest(repo: str, token: str) -> tuple[JsonDict, str | None]:
         return {"dates": []}, sha
     try:
         return _normalize_manifest(json.loads(raw)), sha
-    except Exception:
+    except Exception as exc:
+        log.warning("[MANIFEST] failed to parse archive manifest JSON: %s", exc)
         return {"dates": []}, sha
 
 def save_archive_manifest(repo: str, token: str, manifest: JsonDict, sha: str | None) -> None:
@@ -25747,12 +25754,14 @@ def main() -> None:
         # 과거 아카이브 UI/UX 패치만 수행하고 종료(브리핑 생성/카톡 발송 없음)
         try:
             site_path = get_run_site_path(repo)
-        except Exception:
+        except Exception as exc:
+            log.warning("[MAIN] get_run_site_path failed, using '/': %s", exc)
             site_path = "/"
 
         try:
             base_d = _parse_force_report_date(FORCE_REPORT_DATE) if FORCE_REPORT_DATE else end_kst.date()
-        except Exception:
+        except Exception as exc:
+            log.warning("[MAIN] _parse_force_report_date failed: %s", exc)
             base_d = end_kst.date()
 
         days = int(UX_PATCH_DAYS or 0)
