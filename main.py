@@ -18783,7 +18783,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     move_to_policy = False
 
                 if move_to_policy:
-
+                    if "양파" in (a.title or "") and "약세" in (a.title or ""):
+                        log.info("[OVERRIDE1-DEBUG] supply->policy sk=%s reason=policy_domain_override title=%s", sk, (a.title or "")[:80])
                     a.section = "policy"
                     # policy 섹션 기준으로 재스코어링
                     try:
@@ -18888,6 +18889,8 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     # dist 기준으로도 통과할 때만 이동
                     try:
                         if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
+                            if "양파" in (a.title or "") and "약세" in (a.title or ""):
+                                log.info("[SUPPLY2DIST-DEBUG] supply->dist title=%s", (a.title or "")[:80])
                             a.section = "dist"
                             a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, dist_conf, p)
                             raw_by_section.setdefault("dist", []).append(a)
@@ -18981,6 +18984,9 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 continue
 
             # 그 외(정책성 강 + 품목 직접성 약)는 policy로 이동
+            if "양파" in (a.title or "") and "약세" in (a.title or ""):
+                log.info("[OVERRIDE2-DEBUG] topic_section->policy sec=%s policy_like=%s horti=%.2f bs=%.2f bt=%s title=%s",
+                         _sec_key, policy_like, horti_sc, bs, bt, (a.title or "")[:80])
             a.section = "policy"
             # policy 기준으로 재스코어링 (원래 섹션 점수가 policy 선정에 오용되는 것을 방지)
             try:
