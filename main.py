@@ -13109,11 +13109,12 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
             return False
 
         # ✅ 하드게이트: supply 핵심은 반드시 제목에 원예 품목명이 있어야 함
-        # 축산(계란/닭고기 등), 인사(회장/취임 등)가 제목에 있으면 무조건 차단
-        _ttl_lower = (a.title or "").lower()
+        # 축산(계란/닭고기 등)이 제목에 있으면 무조건 차단
         if _title_has_livestock_item(a.title):
             return False
-        if _title_has_mgmt_item(a.title) and not _title_has_horti_item(a.title):
+        # 인사/거버넌스(회장/취임 등)가 제목에 있으면 무조건 차단
+        # (description에 품목 있어도 기사 성격이 인사/거버넌스이면 supply 핵심 부적격)
+        if _title_has_mgmt_item(a.title):
             return False
         if not _title_has_horti_item(a.title):
             # 제목에 원예 품목명이 없으면 supply 핵심 불가
@@ -14092,10 +14093,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         # 축산 도미넌트: 제목에 축산 + 원예 품목 없음 → 차단
         if _title_has_livestock_item(a.title) and not _title_has_horti_item(a.title):
             return True
-        # 경영/인사/행사: 제목에 인사 키워드 + 수급 키워드 없음 → 차단
-        if _title_has_mgmt_item(a.title) and supply_hits == 0:
+        # 경영/인사/행사: 제목에 인사 키워드면 차단 (description에 품목 있어도 기사 성격이 인사)
+        if _title_has_mgmt_item(a.title):
             return True
-        # 제목+본문 모두에 원예 품목이 없으면 → 차단
+        # 제목에 원예 품목이 없고, 본문에도 없으면 → 차단
         if not _title_has_horti_item(a.title) and not any(w in mix for w in _SUPPLY_HORTI_GATE_ITEMS):
             return True
         return False
