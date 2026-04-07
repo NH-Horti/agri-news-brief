@@ -11416,9 +11416,14 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("ban_keywords")
 
     # 엔터테인먼트/연예 기사 차단(농산물 브리핑과 무관)
-    _ENTERTAINMENT_BLOCK_TERMS = ("bts", "방탄소년단", "블랙핑크", "팬미팅", "콘서트", "공연", "뮤지컬", "페스티벌")
-    if any(w in text for w in _ENTERTAINMENT_BLOCK_TERMS):
-        agri_keep = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "수급", "출하", "도매시장", "가락시장", "경락", "공판장")])
+    _ENTERTAINMENT_BLOCK_TERMS = (
+        "bts", "방탄소년단", "블랙핑크", "팬미팅", "콘서트", "공연", "뮤지컬", "페스티벌",
+        "드라마", "미니시리즈", "시즌2", "연예", "연기", "시청률", "주연", "출연",
+    )
+    _ENTERTAINMENT_BLOCK_DOMAINS = ("topstarnews.net", "starnewskorea.com", "newsen.com", "osen.co.kr", "xportsnews.com", "sportsseoul.com")
+    _is_entertainment_domain = dom in _ENTERTAINMENT_BLOCK_DOMAINS
+    if any(w in text for w in _ENTERTAINMENT_BLOCK_TERMS) or _is_entertainment_domain:
+        agri_keep = count_any(text, [w.lower() for w in ("농산물", "농업", "농식품", "수급", "출하", "도매시장", "가락시장", "경락", "공판장", "방제", "병해충")])
         if agri_keep < 2:
             return _reject("hardblock_entertainment")
 
@@ -19112,6 +19117,33 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
         raw_by_section[_sec_key] = keep_items
     if moved_topic:
         log.info("[REBALANCE] moved %d item(s) by policy-like override: -> policy", moved_topic)
+
+    # ✅ Supply 비원예 기사 최종 정리: 제목+본문에 원예 품목이 없는 기사는 supply에서 제거
+    if "supply" in raw_by_section:
+        _supply_clean = []
+        _supply_removed = 0
+        for a in raw_by_section.get("supply", []):
+            ttl = (a.title or "").lower()
+            mix = ((a.title or "") + " " + (a.description or "")).lower()
+            has_horti_title = _title_has_horti_item(a.title)
+            has_horti_mix = any(w in mix for w in _SUPPLY_HORTI_GATE_ITEMS)
+            has_livestock = _title_has_livestock_item(a.title)
+            has_mgmt = _title_has_mgmt_item(a.title)
+            # 축산/인사 제목이면 무조건 제거
+            if has_livestock and not has_horti_title:
+                _supply_removed += 1
+                continue
+            if has_mgmt and not has_horti_title:
+                _supply_removed += 1
+                continue
+            # 제목+본문 모두에 원예 품목이 없으면 제거
+            if not has_horti_title and not has_horti_mix:
+                _supply_removed += 1
+                continue
+            _supply_clean.append(a)
+        raw_by_section["supply"] = _supply_clean
+        if _supply_removed:
+            log.info("[SUPPLY CLEAN] removed %d non-horti article(s) from supply", _supply_removed)
 
     # ✅ Global section reassignment (best section by rescoring; reduces query-driven misplacement)
     try:
