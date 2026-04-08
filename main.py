@@ -2992,10 +2992,51 @@ _SUPPLY_MGMT_ITEMS: tuple[str, ...] = (
     "50돌", "한마당", "기념식", "이사장", "선거", "조합장",
 )
 
+_HORTI_SUBSTITUTE_RX = re.compile(
+    r"(" + "|".join(re.escape(w) for w in _SUPPLY_HORTI_GATE_ITEMS) + r")\s*대신",
+    re.IGNORECASE,
+)
+
 def _title_has_horti_item(title: str) -> bool:
-    """제목에 원예 품목명이 하나라도 있는지 확인."""
+    """제목에 원예 품목명이 하나라도 있는지 확인.
+    단, 'X 대신 Y' 패턴에서 X만 원예 품목이고 실제 주제가 비원예인 경우 False.
+    예: '감귤 대신 올리브' → 감귤은 단순 언급, 실제 주제는 올리브 → False
+    """
     ttl = (title or "").lower()
-    return any(w in ttl for w in _SUPPLY_HORTI_GATE_ITEMS)
+    matched = [w for w in _SUPPLY_HORTI_GATE_ITEMS if w in ttl]
+    if not matched:
+        return False
+    # 'X 대신' 패턴이 있으면, 해당 품목을 제거하고 나머지 품목이 있는지 확인
+    if _HORTI_SUBSTITUTE_RX.search(ttl):
+        substitute_items = set()
+        for m in _HORTI_SUBSTITUTE_RX.finditer(ttl):
+            substitute_items.add(m.group(1).lower())
+        # 부분문자열 매칭 제거: "감"이 "감귤"의 부분이면 독립 매칭으로 안 봄
+        remaining = []
+        for w in matched:
+            wl = w.lower()
+            if wl in substitute_items:
+                continue
+            # w가 substitute 항목의 부분문자열이면 스킵 (예: "감" ⊂ "감귤")
+            if any(wl in si and wl != si for si in substitute_items):
+                continue
+            # w의 출현 위치가 substitute 항목 안에만 있으면 스킵
+            _w_positions = [i for i in range(len(ttl)) if ttl[i:i+len(wl)] == wl]
+            _independent = False
+            for pos in _w_positions:
+                _inside_sub = False
+                for si in substitute_items:
+                    si_pos = ttl.find(si)
+                    if si_pos >= 0 and si_pos <= pos < si_pos + len(si):
+                        _inside_sub = True
+                        break
+                if not _inside_sub:
+                    _independent = True
+                    break
+            if _independent:
+                remaining.append(w)
+        return len(remaining) > 0
+    return True
 
 def _title_has_livestock_item(title: str) -> bool:
     """제목에 축산 품목명이 있는지 확인."""
@@ -3297,7 +3338,8 @@ def _dedupe_prefer_bonus(a: "Article", section_key: str) -> float:
 
 
 def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Article"]:
-    """이벤트 키 기준으로 중복 후보를 1건만 남긴다(점수/티어/최신 순)."""
+    """이벤트 키 기준으로 중복 후보를 1건만 남긴다(점수/티어/최신 순).
+    이벤트 키가 없는 기사도 제목 유사도로 추가 dedup."""
     if not items:
         return items
 
@@ -3316,13 +3358,22 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
             best[k] = a
 
     if not best:
-        return items
+        # 이벤트 키가 하나도 없어도, 제목 유사도 기반 dedup은 수행
+        pass
 
     out: list["Article"] = []
+    # 제목 유사도 기반 추가 dedup: 이벤트 키가 없어 통과하는 중복 기사 제거
+    _seen_title_keys: list[str] = []
     for a in items:
         k = _event_key(a, section_key)
         if k and best.get(k) is not a:
             continue
+        # 제목 유사도 체크: 이미 선택된 기사와 유사하면 스킵
+        _tk = getattr(a, "title_key", "") or norm_title_key(a.title or "")
+        if _tk and any(_is_similar_title(_tk, sk) for sk in _seen_title_keys):
+            continue
+        if _tk:
+            _seen_title_keys.append(_tk)
         out.append(a)
     return out
 
@@ -11216,7 +11267,7 @@ PEST_STRICT_TERMS = [
     # 미생물/바이오 방제
     "미생물", "바실러스", "길항균",
 ]
-PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해"]
+PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해", "우박", "폭우", "집중호우", "태풍", "폭설"]
 PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
     "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀", "벼",
@@ -13541,9 +13592,9 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
             relief = 1.6
     elif section_key == "supply":
         if unique_n <= 5:
-            relief = 3.0
+            relief = 4.0
         elif unique_n <= 10:
-            relief = 1.8
+            relief = 2.5
     elif section_key == "dist":
         if unique_n <= 6:
             relief = 3.0
@@ -13688,10 +13739,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     tail_ref_score = _selection_reference_score(pool, section_key)
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
     tail_margin_by_section = {
-        "supply": 3.6,
+        "supply": 5.0,
         "policy": 3.8,
         "dist": 3.4,
-        "pest": 3.6,
+        "pest": 4.2,
     }
     tail_margin = tail_margin_by_section.get(section_key, 3.6)
 
@@ -21386,6 +21437,14 @@ def _normalize_supply_section_from_board(
                 continue
             if article_key in current_supply_keys:
                 continue
+            # 거버넌스/인사 기사 board promote 차단
+            if _title_has_mgmt_item(article.title or "") and not _title_has_horti_item(article.title or ""):
+                log.info("[REBALANCE] blocked governance article from board promote: %s", (article.title or "")[:60])
+                continue
+            # 축산 기사 board promote 차단
+            if _title_has_livestock_item(article.title or "") and not _title_has_horti_item(article.title or ""):
+                log.info("[REBALANCE] blocked livestock article from board promote: %s", (article.title or "")[:60])
+                continue
             # commodity+issue 중복 체크 (같은 품목 기사 중복 방지)
             _cand_txt = ((article.title or "") + " " + (article.description or "")).lower()
             _cand_comms = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _cand_txt}
@@ -21443,6 +21502,10 @@ def _normalize_supply_section_from_board(
     for article in ranked_supply:
         article_key = _article_selection_identity(article)
         if article_key and article_key in seen_supply_keys:
+            continue
+        # 제목 유사도 기반 중복 체크 (같은 이슈 다른 매체 보도 제거)
+        _tk = getattr(article, "title_key", "") or norm_title_key(article.title or "")
+        if _tk and any(_is_similar_title(_tk, getattr(ex, "title_key", "") or norm_title_key(ex.title or "")) for ex in deduped_supply):
             continue
         if article_key:
             seen_supply_keys.add(article_key)
