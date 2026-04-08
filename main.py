@@ -13541,7 +13541,9 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
             relief = 1.6
     elif section_key == "supply":
         if unique_n <= 5:
-            relief = 1.4
+            relief = 3.0
+        elif unique_n <= 10:
+            relief = 1.8
     elif section_key == "dist":
         if unique_n <= 6:
             relief = 3.0
@@ -18889,9 +18891,12 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 # ── 원예 품목 + 수급/가격 직접 기사는 supply/dist 유지 (policy 이동 방지) ──
                 if move_to_policy and sk in ("supply", "dist"):
                     _OR1_SUPPLY = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
-                        "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가")
+                        "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가",
+                        "바닥세","폭락","급등세","천정부지","가격안정","수급불안","수급안정",
+                        "산지폐기","산지 폐기","출하량","반입량","재고","격리","저장")
                     _or1_ttl = (a.title or "").lower()
-                    if _title_has_horti_item(a.title) and any(w in _or1_ttl for w in _OR1_SUPPLY):
+                    _or1_desc = (a.description or "").lower()
+                    if _title_has_horti_item(a.title) and (any(w in _or1_ttl for w in _OR1_SUPPLY) or any(w in _or1_desc for w in _OR1_SUPPLY)):
                         move_to_policy = False
                         log.info("[OVERRIDE1] supply-horti-protect: kept in %s title=%s", sk, (a.title or "")[:80])
 
@@ -19092,6 +19097,17 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 a.topic = bt
                 keep_items.append(a)
                 continue
+
+            # ✅ supply 보호: 제목에 원예 품목 + 수급/시세 키워드가 있으면 supply 유지
+            if _sec_key == "supply" and not _is_governance:
+                _sp_kw = ("가격","시세","출하","수급","산지","증산","감산","작황","반입","경락",
+                          "도매","폐기","생산","약세","강세","급등","급락","하락","상승","물가",
+                          "바닥세","폭락","격리","저장","재고","출하량","반입량")
+                _sp_ttl = (a.title or "").lower()
+                _sp_desc = (a.description or "").lower()
+                if _title_has_horti_item(a.title) and (any(w in _sp_ttl for w in _sp_kw) or any(w in _sp_desc for w in _sp_kw)):
+                    keep_items.append(a)
+                    continue
 
             # 방송사 현장 리포트 + 농업 맥락이 있으면 supply 유지 (정책 이동 방지)
             # 방송 리포트는 현장 취재 중심이라 거시 키워드가 도입부에 나와도 실제로는 품목 수급 기사
