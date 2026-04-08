@@ -3297,7 +3297,8 @@ def _dedupe_prefer_bonus(a: "Article", section_key: str) -> float:
 
 
 def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Article"]:
-    """이벤트 키 기준으로 중복 후보를 1건만 남긴다(점수/티어/최신 순)."""
+    """이벤트 키 기준으로 중복 후보를 1건만 남긴다(점수/티어/최신 순).
+    이벤트 키가 없는 기사도 제목 유사도로 추가 dedup."""
     if not items:
         return items
 
@@ -3316,13 +3317,22 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
             best[k] = a
 
     if not best:
-        return items
+        # 이벤트 키가 하나도 없어도, 제목 유사도 기반 dedup은 수행
+        pass
 
     out: list["Article"] = []
+    # 제목 유사도 기반 추가 dedup: 이벤트 키가 없어 통과하는 중복 기사 제거
+    _seen_title_keys: list[str] = []
     for a in items:
         k = _event_key(a, section_key)
         if k and best.get(k) is not a:
             continue
+        # 제목 유사도 체크: 이미 선택된 기사와 유사하면 스킵
+        _tk = getattr(a, "title_key", "") or norm_title_key(a.title or "")
+        if _tk and any(_is_similar_title(_tk, sk) for sk in _seen_title_keys):
+            continue
+        if _tk:
+            _seen_title_keys.append(_tk)
         out.append(a)
     return out
 
@@ -21386,6 +21396,14 @@ def _normalize_supply_section_from_board(
                 continue
             if article_key in current_supply_keys:
                 continue
+            # 거버넌스/인사 기사 board promote 차단
+            if _title_has_mgmt_item(article.title or "") and not _title_has_horti_item(article.title or ""):
+                log.info("[REBALANCE] blocked governance article from board promote: %s", (article.title or "")[:60])
+                continue
+            # 축산 기사 board promote 차단
+            if _title_has_livestock_item(article.title or "") and not _title_has_horti_item(article.title or ""):
+                log.info("[REBALANCE] blocked livestock article from board promote: %s", (article.title or "")[:60])
+                continue
             # commodity+issue 중복 체크 (같은 품목 기사 중복 방지)
             _cand_txt = ((article.title or "") + " " + (article.description or "")).lower()
             _cand_comms = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _cand_txt}
@@ -21443,6 +21461,10 @@ def _normalize_supply_section_from_board(
     for article in ranked_supply:
         article_key = _article_selection_identity(article)
         if article_key and article_key in seen_supply_keys:
+            continue
+        # 제목 유사도 기반 중복 체크 (같은 이슈 다른 매체 보도 제거)
+        _tk = getattr(article, "title_key", "") or norm_title_key(article.title or "")
+        if _tk and any(_is_similar_title(_tk, getattr(ex, "title_key", "") or norm_title_key(ex.title or "")) for ex in deduped_supply):
             continue
         if article_key:
             seen_supply_keys.add(article_key)
