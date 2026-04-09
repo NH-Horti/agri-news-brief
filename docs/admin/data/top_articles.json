@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-09T00:48:55+09:00",
+  "generated_at": "2026-04-10T00:56:17+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -52,6 +52,32 @@
       "users": 3,
       "archive_url": "/agri-news-brief/archive/2026-04-01.html#sec-supply",
       "source_url": "http://www.dynews.co.kr/news/articleView.html?idxno=844752"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "092666e402c8",
+      "title": "\"폭락을 안정이라니\"… 산지 피눈물 나는데 '물가안정' 자화자찬",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64294"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "64b5696ad90b",
+      "title": "청송군, 사과 결실 위기 대응…꽃가루 긴급 공급 나서",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.kyongbuk.co.kr",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
+      "source_url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4069429"
     },
     {
       "date": "2026-04-01",
@@ -180,19 +206,6 @@
       "target_domain": "www.nongmin.com",
       "clicks": 2,
       "users": 2,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-08",
-      "article_id": "261bdc3888a8",
-      "title": "\" 감귤 농가에 타이벡 등 피복자재 선구매 대응 시급\"",
-      "report_date": "2026-04-08",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.jibs.co.kr",
-      "clicks": 2,
-      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -869,8 +882,8 @@
       "target_domain": "www.dailypop.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-04-07.html#sec-supply",
-      "source_url": "http://www.dailypop.kr/news/articleView.html?idxno=97805"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-07",
@@ -923,6 +936,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-08.html#sec-policy",
       "source_url": "http://www.aflnews.co.kr/news/articleView.html?idxno=318183"
+    },
+    {
+      "date": "2026-04-08",
+      "article_id": "261bdc3888a8",
+      "title": "\" 감귤 농가에 타이벡 등 피복자재 선구매 대응 시급\"",
+      "report_date": "2026-04-08",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.jibs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-08",
@@ -986,8 +1012,8 @@
       "target_domain": "www.dailypop.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-04-07.html#sec-supply",
-      "source_url": "http://www.dailypop.kr/news/articleView.html?idxno=97805"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-08",
@@ -1023,6 +1049,175 @@
       "section": "supply",
       "surface": "commodity_primary",
       "target_domain": "www.topstarnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "092666e402c8",
+      "title": "\"폭락을 안정이라니\"… 산지 피눈물 나는데 '물가안정' 자화자찬",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64294"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "2579215eff5a",
+      "title": "[전북의 창] 사과 당도 측정도 ‘인공지능’으로…흠집까지 판독",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "2d4c63c2ce3f",
+      "title": "박정훈 식량실장, 중동상황 관련 시설원예 농가 현장 점검",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64293"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "2d4c63c2ce3f",
+      "title": "박정훈 식량실장, 중동상황 관련 시설원예 농가 현장 점검",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64293"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "497a2812c504",
+      "title": "정청래 민주당 대표 대구 이어 상주 방문 현장 소통",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "andongmbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
+      "source_url": "http://andongmbc.co.kr/adboard/NewsView81789"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "497a2812c504",
+      "title": "정청래 민주당 대표 대구 이어 상주 방문 현장 소통",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "andongmbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
+      "source_url": "http://andongmbc.co.kr/adboard/NewsView81789"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "505d077908fa",
+      "title": "K-푸드+ 수출 전년 대비 3.5% 증가한 33억5천 달러",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64274"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "5a2fa62382b1",
+      "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
+      "report_date": "2026-04-07",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "8440b650315a",
+      "title": "감귤 대신 올리브...23만명 몰린 제주 비양도의 '기후위기 생존법'",
+      "report_date": "2026-04-07",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ajunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-07.html#sec-supply",
+      "source_url": "https://www.ajunews.com/view/20260406080856490"
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "a522ca5ee04c",
+      "title": "정청래, 김부겸과 대구 새벽시장 찾아...경북 포도 농가 도 방문",
+      "report_date": "2026-04-09",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.ytn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "a608856a39dd",
+      "title": "홍천 내촌농협 “올해부터 생일선물로 10만원 영농자재 고르시죠!”",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "de551f29b50f",
+      "title": "양파경남협의회 정기총회 개최",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-09",
+      "article_id": "f6587df3107a",
+      "title": "사과 당도 측정도 ‘인공지능’으로…흠집까지 판독",
+      "report_date": "2026-04-08",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
