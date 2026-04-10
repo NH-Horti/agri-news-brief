@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-10T00:56:17+09:00",
+  "generated_at": "2026-04-11T00:08:48+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -1222,6 +1222,58 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-10",
+      "article_id": "40640909832",
+      "title": "예천군 가격 폭락 ' 쪽파 농가' 살리기 총력 온·오프라인 특별 판매전",
+      "report_date": "2026-04-10",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.dkilbo.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-10",
+      "article_id": "882069cf4ab1",
+      "title": "[산지 확대경] 시설봄 감자 , 생산량 다소 늘고 알 작아…시세 강세 출발",
+      "report_date": "2026-04-10",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-10",
+      "article_id": "8b48f4b0810e",
+      "title": "김주양 농업경제대표이사, 농산물 수급 안정 박차",
+      "report_date": "2026-04-10",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-10.html#sec-dist",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=71945"
+    },
+    {
+      "date": "2026-04-10",
+      "article_id": "fe4b58111bfe",
+      "title": "경남농기원, 아삭달콤한 국산 햇 양파 본격 출하",
+      "report_date": "2026-04-10",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongup.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-10.html#sec-supply",
+      "source_url": "http://www.nongup.net/news/articleView.html?idxno=32918"
     }
   ]
 }
