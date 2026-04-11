@@ -6667,6 +6667,98 @@ _POLICY_RETAIL_WHITELIST_TERMS = (
     "원산지", "단속",
 )
 
+# 2026-04-11: 새마을/봉사활동/조합원 복지 등 커뮤니티·복리후생 노이즈
+# (옥수수 심고, 복지카드 지급 같은 비-품목 스토리 차단)
+_SUPPLY_COMMUNITY_WELFARE_TERMS = (
+    "새마을", "봉사활동", "봉사 활동", "이웃돕기", "이웃 돕기", "자선",
+    "기탁", "후원사업", "후원금", "나눔 행사", "나눔행사", "나눔 실천",
+    "사회공헌", "기부금", "기부 행사", "장학금",
+    "복지카드", "복지 카드", "생일선물", "생일 선물", "조합원 복지",
+    "조합원복지", "영농자재 고르", "휴경지 경작", "수익 나눔",
+)
+_SUPPLY_DIRECT_SIGNAL_TERMS = (
+    "가격 상승", "가격 하락", "가격 약세", "가격 강세", "시세", "경락", "경매",
+    "도매시장", "출하량", "반입량", "공급 부족", "수급 불안", "작황",
+    "산지 시세", "산지가격", "도매가격", "소비자가격",
+)
+
+
+def _is_community_welfare_noise_context(title: str, desc: str) -> bool:
+    """커뮤니티 봉사·조합원 복지·기부 기사 판정 (품목 수급과 무관).
+
+    예) "새마을 이웃돕기 옥수수 심고", "내촌농협 생일선물 10만원 복지카드"
+    기사 성격이 봉사/복리후생이고 직접적 수급 신호(가격/시세/경매 등)가 없으면 True.
+
+    주의: body crawl로 보강된 description에 관련 기사/광고 텍스트가 섞여 있을 수
+    있으므로 **제목 기반 welfare 신호를 우선 판단**한다 (더 신뢰도 높음).
+    """
+    ttl = (title or "").lower()
+    body = (desc or "").lower()
+    if not ttl and not body:
+        return False
+
+    # 1) 제목 기반 판정 (신뢰도 높음)
+    title_welfare = count_any(ttl, [w.lower() for w in _SUPPLY_COMMUNITY_WELFARE_TERMS])
+    if title_welfare >= 1:
+        # 제목에 직접 수급 신호가 있으면 실제 수급 기사로 간주
+        title_direct = count_any(ttl, [w.lower() for w in _SUPPLY_DIRECT_SIGNAL_TERMS])
+        if title_direct >= 1:
+            return False
+        return True
+
+    # 2) 제목에 welfare 없음 → 본문에 3개 이상 welfare 신호 + 직접 수급 신호 거의 없음
+    mix = f"{ttl} {body}"
+    welfare_hits = count_any(mix, [w.lower() for w in _SUPPLY_COMMUNITY_WELFARE_TERMS])
+    if welfare_hits < 3:
+        return False
+    direct_hits = count_any(mix, [w.lower() for w in _SUPPLY_DIRECT_SIGNAL_TERMS])
+    if direct_hits >= 3:
+        return False
+    return True
+
+
+# 2026-04-11: 지역 농협 자체 지원사업 노이즈 (정부 정책 아님, 품목 수급도 아님)
+# 예) "능주농협, 호박벌 지원사업 실시" - 지역 농협 자체 예산으로 조합원에 물품 지원
+_LOCAL_NH_SELF_SUPPORT_TERMS = (
+    "지원사업 실시", "무상 지원", "무상지원", "조합원 지원", "조합원에 지원",
+    "무상 공급", "자체 예산", "자체예산", "상생 협력", "상생협력",
+    "복지카드", "생일선물", "호박벌 지원",
+)
+_GOVERNMENT_POLICY_STRONG_TERMS = (
+    "농식품부", "농림축산식품부", "정부 정책", "정부정책", "국비 지원",
+    "국정과제", "시책", "조례 제정", "법안 발의", "대통령", "장관",
+)
+
+
+def _is_local_nh_self_support_noise_context(title: str, desc: str) -> bool:
+    """지역 농협이 자체 예산으로 조합원에게 물품/자재를 지원하는 기사.
+
+    예) "능주농협, 호박벌 지원사업 실시" (조합원 300농가에 호박벌 무상 지원)
+    품목이 언급되지만 기사의 핵심은 지역 조합의 복지·지원 활동이며,
+    정부 정책도 아니고 품목 수급 이슈도 아님.
+    """
+    ttl = (title or "").lower()
+    body = (desc or "").lower()
+    mix = f"{ttl} {body}"
+    if not mix:
+        return False
+    # 지역 농협 주체
+    if "농협" not in ttl:
+        return False
+    # 자체 지원사업 신호
+    self_support_hits = count_any(mix, [w.lower() for w in _LOCAL_NH_SELF_SUPPORT_TERMS])
+    if self_support_hits < 1:
+        return False
+    # 정부 정책 신호가 강하면 아님 (정부 정책 기사로 취급)
+    gov_policy_hits = count_any(mix, [w.lower() for w in _GOVERNMENT_POLICY_STRONG_TERMS])
+    if gov_policy_hits >= 2:
+        return False
+    # 직접적 수급 신호가 있으면 아님 (실제 품목 수급 기사로 취급)
+    direct_hits = count_any(mix, [w.lower() for w in _SUPPLY_DIRECT_SIGNAL_TERMS])
+    if direct_hits >= 2:
+        return False
+    return True
+
 
 def _is_policy_community_noise_context(title: str, desc: str) -> bool:
     """봉사/기부/헌혈/홈쇼핑 등 정책과 무관한 CSR·프로모션 기사 차단.
@@ -14156,6 +14248,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         # 2026-04-10: 정치 발언 차단 (기존 dist 필터에만 있던 로직을 supply에도 적용)
         if is_commodity_political_statement_context(a.title or "", a.description or ""):
             return True
+        # 2026-04-11: 커뮤니티 봉사·조합원 복지·지역 농협 자체 지원사업 차단
+        # (04-09 품질 이슈: 새마을 이웃돕기, NH 생일선물 복지카드, 능주농협 호박벌 지원)
+        if _is_community_welfare_noise_context(a.title or "", a.description or ""):
+            return True
+        if _is_local_nh_self_support_noise_context(a.title or "", a.description or ""):
+            return True
         launchy_hits = count_any(title_local, [w.lower() for w in ("첫선", "첫 결실", "첫결실", "첫 출하", "첫출하", "선보여", "선봬")])
         if launchy_hits >= 1 and (not is_supply_feature_article(a.title or "", a.description or "")) and (not is_supply_price_outlook_context(a.title or "", a.description or "")):
             try:
@@ -14369,6 +14467,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             a.title or "",
             a.description or "",
         ) or _is_policy_community_noise_context(
+            a.title or "",
+            a.description or "",
+        ) or _is_local_nh_self_support_noise_context(
             a.title or "",
             a.description or "",
         )
@@ -18480,6 +18581,25 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
         if not is_pest_control_policy_context(txt):
             keep_policy.append(a)
             continue
+
+        # 2026-04-11: 제목이 명백히 정책/수급안정 기사인 경우 pest 이동 금지.
+        # 본문에 방제/약제/예찰 등 pest 용어가 나열되어 있어도 (포괄적 대책 문서라서),
+        # 제목이 정책성이고 title에 pest strict term이 없으면 policy에 유지.
+        # 예) "사과 생산량 전년대비 10% 확대로 수급 안정 도모" (본문에 방제 7회 언급되지만 정책 기사)
+        title_l = (a.title or "").lower()
+        _POLICY_STRONG_TITLE_KWS = (
+            "수급 안정", "수급안정", "안정생산", "안정 생산",
+            "추진방안", "추진 방안", "대책 마련", "대책마련",
+            "대책 발표", "정책 발표", "수급 관리", "수급관리",
+            "지원 방안", "지원방안", "생산량 확대", "생산 확대",
+            "대응 방안", "대응방안",
+        )
+        if any(kw in title_l for kw in _POLICY_STRONG_TITLE_KWS):
+            title_pest_hits = count_any(title_l, [w.lower() for w in PEST_STRICT_TERMS])
+            if title_pest_hits == 0:
+                # 정책 기사 확정 — pest로 이동하지 않음
+                keep_policy.append(a)
+                continue
 
         d = normalize_host(getattr(a, "domain", "") or "")
         p = (getattr(a, "press", "") or "").strip()
