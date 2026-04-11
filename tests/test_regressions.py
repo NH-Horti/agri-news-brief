@@ -206,9 +206,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("push:", self.auto_sync_text)
         self.assertIn("- main", self.auto_sync_text)
         self.assertIn("if: github.ref_name == 'main'", self.auto_sync_text)
+        self.assertIn("actions: write", self.auto_sync_text)
         self.assertIn("git merge-base --is-ancestor origin/main origin/dev", self.auto_sync_text)
         self.assertIn("git merge --no-edit origin/main", self.auto_sync_text)
         self.assertIn("git push origin HEAD:dev", self.auto_sync_text)
+        self.assertIn("steps.sync.outputs.synced == 'true'", self.auto_sync_text)
+        self.assertIn("actions/workflows/dev-verify.yml/dispatches", self.auto_sync_text)
 
     def test_rebuild_and_dev_verify_report_actual_kakao_status(self):
         self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.rebuild_text)

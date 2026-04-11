@@ -190,7 +190,7 @@ Behavior:
 This workflow fast-forwards `main` to `origin/dev` and can optionally dispatch a production rebuild after promotion.
 The workflow is intentionally `ff-only` so development history stays clean and production only moves to code that already exists on `dev`.
 `auto-promote-dev.yml` runs the same fast-forward automatically after a successful `dev-verify.yml` push run on `dev`.
-`auto-sync-main-to-dev.yml` merges `main` back into `dev` after production changes land, so the next verified `dev` push can still promote cleanly.
+`auto-sync-main-to-dev.yml` merges `main` back into `dev` after production changes land and then dispatches `dev-verify.yml`, so the preview branch refresh stays close to production code.
 
 ### Simple operation flow
 
