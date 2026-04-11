@@ -686,6 +686,9 @@ DEBUG_REPORT_MAX_CANDIDATES = int(os.getenv("DEBUG_REPORT_MAX_CANDIDATES", "25")
 DEBUG_REPORT_MAX_REJECTS = int(os.getenv("DEBUG_REPORT_MAX_REJECTS", "120"))
 DEBUG_REPORT_WRITE_JSON = (os.getenv("DEBUG_REPORT_WRITE_JSON", "1") == "1") if DEBUG_REPORT else False
 REPORT_DATE_OVERRIDE = os.getenv("REPORT_DATE_OVERRIDE", "").strip()
+# PLACEMENT_ONLY: 초고속 배치 검증 모드. HTML/요약/푸시 스킵, 섹션별 배치 JSON만 덤프.
+PLACEMENT_ONLY = os.getenv("PLACEMENT_ONLY", "0") == "1"
+PLACEMENT_ONLY_OUTPUT = os.getenv("PLACEMENT_ONLY_OUTPUT", "").strip()
 
 # Debug report data (embedded into HTML when DEBUG_REPORT=1)
 _DEBUG_LOCK = threading.Lock()
@@ -3049,9 +3052,10 @@ def _title_has_mgmt_item(title: str) -> bool:
     return any(w in ttl for w in _SUPPLY_MGMT_ITEMS)
 
 # === Dedup Thresholds ===
-_DEDUP_JACCARD_THR_DIST = 0.35
-_DEDUP_JACCARD_THR_SUPPLY_POLICY = 0.40
-_DEDUP_JACCARD_THR_DEFAULT = 0.35
+# 2026-04-10: 중복 완화 (49개/26유니크 문제 해결)
+_DEDUP_JACCARD_THR_DIST = 0.30
+_DEDUP_JACCARD_THR_SUPPLY_POLICY = 0.33
+_DEDUP_JACCARD_THR_DEFAULT = 0.30
 _DEDUP_MIN_TITLE_KEY_LEN = 10
 _DEDUP_CONTAIN_RATIO_LONG = 0.55    # title_key >= 14 chars
 _DEDUP_CONTAIN_RATIO_SHORT = 0.78   # title_key < 14 chars
@@ -6644,6 +6648,48 @@ def is_policy_budget_drive_noise_context(title: str, desc: str) -> bool:
         [w.lower() for w in ("가격안정", "가격 안정", "수급", "출하비용", "보전", "최소가격", "할인지원", "검역", "원산지", "단속", "도매시장", "공판장", "가락시장", "농산물", "원예", "과수", "과일", "채소")],
     ) + managed_count
     return keep_hits < 3 and _local_geo_match(ttl)
+
+
+# 2026-04-10: policy 섹션 봉사활동/홈쇼핑/기부 노이즈 차단
+_POLICY_COMMUNITY_NOISE_TERMS = (
+    "봉사활동", "사회공헌", "기부금", "기부", "나눔행사", "나눔 행사",
+    "성금", "헌혈", "기탁", "장학금", "발전기금", "후원금", "자선",
+)
+_POLICY_RETAIL_NOISE_TERMS = (
+    "홈쇼핑", "프로모션", "특판", "판촉", "세일", "할인전", "기획전",
+)
+_POLICY_NOISE_WHITELIST_TERMS = (
+    "수급안정", "수급 안정", "정책", "대책", "제도", "지원사업", "시행령",
+    "시행규칙", "고시", "조례", "법안", "예산안", "심의", "의결",
+)
+_POLICY_RETAIL_WHITELIST_TERMS = (
+    "산지유통", "공판장", "유통구조", "도매시장", "수급", "경락",
+    "원산지", "단속",
+)
+
+
+def _is_policy_community_noise_context(title: str, desc: str) -> bool:
+    """봉사/기부/헌혈/홈쇼핑 등 정책과 무관한 CSR·프로모션 기사 차단.
+    단, 실제 정책 맥락(수급안정/대책/제도)이 있으면 허용.
+    """
+    ttl = title or ""
+    body = desc or ""
+    mix = f"{ttl} {body}".lower()
+    if not mix:
+        return False
+    community_hits = count_any(mix, [w.lower() for w in _POLICY_COMMUNITY_NOISE_TERMS])
+    retail_hits = count_any(mix, [w.lower() for w in _POLICY_RETAIL_NOISE_TERMS])
+    if community_hits == 0 and retail_hits == 0:
+        return False
+    # 화이트리스트 체크: 실제 정책 맥락이 있으면 통과
+    policy_hits = count_any(mix, [w.lower() for w in _POLICY_NOISE_WHITELIST_TERMS])
+    if community_hits >= 2 and policy_hits == 0:
+        return True
+    if retail_hits >= 1:
+        retail_wl_hits = count_any(mix, [w.lower() for w in _POLICY_RETAIL_WHITELIST_TERMS])
+        if retail_wl_hits == 0 and policy_hits == 0:
+            return True
+    return False
 
 
 def is_dist_political_visit_context(title: str, desc: str) -> bool:
@@ -13580,11 +13626,13 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
     unique_candidates = _dedupe_by_event_key(list(candidates_sorted), section_key)
     unique_n = len(unique_candidates)
     relief = 0.0
+    # 2026-04-10: supply/policy relief 축소 — 얕은 풀에서 임계치가 지나치게 낮아져
+    # 저품질 기사가 유입되는 문제 해결. 하한을 BASE_MIN_SCORE + 1.5로 강화.
     if section_key == "policy":
         if unique_n <= 6:
-            relief = 4.0
+            relief = 3.0
         elif unique_n <= 12:
-            relief = 2.5
+            relief = 2.0
     elif section_key == "pest":
         if unique_n <= 4:
             relief = 3.0
@@ -13592,16 +13640,20 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
             relief = 1.6
     elif section_key == "supply":
         if unique_n <= 5:
-            relief = 4.0
+            relief = 3.0
         elif unique_n <= 10:
-            relief = 2.5
+            relief = 1.8
     elif section_key == "dist":
         if unique_n <= 6:
             relief = 3.0
         elif unique_n <= 10:
             relief = 1.8
     if relief > 0:
-        thr = max(BASE_MIN_SCORE.get(section_key, 6.0), thr - relief)
+        # supply/policy: BASE_MIN + 1.5 하한
+        _base_floor = BASE_MIN_SCORE.get(section_key, 6.0)
+        if section_key in ("supply", "policy"):
+            _base_floor = _base_floor + 1.5
+        thr = max(_base_floor, thr - relief)
     return thr
 
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
@@ -13682,10 +13734,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             a.selection_fit_score = 0.0
 
     # 섹션 적합도(section-fit)가 매우 낮은 후보는 상단 선발에서 제외(단, 점수가 충분히 높으면 유지)
+    # 2026-04-10: override 문턱 1.2 → 3.0 (정말 높은 점수만 fit 부족 허용)
+    # 2026-04-11: fit 게이트 0.3 → 0.15 로 완화 — 섹션별 must_terms 가 드문
+    #             유통센터 기사(벼 육묘장·유통센터 등) 보호. fit=0.0 (완전 무관)만 차단.
     fit_filtered: list[Article] = []
     for a in pool:
         fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
-        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (float(getattr(a, "score", 0.0) or 0.0) >= (thr + 1.2)):
+        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (fit_sc >= 0.15 and float(getattr(a, "score", 0.0) or 0.0) >= (thr + 3.0)):
             fit_filtered.append(a)
     if fit_filtered:
         pool = fit_filtered
@@ -13738,8 +13793,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     best_score = float(getattr(pool[0], "score", 0.0) or 0.0)
     tail_ref_score = _selection_reference_score(pool, section_key)
     # 섹션별로 꼬리 허용폭을 다르게(유통/현장(dist)은 누수 방지를 위해 더 엄격)
+    # 2026-04-10: supply tail_margin 복원 (5.0 → 3.8) — 저품질 꼬리 유입 방지
+    # 2026-04-11: supply tail_margin 미세조정 (3.8 → 4.2) — 5번째 기사 수용 회귀 수정
     tail_margin_by_section = {
-        "supply": 5.0,
+        "supply": 4.2,
         "policy": 3.8,
         "dist": 3.4,
         "pest": 4.2,
@@ -13748,15 +13805,18 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     # 페이지 노출량을 늘릴 때(예: MAX_PER_SECTION=5) "핵심2" 외 일반 기사도 적절히 포함되도록
     # tail-cut 폭을 넓힌다. (core 선정 로직/점수는 그대로 유지)
+    # 2026-04-10: default 4.0 → 2.5 — extra margin도 축소
     if MAX_PER_SECTION >= 5:
         try:
-            extra = float(os.getenv("PAGE_TAIL_MARGIN_EXTRA", "4.0") or 0.0)
+            extra = float(os.getenv("PAGE_TAIL_MARGIN_EXTRA", "2.5") or 0.0)
         except Exception:
-            extra = 4.0
+            extra = 2.5
         extra = max(0.0, min(extra, 12.0))
         tail_margin += extra
 
-    tail_cut = max(thr, tail_ref_score - tail_margin)
+    # 2026-04-10: 품질 하한선 — 어떤 margin 계산이든 BASE_MIN + 1.5 미만 기사는 절대 진입 불가
+    _quality_floor = BASE_MIN_SCORE.get(section_key, 6.0) + 1.5
+    tail_cut = max(thr, tail_ref_score - tail_margin, _quality_floor)
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -14075,6 +14135,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if section_key != "supply":
             return False
         title_local = (a.title or "").lower()
+        # 2026-04-10: 정치 발언 차단 (기존 dist 필터에만 있던 로직을 supply에도 적용)
+        if is_commodity_political_statement_context(a.title or "", a.description or ""):
+            return True
         launchy_hits = count_any(title_local, [w.lower() for w in ("첫선", "첫 결실", "첫결실", "첫 출하", "첫출하", "선보여", "선봬")])
         if launchy_hits >= 1 and (not is_supply_feature_article(a.title or "", a.description or "")) and (not is_supply_price_outlook_context(a.title or "", a.description or "")):
             try:
@@ -14164,7 +14227,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if _title_has_mgmt_item(a.title):
             return True
         # 제목에 원예 품목이 없고, 본문에도 없으면 → 차단
+        # 2026-04-10: 단, best_horti_score가 충분히 높으면 (title+desc 전반 강한 원예 시그널)
+        # 차단하지 않음 — "X 대신 Y" 패턴 오과잉 필터 안전망
         if not _title_has_horti_item(a.title) and not any(w in mix for w in _SUPPLY_HORTI_GATE_ITEMS):
+            try:
+                if best_horti_score(a.title or "", a.description or "") >= 2.0:
+                    return False
+            except Exception:
+                pass
             return True
         return False
 
@@ -14278,6 +14348,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             a.title or "",
             a.description or "",
         ) or is_policy_budget_drive_noise_context(
+            a.title or "",
+            a.description or "",
+        ) or _is_policy_community_noise_context(
             a.title or "",
             a.description or "",
         )
@@ -15765,6 +15838,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             dist_unique.append(a)
         deduped = dist_unique
+
+    # 2026-04-10: supply/policy story-level dedup — 제거됨 (2026-04-11 회귀 수정)
+    # 이유: _is_similar_story의 anchor+action 규칙이 너무 공격적으로
+    #       서로 다른 policy 기사(market_brief vs official announcement)를 중복 판정.
+    #       Jaccard 기반 dedup(_near_duplicate_title + _anchor Jaccard)만 사용.
+    # 만약 policy 섹션에서 reformulation 중복 문제가 재발하면,
+    # _near_duplicate_title 임계치 조정 또는 title_key 기반 dedup 추가 검토.
 
     if section_key == "pest":
         def _pest_exact_title_key(article: Article) -> str:
@@ -18820,6 +18900,11 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
     if not isinstance(final_by_section, dict):
         return 0
     pruned = 0
+    # 2026-04-10 (Change 9): 품질 하한 감사
+    # board promotion / core re-designation 을 통해 select_top_articles 의 fit 필터를
+    # 우회한 저품질 기사가 최종 섹션에 남아있는 경우 제거.
+    # 기준: section_fit_score 를 재계산하여 fit < 0.3 이면서 score < 10.0 인 기사
+    _sec_conf_map = {str(s.get("key") or "").strip(): s for s in SECTIONS if str(s.get("key") or "").strip()}
     for key, items in list((final_by_section or {}).items()):
         keep: list[Article] = []
         for a in (items or []):
@@ -18831,6 +18916,44 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
                 _mark_debug_postbuild_reject(str(key), a, reason)
                 log.info("[AUDIT] drop section=%s reason=%s title=%s", key, reason, (a.title or "")[:120])
                 continue
+            # 품질 하한 체크 (supply/policy/dist만; pest 섹션은 기존 로직이 잘 작동)
+            # 2026-04-11 (Change 9 정밀화): fit 위주, 점수 보조 로직
+            # DROP 조건:
+            #   A) fit < 0.15 → 완전 무관 (무조건 drop)
+            #   B) fit < 0.3 AND score < 25.0 AND NOT is_core
+            #      → 애매한 fit + 중간 점수인데 프로그램 코어도 아닌 경우 drop
+            #        (K-신재생에너지, 정치발언 혼입 등 underfill/backfill 경로 차단)
+            # 보호 조건:
+            #   - is_core + score >= 10.0 이고 fit >= 0.15 인 경우는 그대로 유지
+            #     (고추/감귤 같이 core_final 경로로 들어온 정식 원예 기사 보호)
+            #   - 비core 이어도 score >= 25.0 이면 유지
+            #     (중동 사태 요소 비료 같이 거시적 배경 기사지만 고점수인 경우)
+            if str(key) in ("supply", "policy", "dist"):
+                try:
+                    _audit_fit = section_fit_score(
+                        a.title or "",
+                        a.description or "",
+                        _sec_conf_map.get(str(key), {}),
+                        a.domain or "",
+                        a.press or "",
+                    )
+                except Exception:
+                    _audit_fit = 0.0
+                _audit_score = float(getattr(a, "score", 0.0) or 0.0)
+                _audit_is_core = bool(getattr(a, "is_core", False))
+                _drop = False
+                _drop_reason = ""
+                if _audit_fit < 0.15:
+                    _drop = True
+                    _drop_reason = "fit_near_zero"
+                elif _audit_fit < 0.3 and _audit_score < 25.0 and not _audit_is_core:
+                    _drop = True
+                    _drop_reason = "low_fit_mid_score_noncore"
+                if _drop:
+                    pruned += 1
+                    log.info("[AUDIT] drop section=%s reason=%s fit=%.2f score=%.2f core=%s title=%s",
+                             key, _drop_reason, _audit_fit, _audit_score, _audit_is_core, (a.title or "")[:120])
+                    continue
             keep.append(a)
         final_by_section[str(key)] = keep
     return pruned
@@ -18885,8 +19008,59 @@ def collect_raw_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
     return raw_by_section
 
 
+def _placement_preproc_cache_path(report_date: str) -> Path:
+    return Path(".local-debug/placement") / f"pipeline-state-{report_date}.pkl"
+
+
+def _placement_load_preproc_cache(raw_by_section: dict[str, list[Article]], start_kst: datetime) -> bool:
+    """Load pre-Phase1 pipeline state from cache if available. Returns True if loaded."""
+    if not PLACEMENT_ONLY:
+        return False
+    if os.getenv("PLACEMENT_PIPELINE_REFRESH", "0") == "1":
+        return False
+    report_date = os.getenv("FORCE_REPORT_DATE", "").strip() or start_kst.date().isoformat()
+    cache_path = _placement_preproc_cache_path(report_date)
+    if not cache_path.is_file():
+        return False
+    try:
+        import pickle
+        with open(cache_path, "rb") as fh:
+            cached = pickle.load(fh)
+        if not isinstance(cached, dict):
+            return False
+        raw_by_section.clear()
+        for k, v in cached.items():
+            raw_by_section[k] = list(v or [])
+        log.info("[PLACEMENT_ONLY] loaded pipeline-state cache: %s", cache_path)
+        return True
+    except Exception as exc:
+        log.warning("[PLACEMENT_ONLY] pipeline-state cache load failed: %s", exc)
+        return False
+
+
+def _placement_save_preproc_cache(raw_by_section: dict[str, list[Article]], start_kst: datetime) -> None:
+    if not PLACEMENT_ONLY:
+        return
+    report_date = os.getenv("FORCE_REPORT_DATE", "").strip() or start_kst.date().isoformat()
+    cache_path = _placement_preproc_cache_path(report_date)
+    try:
+        import pickle
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(cache_path, "wb") as fh:
+            pickle.dump({k: list(v or []) for k, v in raw_by_section.items()}, fh)
+        log.info("[PLACEMENT_ONLY] wrote pipeline-state cache: %s", cache_path)
+    except Exception as exc:
+        log.warning("[PLACEMENT_ONLY] pipeline-state cache save failed: %s", exc)
+
+
 def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
     board_source_by_section: dict[str, list[Article]] = {str(sec.get("key") or "").strip(): [] for sec in SECTIONS if str(sec.get("key") or "").strip()}
+
+    # PLACEMENT_ONLY 캐시: 전처리(OVERRIDE1/REBALANCE/SUPPLY CLEAN/GLOBAL REASSIGN) 결과가 캐시되면
+    # Phase 1 직전으로 점프하여 10분 이상 절약. Changes 1-7 은 Phase 1+ 에만 영향.
+    _placement_cache_loaded = _placement_load_preproc_cache(raw_by_section, start_kst)
+    if _placement_cache_loaded:
+        return _build_sections_phase123(raw_by_section, board_source_by_section, start_kst, end_kst)
 
     # ✅ 정책/기관 도메인(정책브리핑/농식품부/aT/농관원/KREI 등)은 수급/유통 쿼리에도 걸릴 수 있다.
     #    수집 단계에서는 살려두되, 최종 섹션은 policy로 강제 이동(누락/오분류 방지).
@@ -19213,11 +19387,16 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             log.info("[SUPPLY CLEAN] removed %d non-horti article(s) from supply", _supply_removed)
 
     # ✅ Global section reassignment (best section by rescoring; reduces query-driven misplacement)
+    # PLACEMENT_ONLY: _global_section_reassign는 compute_rank_score를 ~2000번 호출하여 ~30분 소요.
+    # Changes 1-7 는 이 함수 내부 로직에 영향을 주지 않으므로 placement 검증 시 스킵 가능.
+    _skip_global_reassign = PLACEMENT_ONLY and os.getenv("PLACEMENT_FORCE_GLOBAL_REASSIGN", "0") != "1"
     try:
-        if GLOBAL_SECTION_REASSIGN_ENABLED:
+        if GLOBAL_SECTION_REASSIGN_ENABLED and not _skip_global_reassign:
             moved_global = _global_section_reassign(raw_by_section, start_kst, end_kst)
             if moved_global:
                 log.info("[REASSIGN] moved %d item(s) by global rescoring", moved_global)
+        elif _skip_global_reassign:
+            log.info("[PLACEMENT_ONLY] skipping _global_section_reassign (set PLACEMENT_FORCE_GLOBAL_REASSIGN=1 to enable)")
     except Exception as e:
         log.warning("[WARN] global section reassignment failed: %s", e)
 
@@ -19229,6 +19408,18 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
     except Exception as e:
         log.warning("[WARN] pest-priority rebalance failed: %s", e)
 
+    # PLACEMENT_ONLY: 전처리 완료 후 캐시 저장 (다음 실행에서 10분+ 절약)
+    _placement_save_preproc_cache(raw_by_section, start_kst)
+
+    return _build_sections_phase123(raw_by_section, board_source_by_section, start_kst, end_kst)
+
+
+def _build_sections_phase123(
+    raw_by_section: dict[str, list[Article]],
+    board_source_by_section: dict[str, list[Article]],
+    start_kst: datetime,
+    end_kst: datetime,
+) -> dict[str, list[Article]]:
     board_source_by_section = build_managed_commodity_board_source_by_section(raw_by_section)
     final_by_section: dict[str, list[Article]] = {}
 
@@ -21444,6 +21635,23 @@ def _normalize_supply_section_from_board(
             # 축산 기사 board promote 차단
             if _title_has_livestock_item(article.title or "") and not _title_has_horti_item(article.title or ""):
                 log.info("[REBALANCE] blocked livestock article from board promote: %s", (article.title or "")[:60])
+                continue
+            # 2026-04-10 (Change 8): 품질 하한 게이트 — board promote는 최소 fit/score 요구
+            # 기존엔 governance/livestock 필터만 있어 fit=0/score<8 저품질 기사가 promote됨
+            try:
+                _bp_fit = section_fit_score(
+                    article.title or "",
+                    article.description or "",
+                    next((s for s in SECTIONS if s.get("key") == "supply"), {}),
+                    article.domain or "",
+                    article.press or "",
+                )
+            except Exception:
+                _bp_fit = 0.0
+            _bp_score = float(getattr(article, "score", 0.0) or 0.0)
+            if _bp_fit < 0.8 and _bp_score < 10.0:
+                log.info("[REBALANCE] blocked low-quality board promote: fit=%.2f score=%.2f title=%s",
+                         _bp_fit, _bp_score, (article.title or "")[:60])
                 continue
             # commodity+issue 중복 체크 (같은 품목 기사 중복 방지)
             _cand_txt = ((article.title or "") + " " + (article.description or "")).lower()
@@ -25577,35 +25785,80 @@ def _build_sections_for_report(
         log.info("[REPLAY] loaded snapshot: %s", snapshot_path)
 
         # ── 리플레이 재스코어링: 스냅샷에 저장된 구(舊) 점수를 현재 scoring 로직으로 갱신 ──
-        _sec_conf_map: dict[str, JsonDict] = {
-            str(s.get("key") or "").strip(): s
-            for s in SECTIONS if str(s.get("key") or "").strip()
-        }
-        _rescore_count = 0
-        for _rs_key, _rs_articles in raw_by_section.items():
-            _rs_conf = _sec_conf_map.get(_rs_key, {})
-            for _rs_a in _rs_articles:
+        # PLACEMENT_ONLY 모드: rescore 결과를 캐시에 저장/로드하여 반복 실행 시 ~7분 절약
+        _rescore_cache_path: Path | None = None
+        _rescore_loaded_from_cache = False
+        if PLACEMENT_ONLY:
+            try:
+                _snapshot_mtime = snapshot_path.stat().st_mtime if snapshot_path else 0.0
+            except Exception:
+                _snapshot_mtime = 0.0
+            _rescore_cache_path = Path(".local-debug/placement") / f"rescore-{report_date}.json"
+            if _rescore_cache_path.is_file() and os.getenv("PLACEMENT_RESCORE_REFRESH", "0") != "1":
                 try:
-                    _old_sc = float(getattr(_rs_a, "score", 0.0) or 0.0)
-                    _new_sc = compute_rank_score(
-                        _rs_a.title or "", _rs_a.description or "",
-                        _rs_a.domain or "", _rs_a.pub_dt_kst, _rs_conf, _rs_a.press or "",
-                    )
-                    _rs_a.score = _new_sc
-                    _rescore_count += 1
-                except Exception:
-                    pass
-        log.info("[REPLAY] rescored %d article(s) with current scoring logic", _rescore_count)
+                    with open(_rescore_cache_path, "r", encoding="utf-8") as fh:
+                        _rescore_cache = json.load(fh)
+                    if float(_rescore_cache.get("snapshot_mtime") or 0.0) == _snapshot_mtime:
+                        _score_by_key = _rescore_cache.get("scores") or {}
+                        _applied = 0
+                        for _rs_key, _rs_articles in raw_by_section.items():
+                            for _rs_a in _rs_articles:
+                                nk = _rs_a.norm_key or _rs_a.canon_url or ""
+                                if nk and nk in _score_by_key:
+                                    _rs_a.score = float(_score_by_key[nk])
+                                    _applied += 1
+                        log.info("[PLACEMENT_ONLY] loaded rescore cache: %d article(s) from %s", _applied, _rescore_cache_path)
+                        _rescore_loaded_from_cache = True
+                except Exception as exc:
+                    log.warning("[PLACEMENT_ONLY] rescore cache load failed: %s", exc)
+
+        if not _rescore_loaded_from_cache:
+            _sec_conf_map: dict[str, JsonDict] = {
+                str(s.get("key") or "").strip(): s
+                for s in SECTIONS if str(s.get("key") or "").strip()
+            }
+            _rescore_count = 0
+            _score_dump: dict[str, float] = {}
+            for _rs_key, _rs_articles in raw_by_section.items():
+                _rs_conf = _sec_conf_map.get(_rs_key, {})
+                for _rs_a in _rs_articles:
+                    try:
+                        _old_sc = float(getattr(_rs_a, "score", 0.0) or 0.0)
+                        _new_sc = compute_rank_score(
+                            _rs_a.title or "", _rs_a.description or "",
+                            _rs_a.domain or "", _rs_a.pub_dt_kst, _rs_conf, _rs_a.press or "",
+                        )
+                        _rs_a.score = _new_sc
+                        _rescore_count += 1
+                        if PLACEMENT_ONLY:
+                            nk = _rs_a.norm_key or _rs_a.canon_url or ""
+                            if nk:
+                                _score_dump[nk] = _new_sc
+                    except Exception:
+                        pass
+            log.info("[REPLAY] rescored %d article(s) with current scoring logic", _rescore_count)
+            if PLACEMENT_ONLY and _rescore_cache_path is not None and _score_dump:
+                try:
+                    _rescore_cache_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(_rescore_cache_path, "w", encoding="utf-8") as fh:
+                        json.dump({"snapshot_mtime": _snapshot_mtime, "scores": _score_dump}, fh)
+                    log.info("[PLACEMENT_ONLY] wrote rescore cache: %s (%d entries)", _rescore_cache_path, len(_score_dump))
+                except Exception as exc:
+                    log.warning("[PLACEMENT_ONLY] rescore cache write failed: %s", exc)
     else:
         raw_by_section = collect_raw_sections(start_kst, end_kst)
         raw_snapshot = _clone_articles_by_section(raw_by_section)
         snapshot_debug = _snapshot_debug_payload()
 
     by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
-    summary_cache = load_summary_cache(repo, token)
-    if snapshot_summary_cache:
-        summary_cache.update(snapshot_summary_cache)
-    by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
+    if PLACEMENT_ONLY:
+        # 배치 검증 모드: 요약/캐시 로드 생략 (GitHub API 호출 0건)
+        summary_cache = dict(snapshot_summary_cache or {})
+    else:
+        summary_cache = load_summary_cache(repo, token)
+        if snapshot_summary_cache:
+            summary_cache.update(snapshot_summary_cache)
+        by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
 
     if raw_snapshot is not None and _replay_snapshot_write_enabled():
         try:
@@ -25823,6 +26076,53 @@ def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path:
     )
 
 
+def _dump_placement_only(report_date: str, by_section: dict[str, list[Article]]) -> str:
+    """PLACEMENT_ONLY 모드: 섹션별 최종 기사 배치를 JSON으로 덤프.
+
+    Returns the output path. Caller should log + early exit.
+    """
+    out_path = PLACEMENT_ONLY_OUTPUT or f".local-debug/placement/{report_date}.json"
+    try:
+        os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    except Exception:
+        pass
+    payload: JsonDict = {
+        "report_date": report_date,
+        "generated_at_kst": datetime.now(KST).isoformat(),
+        "sections": {},
+    }
+    total = 0
+    for sec in SECTIONS:
+        key = str(sec.get("key") or "").strip()
+        if not key:
+            continue
+        arts = [a for a in (by_section.get(key) or []) if isinstance(a, Article)]
+        rows: list[JsonDict] = []
+        for rank, a in enumerate(arts, start=1):
+            rows.append({
+                "rank": rank,
+                "title": (a.title or "")[:300],
+                "press": (a.press or "")[:80],
+                "domain": (a.domain or "")[:120],
+                "score": round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                "fit": round(float(getattr(a, "selection_fit_score", 0.0) or 0.0), 3),
+                "is_core": bool(getattr(a, "is_core", False)),
+                "reassigned_from": str(getattr(a, "reassigned_from", "") or ""),
+                "norm_key": (a.norm_key or "")[:120],
+                "url": (a.link or a.canon_url or "")[:400],
+            })
+        payload["sections"][key] = rows
+        total += len(rows)
+    payload["total_selected"] = total
+
+    try:
+        with open(out_path, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, ensure_ascii=False, indent=2)
+    except Exception as e:
+        log.warning("[PLACEMENT_ONLY] write failed: %s", e)
+    return out_path
+
+
 def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = False) -> None:
     """Rebuild a single date page from a saved replay snapshot. No Naver collection."""
     if not report_date or not is_iso_date_str(report_date):
@@ -25838,6 +26138,12 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
         replay_snapshot=True,
     )
     log.info("[MAINT] replay_date %s window: %s ~ %s", report_date, start_kst.isoformat(), end_kst.isoformat())
+
+    if PLACEMENT_ONLY:
+        out_path = _dump_placement_only(report_date, by_section)
+        log.info("[PLACEMENT_ONLY] wrote %s", out_path)
+        return
+
     _publish_maintenance_report(
         repo,
         token,
