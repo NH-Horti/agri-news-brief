@@ -4,8 +4,11 @@ on:
   schedule:
     # 월요일(일요일 UTC): KST 05:00 — 주말 72h 윈도우 대응 (early-start margin 2h 적용)
     - cron: '0 20 * * 0'
-    # 화~금(월~목 UTC): KST 06:00 — 평일 24h 윈도우
-    - cron: '0 21 * * 1-4'
+    # 화~금(월~목 UTC): KST 06:05 — off-peak minute 로 GH Actions 스케줄러 지연 최소화
+    # 2026-04-11: 정각(:00)은 GH Actions 로드 피크로 평균 37-49분 지연 발생
+    #             → :05 off-peak 로 5-15분 지연 기대 (기사 발행 원칙 "전일 06:00 ~ 당일 06:00" 유지)
+    # 평일 window 는 여전히 전일 06:00 ~ 당일 06:00 (cutoff 기준 불변)
+    - cron: '5 21 * * 1-4'
   workflow_dispatch: {}
 
 permissions:
