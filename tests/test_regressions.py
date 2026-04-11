@@ -10,6 +10,7 @@ REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "promote-dev.yml"
 AUTO_PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "auto-promote-dev.yml"
 AUTO_SYNC_MAIN_TO_DEV_WORKFLOW = ROOT / ".github" / "workflows" / "auto-sync-main-to-dev.yml"
+CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
 DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
 DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
@@ -25,6 +26,7 @@ class TestRegressions(unittest.TestCase):
         cls.promote_text = PROMOTE_WORKFLOW.read_text(encoding="utf-8")
         cls.auto_promote_text = AUTO_PROMOTE_WORKFLOW.read_text(encoding="utf-8")
         cls.auto_sync_text = AUTO_SYNC_MAIN_TO_DEV_WORKFLOW.read_text(encoding="utf-8")
+        cls.ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
         cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
         cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
         cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
@@ -264,5 +266,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("python scripts/run_smoke_checks.py", self.maintenance_text)
         self.assertIn("DEBUG_REPORT:", self.maintenance_text)
         self.assertIn("Write debug JSON for rebuilt archive pages", self.maintenance_text)
+
+    def test_ci_workflow_uses_focused_regression_suite(self):
+        self.assertIn("python scripts/run_ci_regression_suite.py", self.ci_text)
 if __name__ == "__main__":
     unittest.main()
