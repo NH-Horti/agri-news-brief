@@ -32,6 +32,24 @@ Behavior:
 - Hugging Face only nudges ranking among already-eligible candidates
 - if the token is missing or the API call fails, the pipeline falls back to the original behavior
 
+## Daily Report Evaluation Harness
+
+The repo now includes a daily report quality harness.
+
+- Core module: `report_eval.py`
+- CLI: `scripts/evaluate_daily_report.py`
+- Published artifacts: `docs/evals/`
+- Auto-feedback loop: `docs/evals/latest-feedback.txt` is fed back into the next OpenAI summary run
+
+Local example:
+
+```powershell
+python scripts/evaluate_daily_report.py `
+  --report-date 2026-04-10 `
+  --snapshot-path docs/replay/2026-04-10.snapshot.json `
+  --html-path docs/archive/2026-04-10.html
+```
+
 ## Local Rebuild
 
 You can run rebuilds locally without waiting for GitHub Actions.
@@ -163,17 +181,22 @@ Behavior:
 - Raw preview asset base: `https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev`
 - Runtime guard blocks writes outside the dev preview paths when `DEV_SINGLE_PAGE_MODE=true`
 
-### Promotion workflow
+### Branch sync workflows
 
 - `.github/workflows/promote-dev.yml`
+- `.github/workflows/auto-promote-dev.yml`
+- `.github/workflows/auto-sync-main-to-dev.yml`
 
 This workflow fast-forwards `main` to `origin/dev` and can optionally dispatch a production rebuild after promotion.
 The workflow is intentionally `ff-only` so development history stays clean and production only moves to code that already exists on `dev`.
+`auto-promote-dev.yml` runs the same fast-forward automatically after a successful `dev-verify.yml` push run on `dev`.
+`auto-sync-main-to-dev.yml` merges `main` back into `dev` after production changes land, so the next verified `dev` push can still promote cleanly.
 
 ### Simple operation flow
 
 1. Develop code on `dev`
 2. Push to `dev` or run `dev-verify.yml` manually
 3. Review the result on `/dev/`
-4. When ready, run `promote-dev.yml` to fast-forward `main` to `dev`
-5. Optionally trigger `rebuild.yml` for the production date and Kakao send
+4. Successful `dev` push runs are auto-promoted to `main`
+5. Production changes on `main` are auto-synced back into `dev`
+6. Use `promote-dev.yml` only when you want a manual fast-forward or an immediate rebuild dispatch

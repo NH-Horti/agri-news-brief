@@ -1,0 +1,132 @@
+{
+  "report_date": "2026-04-03",
+  "generated_at_kst": "2026-04-11T22:57:55+09:00",
+  "status": "pass",
+  "overall_score": 90.81,
+  "scores": {
+    "completeness": 76.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 75.28
+  },
+  "counts": {
+    "briefing_total": 10,
+    "commodity_total": 50,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 2,
+      "pest": 0
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 0
+    },
+    "commodity_by_section": {
+      "supply": 20,
+      "policy": 24,
+      "dist": 4,
+      "pest": 2
+    },
+    "raw_by_section": {
+      "supply": 246,
+      "policy": 163,
+      "dist": 71,
+      "pest": 5
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 1
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.6667,
+      "pest": 0.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 0.4444
+    },
+    "seed_coverage": {}
+  },
+  "freshness_samples": [
+    {
+      "title": "3월 농축산물가 1.2%↓…\"기상여건 개선→출하량 증가 영향\"",
+      "section": "policy",
+      "age_hours": 21.0
+    },
+    {
+      "title": "\" 농산물 출하 정보 미리 본다\"…전자송품장으로 '홍수출하' 막아 가격 변...",
+      "section": "dist",
+      "age_hours": 20.2
+    },
+    {
+      "title": "중동전쟁發 유가 쇼크에 3월 물가 2.2%…경유 17%·휘발유 8% 급등",
+      "section": "policy",
+      "age_hours": 19.9
+    },
+    {
+      "title": "이형일 차관 \"국제유가 변동성 커…물가관리품목 가격안정 총력\"",
+      "section": "policy",
+      "age_hours": 19.5
+    },
+    {
+      "title": "사과 생산량 4.5만t 늘린다…작년보다 10% 확대",
+      "section": "policy",
+      "age_hours": 18.8
+    },
+    {
+      "title": "농자재 수급 불안 현실화…타들어 가는 농심",
+      "section": "supply",
+      "age_hours": 17.3
+    },
+    {
+      "title": "김주양 농협 농업경제대표이사, \"농산물 수급 안정에 만전 기할 터\"",
+      "section": "supply",
+      "age_hours": 15.2
+    },
+    {
+      "title": "[이슈픽] “쌈만 싸 먹기엔 아쉽다?”…‘산나물의 제왕’ 곰취, 더 맛있...",
+      "section": "supply",
+      "age_hours": 11.6
+    }
+  ],
+  "improvement_hints": [
+    "선정 결과가 약한 섹션이 있습니다: dist. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다."
+  ],
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

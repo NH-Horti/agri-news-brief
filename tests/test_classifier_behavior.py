@@ -2652,6 +2652,25 @@ class TestClassifierBehavior(unittest.TestCase):
         desc = "aT가 시장관리운영위원회를 열고 온라인도매시장 내실화와 이용자 신뢰 제고, 거래실적 전수조사, 제도개선 및 활성화 방안을 논의한 기사다."
         self.assertTrue(main.is_dist_market_ops_context(title, desc, "wonyesanup.co.kr", "원예산업신문"))
 
+    def test_dist_market_ops_context_matches_wholesale_logistics_automation_story(self):
+        title = "\ub300\uad6c\ub3c4\ub9e4\uc2dc\uc7a5, \ubb34\uc778 \ub85c\ubd07 \ud558\uc5ed \uc2e4\ud5d8 \ubcf8\uaca9\ud654"
+        desc = (
+            "\ub300\uad6c\ub18d\uc218\uc0b0\ubb3c\ub3c4\ub9e4\uc2dc\uc7a5\uc774 \ucca8\ub2e8 \uc790\ub3d9\ud654 \uae30\uc220 \uc2e4\uc99d\uacfc "
+            "\uc2a4\ub9c8\ud2b8 \ub3c4\ub9e4\uc2dc\uc7a5 \uad6c\ud604\uc744 \uc704\ud574 \uc2a4\ub9c8\ud2b8 \uc720\ud1b5\xb7\ubb3c\ub958 \ud6a8\uc728\ud654 \uc2dc\ubc94\uc0ac\uc5c5\uc744 "
+            "\ucd94\uc9c4\ud55c\ub2e4. \ub3c4\ub9e4\uc2dc\uc7a5\ubc95\uc778\uacfc \uc911\ub3c4\ub9e4\uc778\ub3c4 \ucc38\uc5ec\ud55c\ub2e4."
+        )
+        self.assertTrue(main.is_dist_market_ops_context(title, desc, "amnews.co.kr", "\ub18d\ucd95\uc720\ud1b5\uc2e0\ubb38"))
+
+    def test_dist_consumer_tail_context_keeps_wholesale_cost_support_story(self):
+        title = "\ub3d9\ud654 \uccad\uacfc, \uc2e4\uc9c8\uc801 \ucd9c\ud558\ube44\uc6a9 \uc9c0\uc6d0 '\uc815\uc870\uc900'"
+        desc = (
+            "\uac00\ub77d\uc2dc\uc7a5 \ub3d9\ud654\uccad\uacfc\uac00 \ub18d\uc0b0\ubb3c \uac00\uaca9 \ud558\ub77d\uacfc \uc0dd\uc0b0\ube44 \uc0c1\uc2b9\uc73c\ub85c "
+            "\uc774\uc911\uace0\ub97c \uacaa\ub294 \ub18d\uac00\ub97c \uc704\ud574 \ucd9c\ud558\ube44\uc6a9 \ubcf4\uc804 \uc2dc\ubc94\uc0ac\uc5c5\uc744 \uc2dc\ud589\ud558\uba70 "
+            "\ubc15\uc2a4 \uc81c\uc791\ube44, \uc6b4\uc1a1\ube44, \uc778\uac74\ube44 \ub4f1 \ud544\uc218 \ube44\uc6a9\uc744 \uc9c1\uc811 \uc9c0\uc6d0\ud55c\ub2e4."
+        )
+        self.assertTrue(main.is_dist_market_ops_context(title, desc, "amnews.co.kr", "\ub18d\ucd95\uc720\ud1b5\uc2e0\ubb38"))
+        self.assertFalse(main.is_dist_consumer_tail_context(title, desc))
+
     def test_amnews_distribution_association_story_prefers_dist(self):
         title = "농업유통법인중앙연합회 ‘새 수장’에 배진현"
         desc = "가락시장 6개 법인 경험을 바탕으로 회원 물량 통합관리와 산지유통 경쟁력 강화, 물류·마케팅 기능 활성화, 온라인 유통채널 진출 지원을 추진하겠다는 기사다."
@@ -3099,6 +3118,58 @@ class TestClassifierBehavior(unittest.TestCase):
 
         self.assertTrue(main._is_similar_story(news_story, wire_story, "dist"))
         self.assertTrue(main._is_similar_story(photo_story, wire_story, "dist"))
+
+    def test_dist_market_ops_stories_with_different_signatures_are_not_merged(self):
+        cost_support = self._make_article(
+            "dist",
+            "동화청과, 실질적 출하비용 지원 '정조준'",
+            "가락시장 동화청과가 농산물 가격 하락과 생산비 상승으로 어려움을 겪는 농가를 위해 출하비용 보전 시범사업을 시행하며 박스 제작비와 운송비, 인건비를 직접 지원한다.",
+            "https://www.amnews.co.kr/news/articleView.html?idxno=999001",
+        )
+        logistics = self._make_article(
+            "dist",
+            "\"무인 로봇이 하역부터 청소까지\"…대구도매시장, 물류 혁신 실험 본격화",
+            "대구농수산물도매시장이 스마트 도매시장 구현을 위해 무인 물류 로봇, 자동화 기술, 하역 실증을 포함한 스마트 유통·물류 효율화 시범사업을 추진한다.",
+            "https://www.amnews.co.kr/news/articleView.html?idxno=999002",
+        )
+        cost_support.score = 38.72
+        logistics.score = 35.47
+
+        sig_a = main._section_story_signature("dist", cost_support.title, cost_support.description, cost_support.domain, cost_support.press)
+        sig_b = main._section_story_signature("dist", logistics.title, logistics.description, logistics.domain, logistics.press)
+        self.assertTrue(sig_a)
+        self.assertTrue(sig_b)
+        self.assertNotEqual(sig_a, sig_b)
+        self.assertFalse(main._is_similar_story(cost_support, logistics, "dist"))
+
+    def test_dist_selection_keeps_distinct_market_ops_from_same_press(self):
+        cost_support = self._make_article(
+            "dist",
+            "동화청과, 실질적 출하비용 지원 '정조준'",
+            "가락시장 동화청과가 농산물 가격 하락과 생산비 상승으로 어려움을 겪는 농가를 위해 출하비용 보전 시범사업을 시행하며 박스 제작비와 운송비, 인건비를 직접 지원한다.",
+            "https://www.amnews.co.kr/news/articleView.html?idxno=999011",
+        )
+        logistics = self._make_article(
+            "dist",
+            "\"무인 로봇이 하역부터 청소까지\"…대구도매시장, 물류 혁신 실험 본격화",
+            "대구농수산물도매시장이 스마트 도매시장 구현을 위해 무인 물류 로봇, 자동화 기술, 하역 실증을 포함한 스마트 유통·물류 효율화 시범사업을 추진한다.",
+            "https://www.amnews.co.kr/news/articleView.html?idxno=999012",
+        )
+        field_training = self._make_article(
+            "dist",
+            "경기 농협 본부, 애호박·방울토마토 재배기술 교육",
+            "경기 농협 본부가 애호박과 방울토마토 재배 농가를 대상으로 출하 품질과 유통 대응 역량 강화를 위한 현장 교육을 진행했다.",
+            "https://www.nongmin.com/article/999013",
+        )
+        cost_support.score = 38.72
+        logistics.score = 35.47
+        field_training.score = 32.81
+
+        picked = main.select_top_articles([cost_support, logistics, field_training], "dist", 5)
+        picked_links = {x.link for x in picked}
+        self.assertEqual(len(picked), 2, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(cost_support.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
+        self.assertIn(logistics.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
     def test_flower_novelty_noise_is_rejected_from_supply_and_policy(self):
         title = "유재석도 받은 '이 꽃다발'…졸업 선물로 뜬 레고 보태니컬"

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-11T00:08:48+09:00",
+  "generated_at": "2026-04-11T23:56:44+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -230,6 +230,19 @@
       "section": "supply",
       "surface": "briefing_open",
       "target_domain": "mpmbc.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-10",
+      "article_id": "40640909832",
+      "title": "예천군 가격 폭락 ' 쪽파 농가' 살리기 총력 온·오프라인 특별 판매전",
+      "report_date": "2026-04-10",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.dkilbo.com",
       "clicks": 2,
       "users": 2,
       "archive_url": "",
@@ -1116,8 +1129,8 @@
       "target_domain": "andongmbc.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
-      "source_url": "http://andongmbc.co.kr/adboard/NewsView81789"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-09",
@@ -1129,8 +1142,8 @@
       "target_domain": "andongmbc.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
-      "source_url": "http://andongmbc.co.kr/adboard/NewsView81789"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-09",
@@ -1225,19 +1238,6 @@
     },
     {
       "date": "2026-04-10",
-      "article_id": "40640909832",
-      "title": "예천군 가격 폭락 ' 쪽파 농가' 살리기 총력 온·오프라인 특별 판매전",
-      "report_date": "2026-04-10",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.dkilbo.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-10",
       "article_id": "882069cf4ab1",
       "title": "[산지 확대경] 시설봄 감자 , 생산량 다소 늘고 알 작아…시세 강세 출발",
       "report_date": "2026-04-10",
@@ -1274,6 +1274,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-10.html#sec-supply",
       "source_url": "http://www.nongup.net/news/articleView.html?idxno=32918"
+    },
+    {
+      "date": "2026-04-11",
+      "article_id": "4857a555f8e7",
+      "title": "능주농협, 호박벌 지원사업 실시",
+      "report_date": "2026-04-09",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-policy",
+      "source_url": "http://www.aflnews.co.kr/news/articleView.html?idxno=318244"
+    },
+    {
+      "date": "2026-04-11",
+      "article_id": "7d8f431fb76a",
+      "title": "사과 생산량 전년대비 10% 확대로 수급 안정 도모",
+      "report_date": "2026-04-09",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-pest",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64269"
+    },
+    {
+      "date": "2026-04-11",
+      "article_id": "a608856a39dd",
+      "title": "홍천 내촌농협 “올해부터 생일선물로 10만원 영농자재 고르시죠!”",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-11",
+      "article_id": "de551f29b50f",
+      "title": "양파경남협의회 정기총회 개최",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-11",
+      "article_id": "fd0aa979a024",
+      "title": "\"라면 나누고 옥수수 심고\"…영동 새마을, 이웃 돕기 '현장 실천'",
+      "report_date": "2026-04-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.inews365.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
+      "source_url": "https://www.inews365.com/news/article.html?no=914292"
     }
   ]
 }

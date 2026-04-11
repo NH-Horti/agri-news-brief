@@ -911,6 +911,9 @@ OPENAI_SUMMARY_CACHE_MAX = int((os.getenv("OPENAI_SUMMARY_CACHE_MAX", "2000") or
 OPENAI_SUMMARY_CACHE_MAX = max(200, min(OPENAI_SUMMARY_CACHE_MAX, 20000))
 OPENAI_RETRY_MAX = int((os.getenv("OPENAI_RETRY_MAX", "3") or "3").strip() or 3)
 OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
+OPENAI_SUMMARY_FEEDBACK_PATH = os.getenv("OPENAI_SUMMARY_FEEDBACK_PATH", "docs/evals/latest-feedback.txt").strip()
+OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = int((os.getenv("OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", "600") or "600").strip() or 600)
+OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = max(0, min(OPENAI_SUMMARY_FEEDBACK_MAX_CHARS, 4000))
 
 HF_API_TOKEN = (
     os.getenv("HF_TOKEN", "").strip()
@@ -3168,6 +3171,16 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
         return f"EV:DIST:SALES_CHANNEL:{loc or 'joint_sales'}"
 
     if is_dist_market_ops_context(title, desc):
+        if ("출하비용" in text or "출하 비용" in text) and ("지원" in text or "보전" in text):
+            actor_match = re.search(r"([가-힣]{2,12}\s*(?:청과|도매법인))", (title or "") + " " + (desc or ""))
+            actor_key = re.sub(r"\s+", "", actor_match.group(1).lower()) if actor_match else ""
+            if not actor_key and "가락시장" in text:
+                actor_key = "가락시장"
+            return f"EV:DIST:WHOLESALE_COST_SUPPORT:{actor_key or 'market'}"
+        if any(term in text for term in ("물류 혁신", "스마트 도매시장", "자동화", "자동화 기술", "무인 로봇", "하역", "실증")):
+            regs = sorted(_region_set(text))
+            loc = regs[0] if regs else ""
+            return f"EV:DIST:WHOLESALE_LOGISTICS:{loc or 'market'}"
         if "온라인도매시장" in compact or "온라인 도매시장" in text:
             return "EV:DIST:ONLINE_WHOLESALE_OPS"
 
@@ -3405,6 +3418,10 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         b_scope = dist_market_disruption_scope(bt, bd)
         if a_scope and b_scope and {a_scope, b_scope} == {"systemic", "commodity_aftershock"}:
             return False
+        a_sig = _section_story_signature(section_key, at, ad, getattr(a, "domain", "") or "", getattr(a, "press", "") or "")
+        b_sig = _section_story_signature(section_key, bt, bd, getattr(b, "domain", "") or "", getattr(b, "press", "") or "")
+        if a_sig and b_sig:
+            return a_sig == b_sig
 
     if section_key == "supply":
         a_feature = supply_feature_context_kind(at, ad)
@@ -3500,6 +3517,8 @@ def _is_similar_story(a: "Article", b: "Article", section_key: str) -> bool:
         sb = _section_story_signature(section_key, bt, bd, getattr(b, "domain", "") or "", getattr(b, "press", "") or "")
         if sa and sb and sa == sb:
             return True
+        if section_key == "dist" and sa and sb and sa != sb:
+            return False
 
     # 1) 제목/요약 기반 근접 중복(타매체 재전송/표기 차이) 보강
     try:
@@ -6130,7 +6149,7 @@ _DIST_LOCAL_FIELD_PROFILE_BODY_TERMS = (
 )
 _DIST_MARKET_OPS_MARKET_TERMS = (
     "\uc628\ub77c\uc778\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\ub18d\uc218\uc0b0\ubb3c \uc628\ub77c\uc778\ub3c4\ub9e4\uc2dc\uc7a5",
-    "\ub18d\uc218\uc0b0\ubb3c \uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uc2dc\uc7a5\uad00\ub9ac\uc6b4\uc601\uc704\uc6d0\ud68c",
+    "\ub18d\uc218\uc0b0\ubb3c \uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uacf5\ud310\uc7a5", "\uc2dc\uc7a5\uad00\ub9ac\uc6b4\uc601\uc704\uc6d0\ud68c",
     "\uad11\uc5ed\uc218\uae09\uad00\ub9ac\uc13c\ud130", "\uc218\uae09\uad00\ub9ac\uc13c\ud130",
 )
 _DIST_MARKET_OPS_TERMS = (
@@ -6138,6 +6157,13 @@ _DIST_MARKET_OPS_TERMS = (
     "\uac70\ub798\uc2e4\uc801", "\uc804\uc218\uc870\uc0ac", "\uc774\uc6a9\uc790", "\ud310\ub9e4\uc790", "\uad6c\ub9e4\uc790", "\uc2dc\uc7a5 \ucc38\uc5ec\uc790",
     "\uc2dc\uc7a5\uc6b4\uc601\uc790", "\ubc1c\uc804\ubc29\uc548", "\uac1c\uc120\ubc29\uc548", "tf", "\ubc95\ub960", "\ubcf8\ud68c\uc758", "\ud1b5\uacfc",
     "\uc218\uae09 \uad00\ub9ac", "\uc120\uc81c \uad00\ub9ac", "\uc2dc\ubc94\uc0ac\uc5c5",
+    "\ucd9c\ud558\ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558 \ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558\ube44\uc6a9 \ubcf4\uc804", "\ucd9c\ud558 \ube44\uc6a9 \ubcf4\uc804",
+    "\ubb3c\ub958 \ud601\uc2e0", "\uc720\ud1b5\xb7\ubb3c\ub958 \ud6a8\uc728\ud654", "\uc720\ud1b5 \ubb3c\ub958 \ud6a8\uc728\ud654",
+    "\uc2a4\ub9c8\ud2b8 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc790\ub3d9\ud654", "\uc790\ub3d9\ud654 \uae30\uc220", "\uc2e4\uc99d", "\ud558\uc5ed",
+)
+_DIST_MARKET_OPS_ACTOR_TERMS = (
+    "aT", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac", "\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc2dc\uc7a5\uc6b4\uc601\uc790",
+    "\ub3c4\ub9e4\uc2dc\uc7a5\ubc95\uc778", "\ub3c4\ub9e4\ubc95\uc778", "\uc911\ub3c4\ub9e4\uc778", "\uccad\uacfc", "\ub18d\uc218\uc0b0\ubb3c\uc720\ud1b5\uad00\ub9ac\uacf5\uc0ac", "\uc720\ud1b5\uad00\ub9ac\uacf5\uc0ac",
 )
 _DIST_SUPPLY_MANAGEMENT_CENTER_TERMS = (
     "\uad11\uc5ed\uc218\uae09\uad00\ub9ac\uc13c\ud130", "\uc218\uae09\uad00\ub9ac\uc13c\ud130", "\uc218\uae09 \uad00\ub9ac", "\uc120\uc81c \uad00\ub9ac",
@@ -6246,7 +6272,7 @@ def is_dist_market_ops_context(title: str, desc: str, dom: str = "", press: str 
     ops_hits = count_any(txt, [w.lower() for w in _DIST_MARKET_OPS_TERMS])
     actor_hits = count_any(
         txt,
-        [w.lower() for w in ("aT", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac", "\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "\uc2dc\uc7a5\uc6b4\uc601\uc790")],
+        [w.lower() for w in _DIST_MARKET_OPS_ACTOR_TERMS],
     )
     agri_hits = count_any(
         txt,
@@ -7442,16 +7468,28 @@ def is_dist_consumer_tail_context(title: str, desc: str) -> bool:
     txt = f"{ttl} {desc or ''}".lower()
     if not txt:
         return False
-    if is_retail_promo_context(txt) or is_fruit_foodservice_event_context(txt) or is_flower_consumer_trend_context(txt):
-        return True
-    if is_dist_market_ops_context(title, desc, "", "") or is_dist_supply_management_center_context(title, desc) or is_dist_sales_channel_ops_context(title, desc):
-        return False
-    if is_dist_market_disruption_context(title, desc) or is_dist_export_shipping_context(title, desc):
-        return False
     market_hits = count_any(
         txt,
         [w.lower() for w in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "직거래", "선적", "통관", "검역")],
     ) + (1 if has_apc_agri_context(txt) else 0)
+    market_support_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "\ucd9c\ud558\ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558 \ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558\ube44\uc6a9 \ubcf4\uc804", "\ucd9c\ud558 \ube44\uc6a9 \ubcf4\uc804",
+                "\ubc15\uc2a4 \uc81c\uc791\ube44", "\uc6b4\uc1a1\ube44", "\uc778\uac74\ube44", "\ub3c4\ub9e4\uc2dc\uc7a5\ubc95\uc778", "\uccad\uacfc",
+            )
+        ],
+    )
+    if is_dist_market_ops_context(title, desc, "", "") or is_dist_supply_management_center_context(title, desc) or is_dist_sales_channel_ops_context(title, desc):
+        return False
+    if is_dist_market_disruption_context(title, desc) or is_dist_export_shipping_context(title, desc):
+        return False
+    if market_hits >= 1 and market_support_hits >= 2:
+        return False
+    if is_retail_promo_context(txt) or is_fruit_foodservice_event_context(txt) or is_flower_consumer_trend_context(txt):
+        return True
     consumer_hits = count_any(txt, [w.lower() for w in _DIST_CONSUMER_TAIL_TERMS])
     title_consumer_hits = count_any((ttl or "").lower(), [w.lower() for w in _DIST_CONSUMER_TAIL_TERMS])
     return market_hits == 0 and (consumer_hits >= 2 or title_consumer_hits >= 1)
@@ -20011,6 +20049,21 @@ def save_summary_cache(repo: str, token: str, cache: dict[str, SummaryCacheEntry
         return
     github_put_file(repo, path, raw_new, token, f"Update summary cache ({len(cache2)})", sha=sha, branch="main")
 
+
+def _load_openai_summary_feedback() -> str:
+    path = str(OPENAI_SUMMARY_FEEDBACK_PATH or "").strip()
+    if not path or OPENAI_SUMMARY_FEEDBACK_MAX_CHARS <= 0:
+        return ""
+    try:
+        raw = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    text = raw.strip()
+    if not text:
+        return ""
+    return text[:OPENAI_SUMMARY_FEEDBACK_MAX_CHARS]
+
+
 def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
     """OpenAI Responses API를 호출해 rows를 요약.
     출력 형식: 각 줄 'id\t요약'
@@ -20024,6 +20077,9 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
         "- 각 기사 요약은 2문장 내, 110~200자 내. 핵심 팩트 중심.\n"
         "출력 형식: 각 줄 'id\t요약' 형태로만 출력."
     )
+    feedback_text = _load_openai_summary_feedback()
+    if feedback_text:
+        system = system + "\n\n최근 품질 평가에서 바로 반영할 요약 지침:\n" + feedback_text
     user = "기사 목록(JSON):\n" + json.dumps(rows, ensure_ascii=False)
 
     payload: JsonDict = {

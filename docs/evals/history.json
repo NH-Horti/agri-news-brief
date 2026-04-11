@@ -1,0 +1,82 @@
+{
+  "reports": [
+    {
+      "report_date": "2026-04-10",
+      "generated_at_kst": "2026-04-11T22:57:45+09:00",
+      "overall_score": 96.82,
+      "status": "pass",
+      "briefing_total": 15,
+      "commodity_total": 63,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-09",
+      "generated_at_kst": "2026-04-11T22:57:56+09:00",
+      "overall_score": 93.31,
+      "status": "pass",
+      "briefing_total": 16,
+      "commodity_total": 52,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-08",
+      "generated_at_kst": "2026-04-11T22:57:56+09:00",
+      "overall_score": 98.5,
+      "status": "pass",
+      "briefing_total": 17,
+      "commodity_total": 60,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-07",
+      "generated_at_kst": "2026-04-11T22:57:56+09:00",
+      "overall_score": 98.5,
+      "status": "pass",
+      "briefing_total": 16,
+      "commodity_total": 59,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-06",
+      "generated_at_kst": "2026-04-11T22:57:55+09:00",
+      "overall_score": 94.61,
+      "status": "pass",
+      "briefing_total": 16,
+      "commodity_total": 62,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-03",
+      "generated_at_kst": "2026-04-11T22:57:55+09:00",
+      "overall_score": 90.81,
+      "status": "pass",
+      "briefing_total": 10,
+      "commodity_total": 50,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    },
+    {
+      "report_date": "2026-04-02",
+      "generated_at_kst": "2026-04-11T22:57:55+09:00",
+      "overall_score": 97.23,
+      "status": "pass",
+      "briefing_total": 17,
+      "commodity_total": 38,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0
+    }
+  ],
+  "updated_at_kst": "2026-04-11T22:57:56+09:00"
+}

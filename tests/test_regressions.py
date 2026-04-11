@@ -8,6 +8,8 @@ DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "promote-dev.yml"
+AUTO_PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "auto-promote-dev.yml"
+AUTO_SYNC_MAIN_TO_DEV_WORKFLOW = ROOT / ".github" / "workflows" / "auto-sync-main-to-dev.yml"
 SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
 DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
 DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
@@ -21,6 +23,8 @@ class TestRegressions(unittest.TestCase):
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
         cls.promote_text = PROMOTE_WORKFLOW.read_text(encoding="utf-8")
+        cls.auto_promote_text = AUTO_PROMOTE_WORKFLOW.read_text(encoding="utf-8")
+        cls.auto_sync_text = AUTO_SYNC_MAIN_TO_DEV_WORKFLOW.read_text(encoding="utf-8")
         cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
         cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
         cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
@@ -187,6 +191,25 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("default: true", self.promote_text)
         self.assertIn('echo "- Rebuild Kakao requested: ${{ steps.vars.outputs.send_kakao }}"', self.promote_text)
 
+    def test_auto_promote_workflow_promotes_verified_dev_pushes(self):
+        self.assertIn("name: agri-news-brief (auto promote dev to main)", self.auto_promote_text)
+        self.assertIn("workflow_run:", self.auto_promote_text)
+        self.assertIn("agri-news-brief (dev verify rebuild)", self.auto_promote_text)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", self.auto_promote_text)
+        self.assertIn("github.event.workflow_run.head_branch == 'dev'", self.auto_promote_text)
+        self.assertIn("github.event.workflow_run.event == 'push'", self.auto_promote_text)
+        self.assertIn("git merge --ff-only origin/dev", self.auto_promote_text)
+        self.assertIn("git push origin HEAD:main", self.auto_promote_text)
+
+    def test_auto_sync_workflow_merges_main_back_into_dev(self):
+        self.assertIn("name: agri-news-brief (auto sync main to dev)", self.auto_sync_text)
+        self.assertIn("push:", self.auto_sync_text)
+        self.assertIn("- main", self.auto_sync_text)
+        self.assertIn("if: github.ref_name == 'main'", self.auto_sync_text)
+        self.assertIn("git merge-base --is-ancestor origin/main origin/dev", self.auto_sync_text)
+        self.assertIn("git merge --no-edit origin/main", self.auto_sync_text)
+        self.assertIn("git push origin HEAD:dev", self.auto_sync_text)
+
     def test_rebuild_and_dev_verify_report_actual_kakao_status(self):
         self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.rebuild_text)
         self.assertIn("id: kakao_status", self.rebuild_text)
@@ -219,10 +242,18 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
 
     def test_prod_workflows_do_not_extend_window(self):
-        self.assertIn("cron: '0 21 * * 0-4'", self.daily_text)
+        self.assertIn("cron: '0 20 * * 0'", self.daily_text)
+        self.assertIn("cron: '5 21 * * 1-4'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
+
+    def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
+        self.assertIn("OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt", self.daily_text)
+        self.assertIn("DEBUG_REPORT: '1'", self.daily_text)
+        self.assertIn("DEBUG_REPORT_WRITE_JSON: '0'", self.daily_text)
+        self.assertIn("scripts/evaluate_daily_report.py", self.daily_text)
+        self.assertIn("docs/evals", self.daily_text)
 
     def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
         self.assertIn("requirements-dev.txt", self.maintenance_text)

@@ -63,6 +63,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-5.4
           OPENAI_REASONING_EFFORT: low
+          OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SEMANTIC_MODEL: intfloat/multilingual-e5-large
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
@@ -92,6 +93,10 @@ jobs:
           NAVER_MAX_WORKERS: '6'
           NAVER_MIN_INTERVAL_SEC: '0.3'
           BODY_CRAWL_MAX_WORKERS: '20'
+          DEBUG_REPORT: '1'
+          DEBUG_REPORT_WRITE_JSON: '0'
+          DEBUG_REPORT_MAX_CANDIDATES: '200'
+          DEBUG_REPORT_MAX_REJECTS: '2000'
 
         run: |
           python main.py
@@ -118,6 +123,27 @@ jobs:
             --remote-path "docs/replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
             --input "$snapshot_path" \
             --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
+
+      - name: Evaluate daily report quality
+        if: success()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          python scripts/evaluate_daily_report.py \
+            --report-date "${{ steps.vars.outputs.report_date }}" \
+            --snapshot-path ".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --ref main \
+            --publish-branch main \
+            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json" \
+            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
+            --feedback-out "reports/evals/latest-feedback.txt" \
+            --fail-under 55
 
       - name: Resolve Kakao status
         if: always()
@@ -148,4 +174,9 @@ jobs:
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
+            echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.md" ]; then
+            cat "reports/evals/${{ steps.vars.outputs.report_date }}.md" >> "$GITHUB_STEP_SUMMARY"
+          fi

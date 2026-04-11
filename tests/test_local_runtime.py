@@ -195,3 +195,13 @@ class LocalRuntimeTests(TestCase):
                 self.assertTrue(by_section["supply"])
                 self.assertEqual(by_section["supply"][0].summary, "리플레이 스냅샷에서 가져온 요약")
                 self.assertEqual(summary_cache[article.norm_key]["s"], "리플레이 스냅샷에서 가져온 요약")
+
+    def test_load_openai_summary_feedback_reads_file(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            feedback_path = Path(td) / "latest-feedback.txt"
+            feedback_path.write_text("- keep the first sentence concrete\n- retain one number\n", encoding="utf-8")
+            with patch.object(main, "OPENAI_SUMMARY_FEEDBACK_PATH", str(feedback_path)):
+                with patch.object(main, "OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", 80):
+                    feedback = main._load_openai_summary_feedback()
+            self.assertIn("first sentence", feedback)
+            self.assertIn("retain one number", feedback)
