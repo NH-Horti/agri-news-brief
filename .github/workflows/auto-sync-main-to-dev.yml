@@ -6,6 +6,7 @@ on:
       - main
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -59,6 +60,25 @@ jobs:
           echo "after_sha=$after_sha" >> "$GITHUB_OUTPUT"
           echo "synced=$synced" >> "$GITHUB_OUTPUT"
 
+      - name: Dispatch dev verify refresh
+        if: steps.sync.outputs.synced == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/dev-verify.yml/dispatches" \
+            -d @- <<EOF
+          {
+            "ref": "dev"
+          }
+          EOF
+
       - name: Publish summary
         if: always()
         shell: bash
@@ -69,4 +89,5 @@ jobs:
             echo "- Dev before: ${{ steps.sync.outputs.before_sha }}"
             echo "- Dev after: ${{ steps.sync.outputs.after_sha }}"
             echo "- Synced: ${{ steps.sync.outputs.synced }}"
+            echo "- Dev verify refresh dispatched: ${{ steps.sync.outputs.synced }}"
           } >> "$GITHUB_STEP_SUMMARY"
