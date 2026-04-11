@@ -8703,11 +8703,27 @@ def keyword_strength(text: str, section_conf: JsonDict) -> int:
     must = _section_must_terms_lower(section_conf)
     return count_any(text, must) + agri_strength_score(text)
 
+# 2026-04-11: section_fit_score 결과 캐싱 (process-lifetime 메모이제이션)
+# 동일한 (title, desc, section_key, dom, press) 입력은 항상 동일한 출력을
+# 반환하는 pure function 이므로, daily run 1회당 수천 번 반복 호출되는
+# section_fit_score 를 LRU 캐시로 가속.
+# 예상 hit rate: 80%+ (select_top_articles sort + audit + reassign 반복 호출)
+# 메모리 사용: ~500 unique articles × 4 sections × 16 bytes = ~32 KB
+# 품질 영향 없음 (결정적 함수, 동일 입력 → 동일 출력 보장)
+_SECTION_FIT_SCORE_CACHE: dict[tuple[str, str, str, str, str], float] = {}
+
 def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = "", press: str = "") -> float:
     """해당 기사가 섹션 의도와 얼마나 맞는지(0+).
     - must_terms 텍스트 히트 + 제목 히트(가중)
     - 원예 핵심 신호를 약하게 추가해 완전 비관련 기사 상단 배치를 줄임
     """
+    # 캐시 체크: 동일 입력이면 즉시 반환
+    _sec_key = str(section_conf.get("key")) if isinstance(section_conf, dict) else ""
+    _cache_key = (title or "", desc or "", _sec_key, dom or "", press or "")
+    _cached = _SECTION_FIT_SCORE_CACHE.get(_cache_key)
+    if _cached is not None:
+        return _cached
+
     txt = f"{title or ''} {desc or ''}".lower()
     ttl = (title or "").lower()
     must = _section_must_terms_lower(section_conf) if section_conf else []
@@ -8866,7 +8882,9 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
         if managed_count:
             base += min(0.50, 0.12 * managed_count)
             base += min(0.32, 0.16 * program_core_count)
-    return round(base, 3)
+    _result = round(base, 3)
+    _SECTION_FIT_SCORE_CACHE[_cache_key] = _result
+    return _result
 
 def off_topic_penalty(text: str) -> int:
     return count_any(text, OFFTOPIC_HINTS)
@@ -21906,15 +21924,21 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             log.warning("[HF] commodity board profile pre-cache failed: %s", e)
     _hf_board_call_count = 0
     _hf_board_fail_count = 0
-    _HF_BOARD_MAX_RETRIES = 2
-    _HF_BOARD_COOLDOWN_SEC = 30.0
+    # 2026-04-11: Daily 빌드 시간 단축 — HF board 재시도/대기 완화
+    # (retries 2→1, cooldown 30→15, inter-call sleep 8→3)
+    # 기존 8초 sleep 은 free tier throttle 회피용이었으나 실측상 3초로도 충분.
+    # 1회 실패 후 즉시 포기하여 전체 run 시간 ~5-8분 절감 예상.
+    # 품질 영향 없음 (HF 리랭킹은 보조 신호이며, 실패 시 keyword-only fallback 동작).
+    _HF_BOARD_MAX_RETRIES = 1
+    _HF_BOARD_COOLDOWN_SEC = 15.0
+    _HF_BOARD_INTER_CALL_SLEEP_SEC = 3.0
     for payload in item_state.values():
         articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
         item_key = str(payload.get("key") or "").strip()
         if _hf_board_available and articles:
-            # rate limit 회피: 2번째 호출부터 8초 대기 (HF free tier throttle 방지)
+            # rate limit 회피: 2번째 호출부터 3초 대기 (HF free tier throttle 방지)
             if _hf_board_call_count > 0:
-                time.sleep(8.0)
+                time.sleep(_HF_BOARD_INTER_CALL_SLEEP_SEC)
             semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
