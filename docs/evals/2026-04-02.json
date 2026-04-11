@@ -1,0 +1,132 @@
+{
+  "report_date": "2026-04-02",
+  "generated_at_kst": "2026-04-11T22:57:55+09:00",
+  "status": "pass",
+  "overall_score": 97.23,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 94.71,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 85.0
+  },
+  "counts": {
+    "briefing_total": 17,
+    "commodity_total": 38,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 5,
+      "pest": 3
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 15,
+      "policy": 9,
+      "dist": 4,
+      "pest": 10
+    },
+    "raw_by_section": {
+      "supply": 297,
+      "policy": 88,
+      "dist": 68,
+      "pest": 17
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.6471,
+    "surface_reuse_penalty": 0.0182,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8824,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {}
+  },
+  "freshness_samples": [
+    {
+      "title": "NH농협무역 이재호 신임 대표이사",
+      "section": "dist",
+      "age_hours": 19.3
+    },
+    {
+      "title": "문대림, 농업인 기본수당 100만원… 최저 가격 보장·농자재 지원 강화",
+      "section": "policy",
+      "age_hours": 19.2
+    },
+    {
+      "title": "논에 밀·보리 심은 농가, 24일까지 직불금 신청해야",
+      "section": "supply",
+      "age_hours": 19.0
+    },
+    {
+      "title": "농식품부 , 봄배추 생육 및 비료원료 수급 점검",
+      "section": "supply",
+      "age_hours": 18.8
+    },
+    {
+      "title": "농업 분야 추경 예산안 2,658억원 편성",
+      "section": "policy",
+      "age_hours": 18.8
+    },
+    {
+      "title": "지역농산물 유통구조 이끌어가는 품목농협 - 상주원예농협",
+      "section": "dist",
+      "age_hours": 18.8
+    },
+    {
+      "title": "병해충 대응 민관 연구협의체 발족",
+      "section": "pest",
+      "age_hours": 18.8
+    },
+    {
+      "title": "경남도, 중동 정세 물가 불안…물가 안정 종합대책 추진",
+      "section": "policy",
+      "age_hours": 17.7
+    }
+  ],
+  "improvement_hints": [
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
+  ],
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

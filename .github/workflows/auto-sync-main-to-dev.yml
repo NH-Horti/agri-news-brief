@@ -1,0 +1,72 @@
+name: agri-news-brief (auto sync main to dev)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agri-news-brief-auto-sync-dev
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v5
+        with:
+          token: ${{ github.token }}
+          persist-credentials: true
+          ref: dev
+          fetch-depth: 0
+
+      - name: Merge main into dev when needed
+        id: sync
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main dev
+          git checkout -B dev origin/dev
+
+          before_sha="$(git rev-parse origin/dev)"
+          main_sha="$(git rev-parse origin/main)"
+          synced='false'
+
+          if git merge-base --is-ancestor origin/main origin/dev; then
+            after_sha="$before_sha"
+          else
+            git merge --no-edit origin/main
+            after_sha="$(git rev-parse HEAD)"
+
+            if [ "$after_sha" != "$before_sha" ]; then
+              git push origin HEAD:dev
+              synced='true'
+            fi
+          fi
+
+          echo "before_sha=$before_sha" >> "$GITHUB_OUTPUT"
+          echo "main_sha=$main_sha" >> "$GITHUB_OUTPUT"
+          echo "after_sha=$after_sha" >> "$GITHUB_OUTPUT"
+          echo "synced=$synced" >> "$GITHUB_OUTPUT"
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Auto Sync Summary'
+            echo "- Main source: ${{ steps.sync.outputs.main_sha }}"
+            echo "- Dev before: ${{ steps.sync.outputs.before_sha }}"
+            echo "- Dev after: ${{ steps.sync.outputs.after_sha }}"
+            echo "- Synced: ${{ steps.sync.outputs.synced }}"
+          } >> "$GITHUB_STEP_SUMMARY"
