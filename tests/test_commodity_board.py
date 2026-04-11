@@ -211,6 +211,40 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertEqual(onion_item["top_article"].title, issue_article.title)
 
+    def test_board_context_prefers_core_issue_story_for_program_item(self):
+        tail_article = self._make_article(
+            "supply",
+            "양파 산지 공선출하회 총회·재배기술교육 진행",
+            "양파 재배 농가를 대상으로 총회와 교육을 진행한 행사성 기사다.",
+            "https://example.com/onion-tail-training-priority",
+        )
+        tail_article.score = 92.0
+        tail_article.selection_stage = "tail"
+        tail_article.selection_fit_score = 0.48
+
+        core_issue_article = self._make_article(
+            "supply",
+            "양파 가격 약세 심화…산지 출하 조절·수급 대책 촉구",
+            "양파 가격 약세와 출하 조절, 수급 대책 요구를 다룬 핵심 기사다.",
+            "https://example.com/onion-core-issue-priority",
+        )
+        core_issue_article.score = 71.0
+        core_issue_article.is_core = True
+        core_issue_article.selection_stage = "core_final"
+        core_issue_article.selection_fit_score = 1.82
+
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [tail_article, core_issue_article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        onion_item = next(payload for group in ctx["groups"] for payload in group["items"] if payload["key"] == "onion")
+
+        self.assertEqual(onion_item["top_article"].title, core_issue_article.title)
+        self.assertGreater(
+            float(onion_item["top_article_metrics"].get("representative_score") or 0.0),
+            float(main._commodity_board_item_article_representative_metrics(onion_item, tail_article).get("representative_score") or 0.0),
+        )
+
     def test_board_context_prefers_issue_story_over_interview_story_for_same_item(self):
         issue_article = self._make_article(
             "supply",

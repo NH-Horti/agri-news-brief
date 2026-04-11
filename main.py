@@ -11191,6 +11191,7 @@ def _analytics_article_attrs_html(
     title: str,
     surface: str,
     rank: int | None = None,
+    extra_attrs: dict[str, Any] | None = None,
 ) -> str:
     attrs: list[tuple[str, str]] = [
         ("track", "article"),
@@ -11206,6 +11207,13 @@ def _analytics_article_attrs_html(
             attrs.append(("article-rank", str(int(rank))))
         except Exception:
             pass
+    if isinstance(extra_attrs, dict):
+        for name, value in extra_attrs.items():
+            raw_name = str(name or "").strip().replace("_", "-")
+            raw_value = str(value or "").strip()
+            if not raw_name or not raw_value:
+                continue
+            attrs.append((raw_name, raw_value))
     rendered: list[str] = []
     for name, value in attrs:
         if not str(value or "").strip():
@@ -21194,6 +21202,9 @@ def _commodity_board_item_article_metrics(
     desc = str(getattr(article, "description", "") or "")
     title_l = title.lower()
     body_l = f"{title} {desc}".lower()
+    selection_stage = str(getattr(article, "selection_stage", "") or "").strip()
+    selection_stage_l = selection_stage.lower()
+    selection_fit_score = float(getattr(article, "selection_fit_score", 0.0) or 0.0)
     base_terms = _managed_commodity_base_terms(item, limit=6)
     context_terms = _ordered_unique_terms(list(item.get("context_terms") or []) + list(item.get("match_terms") or []))
     focus_summary = _managed_commodity_focus_summary_for_article(article)
@@ -21217,7 +21228,24 @@ def _commodity_board_item_article_metrics(
         program_core=bool(item.get("program_core")),
         focus_metrics=board_metrics,
     )
+    issue_bucket = str(story_metrics.get("issue_bucket") or "")
+    direct_supply = bool(story_metrics.get("direct_supply"))
+    market_response = bool(story_metrics.get("market_response"))
+    issue_title_hits = int(story_metrics.get("issue_title_hits") or 0)
     story_priority = float(story_metrics.get("priority_score") or 0.0)
+    stage_core_story = "core" in selection_stage_l
+    weak_stage_story = any(token in selection_stage_l for token in ("tail", "backfill", "bridge", "swap", "recycle"))
+    key_story_bonus = 0.0
+    if stage_core_story and (issue_bucket or direct_supply or market_response or title_primary_hits >= 1 or primary_focus):
+        key_story_bonus += 12.0
+    elif getattr(article, "is_core", False) and (issue_bucket or direct_supply or market_response or issue_title_hits >= 1):
+        key_story_bonus += 8.0
+    if selection_fit_score >= 1.35:
+        key_story_bonus += min(12.0, (selection_fit_score - 1.35) * 14.0)
+    elif 0.0 < selection_fit_score < 0.75:
+        key_story_bonus -= min(12.0, (0.75 - selection_fit_score) * 18.0)
+    if weak_stage_story and selection_fit_score < 0.95 and not (issue_bucket or direct_supply or market_response):
+        key_story_bonus -= 6.0
     if include_semantic:
         semantic_state = _commodity_board_semantic_state_for_article(article, item_key)
     else:
@@ -21239,6 +21267,7 @@ def _commodity_board_item_article_metrics(
         + (_COMMODITY_BOARD_SECTION_RANK.get(section_key, 0) * 2.0)
         + (4.0 if item.get("program_core") and section_key == "supply" else 0.0)
         + story_priority
+        + key_story_bonus
         + semantic_boost
         - (max(0, match_count - 1) * 8.0)
         - board_penalty
@@ -21261,18 +21290,23 @@ def _commodity_board_item_article_metrics(
         "board_eligible": board_eligible,
         "board_penalty": board_penalty,
         "story_priority": story_priority,
+        "selection_fit_score": selection_fit_score,
+        "selection_stage": selection_stage,
+        "stage_core_story": stage_core_story,
+        "weak_stage_story": weak_stage_story,
+        "key_story_bonus": key_story_bonus,
         "semantic_similarity": semantic_similarity,
         "semantic_boost": semantic_boost,
         "semantic_model": semantic_model,
         "story_bonus": float(story_metrics.get("story_bonus") or 0.0),
         "story_penalty": float(story_metrics.get("story_penalty") or 0.0),
-        "issue_bucket": str(story_metrics.get("issue_bucket") or ""),
+        "issue_bucket": issue_bucket,
         "feature_kind": str(story_metrics.get("feature_kind") or ""),
-        "market_response": bool(story_metrics.get("market_response")),
-        "direct_supply": bool(story_metrics.get("direct_supply")),
+        "market_response": market_response,
+        "direct_supply": direct_supply,
         "market_anchor_hits": int(story_metrics.get("market_anchor_hits") or 0),
         "issue_anchor_hits": int(story_metrics.get("issue_anchor_hits") or 0),
-        "issue_title_hits": int(story_metrics.get("issue_title_hits") or 0),
+        "issue_title_hits": issue_title_hits,
         "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
         "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
         "consumer_noise_hits": int(story_metrics.get("consumer_noise_hits") or 0),
@@ -21312,6 +21346,9 @@ def _commodity_board_item_article_representative_metrics(
     title_context_hits = int(metrics.get("title_context_hits") or 0)
     board_score = float(metrics.get("board_score") or 0.0)
     story_priority = float(metrics.get("story_priority") or 0.0)
+    selection_fit_score = float(metrics.get("selection_fit_score") or 0.0)
+    stage_core_story = bool(metrics.get("stage_core_story"))
+    weak_stage_story = bool(metrics.get("weak_stage_story"))
     consumer_noise_hits = int(metrics.get("consumer_noise_hits") or 0)
     fruit_blossom_tourism = bool(metrics.get("fruit_blossom_tourism"))
     operational_issue_signal = _commodity_board_has_operational_issue_signal(metrics)
@@ -21417,6 +21454,20 @@ def _commodity_board_item_article_representative_metrics(
         representative_rank = -1
     elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch:
         representative_rank = 0
+    elif stage_core_story and selection_fit_score >= 1.45 and (
+        issue_bucket in ("commodity_issue", "farm_action", "export_recovery")
+        or direct_supply
+        or market_response
+        or issue_title_hits >= 1
+    ):
+        representative_rank = 4
+    elif stage_core_story and selection_fit_score >= 1.1 and (
+        direct_supply
+        or market_response
+        or strong_focus
+        or title_primary_hits >= 1
+    ):
+        representative_rank = 3
     elif issue_bucket in ("commodity_issue", "farm_action", "export_recovery"):
         representative_rank = 4
     elif direct_supply or market_response:
@@ -21440,6 +21491,14 @@ def _commodity_board_item_article_representative_metrics(
     _rep_press_tier = press_priority(item.get("press", ""), item.get("domain", ""))
     _rep_tier_bonus = {3: 8.0, 2: 3.0}.get(_rep_press_tier, 0.0)
     representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus
+    if stage_core_story and representative_rank >= 2:
+        representative_score += 8.0
+    if selection_fit_score >= 1.55:
+        representative_score += min(10.0, (selection_fit_score - 1.55) * 12.0)
+    elif 0.0 < selection_fit_score < 0.7:
+        representative_score -= min(14.0, (0.7 - selection_fit_score) * 18.0)
+    if weak_stage_story and selection_fit_score < 0.95 and representative_rank <= 1:
+        representative_score -= 10.0
     if weak_training:
         representative_score -= 26.0
     if weak_profile:
@@ -21492,6 +21551,8 @@ def _commodity_board_item_article_representative_metrics(
             "representative_rank": int(representative_rank),
             "representative_score": round(float(representative_score), 3),
             "representative_eligible": bool(representative_rank >= 1),
+            "stage_core_story": bool(stage_core_story),
+            "weak_stage_story": bool(weak_stage_story),
             "weak_training_story": bool(weak_training),
             "weak_profile_story": bool(weak_profile),
             "weak_org_feature_story": bool(weak_org_feature),
@@ -21606,6 +21667,8 @@ def _commodity_board_item_article_base_sort_key(item: dict[str, Any], article: A
     return (
         int(metrics.get("representative_rank", -1)),
         float(metrics.get("representative_score", 0.0)),
+        1 if bool(metrics.get("stage_core_story")) else 0,
+        float(metrics.get("selection_fit_score", 0.0)),
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
         float(metrics["focus_score"]),
@@ -21679,6 +21742,8 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
     return (
         int(metrics.get("representative_rank", -1)),
         float(metrics.get("representative_score", 0.0)),
+        1 if bool(metrics.get("stage_core_story")) else 0,
+        float(metrics.get("selection_fit_score", 0.0)),
         float(metrics.get("semantic_similarity", 0.0)),
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
@@ -22155,46 +22220,43 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
                 item_key,
                 semantic_adjustments.get(_article_selection_identity(article)),
             )
-        if semantic_adjustments:
-            articles = sorted(
-                articles,
-                key=lambda article: _commodity_board_item_article_sort_key(item_payload, article),
-                reverse=True,
-            )
+        articles = sorted(
+            articles,
+            key=lambda article: _commodity_board_item_article_sort_key(item_payload, article),
+            reverse=True,
+        )
         _all_repr_metrics = [
             (article, _commodity_board_item_article_representative_metrics(item_payload, article))
             for article in articles
         ]
-        qualified_articles = [
-            article
-            for article, m in _all_repr_metrics
-            if _commodity_board_article_is_active_candidate(item_payload, article, m)
+        qualified_metric_pairs = [
+            (article, metrics)
+            for article, metrics in _all_repr_metrics
+            if _commodity_board_article_is_active_candidate(item_payload, article, metrics)
         ]
+        qualified_articles = [article for article, _ in qualified_metric_pairs]
         # fallback: 정규 active 후보가 없지만 board_eligible + rank>=0 기사가 있으면 최고 board_score 1건 연결
         # program_core 품목은 품질 기준이 엄격하므로 fallback 대상에서 제외
         if not qualified_articles and articles and not bool(item_payload.get("program_core")):
             _fallback_candidates = [
-                (article, m)
-                for article, m in _all_repr_metrics
-                if bool(m.get("board_eligible")) and int(m.get("representative_rank", -1)) >= 0
+                (article, metrics)
+                for article, metrics in _all_repr_metrics
+                if bool(metrics.get("board_eligible")) and int(metrics.get("representative_rank", -1)) >= 0
             ]
             if _fallback_candidates:
                 _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
+                qualified_metric_pairs = [_fallback_candidates[0]]
                 qualified_articles = [_fallback_candidates[0][0]]
+        top_article_metrics = dict(qualified_metric_pairs[0][1]) if qualified_metric_pairs else {}
         item_payload["articles"] = articles
         item_payload["article_count"] = len(articles)
         item_payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
         item_payload["qualified_article_count"] = len(qualified_articles)
         item_payload["active"] = bool(qualified_articles)
         item_payload["top_article"] = qualified_articles[0] if qualified_articles else None
-        item_payload["top_article_board_score"] = (
-            float(_commodity_board_item_article_metrics(item_payload, qualified_articles[0]).get("board_score", 0.0))
-            if qualified_articles else 0.0
-        )
-        item_payload["top_article_representative_score"] = (
-            float(_commodity_board_item_article_representative_metrics(item_payload, qualified_articles[0]).get("representative_score", 0.0))
-            if qualified_articles else 0.0
-        )
+        item_payload["top_article_metrics"] = top_article_metrics
+        item_payload["top_article_board_score"] = float(top_article_metrics.get("board_score") or 0.0)
+        item_payload["top_article_representative_score"] = float(top_article_metrics.get("representative_score") or 0.0)
         item_payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
         item_payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
         item_payload["secondary_article_count"] = len(item_payload["secondary_articles"])
@@ -22314,6 +22376,37 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
         cls = "isPos" if boost > 0 else "isNeg"
         return f'<span class="hfDelta {cls}">HF {boost:+.2f}</span>'
 
+    def _commodity_article_attrs(
+        item_payload: dict[str, Any],
+        article: Article,
+        *,
+        surface: str,
+        metrics: dict[str, Any] | None = None,
+    ) -> str:
+        item_extra_attrs: dict[str, Any] = {
+            "item-key": str(item_payload.get("key") or "").strip(),
+            "item-label": str(item_payload.get("label") or "").strip(),
+        }
+        if metrics:
+            item_extra_attrs.update(
+                {
+                    "representative-rank": str(int(metrics.get("representative_rank", -1))),
+                    "representative-score": f"{float(metrics.get('representative_score', 0.0) or 0.0):.3f}",
+                    "board-score": f"{float(metrics.get('board_score', 0.0) or 0.0):.3f}",
+                    "selection-fit": f"{float(metrics.get('selection_fit_score', 0.0) or 0.0):.3f}",
+                    "selection-stage": str(metrics.get("selection_stage") or "").strip(),
+                    "is-core": "1" if getattr(article, "is_core", False) else "",
+                }
+            )
+        return _analytics_article_attrs_html(
+            report_date,
+            section_key=str(getattr(article, "section", "") or "").strip(),
+            url=str(getattr(article, "url", "") or ""),
+            title=str(getattr(article, "title", "") or ""),
+            surface=surface,
+            extra_attrs=item_extra_attrs,
+        )
+
     for group in groups:
         group_color = str(group.get("color") or "#475569")
         group_soft_bg = _hex_to_rgba(group_color, 0.07)
@@ -22331,6 +22424,9 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
             if primary_article:
                 primary_semantic_badge = _commodity_semantic_badge(item, primary_article)
+                primary_metrics = dict(item.get("top_article_metrics") or {})
+                if not primary_metrics:
+                    primary_metrics = _commodity_board_item_article_representative_metrics(item, primary_article)
                 primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
                 primary_press_label = normalize_press_label(str(getattr(primary_article, "press", "") or "").strip(), str(getattr(primary_article, "url", "") or ""))
                 primary_meta_terms = [
@@ -22344,7 +22440,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 ]
                 secondary_links = "".join(
                     f"""
-                    <a class="commoditySupportStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=str(getattr(article, "section", "") or "").strip(), url=str(getattr(article, "url", "") or ""), title=str(getattr(article, "title", "") or ""), surface="commodity_support")} href="{esc(article.url)}" target="_top" rel="noopener">
+                    <a class="commoditySupportStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_support")} href="{esc(article.url)}" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
                       <span class="commoditySupportText">{esc(article.title)}</span>
                     </a>
@@ -22353,7 +22449,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 )
                 extra_links = "".join(
                     f"""
-                    <a class="commodityMoreStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=str(getattr(article, "section", "") or "").strip(), url=str(getattr(article, "url", "") or ""), title=str(getattr(article, "title", "") or ""), surface="commodity_more")} href="{esc(article.url)}" target="_top" rel="noopener">
+                    <a class="commodityMoreStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_more")} href="{esc(article.url)}" target="_top" rel="noopener">
                       <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
                       <span class="commoditySupportText">{esc(article.title)}</span>
                     </a>
@@ -22386,7 +22482,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                       <div class="commodityPrimaryKicker">대표 기사</div>
                       {primary_semantic_badge}
                     </div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1"{_analytics_article_attrs_html(report_date, section_key=primary_section_key, url=str(getattr(primary_article, "url", "") or ""), title=str(getattr(primary_article, "title", "") or ""), surface="commodity_primary")} href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
+                    <a class="commodityPrimaryStory" data-swipe-ignore="1"{_commodity_article_attrs(item, primary_article, surface="commodity_primary", metrics=primary_metrics)} href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
                     <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
                   </div>
                   {secondary_html}

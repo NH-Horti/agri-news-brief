@@ -30,6 +30,52 @@ TRACKING_QUERY_KEYS = frozenset(
 
 _NON_KO_WORD_RE = re.compile(r"[^0-9a-zA-Z가-힣]+")
 _SPACE_RE = re.compile(r"\s+")
+_WEAK_SELECTION_STAGE_TOKENS = ("tail", "backfill", "bridge", "swap", "recycle")
+_COMMODITY_ISSUE_TERMS = (
+    "가격",
+    "수급",
+    "출하",
+    "반입",
+    "경락",
+    "도매",
+    "공판",
+    "작황",
+    "피해",
+    "병해충",
+    "방제",
+    "생산량",
+    "공급",
+    "재배면적",
+    "수출",
+    "저장",
+    "안정",
+    "폭락",
+    "폭등",
+    "급등",
+    "급락",
+    "하락",
+    "상승",
+    "물량",
+)
+_COMMODITY_WEAK_TERMS = (
+    "교육",
+    "총회",
+    "인터뷰",
+    "행사",
+    "축제",
+    "체험",
+    "홍보",
+    "맛집",
+    "레시피",
+    "요리",
+    "뷰티",
+    "협약",
+    "개소",
+    "개장",
+    "선정",
+    "브랜드",
+    "시식",
+)
 
 
 @dataclass
@@ -43,6 +89,31 @@ class SurfaceArticle:
     domain: str
     summary: str = ""
     is_core: bool = False
+    item_key: str = ""
+    item_label: str = ""
+    representative_rank: int = -1
+    representative_score: float = 0.0
+    board_score: float = 0.0
+    selection_fit_score: float = 0.0
+    selection_stage: str = ""
+
+
+def _float_attr(value: Any) -> float:
+    try:
+        return float(str(value or "").strip())
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _int_attr(value: str | None, default: int = -1) -> int:
+    try:
+        return int(str(value or "").strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _bool_attr(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y"}
 
 
 class ReportHTMLParser(HTMLParser):
@@ -84,6 +155,14 @@ class ReportHTMLParser(HTMLParser):
                     href=str(attr_map.get("href", "")).strip(),
                     article_id=str(attr_map.get("data-article-id", "")).strip(),
                     domain=str(attr_map.get("data-target-domain", "")).strip(),
+                    is_core=_bool_attr(attr_map.get("data-is-core")),
+                    item_key=str(attr_map.get("data-item-key", "")).strip(),
+                    item_label=str(attr_map.get("data-item-label", "")).strip(),
+                    representative_rank=_int_attr(attr_map.get("data-representative-rank")),
+                    representative_score=_float_attr(attr_map.get("data-representative-score")),
+                    board_score=_float_attr(attr_map.get("data-board-score")),
+                    selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
+                    selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
                 )
             )
             return
@@ -213,6 +292,92 @@ def _expected_briefing_count(raw_count: int) -> int:
     return 0
 
 
+def _iter_snapshot_items(snapshot_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    raw_by_section = snapshot_payload.get("raw_by_section", {})
+    if not isinstance(raw_by_section, dict):
+        return items
+    for section, section_items in raw_by_section.items():
+        if not isinstance(section_items, list):
+            continue
+        for item in section_items:
+            if not isinstance(item, dict):
+                continue
+            payload = dict(item)
+            payload.setdefault("section", str(section or "").strip())
+            items.append(payload)
+    return items
+
+
+def _selection_fit(item: dict[str, Any] | None) -> float:
+    if not isinstance(item, dict):
+        return 0.0
+    return _float_attr(item.get("selection_fit_score") or item.get("fit_score") or item.get("fit"))
+
+
+def _selection_stage(item: dict[str, Any] | None) -> str:
+    if not isinstance(item, dict):
+        return ""
+    return str(item.get("selection_stage") or item.get("stage") or "").strip()
+
+
+def _stage_has_core_signal(stage: str) -> bool:
+    return "core" in str(stage or "").strip().lower()
+
+
+def _stage_is_weak(stage: str) -> bool:
+    stage_l = str(stage or "").strip().lower()
+    return bool(stage_l and any(token in stage_l for token in _WEAK_SELECTION_STAGE_TOKENS))
+
+
+def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -> float:
+    target = _float_attr((item or {}).get("score") if isinstance(item, dict) else 0.0)
+    scores = [
+        _float_attr(candidate.get("score"))
+        for candidate in pool
+        if isinstance(candidate, dict)
+    ]
+    if not scores:
+        return 0.5
+    lower_or_equal = sum(1 for score in scores if score <= target)
+    return _rate(lower_or_equal, len(scores), default=0.5)
+
+
+def _item_alias_terms(label: str) -> list[str]:
+    raw = _normalize_spaces(label)
+    aliases = {raw.lower(), raw.replace(" ", "").lower()}
+    aliases.update(part.lower() for part in re.split(r"[\s/·,]+", raw) if part.strip())
+    return [alias for alias in aliases if alias]
+
+
+def _contains_any_term(text: str, terms: tuple[str, ...] | list[str]) -> bool:
+    haystack = _normalize_spaces(text).lower()
+    return any(str(term or "").lower() in haystack for term in terms if str(term or "").strip())
+
+
+def _commodity_item_focus(article: SurfaceArticle) -> bool:
+    if not article.item_label:
+        return False
+    title_l = _normalize_spaces(article.title).lower()
+    title_compact = title_l.replace(" ", "")
+    for alias in _item_alias_terms(article.item_label):
+        if alias in title_l or alias.replace(" ", "") in title_compact:
+            return True
+    return False
+
+
+def _has_representative_issue_signal(title: str, body: str) -> bool:
+    text = f"{title} {body}"
+    for noise in ("공선출하회", "공동출하회", "출하회", "출하식"):
+        text = text.replace(noise, " ")
+    return _contains_any_term(text, _COMMODITY_ISSUE_TERMS)
+
+
+def _is_weak_commodity_representative(title: str, body: str) -> bool:
+    text = f"{title} {body}"
+    return _contains_any_term(text, _COMMODITY_WEAK_TERMS) and not _has_representative_issue_signal(title, body)
+
+
 def _find_snapshot_match(
     article: SurfaceArticle,
     by_url: dict[str, dict[str, Any]],
@@ -234,22 +399,14 @@ def _find_snapshot_match(
 def _build_snapshot_indexes(snapshot_payload: dict[str, Any]) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]]]:
     by_url: dict[str, dict[str, Any]] = {}
     by_title: dict[str, list[dict[str, Any]]] = {}
-    raw_by_section = snapshot_payload.get("raw_by_section", {})
-    if not isinstance(raw_by_section, dict):
-        return by_url, by_title
-
-    for items in raw_by_section.values():
-        if not isinstance(items, list):
-            continue
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-            url_key = normalize_url(str(item.get("link", "") or ""))
+    for item in _iter_snapshot_items(snapshot_payload):
+        for key in ("link", "originallink", "canon_url", "url"):
+            url_key = normalize_url(str(item.get(key, "") or ""))
             if url_key and url_key not in by_url:
                 by_url[url_key] = item
-            title_key = normalize_title_key(item.get("title", ""))
-            if title_key:
-                by_title.setdefault(title_key, []).append(item)
+        title_key = normalize_title_key(item.get("title", ""))
+        if title_key:
+            by_title.setdefault(title_key, []).append(item)
     return by_url, by_title
 
 
@@ -293,13 +450,20 @@ def _rolling_seed_score(snapshot_payload: dict[str, Any]) -> tuple[float, dict[s
     return sum(section_scores.values()) / len(section_scores), section_scores
 
 
+def _average(values: list[float], default: float = 0.0) -> float:
+    return sum(values) / len(values) if values else default
+
+
 def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str, Any]) -> dict[str, Any]:
     articles = parse_report_html(html_text)
     briefing_articles = [article for article in articles if article.surface == BRIEFING_SURFACE]
     commodity_articles = [article for article in articles if article.surface in COMMODITY_SURFACES]
+    commodity_primary_articles = [article for article in commodity_articles if article.surface == "commodity_primary"]
     all_surface_articles = briefing_articles + commodity_articles
 
     raw_by_section = snapshot_payload.get("raw_by_section", {})
+    if not isinstance(raw_by_section, dict):
+        raw_by_section = {}
     raw_counts = {
         section: len(raw_by_section.get(section, [])) if isinstance(raw_by_section, dict) else 0
         for section in SECTION_KEYS
@@ -361,11 +525,16 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
 
     snapshot_end = parse_kst_datetime(snapshot_payload.get("window", {}).get("end_kst"))
     by_url, by_title = _build_snapshot_indexes(snapshot_payload)
+    section_raw_pools = {
+        section: list(raw_by_section.get(section, [])) if isinstance(raw_by_section.get(section, []), list) else []
+        for section in SECTION_KEYS
+    }
     matched_count = 0
     within_48h = 0
     within_72h = 0
     stale_older_than_96h = 0
     freshness_samples: list[dict[str, Any]] = []
+    briefing_match_records: list[dict[str, Any]] = []
 
     for article in briefing_articles:
         match = _find_snapshot_match(article, by_url, by_title)
@@ -387,6 +556,28 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "title": article.title,
                 "section": article.section,
                 "age_hours": round(age_hours, 1),
+            }
+        )
+        title_candidates = list(by_title.get(normalize_title_key(article.title), []))
+        best_fit = _selection_fit(match)
+        best_section = str(match.get("section", "")).strip() or article.section
+        for candidate in title_candidates:
+            candidate_fit = _selection_fit(candidate)
+            if candidate_fit > best_fit:
+                best_fit = candidate_fit
+                best_section = str(candidate.get("section", "")).strip() or best_section
+        fit_score = _selection_fit(match)
+        stage = _selection_stage(match)
+        briefing_match_records.append(
+            {
+                "title": article.title,
+                "section": article.section,
+                "is_core": bool(article.is_core),
+                "fit_score": fit_score,
+                "stage": stage,
+                "score_percentile": _score_percentile(match, section_raw_pools.get(article.section, [])),
+                "cross_section_gap": max(0.0, best_fit - fit_score),
+                "best_section": best_section,
             }
         )
 
@@ -418,12 +609,179 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + seed_score * 0.3
     )
 
+    section_fit_values = [float(record.get("fit_score") or 0.0) for record in briefing_match_records]
+    section_alignment_fit_avg = _average(section_fit_values)
+    section_alignment_low_fit_rate = _rate(
+        sum(1 for record in briefing_match_records if float(record.get("fit_score") or 0.0) < 0.85),
+        len(briefing_match_records),
+        default=0.0,
+    )
+    section_alignment_cross_gap_rate = _rate(
+        sum(
+            1
+            for record in briefing_match_records
+            if float(record.get("cross_section_gap") or 0.0) >= 0.35
+            and str(record.get("best_section") or "") != str(record.get("section") or "")
+        ),
+        len(briefing_match_records),
+        default=0.0,
+    )
+    section_alignment_weak_stage_rate = _rate(
+        sum(1 for record in briefing_match_records if _stage_is_weak(str(record.get("stage") or ""))),
+        len(briefing_match_records),
+        default=0.0,
+    )
+    section_alignment_score = 100.0 * (
+        _score_between(section_alignment_fit_avg, 0.8, 1.35) * 0.45
+        + _score_inverse(section_alignment_low_fit_rate, 0.08, 0.3) * 0.2
+        + _score_inverse(section_alignment_cross_gap_rate, 0.02, 0.18) * 0.2
+        + _score_inverse(section_alignment_weak_stage_rate, 0.06, 0.24) * 0.15
+    )
+
+    section_alignment_section_scores: dict[str, float] = {}
+    for section in SECTION_KEYS:
+        records = [record for record in briefing_match_records if record.get("section") == section]
+        if not records:
+            section_alignment_section_scores[section] = 1.0 if briefing_counts[section] <= 0 else 0.0
+            continue
+        fit_avg = _average([float(record.get("fit_score") or 0.0) for record in records])
+        low_fit_rate = _rate(sum(1 for record in records if float(record.get("fit_score") or 0.0) < 0.85), len(records))
+        section_alignment_section_scores[section] = (
+            _score_between(fit_avg, 0.8, 1.35) * 0.7
+            + _score_inverse(low_fit_rate, 0.08, 0.3) * 0.3
+        )
+
+    core_match_records = [record for record in briefing_match_records if bool(record.get("is_core"))]
+    core_fit_avg = _average([float(record.get("fit_score") or 0.0) for record in core_match_records])
+    core_rank_percentile_avg = _average([float(record.get("score_percentile") or 0.0) for record in core_match_records], default=0.5)
+    core_stage_core_rate = _rate(
+        sum(1 for record in core_match_records if _stage_has_core_signal(str(record.get("stage") or ""))),
+        len(core_match_records),
+        default=0.0,
+    )
+    weak_core_rate = _rate(
+        sum(
+            1
+            for record in core_match_records
+            if float(record.get("fit_score") or 0.0) < 0.95
+            or float(record.get("score_percentile") or 0.0) < 0.6
+            or _stage_is_weak(str(record.get("stage") or ""))
+        ),
+        len(core_match_records),
+        default=0.0,
+    )
+    if core_counts and sum(core_counts.values()) == 0 and briefing_articles:
+        core_quality_score = 0.0
+    elif core_match_records:
+        core_quality_score = 100.0 * (
+            _score_between(core_fit_avg, 0.95, 1.5) * 0.45
+            + _score_between(core_rank_percentile_avg, 0.55, 0.9) * 0.25
+            + _score_between(core_stage_core_rate, 0.35, 0.8) * 0.15
+            + _score_inverse(weak_core_rate, 0.05, 0.35) * 0.15
+        )
+    else:
+        core_quality_score = 40.0 if briefing_articles else 100.0
+
+    core_quality_section_scores: dict[str, float] = {}
+    for section in SECTION_KEYS:
+        records = [record for record in core_match_records if record.get("section") == section]
+        if not records:
+            core_quality_section_scores[section] = 1.0 if core_counts[section] <= 0 else 0.0
+            continue
+        fit_avg = _average([float(record.get("fit_score") or 0.0) for record in records])
+        pct_avg = _average([float(record.get("score_percentile") or 0.0) for record in records], default=0.5)
+        weak_rate = _rate(
+            sum(
+                1
+                for record in records
+                if float(record.get("fit_score") or 0.0) < 0.95
+                or float(record.get("score_percentile") or 0.0) < 0.6
+                or _stage_is_weak(str(record.get("stage") or ""))
+            ),
+            len(records),
+        )
+        core_quality_section_scores[section] = (
+            _score_between(fit_avg, 0.95, 1.5) * 0.55
+            + _score_between(pct_avg, 0.55, 0.9) * 0.25
+            + _score_inverse(weak_rate, 0.05, 0.35) * 0.2
+        )
+
+    commodity_primary_records: list[dict[str, Any]] = []
+    for article in commodity_primary_articles:
+        match = _find_snapshot_match(article, by_url, by_title)
+        body = ""
+        if isinstance(match, dict):
+            body = _normalize_spaces(
+                " ".join(
+                    str(match.get(field) or "")
+                    for field in ("description", "summary", "desc")
+                    if str(match.get(field) or "").strip()
+                )
+            )
+        fit_score = float(article.selection_fit_score or 0.0) or _selection_fit(match)
+        stage = article.selection_stage or _selection_stage(match)
+        representative_rank = int(article.representative_rank)
+        if representative_rank < 0:
+            if _stage_has_core_signal(stage) and fit_score >= 1.3:
+                representative_rank = 3
+            elif fit_score >= 0.9:
+                representative_rank = 1
+            else:
+                representative_rank = 0
+        commodity_primary_records.append(
+            {
+                "title": article.title,
+                "item_label": article.item_label,
+                "item_focus": _commodity_item_focus(article),
+                "issue_signal": _has_representative_issue_signal(article.title, body),
+                "weak_story": _is_weak_commodity_representative(article.title, body),
+                "fit_score": fit_score,
+                "representative_rank": representative_rank,
+            }
+        )
+
+    commodity_primary_item_focus_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("item_focus"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_issue_signal_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("issue_signal"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_weak_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("weak_story"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_fit_avg = _average([float(record.get("fit_score") or 0.0) for record in commodity_primary_records])
+    commodity_primary_rank_avg = _average(
+        [float(record.get("representative_rank") or 0.0) for record in commodity_primary_records],
+        default=0.0,
+    )
+    if commodity_articles and not commodity_primary_articles:
+        commodity_board_quality_score = 0.0
+    elif commodity_primary_records:
+        commodity_board_quality_score = 100.0 * (
+            commodity_primary_item_focus_rate * 0.28
+            + _score_between(commodity_primary_issue_signal_rate, 0.45, 0.8) * 0.25
+            + _score_inverse(commodity_primary_weak_rate, 0.05, 0.25) * 0.22
+            + _score_between(commodity_primary_fit_avg, 0.8, 1.35) * 0.15
+            + _score_between(commodity_primary_rank_avg, 1.4, 3.2) * 0.1
+        )
+    else:
+        commodity_board_quality_score = 100.0
+
     overall_score = (
-        completeness_score * 0.28
-        + diversity_score * 0.24
-        + summary_score * 0.20
-        + freshness_score * 0.18
-        + retrieval_score * 0.10
+        completeness_score * 0.20
+        + diversity_score * 0.18
+        + summary_score * 0.16
+        + freshness_score * 0.14
+        + retrieval_score * 0.08
+        + section_alignment_score * 0.12
+        + core_quality_score * 0.07
+        + commodity_board_quality_score * 0.05
     )
 
     if overall_score >= 85.0:
@@ -440,6 +798,18 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "선정 결과가 약한 섹션이 있습니다: "
             + ", ".join(low_sections)
             + ". 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다."
+        )
+    if section_alignment_score < 78.0 or section_alignment_low_fit_rate > 0.18 or section_alignment_cross_gap_rate > 0.1:
+        improvement_hints.append(
+            "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요."
+        )
+    if core_quality_score < 78.0 or weak_core_rate > 0.18:
+        improvement_hints.append(
+            "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요."
+        )
+    if commodity_board_quality_score < 80.0 or commodity_primary_weak_rate > 0.15 or commodity_primary_item_focus_rate < 0.9:
+        improvement_hints.append(
+            "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요."
         )
     if title_unique_rate < 0.8 or surface_reuse_penalty > 0.1:
         improvement_hints.append("동일 이슈가 브리핑/품목 보드에 반복 노출됩니다. story signature 중복 억제와 commodity surface 재사용 상한이 필요합니다.")
@@ -465,10 +835,14 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "summary_quality": round(summary_score, 2),
             "freshness": round(freshness_score, 2),
             "retrieval_support": round(retrieval_score, 2),
+            "section_alignment": round(section_alignment_score, 2),
+            "core_quality": round(core_quality_score, 2),
+            "commodity_board_quality": round(commodity_board_quality_score, 2),
         },
         "counts": {
             "briefing_total": len(briefing_articles),
             "commodity_total": len(commodity_articles),
+            "commodity_primary_total": len(commodity_primary_articles),
             "briefing_by_section": briefing_counts,
             "core_by_section": core_counts,
             "commodity_by_section": commodity_counts,
@@ -488,12 +862,27 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "within_72h_rate": round(within_72h_rate, 4),
             "stale_over_96h_rate": round(stale_rate, 4),
             "seed_coverage_score": round(seed_score, 4),
+            "section_alignment_fit_avg": round(section_alignment_fit_avg, 4),
+            "section_alignment_low_fit_rate": round(section_alignment_low_fit_rate, 4),
+            "section_alignment_cross_gap_rate": round(section_alignment_cross_gap_rate, 4),
+            "section_alignment_weak_stage_rate": round(section_alignment_weak_stage_rate, 4),
+            "core_fit_avg": round(core_fit_avg, 4),
+            "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
+            "core_stage_core_rate": round(core_stage_core_rate, 4),
+            "weak_core_rate": round(weak_core_rate, 4),
+            "commodity_primary_item_focus_rate": round(commodity_primary_item_focus_rate, 4),
+            "commodity_primary_issue_signal_rate": round(commodity_primary_issue_signal_rate, 4),
+            "commodity_primary_weak_rate": round(commodity_primary_weak_rate, 4),
+            "commodity_primary_fit_avg": round(commodity_primary_fit_avg, 4),
+            "commodity_primary_rank_avg": round(commodity_primary_rank_avg, 4),
         },
         "section_scores": {
             "briefing_fill": {section: round(section_fill_scores[section], 4) for section in SECTION_KEYS},
             "core_fill": {section: round(core_fill_scores[section], 4) for section in SECTION_KEYS},
             "retrieval_pool": {section: round(retrieval_pool_scores[section], 4) for section in SECTION_KEYS},
             "seed_coverage": {section: round(score, 4) for section, score in seed_section_scores.items()},
+            "section_alignment": {section: round(section_alignment_section_scores[section], 4) for section in SECTION_KEYS},
+            "core_quality": {section: round(core_quality_section_scores[section], 4) for section in SECTION_KEYS},
         },
         "freshness_samples": sorted(freshness_samples, key=lambda item: item["age_hours"], reverse=True)[:8],
         "improvement_hints": improvement_hints,
@@ -516,6 +905,8 @@ def build_summary_feedback(result: dict[str, Any]) -> list[str]:
         feedback.append("동일 이벤트로 보이는 기사들은 표현을 달리해도 같은 결로 요약하지 말고 차별점이 있을 때만 강조한다.")
     if float(metrics.get("within_72h_rate", 1.0)) < 0.9:
         feedback.append("오래된 기사일수록 배경 설명은 줄이고 이번 보고일 기준으로 새롭게 확인된 조치나 수급 신호를 먼저 적는다.")
+    if float(metrics.get("weak_core_rate", 0.0)) > 0.2:
+        feedback.append("핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다.")
 
     if not feedback:
         feedback = [
@@ -551,14 +942,18 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"- Overall: **{result.get('overall_score', 0):.2f}** ({result.get('status', 'unknown')})\n"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
-        f"retrieval={scores.get('retrieval_support', 0):.1f}\n"
+        f"retrieval={scores.get('retrieval_support', 0):.1f}, section_fit={scores.get('section_alignment', 0):.1f}, "
+        f"core={scores.get('core_quality', 0):.1f}, commodity={scores.get('commodity_board_quality', 0):.1f}\n"
         f"- Briefing cards: {counts.get('briefing_total', 0)} / Commodity cards: {counts.get('commodity_total', 0)}\n"
         f"- Sections: {section_summary}\n"
         f"- Metrics: title_unique={metrics.get('briefing_title_unique_rate', 0):.2f}, "
         f"domain_diversity={metrics.get('briefing_domain_diversity_rate', 0):.2f}, "
         f"summary_presence={metrics.get('summary_presence_rate', 0):.2f}, "
         f"summary_numeric={metrics.get('summary_numeric_rate', 0):.2f}, "
-        f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}\n\n"
+        f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
+        f"fit_avg={metrics.get('section_alignment_fit_avg', 0):.2f}, "
+        f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
+        f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}\n\n"
         f"### Improvement Hints\n"
         f"{hint_lines}\n\n"
         f"### Next Summary Feedback\n"
@@ -574,6 +969,9 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "generated_at_kst": result.get("generated_at_kst"),
         "overall_score": result.get("overall_score"),
         "status": result.get("status"),
+        "section_alignment": result.get("scores", {}).get("section_alignment", 0),
+        "core_quality": result.get("scores", {}).get("core_quality", 0),
+        "commodity_board_quality": result.get("scores", {}).get("commodity_board_quality", 0),
         "briefing_total": counts.get("briefing_total", 0),
         "commodity_total": counts.get("commodity_total", 0),
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
