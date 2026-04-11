@@ -17,6 +17,7 @@ class GithubDirItem(TypedDict, total=False):
     path: str
     sha: str
     type: str
+    size: NotRequired[int]
 
 
 class NaverNewsItem(TypedDict, total=False):
@@ -143,6 +144,7 @@ def ensure_github_dir_items(value: Any) -> list[GithubDirItem]:
         path = raw.get("path")
         sha = raw.get("sha")
         item_type = raw.get("type")
+        size = raw.get("size")
 
         if isinstance(name, str):
             item["name"] = name
@@ -152,6 +154,8 @@ def ensure_github_dir_items(value: Any) -> list[GithubDirItem]:
             item["sha"] = sha
         if isinstance(item_type, str):
             item["type"] = item_type
+        if isinstance(size, int):
+            item["size"] = size
 
         out.append(item)
 

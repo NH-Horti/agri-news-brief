@@ -43,6 +43,7 @@ from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Callable, Sequence, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
+import xml.etree.ElementTree as ET
 
 import requests  # type: ignore[import-untyped]
 from requests.adapters import HTTPAdapter  # type: ignore[import-untyped]
@@ -2070,22 +2071,22 @@ def build_managed_section_recall_queries(section_key: str, anchor_dt: datetime |
     items = _balanced_managed_catalog_items()
     group_queries = _managed_group_recall_queries(section_key, seed)
     if section_key == "supply":
-        balanced_queries: list[str] = []
+        supply_queries: list[str] = []
         for item in items:
             order = int(item.get("order") or 0)
             is_core = bool(item.get("program_core"))
             buckets = _managed_commodity_supply_query_buckets(item)
-            balanced_queries.extend(
+            supply_queries.extend(
                 _pick_rotated_item_queries(buckets.get("market") or [], seed, order, 1, phase=0, pin_first=is_core)
             )
-            balanced_queries.extend(
+            supply_queries.extend(
                 _pick_rotated_item_queries(buckets.get("field") or [], seed, order, 1, phase=1, pin_first=is_core)
             )
             if is_core:
-                balanced_queries.extend(
+                supply_queries.extend(
                     _pick_rotated_item_queries(buckets.get("response") or [], seed, order, 1, phase=2)
                 )
-        return _ordered_unique_terms(list(group_queries) + balanced_queries)
+        return _ordered_unique_terms(list(group_queries) + supply_queries)
 
     builder = _managed_section_query_builder(section_key)
     if builder is None:
@@ -10432,7 +10433,7 @@ def _snapshot_debug_payload() -> JsonDict:
         return {"hf_state": hf_state}
     try:
         with _DEBUG_LOCK:
-            return json.loads(
+            payload = json.loads(
                 json.dumps(
                     {
                         "collections": DEBUG_DATA.get("collections", {}) or {},
@@ -10442,8 +10443,11 @@ def _snapshot_debug_payload() -> JsonDict:
                     ensure_ascii=False,
                 )
             )
+            if isinstance(payload, dict):
+                return payload
     except Exception:
         return {"hf_state": hf_state}
+    return {"hf_state": hf_state}
 
 
 def _restore_debug_from_snapshot(payload: Any, snapshot_path: Path | None = None) -> None:
@@ -15938,7 +15942,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         tier1_cap_relax = max(tier1_cap, 3)
         tier2_cap_relax = max(tier2_cap, 4)
         selected_regions = {_pest_region_or_fallback_key(x) for x in final if _pest_region_or_fallback_key(x)}
-        selected_footprints = {token for x in final for token in _pest_story_footprint_tokens(x)}
+        selected_relax_footprints = {token for x in final for token in _pest_story_footprint_tokens(x)}
 
         def _source_ok_pest_region(a: Article) -> bool:
             return _source_ok_with_caps(a, tier1_cap_relax, tier2_cap_relax, source_cap_relax)
@@ -15965,7 +15969,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if not region_key or region_key in selected_regions:
                 continue
             footprint_tokens = set(_pest_story_footprint_tokens(a))
-            if footprint_tokens and (footprint_tokens & selected_footprints):
+            if footprint_tokens and (footprint_tokens & selected_relax_footprints):
                 continue
             if any(_is_similar_title(a.title_key, b.title_key) for b in final):
                 continue
@@ -15977,7 +15981,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             _mark_used(a)
             _source_take(a)
             selected_regions.add(region_key)
-            selected_footprints.update(footprint_tokens)
+            selected_relax_footprints.update(footprint_tokens)
     # 마지막 안전장치: 동일 URL 중복 제거
     seen = set()
     deduped: list[Article] = []
@@ -16008,21 +16012,21 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return re.sub(r"\s+", " ", _nfkc_lower(article.title or "")).strip()
 
         pest_unique: list[Article] = []
-        selected_footprints: set[str] = set()
+        selected_pest_footprints: set[str] = set()
         selected_exact_titles: set[str] = set()
         for a in deduped:
             exact_title_key = _pest_exact_title_key(a)
             if exact_title_key and exact_title_key in selected_exact_titles:
                 continue
             footprint_tokens = set(_pest_story_footprint_tokens(a))
-            if footprint_tokens and (footprint_tokens & selected_footprints):
+            if footprint_tokens and (footprint_tokens & selected_pest_footprints):
                 continue
             if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                 continue
             pest_unique.append(a)
             if exact_title_key:
                 selected_exact_titles.add(exact_title_key)
-            selected_footprints.update(footprint_tokens)
+            selected_pest_footprints.update(footprint_tokens)
 
         target = min(4, max_n)
         if len(pest_unique) < target:
@@ -16030,7 +16034,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
             selected_regions = {_pest_region_or_fallback_key(x) for x in pest_unique if _pest_region_or_fallback_key(x)}
             selected_commodity_keys = {key for x in pest_unique for key in _pest_article_commodity_keys(x)}
-            selected_footprints = {token for x in pest_unique for token in _pest_story_footprint_tokens(x)}
+            selected_pest_footprints = {token for x in pest_unique for token in _pest_story_footprint_tokens(x)}
 
             def _rank_pest_diversity_candidate(a: Article, allow_same_footprint: bool) -> tuple[tuple[Any, ...], str, tuple[str, ...], tuple[str, ...]] | None:
                 if a in pest_unique:
@@ -16056,8 +16060,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 footprint_tokens = _pest_story_footprint_tokens(a)
                 has_new_region = 1 if region_key and region_key not in selected_regions else 0
                 has_new_commodity = 1 if commodity_keys and not (set(commodity_keys) & selected_commodity_keys) else 0
-                has_new_footprint = 1 if footprint_tokens and not (set(footprint_tokens) & selected_footprints) else 0
-                if footprint_tokens and (set(footprint_tokens) & selected_footprints):
+                has_new_footprint = 1 if footprint_tokens and not (set(footprint_tokens) & selected_pest_footprints) else 0
+                if footprint_tokens and (set(footprint_tokens) & selected_pest_footprints):
                     return None
                 if not allow_same_footprint and not (has_new_region or has_new_commodity or has_new_footprint):
                     return None
@@ -16088,7 +16092,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     ranked_refill.append((ranked[0], a, ranked[1], ranked[2], ranked[3]))
                 ranked_refill.sort(key=lambda item: item[0], reverse=True)
-                for _, a, region_key, commodity_keys, footprint_tokens in ranked_refill:
+                for _, a, region_key, commodity_keys, ranked_footprints in ranked_refill:
                     if len(pest_unique) >= target:
                         break
                     if a in pest_unique:
@@ -16102,7 +16106,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                     if any(_is_similar_story(a, b, "pest") for b in pest_unique):
                         continue
-                    if footprint_tokens and (set(footprint_tokens) & selected_footprints):
+                    if ranked_footprints and (set(ranked_footprints) & selected_pest_footprints):
                         continue
                     _record_selection(a, "pest_diversity_backfill")
                     pest_unique.append(a)
@@ -16111,7 +16115,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     if region_key:
                         selected_regions.add(region_key)
                     selected_commodity_keys.update(commodity_keys)
-                    selected_footprints.update(footprint_tokens)
+                    selected_pest_footprints.update(ranked_footprints)
         deduped = pest_unique
 
     forced_final_items = [a for a in candidates_sorted if getattr(a, "forced_section", "") == section_key]
@@ -16358,10 +16362,8 @@ def _needs_supply_feature_refresh(
 # - WHITELIST_RSS_URLS 환경변수에 RSS URL을 넣으면 해당 소스에서 기사 후보를 추가한다.
 # - 기본은 OFF(빈 값)이며, 기존 Naver OpenAPI 기반 파이프라인은 그대로 유지한다.
 # -----------------------------
-def _safe_xml_parse(text: str) -> "xml.etree.ElementTree.Element":
+def _safe_xml_parse(text: str) -> ET.Element:
     """Parse XML with external entity resolution disabled (XXE prevention)."""
-    import xml.etree.ElementTree as ET
-
     parser = ET.XMLParser()
     # Disable external entity resolution to prevent XXE attacks
     parser.feed(text)
@@ -18313,9 +18315,12 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             for alt_key in ("policy", "dist"):
                 if alt_key not in conf_by_key:
                     continue
+                pub_dt = getattr(a, "pub_dt_kst", None)
+                if not isinstance(pub_dt, datetime):
+                    pub_dt = datetime.min.replace(tzinfo=KST)
                 alt_score = compute_rank_score(
                     a.title or "", a.description or "", _pest_dom,
-                    getattr(a, "pub_dt_kst", None), conf_by_key[alt_key], _pest_press,
+                    pub_dt, conf_by_key[alt_key], _pest_press,
                 )
                 if alt_score >= pest_score + 2.0 and alt_score > best_alt_score:
                     best_alt_score = alt_score
@@ -18948,9 +18953,8 @@ def _sync_debug_with_final_sections(final_by_section: dict[str, list["Article"]]
                     continue
                 row_key = ((row.get("url") or "")[:500], (row.get("title") or "")[:160])
                 final_article = final_by_key.get(row_key)
-                is_sel = final_article is not None
-                row["selected"] = bool(is_sel)
-                if not is_sel:
+                row["selected"] = final_article is not None
+                if final_article is None:
                     row["is_core"] = False
                     if not row.get("reason"):
                         row["reason"] = "postbuild_pruned"
@@ -19664,7 +19668,7 @@ def _build_sections_phase123(
         key = sec["key"]
         blocked = _blocked_idents.get(key, set())
         picked: list[Article] = []
-        _picked_sigs: list[tuple[frozenset, frozenset]] = []  # (commodity_set, issue_set)
+        _picked_sigs: list[tuple[frozenset[str], frozenset[str]]] = []  # (commodity_set, issue_set)
         for a in _section_buffers.get(key, []):
             ident = a.norm_key or a.canon_url or f"{(a.press or '').strip()}|{a.title_key}"
             if ident in blocked:
@@ -19725,7 +19729,7 @@ def _build_sections_phase123(
         if len(articles) <= 1:
             continue
         # 각 기사의 토픽 시그니처 추출 (title만 사용 — description은 간접 키워드가 오탐 유발)
-        _topic_sigs: list[tuple[frozenset, frozenset, frozenset]] = []
+        _topic_sigs: list[tuple[frozenset[str], frozenset[str], frozenset[str]]] = []
         for a in articles:
             _txt = (a.title or "").lower()
             _comms = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _txt)
@@ -19887,14 +19891,14 @@ def _build_sections_phase123(
                     continue
                 # backfill 시 같은 섹션 기존 기사와 품목+이슈 중복 체크 (title만 사용)
                 _a_txt = (a.title or "").lower()
-                _a_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt}
-                _a_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt}
+                _a_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _a_txt)
+                _a_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _a_txt)
                 _backfill_within_skip = False
                 if _a_commodities and _a_issues:
                     for b in final_by_section[sec_key]:
                         _b_txt = (b.title or "").lower()
-                        _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
-                        _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                        _b_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt)
+                        _b_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt)
                         if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
                             _backfill_within_skip = True
                             log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
@@ -19909,8 +19913,8 @@ def _build_sections_phase123(
                 # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완, title만 사용)
                 for b in final_by_section[sec_key]:
                     _b_txt = (b.title or "").lower()
-                    _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
-                    _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                    _b_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt)
+                    _b_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt)
                     if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
                         _backfill_cross_skip = True
                         log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
@@ -19927,8 +19931,8 @@ def _build_sections_phase123(
                         _backfill_cross_skip = True
                         break
                     # 품목+이슈 중복 체크 (지역 없어도 OK)
-                    _b_commodities = {TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt}
-                    _b_issues = {k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt}
+                    _b_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt)
+                    _b_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt)
                     if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
                         _backfill_cross_skip = True
                         break
@@ -21872,7 +21876,8 @@ def _normalize_supply_section_from_board(
                     key=lambda idx: _final_supply_article_sort_key(supply_items[idx]),
                 )
                 victim = supply_items[victim_idx]
-                if record.get("sort_key") and record.get("sort_key") <= _final_supply_article_sort_key(victim):
+                record_sort_key = record.get("sort_key")
+                if isinstance(record_sort_key, tuple) and record_sort_key <= _final_supply_article_sort_key(victim):
                     continue
                 supply_items[victim_idx] = article
                 inserted += 1
@@ -22062,10 +22067,10 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     for sec in SECTIONS:
         for article in by_section.get(sec["key"], []) or []:
             for key in managed_commodity_board_keys_for_article(article, max_keys=2):
-                payload = item_state.get(key)
-                if payload is None:
+                item_payload = item_state.get(key)
+                if item_payload is None:
                     continue
-                payload["articles"].append(article)
+                item_payload["articles"].append(article)
 
     active_items = 0
     active_program_items = 0
@@ -22108,14 +22113,14 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
     _HF_BOARD_MAX_RETRIES = 1
     _HF_BOARD_COOLDOWN_SEC = 15.0
     _HF_BOARD_INTER_CALL_SLEEP_SEC = 3.0
-    for payload in item_state.values():
-        articles = _dedupe_articles_for_commodity_board(payload, payload.get("articles") or [])
-        item_key = str(payload.get("key") or "").strip()
+    for item_payload in item_state.values():
+        articles = _dedupe_articles_for_commodity_board(item_payload, item_payload.get("articles") or [])
+        item_key = str(item_payload.get("key") or "").strip()
         if _hf_board_available and articles:
             # rate limit 회피: 2번째 호출부터 3초 대기 (HF free tier throttle 방지)
             if _hf_board_call_count > 0:
                 time.sleep(_HF_BOARD_INTER_CALL_SLEEP_SEC)
-            semantic_adjustments = _hf_semantic_commodity_board_adjustments(payload, articles)
+            semantic_adjustments = _hf_semantic_commodity_board_adjustments(item_payload, articles)
             if semantic_adjustments:
                 _hf_board_call_count += 1
                 _hf_board_fail_count = 0  # 성공하면 실패 카운트 리셋
@@ -22153,21 +22158,21 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         if semantic_adjustments:
             articles = sorted(
                 articles,
-                key=lambda article: _commodity_board_item_article_sort_key(payload, article),
+                key=lambda article: _commodity_board_item_article_sort_key(item_payload, article),
                 reverse=True,
             )
         _all_repr_metrics = [
-            (article, _commodity_board_item_article_representative_metrics(payload, article))
+            (article, _commodity_board_item_article_representative_metrics(item_payload, article))
             for article in articles
         ]
         qualified_articles = [
             article
             for article, m in _all_repr_metrics
-            if _commodity_board_article_is_active_candidate(payload, article, m)
+            if _commodity_board_article_is_active_candidate(item_payload, article, m)
         ]
         # fallback: 정규 active 후보가 없지만 board_eligible + rank>=0 기사가 있으면 최고 board_score 1건 연결
         # program_core 품목은 품질 기준이 엄격하므로 fallback 대상에서 제외
-        if not qualified_articles and articles and not bool(payload.get("program_core")):
+        if not qualified_articles and articles and not bool(item_payload.get("program_core")):
             _fallback_candidates = [
                 (article, m)
                 for article, m in _all_repr_metrics
@@ -22176,31 +22181,31 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             if _fallback_candidates:
                 _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
                 qualified_articles = [_fallback_candidates[0][0]]
-        payload["articles"] = articles
-        payload["article_count"] = len(articles)
-        payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
-        payload["qualified_article_count"] = len(qualified_articles)
-        payload["active"] = bool(qualified_articles)
-        payload["top_article"] = qualified_articles[0] if qualified_articles else None
-        payload["top_article_board_score"] = (
-            float(_commodity_board_item_article_metrics(payload, qualified_articles[0]).get("board_score", 0.0))
+        item_payload["articles"] = articles
+        item_payload["article_count"] = len(articles)
+        item_payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
+        item_payload["qualified_article_count"] = len(qualified_articles)
+        item_payload["active"] = bool(qualified_articles)
+        item_payload["top_article"] = qualified_articles[0] if qualified_articles else None
+        item_payload["top_article_board_score"] = (
+            float(_commodity_board_item_article_metrics(item_payload, qualified_articles[0]).get("board_score", 0.0))
             if qualified_articles else 0.0
         )
-        payload["top_article_representative_score"] = (
-            float(_commodity_board_item_article_representative_metrics(payload, qualified_articles[0]).get("representative_score", 0.0))
+        item_payload["top_article_representative_score"] = (
+            float(_commodity_board_item_article_representative_metrics(item_payload, qualified_articles[0]).get("representative_score", 0.0))
             if qualified_articles else 0.0
         )
-        payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
-        payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
-        payload["secondary_article_count"] = len(payload["secondary_articles"])
+        item_payload["preview_articles"] = qualified_articles[: 1 + secondary_preview_limit]
+        item_payload["secondary_articles"] = qualified_articles[1 : 1 + secondary_preview_limit]
+        item_payload["secondary_article_count"] = len(item_payload["secondary_articles"])
         # 품목 보드 노이즈를 줄이기 위해 "관련 기사 보기"는 active 후보로 통과한 기사만 노출한다.
         _extra_qualified = qualified_articles[1 + secondary_preview_limit :]
-        payload["extra_articles"] = _extra_qualified
-        payload["more_article_count"] = len(payload["extra_articles"])
-        payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
-        if payload["active"]:
+        item_payload["extra_articles"] = _extra_qualified
+        item_payload["more_article_count"] = len(item_payload["extra_articles"])
+        item_payload["section_keys"] = _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles])
+        if item_payload["active"]:
             active_items += 1
-            if payload.get("program_core"):
+            if item_payload.get("program_core"):
                 active_program_items += 1
 
     groups: list[dict[str, Any]] = []
