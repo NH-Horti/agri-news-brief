@@ -58,7 +58,7 @@ jobs:
         id: tests
         run: |
           set -o pipefail
-          python -m unittest discover -s tests -p "test_*.py" 2>&1 | tee reports/unittest.log
+          python scripts/run_ci_regression_suite.py 2>&1 | tee reports/unittest.log
 
       - name: Publish check summary
         if: always()
