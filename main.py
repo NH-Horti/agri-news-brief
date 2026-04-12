@@ -11210,7 +11210,7 @@ def _analytics_article_attrs_html(
             pass
     if isinstance(extra_attrs, dict):
         for name, value in extra_attrs.items():
-            raw_name = str(name or "").strip().replace("_", "-")
+            raw_name = re.sub(r"[^a-z0-9-]", "", str(name or "").strip().lower().replace("_", "-"))
             raw_value = str(value or "").strip()
             if not raw_name or not raw_value:
                 continue
@@ -15177,6 +15177,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "dist" and _is_dist_weak_tail_story(a):
                 continue
             if section_key == "policy" and _is_policy_weak_tail_story(a):
+                continue
+            if section_key == "policy" and not _is_policy_tail_candidate(a):
                 continue
             if section_key == "supply" and _is_supply_weak_tail_story(a):
                 continue
@@ -20171,15 +20173,19 @@ def _load_selection_feedback_guardrails() -> JsonDict:
     try:
         raw = Path(path).read_text(encoding="utf-8")
     except OSError:
+        log.info("[EVAL-FEEDBACK] selection guardrails file not found: %s (using defaults)", path)
         return {}
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
+        log.warning("[EVAL-FEEDBACK] selection guardrails file is malformed JSON: %s", path)
         return {}
     if not isinstance(payload, dict):
+        log.warning("[EVAL-FEEDBACK] selection guardrails payload is not a dict: %s", path)
         return {}
     guardrails = payload.get("selection_guardrails", payload)
     if not isinstance(guardrails, dict):
+        log.warning("[EVAL-FEEDBACK] selection_guardrails key is not a dict: %s", path)
         return {}
     return dict(guardrails)
 
@@ -26245,6 +26251,7 @@ def _build_sections_for_report(
     snapshot_path: Path | None = None
     raw_snapshot: dict[str, list[Article]] | None = None
     snapshot_debug: JsonDict = {}
+    _should_save_snapshot = False
 
     if replay_snapshot:
         raw_by_section, snap_start, snap_end, snapshot_summary_cache, snapshot_debug, snapshot_path = load_replay_snapshot(report_date)
@@ -26316,10 +26323,13 @@ def _build_sections_for_report(
                     log.warning("[PLACEMENT_ONLY] rescore cache write failed: %s", exc)
     else:
         raw_by_section = collect_raw_sections(start_kst, end_kst)
-        raw_snapshot = _clone_articles_by_section(raw_by_section)
         snapshot_debug = _snapshot_debug_payload()
+        _should_save_snapshot = True
 
     by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
+    # selection 실행 후 clone — selection_fit_score 등 메타데이터가 보존됨
+    if _should_save_snapshot:
+        raw_snapshot = _clone_articles_by_section(raw_by_section)
     if PLACEMENT_ONLY:
         # 배치 검증 모드: 요약/캐시 로드 생략 (GitHub API 호출 0건)
         summary_cache = dict(snapshot_summary_cache or {})
@@ -26926,7 +26936,8 @@ def main() -> None:
 
     # collect + summarize
     raw_by_section = collect_raw_sections(start_kst, end_kst)
-    # replay snapshot 저장 (다음 rebuild 시 Naver 수집 스킵 가능)
+    by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
+    # replay snapshot 저장: selection 실행 후 clone하여 selection_fit_score 등 메타데이터가 보존되도록 한다.
     if _replay_snapshot_write_enabled():
         try:
             raw_clone = _clone_articles_by_section(raw_by_section)
@@ -26934,7 +26945,6 @@ def main() -> None:
             log.info("[REPLAY] snapshot saved: %s", saved_snap)
         except Exception as exc:
             log.warning("[WARN] replay snapshot save failed: %s", exc)
-    by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
     summary_cache = load_summary_cache(repo, GH_TOKEN)
     by_section = fill_summaries(by_section, cache=summary_cache)
     try:
