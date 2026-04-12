@@ -1,68 +1,85 @@
 {
-  "report_date": "2026-04-09",
-  "generated_at_kst": "2026-04-11T22:57:56+09:00",
+  "report_date": "2026-04-13",
+  "generated_at_kst": "2026-04-13T07:03:45+09:00",
   "status": "pass",
-  "overall_score": 93.31,
+  "overall_score": 87.68,
   "scores": {
-    "completeness": 100.0,
-    "diversity": 80.0,
+    "completeness": 88.0,
+    "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 100.0,
-    "retrieval_support": 81.11
+    "freshness": 77.75,
+    "retrieval_support": 86.25,
+    "section_alignment": 71.17,
+    "core_quality": 81.39,
+    "commodity_board_quality": 81.2
   },
   "counts": {
-    "briefing_total": 16,
-    "commodity_total": 52,
+    "briefing_total": 13,
+    "commodity_total": 47,
+    "commodity_primary_total": 19,
     "briefing_by_section": {
       "supply": 5,
-      "policy": 4,
-      "dist": 3,
+      "policy": 3,
+      "dist": 1,
       "pest": 4
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 2,
+      "policy": 1,
       "dist": 1,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 23,
-      "policy": 21,
-      "dist": 4,
-      "pest": 4
+      "supply": 21,
+      "policy": 9,
+      "dist": 11,
+      "pest": 6
     },
     "raw_by_section": {
-      "supply": 247,
-      "policy": 67,
-      "dist": 68,
-      "pest": 8
+      "supply": 177,
+      "policy": 153,
+      "dist": 45,
+      "pest": 33
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 1
+      "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.5,
-    "surface_reuse_penalty": 0.0,
+    "briefing_domain_diversity_rate": 0.8462,
+    "surface_reuse_penalty": 0.0167,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9375,
+    "summary_numeric_rate": 0.8462,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 1.0,
+    "within_48h_rate": 0.5385,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "seed_coverage_score": 0.5
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.1208,
+    "section_alignment_low_fit_rate": 0.1538,
+    "section_alignment_cross_gap_rate": 0.0769,
+    "section_alignment_weak_stage_rate": 0.3846,
+    "core_fit_avg": 2.89,
+    "core_rank_percentile_avg": 0.9846,
+    "core_stage_core_rate": 0.6667,
+    "weak_core_rate": 0.3333,
+    "commodity_primary_item_focus_rate": 0.3684,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 1.5658,
+    "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
     "briefing_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.3333,
       "pest": 1.0
     },
     "core_fill": {
@@ -75,58 +92,114 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.7778
+      "pest": 1.0
     },
-    "seed_coverage": {}
+    "seed_coverage": {
+      "supply": 0.75,
+      "policy": 0.5,
+      "dist": 0.4167,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 0.8364,
+      "policy": 0.7,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 0.8,
+      "policy": 0.25,
+      "dist": 1.0,
+      "pest": 1.0
+    }
   },
   "freshness_samples": [
     {
-      "title": "능주농협, 호박벌 지원사업 실시",
-      "section": "policy",
-      "age_hours": 20.9
-    },
-    {
-      "title": "농협경기본부, 생산자조직 활성화 교육 실시",
-      "section": "dist",
-      "age_hours": 20.8
-    },
-    {
-      "title": "신젠타코리아, ‘2026 병해충 관리 심포지엄’ 개최",
-      "section": "pest",
-      "age_hours": 19.5
-    },
-    {
-      "title": "\"라면 나누고 옥수수 심고\"…영동 새마을, 이웃 돕기 '현장 실천'",
+      "title": "가격 맥 못추는 조생 양파 도 결국 '시장격리'",
       "section": "supply",
-      "age_hours": 19.0
+      "age_hours": 70.0
     },
     {
-      "title": "\"폭락을 안정이라니\"… 산지 피눈물 나는데 '물가안정' 자화자찬",
+      "title": "낮은 시세·잦은 강우, 수확 막바지까지 난항 겪는 월동무",
+      "section": "supply",
+      "age_hours": 69.9
+    },
+    {
+      "title": "감 탄저병 병원균 4월부터 확산",
+      "section": "pest",
+      "age_hours": 68.0
+    },
+    {
+      "title": "중동발 고유가에 비료 등 상승 압력…농식차관 \"농자재 공급 관리 총력...",
       "section": "policy",
-      "age_hours": 18.9
+      "age_hours": 62.5
     },
     {
-      "title": "박정훈 식량실장, 중동상황 관련 시설원예 농가 현장 점검",
+      "title": "[품목포커스/ 참외 ] 평년비 생산량 증가···당분간 약세 전망",
+      "section": "supply",
+      "age_hours": 59.1
+    },
+    {
+      "title": "[도매시장이 주목한 청년농] '산지유통 젊은 피' 전완규 강원푸드 대표...",
+      "section": "supply",
+      "age_hours": 59.1
+    },
+    {
+      "title": "정읍시, 가격안정 지원 으로 농가 숨통",
       "section": "policy",
-      "age_hours": 18.9
+      "age_hours": 43.0
     },
     {
-      "title": "K-푸드+ 수출 전년 대비 3.5% 증가한 33억5천 달러",
-      "section": "policy",
-      "age_hours": 18.9
-    },
-    {
-      "title": "지역농산물 유통구조 이끌어가는 품목농협 - 창원원예농협",
-      "section": "dist",
-      "age_hours": 18.9
+      "title": "의성 한지형 마늘 , 파종 지연 이겨내고 ‘ 생육 호조’",
+      "section": "pest",
+      "age_hours": 32.4
     }
   ],
   "improvement_hints": [
-    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
+    "선정 결과가 약한 섹션이 있습니다: dist. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "core_quality",
+      "core_quality_severe",
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.88,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.3,
+    "high_score_low_fit_rescue_margin": 4.0,
+    "tail_score_floor_delta": 0.6,
+    "core_fit_min": {
+      "default": 1.36,
+      "supply": 1.56,
+      "policy": 1.56,
+      "dist": 1.7,
+      "pest": 1.36
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.22,
+      "supply": 1.4,
+      "policy": 1.37,
+      "dist": 1.5,
+      "pest": 1.22
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  },
   "summary_prompt_feedback": [
-    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
-    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
-    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+    "핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다."
   ]
 }
