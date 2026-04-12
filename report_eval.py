@@ -1027,6 +1027,25 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         commodity_require_direct_item_focus = True
         commodity_require_issue_signal = True
 
+    # ── ceiling caps: 가드레일이 지나치게 엄격해져 기사 선정 자체가 불가능한 피드백 루프를 방지 ──
+    _CAPS: dict[str, float] = {
+        "section_card_min_fit": 1.05,
+        "core_fit_min": 1.7,
+        "core_relaxed_min_fit": 1.5,
+        "tail_score_floor_delta": 0.8,
+        "section_low_fit_rescue_min": 0.5,
+        "high_score_low_fit_rescue_margin": 5.5,
+    }
+    for key in section_card_min_fit:
+        section_card_min_fit[key] = min(section_card_min_fit[key], _CAPS["section_card_min_fit"])
+    for key in core_fit_min:
+        core_fit_min[key] = min(core_fit_min[key], _CAPS["core_fit_min"])
+    for key in core_relaxed_min_fit:
+        core_relaxed_min_fit[key] = min(core_relaxed_min_fit[key], _CAPS["core_relaxed_min_fit"])
+    tail_score_floor_delta = min(tail_score_floor_delta, _CAPS["tail_score_floor_delta"])
+    low_fit_rescue_min = min(low_fit_rescue_min, _CAPS["section_low_fit_rescue_min"])
+    high_score_low_fit_rescue_margin = min(high_score_low_fit_rescue_margin, _CAPS["high_score_low_fit_rescue_margin"])
+
     def _round_map(values: dict[str, float]) -> dict[str, float]:
         return {key: round(float(value), 3) for key, value in values.items()}
 
@@ -1133,6 +1152,7 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
+        "guardrail_driver_tags": (result.get("selection_guardrails") or {}).get("driver_tags", []),
     }
 
 
