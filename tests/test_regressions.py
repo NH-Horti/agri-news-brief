@@ -267,6 +267,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("reports/evals/", self.dev_verify_text)
         self.assertIn("latest-selection-feedback.json", self.dev_verify_text)
 
+    def test_briefing_cards_expose_eval_metadata(self):
+        self.assertIn('data-selection-fit="', self.text)
+        self.assertIn('data-selection-stage="', self.text)
+        self.assertIn('data-is-core="', self.text)
+
     def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
         self.assertIn("requirements-dev.txt", self.maintenance_text)
         self.assertIn("Run smoke checks before backfill", self.maintenance_text)

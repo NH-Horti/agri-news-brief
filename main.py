@@ -22894,6 +22894,22 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 surface="briefing_card",
                 rank=getattr(a, "rank", None),
             )
+            selection_fit = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
+            if selection_fit <= 0.0:
+                try:
+                    selection_fit = float(section_fit_score(a.title or "", a.description or "", sec, a.domain or "", a.press or ""))
+                except Exception:
+                    selection_fit = 0.0
+            selection_stage = str(getattr(a, "selection_stage", "") or "").strip()
+            if (not selection_stage) and is_core:
+                selection_stage = "core_final"
+            elif not selection_stage:
+                selection_stage = "tail"
+            eval_attrs = (
+                f' data-selection-fit="{selection_fit:.3f}"'
+                f' data-selection-stage="{esc(selection_stage)}"'
+                f' data-is-core="{"1" if is_core else "0"}"'
+            )
             button_attrs = _analytics_article_attrs_html(
                 report_date,
                 section_key=key,
@@ -22903,7 +22919,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 rank=getattr(a, "rank", None),
             )
             return f"""
-            <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\"{card_attrs}>
+            <div class=\"card\" style=\"border-left-color:{color}\" data-href=\"{esc(url)}\"{card_attrs}{eval_attrs}>
               <div class=\"cardTop\">
                 <div class=\"meta\">
                   {core_badge}
