@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-04-07T22:02:46+09:00",
-  "build_tag": "cf2588f",
+  "generated_at_kst": "2026-04-12T15:49:37+09:00",
+  "build_tag": "093b355",
   "filter_rejects": [
     {
       "section": "policy",
@@ -14644,7 +14644,17 @@
     },
     {
       "section": "supply",
-      "reason": "hard_offtopic_no_agri_context",
+      "reason": "livestock_only_supply",
+      "press": "전국매일신문",
+      "domain": "jeonmae.co.kr",
+      "title": "'산엔청쇼핑몰' 할인전…농특산물 최대 15% 할인",
+      "url": "https://jeonmae.co.kr/news/articleView.html?idxno=1245700",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
       "press": "inthenews",
       "domain": "inthenews.co.kr",
       "title": "GS25, ‘혜자로운 디저트’ 출시 한 달 만에 100만개 판매",
@@ -14673,32 +14683,32 @@
       "source_channel": ""
     },
     {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육",
-      "url": "https://nongmin.com/article/20260403500581",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육",
-      "url": "https://nongmin.com/article/20260403500581",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "dist",
-      "reason": "dist_retail_promo_no_wholesale",
+      "reason": "dist_consumer_tail",
       "press": "농민신문",
       "domain": "nongmin.com",
-      "title": "제주시농협 창립 50돌…5000여 조합원과 ‘어울림 한마당’",
-      "url": "https://nongmin.com/article/20260406500588",
+      "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
+      "url": "https://nongmin.com/article/20260406500175",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육",
+      "url": "https://nongmin.com/article/20260403500581",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농민신문",
+      "domain": "nongmin.com",
+      "title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육",
+      "url": "https://nongmin.com/article/20260403500581",
       "source_query": "",
       "source_channel": ""
     },
@@ -14734,31 +14744,61 @@
     },
     {
       "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "BBSI",
+      "domain": "news.bbsi.co.kr",
+      "title": "전남도, 친환경농산물 판로 지원 '구매알선센터' 가동",
+      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076408",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "policy",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "policy",
       "reason": "ban_keywords",
       "press": "데일리안",
       "domain": "dailian.co.kr",
       "title": "농진원, 스마트농업 확산사업 설명회…21개 기업 참여",
       "url": "https://dailian.co.kr/news/view/1629950/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "나주 배 주산지 '우박 직격탄'…개화기 농가 비상",
-      "url": "https://newsis.com/view/NISX20260406_0003579575",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "나주 배 주산지 '우박 직격탄'…개화기 농가 비상",
-      "url": "https://newsis.com/view/NISX20260406_0003579575",
       "source_query": "",
       "source_channel": ""
     },
@@ -14803,22 +14843,12 @@
       "source_channel": ""
     },
     {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "BBSI",
-      "domain": "news.bbsi.co.kr",
-      "title": "나주배 주산지 우박 쏟아져…개화기 피해 우려",
-      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076625",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "BBSI",
-      "domain": "news.bbsi.co.kr",
-      "title": "나주배 주산지 우박 쏟아져…개화기 피해 우려",
-      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076625",
+      "section": "policy",
+      "reason": "agri_training_recruitment",
+      "press": "원예타임즈",
+      "domain": "hortitimes.com",
+      "title": "제주농기원, '골드 키위 기계수분 생력화 모델' 실증 추진",
+      "url": "https://hortitimes.com/news/articleView.html?idxno=33837",
       "source_query": "",
       "source_channel": ""
     },
@@ -14829,6 +14859,26 @@
       "domain": "domin.co.kr",
       "title": "부산 청년 박정윤, 김제에서 '스마트파머'의 꿈을 키우다",
       "url": "https://domin.co.kr/news/articleView.html?idxno=1551202",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "seoulfn",
+      "domain": "seoulfn.com",
+      "title": "[신상품] 롯데웰푸드 '카스타드 케이크 말차&딸기' 외",
+      "url": "https://seoulfn.com/news/articleView.html?idxno=625741",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "policy",
+      "reason": "hardblock_entertainment",
+      "press": "원예타임즈",
+      "domain": "hortitimes.com",
+      "title": "충북농기원, 원자재값 극복 위한 수박 '경영비 절감 가이드' 제시",
+      "url": "https://hortitimes.com/news/articleView.html?idxno=33830",
       "source_query": "",
       "source_channel": ""
     },
@@ -14983,8 +15033,28 @@
       "source_channel": ""
     },
     {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "메트로신문",
+      "domain": "metroseoul.co.kr",
+      "title": "\"뺀 자리에 무엇을 넣나\"…저당 시장, '채우는 설계'로 경쟁 구도 전환",
+      "url": "https://metroseoul.co.kr/article/20260406500354",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "메트로신문",
+      "domain": "metroseoul.co.kr",
+      "title": "\"뺀 자리에 무엇을 넣나\"…저당 시장, '채우는 설계'로 경쟁 구도 전환",
+      "url": "https://metroseoul.co.kr/article/20260406500354",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "policy",
-      "reason": "policy_retail_sales_trend",
+      "reason": "hardblock_entertainment",
       "press": "브릿지경제",
       "domain": "viva100.com",
       "title": "[오늘의 신상] 동서식품, 맥스웰하우스 브랜드 전면 리뉴얼 등",
@@ -15029,6 +15099,26 @@
       "domain": "newsam.co.kr",
       "title": "농식품부, 식품 산업 ’지역 혁신 거점‘ 시동... 2026년 식품융합클러스...",
       "url": "https://newsam.co.kr/news/article.html?no=42540",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "dailysportshankook",
+      "domain": "dailysportshankook.co.kr",
+      "title": "송광민 영광 부군수, 시설원예농가 현장 격려 방문",
+      "url": "https://dailysportshankook.co.kr/news/articleView.html?idxno=427051",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "dailysportshankook",
+      "domain": "dailysportshankook.co.kr",
+      "title": "송광민 영광 부군수, 시설원예농가 현장 격려 방문",
+      "url": "https://dailysportshankook.co.kr/news/articleView.html?idxno=427051",
       "source_query": "",
       "source_channel": ""
     },
@@ -15124,7 +15214,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_policy_market_brief",
+      "reason": "livestock_only_supply",
       "press": "머니투데이",
       "domain": "mt.co.kr",
       "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
@@ -15884,16 +15974,6 @@
     },
     {
       "section": "supply",
-      "reason": "agri_training_recruitment",
-      "press": "경남매일",
-      "domain": "gnmaeil.com",
-      "title": "김경수 \"고유가 농가 지원\"·박완수 '재난활동비' 추진",
-      "url": "https://gnmaeil.com/news/articleView.html?idxno=583956",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
       "reason": "finance_strict_no_agri_context",
       "press": "뉴스토마토",
       "domain": "newstomato.com",
@@ -15924,7 +16004,7 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_only",
+      "reason": "livestock_only_supply",
       "press": "브릿지경제",
       "domain": "viva100.com",
       "title": "“흰 우유 안 마셔요”... 변심한 소비자 잡으러 나선 유업계",
@@ -15944,11 +16024,31 @@
     },
     {
       "section": "supply",
+      "reason": "livestock_only_supply",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "[신상브리핑] 삼립, 놀유니버스, GS25, 깨끗한나라 外",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1355304",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
       "reason": "finance_strict_no_agri_context",
       "press": "theviewers",
       "domain": "theviewers.co.kr",
       "title": "[유통갤러리] 롯데온, '온세상 쇼핑 페스타' 진행…쿠폰·쇼핑지원금 쏜...",
       "url": "https://theviewers.co.kr/View.aspx?No=4030544",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
+      "press": "아시아A",
+      "domain": "asiaa.co.kr",
+      "title": "[A 호텔·여행 소식] 하나투어, 노동절 지정 효과에 중국 예약 증가 外",
+      "url": "https://asiaa.co.kr/news/articleView.html?idxno=245611",
       "source_query": "",
       "source_channel": ""
     },
@@ -15964,7 +16064,17 @@
     },
     {
       "section": "supply",
-      "reason": "hard_offtopic_no_agri_context",
+      "reason": "livestock_only_supply",
+      "press": "전국매일신문",
+      "domain": "jeonmae.co.kr",
+      "title": "'산엔청쇼핑몰' 할인전…농특산물 최대 15% 할인",
+      "url": "https://jeonmae.co.kr/news/articleView.html?idxno=1245700",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
       "press": "inthenews",
       "domain": "inthenews.co.kr",
       "title": "GS25, ‘혜자로운 디저트’ 출시 한 달 만에 100만개 판매",
@@ -15993,26 +16103,6 @@
       "source_channel": ""
     },
     {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "경북일보",
-      "domain": "kyongbuk.co.kr",
-      "title": "안동시, AI·로봇 접목 '스마트 과수' 전환 가속",
-      "url": "https://kyongbuk.co.kr/news/articleView.html?idxno=4069169",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "경상매일신문",
-      "domain": "ksmnews.co.kr",
-      "title": "안동시, AI·로봇으로 스마트 과수 혁신 시동",
-      "url": "https://ksmnews.co.kr/news/view.php?idx=598863",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "dist",
       "reason": "dist_consumer_tail",
       "press": "한국일보",
@@ -16034,7 +16124,7 @@
     },
     {
       "section": "supply",
-      "reason": "supply_policy_market_brief",
+      "reason": "livestock_only_supply",
       "press": "인뉴스365",
       "domain": "inews365.com",
       "title": "\"대청호 지키며 돈 버는 구조로\"…김승룡, 옥천 '물·농업·관광' 2호 공...",
@@ -16054,31 +16144,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_consumer_tail",
+      "reason": "dist_retail_promo_no_wholesale",
       "press": "농민신문",
       "domain": "nongmin.com",
-      "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
-      "url": "https://nongmin.com/article/20260406500175",
+      "title": "제주시농협 창립 50돌…5000여 조합원과 ‘어울림 한마당’",
+      "url": "https://nongmin.com/article/20260406500588",
       "source_query": "",
       "source_channel": ""
     },
     {
       "section": "supply",
-      "reason": "supply_policy_market_brief",
+      "reason": "supply_dist_export_shipping",
       "press": "농민신문",
       "domain": "nongmin.com",
-      "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
-      "url": "https://nongmin.com/article/20260406500175",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "supply_policy_market_brief",
-      "press": "농민신문",
-      "domain": "nongmin.com",
-      "title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동",
-      "url": "https://nongmin.com/article/20260406500390",
+      "title": "제주시농협 창립 50돌…5000여 조합원과 ‘어울림 한마당’",
+      "url": "https://nongmin.com/article/20260406500588",
       "source_query": "",
       "source_channel": ""
     },
@@ -16114,7 +16194,7 @@
     },
     {
       "section": "supply",
-      "reason": "finance_strict_no_agri_context",
+      "reason": "livestock_only_supply",
       "press": "머니투데이",
       "domain": "mt.co.kr",
       "title": "1500원 빵, 한달 새 100만개 '불티'...편의점도 '균일가' 경쟁",
@@ -16194,16 +16274,6 @@
     },
     {
       "section": "supply",
-      "reason": "agri_training_recruitment",
-      "press": "원예타임즈",
-      "domain": "hortitimes.com",
-      "title": "제주농기원, '골드 키위 기계수분 생력화 모델' 실증 추진",
-      "url": "https://hortitimes.com/news/articleView.html?idxno=33837",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
       "reason": "energy_supply_offtopic",
       "press": "pinpointnews",
       "domain": "pinpointnews.co.kr",
@@ -16214,7 +16284,7 @@
     },
     {
       "section": "supply",
-      "reason": "energy_supply_offtopic",
+      "reason": "hardblock_entertainment",
       "press": "뉴스토마토",
       "domain": "newstomato.com",
       "title": "전쟁보다 충격파 큰 '2차 인플레' 온다",
@@ -16289,26 +16359,6 @@
       "domain": "asiatime.co.kr",
       "title": "불경기엔 ‘혜자’…편의점 도시락 이어 빵·디저트도 ‘불티’",
       "url": "https://asiatime.co.kr/article/20260406500068",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "\"뺀 자리에 무엇을 넣나\"…저당 시장, '채우는 설계'로 경쟁 구도 전환",
-      "url": "https://metroseoul.co.kr/article/20260406500354",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "\"뺀 자리에 무엇을 넣나\"…저당 시장, '채우는 설계'로 경쟁 구도 전환",
-      "url": "https://metroseoul.co.kr/article/20260406500354",
       "source_query": "",
       "source_channel": ""
     },
@@ -16483,26 +16533,6 @@
       "source_channel": ""
     },
     {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "dailysportshankook",
-      "domain": "dailysportshankook.co.kr",
-      "title": "송광민 영광 부군수, 시설원예농가 현장 격려 방문",
-      "url": "https://dailysportshankook.co.kr/news/articleView.html?idxno=427051",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "dailysportshankook",
-      "domain": "dailysportshankook.co.kr",
-      "title": "송광민 영광 부군수, 시설원예농가 현장 격려 방문",
-      "url": "https://dailysportshankook.co.kr/news/articleView.html?idxno=427051",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "supply",
       "reason": "agri_training_recruitment",
       "press": "원예타임즈",
@@ -16553,16 +16583,6 @@
       "source_channel": ""
     },
     {
-      "section": "supply",
-      "reason": "remote_foreign_horti",
-      "press": "원예타임즈",
-      "domain": "hortitimes.com",
-      "title": "청주시, 청년농 육성 위한 스마트팜 원예단지 조성 박차",
-      "url": "https://hortitimes.com/news/articleView.html?idxno=33854",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "dist",
       "reason": "dist_consumer_tail",
       "press": "농민신문",
@@ -16599,6 +16619,46 @@
       "domain": "newsis.com",
       "title": "[오늘의 주요일정]전북(4월7일 화요일)",
       "url": "https://newsis.com/view/NISX20260406_0003580024",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "뉴스핌",
+      "domain": "newspim.com",
+      "title": "[르포] 중동 사태에 비료·사료 수급 '빨간불'…종로 종묘사 '불안감 확...",
+      "url": "https://newspim.com/news/view/20260406000870",
       "source_query": "",
       "source_channel": ""
     },
@@ -16719,6 +16779,16 @@
       "domain": "view.asiae.co.kr",
       "title": "내서농산물 도매시장 , 선제적 화재안전관리 체계 구축",
       "url": "https://view.asiae.co.kr/article/2026040614114406975",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "hardblock_entertainment",
+      "press": "KBS",
+      "domain": "kstar.kbs.co.kr",
+      "title": "[말자쇼] 김영희, “단언컨대 정선희와 나나가 제일!” 난데없는 몸매 ...",
+      "url": "https://kstar.kbs.co.kr/list_view.html?idx=397748",
       "source_query": "",
       "source_channel": ""
     },
@@ -16935,26 +17005,6 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "\"뺀 자리에 무엇을 넣나\"…저당 시장, '채우는 설계'로 경쟁 구도 전환",
-      "url": "https://metroseoul.co.kr/article/20260406500354",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "dailysportshankook",
-      "domain": "dailysportshankook.co.kr",
-      "title": "송광민 영광 부군수, 시설원예농가 현장 격려 방문",
-      "url": "https://dailysportshankook.co.kr/news/articleView.html?idxno=427051",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
       "press": "원예타임즈",
       "domain": "hortitimes.com",
       "title": "금산군농업기술센터, 약초 가공제품 개발· 농가 창업 지원 박차",
@@ -16965,18 +17015,50 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 20.2,
-      "tail_cut": 24.6,
-      "core_min": 20.2,
+      "threshold": 20.0,
+      "tail_cut": 23.8,
+      "core_min": 20.0,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 12,
-      "total_candidates": 177,
-      "total_selected": 3,
+      "total_candidates": 173,
+      "total_selected": 2,
       "top": [
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
-          "score": 32.2,
+          "score": 41.43,
+          "semantic_similarity": 0.8375,
+          "semantic_noise_similarity": 0.8161,
+          "semantic_margin": 0.0214,
+          "semantic_boost": 0.166,
+          "semantic_model": "intfloat/multilingual-e5-large",
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
+          "url": "https://www.nongmin.com/article/20260406500175",
+          "reason": "postbuild_pruned",
+          "fit_score": 0.6,
+          "selection_stage": "postbuild_pruned",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 3,
+            "strength": 13,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": true,
+          "score": 32.0,
           "semantic_similarity": 0.8253,
           "semantic_noise_similarity": 0.7902,
           "semantic_margin": 0.0351,
@@ -16989,7 +17071,7 @@
           "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008507334&plink=ORI&cooper=NAVER",
           "reason": "",
           "fit_score": 3.89,
-          "selection_stage": "tail",
+          "selection_stage": "core_final",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -17008,7 +17090,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.87,
+          "score": 31.67,
           "semantic_similarity": 0.8286,
           "semantic_noise_similarity": 0.8227,
           "semantic_margin": 0.0059,
@@ -17040,7 +17122,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.2,
+          "score": 32.0,
           "semantic_similarity": 0.8111,
           "semantic_noise_similarity": 0.82,
           "semantic_margin": -0.0089,
@@ -17072,7 +17154,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.0,
+          "score": 30.8,
           "semantic_similarity": 0.8079,
           "semantic_noise_similarity": 0.8003,
           "semantic_margin": 0.0076,
@@ -17104,7 +17186,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.6,
+          "score": 27.4,
           "semantic_similarity": 0.8395,
           "semantic_noise_similarity": 0.836,
           "semantic_margin": 0.0035,
@@ -17136,7 +17218,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 25.4,
+          "score": 25.2,
           "semantic_similarity": 0.8388,
           "semantic_noise_similarity": 0.7954,
           "semantic_margin": 0.0434,
@@ -17147,9 +17229,9 @@
           "domain": "farmnmarket.com",
           "title": "정부, 올해 사과 생산 10% 늘린다",
           "url": "https://www.farmnmarket.com/news/article.html?no=26059",
-          "reason": "postbuild_pruned",
+          "reason": "not_selected",
           "fit_score": -1.77,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "not_selected",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -17168,7 +17250,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.09,
+          "score": 25.89,
           "semantic_similarity": 0.8208,
           "semantic_noise_similarity": 0.8127,
           "semantic_margin": 0.0081,
@@ -17200,7 +17282,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 25.21,
+          "score": 25.01,
           "semantic_similarity": 0.8261,
           "semantic_noise_similarity": 0.8126,
           "semantic_margin": 0.0136,
@@ -17230,9 +17312,9 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
-          "score": 24.17,
+          "selected": true,
+          "is_core": true,
+          "score": 23.97,
           "semantic_similarity": 0.8383,
           "semantic_noise_similarity": 0.8035,
           "semantic_margin": 0.0348,
@@ -17243,9 +17325,9 @@
           "domain": "aflnews.co.kr",
           "title": "양파·대파· 무 ·배추·양배추·당근 가격 동시 하락…산지 폐기도 고심",
           "url": "http://www.aflnews.co.kr/news/articleView.html?idxno=318017",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 4.3,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -17264,20 +17346,20 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.04,
-          "semantic_similarity": 0.8341,
-          "semantic_noise_similarity": 0.8219,
-          "semantic_margin": 0.0122,
-          "semantic_boost": -0.077,
-          "semantic_model": "intfloat/multilingual-e5-large",
+          "score": 23.84,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
           "tier": 1,
           "press": "전라일보",
           "domain": "jeollailbo.com",
           "title": "전북자치도, 건고추·생강·노지 감자 '최저 가격 보장제' 5월 29일까지 신...",
           "url": "http://www.jeollailbo.com/news/articleView.html?idxno=796830",
-          "reason": "tail_cut",
+          "reason": "supply_policy_like",
           "fit_score": 4.96,
-          "selection_stage": "tail_cut",
+          "selection_stage": "supply_policy_like",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -17296,7 +17378,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.45,
+          "score": 23.25,
           "semantic_similarity": 0.8236,
           "semantic_noise_similarity": 0.8081,
           "semantic_margin": 0.0155,
@@ -17328,7 +17410,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.35,
+          "score": 22.15,
           "semantic_similarity": 0.8146,
           "semantic_noise_similarity": 0.8044,
           "semantic_margin": 0.0102,
@@ -17360,7 +17442,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.36,
+          "score": 21.16,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17392,7 +17474,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.01,
+          "score": 20.93,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동",
+          "url": "https://www.nongmin.com/article/20260406500390",
+          "reason": "tail_cut",
+          "fit_score": -1.9,
+          "selection_stage": "tail_cut",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 2,
+            "strength": 12,
+            "korea": 7,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 19.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17424,7 +17538,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.8,
+          "score": 18.4,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17456,7 +17570,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.65,
+          "score": 16.45,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17488,7 +17602,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.55,
+          "score": 16.35,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17520,7 +17634,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.34,
+          "score": 16.14,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17552,7 +17666,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.32,
+          "score": 16.12,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17584,7 +17698,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.31,
+          "score": 15.11,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17616,7 +17730,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.0,
+          "score": 14.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17648,7 +17762,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.75,
+          "score": 14.55,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17680,7 +17794,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.54,
+          "score": 14.34,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17712,7 +17826,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.48,
+          "score": 14.28,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17744,7 +17858,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.17,
+          "score": 13.97,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17776,7 +17890,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.0,
+          "score": 13.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17808,7 +17922,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.8,
+          "score": 13.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17840,7 +17954,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.2,
+          "score": 13.0,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17872,7 +17986,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.61,
+          "score": 12.4,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17904,7 +18018,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.56,
+          "score": 12.36,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17920,7 +18034,7 @@
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "policy",
+          "reassigned_from": "",
           "source_query": "오이 수급",
           "source_channel": "naver_api",
           "signals": {
@@ -17936,7 +18050,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.08,
+          "score": 11.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17968,7 +18082,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.07,
+          "score": 11.87,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18000,7 +18114,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.7,
+          "score": 11.5,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18032,7 +18146,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.66,
+          "score": 11.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18064,7 +18178,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.61,
+          "score": 11.4,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18080,7 +18194,7 @@
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "policy",
+          "reassigned_from": "",
           "source_query": "사과 출하",
           "source_channel": "naver_api",
           "signals": {
@@ -18096,7 +18210,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.6,
+          "score": 11.4,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18128,7 +18242,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.21,
+          "score": 11.01,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18160,7 +18274,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.9,
+          "score": 10.7,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18192,7 +18306,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.86,
+          "score": 10.66,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18224,7 +18338,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.82,
+          "score": 10.62,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18256,39 +18370,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.79,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "나주 배 주산지 '우박 직격탄'…개화기 농가 비상",
-          "url": "https://www.newsis.com/view/NISX20260406_0003579575",
-          "reason": "below_threshold",
-          "fit_score": 0.66,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "가지 생육",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 1.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 10.43,
+          "score": 10.23,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18320,7 +18402,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.0,
+          "score": 10.17,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "BBSI",
+          "domain": "news.bbsi.co.kr",
+          "title": "전남도, 친환경농산물 판로 지원 '구매알선센터' 가동",
+          "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076408",
+          "reason": "below_threshold",
+          "fit_score": 0.68,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "과수 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18352,7 +18466,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.0,
+          "score": 9.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18384,7 +18498,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.0,
+          "score": 9.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18416,7 +18530,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.41,
+          "score": 9.21,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18448,39 +18562,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.3,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "아시아경제",
-          "domain": "view.asiae.co.kr",
-          "title": "농식품부 \"농업 비료, 7월까지 안정공급 가능\"",
-          "url": "https://view.asiae.co.kr/article/2026040619205028524",
-          "reason": "below_threshold",
-          "fit_score": 0.2,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "무 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.0,
+          "score": 8.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18512,7 +18594,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.9,
+          "score": 8.7,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18544,7 +18626,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.71,
+          "score": 8.51,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18576,7 +18658,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.59,
+          "score": 8.39,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18608,39 +18690,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.48,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "세계일보",
-          "domain": "segye.com",
-          "title": "간장·치즈까지 넘본다…치킨업계, ‘텃밭 침투’ 경쟁",
-          "url": "https://www.segye.com/newsView/20260406506263",
-          "reason": "below_threshold",
-          "fit_score": -0.17,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "마늘 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 7.97,
+          "score": 7.77,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18672,7 +18722,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.75,
+          "score": 7.55,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18704,7 +18754,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.58,
+          "score": 7.38,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18736,7 +18786,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.46,
+          "score": 7.06,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18768,7 +18818,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.21,
+          "score": 7.01,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18800,7 +18850,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.9,
+          "score": 6.7,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18832,39 +18882,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.75,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "fntoday",
-          "domain": "fntoday.co.kr",
-          "title": "경기 광주시, \" 오포2동... 공동체 텃밭서 '사랑의 감자 심기' \"",
-          "url": "https://www.fntoday.co.kr/news/articleView.html?idxno=381661",
-          "reason": "below_threshold",
-          "fit_score": 1.9,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감자 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 6.66,
+          "score": 6.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18894,63 +18912,35 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
-          "score": 52.68,
-          "semantic_similarity": 0.8098,
-          "semantic_boost": -0.642,
-          "semantic_model": "intfloat/multilingual-e5-large",
-          "tier": 1,
-          "press": "dailypop",
-          "domain": "dailypop.kr",
-          "title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다",
-          "url": "http://www.dailypop.kr/news/articleView.html?idxno=97805",
-          "reason": "",
-          "fit_score": 5.76,
-          "selection_stage": "core_final",
-          "selection_note": "grape",
-          "origin_section": "supply",
-          "reassigned_from": "dist",
-          "source_query": "포도 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 3,
-            "strength": 14,
-            "korea": 8,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": true,
-          "score": 61.11,
+          "selected": false,
+          "is_core": false,
+          "score": 6.35,
           "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
           "semantic_boost": 0.0,
           "semantic_model": "",
-          "tier": 3,
-          "press": "머니투데이",
-          "domain": "mt.co.kr",
-          "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
-          "url": "https://www.mt.co.kr/economy/2026/04/06/2026040617203821520",
-          "reason": "",
-          "fit_score": -2.12,
-          "selection_stage": "core_final",
-          "selection_note": "green_pepper",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "농산물 가격 동향",
+          "tier": 2,
+          "press": "아주경제",
+          "domain": "ajunews.com",
+          "title": "감귤 대신 올리브...23만명 몰린 제주 비양도의 '기후위기 생존법'",
+          "url": "https://www.ajunews.com/view/20260406080856490",
+          "reason": "below_threshold",
+          "fit_score": 0.05,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감귤 생육",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 2.0,
+            "horti_sc": 2.5,
             "market_hits": 0,
-            "strength": 11,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 2,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         }
       ],
@@ -18958,10 +18948,10 @@
         {
           "seed": "양파",
           "rep": "양파",
-          "hits": 17,
-          "selected_hits": 2,
+          "hits": 18,
+          "selected_hits": 3,
           "missing": false,
-          "sample_title": "'과일 개화기에 큰일 날 뻔'… 대구·경북에 1㎝ 우박 쏟아져"
+          "sample_title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’"
         },
         {
           "seed": "복숭아",
@@ -18982,10 +18972,10 @@
         {
           "seed": "무",
           "rep": "무",
-          "hits": 26,
+          "hits": 29,
           "selected_hits": 3,
           "missing": false,
-          "sample_title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육"
+          "sample_title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’"
         },
         {
           "seed": "호박",
@@ -19006,7 +18996,7 @@
         {
           "seed": "토마토",
           "rep": "토마토",
-          "hits": 7,
+          "hits": 9,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "경기농협, 평택 송탄농협 애호박 ·방울토마토 재배 기술 및 유통 교육"
@@ -19028,89 +19018,57 @@
           "sample_title": ""
         },
         {
-          "seed": "마늘",
-          "rep": "마늘",
-          "hits": 5,
-          "selected_hits": 1,
+          "seed": "고추",
+          "rep": "고추",
+          "hits": 9,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "'과일 개화기에 큰일 날 뻔'… 대구·경북에 1㎝ 우박 쏟아져"
+          "sample_title": "전북자치도, 건고추·생강·노지 감자 '최저 가격 보장제' 신청 접수"
         },
         {
           "seed": "농가",
           "rep": "농가",
-          "hits": 26,
+          "hits": 29,
           "selected_hits": 2,
           "missing": false,
           "sample_title": "'과일 개화기에 큰일 날 뻔'… 대구·경북에 1㎝ 우박 쏟아져"
         },
         {
-          "seed": "풋고추",
-          "rep": "풋고추",
-          "hits": 0,
+          "seed": "감귤",
+          "rep": "감귤",
+          "hits": 6,
           "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
+          "missing": false,
+          "sample_title": "[탐방] 농업회사법인 주식회사 독립꾼"
         }
       ]
     },
     "policy": {
-      "threshold": 52.2,
-      "tail_cut": 54.4,
-      "core_min": 52.2,
+      "threshold": 50.91,
+      "tail_cut": 53.11,
+      "core_min": 50.91,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 7,
-      "total_candidates": 211,
-      "total_selected": 4,
+      "total_candidates": 204,
+      "total_selected": 3,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 62.2,
-          "semantic_similarity": 0.8323,
-          "semantic_noise_similarity": 0.7956,
-          "semantic_margin": 0.0367,
-          "semantic_boost": 0.192,
+          "score": 60.91,
+          "semantic_similarity": 0.8377,
+          "semantic_noise_similarity": 0.7826,
+          "semantic_margin": 0.0551,
+          "semantic_boost": 0.662,
           "semantic_model": "intfloat/multilingual-e5-large",
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동",
-          "url": "https://www.nongmin.com/article/20260406500390",
-          "reason": "",
-          "fit_score": 5.95,
-          "selection_stage": "core",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 2,
-            "strength": 12,
-            "korea": 7,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 61.11,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
           "tier": 3,
           "press": "머니투데이",
           "domain": "mt.co.kr",
           "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
           "url": "https://www.mt.co.kr/economy/2026/04/06/2026040617203821520",
-          "reason": "similar_story",
+          "reason": "",
           "fit_score": 6.49,
-          "selection_stage": "similar_story",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -19129,7 +19087,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 59.97,
+          "score": 59.77,
           "semantic_similarity": 0.8429,
           "semantic_noise_similarity": 0.7902,
           "semantic_margin": 0.0527,
@@ -19161,7 +19119,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 57.74,
+          "score": 57.34,
           "semantic_similarity": 0.8241,
           "semantic_noise_similarity": 0.7863,
           "semantic_margin": 0.0378,
@@ -19193,7 +19151,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 57.0,
+          "score": 56.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19223,9 +19181,9 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
-          "score": 55.05,
+          "score": 54.85,
           "semantic_similarity": 0.8376,
           "semantic_noise_similarity": 0.7789,
           "semantic_margin": 0.0587,
@@ -19236,9 +19194,9 @@
           "domain": "nongmin.com",
           "title": "조생양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
           "url": "https://www.nongmin.com/article/20260406500175",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 3.05,
-          "selection_stage": "tail",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -19257,7 +19215,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 55.96,
+          "score": 55.76,
           "semantic_similarity": 0.8196,
           "semantic_noise_similarity": 0.8156,
           "semantic_margin": 0.004,
@@ -19273,7 +19231,7 @@
           "selection_stage": "not_selected",
           "selection_note": "",
           "origin_section": "dist",
-          "reassigned_from": "",
+          "reassigned_from": "dist",
           "source_query": "농산물 판로 확대",
           "source_channel": "naver_api",
           "signals": {
@@ -19289,7 +19247,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 54.79,
+          "score": 54.59,
           "semantic_similarity": 0.8247,
           "semantic_noise_similarity": 0.8015,
           "semantic_margin": 0.0232,
@@ -19304,9 +19262,9 @@
           "fit_score": 5.46,
           "selection_stage": "tail",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농산물 가격안정 지원사업",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "감자 수급",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.6,
@@ -19321,7 +19279,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 54.19,
+          "score": 53.99,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19332,9 +19290,9 @@
           "domain": "newsis.com",
           "title": "중동전쟁에 먹거리 가격 뛸라…농식품부, 수급 불안 품목 점검",
           "url": "https://www.newsis.com/view/NISX20260406_0003579955",
-          "reason": "tail_cut",
+          "reason": "policy_tail_gate",
           "fit_score": 6.48,
-          "selection_stage": "tail_cut",
+          "selection_stage": "policy_tail_gate",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -19353,7 +19311,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 52.42,
+          "score": 52.22,
           "semantic_similarity": 0.819,
           "semantic_noise_similarity": 0.8032,
           "semantic_margin": 0.0158,
@@ -19385,7 +19343,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 50.05,
+          "score": 49.85,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19417,7 +19375,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 45.65,
+          "score": 45.45,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19432,9 +19390,9 @@
           "fit_score": 6.03,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농축산물 가격 동향",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "토마토 가격",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 2.8,
@@ -19449,7 +19407,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 44.72,
+          "score": 44.52,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19464,9 +19422,9 @@
           "fit_score": 4.03,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "청양고추 수급 안정",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "청양고추 가격 안정",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 2.0,
@@ -19481,7 +19439,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 44.62,
+          "score": 44.42,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19513,7 +19471,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 44.19,
+          "score": 43.99,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19545,7 +19503,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 43.93,
+          "score": 43.73,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19577,7 +19535,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 42.62,
+          "score": 42.42,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19609,7 +19567,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 42.4,
+          "score": 42.2,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19641,7 +19599,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 41.81,
+          "score": 41.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19673,7 +19631,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 41.16,
+          "score": 40.96,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19705,7 +19663,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 40.75,
+          "score": 40.55,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19737,7 +19695,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 40.53,
+          "score": 40.33,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19769,7 +19727,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 38.1,
+          "score": 37.9,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19801,7 +19759,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 38.1,
+          "score": 37.9,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19833,7 +19791,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 37.77,
+          "score": 37.57,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19865,7 +19823,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 36.43,
+          "score": 36.23,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19874,15 +19832,15 @@
           "tier": 1,
           "press": "MTN",
           "domain": "news.mtn.co.kr",
-          "title": "농산물 값 내렸다는데 체감은 '글쎄'…워플레이션에 장보기 '한숨'",
+          "title": "농산물값 내렸다는데 체감은 '글쎄'…워플레이션에 장보기 '한숨'",
           "url": "https://news.mtn.co.kr/news-detail/2026040317162611883",
           "reason": "below_threshold",
           "fit_score": 5.62,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농산물 가격 동향",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "배 과일 가격",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.6,
@@ -19897,7 +19855,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 35.93,
+          "score": 35.73,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19929,39 +19887,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 35.78,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "IDAEGU",
-          "domain": "idaegu.co.kr",
-          "title": "유기질 비료 품질· 수급 '이중 안전망' 가동",
-          "url": "https://www.idaegu.co.kr/news/articleView.html?idxno=544175",
-          "reason": "below_threshold",
-          "fit_score": 3.17,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농산물 수급 안정 대책",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 35.66,
+          "score": 35.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19993,7 +19919,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 34.85,
+          "score": 35.38,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "IDAEGU",
+          "domain": "idaegu.co.kr",
+          "title": "유기질 비료 품질· 수급 '이중 안전망' 가동",
+          "url": "https://www.idaegu.co.kr/news/articleView.html?idxno=544175",
+          "reason": "below_threshold",
+          "fit_score": 3.17,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농산물 수급 안정 대책",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 34.65,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20025,7 +19983,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 34.72,
+          "score": 34.52,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20057,7 +20015,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 34.48,
+          "score": 34.28,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20089,7 +20047,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.82,
+          "score": 33.62,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20121,7 +20079,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.68,
+          "score": 33.48,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20153,7 +20111,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.04,
+          "score": 32.84,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20185,39 +20143,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.33,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "경향신문",
-          "domain": "khan.co.kr",
-          "title": "“스마트폰으로 비닐하우스 온도·물·개폐 조절 편리”",
-          "url": "https://www.khan.co.kr/article/202604062100005",
-          "reason": "below_threshold",
-          "fit_score": 2.27,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "토마토 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 32.25,
+          "score": 32.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20249,7 +20175,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.2,
+          "score": 32.0,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20281,7 +20207,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.13,
+          "score": 31.93,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20290,14 +20216,14 @@
           "tier": 3,
           "press": "경향신문",
           "domain": "khan.co.kr",
-          "title": "“스마트폰으로 온도·물 조절···하루 열댓번씩 하우스 안 가도 되니...",
-          "url": "https://www.khan.co.kr/article/202604061656001",
+          "title": "“스마트폰으로 비닐하우스 온도·물·개폐 조절 편리”",
+          "url": "https://www.khan.co.kr/article/202604062100005",
           "reason": "below_threshold",
           "fit_score": 2.27,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
+          "reassigned_from": "supply",
           "source_query": "토마토 가격",
           "source_channel": "naver_api",
           "signals": {
@@ -20313,7 +20239,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.01,
+          "score": 31.93,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "경향신문",
+          "domain": "khan.co.kr",
+          "title": "“스마트폰으로 온도·물 조절···하루 열댓번씩 하우스 안 가도 되니...",
+          "url": "https://www.khan.co.kr/article/202604061656001",
+          "reason": "below_threshold",
+          "fit_score": 2.27,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "토마토 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 31.81,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20345,7 +20303,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.93,
+          "score": 31.73,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20377,7 +20335,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.81,
+          "score": 30.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20409,39 +20367,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.69,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "강원일보",
-          "domain": "kwnews.co.kr",
-          "title": "로컬푸드 직매장, 지역 유통 새 흐름… 농가 ·소비자 ‘상생’",
-          "url": "https://www.kwnews.co.kr/page/view/2026040615364836036",
-          "reason": "below_threshold",
-          "fit_score": 2.0,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "당근 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.52,
-            "market_hits": 1,
-            "strength": 8,
-            "korea": 7,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 30.68,
+          "score": 30.48,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20473,7 +20399,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.63,
+          "score": 30.43,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20505,7 +20431,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.61,
+          "score": 30.41,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20537,7 +20463,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.03,
+          "score": 30.29,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "강원일보",
+          "domain": "kwnews.co.kr",
+          "title": "로컬푸드 직매장, 지역 유통 새 흐름… 농가 ·소비자 ‘상생’",
+          "url": "https://www.kwnews.co.kr/page/view/2026040615364836036",
+          "reason": "below_threshold",
+          "fit_score": 2.0,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "당근 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 1,
+            "strength": 8,
+            "korea": 7,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 29.83,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20569,7 +20527,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.82,
+          "score": 29.62,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20585,7 +20543,7 @@
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
+          "reassigned_from": "supply",
           "source_query": "화훼 가격",
           "source_channel": "naver_api",
           "signals": {
@@ -20601,7 +20559,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.79,
+          "score": 29.59,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20633,7 +20591,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.42,
+          "score": 29.22,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20665,7 +20623,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.02,
+          "score": 28.62,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20697,7 +20655,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.56,
+          "score": 28.36,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20729,7 +20687,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.29,
+          "score": 28.09,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20761,7 +20719,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.17,
+          "score": 27.97,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20793,7 +20751,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.93,
+          "score": 27.73,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20825,7 +20783,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.84,
+          "score": 27.64,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20857,7 +20815,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.58,
+          "score": 27.38,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20889,7 +20847,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.08,
+          "score": 26.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20921,7 +20879,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.06,
+          "score": 26.86,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20936,9 +20894,9 @@
           "fit_score": 5.01,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "사과 수급 안정",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "사과 수급",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 3.4,
@@ -20953,7 +20911,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.71,
+          "score": 26.51,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20969,7 +20927,7 @@
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
-          "reassigned_from": "",
+          "reassigned_from": "supply",
           "source_query": "사과 가격",
           "source_channel": "naver_api",
           "signals": {
@@ -20981,21 +20939,53 @@
             "press_tier": 1,
             "press_weight": -2.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 26.36,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "세계일보",
+          "domain": "segye.com",
+          "title": "구리시 퇴직 고위 공직자, ‘안승남’ 후보 지지 선언",
+          "url": "https://www.segye.com/newsView/20260406508284",
+          "reason": "below_threshold",
+          "fit_score": 1.93,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "딸기 산업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 2,
+            "strength": 4,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
+          }
         }
       ],
       "coverage_ledger": [
         {
-          "seed": "사과",
-          "rep": "사과",
-          "hits": 30,
+          "seed": "동향",
+          "rep": "동향",
+          "hits": 13,
           "selected_hits": 2,
           "missing": false,
-          "sample_title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동"
+          "sample_title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토"
         },
         {
           "seed": "원예",
           "rep": "원예",
-          "hits": 12,
+          "hits": 9,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "충남 농민단체 \"농업 홀대한 전쟁 추경, 증액해야\""
@@ -21003,42 +20993,42 @@
         {
           "seed": "판로",
           "rep": "판로",
-          "hits": 9,
-          "selected_hits": 1,
-          "missing": false,
-          "sample_title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동"
-        },
-        {
-          "seed": "풋고추",
-          "rep": "풋고추",
-          "hits": 5,
+          "hits": 7,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토"
+          "sample_title": "추풍령농협, 농산물 수출 500만달러 돌파…'수출탑' 수상"
         },
         {
           "seed": "토마토",
           "rep": "토마토",
-          "hits": 23,
+          "hits": 22,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "난방비는 치솟고 일부 농자재는 품귀, 농민들 ‘울상’"
         },
         {
+          "seed": "거점",
+          "rep": "거점",
+          "hits": 15,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "정부, 올해 사과 생산 10% 늘린다"
+        },
+        {
           "seed": "전반",
           "rep": "전반",
           "hits": 28,
-          "selected_hits": 1,
+          "selected_hits": 2,
           "missing": false,
           "sample_title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토"
         },
         {
-          "seed": "감자",
-          "rep": "감자",
-          "hits": 18,
-          "selected_hits": 1,
+          "seed": "배",
+          "rep": "배",
+          "hits": 98,
+          "selected_hits": 3,
           "missing": false,
-          "sample_title": "“치솟는 비닐값에 하우스 접을 판” “만선이어도 적자”… ‘고유가..."
+          "sample_title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토"
         },
         {
           "seed": "양파",
@@ -21051,7 +21041,7 @@
         {
           "seed": "화훼",
           "rep": "화훼",
-          "hits": 6,
+          "hits": 5,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "김경수, 김해 화훼 농가 방문…\"유가 부담, 추경으로는 부족\""
@@ -21065,12 +21055,12 @@
           "sample_title": "전북도, 농산물 가격 안정 지원 …건고추·생강·노지감자"
         },
         {
-          "seed": "물가",
-          "rep": "물가",
-          "hits": 57,
-          "selected_hits": 3,
+          "seed": "apc",
+          "rep": "apc",
+          "hits": 30,
+          "selected_hits": 1,
           "missing": false,
-          "sample_title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동"
+          "sample_title": "유류비 지원, 세금유예, 지역화폐 확대 등 농어촌 총력 지원나선 지자체..."
         },
         {
           "seed": "가지",
@@ -21083,18 +21073,18 @@
       ]
     },
     "dist": {
-      "threshold": 20.55,
-      "tail_cut": 26.15,
-      "core_min": 20.55,
+      "threshold": 19.59,
+      "tail_cut": 25.19,
+      "core_min": 19.59,
       "hf_semantic_enabled": true,
-      "hf_semantic_hits": 9,
-      "total_candidates": 33,
-      "total_selected": 3,
+      "hf_semantic_hits": 7,
+      "total_candidates": 32,
+      "total_selected": 4,
       "top": [
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
-          "score": 52.68,
+          "score": 52.48,
           "semantic_similarity": 0.8098,
           "semantic_noise_similarity": 0.8017,
           "semantic_margin": 0.0081,
@@ -21105,13 +21095,13 @@
           "domain": "dailypop.kr",
           "title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다",
           "url": "http://www.dailypop.kr/news/articleView.html?idxno=97805",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 5.76,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "dist_anchor_backfill",
           "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "포도 수급",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "도매시장 수급",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.92,
@@ -21126,7 +21116,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 47.35,
+          "score": 47.15,
           "semantic_similarity": 0.8254,
           "semantic_noise_similarity": 0.8068,
           "semantic_margin": 0.0186,
@@ -21158,39 +21148,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 33.55,
-          "semantic_similarity": 0.7685,
-          "semantic_noise_similarity": 0.753,
-          "semantic_margin": 0.0155,
-          "semantic_boost": -0.224,
-          "semantic_model": "intfloat/multilingual-e5-large",
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "정우창 익산 여산농협 조합장, ‘새로운 농협 조합장상’ 수상",
-          "url": "https://www.nongmin.com/article/20260406500502",
-          "reason": "similar_story",
-          "fit_score": 2.7,
-          "selection_stage": "similar_story",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "마늘 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 2,
-            "strength": 8,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 32.79,
+          "score": 32.59,
           "semantic_similarity": 0.7907,
           "semantic_noise_similarity": 0.7635,
           "semantic_margin": 0.0272,
@@ -21222,7 +21180,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.93,
+          "score": 31.73,
           "semantic_similarity": 0.8139,
           "semantic_noise_similarity": 0.7958,
           "semantic_margin": 0.0181,
@@ -21254,12 +21212,12 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 30.68,
-          "semantic_similarity": 0.7997,
-          "semantic_noise_similarity": 0.7848,
-          "semantic_margin": 0.0149,
-          "semantic_boost": -0.259,
-          "semantic_model": "intfloat/multilingual-e5-large",
+          "score": 30.48,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
           "tier": 1,
           "press": "DOMIN",
           "domain": "domin.co.kr",
@@ -21286,7 +21244,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.79,
+          "score": 29.59,
           "semantic_similarity": 0.8014,
           "semantic_noise_similarity": 0.7843,
           "semantic_margin": 0.0171,
@@ -21318,20 +21276,20 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 25.6,
-          "semantic_similarity": 0.8136,
-          "semantic_noise_similarity": 0.7994,
-          "semantic_margin": 0.0142,
-          "semantic_boost": -0.295,
-          "semantic_model": "intfloat/multilingual-e5-large",
+          "score": 25.4,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
           "tier": 1,
           "press": "노컷뉴스",
           "domain": "nocutnews.co.kr",
           "title": "전북도, 건고추·생강·노지감자 최저가격 보장제 접수",
           "url": "https://www.nocutnews.co.kr/news/6497003",
-          "reason": "tail_cut",
+          "reason": "dist_local_org_profile",
           "fit_score": 0.2,
-          "selection_stage": "tail_cut",
+          "selection_stage": "dist_local_org_profile",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "dist",
@@ -21349,8 +21307,8 @@
         },
         {
           "selected": true,
-          "is_core": false,
-          "score": 21.74,
+          "is_core": true,
+          "score": 21.54,
           "semantic_similarity": 0.8185,
           "semantic_noise_similarity": 0.7857,
           "semantic_margin": 0.0328,
@@ -21363,7 +21321,7 @@
           "url": "https://www.farminsight.net/news/articleView.html?idxno=16222",
           "reason": "",
           "fit_score": 1.26,
-          "selection_stage": "dist_underfill",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "dist",
           "reassigned_from": "",
@@ -21382,12 +21340,12 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.8,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "score": 18.4,
+          "semantic_similarity": 0.7848,
+          "semantic_noise_similarity": 0.7727,
+          "semantic_margin": 0.0121,
+          "semantic_boost": -0.418,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "이코노뉴스",
           "domain": "econonews.co.kr",
@@ -21414,7 +21372,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.42,
+          "score": 16.22,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21446,7 +21404,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 13.59,
+          "score": 13.39,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21478,7 +21436,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.87,
+          "score": 10.67,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21510,7 +21468,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.17,
+          "score": 9.77,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21542,7 +21500,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.49,
+          "score": 9.29,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21574,7 +21532,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.49,
+          "score": 9.29,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21606,7 +21564,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.36,
+          "score": 9.16,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21638,7 +21596,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.22,
+          "score": 8.02,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21670,7 +21628,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.04,
+          "score": 6.84,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21702,7 +21660,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.15,
+          "score": 5.95,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21734,7 +21692,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.64,
+          "score": 4.44,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21766,7 +21724,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.32,
+          "score": 4.12,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21798,7 +21756,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.02,
+          "score": 1.82,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21830,7 +21788,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -1.26,
+          "score": -1.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21862,7 +21820,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -4.0,
+          "score": -4.2,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21894,7 +21852,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -8.66,
+          "score": -8.86,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21926,7 +21884,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -8.81,
+          "score": -9.01,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21953,38 +21911,6 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": -9.63,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "에너지경제신문",
-          "domain": "ekn.kr",
-          "title": "영천시, ‘서영천 하이패스IC’ 이달 30일 개통… 교통·물류 새 축 기대",
-          "url": "https://www.ekn.kr/web/view.php?key=20260406028384663",
-          "reason": "below_threshold",
-          "fit_score": 0.18,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 물류비 절감",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
           }
         },
         {
@@ -22093,6 +22019,38 @@
           "semantic_boost": 0.0,
           "semantic_model": "",
           "tier": 1,
+          "press": "에너지경제신문",
+          "domain": "ekn.kr",
+          "title": "영천시, ‘서영천 하이패스IC’ 이달 30일 개통… 교통·물류 새 축 기대",
+          "url": "https://www.ekn.kr/web/view.php?key=20260406028384663",
+          "reason": "below_threshold",
+          "fit_score": 0.18,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 물류비 절감",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": -10.0,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
           "press": "충청리뷰",
           "domain": "ccreview.co.kr",
           "title": "조남길 동충주농협 조합장, 수상 영광",
@@ -22150,28 +22108,20 @@
       ],
       "coverage_ledger": [
         {
-          "seed": "포도",
-          "rep": "포도",
-          "hits": 4,
-          "selected_hits": 1,
+          "seed": "가락시장",
+          "rep": "가락시장",
+          "hits": 14,
+          "selected_hits": 3,
           "missing": false,
           "sample_title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다"
         },
         {
           "seed": "apc",
           "rep": "apc",
-          "hits": 10,
+          "hits": 9,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "경기 농협 , 평택 송탄 농협 애호박·방울토마토 재배기술 및 유통 교육"
-        },
-        {
-          "seed": "양파",
-          "rep": "양파",
-          "hits": 3,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "신안 임자농협, 조합원 영농자재 구입비 1억9000만원 지원"
         },
         {
           "seed": "통합마케팅",
@@ -22190,12 +22140,12 @@
           "sample_title": "농식품부, \" 사과 생산 10% 이상 증대\"…계약재배 확대·가격지표 개편"
         },
         {
-          "seed": "생강",
-          "rep": "생강",
-          "hits": 5,
-          "selected_hits": 1,
+          "seed": "수출",
+          "rep": "수출",
+          "hits": 11,
+          "selected_hits": 2,
           "missing": false,
-          "sample_title": "전북자치도, 건고추·생강·노지감자 '최저가격 보장제' 5월 29일까지 신..."
+          "sample_title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다"
         },
         {
           "seed": "현장",
@@ -22232,7 +22182,7 @@
         {
           "seed": "농협",
           "rep": "농협",
-          "hits": 14,
+          "hits": 13,
           "selected_hits": 2,
           "missing": false,
           "sample_title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다"
@@ -22244,22 +22194,30 @@
           "selected_hits": 0,
           "missing": true,
           "sample_title": ""
+        },
+        {
+          "seed": "품목농협",
+          "rep": "품목농협",
+          "hits": 0,
+          "selected_hits": 0,
+          "missing": true,
+          "sample_title": ""
         }
       ]
     },
     "pest": {
-      "threshold": 25.01,
-      "tail_cut": 25.01,
-      "core_min": 25.01,
+      "threshold": 24.81,
+      "tail_cut": 24.81,
+      "core_min": 24.81,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 5,
-      "total_candidates": 31,
+      "total_candidates": 32,
       "total_selected": 5,
       "top": [
         {
           "selected": true,
           "is_core": true,
-          "score": 32.01,
+          "score": 31.81,
           "semantic_similarity": 0.8455,
           "semantic_noise_similarity": 0.7984,
           "semantic_margin": 0.0471,
@@ -22291,7 +22249,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 32.01,
+          "score": 31.81,
           "semantic_similarity": 0.8455,
           "semantic_noise_similarity": 0.7984,
           "semantic_margin": 0.0471,
@@ -22323,7 +22281,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.01,
+          "score": 31.81,
           "semantic_similarity": 0.8524,
           "semantic_noise_similarity": 0.8065,
           "semantic_margin": 0.0459,
@@ -22355,7 +22313,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.01,
+          "score": 31.81,
           "semantic_similarity": 0.8524,
           "semantic_noise_similarity": 0.8065,
           "semantic_margin": 0.0459,
@@ -22387,7 +22345,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.81,
+          "score": 28.61,
           "semantic_similarity": 0.846,
           "semantic_noise_similarity": 0.8053,
           "semantic_margin": 0.0407,
@@ -22419,7 +22377,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.81,
+          "score": 28.61,
           "semantic_similarity": 0.846,
           "semantic_noise_similarity": 0.8053,
           "semantic_margin": 0.0407,
@@ -22451,7 +22409,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 29.28,
+          "score": 29.08,
           "semantic_similarity": 0.8429,
           "semantic_noise_similarity": 0.8161,
           "semantic_margin": 0.0268,
@@ -22483,7 +22441,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 25.75,
+          "score": 25.55,
           "semantic_similarity": 0.8448,
           "semantic_noise_similarity": 0.7891,
           "semantic_margin": 0.0558,
@@ -22515,7 +22473,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.7,
+          "score": 22.5,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22547,7 +22505,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.7,
+          "score": 22.5,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22579,7 +22537,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.15,
+          "score": 19.95,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22611,7 +22569,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 19.85,
+          "score": 19.65,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22643,7 +22601,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.76,
+          "score": 18.56,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22675,7 +22633,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.31,
+          "score": 18.11,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22707,7 +22665,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.81,
+          "score": 17.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22739,7 +22697,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 17.56,
+          "score": 17.36,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22771,7 +22729,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.33,
+          "score": 17.29,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "뉴시스",
+          "domain": "newsis.com",
+          "title": "나주 배 주산지 '우박 직격탄'…개화기 농가 비상",
+          "url": "https://www.newsis.com/view/NISX20260406_0003579575",
+          "reason": "below_threshold",
+          "fit_score": 1.96,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "가지 생육",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.13,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22803,7 +22793,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.18,
+          "score": 15.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22835,7 +22825,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.18,
+          "score": 15.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22867,7 +22857,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.18,
+          "score": 15.61,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "BBSI",
+          "domain": "news.bbsi.co.kr",
+          "title": "나주배 주산지 우박 쏟아져…개화기 피해 우려",
+          "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076625",
+          "reason": "below_threshold",
+          "fit_score": 2.16,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "가지 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 3.2,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22899,7 +22921,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.7,
+          "score": 11.5,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22931,39 +22953,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.31,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "BBSI",
-          "domain": "news.bbsi.co.kr",
-          "title": "나주배 주산지 우박 쏟아져…개화기 피해 우려",
-          "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4076625",
-          "reason": "below_threshold",
-          "fit_score": 1.41,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "가지 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 3.2,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 9.83,
+          "score": 9.63,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22995,7 +22985,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.84,
+          "score": 8.64,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23027,7 +23017,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.78,
+          "score": 8.58,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23059,7 +23049,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.23,
+          "score": 8.03,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23091,7 +23081,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.8,
+          "score": 5.6,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23123,7 +23113,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.3,
+          "score": 5.1,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23155,39 +23145,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.85,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "톱스타뉴스",
-          "domain": "topstarnews.net",
-          "title": "[오늘의 날씨] 내륙 아침 0도 안팎 한파·강풍…9일 제주 최대 150mm 비 예...",
-          "url": "https://www.topstarnews.net/news/articleView.html?idxno=16027308",
-          "reason": "below_threshold",
-          "fit_score": 0.0,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "pest",
-          "reassigned_from": "",
-          "source_query": "냉해 동해 과수 피해",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 2.73,
+          "score": 2.53,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23219,7 +23177,39 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 0.99,
+          "score": 2.45,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "톱스타뉴스",
+          "domain": "topstarnews.net",
+          "title": "[오늘의 날씨] 내륙 아침 0도 안팎 한파·강풍…9일 제주 최대 150mm 비 예...",
+          "url": "https://www.topstarnews.net/news/articleView.html?idxno=16027308",
+          "reason": "below_threshold",
+          "fit_score": 0.0,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "pest",
+          "reassigned_from": "",
+          "source_query": "냉해 동해 과수 피해",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 1,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 0.59,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23253,7 +23243,7 @@
         {
           "seed": "가지",
           "rep": "가지",
-          "hits": 9,
+          "hits": 10,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "경남도농업기술원, 만감류 병해충 초기 방제 주의보"
@@ -23261,7 +23251,7 @@
         {
           "seed": "병해충",
           "rep": "병해충",
-          "hits": 28,
+          "hits": 29,
           "selected_hits": 4,
           "missing": false,
           "sample_title": "경남도농업기술원, 만감류 병해충 초기 방제 주의보"
@@ -24816,9 +24806,11 @@
     "mode": "selection",
     "candidate_cap": 40,
     "summary": {
-      "changed_sections": [],
-      "changed_section_count": 0,
-      "changed_slots": 0,
+      "changed_sections": [
+        "policy"
+      ],
+      "changed_section_count": 1,
+      "changed_slots": 2,
       "changed_board_items": 0
     },
     "sections": {
@@ -24837,9 +24829,9 @@
             "semantic_similarity": 0.838299
           },
           {
-            "title": "정부, 올해 사과 생산 10% 늘린다",
-            "semantic_boost": 0.7533,
-            "semantic_similarity": 0.83877
+            "title": "조생 양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
+            "semantic_boost": -0.016146,
+            "semantic_similarity": 0.837469
           },
           {
             "title": "'과일 개화기에 큰일 날 뻔'… 대구·경북에 1㎝ 우박 쏟아져",
@@ -24850,23 +24842,34 @@
         "boosted_selected_count": 4
       },
       "policy": {
-        "changed": false,
-        "slot_changes": [],
-        "boosted_selected": [
+        "changed": true,
+        "slot_changes": [
           {
-            "title": "“ 사과 생산 10% 늘리자”….정부, ‘안정생산 추진단’ 가동",
-            "semantic_boost": 0.191924,
-            "semantic_similarity": 0.832313
+            "position": 2,
+            "baseline_title": "추풍령농협, 농산물 수출 500만달러 돌파…'수출탑' 수상",
+            "hf_title": "조생양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’"
           },
           {
-            "title": "추풍령농협, 농산물 수출 500만달러 돌파…'수출탑' 수상",
-            "semantic_boost": -0.6417,
-            "semantic_similarity": 0.819571
+            "position": 3,
+            "baseline_title": "조생양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
+            "hf_title": "추풍령농협, 농산물 수출 500만달러 돌파…'수출탑' 수상"
+          }
+        ],
+        "boosted_selected": [
+          {
+            "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
+            "semantic_boost": 0.66205,
+            "semantic_similarity": 0.837674
           },
           {
             "title": "조생양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
             "semantic_boost": 0.7533,
             "semantic_similarity": 0.837594
+          },
+          {
+            "title": "추풍령농협, 농산물 수출 500만달러 돌파…'수출탑' 수상",
+            "semantic_boost": -0.6417,
+            "semantic_similarity": 0.819571
           }
         ],
         "boosted_selected_count": 3
@@ -24915,30 +24918,8 @@
       "changed": false,
       "changed_items": [],
       "changed_item_count": 0,
-      "boosted_items": [
-        {
-          "key": "green_pepper",
-          "label": "풋고추",
-          "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
-          "semantic_boost": -0.35,
-          "semantic_similarity": 0.808197
-        },
-        {
-          "key": "onion",
-          "label": "양파",
-          "title": "조생양파 가격 약세…출하조절·시장다변화로 ‘단계별 대응’",
-          "semantic_boost": -0.35,
-          "semantic_similarity": 0.831555
-        },
-        {
-          "key": "tomato",
-          "label": "토마토",
-          "title": "AI 프로그램으로 토마토 재배...난방비 30% 절감",
-          "semantic_boost": -0.35,
-          "semantic_similarity": 0.818122
-        }
-      ],
-      "boosted_item_count": 3
+      "boosted_items": [],
+      "boosted_item_count": 0
     }
   },
   "replay": {
