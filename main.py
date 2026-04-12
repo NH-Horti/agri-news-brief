@@ -20196,10 +20196,14 @@ def _selection_guardrail_number(key: str, default: float, *, section_key: str = 
         if scoped is None:
             scoped = payload.get("default")
         payload = scoped
-    try:
+    if isinstance(payload, (int, float)) and not isinstance(payload, bool):
         return float(payload)
-    except (TypeError, ValueError):
-        return float(default)
+    if isinstance(payload, str):
+        try:
+            return float(payload)
+        except ValueError:
+            return float(default)
+    return float(default)
 
 
 def _selection_guardrail_bool(key: str, default: bool = False) -> bool:
