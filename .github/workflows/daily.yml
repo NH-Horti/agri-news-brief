@@ -143,6 +143,7 @@ jobs:
             --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json" \
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
+            --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
             --fail-under 55
 
       - name: Resolve Kakao status

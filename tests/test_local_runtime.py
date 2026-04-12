@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 from datetime import datetime
@@ -205,3 +206,23 @@ class LocalRuntimeTests(TestCase):
                     feedback = main._load_openai_summary_feedback()
             self.assertIn("first sentence", feedback)
             self.assertIn("retain one number", feedback)
+
+    def test_load_selection_feedback_guardrails_reads_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            feedback_path = Path(td) / "latest-selection-feedback.json"
+            feedback_path.write_text(
+                json.dumps(
+                    {
+                        "selection_guardrails": {
+                            "commodity_active_min_rank": 2,
+                            "commodity_require_issue_signal": True,
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            with patch.object(main, "SELECTION_FEEDBACK_PATH", str(feedback_path)):
+                guardrails = main._load_selection_feedback_guardrails()
+            self.assertEqual(int(guardrails["commodity_active_min_rank"]), 2)
+            self.assertTrue(bool(guardrails["commodity_require_issue_signal"]))

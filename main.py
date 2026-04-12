@@ -915,6 +915,7 @@ OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
 OPENAI_SUMMARY_FEEDBACK_PATH = os.getenv("OPENAI_SUMMARY_FEEDBACK_PATH", "docs/evals/latest-feedback.txt").strip()
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = int((os.getenv("OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", "600") or "600").strip() or 600)
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = max(0, min(OPENAI_SUMMARY_FEEDBACK_MAX_CHARS, 4000))
+SELECTION_FEEDBACK_PATH = os.getenv("SELECTION_FEEDBACK_PATH", "docs/evals/latest-selection-feedback.json").strip()
 
 HF_API_TOKEN = (
     os.getenv("HF_TOKEN", "").strip()
@@ -13849,6 +13850,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # threshold 바로 아래 기사도 HF boost로 구제될 수 있도록,
     # max_boost 마진만큼 넓은 pre-pool에서 HF를 먼저 실행한다.
     sec_conf = next((x for x in SECTIONS if x.get("key") == section_key), {})
+    section_card_min_fit = _selection_guardrail_number(
+        "section_card_min_fit",
+        SECTION_FIT_MIN_FOR_TOP,
+        section_key=section_key,
+    )
+    section_low_fit_rescue_min = _selection_guardrail_number("section_low_fit_rescue_min", 0.15)
+    high_score_low_fit_rescue_margin = _selection_guardrail_number("high_score_low_fit_rescue_margin", 3.0)
 
     hf_pre_margin = float(HF_SEMANTIC_MAX_BOOST) + 0.5 if HF_SEMANTIC_RERANK_ENABLED else 0.0
     pre_pool = [a for a in candidates_sorted_raw if a.score >= (thr - hf_pre_margin)]
@@ -13900,10 +13908,34 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     fit_filtered: list[Article] = []
     for a in pool:
         fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
-        if (fit_sc >= SECTION_FIT_MIN_FOR_TOP) or (fit_sc >= 0.15 and float(getattr(a, "score", 0.0) or 0.0) >= (thr + 3.0)):
+        if (
+            fit_sc >= section_card_min_fit
+            or (
+                fit_sc >= section_low_fit_rescue_min
+                and float(getattr(a, "score", 0.0) or 0.0) >= (thr + high_score_low_fit_rescue_margin)
+            )
+        ):
             fit_filtered.append(a)
     if fit_filtered:
         pool = fit_filtered
+
+    def _fit_score_local(a: Article) -> float:
+        fit_sc = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
+        if fit_sc > 0.0:
+            return fit_sc
+        try:
+            return float(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""))
+        except Exception:
+            return 0.0
+
+    def _passes_section_fit_gate(a: Article, *, score_floor: float) -> bool:
+        fit_sc = _fit_score_local(a)
+        if fit_sc >= section_card_min_fit:
+            return True
+        return (
+            fit_sc >= section_low_fit_rescue_min
+            and float(getattr(a, "score", 0.0) or 0.0) >= (score_floor + high_score_low_fit_rescue_margin)
+        )
 
     def _semantic_adjusted_score(a: Article) -> float:
         return float(getattr(a, "score", 0.0) or 0.0) + float(getattr(a, "semantic_boost", 0.0) or 0.0)
@@ -13937,7 +13969,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         return priority
 
     def _selection_sort_key(a: Article) -> Any:
-        fit_sc = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
+        fit_sc = _fit_score_local(a)
         return (
             _semantic_adjusted_score(a),
             _nh_major_core_priority(a),
@@ -13977,6 +14009,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 2026-04-10: 품질 하한선 — 어떤 margin 계산이든 BASE_MIN + 1.5 미만 기사는 절대 진입 불가
     _quality_floor = BASE_MIN_SCORE.get(section_key, 6.0) + 1.5
     tail_cut = max(thr, tail_ref_score - tail_margin, _quality_floor)
+    tail_cut += max(0.0, _selection_guardrail_number("tail_score_floor_delta", 0.0))
 
     # 출처 캡(지방/인터넷 과다 방지)
     tier_count = {1: 0, 2: 0, 3: 0}
@@ -14032,7 +14065,20 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         "dist": 1.6,
         "pest": 1.2,
     }
-    core_fit_min = core_fit_min_by_section.get(section_key, 1.2)
+    core_fit_min = max(
+        core_fit_min_by_section.get(section_key, 1.2),
+        _selection_guardrail_number(
+            "core_fit_min",
+            core_fit_min_by_section.get(section_key, 1.2),
+            section_key=section_key,
+        ),
+    )
+    core_relaxed_min_fit = _selection_guardrail_number(
+        "core_relaxed_min_fit",
+        max(0.0, core_fit_min - 0.2),
+        section_key=section_key,
+    )
+    disable_relaxed_core_fill = _selection_guardrail_bool("disable_relaxed_core_fill", False)
     core: list[Article] = []
     used_title_keys: set[str] = set()
     used_url_keys: set[str] = set()
@@ -14926,8 +14972,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if strong_supply_focus_pool_count >= 2 and focus_max_local < _MANAGED_COMMODITY_FOCUS_STRONG_MIN:
                 if (not has_direct_supply_chain_signal(mix)) or focus_max_local < (_MANAGED_COMMODITY_FOCUS_MATCH_MIN + 0.8):
                     continue
-        fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
+        fit_sc_core = _fit_score_local(a)
         if fit_sc_core < core_fit_min and a.score < (core_min + 1.8):
+            continue
+        if not _passes_section_fit_gate(a, score_floor=core_min):
             continue
         if not _headline_gate(a, section_key):
             continue
@@ -15023,8 +15071,14 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             agri_anchor_hits_local = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
             if ops_hits >= 1 and market_anchor_hits == 0 and (not apc_ctx_local) and agri_anchor_hits_local == 0 and best_horti_score(a.title or "", a.description or "") < 1.9:
                 continue
-            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
+            fit_sc_core = _fit_score_local(a)
             if fit_sc_core < (core_fit_min - 0.1) and a.score < (core_min + 1.2):
+                continue
+            if fit_sc_core < core_relaxed_min_fit and a.score < (core_min + 1.6):
+                continue
+            if disable_relaxed_core_fill and fit_sc_core < core_fit_min:
+                continue
+            if not _passes_section_fit_gate(a, score_floor=core_min):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -15064,8 +15118,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _is_low_core_source(a) or press_priority(a.press, a.domain) < 2:
                 continue
-            fit_sc_core = section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or "")
+            fit_sc_core = _fit_score_local(a)
             if fit_sc_core < (core_fit_min - 0.2) and a.score < max(thr, core_min - 0.8):
+                continue
+            if fit_sc_core < core_relaxed_min_fit:
+                continue
+            if not _passes_section_fit_gate(a, score_floor=max(thr, core_min - 0.8)):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -15099,6 +15157,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if len(core) >= 2:
                 break
             if _already_used(a):
+                continue
+            fit_sc_core = _fit_score_local(a)
+            if fit_sc_core < core_relaxed_min_fit:
+                continue
+            if disable_relaxed_core_fill and fit_sc_core < core_fit_min:
+                continue
+            if not _passes_section_fit_gate(a, score_floor=thr):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -15167,7 +15232,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             has_anchor = any(t.lower() in text for t in anchor_terms) or has_apc_agri_context(text) or strong_local_org or field_market_response
             if not has_anchor:
                 continue
-            fit_sc_anchor = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
+            fit_sc_anchor = _fit_score_local(a)
             if fit_sc_anchor <= 0.0:
                 try:
                     fit_sc_anchor = float(section_fit_score(a.title or "", a.description or "", sec_conf, a.domain or "", a.press or ""))
@@ -15175,6 +15240,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     fit_sc_anchor = 0.0
             strong_ops_anchor = market_ops or supply_center or sales_channel_ops or field_market_response or strong_local_org
             if (not strong_ops_anchor) and fit_sc_anchor < 1.6:
+                continue
+            if not _passes_section_fit_gate(a, score_floor=thr):
                 continue
             # 추가 안전장치: 농산물/원예 앵커가 약하면 '일반 물류/경제'로 보고 제외
             agri_anchor_hits = count_any(text, [t.lower() for t in ("농산물","농업","농식품","원예","과수","과일","채소","화훼","절화","청과")])
@@ -15232,6 +15299,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if _already_used(a):
                 continue
+            if not _passes_section_fit_gate(a, score_floor=tail_cut):
+                continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
             # 출처 캡은 MMR 선발에서도 유지(선정 시점에 다시 확인)
@@ -15281,6 +15350,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     continue
                 if _is_supply_low_signal_feature_story(a):
                     continue
+                if not _passes_section_fit_gate(a, score_floor=tail_cut):
+                    continue
                 tri_a = _mmr_tri(a)
                 max_sim = 0.0
                 if sel_tris and tri_a:
@@ -15327,6 +15398,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if a.score < tail_cut:
                 continue
             if _already_used(a):
+                continue
+            if not _passes_section_fit_gate(a, score_floor=tail_cut):
                 continue
             if not _headline_gate_relaxed(a, section_key):
                 continue
@@ -18741,6 +18814,21 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
 
 def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
+    min_fit = _selection_guardrail_number("section_card_min_fit", 0.0, section_key=section_key)
+    core_min_fit = _selection_guardrail_number("core_relaxed_min_fit", min_fit, section_key=section_key)
+    if min_fit > 0.0:
+        fit_sc = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
+        if fit_sc <= 0.0:
+            try:
+                section_conf = next((s for s in SECTIONS if s.get("key") == section_key), {})
+                fit_sc = float(section_fit_score(a.title or "", a.description or "", section_conf, a.domain or "", a.press or ""))
+            except Exception:
+                fit_sc = 0.0
+        if fit_sc > 0.0:
+            if bool(getattr(a, "is_core", False)) and fit_sc < core_min_fit:
+                return "selection_feedback_core_fit"
+            if fit_sc < min_fit:
+                return "selection_feedback_low_fit"
     if is_apple_apology_context(text):
         return "apple_apology_context"
     # 농협 회장/임원 부정적 기사 완전 차단
@@ -20074,6 +20162,53 @@ def _load_openai_summary_feedback() -> str:
     if not text:
         return ""
     return text[:OPENAI_SUMMARY_FEEDBACK_MAX_CHARS]
+
+
+def _load_selection_feedback_guardrails() -> JsonDict:
+    path = str(SELECTION_FEEDBACK_PATH or "").strip()
+    if not path:
+        return {}
+    try:
+        raw = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return {}
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    guardrails = payload.get("selection_guardrails", payload)
+    if not isinstance(guardrails, dict):
+        return {}
+    return dict(guardrails)
+
+
+SELECTION_FEEDBACK_GUARDRAILS = _load_selection_feedback_guardrails()
+if SELECTION_FEEDBACK_GUARDRAILS:
+    log.info("[EVAL-FEEDBACK] loaded selection guardrails from %s", SELECTION_FEEDBACK_PATH)
+
+
+def _selection_guardrail_number(key: str, default: float, *, section_key: str = "") -> float:
+    payload = SELECTION_FEEDBACK_GUARDRAILS.get(str(key or "").strip())
+    if isinstance(payload, dict):
+        scoped = payload.get(str(section_key or "").strip())
+        if scoped is None:
+            scoped = payload.get("default")
+        payload = scoped
+    try:
+        return float(payload)
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def _selection_guardrail_bool(key: str, default: bool = False) -> bool:
+    payload = SELECTION_FEEDBACK_GUARDRAILS.get(str(key or "").strip())
+    if isinstance(payload, bool):
+        return payload
+    if isinstance(payload, str):
+        return payload.strip().lower() in ("1", "true", "yes", "y")
+    return bool(payload) if payload is not None else bool(default)
 
 
 def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
@@ -21580,7 +21715,9 @@ def _commodity_board_item_article_representative_metrics(
 
 
 def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
-    return 1 if bool(item.get("program_core")) else 1
+    base_rank = 1
+    guardrail_key = "commodity_program_core_min_rank" if bool(item.get("program_core")) else "commodity_active_min_rank"
+    return max(base_rank, int(_selection_guardrail_number(guardrail_key, base_rank)))
 
 
 def _commodity_board_article_is_active_candidate(
@@ -21610,6 +21747,17 @@ def _commodity_board_article_is_active_candidate(
     representative_rank = int(article_metrics.get("representative_rank", -1))
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
+    if _selection_guardrail_bool("commodity_require_issue_signal", False):
+        if not _commodity_board_has_operational_issue_signal(article_metrics):
+            return False
+    if _selection_guardrail_bool("commodity_require_direct_item_focus", False):
+        has_direct_item_focus = bool(
+            int(article_metrics.get("title_primary_hits") or 0) >= 1
+            or bool(article_metrics.get("single_focus"))
+            or bool(article_metrics.get("primary_focus"))
+        )
+        if not has_direct_item_focus:
+            return False
     if bool(item.get("program_core")):
         has_direct_item_focus = int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
         has_indirect_issue_focus = bool(

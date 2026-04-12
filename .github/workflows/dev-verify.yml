@@ -195,6 +195,7 @@ jobs:
           OPENAI_MODEL: gpt-5.4-mini
           OPENAI_REASONING_EFFORT: low
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
+          SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SEMANTIC_MODEL: intfloat/multilingual-e5-large
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
@@ -327,6 +328,27 @@ jobs:
             exit 1
           fi
 
+      - name: Evaluate rebuilt preview report
+        if: steps.rebuild.outcome == 'success'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          python scripts/evaluate_daily_report.py \
+            --report-date "${{ steps.vars.outputs.report_date }}" \
+            --snapshot-path ".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --ref codex/dev-preview \
+            --remote-html-path "docs/dev/index.html" \
+            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.preview.json" \
+            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.preview.md" \
+            --feedback-out "reports/evals/${{ steps.vars.outputs.report_date }}.preview-feedback.txt" \
+            --selection-feedback-out "reports/evals/${{ steps.vars.outputs.report_date }}.preview-selection-feedback.json"
+
       - name: Upload dev verify artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -337,6 +359,7 @@ jobs:
             docs/dev/index.html
             docs/dev/version.json
             docs/dev/debug/
+            reports/evals/
 
       - name: Publish summary
         if: always()
@@ -360,3 +383,7 @@ jobs:
             echo "- Raw preview: https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/index.html"
             echo "- Raw debug JSON: https://raw.githubusercontent.com/NH-Horti/agri-news-brief/codex/dev-preview/docs/dev/debug/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.preview.md" ]; then
+            cat "reports/evals/${{ steps.vars.outputs.report_date }}.preview.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
