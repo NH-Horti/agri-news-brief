@@ -40,6 +40,7 @@ The repo now includes a daily report quality harness.
 - CLI: `scripts/evaluate_daily_report.py`
 - Published artifacts: `docs/evals/`
 - Auto-feedback loop: `docs/evals/latest-feedback.txt` is fed back into the next OpenAI summary run
+- Selection guardrails: `docs/evals/latest-selection-feedback.json` is fed back into the next card/core/commodity selection run
 
 Local example:
 

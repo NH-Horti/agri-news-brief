@@ -887,6 +887,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         "freshness_samples": sorted(freshness_samples, key=lambda item: item["age_hours"], reverse=True)[:8],
         "improvement_hints": improvement_hints,
     }
+    result["selection_guardrails"] = build_selection_guardrails(result)
     result["summary_prompt_feedback"] = build_summary_feedback(result)
     return result
 
@@ -915,6 +916,161 @@ def build_summary_feedback(result: dict[str, Any]) -> list[str]:
             "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.",
         ]
     return feedback[:4]
+
+
+def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
+    scores = result.get("scores", {}) if isinstance(result, dict) else {}
+    metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
+
+    section_alignment_score = float(scores.get("section_alignment", 100.0) or 100.0)
+    core_quality_score = float(scores.get("core_quality", 100.0) or 100.0)
+    commodity_board_quality_score = float(scores.get("commodity_board_quality", 100.0) or 100.0)
+
+    section_alignment_low_fit_rate = float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0)
+    section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
+    weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
+    commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
+    commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
+    commodity_primary_weak_rate = float(metrics.get("commodity_primary_weak_rate", 0.0) or 0.0)
+
+    section_card_min_fit = {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78,
+    }
+    core_fit_min = {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2,
+    }
+    core_relaxed_min_fit = {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0,
+    }
+    low_fit_rescue_min = 0.15
+    high_score_low_fit_rescue_margin = 3.0
+    tail_score_floor_delta = 0.0
+    disable_relaxed_core_fill = False
+    commodity_active_min_rank = 1
+    commodity_program_core_min_rank = 1
+    commodity_require_issue_signal = False
+    commodity_require_direct_item_focus = False
+
+    reasons: list[str] = []
+
+    if (
+        section_alignment_score < 78.0
+        or section_alignment_low_fit_rate > 0.18
+        or section_alignment_cross_gap_rate > 0.1
+    ):
+        reasons.append("section_alignment")
+        for key, delta in (("supply", 0.08), ("policy", 0.08), ("dist", 0.12), ("pest", 0.06)):
+            section_card_min_fit[key] += delta
+        section_card_min_fit["default"] += 0.08
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.3)
+        high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.0)
+        tail_score_floor_delta += 0.6
+
+    if (
+        section_alignment_score < 65.0
+        or section_alignment_low_fit_rate > 0.26
+        or section_alignment_cross_gap_rate > 0.14
+    ):
+        reasons.append("section_alignment_severe")
+        for key, delta in (("supply", 0.08), ("policy", 0.08), ("dist", 0.1), ("pest", 0.06)):
+            section_card_min_fit[key] += delta
+        section_card_min_fit["default"] += 0.08
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.45)
+        high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.8)
+        tail_score_floor_delta += 0.4
+
+    if core_quality_score < 78.0 or weak_core_rate > 0.18:
+        reasons.append("core_quality")
+        for key in ("default", "supply", "policy", "dist", "pest"):
+            core_fit_min[key] += 0.08
+            core_relaxed_min_fit[key] += 0.12
+        disable_relaxed_core_fill = weak_core_rate > 0.32 or core_quality_score < 68.0
+
+    if core_quality_score < 68.0 or weak_core_rate > 0.32:
+        reasons.append("core_quality_severe")
+        for key in ("default", "supply", "policy", "dist", "pest"):
+            core_fit_min[key] += 0.08
+            core_relaxed_min_fit[key] += 0.1
+        disable_relaxed_core_fill = True
+
+    if (
+        commodity_board_quality_score < 80.0
+        or commodity_primary_weak_rate > 0.15
+        or commodity_primary_item_focus_rate < 0.9
+    ):
+        reasons.append("commodity_board")
+        commodity_active_min_rank = 2
+        commodity_program_core_min_rank = 3
+        commodity_require_direct_item_focus = (
+            commodity_primary_item_focus_rate < 0.96 or commodity_primary_weak_rate > 0.12
+        )
+        commodity_require_issue_signal = (
+            commodity_primary_issue_signal_rate < 0.7 or commodity_primary_weak_rate > 0.15
+        )
+
+    if commodity_board_quality_score < 68.0 or commodity_primary_weak_rate > 0.25:
+        reasons.append("commodity_board_severe")
+        commodity_active_min_rank = 2
+        commodity_program_core_min_rank = 3
+        commodity_require_direct_item_focus = True
+        commodity_require_issue_signal = True
+
+    def _round_map(values: dict[str, float]) -> dict[str, float]:
+        return {key: round(float(value), 3) for key, value in values.items()}
+
+    return {
+        "driver_tags": list(dict.fromkeys(reasons)),
+        "section_card_min_fit": _round_map(section_card_min_fit),
+        "section_low_fit_rescue_min": round(low_fit_rescue_min, 3),
+        "high_score_low_fit_rescue_margin": round(high_score_low_fit_rescue_margin, 3),
+        "tail_score_floor_delta": round(tail_score_floor_delta, 3),
+        "core_fit_min": _round_map(core_fit_min),
+        "core_relaxed_min_fit": _round_map(core_relaxed_min_fit),
+        "disable_relaxed_core_fill": bool(disable_relaxed_core_fill),
+        "commodity_active_min_rank": int(commodity_active_min_rank),
+        "commodity_program_core_min_rank": int(commodity_program_core_min_rank),
+        "commodity_require_issue_signal": bool(commodity_require_issue_signal),
+        "commodity_require_direct_item_focus": bool(commodity_require_direct_item_focus),
+    }
+
+
+def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
+    scores = result.get("scores", {}) if isinstance(result, dict) else {}
+    metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
+    guardrails = result.get("selection_guardrails")
+    if not isinstance(guardrails, dict):
+        guardrails = build_selection_guardrails(result)
+
+    return {
+        "report_date": result.get("report_date"),
+        "generated_at_kst": result.get("generated_at_kst"),
+        "scores": {
+            "section_alignment": round(float(scores.get("section_alignment", 0.0) or 0.0), 2),
+            "core_quality": round(float(scores.get("core_quality", 0.0) or 0.0), 2),
+            "commodity_board_quality": round(float(scores.get("commodity_board_quality", 0.0) or 0.0), 2),
+        },
+        "metrics": {
+            "section_alignment_low_fit_rate": round(float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0), 4),
+            "section_alignment_cross_gap_rate": round(float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0), 4),
+            "weak_core_rate": round(float(metrics.get("weak_core_rate", 0.0) or 0.0), 4),
+            "commodity_primary_item_focus_rate": round(float(metrics.get("commodity_primary_item_focus_rate", 0.0) or 0.0), 4),
+            "commodity_primary_issue_signal_rate": round(float(metrics.get("commodity_primary_issue_signal_rate", 0.0) or 0.0), 4),
+            "commodity_primary_weak_rate": round(float(metrics.get("commodity_primary_weak_rate", 0.0) or 0.0), 4),
+        },
+        "selection_guardrails": guardrails,
+    }
 
 
 def render_summary_feedback_text(result: dict[str, Any]) -> str:

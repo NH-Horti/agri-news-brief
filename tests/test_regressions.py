@@ -258,7 +258,14 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("DEBUG_REPORT: '1'", self.daily_text)
         self.assertIn("DEBUG_REPORT_WRITE_JSON: '0'", self.daily_text)
         self.assertIn("scripts/evaluate_daily_report.py", self.daily_text)
+        self.assertIn("latest-selection-feedback.json", self.daily_text)
         self.assertIn("docs/evals", self.daily_text)
+
+    def test_dev_verify_workflow_evaluates_preview_report(self):
+        self.assertIn("Evaluate rebuilt preview report", self.dev_verify_text)
+        self.assertIn("docs/dev/index.html", self.dev_verify_text)
+        self.assertIn("reports/evals/", self.dev_verify_text)
+        self.assertIn("latest-selection-feedback.json", self.dev_verify_text)
 
     def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
         self.assertIn("requirements-dev.txt", self.maintenance_text)

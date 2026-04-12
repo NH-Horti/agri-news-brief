@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
 
 from io_github import github_get_file, github_put_file
 from report_eval import (
+    build_selection_feedback_payload,
     evaluate_report,
     load_snapshot_payload,
     render_evaluation_markdown,
@@ -154,6 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-json", default="")
     parser.add_argument("--output-md", default="")
     parser.add_argument("--feedback-out", default="")
+    parser.add_argument("--selection-feedback-out", default="")
     parser.add_argument("--publish-branch", default="")
     parser.add_argument("--publish-prefix", default="docs/evals")
     parser.add_argument("--fail-under", type=float, default=0.0)
@@ -181,11 +183,17 @@ def main() -> int:
     result = evaluate_report(report_date, html_text, snapshot_payload)
     markdown = render_evaluation_markdown(result)
     feedback_text = render_summary_feedback_text(result)
+    selection_feedback_payload = build_selection_feedback_payload(result)
 
     output_dir = _default_output_dir()
     output_json = Path(args.output_json) if args.output_json else output_dir / f"{report_date}.json"
     output_md = Path(args.output_md) if args.output_md else output_dir / f"{report_date}.md"
     feedback_out = Path(args.feedback_out) if args.feedback_out else output_dir / "latest-feedback.txt"
+    selection_feedback_out = (
+        Path(args.selection_feedback_out)
+        if args.selection_feedback_out
+        else output_dir / "latest-selection-feedback.json"
+    )
     latest_json = output_json.with_name("latest.json")
     latest_md = output_md.with_name("latest.md")
     history_out = output_json.with_name("history.json")
@@ -193,6 +201,7 @@ def main() -> int:
     write_json(output_json, result)
     write_text(output_md, markdown)
     write_text(feedback_out, feedback_text)
+    write_json(selection_feedback_out, selection_feedback_payload)
     write_json(latest_json, result)
     write_text(latest_md, markdown)
     history_payload = _upsert_history(_load_local_history(history_out), result_to_history_entry(result))
@@ -214,6 +223,14 @@ def main() -> int:
         _publish_text(args.repo, args.token, args.publish_branch, f"{prefix}/latest.json", json_body, f"Update latest eval ({report_date})")
         _publish_text(args.repo, args.token, args.publish_branch, f"{prefix}/latest.md", markdown, f"Update latest eval summary ({report_date})")
         _publish_text(args.repo, args.token, args.publish_branch, f"{prefix}/latest-feedback.txt", feedback_text, f"Update summary feedback ({report_date})")
+        _publish_text(
+            args.repo,
+            args.token,
+            args.publish_branch,
+            f"{prefix}/latest-selection-feedback.json",
+            json.dumps(selection_feedback_payload, ensure_ascii=False, indent=2) + "\n",
+            f"Update selection feedback ({report_date})",
+        )
         _publish_text(args.repo, args.token, args.publish_branch, history_path, history_body, f"Update eval history ({report_date})")
 
     print(markdown)
