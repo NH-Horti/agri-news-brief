@@ -1,51 +1,50 @@
 {
-  "report_date": "2026-04-13",
-  "generated_at_kst": "2026-04-13T07:03:45+09:00",
+  "report_date": "2026-04-14",
+  "generated_at_kst": "2026-04-14T08:26:26+09:00",
   "scores": {
-    "section_alignment": 71.17,
-    "core_quality": 81.39,
-    "commodity_board_quality": 81.2
+    "section_alignment": 68.35,
+    "core_quality": 94.32,
+    "commodity_board_quality": 73.27
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1538,
-    "section_alignment_cross_gap_rate": 0.0769,
-    "weak_core_rate": 0.3333,
-    "commodity_primary_item_focus_rate": 0.3684,
-    "commodity_primary_issue_signal_rate": 1.0,
+    "section_alignment_low_fit_rate": 0.2632,
+    "section_alignment_cross_gap_rate": 0.0,
+    "weak_core_rate": 0.1429,
+    "commodity_primary_item_focus_rate": 0.5789,
+    "commodity_primary_issue_signal_rate": 0.9474,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
     "driver_tags": [
       "section_alignment",
-      "core_quality",
-      "core_quality_severe",
+      "section_alignment_severe",
       "commodity_board"
     ],
     "section_card_min_fit": {
-      "default": 0.88,
-      "supply": 0.9,
-      "policy": 0.9,
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
       "dist": 1.05,
-      "pest": 0.84
+      "pest": 0.9
     },
-    "section_low_fit_rescue_min": 0.3,
-    "high_score_low_fit_rescue_margin": 4.0,
-    "tail_score_floor_delta": 0.6,
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
-      "default": 1.36,
-      "supply": 1.56,
-      "policy": 1.56,
-      "dist": 1.7,
-      "pest": 1.36
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
-      "default": 1.22,
-      "supply": 1.4,
-      "policy": 1.37,
-      "dist": 1.5,
-      "pest": 1.22
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
     },
-    "disable_relaxed_core_fill": true,
+    "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 2,
     "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
