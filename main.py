@@ -18698,10 +18698,14 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
 
             try:
                 conf = conf_by_key[k]
+                # section_fit_score는 캐시 적중이 빠르므로 먼저 확인하여
+                # 완전 무관한 섹션(fit < 0.15)에 대한 compute_rank_score 호출을 생략한다.
+                fit_new = section_fit_score(a.title, a.description, conf, dom, press)
+                if fit_new < 0.15:
+                    continue
                 if not is_relevant(a.title, a.description, dom, url, conf, press):
                     continue
                 sc = compute_rank_score(a.title, a.description, dom, a.pub_dt_kst, conf, press)
-                fit_new = section_fit_score(a.title, a.description, conf, dom, press)
             except Exception:
                 continue
 
@@ -21640,12 +21644,20 @@ def _commodity_board_item_article_metrics(
     }
 
 
+_COMMODITY_REP_METRICS_MEMO: dict[tuple[str, str, bool], dict[str, Any]] = {}
+
+
 def _commodity_board_item_article_representative_metrics(
     item: dict[str, Any],
     article: Article,
     *,
     include_semantic: bool = True,
 ) -> dict[str, Any]:
+    _item_key = str(item.get("key") or "").strip()
+    _art_key = str(getattr(article, "norm_key", "") or "").strip()
+    _memo_key = (_item_key, _art_key, include_semantic)
+    if _item_key and _art_key and _memo_key in _COMMODITY_REP_METRICS_MEMO:
+        return dict(_COMMODITY_REP_METRICS_MEMO[_memo_key])
     metrics = dict(_commodity_board_item_article_metrics(item, article, include_semantic=include_semantic))
     title = str(getattr(article, "title", "") or "")
     desc = str(getattr(article, "description", "") or "")
@@ -21901,6 +21913,8 @@ def _commodity_board_item_article_representative_metrics(
             "weak_generic_market_watch_story": bool(weak_generic_market_watch),
         }
     )
+    if _item_key and _art_key:
+        _COMMODITY_REP_METRICS_MEMO[_memo_key] = dict(metrics)
     return metrics
 
 
