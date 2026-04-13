@@ -1,0 +1,204 @@
+{
+  "report_date": "2026-04-14",
+  "generated_at_kst": "2026-04-14T08:26:26+09:00",
+  "status": "pass",
+  "overall_score": 93.42,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 68.35,
+    "core_quality": 94.32,
+    "commodity_board_quality": 73.27
+  },
+  "counts": {
+    "briefing_total": 19,
+    "commodity_total": 48,
+    "commodity_primary_total": 19,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 29,
+      "policy": 16,
+      "dist": 2,
+      "pest": 1
+    },
+    "raw_by_section": {
+      "supply": 234,
+      "policy": 200,
+      "dist": 23,
+      "pest": 41
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 2,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8947,
+    "surface_reuse_penalty": 0.0149,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8421,
+    "summary_opening_diversity": 0.9474,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 3.0574,
+    "section_alignment_low_fit_rate": 0.2632,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.2632,
+    "core_fit_avg": 3.1243,
+    "core_rank_percentile_avg": 0.8855,
+    "core_stage_core_rate": 0.8571,
+    "weak_core_rate": 0.1429,
+    "commodity_primary_item_focus_rate": 0.5789,
+    "commodity_primary_issue_signal_rate": 0.9474,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.8753,
+    "commodity_primary_rank_avg": 2.8421
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.8333,
+      "policy": 0.75,
+      "dist": 0.25,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 0.7,
+      "policy": 1.0,
+      "dist": 0.7,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.3796,
+      "pest": 0.9843
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "응애, 연간 8~10세대 발생…신초·꽃잎에 안전한 약제로 초기 방제해야",
+      "section": "pest",
+      "age_hours": 23.0
+    },
+    {
+      "title": "과수 농가 고령화 64%…사과·배·포도 생산 최대 1.2% 감소 전망",
+      "section": "supply",
+      "age_hours": 22.6
+    },
+    {
+      "title": "강원농업기술원, 씨 감자 바이러스병 매개충 방제 당부",
+      "section": "pest",
+      "age_hours": 19.9
+    },
+    {
+      "title": "[ 현장취재 ] 초록 물결 의성 한지형 마늘 … 풍작 신호",
+      "section": "supply",
+      "age_hours": 15.9
+    },
+    {
+      "title": "충주 중원농협, 영농철 인력난 농가 밀착 지원",
+      "section": "policy",
+      "age_hours": 15.4
+    },
+    {
+      "title": "농림해양 추경 5,246억 확정… 농업용 비닐·중소선사 구제 '총력",
+      "section": "policy",
+      "age_hours": 15.3
+    },
+    {
+      "title": "화성특례시, 과수 화상병 확산 차단 위한 약제 지원",
+      "section": "pest",
+      "age_hours": 15.3
+    },
+    {
+      "title": "인천 옹진군, 공정육묘장 통해 들깨· 배추 모종까지 공급",
+      "section": "supply",
+      "age_hours": 14.8
+    }
+  ],
+  "improvement_hints": [
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "section_alignment_severe",
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
+      "dist": 1.05,
+      "pest": 0.9
+    },
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}
