@@ -56,6 +56,8 @@ jobs:
 
       - name: Run regression tests
         id: tests
+        env:
+          SELECTION_FEEDBACK_PATH: ''
         run: |
           set -o pipefail
           python scripts/run_ci_regression_suite.py 2>&1 | tee reports/unittest.log
