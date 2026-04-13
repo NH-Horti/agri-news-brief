@@ -13,7 +13,7 @@ SessionFactory = Callable[[], Any]
 # 키: (model, text_hash), 값: embedding vector
 _EMBED_CACHE: dict[tuple[str, str], list[float]] = {}
 _EMBED_CACHE_LOCK = threading.Lock()
-_EMBED_CACHE_MAX = 500
+_EMBED_CACHE_MAX = 2000
 
 
 def _text_cache_key(model: str, text: str) -> tuple[str, str]:
