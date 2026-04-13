@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-12T23:58:42+09:00",
+  "generated_at": "2026-04-14T00:48:23+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -76,6 +76,12 @@
       "to_view": "commodity"
     },
     {
+      "date": "2026-04-13",
+      "count": 3,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
       "date": "2026-03-31",
       "count": 2,
       "from_view": "commodity",
@@ -101,6 +107,12 @@
     },
     {
       "date": "2026-04-08",
+      "count": 1,
+      "from_view": "commodity",
+      "to_view": "briefing"
+    },
+    {
+      "date": "2026-04-13",
       "count": 1,
       "from_view": "commodity",
       "to_view": "briefing"

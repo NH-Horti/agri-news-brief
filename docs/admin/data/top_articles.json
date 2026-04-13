@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-12T23:58:42+09:00",
+  "generated_at": "2026-04-14T00:48:23+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -245,6 +245,45 @@
       "target_domain": "www.dkilbo.com",
       "clicks": 2,
       "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "579f4eb5266f",
+      "title": "가격 맥 못추는 조생 양파 도 결국 '시장격리'",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70110"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "b8af9ac0cd96",
+      "title": "낮은 시세·잦은 강우, 수확 막바지까지 난항 겪는 월동무",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70113"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "d72fd125532e",
+      "title": "의성 한지형 마늘 , 파종 지연 이겨내고 ‘ 생육 호조’",
+      "report_date": "2026-04-13",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 2,
+      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -1339,6 +1378,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
       "source_url": "https://www.inews365.com/news/article.html?no=914292"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "30c73fd84df0",
+      "title": "도내 농가, 수도권 도매시장 주 5일제 시도에 한숨만",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.knnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "http://www.knnews.co.kr/news/articleView.php?idxno=1539192"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "579f4eb5266f",
+      "title": "가격 맥 못추는 조생 양파 도 결국 '시장격리'",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70110"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "648c43b69862",
+      "title": "[도매시장이 주목한 청년농] '산지유통 젊은 피' 전완규 강원푸드 대표...",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=403268"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "b8af9ac0cd96",
+      "title": "낮은 시세·잦은 강우, 수확 막바지까지 난항 겪는 월동무",
+      "report_date": "2026-04-13",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-13.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70113"
+    },
+    {
+      "date": "2026-04-13",
+      "article_id": "d72fd125532e",
+      "title": "의성 한지형 마늘 , 파종 지연 이겨내고 ‘ 생육 호조’",
+      "report_date": "2026-04-13",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
