@@ -31,6 +31,7 @@ TRACKING_QUERY_KEYS = frozenset(
 _NON_KO_WORD_RE = re.compile(r"[^0-9a-zA-Z가-힣]+")
 _SPACE_RE = re.compile(r"\s+")
 _WEAK_SELECTION_STAGE_TOKENS = ("tail", "backfill", "bridge", "swap", "recycle")
+_QUALITY_STAGE_PREFIXES = ("dist_anchor", "supply_board", "supply_feature")
 _COMMODITY_ISSUE_TERMS = (
     "가격",
     "수급",
@@ -327,7 +328,11 @@ def _stage_has_core_signal(stage: str) -> bool:
 
 def _stage_is_weak(stage: str) -> bool:
     stage_l = str(stage or "").strip().lower()
-    return bool(stage_l and any(token in stage_l for token in _WEAK_SELECTION_STAGE_TOKENS))
+    if not stage_l:
+        return False
+    if any(stage_l.startswith(p) for p in _QUALITY_STAGE_PREFIXES):
+        return False
+    return any(token in stage_l for token in _WEAK_SELECTION_STAGE_TOKENS)
 
 
 def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -> float:
@@ -998,7 +1003,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
             core_relaxed_min_fit[key] += 0.12
         disable_relaxed_core_fill = weak_core_rate > 0.32 or core_quality_score < 68.0
 
-    if core_quality_score < 68.0 or weak_core_rate > 0.32:
+    if core_quality_score < 55.0 or weak_core_rate > 0.5:
         reasons.append("core_quality_severe")
         for key in ("default", "supply", "policy", "dist", "pest"):
             core_fit_min[key] += 0.08

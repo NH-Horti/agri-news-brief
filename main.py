@@ -14703,6 +14703,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             )
             if has_stronger_ops_alt:
                 return True
+        # 강한 유통 신호(도매시장 운영/산지유통센터/판매채널/현장대응 등)가 있는 기사는
+        # 아래 노이즈 필터에서 보호한다. 이 기사들은 유통 섹션의 핵심 기사일 가능성이 높다.
+        if strong_dist_signal:
+            return False
         return (
             is_dist_political_visit_context(a.title or "", a.description or "")
             or is_local_agri_infra_designation_context(a.title or "", a.description or "")
@@ -21827,7 +21831,9 @@ def _commodity_board_item_article_representative_metrics(
     # press tier bonus: 메이저 매체 대표기사 우선
     _rep_press_tier = press_priority(item.get("press", ""), item.get("domain", ""))
     _rep_tier_bonus = {3: 8.0, 2: 3.0}.get(_rep_press_tier, 0.0)
-    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus
+    # 품목명 제목 매칭 보너스: 대표기사에 품목명이 직접 등장하면 구독자가 직관적으로 확인 가능
+    _title_focus_bonus = 10.0 if (title_primary_hits >= 1 and board_eligible) else 0.0
+    representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus + _title_focus_bonus
     if stage_core_story and representative_rank >= 2:
         representative_score += 8.0
     if selection_fit_score >= 1.55:
