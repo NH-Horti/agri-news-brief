@@ -30,7 +30,7 @@ TRACKING_QUERY_KEYS = frozenset(
 
 _NON_KO_WORD_RE = re.compile(r"[^0-9a-zA-Z가-힣]+")
 _SPACE_RE = re.compile(r"\s+")
-_WEAK_SELECTION_STAGE_TOKENS = ("tail", "backfill", "bridge", "swap", "recycle")
+_WEAK_SELECTION_STAGE_TOKENS = ("backfill", "bridge", "swap", "recycle")
 _QUALITY_STAGE_PREFIXES = ("dist_anchor", "supply_board", "supply_feature")
 _COMMODITY_ISSUE_TERMS = (
     "가격",
