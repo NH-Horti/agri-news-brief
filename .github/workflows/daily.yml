@@ -67,6 +67,8 @@ jobs:
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SEMANTIC_MODEL: intfloat/multilingual-e5-large
+          HF_SEMANTIC_RERANK_ENABLED: 'false'
+          HF_COMMODITY_BOARD_RERANK_ENABLED: 'false'
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
