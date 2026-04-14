@@ -20276,6 +20276,21 @@ def _build_sections_phase123(
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
 
+    # ── fit 보정: 후처리(board_bridge, underfill 등)로 추가된 기사에 selection_fit_score가 없으면 보정 ──
+    _sec_conf_map_final: dict[str, JsonDict] = {
+        str(s.get("key") or "").strip(): s for s in SECTIONS if str(s.get("key") or "").strip()
+    }
+    for _fk, _flist in final_by_section.items():
+        _fconf = _sec_conf_map_final.get(_fk, {})
+        for _fa in _flist:
+            if float(getattr(_fa, "selection_fit_score", 0.0) or 0.0) <= 0.0 and _fconf:
+                try:
+                    _fa.selection_fit_score = round(float(section_fit_score(
+                        _fa.title or "", _fa.description or "", _fconf, _fa.domain or "", _fa.press or "",
+                    )), 3)
+                except Exception:
+                    pass
+
     return final_by_section
 
 
