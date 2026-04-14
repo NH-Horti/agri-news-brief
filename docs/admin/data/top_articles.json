@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-14T00:48:23+09:00",
+  "generated_at": "2026-04-15T00:41:53+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -286,6 +286,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "8411c40803f3",
+      "title": "\"온라인도매시장 '가짜 실적 파티', 반드시 심판할 것\"",
+      "report_date": "2026-04-14",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70149"
     },
     {
       "date": "2026-03-30",
@@ -1443,6 +1456,71 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "2b54873d3e93",
+      "title": "함안군, 중동 사태 물가 급등에 농작물 생산 비상",
+      "report_date": "2026-04-14",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.gnnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-policy",
+      "source_url": "https://www.gnnews.co.kr/news/articleView.html?idxno=634766"
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "8411c40803f3",
+      "title": "\"온라인도매시장 '가짜 실적 파티', 반드시 심판할 것\"",
+      "report_date": "2026-04-14",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70149"
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "95bd77faad0e",
+      "title": "고흥 햇 양파 지난해보다 45% 가격 하락",
+      "report_date": "2026-04-14",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "ysmbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-supply",
+      "source_url": "https://ysmbc.co.kr/NewsArticle/1513796"
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "bd273fd6e44f",
+      "title": "[ 현장취재 ] 초록 물결 의성 한지형 마늘 … 풍작 신호",
+      "report_date": "2026-04-14",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.hansbiz.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-supply",
+      "source_url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=832309"
+    },
+    {
+      "date": "2026-04-14",
+      "article_id": "f3f5297cc022",
+      "title": "지역에서 키우고 지역에서 소비하는 창원 먹거리",
+      "report_date": "2026-04-14",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.gndomin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
+      "source_url": "http://www.gndomin.com/news/articleView.html?idxno=472166"
     }
   ]
 }
