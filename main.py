@@ -21832,7 +21832,8 @@ def _commodity_board_item_article_representative_metrics(
     _rep_press_tier = press_priority(item.get("press", ""), item.get("domain", ""))
     _rep_tier_bonus = {3: 8.0, 2: 3.0}.get(_rep_press_tier, 0.0)
     # 품목명 제목 매칭 보너스: 대표기사에 품목명이 직접 등장하면 구독자가 직관적으로 확인 가능
-    _title_focus_bonus = 10.0 if (title_primary_hits >= 1 and board_eligible) else 0.0
+    # 단, fit_score가 0.8 이상일 때만 부여하여 저적합 기사가 대표로 올라오는 부작용 방지
+    _title_focus_bonus = 10.0 if (title_primary_hits >= 1 and board_eligible and selection_fit_score >= 0.8) else 0.0
     representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus + _title_focus_bonus
     if stage_core_story and representative_rank >= 2:
         representative_score += 8.0
