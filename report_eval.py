@@ -351,7 +351,7 @@ def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -
 def _item_alias_terms(label: str) -> list[str]:
     raw = _normalize_spaces(label)
     aliases = {raw.lower(), raw.replace(" ", "").lower()}
-    aliases.update(part.lower() for part in re.split(r"[\s/·,]+", raw) if part.strip())
+    aliases.update(part.lower() for part in re.split(r"[\s/·,()]+", raw) if part.strip())
     return [alias for alias in aliases if alias]
 
 

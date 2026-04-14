@@ -4062,6 +4062,14 @@ def _managed_commodity_focus_metrics(
         score -= 3.0
     if is_flower_novelty_noise_context(title, desc) and market_anchor_hits == 0:
         score -= 3.0
+    # 화훼: 문화/예술/전시 맥락만 있고 원예 맥락 없으면 감점 (간송전형필, 갤러리 등)
+    _FLOWER_CULTURE_NOISE = ("문화보국", "전형필", "간송", "미술관", "갤러리", "아트페어", "경매사", "소장품")
+    if key == "flowers" and any(t in text_l for t in _FLOWER_CULTURE_NOISE) and market_anchor_hits == 0 and agri_anchor_hits == 0:
+        score -= 4.5
+    # 상추: 도시농업/텃밭 체험 맥락만 있고 수급 맥락 없으면 감점
+    _LETTUCE_URBAN_NOISE = ("텃밭", "상자텃밭", "도시농업", "옥상농원", "베란다", "주말농장")
+    if key == "lettuce" and any(t in text_l for t in _LETTUCE_URBAN_NOISE) and market_anchor_hits == 0:
+        score -= 4.0
     if is_macro_trade_noise_context(text_l) and market_anchor_hits == 0 and agri_anchor_hits <= 1:
         score -= 2.6
 
@@ -4896,7 +4904,8 @@ def is_edible_carrot_context(text: str) -> bool:
     if "당근" not in t:
         return False
     # 제목/본문에 "당근마켓" 등 플랫폼명이 직접 등장하면 즉시 제외
-    _CARROT_PLATFORM_STRONG = ("당근마켓", "당근 마켓", "당근앱", "당근 앱", "당근페이", "당근 페이", "karrot", "daangn")
+    _CARROT_PLATFORM_STRONG = ("당근마켓", "당근 마켓", "당근앱", "당근 앱", "당근페이", "당근 페이", "karrot", "daangn",
+                                "중고차", "중고거래", "중개 논란", "직거래앱", "번개장터", "세컨핸드", "당근 입점")
     if any(w in t for w in _CARROT_PLATFORM_STRONG):
         return False
     edible_hit = any(w.lower() in t for w in _CARROT_EDIBLE_MARKERS)
@@ -21889,6 +21898,9 @@ def _commodity_board_item_article_representative_metrics(
         representative_score -= 24.0
     if is_nh_internal_negative(title, desc):
         representative_score -= 50.0
+    # 품목명이 제목+본문 어디에도 없으면 대표기사로 부적합 (범용 정책/물가 기사 방지)
+    if title_primary_hits == 0 and match_count == 0:
+        representative_score -= 30.0
 
     metrics.update(
         {
