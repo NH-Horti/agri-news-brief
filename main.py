@@ -15230,6 +15230,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _low_core_allowed(a):
                 continue
+            # 콘텐츠 관련성 게이트
+            try:
+                if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
+                    continue
+            except Exception:
+                pass
             # dist: 지역 단신/공지형은 core 후보에서 제외
             if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
                 continue
@@ -15317,6 +15323,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         for a in pool:
             if _already_used(a):
                 continue
+            # 콘텐츠 관련성 게이트
+            try:
+                if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
+                    continue
+            except Exception:
+                pass
             if _is_policy_weak_tail_story(a):
                 continue
             if _is_policy_noncore_only_story(a):
