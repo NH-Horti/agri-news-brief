@@ -1,36 +1,36 @@
 {
-  "generated_at": "2026-04-14T00:48:23+09:00",
+  "generated_at": "2026-04-15T00:41:53+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 49,
-        "users": 14,
-        "pageviews": 128,
-        "article_clicks": 56,
-        "article_ctr": 0.4375,
-        "avg_engagement_sec": 297.46
+        "visits": 47,
+        "users": 12,
+        "pageviews": 118,
+        "article_clicks": 47,
+        "article_ctr": 0.398305,
+        "avg_engagement_sec": 238.26
       },
       "prev": {
-        "visits": 72,
-        "users": 18,
-        "pageviews": 201,
-        "article_clicks": 83,
-        "article_ctr": 0.412935,
-        "avg_engagement_sec": 363.81
+        "visits": 56,
+        "users": 13,
+        "pageviews": 125,
+        "article_clicks": 64,
+        "article_ctr": 0.512,
+        "avg_engagement_sec": 230.6
       },
       "range": {
-        "from": "2026-04-08",
-        "to": "2026-04-14"
+        "from": "2026-04-09",
+        "to": "2026-04-15"
       }
     },
     "30": {
       "totals": {
-        "visits": 149,
+        "visits": 160,
         "users": 28,
-        "pageviews": 550,
-        "article_clicks": 147,
-        "article_ctr": 0.267273,
-        "avg_engagement_sec": 369.76
+        "pageviews": 570,
+        "article_clicks": 154,
+        "article_ctr": 0.270175,
+        "avg_engagement_sec": 351.66
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-16",
-        "to": "2026-04-14"
+        "from": "2026-03-17",
+        "to": "2026-04-15"
       }
     },
     "90": {
       "totals": {
-        "visits": 149,
+        "visits": 160,
         "users": 28,
-        "pageviews": 550,
-        "article_clicks": 147,
-        "article_ctr": 0.267273,
-        "avg_engagement_sec": 369.76
+        "pageviews": 570,
+        "article_clicks": 154,
+        "article_ctr": 0.270175,
+        "avg_engagement_sec": 351.66
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-15",
-        "to": "2026-04-14"
+        "from": "2026-01-16",
+        "to": "2026-04-15"
       }
     }
   }

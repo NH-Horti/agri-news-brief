@@ -15108,6 +15108,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if not _low_core_allowed(a):
             continue
+        # 콘텐츠 관련성 게이트: core 기사는 반드시 해당 섹션에 relevant해야 함
+        try:
+            if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
+                continue
+        except Exception:
+            pass
         # dist: 지역 단신/공지형은 core 후보에서 제외(진짜 이슈가 밀리는 것을 방지)
         if section_key == "dist" and is_local_brief_text(a.title or "", a.description or "", section_key):
             continue
@@ -15206,6 +15212,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         for a in _core_iteration_pool(pool):
             if len(core) >= 2:
                 break
+            # 콘텐츠 관련성 게이트
+            try:
+                if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
+                    continue
+            except Exception:
+                pass
             # dist 완화 선발 임계값: APC 인프라/시설 기사(준공/가동/선별/저온저장 등)는 소폭 완화
             text = ((a.title or "") + " " + (a.description or "")).lower()
             apc_ctx_local = has_apc_agri_context(text)
@@ -16164,6 +16176,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     for fa in forced_items:
         if fa in final:
             continue
+        # forced_section 기사도 해당 섹션에 relevant해야 포함 (관광/외교 등 무관 기사 차단)
+        try:
+            if not is_relevant(fa.title or "", fa.description or "", normalize_host(fa.domain or ""), fa.link or "", sec_conf, (fa.press or "").strip()):
+                continue
+        except Exception:
+            pass
         if len(final) < max_n:
             _record_selection(fa, "forced_section", getattr(fa, "forced_section", "") or section_key)
             final.append(fa)
@@ -19028,6 +19046,18 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
                 return "selection_feedback_core_fit"
             if fit_sc < min_fit:
                 return "selection_feedback_low_fit"
+    # 해외 CPI/물가 기사 필터: 한국 농업과 무관한 외국 경제지표 기사 차단
+    _FOREIGN_MARKERS = ("인도 ", "중국 ", "미국 ", "일본 ", "EU ", "브라질 ", "베트남 ", "태국 ", "호주 ")
+    _FOREIGN_CPI_KWS = ("소비자물가", "cpi", "물가지수", "인플레이션", "기준금리", "금리 동결", "금리 인상", "금리 인하")
+    _title_l = (a.title or "").lower()
+    if any(c in _title_l for c in _FOREIGN_MARKERS) and any(m in text for m in _FOREIGN_CPI_KWS):
+        try:
+            _agri = agri_strength_score(text)
+            _horti = best_horti_score(a.title or "", a.description or "")
+        except Exception:
+            _agri, _horti = 0, 0.0
+        if _agri == 0 and _horti < 1.0:
+            return "foreign_macro_no_agri"
     if is_apple_apology_context(text):
         return "apple_apology_context"
     # 농협 회장/임원 부정적 기사 완전 차단
