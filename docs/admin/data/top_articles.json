@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T00:41:53+09:00",
+  "generated_at": "2026-04-16T00:39:23+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -78,6 +78,19 @@
       "users": 3,
       "archive_url": "/agri-news-brief/archive/2026-04-09.html#sec-supply",
       "source_url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4069429"
+    },
+    {
+      "date": "2026-04-15",
+      "article_id": "6bcc5adbcb39",
+      "title": "인도 3월 소비자물가 3.40%·0.19P↑…\"중동전쟁에 물가 압력 커져\"",
+      "report_date": "2026-04-15",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -1498,6 +1511,19 @@
     },
     {
       "date": "2026-04-14",
+      "article_id": "9d3934003434",
+      "title": "농산물 온라인 도매시장 실적 부풀리기, 감사하라!",
+      "report_date": "2026-04-14",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318634"
+    },
+    {
+      "date": "2026-04-14",
       "article_id": "bd273fd6e44f",
       "title": "[ 현장취재 ] 초록 물결 의성 한지형 마늘 … 풍작 신호",
       "report_date": "2026-04-14",
@@ -1521,6 +1547,58 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
       "source_url": "http://www.gndomin.com/news/articleView.html?idxno=472166"
+    },
+    {
+      "date": "2026-04-15",
+      "article_id": "6323a86b8b04",
+      "title": "[지자체 이슈] 울진군, 동해선 KTX 개통 100일 맞아 부산역 관광 홍보 나...",
+      "report_date": "2026-04-15",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.queen.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-15.html#sec-pest",
+      "source_url": "http://www.queen.co.kr/news/articleView.html?idxno=455040"
+    },
+    {
+      "date": "2026-04-15",
+      "article_id": "7d6b1ede1d04",
+      "title": "“올해 저장무 총량 4만 200t” 대아청과, 전수조사 결과 발표",
+      "report_date": "2026-04-15",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.seoul.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-15",
+      "article_id": "83eeecc03980",
+      "title": "\" 사과 값 불안 잡는다\"…옥천군, '현장기술지원단' 가동",
+      "report_date": "2026-04-15",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.inews365.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-15",
+      "article_id": "fba4b65dcb10",
+      "title": "양파 값 '바닥'···조생종도 시장격리",
+      "report_date": "2026-04-15",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }

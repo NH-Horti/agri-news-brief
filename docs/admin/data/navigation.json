@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T00:41:53+09:00",
+  "generated_at": "2026-04-16T00:39:23+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -122,6 +122,12 @@
       "count": 1,
       "from_view": "commodity",
       "to_view": "briefing"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
     }
   ],
   "archive_nav": [
@@ -292,6 +298,34 @@
       "nav_type": "prev_date",
       "from_date": "2026-04-08",
       "to_date": "2026-04-07"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 1,
+      "nav_type": "next_date",
+      "from_date": "2026-04-13",
+      "to_date": "2026-04-14"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 1,
+      "nav_type": "next_date",
+      "from_date": "2026-04-14",
+      "to_date": "2026-04-15"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-04-14",
+      "to_date": "2026-04-13"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-04-15",
+      "to_date": "2026-04-14"
     }
   ]
 }
