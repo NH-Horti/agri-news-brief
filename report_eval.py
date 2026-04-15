@@ -573,6 +573,16 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 best_section = str(candidate.get("section", "")).strip() or best_section
         fit_score = _selection_fit(match)
         stage = _selection_stage(match)
+        # 콘텐츠 관련성 검증: 매칭된 스냅샷 기사의 description으로 농업 관련성 체크
+        _desc_text = _normalize_spaces(str(match.get("description", "") or ""))
+        _combined_text = f"{article.title} {_desc_text}".lower()
+        _AGRI_RELEVANCE_TERMS = (
+            "농산물", "농업", "농가", "원예", "과수", "채소", "화훼", "도매시장",
+            "공판장", "수급", "출하", "반입", "경락", "방제", "병해충", "작황",
+            "재배", "수확", "비료", "농약", "묘목", "육묘", "종자", "경매",
+            "산지", "가락시장", "유통", "농협", "농식품", "과일", "청과",
+        )
+        _agri_hits = sum(1 for t in _AGRI_RELEVANCE_TERMS if t in _combined_text)
         briefing_match_records.append(
             {
                 "title": article.title,
@@ -583,6 +593,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "score_percentile": _score_percentile(match, section_raw_pools.get(article.section, [])),
                 "cross_section_gap": max(0.0, best_fit - fit_score),
                 "best_section": best_section,
+                "agri_relevance_hits": _agri_hits,
             }
         )
 
@@ -636,11 +647,17 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         len(briefing_match_records),
         default=0.0,
     )
+    content_irrelevant_rate = _rate(
+        sum(1 for record in briefing_match_records if int(record.get("agri_relevance_hits", 0)) < 1),
+        len(briefing_match_records),
+        default=0.0,
+    )
     section_alignment_score = 100.0 * (
-        _score_between(section_alignment_fit_avg, 0.8, 1.35) * 0.45
-        + _score_inverse(section_alignment_low_fit_rate, 0.08, 0.3) * 0.2
-        + _score_inverse(section_alignment_cross_gap_rate, 0.02, 0.18) * 0.2
-        + _score_inverse(section_alignment_weak_stage_rate, 0.06, 0.24) * 0.15
+        _score_between(section_alignment_fit_avg, 0.8, 1.35) * 0.35
+        + _score_inverse(section_alignment_low_fit_rate, 0.08, 0.3) * 0.15
+        + _score_inverse(section_alignment_cross_gap_rate, 0.02, 0.18) * 0.15
+        + _score_inverse(section_alignment_weak_stage_rate, 0.06, 0.24) * 0.10
+        + _score_inverse(content_irrelevant_rate, 0.0, 0.15) * 0.25
     )
 
     section_alignment_section_scores: dict[str, float] = {}
@@ -826,6 +843,11 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         weak_seed_sections = [section for section, score in seed_section_scores.items() if score < 0.5]
         improvement_hints.append("리콜 시드 결손이 보입니다: " + ", ".join(weak_seed_sections) + ". query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.")
 
+    if content_irrelevant_rate > 0.0:
+        improvement_hints.append(
+            f"농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 {content_irrelevant_rate:.0%}). "
+            "해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+        )
     if not improvement_hints:
         improvement_hints.append("전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.")
 
@@ -871,6 +893,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "section_alignment_low_fit_rate": round(section_alignment_low_fit_rate, 4),
             "section_alignment_cross_gap_rate": round(section_alignment_cross_gap_rate, 4),
             "section_alignment_weak_stage_rate": round(section_alignment_weak_stage_rate, 4),
+            "content_irrelevant_rate": round(content_irrelevant_rate, 4),
             "core_fit_avg": round(core_fit_avg, 4),
             "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
             "core_stage_core_rate": round(core_stage_core_rate, 4),
