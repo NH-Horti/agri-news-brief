@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-16T00:39:23+09:00",
+  "generated_at": "2026-04-17T00:57:06+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -13,6 +13,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-02.html#sec-policy",
       "source_url": "https://www.newspim.com/news/view/20260401000809"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "ea81ae829623",
+      "title": "\"산지유통 역량 입증\"...광양농협, 'APC 연도대상' 수상",
+      "report_date": "2026-04-16",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "daily.hankooki.com",
+      "clicks": 7,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
+      "source_url": "https://daily.hankooki.com/news/articleView.html?idxno=1358454"
     },
     {
       "date": "2026-04-01",
@@ -91,6 +104,19 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "9c8035c6b039",
+      "title": "고흥군, 조생 양파 가격 하락 대응 소비 촉진 '총력'",
+      "report_date": "2026-04-16",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.sisafocus.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-supply",
+      "source_url": "http://www.sisafocus.co.kr/news/articleView.html?idxno=358738"
     },
     {
       "date": "2026-04-01",
@@ -312,6 +338,45 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-14.html#sec-dist",
       "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70149"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "5eefde347933",
+      "title": "지역농산물 유통구조 이끌어가는 품목농협 - 충북원예농협 충주거점산...",
+      "report_date": "2026-04-16",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64363"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "d01b90d57ef9",
+      "title": "농식품부, 추경 예산 신속 집행 재정집행점검회의 개최",
+      "report_date": "2026-04-16",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-policy",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64364"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "dc822323d6a4",
+      "title": "‘양파 가격 반토막’…고흥군, 수급 안정·소비 촉진 총력",
+      "report_date": "2026-04-16",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.kjdaily.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
+      "source_url": "http://www.kjdaily.com/article.php?aid=1776251057676908008"
     },
     {
       "date": "2026-03-30",
@@ -1595,6 +1660,110 @@
       "section": "supply",
       "surface": "briefing_card",
       "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "2aee442785d2",
+      "title": "“몇 개 담았더니 ‘5만원’ 훌쩍” 싼 맛에 먹었는데…과일도 ‘사치품...",
+      "report_date": "2026-04-16",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "biz.heraldcorp.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "4f977ba14f08",
+      "title": "이준연 대관령원협 조합장, 강원 무·배추 광역주산지협의체 위원장 선...",
+      "report_date": "2026-04-16",
+      "section": "policy",
+      "surface": "commodity_support",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "68b23d996f06",
+      "title": "봄 앞두고 제주 저장 무 가격 '뚝'…소비 위축에 농가 시름",
+      "report_date": "2026-04-16",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.farminsight.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-supply",
+      "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16272"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "8f4387976022",
+      "title": "올해산 저장무, 평년보다 물량 15% 적어…상품성 '최고' 수준",
+      "report_date": "2026-04-16",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318786"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "9c8035c6b039",
+      "title": "고흥군, 조생 양파 가격 하락 대응 소비 촉진 '총력'",
+      "report_date": "2026-04-16",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.sisafocus.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-supply",
+      "source_url": "http://www.sisafocus.co.kr/news/articleView.html?idxno=358738"
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "c94b8e7f7181",
+      "title": "유정복, 남촌 농산물 도매시장 현장 방문…“고유가 대응점검”",
+      "report_date": "2026-04-16",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.dailian.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "da93f573fd56",
+      "title": "마늘ㆍ 양파 얼마나 남았나? '전화' 대신 '데이터'로 빈틈없이 확인해야",
+      "report_date": "2026-04-06",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.foodnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-16",
+      "article_id": "f62ab52ae0c2",
+      "title": "[자막뉴스]\"키위 기형과 너무 많다\"...생산비 부담에 한숨",
+      "report_date": "2026-04-16",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.jibs.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
