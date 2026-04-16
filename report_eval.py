@@ -348,10 +348,25 @@ def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -
     return _rate(lower_or_equal, len(scores), default=0.5)
 
 
+_COMMODITY_ALIAS_EXTRA: dict[str, tuple[str, ...]] = {
+    "풋고추": ("고추", "청양고추", "꽈리고추"),
+    "참다래": ("키위",),
+    "단감": ("감",),
+    "감": ("단감", "곶감"),
+    "감귤": ("만감류", "한라봉", "레드향", "천혜향"),
+    "포도": ("샤인머스캣",),
+    "화훼": ("절화", "생화", "꽃시장"),
+}
+
+
 def _item_alias_terms(label: str) -> list[str]:
     raw = _normalize_spaces(label)
     aliases = {raw.lower(), raw.replace(" ", "").lower()}
     aliases.update(part.lower() for part in re.split(r"[\s/·,()]+", raw) if part.strip())
+    # 품목 동의어/약어 추가
+    for base, extras in _COMMODITY_ALIAS_EXTRA.items():
+        if base in aliases:
+            aliases.update(e.lower() for e in extras)
     return [alias for alias in aliases if alias]
 
 
@@ -789,8 +804,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             commodity_primary_item_focus_rate * 0.28
             + _score_between(commodity_primary_issue_signal_rate, 0.45, 0.8) * 0.25
             + _score_inverse(commodity_primary_weak_rate, 0.05, 0.25) * 0.22
-            + _score_between(commodity_primary_fit_avg, 0.8, 1.35) * 0.15
-            + _score_between(commodity_primary_rank_avg, 1.4, 3.2) * 0.1
+            + _score_between(commodity_primary_rank_avg, 1.4, 3.2) * 0.25
         )
     else:
         commodity_board_quality_score = 100.0
