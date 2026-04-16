@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-04-17",
+  "generated_at_kst": "2026-04-17T08:08:59+09:00",
+  "status": "pass",
+  "overall_score": 91.73,
+  "scores": {
+    "completeness": 87.0,
+    "diversity": 83.85,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 85.0,
+    "section_alignment": 94.97,
+    "core_quality": 100.0,
+    "commodity_board_quality": 80.79
+  },
+  "counts": {
+    "briefing_total": 13,
+    "commodity_total": 30,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 2,
+      "policy": 3,
+      "dist": 3,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 1,
+      "policy": 2,
+      "dist": 0,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 20,
+      "policy": 7,
+      "dist": 1,
+      "pest": 2
+    },
+    "raw_by_section": {
+      "supply": 150,
+      "policy": 110,
+      "dist": 36,
+      "pest": 32
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.5385,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 3.2769,
+    "section_alignment_low_fit_rate": 0.1538,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "core_fit_avg": 4.802,
+    "core_rank_percentile_avg": 0.9766,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 0.5882,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.7241,
+    "commodity_primary_rank_avg": 2.6471
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 0.6667,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.75,
+      "policy": 0.5,
+      "dist": 0.4167,
+      "pest": 0.3333
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 0.7,
+      "dist": 1.0,
+      "pest": 0.8364
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "고랭지 여름 배추 의 복병 '씨스트선충', 공적 방제로 상품성 지킨다",
+      "section": "pest",
+      "age_hours": 20.0
+    },
+    {
+      "title": "제주농기원, AI 기반 디지털트랩 해충 예찰 실시간 체계 전환",
+      "section": "pest",
+      "age_hours": 19.8
+    },
+    {
+      "title": "제주산 도외 출하 농산물 물류비 50% 지원 …28일까지 접수",
+      "section": "policy",
+      "age_hours": 19.2
+    },
+    {
+      "title": "춘천 신북농협 “신선한 ‘소양강 토마토 ’가 곧 만나러 갑니다!”",
+      "section": "pest",
+      "age_hours": 19.2
+    },
+    {
+      "title": "정선군, 병해충 '씨스트선충' 공적방제 추진",
+      "section": "pest",
+      "age_hours": 14.9
+    },
+    {
+      "title": "농식품 수출기업 '숨통'…중동 리스크에 72억 지원",
+      "section": "dist",
+      "age_hours": 14.0
+    },
+    {
+      "title": "중동발 불안에 사룟값 상승…정부, 1150억 지원 대응",
+      "section": "policy",
+      "age_hours": 13.0
+    },
+    {
+      "title": "제주, AI 디지털트랩으로 해충 예찰 '실시간 전환'",
+      "section": "pest",
+      "age_hours": 12.9
+    }
+  ],
+  "improvement_hints": [
+    "선정 결과가 약한 섹션이 있습니다: supply. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}
