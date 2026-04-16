@@ -22025,6 +22025,12 @@ def _commodity_board_article_is_active_candidate(
     if _wine_hits >= 2 and _supply_hits == 0:
         return False
     representative_rank = int(article_metrics.get("representative_rank", -1))
+    # 품목명이 제목+본문에 전혀 없는 기사는 대표 후보에서 제외
+    # (예: "인천시 주권수호 TF"가 화훼 대표, "유정복 물가점검"이 사과 대표 방지)
+    _title_hits = int(article_metrics.get("title_primary_hits") or 0)
+    _match_count = int(article_metrics.get("match_count") or 0)
+    if _title_hits == 0 and _match_count == 0:
+        return False
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
     if _selection_guardrail_bool("commodity_require_issue_signal", False):
