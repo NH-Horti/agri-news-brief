@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-17T00:57:06+09:00",
+  "generated_at": "2026-04-18T00:18:03+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -1768,6 +1768,45 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-17",
+      "article_id": "2ffee4616765",
+      "title": "저장 ‘겨울무’ 품위 좋아… 무 가격 ‘반등’ 기대",
+      "report_date": "2026-04-17",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-17",
+      "article_id": "c327e3802a34",
+      "title": "춘천 신북농협 “신선한 ‘소양강 토마토 ’가 곧 만나러 갑니다!”",
+      "report_date": "2026-04-17",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-17",
+      "article_id": "ec083757232d",
+      "title": "중동 전쟁에 밥상 물가 상승 압력…'2%대 물가' 착시",
+      "report_date": "2026-04-17",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newspim.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-17.html#sec-policy",
+      "source_url": "https://www.newspim.com/news/view/20260416001248"
     }
   ]
 }
