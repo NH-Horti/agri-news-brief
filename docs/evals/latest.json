@@ -1,45 +1,45 @@
 {
-  "report_date": "2026-04-17",
-  "generated_at_kst": "2026-04-17T08:08:59+09:00",
+  "report_date": "2026-04-20",
+  "generated_at_kst": "2026-04-20T06:47:27+09:00",
   "status": "pass",
-  "overall_score": 91.73,
+  "overall_score": 94.0,
   "scores": {
-    "completeness": 87.0,
-    "diversity": 83.85,
+    "completeness": 100.0,
+    "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 100.0,
+    "freshness": 79.46,
     "retrieval_support": 85.0,
-    "section_alignment": 94.97,
-    "core_quality": 100.0,
-    "commodity_board_quality": 80.79
+    "section_alignment": 93.32,
+    "core_quality": 95.36,
+    "commodity_board_quality": 83.99
   },
   "counts": {
-    "briefing_total": 13,
-    "commodity_total": 30,
-    "commodity_primary_total": 17,
+    "briefing_total": 16,
+    "commodity_total": 26,
+    "commodity_primary_total": 19,
     "briefing_by_section": {
-      "supply": 2,
-      "policy": 3,
-      "dist": 3,
-      "pest": 5
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
     },
     "core_by_section": {
       "supply": 1,
       "policy": 2,
-      "dist": 0,
+      "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 20,
-      "policy": 7,
-      "dist": 1,
-      "pest": 2
+      "supply": 16,
+      "policy": 2,
+      "dist": 3,
+      "pest": 5
     },
     "raw_by_section": {
-      "supply": 150,
-      "policy": 110,
-      "dist": 36,
-      "pest": 32
+      "supply": 193,
+      "policy": 129,
+      "dist": 49,
+      "pest": 27
     },
     "expected_briefing_by_section": {
       "supply": 3,
@@ -50,35 +50,35 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.5385,
+    "briefing_domain_diversity_rate": 0.875,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 1.0,
+    "summary_numeric_rate": 0.8125,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 1.0,
+    "within_48h_rate": 0.5625,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "seed_coverage_score": 0.5,
-    "section_alignment_fit_avg": 3.2769,
-    "section_alignment_low_fit_rate": 0.1538,
+    "section_alignment_fit_avg": 3.0375,
+    "section_alignment_low_fit_rate": 0.125,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.125,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 4.802,
-    "core_rank_percentile_avg": 0.9766,
-    "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.0,
-    "commodity_primary_item_focus_rate": 0.5882,
+    "core_fit_avg": 3.7329,
+    "core_rank_percentile_avg": 0.9665,
+    "core_stage_core_rate": 0.8571,
+    "weak_core_rate": 0.1429,
+    "commodity_primary_item_focus_rate": 0.6842,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.7241,
-    "commodity_primary_rank_avg": 2.6471
+    "commodity_primary_fit_avg": 0.4784,
+    "commodity_primary_rank_avg": 2.6842
   },
   "section_scores": {
     "briefing_fill": {
-      "supply": 0.6667,
+      "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
       "pest": 1.0
@@ -86,7 +86,7 @@
     "core_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.0,
+      "dist": 1.0,
       "pest": 1.0
     },
     "retrieval_pool": {
@@ -96,70 +96,69 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.75,
-      "policy": 0.5,
-      "dist": 0.4167,
-      "pest": 0.3333
+      "supply": 0.5,
+      "policy": 0.5833,
+      "dist": 0.3333,
+      "pest": 0.5833
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 0.7,
+      "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.8364
+      "pest": 0.7
     },
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.8
     }
   },
   "freshness_samples": [
     {
-      "title": "고랭지 여름 배추 의 복병 '씨스트선충', 공적 방제로 상품성 지킨다",
-      "section": "pest",
-      "age_hours": 20.0
-    },
-    {
-      "title": "제주농기원, AI 기반 디지털트랩 해충 예찰 실시간 체계 전환",
-      "section": "pest",
-      "age_hours": 19.8
-    },
-    {
-      "title": "제주산 도외 출하 농산물 물류비 50% 지원 …28일까지 접수",
-      "section": "policy",
-      "age_hours": 19.2
-    },
-    {
-      "title": "춘천 신북농협 “신선한 ‘소양강 토마토 ’가 곧 만나러 갑니다!”",
-      "section": "pest",
-      "age_hours": 19.2
-    },
-    {
-      "title": "정선군, 병해충 '씨스트선충' 공적방제 추진",
-      "section": "pest",
-      "age_hours": 14.9
-    },
-    {
-      "title": "농식품 수출기업 '숨통'…중동 리스크에 72억 지원",
+      "title": "\"도매 시장 신뢰 높아졌어요\"...동화청과, 청년농 현장 교육 눈길",
       "section": "dist",
-      "age_hours": 14.0
+      "age_hours": 70.4
     },
     {
-      "title": "중동발 불안에 사룟값 상승…정부, 1150억 지원 대응",
-      "section": "policy",
-      "age_hours": 13.0
+      "title": "[대구]햇 감자 가 벌써 나왔다고? … '개진 감자 ' 출하 본격화",
+      "section": "supply",
+      "age_hours": 70.2
     },
     {
-      "title": "제주, AI 디지털트랩으로 해충 예찰 '실시간 전환'",
+      "title": "정선군, 고랭지 채소 ‘씨스트선충’ 공적 방제 추진",
       "section": "pest",
-      "age_hours": 12.9
+      "age_hours": 66.9
+    },
+    {
+      "title": "축산농가 경영비 절반 이상은 사료비…\"위기 대응에 힘 모으자”",
+      "section": "policy",
+      "age_hours": 66.6
+    },
+    {
+      "title": "“결국 1만원으론 칼국수도 못 먹는 날이 왔다”…김밥은 1년 새 5.5% 껑...",
+      "section": "policy",
+      "age_hours": 61.8
+    },
+    {
+      "title": "[위클리오늘] 동해시, 농업인대학 ' 마늘 반' 운영",
+      "section": "pest",
+      "age_hours": 61.8
+    },
+    {
+      "title": "박찬우 국힘 천안시장 후보 “4050 농업인 맞춤형 지원”",
+      "section": "policy",
+      "age_hours": 61.5
+    },
+    {
+      "title": "[정부 주요 일정] 경제·사회부처 주간 일정 (4월 20일 ~ 4월 24일)",
+      "section": "dist",
+      "age_hours": 21.2
     }
   ],
   "improvement_hints": [
-    "선정 결과가 약한 섹션이 있습니다: supply. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
     "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
-    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
