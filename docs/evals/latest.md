@@ -1,14 +1,13 @@
-## Daily Eval (2026-04-17)
-- Overall: **91.73** (pass)
-- Scores: completeness=87.0, diversity=83.8, summary=100.0, freshness=100.0, retrieval=85.0, section_fit=95.0, core=100.0, commodity=80.8
-- Briefing cards: 13 / Commodity cards: 30
-- Sections: supply:2/3 raw=150, policy:3/3 raw=110, dist:3/3 raw=36, pest:5/3 raw=32
-- Metrics: title_unique=1.00, domain_diversity=0.54, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=3.28, weak_core=0.00, commodity_weak=0.00
+## Daily Eval (2026-04-20)
+- Overall: **94.00** (pass)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=79.5, retrieval=85.0, section_fit=93.3, core=95.4, commodity=84.0
+- Briefing cards: 16 / Commodity cards: 26
+- Sections: supply:4/3 raw=193, policy:4/3 raw=129, dist:4/3 raw=49, pest:4/3 raw=27
+- Metrics: title_unique=1.00, domain_diversity=0.88, summary_presence=1.00, summary_numeric=0.81, fresh_72h=1.00, fit_avg=3.04, weak_core=0.14, commodity_weak=0.00
 
 ### Improvement Hints
-- 선정 결과가 약한 섹션이 있습니다: supply. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.
-- 리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
