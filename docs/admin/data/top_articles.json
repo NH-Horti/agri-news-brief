@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-20T00:00:16+09:00",
+  "generated_at": "2026-04-21T00:46:02+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -50,6 +50,19 @@
       "target_domain": "www.kmib.co.kr",
       "clicks": 5,
       "users": 5,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "5f2272ba6432",
+      "title": "이상기후 유탄 맞은 마늘 …작황 부진 우려",
+      "report_date": "2026-04-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 4,
+      "users": 3,
       "archive_url": "",
       "source_url": ""
     },
@@ -377,6 +390,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
       "source_url": "http://www.kjdaily.com/article.php?aid=1776251057676908008"
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "ea762e7001b7",
+      "title": "K 포도 수출 키운 샤인머스캣 열풍… ‘신품종 삼총사’가 잇는다 [농어...",
+      "report_date": "2026-04-20",
+      "section": "policy",
+      "surface": "commodity_primary",
+      "target_domain": "www.segye.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -1807,6 +1833,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-17.html#sec-policy",
       "source_url": "https://www.newspim.com/news/view/20260416001248"
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "2053a12c9208",
+      "title": "상주 외서 농협 , 작지만 강한 판매 농협 으로 제역할 ‘톡톡’",
+      "report_date": "2026-04-20",
+      "section": "dist",
+      "surface": "commodity_primary",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "2c8a6f0512c0",
+      "title": "“결국 1만원으론 칼국수도 못 먹는 날이 왔다”…김밥은 1년 새 5.5% 껑...",
+      "report_date": "2026-04-20",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.sedaily.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "39607d5a4bb0",
+      "title": "박찬우 \"농민이 웃어야 천안이 산다\" ··· 북면 오이 농가서 '민생 농정...",
+      "report_date": "2026-04-20",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ggilbo.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-20.html#sec-supply",
+      "source_url": "https://www.ggilbo.com/news/articleView.html?idxno=1153408"
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "5f2272ba6432",
+      "title": "이상기후 유탄 맞은 마늘 …작황 부진 우려",
+      "report_date": "2026-04-20",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-20",
+      "article_id": "f4a4eb371a6c",
+      "title": "모처럼 '냉해 없는 봄'···올해 사과·배 생산 증가 기대",
+      "report_date": "2026-04-20",
+      "section": "pest",
+      "surface": "commodity_primary",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
