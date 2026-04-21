@@ -1,25 +1,25 @@
 {
-  "report_date": "2026-04-21",
-  "generated_at_kst": "2026-04-21T08:17:31+09:00",
+  "report_date": "2026-04-22",
+  "generated_at_kst": "2026-04-22T08:16:33+09:00",
   "status": "pass",
-  "overall_score": 93.82,
+  "overall_score": 96.09,
   "scores": {
     "completeness": 100.0,
-    "diversity": 98.75,
-    "summary_quality": 81.25,
+    "diversity": 100.0,
+    "summary_quality": 94.71,
     "freshness": 100.0,
-    "retrieval_support": 86.25,
-    "section_alignment": 90.16,
+    "retrieval_support": 84.38,
+    "section_alignment": 89.78,
     "core_quality": 100.0,
-    "commodity_board_quality": 86.51
+    "commodity_board_quality": 88.23
   },
   "counts": {
-    "briefing_total": 16,
-    "commodity_total": 32,
-    "commodity_primary_total": 17,
+    "briefing_total": 17,
+    "commodity_total": 22,
+    "commodity_primary_total": 14,
     "briefing_by_section": {
       "supply": 5,
-      "policy": 3,
+      "policy": 4,
       "dist": 3,
       "pest": 5
     },
@@ -30,16 +30,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 17,
-      "policy": 6,
-      "dist": 6,
-      "pest": 3
+      "supply": 14,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
     },
     "raw_by_section": {
-      "supply": 146,
-      "policy": 172,
-      "dist": 41,
-      "pest": 31
+      "supply": 182,
+      "policy": 141,
+      "dist": 42,
+      "pest": 33
     },
     "expected_briefing_by_section": {
       "supply": 3,
@@ -49,32 +49,32 @@
     }
   },
   "metrics": {
-    "briefing_title_unique_rate": 0.9375,
-    "briefing_domain_diversity_rate": 0.6875,
-    "surface_reuse_penalty": 0.0208,
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.7059,
+    "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.375,
-    "summary_numeric_rate": 0.8125,
-    "summary_opening_diversity": 0.9375,
+    "summary_length_ok_rate": 0.8235,
+    "summary_numeric_rate": 0.8235,
+    "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "seed_coverage_score": 0.5417,
-    "section_alignment_fit_avg": 3.4919,
-    "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.125,
-    "section_alignment_weak_stage_rate": 0.0,
+    "seed_coverage_score": 0.4792,
+    "section_alignment_fit_avg": 2.5629,
+    "section_alignment_low_fit_rate": 0.1765,
+    "section_alignment_cross_gap_rate": 0.0588,
+    "section_alignment_weak_stage_rate": 0.0588,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 4.0043,
-    "core_rank_percentile_avg": 0.9526,
+    "core_fit_avg": 3.7357,
+    "core_rank_percentile_avg": 0.968,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
-    "commodity_primary_item_focus_rate": 0.5882,
+    "commodity_primary_item_focus_rate": 0.7143,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.54,
-    "commodity_primary_rank_avg": 3.0588
+    "commodity_primary_fit_avg": 1.6786,
+    "commodity_primary_rank_avg": 2.9286
   },
   "section_scores": {
     "briefing_fill": {
@@ -96,16 +96,16 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.6667,
-      "policy": 0.75,
+      "supply": 0.5,
+      "policy": 0.5,
       "dist": 0.3333,
-      "pest": 0.4167
+      "pest": 0.5833
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 1.0,
-      "dist": 1.0,
-      "pest": 1.0
+      "policy": 0.7682,
+      "dist": 0.7,
+      "pest": 0.8364
     },
     "core_quality": {
       "supply": 1.0,
@@ -116,67 +116,65 @@
   },
   "freshness_samples": [
     {
-      "title": "양파경남협의회, 양파 수급 안정 대책 나서야…공급 과잉 선제 대응을",
+      "title": "중동전쟁 장기화에 병해충까지…산불피해 사과농가 시름 깊어져",
+      "section": "pest",
+      "age_hours": 23.8
+    },
+    {
+      "title": "요동치던 ‘ 양파 값’ 추락…정부, 골든타임 놓쳤다",
       "section": "supply",
       "age_hours": 23.0
     },
     {
-      "title": "[ 수출 선도농협] 제주시농협, 남아시아와 몽골, 북미지역 제주산 농산물 ...",
-      "section": "dist",
-      "age_hours": 21.1
+      "title": "K-농산물 수출, 기술로 뚫는다… 농진청 '기술지원단' 가동",
+      "section": "policy",
+      "age_hours": 20.6
     },
     {
-      "title": "농산물 해상 물류비 50% 지원…손익분기점 이하 물량 대상",
-      "section": "supply",
-      "age_hours": 19.9
-    },
-    {
-      "title": "디어니언-젠틀파머스, 데이터 기반 농산물 유통 혁신 위해 '맞손'",
+      "title": "제주산 만감류 신품종 미래향, 올 추석시즌 조기 출하 되나",
       "section": "supply",
       "age_hours": 19.8
     },
     {
-      "title": "국산 포도·감귤, 올해 해외 데뷔전 치른다",
+      "title": "포도·감귤·감 등 국산 농산물 수출 확대 임박",
       "section": "pest",
-      "age_hours": 19.0
+      "age_hours": 19.1
     },
     {
-      "title": "“해외서 들어온 식물서 5년간 병해충 2만7천 건 검출”",
+      "title": "전남농기원, 맥류 붉은곰팡이병 개화기 선제 방제 시급",
       "section": "pest",
-      "age_hours": 18.9
+      "age_hours": 18.7
     },
     {
-      "title": "원예작물 바이러스 옮기는 총채벌레…초기 방제가 관건",
+      "title": "괴산군, 토마토뿔나방 방제 물품 배부 ··· 39개 농가 초기 진압 총력",
       "section": "pest",
-      "age_hours": 18.8
+      "age_hours": 16.6
     },
     {
-      "title": "광활 햇 감자 , 전국 브랜드 영토 확장 군불",
-      "section": "dist",
-      "age_hours": 18.5
+      "title": "한진, 경북 농가 물류비 절감 위해 '맞춤형 택배' 지원",
+      "section": "policy",
+      "age_hours": 16.1
     }
   ],
   "improvement_hints": [
-    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
     "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
     "요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요.",
-    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
-      "section_alignment",
       "commodity_board"
     ],
     "section_card_min_fit": {
-      "default": 0.88,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.3,
-    "high_score_low_fit_rescue_margin": 4.0,
-    "tail_score_floor_delta": 0.6,
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
