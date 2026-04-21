@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-21T00:46:02+09:00",
+  "generated_at": "2026-04-22T00:44:35+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -1898,6 +1898,32 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-04-21",
+      "article_id": "9d07a3578332",
+      "title": "양파경남협의회, 양파 수급 안정 대책 나서야…공급 과잉 선제 대응을",
+      "report_date": "2026-04-21",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-21.html#sec-supply",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318941"
+    },
+    {
+      "date": "2026-04-21",
+      "article_id": "9d07a3578332",
+      "title": "양파경남협의회, 양파 수급 안정 대책 나서야…공급 과잉 선제 대응을",
+      "report_date": "2026-04-21",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-21.html#sec-supply",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318941"
     }
   ]
 }
