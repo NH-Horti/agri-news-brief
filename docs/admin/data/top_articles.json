@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T00:44:35+09:00",
+  "generated_at": "2026-04-23T00:42:27+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -1924,6 +1924,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-21.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318941"
+    },
+    {
+      "date": "2026-04-22",
+      "article_id": "ac2ccb16a7d3",
+      "title": "수입 양파 가락시장 출하 일시중단",
+      "report_date": "2026-04-22",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-22.html#sec-dist",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=403607"
     }
   ]
 }
