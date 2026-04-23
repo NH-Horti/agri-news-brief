@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-23T00:42:27+09:00",
+  "generated_at": "2026-04-24T01:10:48+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -392,6 +392,13 @@
       "nav_type": "latest_brief",
       "from_date": "(not set)",
       "to_date": "2026-04-21"
+    },
+    {
+      "date": "2026-04-23",
+      "count": 1,
+      "nav_type": "archive_index",
+      "from_date": "2026-04-23",
+      "to_date": ""
     }
   ]
 }

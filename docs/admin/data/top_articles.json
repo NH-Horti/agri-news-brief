@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-23T00:42:27+09:00",
+  "generated_at": "2026-04-24T01:10:48+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -130,6 +130,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-supply",
       "source_url": "http://www.sisafocus.co.kr/news/articleView.html?idxno=358738"
+    },
+    {
+      "date": "2026-04-23",
+      "article_id": "06b4c327fcb6",
+      "title": "농식품부 박정훈 식량정책실장, 영주 사과 개화기 현장 방문",
+      "report_date": "2026-04-23",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.kbmaeil.com",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-23.html#sec-supply",
+      "source_url": "https://www.kbmaeil.com/article/20260422500152"
     },
     {
       "date": "2026-04-01",
@@ -399,6 +412,32 @@
       "section": "policy",
       "surface": "commodity_primary",
       "target_domain": "www.segye.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-23",
+      "article_id": "06b4c327fcb6",
+      "title": "농식품부 박정훈 식량정책실장, 영주 사과 개화기 현장 방문",
+      "report_date": "2026-04-23",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.kbmaeil.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-23.html#sec-supply",
+      "source_url": "https://www.kbmaeil.com/article/20260422500152"
+    },
+    {
+      "date": "2026-04-23",
+      "article_id": "a72f06ee7492",
+      "title": "[풀뿌리K] ‘제주의 보약’ 월동무 수확 현장",
+      "report_date": "2026-04-23",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "news.kbs.co.kr",
       "clicks": 2,
       "users": 1,
       "archive_url": "",
@@ -1937,6 +1976,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-22.html#sec-dist",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=403607"
+    },
+    {
+      "date": "2026-04-23",
+      "article_id": "3344d8691d69",
+      "title": "국중갑(한국절화협회장) - 배움과 관심이 고품질 화훼 생산 핵심",
+      "report_date": "2026-04-23",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-23.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64390"
     }
   ]
 }
