@@ -1,84 +1,84 @@
 {
-  "report_date": "2026-04-23",
-  "generated_at_kst": "2026-04-23T08:13:50+09:00",
+  "report_date": "2026-04-24",
+  "generated_at_kst": "2026-04-24T07:57:50+09:00",
   "status": "pass",
-  "overall_score": 97.87,
+  "overall_score": 93.79,
   "scores": {
-    "completeness": 100.0,
+    "completeness": 88.0,
     "diversity": 100.0,
-    "summary_quality": 98.33,
+    "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 87.5,
-    "section_alignment": 97.88,
+    "retrieval_support": 86.25,
+    "section_alignment": 89.45,
     "core_quality": 95.36,
-    "commodity_board_quality": 94.4
+    "commodity_board_quality": 77.66
   },
   "counts": {
-    "briefing_total": 18,
-    "commodity_total": 27,
-    "commodity_primary_total": 10,
+    "briefing_total": 13,
+    "commodity_total": 28,
+    "commodity_primary_total": 15,
     "briefing_by_section": {
-      "supply": 5,
-      "policy": 4,
-      "dist": 4,
-      "pest": 5
+      "supply": 1,
+      "policy": 3,
+      "dist": 5,
+      "pest": 4
     },
     "core_by_section": {
-      "supply": 2,
+      "supply": 1,
       "policy": 2,
       "dist": 2,
-      "pest": 1
+      "pest": 2
     },
     "commodity_by_section": {
-      "supply": 13,
-      "policy": 5,
-      "dist": 1,
-      "pest": 8
+      "supply": 15,
+      "policy": 4,
+      "dist": 5,
+      "pest": 4
     },
     "raw_by_section": {
-      "supply": 156,
-      "policy": 121,
-      "dist": 36,
-      "pest": 62
+      "supply": 139,
+      "policy": 138,
+      "dist": 32,
+      "pest": 20
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 3
+      "pest": 2
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8889,
+    "briefing_domain_diversity_rate": 0.8462,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.9444,
-    "summary_numeric_rate": 0.7222,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8462,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "seed_coverage_score": 0.5833,
-    "section_alignment_fit_avg": 3.3456,
-    "section_alignment_low_fit_rate": 0.1111,
-    "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0556,
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.2623,
+    "section_alignment_low_fit_rate": 0.0769,
+    "section_alignment_cross_gap_rate": 0.0769,
+    "section_alignment_weak_stage_rate": 0.1538,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 3.8643,
-    "core_rank_percentile_avg": 0.9341,
+    "core_fit_avg": 3.8714,
+    "core_rank_percentile_avg": 0.938,
     "core_stage_core_rate": 0.8571,
     "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.8,
+    "commodity_primary_item_focus_rate": 0.4667,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 1.349,
-    "commodity_primary_rank_avg": 3.4
+    "commodity_primary_fit_avg": 0.5407,
+    "commodity_primary_rank_avg": 2.6667
   },
   "section_scores": {
     "briefing_fill": {
-      "supply": 1.0,
+      "supply": 0.3333,
       "policy": 1.0,
       "dist": 1.0,
       "pest": 1.0
@@ -96,68 +96,70 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.5833,
-      "policy": 0.6667,
-      "dist": 0.5,
-      "pest": 0.5833
+      "supply": 0.75,
+      "policy": 0.5833,
+      "dist": 0.3333,
+      "pest": 0.5
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 1.0,
-      "dist": 0.7682,
-      "pest": 0.8364
+      "policy": 0.7,
+      "dist": 1.0,
+      "pest": 1.0
     },
     "core_quality": {
-      "supply": 0.989,
-      "policy": 1.0,
-      "dist": 0.7921,
+      "supply": 1.0,
+      "policy": 0.8,
+      "dist": 0.9598,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "'찜닭' 먹으러 안동 갔다가 깜짝…\"사 먹기 겁난다\" 초비상 [프라이스&]",
-      "section": "policy",
+      "title": "미래유산 지켜야 하는데 ‘ 뿔나방 ’에 화들짝···‘짭짤이 토마토 ’ ...",
+      "section": "pest",
       "age_hours": 24.0
     },
     {
-      "title": "제주, 국산 만감류 '미래향'도 추석상 오른다… 9월 출하 겨냥 가온재배...",
+      "title": "[산지 확대경] 시설봄 배추 , 작황 대체로 양호…재배면적은 줄어",
       "section": "supply",
-      "age_hours": 20.8
+      "age_hours": 23.0
     },
     {
-      "title": "농식품부 박정훈 식량정책실장, 영주 사과 개화기 현장 방문",
-      "section": "supply",
-      "age_hours": 19.7
-    },
-    {
-      "title": "생산자물가 4년 만에 최대폭 상승…유가發 충격 본격화하나",
+      "title": "LPG부탄 유류세 추가 인하, 리터당 51원↓…석유제품 불법행위 99건 적발",
       "section": "policy",
-      "age_hours": 19.7
+      "age_hours": 21.0
     },
     {
-      "title": "한-베트남 농식품 교역 확대 논의…참외 수출 기간 연장 요청",
+      "title": "[녹색] 농진청 \" 배추 아주심기 전 씨스트선충 방제 꼭 하세요\"",
+      "section": "pest",
+      "age_hours": 20.9
+    },
+    {
+      "title": "[곡성소식]수출 차질 중소기업 지방세 납부 기한 연장 등",
       "section": "dist",
       "age_hours": 18.7
     },
     {
-      "title": "화순군 \"복숭아 냉해 우려\" 경고... 성급한 적과보다 '지연 적과' 권고",
+      "title": "\"과수화상병, 개화기 방제에 사활 걸어야\"",
       "section": "pest",
-      "age_hours": 18.2
+      "age_hours": 18.6
     },
     {
-      "title": "국중갑(한국절화협회장) - 배움과 관심이 고품질 화훼 생산 핵심",
-      "section": "supply",
-      "age_hours": 17.6
+      "title": "국산참외 베트남 수출 기간 연장 추진",
+      "section": "policy",
+      "age_hours": 16.8
     },
     {
-      "title": "여름배추 안정 생산 “씨스트선충 방제 철저 당부”",
-      "section": "pest",
-      "age_hours": 17.6
+      "title": "농협 충남세종본부, '내포 직거래 목요 장터 ' 개장",
+      "section": "dist",
+      "age_hours": 12.7
     }
   ],
   "improvement_hints": [
-    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요."
+    "선정 결과가 약한 섹션이 있습니다: supply. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
