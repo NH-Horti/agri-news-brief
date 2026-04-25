@@ -1,36 +1,36 @@
 {
-  "generated_at": "2026-04-25T00:39:40+09:00",
+  "generated_at": "2026-04-26T00:03:13+09:00",
   "windows": {
     "7": {
       "totals": {
         "visits": 35,
         "users": 14,
-        "pageviews": 85,
+        "pageviews": 86,
         "article_clicks": 42,
-        "article_ctr": 0.494118,
-        "avg_engagement_sec": 237.23
+        "article_ctr": 0.488372,
+        "avg_engagement_sec": 149.57
       },
       "prev": {
-        "visits": 53,
-        "users": 10,
-        "pageviews": 141,
+        "visits": 50,
+        "users": 9,
+        "pageviews": 122,
         "article_clicks": 53,
-        "article_ctr": 0.375887,
-        "avg_engagement_sec": 234.84
+        "article_ctr": 0.434426,
+        "avg_engagement_sec": 222.38
       },
       "range": {
-        "from": "2026-04-19",
-        "to": "2026-04-25"
+        "from": "2026-04-20",
+        "to": "2026-04-26"
       }
     },
     "30": {
       "totals": {
         "visits": 222,
         "users": 30,
-        "pageviews": 729,
+        "pageviews": 730,
         "article_clicks": 231,
-        "article_ctr": 0.316872,
-        "avg_engagement_sec": 314.2
+        "article_ctr": 0.316438,
+        "avg_engagement_sec": 300.38
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-27",
-        "to": "2026-04-25"
+        "from": "2026-03-28",
+        "to": "2026-04-26"
       }
     },
     "90": {
       "totals": {
         "visits": 222,
         "users": 30,
-        "pageviews": 729,
+        "pageviews": 730,
         "article_clicks": 231,
-        "article_ctr": 0.316872,
-        "avg_engagement_sec": 314.2
+        "article_ctr": 0.316438,
+        "avg_engagement_sec": 300.38
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-26",
-        "to": "2026-04-25"
+        "from": "2026-01-27",
+        "to": "2026-04-26"
       }
     }
   }
