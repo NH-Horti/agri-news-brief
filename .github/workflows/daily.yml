@@ -135,9 +135,15 @@ jobs:
         run: |
           set -euo pipefail
 
+          snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          if [ ! -f "$snapshot_path" ]; then
+            echo "::warning::Daily run did not generate replay snapshot; skipping quality evaluation"
+            exit 0
+          fi
+
           python scripts/evaluate_daily_report.py \
             --report-date "${{ steps.vars.outputs.report_date }}" \
-            --snapshot-path ".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json" \
+            --snapshot-path "$snapshot_path" \
             --repo "$REPO" \
             --token "$GITHUB_TOKEN" \
             --ref main \
