@@ -249,6 +249,28 @@ def parse_kst_datetime(value: Any) -> datetime | None:
     return dt.astimezone(KST)
 
 
+def _snapshot_window_hours(snapshot_payload: dict[str, Any]) -> float:
+    window = snapshot_payload.get("window", {}) if isinstance(snapshot_payload, dict) else {}
+    if not isinstance(window, dict):
+        return 0.0
+    start = parse_kst_datetime(window.get("start_kst"))
+    end = parse_kst_datetime(window.get("end_kst"))
+    if not start or not end:
+        return 0.0
+    return max(0.0, (end - start).total_seconds() / 3600.0)
+
+
+def _freshness_weight_profile(report_date: str, snapshot_payload: dict[str, Any]) -> tuple[str, dict[str, float]]:
+    try:
+        report_day = datetime.strptime(str(report_date), "%Y-%m-%d").date()
+        is_monday = report_day.weekday() == 0
+    except ValueError:
+        is_monday = False
+    if is_monday or _snapshot_window_hours(snapshot_payload) >= 60.0:
+        return "weekend_span", {"matched": 0.25, "within_48h": 0.10, "within_72h": 0.50, "stale": 0.15}
+    return "regular", {"matched": 0.25, "within_48h": 0.25, "within_72h": 0.35, "stale": 0.15}
+
+
 def parse_report_html(html_text: str) -> list[SurfaceArticle]:
     parser = ReportHTMLParser()
     parser.feed(html_text)
@@ -376,13 +398,20 @@ def _contains_any_term(text: str, terms: tuple[str, ...] | list[str]) -> bool:
 
 
 def _commodity_item_focus(article: SurfaceArticle) -> bool:
-    if not article.item_label:
+    return _commodity_item_focus_from_text(article.item_label, article.title)
+
+
+def _commodity_item_focus_from_text(item_label: str, *texts: str) -> bool:
+    if not item_label:
         return False
-    title_l = _normalize_spaces(article.title).lower()
-    title_compact = title_l.replace(" ", "")
-    for alias in _item_alias_terms(article.item_label):
-        if alias in title_l or alias.replace(" ", "") in title_compact:
-            return True
+    for text in texts:
+        text_l = _normalize_spaces(text).lower()
+        text_compact = text_l.replace(" ", "")
+        if not text_l:
+            continue
+        for alias in _item_alias_terms(item_label):
+            if alias in text_l or alias.replace(" ", "") in text_compact:
+                return True
     return False
 
 
@@ -617,11 +646,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     within_72h_rate = _rate(within_72h, matched_count, default=1.0)
     stale_rate = _rate(stale_older_than_96h, matched_count, default=0.0)
 
+    freshness_window_mode, freshness_weights = _freshness_weight_profile(report_date, snapshot_payload)
     freshness_score = 100.0 * (
-        matched_rate * 0.25
-        + _score_between(within_48h_rate, 0.5, 0.85) * 0.25
-        + _score_between(within_72h_rate, 0.7, 0.95) * 0.35
-        + _score_inverse(stale_rate, 0.03, 0.2) * 0.15
+        matched_rate * freshness_weights["matched"]
+        + _score_between(within_48h_rate, 0.5, 0.85) * freshness_weights["within_48h"]
+        + _score_between(within_72h_rate, 0.7, 0.95) * freshness_weights["within_72h"]
+        + _score_inverse(stale_rate, 0.03, 0.2) * freshness_weights["stale"]
     )
 
     retrieval_pool_scores: dict[str, float] = {}
@@ -770,6 +800,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "title": article.title,
                 "item_label": article.item_label,
                 "item_focus": _commodity_item_focus(article),
+                "item_focus_with_body": _commodity_item_focus_from_text(article.item_label, article.title, body),
                 "issue_signal": _has_representative_issue_signal(article.title, body),
                 "weak_story": _is_weak_commodity_representative(article.title, body),
                 "fit_score": fit_score,
@@ -778,7 +809,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         )
 
     commodity_primary_item_focus_rate = _rate(
-        sum(1 for record in commodity_primary_records if bool(record.get("item_focus"))),
+        sum(1 for record in commodity_primary_records if bool(record.get("item_focus_with_body"))),
         len(commodity_primary_records),
         default=0.0,
     )
@@ -902,6 +933,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "within_48h_rate": round(within_48h_rate, 4),
             "within_72h_rate": round(within_72h_rate, 4),
             "stale_over_96h_rate": round(stale_rate, 4),
+            "freshness_window_mode": freshness_window_mode,
             "seed_coverage_score": round(seed_score, 4),
             "section_alignment_fit_avg": round(section_alignment_fit_avg, 4),
             "section_alignment_low_fit_rate": round(section_alignment_low_fit_rate, 4),
