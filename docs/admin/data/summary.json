@@ -1,36 +1,36 @@
 {
-  "generated_at": "2026-04-26T00:03:13+09:00",
+  "generated_at": "2026-04-27T00:03:46+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 35,
-        "users": 14,
-        "pageviews": 86,
-        "article_clicks": 42,
-        "article_ctr": 0.488372,
-        "avg_engagement_sec": 149.57
+        "visits": 30,
+        "users": 13,
+        "pageviews": 66,
+        "article_clicks": 31,
+        "article_ctr": 0.469697,
+        "avg_engagement_sec": 135.07
       },
       "prev": {
-        "visits": 50,
-        "users": 9,
-        "pageviews": 122,
+        "visits": 43,
+        "users": 8,
+        "pageviews": 114,
         "article_clicks": 53,
-        "article_ctr": 0.434426,
-        "avg_engagement_sec": 222.38
+        "article_ctr": 0.464912,
+        "avg_engagement_sec": 199.11
       },
       "range": {
-        "from": "2026-04-20",
-        "to": "2026-04-26"
+        "from": "2026-04-21",
+        "to": "2026-04-27"
       }
     },
     "30": {
       "totals": {
-        "visits": 222,
+        "visits": 223,
         "users": 30,
-        "pageviews": 730,
+        "pageviews": 732,
         "article_clicks": 231,
-        "article_ctr": 0.316438,
-        "avg_engagement_sec": 300.38
+        "article_ctr": 0.315574,
+        "avg_engagement_sec": 299.08
       },
       "prev": {
         "visits": 0,
@@ -41,18 +41,18 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-28",
-        "to": "2026-04-26"
+        "from": "2026-03-29",
+        "to": "2026-04-27"
       }
     },
     "90": {
       "totals": {
-        "visits": 222,
+        "visits": 223,
         "users": 30,
-        "pageviews": 730,
+        "pageviews": 732,
         "article_clicks": 231,
-        "article_ctr": 0.316438,
-        "avg_engagement_sec": 300.38
+        "article_ctr": 0.315574,
+        "avg_engagement_sec": 299.08
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-01-27",
-        "to": "2026-04-26"
+        "from": "2026-01-28",
+        "to": "2026-04-27"
       }
     }
   }
