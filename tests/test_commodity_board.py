@@ -114,6 +114,16 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertTrue(any(query in policy_queries for query in main._managed_commodity_policy_queries(self._item("cabbage"))))
         self.assertTrue(any(query in dist_queries for query in main._managed_commodity_dist_queries(self._item("cabbage"))))
 
+    def test_dist_recall_queries_include_market_platform_seeds(self):
+        dist_queries = main.build_managed_section_recall_queries("dist", datetime(2026, 4, 24, tzinfo=main.KST))
+        for query in (
+            "가락시장 반입량",
+            "농산물 도매시장 경락가",
+            "온라인도매시장 거래",
+            "산지유통센터 물류",
+        ):
+            self.assertIn(query, dist_queries)
+
     def test_daily_managed_recall_queries_cover_every_catalog_item(self):
         supply_queries = main.build_managed_section_recall_queries("supply", datetime(2026, 3, 13, tzinfo=main.KST))
         policy_queries = main.build_managed_section_recall_queries("policy", datetime(2026, 3, 13, tzinfo=main.KST))

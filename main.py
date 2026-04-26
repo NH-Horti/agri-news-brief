@@ -915,6 +915,10 @@ OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
 OPENAI_SUMMARY_FEEDBACK_PATH = os.getenv("OPENAI_SUMMARY_FEEDBACK_PATH", "docs/evals/latest-feedback.txt").strip()
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = int((os.getenv("OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", "600") or "600").strip() or 600)
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = max(0, min(OPENAI_SUMMARY_FEEDBACK_MAX_CHARS, 4000))
+SUMMARY_TARGET_MIN_CHARS = int((os.getenv("SUMMARY_TARGET_MIN_CHARS", "85") or "85").strip() or 85)
+SUMMARY_TARGET_MAX_CHARS = int((os.getenv("SUMMARY_TARGET_MAX_CHARS", "140") or "140").strip() or 140)
+SUMMARY_TARGET_MIN_CHARS = max(40, min(SUMMARY_TARGET_MIN_CHARS, 180))
+SUMMARY_TARGET_MAX_CHARS = max(SUMMARY_TARGET_MIN_CHARS, min(SUMMARY_TARGET_MAX_CHARS, 240))
 SELECTION_FEEDBACK_PATH = os.getenv("SELECTION_FEEDBACK_PATH", "docs/evals/latest-selection-feedback.json").strip()
 
 HF_API_TOKEN = (
@@ -1889,6 +1893,23 @@ MANAGED_GROUP_RECALL_QUERY_BANK: dict[str, dict[str, list[str]]] = {
     },
 }
 
+MANAGED_DIST_BASE_RECALL_QUERIES = _ordered_unique_terms(
+    [
+        "가락시장 반입량",
+        "가락시장 경락가",
+        "농산물 도매시장 경락가",
+        "농산물 도매가격",
+        "공영도매시장 반입",
+        "공판장 경매",
+        "온라인도매시장 거래",
+        "산지유통센터 물류",
+        "APC 산지유통",
+        "농산물 물류비",
+        "농산물 수출 선적",
+        "KAMIS 농산물유통정보",
+    ]
+)
+
 
 def _balanced_managed_catalog_items() -> list[dict[str, Any]]:
     grouped_items: list[list[dict[str, Any]]] = []
@@ -1991,7 +2012,11 @@ def _managed_commodity_dist_queries(item: dict[str, Any]) -> list[str]:
     for base in _managed_commodity_base_terms(item, limit=2):
         out.append(f"{base} 경매")
         out.append(f"{base} 공판장")
+        out.append(f"{base} 도매시장")
+        out.append(f"{base} 반입량")
+        out.append(f"{base} 경락가")
         out.append(f"{base} 산지유통")
+        out.append(f"{base} 산지유통센터")
         out.append(f"{base} 유통현장")
         out.append(f"{base} 도매가격")
         out.append(f"{base} 소비 대책")
@@ -2101,7 +2126,8 @@ def build_managed_section_recall_queries(section_key: str, anchor_dt: datetime |
         )
 
     if section_key in ("policy", "dist"):
-        return _ordered_unique_terms(list(group_queries) + balanced_queries)
+        base_queries = list(MANAGED_DIST_BASE_RECALL_QUERIES) if section_key == "dist" else []
+        return _ordered_unique_terms(base_queries + list(group_queries) + balanced_queries)
     return _ordered_unique_terms(balanced_queries)
 
 
@@ -20315,6 +20341,15 @@ def _build_sections_phase123(
     post_norm_pruned = _audit_final_sections(final_by_section)
     if post_norm_pruned:
         log.info("[AUDIT] pruned %d final item(s) after section normalization", post_norm_pruned)
+    try:
+        recovered_supply = _recover_supply_underfill_from_raw(final_by_section, raw_by_section)
+        if recovered_supply:
+            log.info("[REBALANCE] recovered %d supply underfill item(s) from raw pool", recovered_supply)
+    except Exception as e:
+        log.warning("[WARN] supply underfill recovery failed: %s", e)
+    post_recovery_pruned = _audit_final_sections(final_by_section)
+    if post_recovery_pruned:
+        log.info("[AUDIT] pruned %d final item(s) after supply underfill recovery", post_recovery_pruned)
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
 
@@ -20485,7 +20520,7 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
     system = (
         "너는 농협 경제지주 원예수급부(과수화훼) 실무자를 위한 '농산물 뉴스 요약가'다.\n"
         "- 절대 상상/추정으로 사실을 만들지 마라.\n"
-        "- 각 기사 요약은 2문장 내, 110~200자 내. 핵심 팩트 중심.\n"
+        "- 각 기사 요약은 2문장 이내, 85~140자. 품목·지역·수치·대응 주체를 우선해 핵심 팩트만 남겨라.\n"
         "출력 형식: 각 줄 'id\t요약' 형태로만 출력."
     )
     feedback_text = _load_openai_summary_feedback()
@@ -20605,6 +20640,66 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
 
     return mapping
 
+
+def _clean_summary_text(text: str) -> str:
+    return re.sub(r"\s+", " ", str(text or "").replace("\xa0", " ")).strip()
+
+
+def _trim_summary_text(text: str, max_chars: int = SUMMARY_TARGET_MAX_CHARS) -> str:
+    value = _clean_summary_text(text)
+    if len(value) <= max_chars:
+        return value
+    window = value[: max_chars + 1]
+    boundary = max(
+        window.rfind("다."),
+        window.rfind("요."),
+        window.rfind("임."),
+        window.rfind("함."),
+        window.rfind("."),
+    )
+    if boundary >= max(40, max_chars - 45):
+        return window[: boundary + 1].strip()
+    return value[: max(1, max_chars - 3)].rstrip() + "..."
+
+
+def _summary_context_segments(article: Article) -> list[str]:
+    segments: list[str] = []
+    for source in (getattr(article, "description", "") or "", getattr(article, "title", "") or ""):
+        source = _clean_summary_text(source)
+        if not source:
+            continue
+        parts = re.split(r"(?<=[.!?。！？])\s+|(?<=다\.)\s+|(?<=요\.)\s+", source)
+        for part in parts:
+            part = _clean_summary_text(part)
+            if part and part not in segments:
+                segments.append(part)
+    return segments
+
+
+def _normalize_article_summary(article: Article, summary: str) -> str:
+    value = _clean_summary_text(summary)
+    if not value:
+        value = _clean_summary_text(getattr(article, "description", "") or getattr(article, "title", "") or "")
+    if len(value) > SUMMARY_TARGET_MAX_CHARS:
+        value = _trim_summary_text(value)
+    if len(value) >= SUMMARY_TARGET_MIN_CHARS:
+        return value
+
+    for segment in _summary_context_segments(article):
+        if segment in value:
+            continue
+        candidate = _clean_summary_text((value + " " + segment).strip())
+        value = _trim_summary_text(candidate)
+        if len(value) >= SUMMARY_TARGET_MIN_CHARS:
+            break
+
+    if len(value) < SUMMARY_TARGET_MIN_CHARS:
+        title = _clean_summary_text(getattr(article, "title", "") or "")
+        if title and title not in value:
+            value = _trim_summary_text(f"{title} {value}".strip())
+    return value
+
+
 def fill_summaries(by_section: dict[str, list[Article]], cache: dict[str, SummaryCacheEntry | str] | None = None, allow_openai: bool = True) -> dict[str, list[Article]]:
     all_articles: list[Article] = []
     for sec in SECTIONS:
@@ -20626,7 +20721,7 @@ def fill_summaries(by_section: dict[str, list[Article]], cache: dict[str, Summar
 
         if not s:
             s = a.description.strip() or a.title.strip()
-        a.summary = s
+        a.summary = _normalize_article_summary(a, s)
     return by_section
 
 
@@ -21619,6 +21714,7 @@ def _commodity_board_item_article_metrics(
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
+    direct_item_focus = bool(title_primary_hits >= 1 or (primary_focus and body_primary_hits >= 1))
     section_key = str(getattr(article, "section", "") or "").strip()
     board_penalty = float(board_metrics.get("board_penalty") or 0.0)
     board_eligible = bool(board_metrics.get("board_eligible"))
@@ -21659,6 +21755,7 @@ def _commodity_board_item_article_metrics(
         + (title_context_hits * 8.0)
         + (body_primary_hits * 6.0)
         + (body_context_hits * 2.5)
+        + (12.0 if direct_item_focus else 0.0)
         + (16.0 if primary_focus else 0.0)
         + (12.0 if single_focus else 0.0)
         + (10.0 if strong_focus else 0.0)
@@ -21671,6 +21768,8 @@ def _commodity_board_item_article_metrics(
         - (max(0, match_count - 1) * 8.0)
         - board_penalty
     )
+    if not direct_item_focus:
+        board_score -= 18.0
     if not board_eligible:
         board_score -= 120.0
         focus_score = 0.0
@@ -21681,6 +21780,7 @@ def _commodity_board_item_article_metrics(
         "title_context_hits": title_context_hits,
         "body_primary_hits": body_primary_hits,
         "body_context_hits": body_context_hits,
+        "direct_item_focus": direct_item_focus,
         "primary_focus": primary_focus,
         "strong_focus": strong_focus,
         "single_focus": single_focus,
@@ -21751,6 +21851,7 @@ def _commodity_board_item_article_representative_metrics(
     match_count = int(metrics.get("match_count") or 0)
     title_primary_hits = int(metrics.get("title_primary_hits") or 0)
     title_context_hits = int(metrics.get("title_context_hits") or 0)
+    direct_item_focus = bool(metrics.get("direct_item_focus"))
     board_score = float(metrics.get("board_score") or 0.0)
     story_priority = float(metrics.get("story_priority") or 0.0)
     selection_fit_score = float(metrics.get("selection_fit_score") or 0.0)
@@ -21881,7 +21982,7 @@ def _commodity_board_item_article_representative_metrics(
         representative_rank = 3
     elif strong_field_response:
         representative_rank = 3
-    elif issue_title_hits >= 1 and strong_focus and story_priority >= 8.0:
+    elif issue_title_hits >= 1 and strong_focus and (story_priority >= 6.0 or issue_anchor_hits >= 3):
         representative_rank = 3
     elif feature_kind in ("field", "issue") and strong_focus and (title_primary_hits >= 1 or primary_focus) and issue_anchor_hits >= 1:
         representative_rank = 2
@@ -21894,6 +21995,9 @@ def _commodity_board_item_article_representative_metrics(
     else:
         representative_rank = 0
 
+    if not direct_item_focus and representative_rank > 1:
+        representative_rank = 1
+
     # press tier bonus: 메이저 매체 대표기사 우선
     _rep_press_tier = press_priority(item.get("press", ""), item.get("domain", ""))
     _rep_tier_bonus = {3: 8.0, 2: 3.0}.get(_rep_press_tier, 0.0)
@@ -21901,6 +22005,10 @@ def _commodity_board_item_article_representative_metrics(
     # 단, fit_score가 0.8 이상일 때만 부여하여 저적합 기사가 대표로 올라오는 부작용 방지
     _title_focus_bonus = 10.0 if (title_primary_hits >= 1 and board_eligible and selection_fit_score >= 0.8) else 0.0
     representative_score = board_score + (representative_rank * 18.0) + min(6.0, issue_title_hits * 1.5) + _rep_tier_bonus + _title_focus_bonus
+    if not direct_item_focus:
+        representative_score -= 18.0
+    elif title_primary_hits >= 1:
+        representative_score += 6.0
     if stage_core_story and representative_rank >= 2:
         representative_score += 8.0
     if selection_fit_score >= 1.55:
@@ -21964,6 +22072,7 @@ def _commodity_board_item_article_representative_metrics(
             "representative_rank": int(representative_rank),
             "representative_score": round(float(representative_score), 3),
             "representative_eligible": bool(representative_rank >= 1),
+            "direct_item_focus": bool(direct_item_focus),
             "stage_core_story": bool(stage_core_story),
             "weak_stage_story": bool(weak_stage_story),
             "weak_training_story": bool(weak_training),
@@ -22038,6 +22147,8 @@ def _commodity_board_article_is_active_candidate(
             return False
     if _selection_guardrail_bool("commodity_require_direct_item_focus", False):
         has_direct_item_focus = bool(
+            bool(article_metrics.get("direct_item_focus"))
+            or
             int(article_metrics.get("title_primary_hits") or 0) >= 1
             or bool(article_metrics.get("single_focus"))
             or bool(article_metrics.get("primary_focus"))
@@ -22045,7 +22156,7 @@ def _commodity_board_article_is_active_candidate(
         if not has_direct_item_focus:
             return False
     if bool(item.get("program_core")):
-        has_direct_item_focus = int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
+        has_direct_item_focus = bool(article_metrics.get("direct_item_focus")) or int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
         has_indirect_issue_focus = bool(
             representative_rank >= 4
             and bool(article_metrics.get("strong_focus"))
@@ -22106,6 +22217,7 @@ def _commodity_board_item_article_base_sort_key(item: dict[str, Any], article: A
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
         float(metrics["focus_score"]),
+        int(bool(metrics.get("direct_item_focus"))),
         int(metrics["title_primary_hits"]),
         int(metrics["primary_focus"]),
         int(metrics["strong_focus"]),
@@ -22182,6 +22294,7 @@ def _commodity_board_item_article_sort_key(item: dict[str, Any], article: Articl
         float(metrics["board_score"]),
         float(metrics.get("story_priority", 0.0)),
         float(metrics["focus_score"]),
+        int(bool(metrics.get("direct_item_focus"))),
         int(metrics["title_primary_hits"]),
         int(metrics["primary_focus"]),
         int(metrics["strong_focus"]),
@@ -22515,6 +22628,161 @@ def _normalize_supply_section_from_board(
                 for article in (items or [])
                 if not isinstance(article, Article) or _article_selection_identity(article) not in promoted_other_keys
             ]
+    return inserted
+
+
+def _supply_underfill_recovery_rank(article: Article, supply_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not isinstance(article, Article):
+        return None
+    reason = _postbuild_article_reject_reason(article, "supply")
+    if reason:
+        return None
+    text = ((article.title or "") + " " + (article.description or "")).lower()
+    if not text.strip():
+        return None
+    if is_supply_local_sales_event_context(article.title or "", article.description or ""):
+        return None
+    if is_fruit_foodservice_event_context(text):
+        return None
+    if is_flower_consumer_trend_context(text):
+        return None
+
+    try:
+        fit_sc = float(section_fit_score(
+            article.title or "",
+            article.description or "",
+            supply_conf,
+            article.domain or "",
+            article.press or "",
+        ))
+    except Exception:
+        fit_sc = 0.0
+    score = float(getattr(article, "score", 0.0) or 0.0)
+    tier = press_priority(article.press, article.domain)
+    signal_hits = count_any(
+        text,
+        [term.lower() for term in ("가격", "시세", "수급", "작황", "출하", "반입", "물량", "재고", "경락", "도매", "생육")],
+    )
+    feature_kind = supply_feature_context_kind(article.title or "", article.description or "")
+    issue_bucket = supply_issue_context_bucket(article.title or "", article.description or "")
+    direct_supply = has_direct_supply_chain_signal(text)
+    price_outlook = is_supply_price_outlook_context(article.title or "", article.description or "")
+    broad_macro = is_broad_macro_price_context(article.title or "", article.description or "")
+    horti_score = best_horti_score(article.title or "", article.description or "")
+
+    if broad_macro and not direct_supply and not feature_kind:
+        return None
+    if fit_sc < 0.65 and not issue_bucket:
+        return None
+    if score < max(5.0, BASE_MIN_SCORE.get("supply", 7.0) - 1.6) and not (direct_supply and issue_bucket):
+        return None
+    if not (
+        direct_supply
+        or feature_kind
+        or issue_bucket
+        or price_outlook
+        or (fit_sc >= 1.2 and signal_hits >= 2 and horti_score >= 1.5)
+    ):
+        return None
+
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        1 if direct_supply else 0,
+        1 if issue_bucket == "commodity_issue" else 0,
+        1 if issue_bucket == "export_recovery" else 0,
+        1 if price_outlook else 0,
+        1 if feature_kind == "field" else 0,
+        1 if feature_kind == "issue" else 0,
+        1 if feature_kind == "quality" else 0,
+        1 if signal_hits >= 2 else 0,
+        1 if tier >= 2 else 0,
+        round(fit_sc, 3),
+        round(horti_score, 3),
+        round(score, 3),
+        pub_sort,
+    )
+
+
+def _recover_supply_underfill_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), {})
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    target = min(max_n, 3)
+    supply_items = [article for article in (final_by_section.get("supply") or []) if isinstance(article, Article)]
+    if len(supply_items) >= target:
+        return 0
+
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
+    supply_keys = {_article_selection_identity(article) for article in supply_items if _article_selection_identity(article)}
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for article in raw_by_section.get("supply", []) or []:
+        if not isinstance(article, Article):
+            continue
+        article_key = _article_selection_identity(article)
+        if article_key and (article_key in supply_keys or article_key in all_final_keys):
+            continue
+        if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in supply_items):
+            continue
+        if any(_is_similar_story(article, existing, "supply") for existing in supply_items):
+            continue
+        rank = _supply_underfill_recovery_rank(article, supply_conf)
+        if rank is None:
+            continue
+        ranked.append((rank, article))
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    inserted = 0
+    for _rank, article in ranked:
+        if len(supply_items) >= target or len(supply_items) >= max_n:
+            break
+        article_key = _article_selection_identity(article)
+        if article_key and article_key in supply_keys:
+            continue
+        article.section = "supply"
+        article.is_core = False
+        article.selection_stage = "supply_underfill_recovery"
+        try:
+            article.selection_fit_score = round(float(section_fit_score(
+                article.title or "",
+                article.description or "",
+                supply_conf,
+                article.domain or "",
+                article.press or "",
+            )), 3)
+        except Exception:
+            pass
+        supply_items.append(article)
+        if article_key:
+            supply_keys.add(article_key)
+        inserted += 1
+
+    if not inserted:
+        return 0
+
+    if supply_items and not any(bool(getattr(article, "is_core", False)) for article in supply_items):
+        core_pick = max(supply_items, key=_final_supply_article_sort_key)
+        core_pick.is_core = True
+        core_pick.selection_stage = "core_final"
+
+    final_by_section["supply"] = sorted(
+        supply_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            *_final_supply_article_sort_key(article),
+        ),
+        reverse=True,
+    )[:max_n]
     return inserted
 
 

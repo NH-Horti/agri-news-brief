@@ -175,6 +175,92 @@ class ReportEvalTests(unittest.TestCase):
         self.assertTrue(any("핵심기사 품질" in hint for hint in result["improvement_hints"]))
         self.assertTrue(any("품목 보드 대표기사" in hint for hint in result["improvement_hints"]))
 
+    def test_commodity_item_focus_uses_snapshot_body_context(self) -> None:
+        html = """
+        <a
+          data-surface="commodity_primary"
+          data-section="supply"
+          data-article-title="도매시장 반입 줄어 가격 상승"
+          data-article-id="commodity-apple"
+          data-target-domain="example.com"
+          data-item-key="apple"
+          data-item-label="사과"
+          data-representative-rank="3"
+          data-selection-fit="1.4"
+          data-selection-stage="core_final"
+          href="https://example.com/apple-market"
+        >대표기사</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-04-24T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "도매시장 반입 줄어 가격 상승",
+                        "link": "https://example.com/apple-market",
+                        "description": "사과 산지 출하가 줄고 도매시장 반입량이 감소하면서 경락가 상승세가 이어졌다.",
+                        "selection_fit_score": 1.4,
+                        "selection_stage": "core_final",
+                        "score": 88.0,
+                        "pub_dt_kst": "2026-04-24T05:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-04-24", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["commodity_primary_item_focus_rate"], 1.0)
+
+    def test_monday_freshness_weights_weekend_collection_span(self) -> None:
+        summary = "사과 산지 출하량과 도매시장 반입 흐름을 점검하고 가격 변동 가능성을 설명했다. 농가와 유통 주체의 대응 방향도 함께 전했다."
+        html = "\n".join(
+            f"""
+            <div
+              data-surface="briefing_card"
+              data-section="supply"
+              data-article-title="사과 주말 출하 점검 {idx}"
+              data-href="https://example.com/apple-{idx}"
+              data-article-id="brief-{idx}"
+              data-target-domain="example.com"
+            >
+              <div class="sum">{summary}</div>
+            </div>
+            """
+            for idx in range(4)
+        )
+        raw_items = [
+            {
+                "section": "supply",
+                "title": f"사과 주말 출하 점검 {idx}",
+                "link": f"https://example.com/apple-{idx}",
+                "description": "사과 산지 출하량과 도매시장 반입 흐름을 점검했다.",
+                "selection_fit_score": 1.4,
+                "selection_stage": "core_final",
+                "score": 85.0,
+                "pub_dt_kst": f"2026-04-17T{idx + 8:02d}:00:00+09:00",
+            }
+            for idx in range(4)
+        ]
+        snapshot_payload = {
+            "window": {
+                "start_kst": "2026-04-17T06:00:00+09:00",
+                "end_kst": "2026-04-20T06:00:00+09:00",
+            },
+            "raw_by_section": {"supply": raw_items, "policy": [], "dist": [], "pest": []},
+        }
+
+        monday = report_eval.evaluate_report("2026-04-20", html, snapshot_payload)
+        regular = report_eval.evaluate_report("2026-04-21", html, {**snapshot_payload, "window": {"end_kst": "2026-04-21T06:00:00+09:00"}})
+
+        self.assertEqual(monday["metrics"]["freshness_window_mode"], "weekend_span")
+        self.assertGreater(monday["scores"]["freshness"], regular["scores"]["freshness"])
+        self.assertGreaterEqual(monday["scores"]["freshness"], 85.0)
+
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
         markdown = report_eval.render_evaluation_markdown(result)

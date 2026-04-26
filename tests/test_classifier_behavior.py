@@ -1366,6 +1366,56 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(field.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertNotIn(macro.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_supply_final_recovery_fills_strong_raw_candidate_after_prune(self):
+        apple = self._make_article(
+            "supply",
+            "사과 출하 줄며 가격 강세",
+            "사과 출하량 감소로 도매시장 가격이 오름세를 보이고 있다.",
+            "https://www.fnnews.com/news/202603091111111111",
+        )
+        field = self._make_article(
+            "supply",
+            "참외 작황 회복 늦어 산지 출하 조절 비상",
+            "참외 산지 농가에서 작황 회복이 늦고 생육 불균형이 커지면서 출하 조절과 도매시장 반입 관리가 이어지고 있다.",
+            "https://www.nongmin.com/article/20260311010101",
+        )
+        macro = self._make_article(
+            "supply",
+            "농축산물 소비자물가 전주 대비 하락",
+            "정부는 농축산물 소비자물가 흐름이 전주 대비 안정됐다고 설명했다.",
+            "https://www.bokuennews.com/news/article.html?no=260000",
+        )
+        apple.score = 31.0
+        field.score = 8.4
+        macro.score = 30.0
+
+        final_by_section = {"supply": [apple], "policy": [], "dist": [], "pest": []}
+        inserted = main._recover_supply_underfill_from_raw(
+            final_by_section,
+            {"supply": [apple, field, macro], "policy": [], "dist": [], "pest": []},
+            max_items=5,
+        )
+
+        picked_links = {article.link for article in final_by_section["supply"]}
+        self.assertGreaterEqual(inserted, 1)
+        self.assertIn(field.link, picked_links, msg=str([(x.link, x.score, x.title) for x in final_by_section["supply"]]))
+        self.assertNotIn(macro.link, picked_links, msg=str([(x.link, x.score, x.title) for x in final_by_section["supply"]]))
+
+    def test_fill_summaries_normalizes_cached_summary_length(self):
+        article = self._make_article(
+            "supply",
+            "사과 출하 줄며 도매가격 상승세",
+            "경북 사과 산지에서 출하량이 줄고 도매시장 반입도 감소해 가격 상승세가 이어진다는 현장 기사다. 농가와 산지유통센터는 저장 물량과 출하 시점을 조절하고 있다.",
+            "https://example.com/apple-summary",
+        )
+        cache = {article.norm_key: {"s": "사과 가격 상승.", "t": "2026-04-24T06:00:00+09:00"}}
+        by_section = {"supply": [article], "policy": [], "dist": [], "pest": []}
+
+        main.fill_summaries(by_section, cache=cache, allow_openai=False)
+
+        self.assertGreaterEqual(len(article.summary), 85)
+        self.assertLessEqual(len(article.summary), 140)
+
     def test_policy_underfill_backfill_keeps_strong_official_story_just_below_threshold(self):
         major1 = self._make_article(
             "policy",
