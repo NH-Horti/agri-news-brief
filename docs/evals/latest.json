@@ -1,84 +1,85 @@
 {
-  "report_date": "2026-04-24",
-  "generated_at_kst": "2026-04-24T07:57:50+09:00",
+  "report_date": "2026-04-27",
+  "generated_at_kst": "2026-04-27T07:44:24+09:00",
   "status": "pass",
-  "overall_score": 93.79,
+  "overall_score": 96.76,
   "scores": {
-    "completeness": 88.0,
+    "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 100.0,
-    "retrieval_support": 86.25,
-    "section_alignment": 89.45,
+    "freshness": 90.0,
+    "retrieval_support": 83.75,
+    "section_alignment": 99.37,
     "core_quality": 95.36,
-    "commodity_board_quality": 77.66
+    "commodity_board_quality": 97.22
   },
   "counts": {
-    "briefing_total": 13,
-    "commodity_total": 28,
+    "briefing_total": 14,
+    "commodity_total": 29,
     "commodity_primary_total": 15,
     "briefing_by_section": {
-      "supply": 1,
+      "supply": 4,
       "policy": 3,
-      "dist": 5,
-      "pest": 4
+      "dist": 4,
+      "pest": 3
     },
     "core_by_section": {
-      "supply": 1,
+      "supply": 2,
       "policy": 2,
-      "dist": 2,
+      "dist": 1,
       "pest": 2
     },
     "commodity_by_section": {
       "supply": 15,
-      "policy": 4,
-      "dist": 5,
-      "pest": 4
+      "policy": 6,
+      "dist": 3,
+      "pest": 5
     },
     "raw_by_section": {
-      "supply": 139,
-      "policy": 138,
-      "dist": 32,
-      "pest": 20
+      "supply": 231,
+      "policy": 193,
+      "dist": 52,
+      "pest": 31
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 2
+      "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8462,
+    "briefing_domain_diversity_rate": 0.7143,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.8462,
+    "summary_numeric_rate": 0.9286,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 1.0,
+    "within_48h_rate": 0.3571,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "seed_coverage_score": 0.5417,
-    "section_alignment_fit_avg": 3.2623,
-    "section_alignment_low_fit_rate": 0.0769,
-    "section_alignment_cross_gap_rate": 0.0769,
-    "section_alignment_weak_stage_rate": 0.1538,
+    "freshness_window_mode": "weekend_span",
+    "seed_coverage_score": 0.4583,
+    "section_alignment_fit_avg": 2.9457,
+    "section_alignment_low_fit_rate": 0.0714,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0714,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 3.8714,
-    "core_rank_percentile_avg": 0.938,
+    "core_fit_avg": 3.0014,
+    "core_rank_percentile_avg": 0.9549,
     "core_stage_core_rate": 0.8571,
     "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.4667,
+    "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.5407,
-    "commodity_primary_rank_avg": 2.6667
+    "commodity_primary_fit_avg": 0.966,
+    "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
     "briefing_fill": {
-      "supply": 0.3333,
+      "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
       "pest": 1.0
@@ -96,10 +97,10 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.75,
-      "policy": 0.5833,
-      "dist": 0.3333,
-      "pest": 0.5
+      "supply": 0.5833,
+      "policy": 0.4167,
+      "dist": 0.5833,
+      "pest": 0.25
     },
     "section_alignment": {
       "supply": 1.0,
@@ -110,61 +111,57 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 0.8,
-      "dist": 0.9598,
+      "dist": 0.9753,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "미래유산 지켜야 하는데 ‘ 뿔나방 ’에 화들짝···‘짭짤이 토마토 ’ ...",
-      "section": "pest",
-      "age_hours": 24.0
-    },
-    {
-      "title": "[산지 확대경] 시설봄 배추 , 작황 대체로 양호…재배면적은 줄어",
+      "title": "[대구]'성주 참외 ' 작황 좋아…'역대 최고' 기록 깰까?",
       "section": "supply",
-      "age_hours": 23.0
+      "age_hours": 70.2
     },
     {
-      "title": "LPG부탄 유류세 추가 인하, 리터당 51원↓…석유제품 불법행위 99건 적발",
-      "section": "policy",
-      "age_hours": 21.0
-    },
-    {
-      "title": "[녹색] 농진청 \" 배추 아주심기 전 씨스트선충 방제 꼭 하세요\"",
+      "title": "개화기 방제 미루면 큰 피해… 과수화상병 선제 대응 강조",
       "section": "pest",
-      "age_hours": 20.9
+      "age_hours": 67.4
     },
     {
-      "title": "[곡성소식]수출 차질 중소기업 지방세 납부 기한 연장 등",
+      "title": "aT, '온라인도매시장' 고객 대상 팸투어 눈길",
       "section": "dist",
-      "age_hours": 18.7
+      "age_hours": 63.9
     },
     {
-      "title": "\"과수화상병, 개화기 방제에 사활 걸어야\"",
+      "title": "복숭아 탄저병 세균구멍병 \"적기 봉지 씌우기 전 약제 살포\"",
       "section": "pest",
-      "age_hours": 18.6
+      "age_hours": 63.1
     },
     {
-      "title": "국산참외 베트남 수출 기간 연장 추진",
+      "title": "서삼석 의원, 실효성 없는 농어민 유가 지원책 '질타'",
       "section": "policy",
-      "age_hours": 16.8
+      "age_hours": 60.0
     },
     {
-      "title": "농협 충남세종본부, '내포 직거래 목요 장터 ' 개장",
+      "title": "충남세종농협, ‘내포 직거래 목요 장터 ’ 개장…“도농상생 현장으로 오...",
       "section": "dist",
-      "age_hours": 12.7
+      "age_hours": 59.6
+    },
+    {
+      "title": "[품목포커스/ 오이 ] 재배면적 증가로 생산 확대···평년 가격 못미쳐",
+      "section": "supply",
+      "age_hours": 58.1
+    },
+    {
+      "title": "사천시, 논콩 병해충 공동 방제 농약 지원",
+      "section": "pest",
+      "age_hours": 58.1
     }
   ],
   "improvement_hints": [
-    "선정 결과가 약한 섹션이 있습니다: supply. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
-    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
-    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: policy, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
-    "driver_tags": [
-      "commodity_board"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -190,10 +187,10 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": true
+    "commodity_require_direct_item_focus": false
   },
   "summary_prompt_feedback": [
     "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
