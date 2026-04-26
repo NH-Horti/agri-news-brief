@@ -20700,7 +20700,13 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
     return value
 
 
-def fill_summaries(by_section: dict[str, list[Article]], cache: dict[str, SummaryCacheEntry | str] | None = None, allow_openai: bool = True) -> dict[str, list[Article]]:
+def fill_summaries(
+    by_section: dict[str, list[Article]],
+    cache: dict[str, SummaryCacheEntry | str] | None = None,
+    allow_openai: bool = True,
+    *,
+    normalize_cached: bool = True,
+) -> dict[str, list[Article]]:
     all_articles: list[Article] = []
     for sec in SECTIONS:
         all_articles.extend(by_section.get(sec["key"], []))
@@ -20710,18 +20716,21 @@ def fill_summaries(by_section: dict[str, list[Article]], cache: dict[str, Summar
 
     for a in all_articles:
         s = ""
+        from_cache = False
         ck = cache.get(a.norm_key)
         if isinstance(ck, dict):
             s = str(ck.get("s", "") or "").strip()
+            from_cache = bool(s)
         elif isinstance(ck, str):
             s = ck.strip()
+            from_cache = bool(s)
 
         if not s:
             s = (mapping.get(a.norm_key) or "").strip()
 
         if not s:
             s = a.description.strip() or a.title.strip()
-        a.summary = _normalize_article_summary(a, s)
+        a.summary = s if (from_cache and not normalize_cached) else _normalize_article_summary(a, s)
     return by_section
 
 
@@ -26881,7 +26890,12 @@ def _build_sections_for_report(
         summary_cache = load_summary_cache(repo, token)
         if snapshot_summary_cache:
             summary_cache.update(snapshot_summary_cache)
-        by_section = fill_summaries(by_section, cache=summary_cache, allow_openai=allow_openai)
+        by_section = fill_summaries(
+            by_section,
+            cache=summary_cache,
+            allow_openai=allow_openai,
+            normalize_cached=not replay_snapshot,
+        )
 
     if raw_snapshot is not None and _replay_snapshot_write_enabled():
         try:

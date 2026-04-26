@@ -247,8 +247,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
 
     def test_prod_workflows_do_not_extend_window(self):
-        self.assertIn("cron: '0 20 * * 0'", self.daily_text)
-        self.assertIn("cron: '5 21 * * 1-4'", self.daily_text)
+        self.assertIn("Primary daily trigger: Cloudflare Workers Cron at KST 06:05.", self.daily_text)
+        self.assertIn("workflow_dispatch:", self.daily_text)
+        self.assertIn("trigger_source", self.daily_text)
+        self.assertNotIn("schedule:", self.daily_text)
+        self.assertNotIn("cron:", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
