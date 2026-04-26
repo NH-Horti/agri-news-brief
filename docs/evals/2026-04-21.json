@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-04-21",
+  "generated_at_kst": "2026-04-21T08:17:31+09:00",
+  "status": "pass",
+  "overall_score": 93.82,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 98.75,
+    "summary_quality": 81.25,
+    "freshness": 100.0,
+    "retrieval_support": 86.25,
+    "section_alignment": 90.16,
+    "core_quality": 100.0,
+    "commodity_board_quality": 86.51
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 32,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 3,
+      "dist": 3,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 17,
+      "policy": 6,
+      "dist": 6,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 146,
+      "policy": 172,
+      "dist": 41,
+      "pest": 31
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 0.9375,
+    "briefing_domain_diversity_rate": 0.6875,
+    "surface_reuse_penalty": 0.0208,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 0.375,
+    "summary_numeric_rate": 0.8125,
+    "summary_opening_diversity": 0.9375,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.4919,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.125,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "core_fit_avg": 4.0043,
+    "core_rank_percentile_avg": 0.9526,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 0.5882,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.54,
+    "commodity_primary_rank_avg": 3.0588
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.6667,
+      "policy": 0.75,
+      "dist": 0.3333,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "양파경남협의회, 양파 수급 안정 대책 나서야…공급 과잉 선제 대응을",
+      "section": "supply",
+      "age_hours": 23.0
+    },
+    {
+      "title": "[ 수출 선도농협] 제주시농협, 남아시아와 몽골, 북미지역 제주산 농산물 ...",
+      "section": "dist",
+      "age_hours": 21.1
+    },
+    {
+      "title": "농산물 해상 물류비 50% 지원…손익분기점 이하 물량 대상",
+      "section": "supply",
+      "age_hours": 19.9
+    },
+    {
+      "title": "디어니언-젠틀파머스, 데이터 기반 농산물 유통 혁신 위해 '맞손'",
+      "section": "supply",
+      "age_hours": 19.8
+    },
+    {
+      "title": "국산 포도·감귤, 올해 해외 데뷔전 치른다",
+      "section": "pest",
+      "age_hours": 19.0
+    },
+    {
+      "title": "“해외서 들어온 식물서 5년간 병해충 2만7천 건 검출”",
+      "section": "pest",
+      "age_hours": 18.9
+    },
+    {
+      "title": "원예작물 바이러스 옮기는 총채벌레…초기 방제가 관건",
+      "section": "pest",
+      "age_hours": 18.8
+    },
+    {
+      "title": "광활 햇 감자 , 전국 브랜드 영토 확장 군불",
+      "section": "dist",
+      "age_hours": 18.5
+    }
+  ],
+  "improvement_hints": [
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요.",
+    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.88,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.3,
+    "high_score_low_fit_rescue_margin": 4.0,
+    "tail_score_floor_delta": 0.6,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다."
+  ]
+}

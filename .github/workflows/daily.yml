@@ -1,15 +1,14 @@
 name: agri-news-brief (daily)
 
 on:
-  schedule:
-    # 월요일(일요일 UTC): KST 05:00 — 주말 72h 윈도우 대응 (early-start margin 2h 적용)
-    - cron: '0 20 * * 0'
-    # 화~금(월~목 UTC): KST 06:05 — off-peak minute 로 GH Actions 스케줄러 지연 최소화
-    # 2026-04-11: 정각(:00)은 GH Actions 로드 피크로 평균 37-49분 지연 발생
-    #             → :05 off-peak 로 5-15분 지연 기대 (기사 발행 원칙 "전일 06:00 ~ 당일 06:00" 유지)
-    # 평일 window 는 여전히 전일 06:00 ~ 당일 06:00 (cutoff 기준 불변)
-    - cron: '5 21 * * 1-4'
-  workflow_dispatch: {}
+  # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
+  # Keep GitHub native schedule disabled to avoid duplicate Kakao sends.
+  workflow_dispatch:
+    inputs:
+      trigger_source:
+        description: 'External trigger source, e.g. cloudflare-cron'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -173,6 +172,7 @@ jobs:
           {
             echo '## Daily Summary'
             echo "- Event: ${{ github.event_name }}"
+            echo "- Trigger source: ${{ github.event.inputs.trigger_source || 'github' }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- OpenAI model: gpt-5.4"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"

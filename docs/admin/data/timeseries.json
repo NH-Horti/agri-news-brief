@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-16T00:39:23+09:00",
+  "generated_at": "2026-04-26T00:03:13+09:00",
   "daily": [
     {
       "date": "2026-03-30",
@@ -141,9 +141,72 @@
       "visits": 8,
       "users": 3,
       "pageviews": 20,
-      "avg_engagement_sec": 546.78,
+      "avg_engagement_sec": 297.68,
       "page_view_home": 0,
       "page_view_archive": 19
+    },
+    {
+      "date": "2026-04-16",
+      "visits": 13,
+      "users": 3,
+      "pageviews": 44,
+      "avg_engagement_sec": 144.48,
+      "page_view_home": 0,
+      "page_view_archive": 39
+    },
+    {
+      "date": "2026-04-17",
+      "visits": 6,
+      "users": 2,
+      "pageviews": 9,
+      "avg_engagement_sec": 138.62,
+      "page_view_home": 0,
+      "page_view_archive": 9
+    },
+    {
+      "date": "2026-04-20",
+      "visits": 6,
+      "users": 5,
+      "pageviews": 22,
+      "avg_engagement_sec": 198.96,
+      "page_view_home": 0,
+      "page_view_archive": 19
+    },
+    {
+      "date": "2026-04-21",
+      "visits": 5,
+      "users": 3,
+      "pageviews": 12,
+      "avg_engagement_sec": 50.15,
+      "page_view_home": 2,
+      "page_view_archive": 9
+    },
+    {
+      "date": "2026-04-22",
+      "visits": 5,
+      "users": 1,
+      "pageviews": 6,
+      "avg_engagement_sec": 92.36,
+      "page_view_home": 0,
+      "page_view_archive": 6
+    },
+    {
+      "date": "2026-04-23",
+      "visits": 13,
+      "users": 8,
+      "pageviews": 22,
+      "avg_engagement_sec": 76.58,
+      "page_view_home": 1,
+      "page_view_archive": 21
+    },
+    {
+      "date": "2026-04-24",
+      "visits": 6,
+      "users": 6,
+      "pageviews": 24,
+      "avg_engagement_sec": 388.83,
+      "page_view_home": 1,
+      "page_view_archive": 20
     }
   ]
 }
