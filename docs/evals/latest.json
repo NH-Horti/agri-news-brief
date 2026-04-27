@@ -1,81 +1,81 @@
 {
-  "report_date": "2026-04-27",
-  "generated_at_kst": "2026-04-27T07:44:24+09:00",
+  "report_date": "2026-04-28",
+  "generated_at_kst": "2026-04-28T07:15:40+09:00",
   "status": "pass",
-  "overall_score": 96.76,
+  "overall_score": 96.85,
   "scores": {
     "completeness": 100.0,
-    "diversity": 100.0,
+    "diversity": 98.53,
     "summary_quality": 100.0,
-    "freshness": 90.0,
-    "retrieval_support": 83.75,
-    "section_alignment": 99.37,
-    "core_quality": 95.36,
-    "commodity_board_quality": 97.22
+    "freshness": 100.0,
+    "retrieval_support": 78.47,
+    "section_alignment": 94.02,
+    "core_quality": 96.25,
+    "commodity_board_quality": 96.3
   },
   "counts": {
-    "briefing_total": 14,
-    "commodity_total": 29,
+    "briefing_total": 13,
+    "commodity_total": 35,
     "commodity_primary_total": 15,
     "briefing_by_section": {
       "supply": 4,
       "policy": 3,
-      "dist": 4,
+      "dist": 3,
       "pest": 3
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 1,
+      "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 15,
-      "policy": 6,
-      "dist": 3,
-      "pest": 5
+      "supply": 21,
+      "policy": 7,
+      "dist": 6,
+      "pest": 1
     },
     "raw_by_section": {
-      "supply": 231,
-      "policy": 193,
-      "dist": 52,
-      "pest": 31
+      "supply": 160,
+      "policy": 155,
+      "dist": 30,
+      "pest": 6
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 3
+      "pest": 1
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7143,
-    "surface_reuse_penalty": 0.0,
+    "briefing_domain_diversity_rate": 1.0,
+    "surface_reuse_penalty": 0.0625,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9286,
+    "summary_numeric_rate": 1.0,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.3571,
+    "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "freshness_window_mode": "weekend_span",
-    "seed_coverage_score": 0.4583,
-    "section_alignment_fit_avg": 2.9457,
-    "section_alignment_low_fit_rate": 0.0714,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.1254,
+    "section_alignment_low_fit_rate": 0.1538,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0714,
+    "section_alignment_weak_stage_rate": 0.0769,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 3.0014,
-    "core_rank_percentile_avg": 0.9549,
-    "core_stage_core_rate": 0.8571,
-    "weak_core_rate": 0.1429,
+    "core_fit_avg": 3.3138,
+    "core_rank_percentile_avg": 0.9528,
+    "core_stage_core_rate": 0.875,
+    "weak_core_rate": 0.125,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.966,
-    "commodity_primary_rank_avg": 3.0
+    "commodity_primary_fit_avg": 1.954,
+    "commodity_primary_rank_avg": 2.9333
   },
   "section_scores": {
     "briefing_fill": {
@@ -94,71 +94,71 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.5556
     },
     "seed_coverage": {
-      "supply": 0.5833,
-      "policy": 0.4167,
+      "supply": 0.5,
+      "policy": 0.75,
       "dist": 0.5833,
-      "pest": 0.25
+      "pest": 0.3333
     },
     "section_alignment": {
       "supply": 1.0,
       "policy": 0.7,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.7
     },
     "core_quality": {
       "supply": 1.0,
       "policy": 0.8,
-      "dist": 0.9753,
+      "dist": 1.0,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "[대구]'성주 참외 ' 작황 좋아…'역대 최고' 기록 깰까?",
+      "title": "고유가에 이상기후… “사과농사 접을 판”",
+      "section": "pest",
+      "age_hours": 23.9
+    },
+    {
+      "title": "영월, 과수화상병 예찰…200여 곳 대상",
+      "section": "pest",
+      "age_hours": 20.6
+    },
+    {
+      "title": "광주 호남청과, 국내 육성 감귤 신품종 온라인 유통 확대 나서",
       "section": "supply",
-      "age_hours": 70.2
+      "age_hours": 18.5
     },
     {
-      "title": "개화기 방제 미루면 큰 피해… 과수화상병 선제 대응 강조",
-      "section": "pest",
-      "age_hours": 67.4
-    },
-    {
-      "title": "aT, '온라인도매시장' 고객 대상 팸투어 눈길",
-      "section": "dist",
-      "age_hours": 63.9
-    },
-    {
-      "title": "복숭아 탄저병 세균구멍병 \"적기 봉지 씌우기 전 약제 살포\"",
-      "section": "pest",
-      "age_hours": 63.1
-    },
-    {
-      "title": "서삼석 의원, 실효성 없는 농어민 유가 지원책 '질타'",
+      "title": "괴산지역 농업에 세대교체 바람",
       "section": "policy",
-      "age_hours": 60.0
+      "age_hours": 16.1
     },
     {
-      "title": "충남세종농협, ‘내포 직거래 목요 장터 ’ 개장…“도농상생 현장으로 오...",
-      "section": "dist",
-      "age_hours": 59.6
+      "title": "송미령 \"농협 개혁, 조합원·국민 '압도적 찬성'…지선 전 입법 속도\"",
+      "section": "policy",
+      "age_hours": 14.0
     },
     {
-      "title": "[품목포커스/ 오이 ] 재배면적 증가로 생산 확대···평년 가격 못미쳐",
+      "title": "종자 신청량으로 제주 월동채소 생산량 미리 본다… 농업기술원 5월까지...",
       "section": "supply",
-      "age_hours": 58.1
+      "age_hours": 13.2
     },
     {
-      "title": "사천시, 논콩 병해충 공동 방제 농약 지원",
-      "section": "pest",
-      "age_hours": 58.1
+      "title": "aT, 농업 발전 방향 모색...혁신자문위원회 진행",
+      "section": "dist",
+      "age_hours": 13.1
+    },
+    {
+      "title": "토마토ㆍ참외ㆍ파프리카 등 시설과채, 할인지원 품목 추가",
+      "section": "policy",
+      "age_hours": 12.6
     }
   ],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: policy, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
