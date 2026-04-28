@@ -1,46 +1,49 @@
 {
-  "report_date": "2026-04-28",
-  "generated_at_kst": "2026-04-28T07:15:40+09:00",
+  "report_date": "2026-04-29",
+  "generated_at_kst": "2026-04-29T07:19:43+09:00",
   "scores": {
-    "section_alignment": 94.02,
-    "core_quality": 96.25,
-    "commodity_board_quality": 96.3
+    "section_alignment": 89.72,
+    "core_quality": 75.27,
+    "commodity_board_quality": 92.31
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1538,
+    "section_alignment_low_fit_rate": 0.2308,
     "section_alignment_cross_gap_rate": 0.0,
-    "weak_core_rate": 0.125,
-    "commodity_primary_item_focus_rate": 1.0,
+    "weak_core_rate": 0.4286,
+    "commodity_primary_item_focus_rate": 0.9412,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
-    "driver_tags": [],
+    "driver_tags": [
+      "section_alignment",
+      "core_quality"
+    ],
     "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
+      "default": 0.88,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.3,
+    "high_score_low_fit_rescue_margin": 4.0,
+    "tail_score_floor_delta": 0.6,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.28,
+      "supply": 1.48,
+      "policy": 1.48,
+      "dist": 1.68,
+      "pest": 1.28
     },
     "core_relaxed_min_fit": {
-      "default": 1.0,
-      "supply": 1.18,
-      "policy": 1.15,
-      "dist": 1.35,
-      "pest": 1.0
+      "default": 1.12,
+      "supply": 1.3,
+      "policy": 1.27,
+      "dist": 1.47,
+      "pest": 1.12
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
