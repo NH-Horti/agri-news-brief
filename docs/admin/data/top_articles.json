@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-28T01:00:13+09:00",
+  "generated_at": "2026-04-29T01:20:58+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -76,6 +76,32 @@
       "target_domain": "www.nongmin.com",
       "clicks": 4,
       "users": 3,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "59e0403d6dd6",
+      "title": "양배추, 양파 가격 '폭락'...또 산지 폐기 '되풀이'",
+      "report_date": "2026-04-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.jejunews.com",
+      "clicks": 4,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-04-28.html#sec-supply",
+      "source_url": "http://www.jejunews.com/news/articleView.html?idxno=2225139"
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "ee4bced0248c",
+      "title": "종자 신청량으로 제주 월동채소 생산량 미리 본다… 농업기술원 5월까지...",
+      "report_date": "2026-04-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.fnnews.com",
+      "clicks": 4,
+      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -531,6 +557,19 @@
       "target_domain": "www.nongmin.com",
       "clicks": 2,
       "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "ee4bced0248c",
+      "title": "종자 신청량으로 제주 월동채소 생산량 미리 본다… 농업기술원 5월까지...",
+      "report_date": "2026-04-28",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.fnnews.com",
+      "clicks": 2,
+      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -2174,6 +2213,19 @@
     },
     {
       "date": "2026-04-27",
+      "article_id": "15e86c1bf5f5",
+      "title": "서삼석 의원, 실효성 없는 농어민 유가 지원책 '질타'",
+      "report_date": "2026-04-27",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.m-economynews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-27.html#sec-policy",
+      "source_url": "https://www.m-economynews.com/news/article.html?no=66769"
+    },
+    {
+      "date": "2026-04-27",
       "article_id": "19bee39b54a1",
       "title": "[현장] \" 사과 에 제대로 영양 담기 위해 무대재배 고집\"···무농약 사과 ...",
       "report_date": "2026-04-27",
@@ -2301,6 +2353,123 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-10.html#sec-pest",
       "source_url": "https://n.news.naver.com/mnews/article/001/0016012836?sid=101"
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "099c30313c50",
+      "title": "경남도, 진주 수출딸기 현장 점검…물류비 상승 등 애로 청취",
+      "report_date": "2026-04-28",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.gnnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-28.html#sec-dist",
+      "source_url": "https://www.gnnews.co.kr/news/articleView.html?idxno=635827"
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "7763fe1b0bc7",
+      "title": "순천 매실청, 일본 수출길 다시 열어",
+      "report_date": "2026-04-28",
+      "section": "dist",
+      "surface": "commodity_primary",
+      "target_domain": "www.newsmaker.or.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "8933074ad344",
+      "title": "송미령 \"농협 개혁, 조합원·국민 '압도적 찬성'…지선 전 입법 속도\"",
+      "report_date": "2026-04-28",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "8933074ad344",
+      "title": "송미령 \"농협 개혁, 조합원·국민 '압도적 찬성'…지선 전 입법 속도\"",
+      "report_date": "2026-04-28",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "8d6aa2162fbf",
+      "title": "고유가에 이상기후… “사과농사 접을 판”",
+      "report_date": "2026-04-28",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.segye.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "8d6aa2162fbf",
+      "title": "고유가에 이상기후… “사과농사 접을 판”",
+      "report_date": "2026-04-28",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.segye.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "d5a2e5e10d7b",
+      "title": "aT, 농업 발전 방향 모색...혁신자문위원회 진행",
+      "report_date": "2026-04-28",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.chungnamilbo.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-04-28.html#sec-dist",
+      "source_url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=885622"
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "e72fe6d2dabf",
+      "title": "고추의 매운 맛 vs 순한 맛…혈당 스파이크에 어떤 변화가?",
+      "report_date": "2026-04-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "kormedi.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-28",
+      "article_id": "e8fc247ffcb3",
+      "title": "광주 호남청과, 국내 육성 감귤 신품종 온라인 유통 확대 나서",
+      "report_date": "2026-04-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
