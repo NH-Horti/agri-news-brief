@@ -1,9 +1,9 @@
-## Daily Eval (2026-04-30)
-- Overall: **96.50** (pass)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=86.2, section_fit=90.3, core=86.5, commodity=94.1
-- Briefing cards: 18 / Commodity cards: 96
-- Sections: supply:5/3 raw=197, policy:4/3 raw=131, dist:4/3 raw=45, pest:5/3 raw=64
-- Metrics: title_unique=1.00, domain_diversity=0.83, summary_presence=1.00, summary_numeric=0.78, fresh_72h=1.00, fit_avg=2.53, weak_core=0.25, commodity_weak=0.00
+## Daily Eval (2026-05-01)
+- Overall: **93.66** (pass)
+- Scores: completeness=100.0, diversity=96.7, summary=100.0, freshness=100.0, retrieval=86.2, section_fit=84.6, core=68.7, commodity=88.0
+- Briefing cards: 15 / Commodity cards: 46
+- Sections: supply:4/3 raw=169, policy:3/3 raw=83, dist:4/3 raw=34, pest:4/2 raw=14
+- Metrics: title_unique=1.00, domain_diversity=0.67, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=1.90, weak_core=0.50, commodity_weak=0.07
 
 ### Improvement Hints
 - 섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.
