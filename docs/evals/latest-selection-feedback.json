@@ -1,34 +1,35 @@
 {
-  "report_date": "2026-04-30",
-  "generated_at_kst": "2026-04-30T07:36:09+09:00",
+  "report_date": "2026-05-01",
+  "generated_at_kst": "2026-05-01T07:14:53+09:00",
   "scores": {
-    "section_alignment": 90.3,
-    "core_quality": 86.55,
-    "commodity_board_quality": 94.14
+    "section_alignment": 84.63,
+    "core_quality": 68.67,
+    "commodity_board_quality": 87.98
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.2222,
+    "section_alignment_low_fit_rate": 0.4667,
     "section_alignment_cross_gap_rate": 0.0,
-    "weak_core_rate": 0.25,
+    "weak_core_rate": 0.5,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 1.0,
-    "commodity_primary_weak_rate": 0.0
+    "commodity_primary_issue_signal_rate": 0.8667,
+    "commodity_primary_weak_rate": 0.0667
   },
   "selection_guardrails": {
     "driver_tags": [
       "section_alignment",
+      "section_alignment_severe",
       "core_quality"
     ],
     "section_card_min_fit": {
-      "default": 0.88,
-      "supply": 0.9,
-      "policy": 0.9,
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
       "dist": 1.05,
-      "pest": 0.84
+      "pest": 0.9
     },
-    "section_low_fit_rescue_min": 0.3,
-    "high_score_low_fit_rescue_margin": 4.0,
-    "tail_score_floor_delta": 0.6,
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.28,
       "supply": 1.48,
@@ -43,7 +44,7 @@
       "dist": 1.47,
       "pest": 1.12
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
