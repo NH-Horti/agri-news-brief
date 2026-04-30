@@ -1,60 +1,60 @@
 {
-  "report_date": "2026-04-30",
-  "generated_at_kst": "2026-04-30T07:36:09+09:00",
+  "report_date": "2026-05-01",
+  "generated_at_kst": "2026-05-01T07:14:53+09:00",
   "status": "pass",
-  "overall_score": 96.5,
+  "overall_score": 93.66,
   "scores": {
     "completeness": 100.0,
-    "diversity": 100.0,
+    "diversity": 96.67,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 86.25,
-    "section_alignment": 90.3,
-    "core_quality": 86.55,
-    "commodity_board_quality": 94.14
+    "section_alignment": 84.63,
+    "core_quality": 68.67,
+    "commodity_board_quality": 87.98
   },
   "counts": {
-    "briefing_total": 18,
-    "commodity_total": 96,
-    "commodity_primary_total": 18,
+    "briefing_total": 15,
+    "commodity_total": 46,
+    "commodity_primary_total": 15,
     "briefing_by_section": {
-      "supply": 5,
-      "policy": 4,
+      "supply": 4,
+      "policy": 3,
       "dist": 4,
-      "pest": 5
+      "pest": 4
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 2,
-      "dist": 2,
+      "policy": 1,
+      "dist": 1,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 53,
-      "policy": 17,
-      "dist": 7,
-      "pest": 19
+      "supply": 26,
+      "policy": 3,
+      "dist": 10,
+      "pest": 7
     },
     "raw_by_section": {
-      "supply": 197,
-      "policy": 131,
-      "dist": 45,
-      "pest": 64
+      "supply": 169,
+      "policy": 83,
+      "dist": 34,
+      "pest": 14
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 3
+      "pest": 2
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8333,
-    "surface_reuse_penalty": 0.0351,
+    "briefing_domain_diversity_rate": 0.6667,
+    "surface_reuse_penalty": 0.0164,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.7778,
+    "summary_numeric_rate": 1.0,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -62,20 +62,20 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5417,
-    "section_alignment_fit_avg": 2.5344,
-    "section_alignment_low_fit_rate": 0.2222,
+    "section_alignment_fit_avg": 1.9007,
+    "section_alignment_low_fit_rate": 0.4667,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0556,
+    "section_alignment_weak_stage_rate": 0.0667,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 3.0038,
-    "core_rank_percentile_avg": 0.875,
-    "core_stage_core_rate": 0.75,
-    "weak_core_rate": 0.25,
+    "core_fit_avg": 1.995,
+    "core_rank_percentile_avg": 0.8114,
+    "core_stage_core_rate": 0.5,
+    "weak_core_rate": 0.5,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 1.0,
-    "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 1.88,
-    "commodity_primary_rank_avg": 2.7778
+    "commodity_primary_issue_signal_rate": 0.8667,
+    "commodity_primary_weak_rate": 0.0667,
+    "commodity_primary_fit_avg": 1.36,
+    "commodity_primary_rank_avg": 2.4667
   },
   "section_scores": {
     "briefing_fill": {
@@ -98,63 +98,63 @@
     },
     "seed_coverage": {
       "supply": 0.5833,
-      "policy": 0.5,
+      "policy": 0.5833,
       "dist": 0.4167,
-      "pest": 0.6667
+      "pest": 0.5833
     },
     "section_alignment": {
-      "supply": 1.0,
+      "supply": 0.7682,
       "policy": 0.7,
-      "dist": 0.7682,
-      "pest": 0.8364
+      "dist": 0.0,
+      "pest": 0.7682
     },
     "core_quality": {
-      "supply": 1.0,
-      "policy": 0.8,
-      "dist": 0.4501,
+      "supply": 0.8,
+      "policy": 0.25,
+      "dist": 0.0,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "최유철 의성군수 예비후보, 'AI 농업 디지털 대전환' 공약 발표",
-      "section": "dist",
-      "age_hours": 23.3
-    },
-    {
-      "title": "함평군, 애호박 산업 도약 준비",
+      "title": "예천 감천면, 아삭하고 달콤한 '돌 토마토 ' 본격 출하",
       "section": "supply",
-      "age_hours": 21.5
+      "age_hours": 19.5
     },
     {
-      "title": "aT, 5년연속 동반성장 평가 최우수…상생협력 성과 대통령 표창",
+      "title": "임실군, 고추 병해충 공동 방제 본격화",
+      "section": "pest",
+      "age_hours": 19.2
+    },
+    {
+      "title": "농안법 사각지대에 갇힌 공영도매시장 , 대전 노은 시장 사태가 남긴 과제",
       "section": "dist",
-      "age_hours": 21.5
+      "age_hours": 18.8
     },
     {
-      "title": "중국산 사과묘목 63만 주 ‘통째 밀수’…여의도 1.4배 과수 원 될 뻔",
+      "title": "오중기 “영천 대전환”…말산업·지하철·고속도로·수출로 ‘사람·돈...",
       "section": "policy",
-      "age_hours": 19.0
+      "age_hours": 16.6
     },
     {
-      "title": "제주도 만감류, 가격 우위 바탕 시장 안착 가속",
-      "section": "supply",
-      "age_hours": 18.8
-    },
-    {
-      "title": "가락 시장 시설 현대화 사업 3단계 본격화",
+      "title": "상주 대경사과 원예농협 , 농산물 산지유통 센터 준공",
       "section": "dist",
-      "age_hours": 18.8
+      "age_hours": 16.5
     },
     {
-      "title": "과수화상병 현장 해결형 기술 협력 본격화",
-      "section": "pest",
-      "age_hours": 18.8
+      "title": "aT, 산지 팸투어로 온라인도매시장 '신뢰장벽' 허문다",
+      "section": "dist",
+      "age_hours": 16.5
     },
     {
-      "title": "농진청, 봄배추 생육 점검",
-      "section": "pest",
-      "age_hours": 18.8
+      "title": "수입산에 밀리는 국산 양파 '소비 활로' 모색",
+      "section": "policy",
+      "age_hours": 16.4
+    },
+    {
+      "title": "대경사과원예 농협 , 상주 APC준공…“농가소득 증대 첨병 역할 기대”",
+      "section": "supply",
+      "age_hours": 16.0
     }
   ],
   "improvement_hints": [
@@ -165,18 +165,19 @@
   "selection_guardrails": {
     "driver_tags": [
       "section_alignment",
+      "section_alignment_severe",
       "core_quality"
     ],
     "section_card_min_fit": {
-      "default": 0.88,
-      "supply": 0.9,
-      "policy": 0.9,
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
       "dist": 1.05,
-      "pest": 0.84
+      "pest": 0.9
     },
-    "section_low_fit_rescue_min": 0.3,
-    "high_score_low_fit_rescue_margin": 4.0,
-    "tail_score_floor_delta": 0.6,
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.28,
       "supply": 1.48,
@@ -191,7 +192,7 @@
       "dist": 1.47,
       "pest": 1.12
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
