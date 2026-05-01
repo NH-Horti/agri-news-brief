@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-05-01T00:57:24+09:00",
+  "generated_at": "2026-05-02T00:17:26+09:00",
   "windows": {
     "7": {
       "totals": {
         "visits": 51,
         "users": 11,
-        "pageviews": 111,
-        "article_clicks": 66,
-        "article_ctr": 0.594595,
-        "avg_engagement_sec": 271.4
+        "pageviews": 112,
+        "article_clicks": 67,
+        "article_ctr": 0.598214,
+        "avg_engagement_sec": 248.11
       },
       "prev": {
         "visits": 35,
@@ -19,40 +19,40 @@
         "avg_engagement_sec": 149.57
       },
       "range": {
-        "from": "2026-04-25",
-        "to": "2026-05-01"
+        "from": "2026-04-26",
+        "to": "2026-05-02"
       }
     },
     "30": {
       "totals": {
-        "visits": 216,
+        "visits": 204,
         "users": 22,
-        "pageviews": 514,
-        "article_clicks": 254,
-        "article_ctr": 0.494163,
-        "avg_engagement_sec": 223.95
+        "pageviews": 483,
+        "article_clicks": 229,
+        "article_ctr": 0.47412,
+        "avg_engagement_sec": 218.11
       },
       "prev": {
-        "visits": 58,
+        "visits": 70,
         "users": 26,
-        "pageviews": 327,
-        "article_clicks": 43,
-        "article_ctr": 0.131498,
-        "avg_engagement_sec": 554.37
+        "pageviews": 359,
+        "article_clicks": 69,
+        "article_ctr": 0.192201,
+        "avg_engagement_sec": 497.78
       },
       "range": {
-        "from": "2026-04-02",
-        "to": "2026-05-01"
+        "from": "2026-04-03",
+        "to": "2026-05-02"
       }
     },
     "90": {
       "totals": {
         "visits": 273,
         "users": 30,
-        "pageviews": 841,
-        "article_clicks": 297,
-        "article_ctr": 0.353151,
-        "avg_engagement_sec": 294.97
+        "pageviews": 842,
+        "article_clicks": 298,
+        "article_ctr": 0.353919,
+        "avg_engagement_sec": 290.62
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-02-01",
-        "to": "2026-05-01"
+        "from": "2026-02-02",
+        "to": "2026-05-02"
       }
     }
   }

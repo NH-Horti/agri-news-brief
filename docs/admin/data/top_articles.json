@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-01T00:57:24+09:00",
+  "generated_at": "2026-05-02T00:17:26+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -2674,6 +2674,19 @@
       "section": "pest",
       "surface": "briefing_open",
       "target_domain": "www.yna.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-04-30",
+      "article_id": "22d04167aa7b",
+      "title": "전남 나주 배농가 저온피해 로 착과불량 피해 심각",
+      "report_date": "2026-04-29",
+      "section": "policy",
+      "surface": "commodity_primary",
+      "target_domain": "www.wonyesanup.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
