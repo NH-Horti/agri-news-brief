@@ -1,4 +1,12 @@
 {
-  "generated_at": "2026-04-26T00:03:13+09:00",
-  "rows": []
+  "generated_at": "2026-05-04T00:07:38+09:00",
+  "rows": [
+    {
+      "date": "2026-04-30",
+      "query": "사과",
+      "section_filter": "(not set)",
+      "result_count": 123,
+      "count": 1
+    }
+  ]
 }

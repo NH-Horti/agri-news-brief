@@ -98,6 +98,7 @@ $env:LOCAL_DRY_RUN = "false"
 $env:MAINTENANCE_TASK = "rebuild_date"
 $env:FORCE_REPORT_DATE = $ReportDate
 $env:MAINTENANCE_SEND_KAKAO = $(if ($SendKakao) { "true" } else { "false" })
+$env:KAKAO_FAIL_OPEN = $(if ($SendKakao) { "false" } else { "true" })
 $env:MAX_PER_SECTION = [string]$MaxPerSection
 $env:UX_PATCH_DAYS = [string]$UxPatchDays
 $env:WINDOW_MIN_HOURS = "0"

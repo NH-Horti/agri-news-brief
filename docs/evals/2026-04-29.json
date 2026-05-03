@@ -1,0 +1,204 @@
+{
+  "report_date": "2026-04-29",
+  "generated_at_kst": "2026-04-29T07:19:43+09:00",
+  "status": "pass",
+  "overall_score": 94.31,
+  "scores": {
+    "completeness": 94.0,
+    "diversity": 99.23,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 87.5,
+    "section_alignment": 89.72,
+    "core_quality": 75.27,
+    "commodity_board_quality": 92.31
+  },
+  "counts": {
+    "briefing_total": 13,
+    "commodity_total": 42,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 2,
+      "dist": 4,
+      "pest": 3
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 25,
+      "policy": 7,
+      "dist": 4,
+      "pest": 6
+    },
+    "raw_by_section": {
+      "supply": 134,
+      "policy": 104,
+      "dist": 63,
+      "pest": 37
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.6923,
+    "surface_reuse_penalty": 0.0364,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9231,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5833,
+    "section_alignment_fit_avg": 2.5562,
+    "section_alignment_low_fit_rate": 0.2308,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "core_fit_avg": 1.9029,
+    "core_rank_percentile_avg": 0.8705,
+    "core_stage_core_rate": 0.5714,
+    "weak_core_rate": 0.4286,
+    "commodity_primary_item_focus_rate": 0.9412,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.9041,
+    "commodity_primary_rank_avg": 2.7647
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 0.6667,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.75,
+      "policy": 0.6667,
+      "dist": 0.5,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 0.7682,
+      "policy": 0.7,
+      "dist": 1.0,
+      "pest": 0.7
+    },
+    "core_quality": {
+      "supply": 0.1055,
+      "policy": 0.8,
+      "dist": 1.0,
+      "pest": 0.7942
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "농산물 판로지원부터 아이디어 적극 발굴… 40대 이하 청년 영농인 26만...",
+      "section": "dist",
+      "age_hours": 20.6
+    },
+    {
+      "title": "평창 대관령원예농협, 영농철 맞아 감자 모종 심기 거들어",
+      "section": "supply",
+      "age_hours": 19.6
+    },
+    {
+      "title": "경북 고추 수급 안정 ‘시동’…영양에 100억 규모 출하조절 시설",
+      "section": "supply",
+      "age_hours": 19.4
+    },
+    {
+      "title": "동서울농협, ‘오이데이’ 맞아 도농상생 구례오이 판촉 행사",
+      "section": "dist",
+      "age_hours": 16.2
+    },
+    {
+      "title": "제주도, 고온다습 봄날씨 농작물 병해충 철저 관리 당부",
+      "section": "pest",
+      "age_hours": 15.8
+    },
+    {
+      "title": "유망 K-푸드 발굴하려면…“품목 넘어 품종별로 타깃 국가 세분화해야”",
+      "section": "dist",
+      "age_hours": 15.7
+    },
+    {
+      "title": "경기 광주농협, 시설채소 작목반 포장재 지원…영농비 부담 완화",
+      "section": "policy",
+      "age_hours": 15.2
+    },
+    {
+      "title": "구례군, ' 과수화상병 봄철 방제 ' 마쳤다... 청정지역 지키는 현장 예찰...",
+      "section": "pest",
+      "age_hours": 14.7
+    }
+  ],
+  "improvement_hints": [
+    "선정 결과가 약한 섹션이 있습니다: policy. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.",
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "core_quality"
+    ],
+    "section_card_min_fit": {
+      "default": 0.88,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.3,
+    "high_score_low_fit_rescue_margin": 4.0,
+    "tail_score_floor_delta": 0.6,
+    "core_fit_min": {
+      "default": 1.28,
+      "supply": 1.48,
+      "policy": 1.48,
+      "dist": 1.68,
+      "pest": 1.28
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.12,
+      "supply": 1.3,
+      "policy": 1.27,
+      "dist": 1.47,
+      "pest": 1.12
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다."
+  ]
+}
