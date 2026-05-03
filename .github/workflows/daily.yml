@@ -72,6 +72,7 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
+          KAKAO_FAIL_OPEN: 'true'
           GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
           PUBLISH_MODE: github_pages
@@ -189,4 +190,14 @@ jobs:
 
           if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.md" ]; then
             cat "reports/evals/${{ steps.vars.outputs.report_date }}.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce Kakao delivery
+        if: always()
+        shell: bash
+        run: |
+          actual='${{ steps.kakao_status.outputs.actual }}'
+          if [ "$actual" != 'success' ]; then
+            echo "::error::Kakao delivery did not complete successfully: $actual"
+            exit 1
           fi
