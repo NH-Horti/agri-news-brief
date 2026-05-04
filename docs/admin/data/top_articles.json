@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T00:07:38+09:00",
+  "generated_at": "2026-05-05T01:15:36+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -130,6 +130,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-04-30.html#sec-supply",
       "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64462"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "bb50c4c4619a",
+      "title": "폭우·고온 등 이상 기상으로 마늘 농가 '비상'",
+      "report_date": "2026-05-04",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.jibs.co.kr",
+      "clicks": 4,
+      "users": 3,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -646,6 +659,32 @@
       "section": "supply",
       "surface": "briefing_open",
       "target_domain": "www.seoul.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "2af6459746dc",
+      "title": "대경 사과 원예농협 상주지점, 산지유통센터(APC) 준공",
+      "report_date": "2026-05-04",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.kbmaeil.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-dist",
+      "source_url": "https://www.kbmaeil.com/article/20260503500119"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "bb50c4c4619a",
+      "title": "폭우·고온 등 이상 기상으로 마늘 농가 '비상'",
+      "report_date": "2026-05-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.jibs.co.kr",
       "clicks": 2,
       "users": 1,
       "archive_url": "",
@@ -2743,6 +2782,84 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "6109d7eb8144",
+      "title": "만감류 해충, 초기 대응이 결실 좌우",
+      "report_date": "2026-05-04",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "sjbnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-pest",
+      "source_url": "https://sjbnews.com/news/news.php?number=877590"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "b973d94379d5",
+      "title": "농산물 전반 에 걸친 ' 가격 하락 '에도 헛물켜는 정부 정책",
+      "report_date": "2026-05-04",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70332"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "cbe40c9211c6",
+      "title": "임실군, 고품질 고추 생산 기반 구축에 '잰걸음'",
+      "report_date": "2026-05-04",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.ajunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-pest",
+      "source_url": "https://www.ajunews.com/view/20260501110257574"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "cbe40c9211c6",
+      "title": "임실군, 고품질 고추 생산 기반 구축에 '잰걸음'",
+      "report_date": "2026-05-04",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.ajunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-pest",
+      "source_url": "https://www.ajunews.com/view/20260501110257574"
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "d0c35c29852f",
+      "title": "[자막뉴스] 수출 호황 속 가슴 졸이는 상황...사실상 대란 임박",
+      "report_date": "2026-05-04",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.ytn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-04",
+      "article_id": "fba2e7ce0d1b",
+      "title": "과수화상병 방제 , ‘새순’ 자랄 때도 약제 쓰면 효과",
+      "report_date": "2026-05-04",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "sjbnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-04.html#sec-pest",
+      "source_url": "https://sjbnews.com/news/news.php?number=877597"
     }
   ]
 }
