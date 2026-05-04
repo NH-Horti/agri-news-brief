@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-05-04T07:23:26+09:00",
-  "build_tag": "f248299",
+  "generated_at_kst": "2026-05-04T09:42:53+09:00",
+  "build_tag": "fe7993b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -9455,9 +9455,9 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 34.28,
-      "tail_cut": 38.08,
-      "core_min": 34.28,
+      "threshold": 33.88,
+      "tail_cut": 37.68,
+      "core_min": 33.88,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 106,
@@ -9498,7 +9498,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 46.28,
+          "score": 45.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -9626,7 +9626,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.08,
+          "score": 28.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -10746,7 +10746,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.53,
+          "score": 7.33,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -11162,38 +11162,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 2.97,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "연합뉴스",
-          "domain": "yna.co.kr",
-          "title": "삼겹살도 수박도 '조각' 낸다…유통가 점령한 '한입 소비'",
-          "url": "https://www.yna.co.kr/view/AKR20260430212100030?input=1195m",
-          "reason": "below_threshold",
-          "fit_score": -0.52,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양념채소 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.3
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 2.82,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -11221,6 +11189,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 2.77,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "연합뉴스",
+          "domain": "yna.co.kr",
+          "title": "삼겹살도 수박도 '조각' 낸다…유통가 점령한 '한입 소비'",
+          "url": "https://www.yna.co.kr/view/AKR20260430212100030?input=1195m",
+          "reason": "below_threshold",
+          "fit_score": -0.52,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양념채소 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.3
           }
         },
         {
@@ -11466,12 +11466,12 @@
           "sample_title": "제주 마늘밭에 AI 드론 뜬다… 수확기마다 반복되는 농작물 절도 막는다"
         },
         {
-          "seed": "양념채소",
-          "rep": "양념채소",
-          "hits": 1,
-          "selected_hits": 0,
+          "seed": "비닐",
+          "rep": "비닐",
+          "hits": 5,
+          "selected_hits": 1,
           "missing": false,
-          "sample_title": "“될성부른 쪽파 , 종구부터 알아본다”...충남도농기원 ‘예건 관리’ ..."
+          "sample_title": "포장재 수급 '흔들'...비닐·플라스틱 바닥 보인다"
         },
         {
           "seed": "공동선별",
@@ -12007,7 +12007,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 25.18,
+          "score": 24.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -12103,38 +12103,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.91,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "강원일보",
-          "domain": "kwnews.co.kr",
-          "title": "철원군, 원예작물병 무료 진단 서비스 운영… 농가 참여 당부",
-          "url": "https://www.kwnews.co.kr/page/view/2026050250019500000",
-          "reason": "below_threshold",
-          "fit_score": 2.13,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "파프리카 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 22.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -12162,6 +12130,38 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.51,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "강원일보",
+          "domain": "kwnews.co.kr",
+          "title": "철원군, 원예작물병 무료 진단 서비스 운영… 농가 참여 당부",
+          "url": "https://www.kwnews.co.kr/page/view/2026050250019500000",
+          "reason": "below_threshold",
+          "fit_score": 2.13,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "파프리카 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.92,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -12263,7 +12263,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.65,
+          "score": 20.45,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -12679,7 +12679,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.44,
+          "score": 13.24,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -12743,7 +12743,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.73,
+          "score": 11.53,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13095,38 +13095,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.32,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "스트레이트뉴스",
-          "domain": "straightnews.co.kr",
-          "title": "'보수 텃밭' 영양, 이종열 광역의원 단수 공천 확정... \"재선 가도 청신...",
-          "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=301523",
-          "reason": "below_threshold",
-          "fit_score": 0.18,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "과수 정책",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 2,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 4.19,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -13152,6 +13120,38 @@
             "strength": 1,
             "korea": 6,
             "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 4.12,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "스트레이트뉴스",
+          "domain": "straightnews.co.kr",
+          "title": "'보수 텃밭' 영양, 이종열 광역의원 단수 공천 확정... \"재선 가도 청신...",
+          "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=301523",
+          "reason": "below_threshold",
+          "fit_score": 0.18,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "과수 정책",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 2,
+            "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
           }
@@ -13463,12 +13463,12 @@
           "sample_title": "농협, 영농철 맞아 전국 농촌서 '구슬땀'…\"일손돕기 계속하겠다\""
         },
         {
-          "seed": "파프리카",
-          "rep": "파프리카",
-          "hits": 2,
-          "selected_hits": 1,
+          "seed": "딸기",
+          "rep": "딸기",
+          "hits": 4,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "물가 뛰는데 채솟값은 급락…양파 42%↓·배추 25%↓"
+          "sample_title": "“라면 다음은 딸기·고추장…K푸드 영토 넓힐것”"
         },
         {
           "seed": "가지",
@@ -13513,9 +13513,9 @@
       ]
     },
     "dist": {
-      "threshold": 19.4,
-      "tail_cut": 25.0,
-      "core_min": 19.4,
+      "threshold": 19.2,
+      "tail_cut": 24.8,
+      "core_min": 19.2,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 26,
@@ -13620,7 +13620,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 32.4,
+          "score": 32.2,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13940,7 +13940,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.04,
+          "score": 8.64,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -14849,7 +14849,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.98,
+          "score": 20.58,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
