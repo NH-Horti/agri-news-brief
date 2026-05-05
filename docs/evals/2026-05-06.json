@@ -1,0 +1,204 @@
+{
+  "report_date": "2026-05-06",
+  "generated_at_kst": "2026-05-06T07:16:26+09:00",
+  "status": "pass",
+  "overall_score": 92.77,
+  "scores": {
+    "completeness": 93.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 83.75,
+    "section_alignment": 79.33,
+    "core_quality": 78.7,
+    "commodity_board_quality": 88.9
+  },
+  "counts": {
+    "briefing_total": 14,
+    "commodity_total": 43,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 3,
+      "dist": 3,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 0,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 24,
+      "policy": 10,
+      "dist": 6,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 141,
+      "policy": 121,
+      "dist": 38,
+      "pest": 13
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.7857,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.5714,
+    "summary_opening_diversity": 0.9286,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.4583,
+    "section_alignment_fit_avg": 2.8336,
+    "section_alignment_low_fit_rate": 0.2143,
+    "section_alignment_cross_gap_rate": 0.1429,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "core_fit_avg": 2.3583,
+    "core_rank_percentile_avg": 0.874,
+    "core_stage_core_rate": 0.6667,
+    "weak_core_rate": 0.5,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8235,
+    "commodity_primary_weak_rate": 0.0588,
+    "commodity_primary_fit_avg": 1.2659,
+    "commodity_primary_rank_avg": 2.4706
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.4167,
+      "policy": 0.75,
+      "dist": 0.4167,
+      "pest": 0.25
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 0.7,
+      "dist": 0.7,
+      "pest": 0.7682
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 0.8,
+      "dist": 1.0,
+      "pest": 0.6516
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "과수화상병 방제 , ‘새순’ 자랄 때도 약제 쓰면 효과",
+      "section": "pest",
+      "age_hours": 47.3
+    },
+    {
+      "title": "과수화상병 방제, 꽃 진 뒤 ‘새순’ 자랄 때 방제",
+      "section": "pest",
+      "age_hours": 44.8
+    },
+    {
+      "title": "\"오늘 저녁은 미나리 삼겹살?\" 미나리·대파값 내렸다던데...",
+      "section": "policy",
+      "age_hours": 41.3
+    },
+    {
+      "title": "고온·건조 날씨에 응애 비상, 방제전략 달라져야",
+      "section": "pest",
+      "age_hours": 40.9
+    },
+    {
+      "title": "양파 경남협의회, 정기총회 개최… 수급 안정 대책 논의",
+      "section": "supply",
+      "age_hours": 40.7
+    },
+    {
+      "title": "민형배 후보, “각화 농산물도매시장 유통구조 혁신 필요”",
+      "section": "supply",
+      "age_hours": 40.1
+    },
+    {
+      "title": "민형배, 각화 농산물 도매시장 찾아 \"유통구조 혁신\" 강조",
+      "section": "dist",
+      "age_hours": 39.6
+    },
+    {
+      "title": "호남청과 \" 감귤 신품종, 온라인 판로 뚫는다\"",
+      "section": "dist",
+      "age_hours": 36.7
+    }
+  ],
+  "improvement_hints": [
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.",
+    "리콜 시드 결손이 보입니다: supply, dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "section_alignment_severe",
+      "core_quality"
+    ],
+    "section_card_min_fit": {
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
+      "dist": 1.05,
+      "pest": 0.9
+    },
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.28,
+      "supply": 1.48,
+      "policy": 1.48,
+      "dist": 1.68,
+      "pest": 1.28
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.12,
+      "supply": 1.3,
+      "policy": 1.27,
+      "dist": 1.47,
+      "pest": 1.12
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다."
+  ]
+}
