@@ -1,11 +1,12 @@
-## Daily Eval (2026-05-04)
-- Overall: **95.13** (pass)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=96.1, retrieval=84.4, section_fit=87.1, core=88.0, commodity=86.1
-- Briefing cards: 14 / Commodity cards: 32
-- Sections: supply:3/3 raw=109, policy:4/3 raw=61, dist:3/3 raw=26, pest:4/2 raw=21
-- Metrics: title_unique=1.00, domain_diversity=0.79, summary_presence=1.00, summary_numeric=0.93, fresh_72h=1.00, fit_avg=3.10, weak_core=0.25, commodity_weak=0.00
+## Daily Eval (2026-05-06)
+- Overall: **92.77** (pass)
+- Scores: completeness=93.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=83.8, section_fit=79.3, core=78.7, commodity=88.9
+- Briefing cards: 14 / Commodity cards: 43
+- Sections: supply:4/3 raw=141, policy:3/3 raw=121, dist:3/3 raw=38, pest:4/2 raw=13
+- Metrics: title_unique=1.00, domain_diversity=0.79, summary_presence=1.00, summary_numeric=0.57, fresh_72h=1.00, fit_avg=2.83, weak_core=0.50, commodity_weak=0.06
 
 ### Improvement Hints
+- 섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.
 - 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
 - 리콜 시드 결손이 보입니다: supply, dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
 
