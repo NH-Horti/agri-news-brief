@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T01:15:36+09:00",
+  "generated_at": "2026-05-07T01:12:25+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -72,6 +72,12 @@
       "count": 1,
       "section": "policy",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-05-06",
+      "count": 1,
+      "section": "fruit_flower",
+      "surface": "commodity_group_chip"
     }
   ],
   "view_switch": [
@@ -167,6 +173,12 @@
     },
     {
       "date": "2026-04-29",
+      "count": 2,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-05-06",
       "count": 2,
       "from_view": "briefing",
       "to_view": "commodity"
