@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T01:12:25+09:00",
+  "generated_at": "2026-05-08T01:19:22+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -679,19 +679,6 @@
     },
     {
       "date": "2026-05-06",
-      "article_id": "8df5b7a28dd5",
-      "title": "밥상에서 사라진 감자 볶음…중동 전쟁에 감자 값 40% '급등'",
-      "report_date": "2026-05-06",
-      "section": "supply",
-      "surface": "commodity_primary",
-      "target_domain": "www.mt.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-05-06",
       "article_id": "96eff78ba2ae",
       "title": "제주시-농협도매부, 농산물 가격안정 '한뜻'",
       "report_date": "2026-05-06",
@@ -715,6 +702,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-05-06.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318563"
+    },
+    {
+      "date": "2026-05-07",
+      "article_id": "c538428da6d5",
+      "title": "[단독] 파리바게뜨, 비닐 수급 이슈에 제주 감귤 주스·제주 감귤 크러시 ...",
+      "report_date": "2026-05-07",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.wikileaks-kr.org",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -2928,6 +2928,19 @@
     },
     {
       "date": "2026-05-06",
+      "article_id": "8df5b7a28dd5",
+      "title": "밥상에서 사라진 감자 볶음…중동 전쟁에 감자 값 40% '급등'",
+      "report_date": "2026-05-06",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-06",
       "article_id": "91ed857fd69c",
       "title": "[Issue+] 토마토 가격 하락 장기화에 농가 '시름'",
       "report_date": "2026-05-06",
@@ -2947,6 +2960,45 @@
       "section": "policy",
       "surface": "commodity_primary",
       "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-07",
+      "article_id": "27044558c079",
+      "title": "'카네이션 특수 실종' 5월 대목 사라진 화훼 업계 '울상'",
+      "report_date": "2026-05-07",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.domin.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-07",
+      "article_id": "df873b65e0e7",
+      "title": "\"햇 감자 , 진짜 제철은 5~6월\"",
+      "report_date": "2026-05-07",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.hankyung.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-07",
+      "article_id": "e183b7e8b329",
+      "title": "채소값 내리고 고깃값 올랐다…장바구니 물가 온도차",
+      "report_date": "2026-05-07",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.dailian.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
