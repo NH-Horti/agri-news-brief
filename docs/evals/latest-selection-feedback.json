@@ -1,17 +1,18 @@
 {
-  "report_date": "2026-05-08",
-  "generated_at_kst": "2026-05-08T07:25:12+09:00",
+  "report_date": "2026-04-24",
+  "generated_at_kst": "2026-05-09T00:57:43+09:00",
   "scores": {
-    "section_alignment": 97.43,
-    "core_quality": 95.12,
-    "commodity_board_quality": 91.26
+    "section_alignment": 91.55,
+    "core_quality": 100.0,
+    "commodity_board_quality": 87.19
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1176,
-    "section_alignment_cross_gap_rate": 0.0,
-    "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.9524,
-    "commodity_primary_issue_signal_rate": 0.9524,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0667,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
