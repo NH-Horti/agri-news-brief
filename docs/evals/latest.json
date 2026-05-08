@@ -1,83 +1,83 @@
 {
-  "report_date": "2026-05-04",
-  "generated_at_kst": "2026-05-09T00:59:05+09:00",
+  "report_date": "2026-05-07",
+  "generated_at_kst": "2026-05-09T00:59:31+09:00",
   "status": "pass",
-  "overall_score": 97.17,
+  "overall_score": 97.34,
   "scores": {
-    "completeness": 100.0,
-    "diversity": 99.47,
+    "completeness": 93.0,
+    "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 98.16,
-    "retrieval_support": 84.38,
-    "section_alignment": 95.4,
+    "freshness": 100.0,
+    "retrieval_support": 86.25,
+    "section_alignment": 99.86,
     "core_quality": 100.0,
-    "commodity_board_quality": 86.59
+    "commodity_board_quality": 97.22
   },
   "counts": {
-    "briefing_total": 14,
-    "commodity_total": 41,
+    "briefing_total": 16,
+    "commodity_total": 67,
     "commodity_primary_total": 17,
     "briefing_by_section": {
-      "supply": 3,
+      "supply": 4,
       "policy": 4,
       "dist": 3,
-      "pest": 4
+      "pest": 5
     },
     "core_by_section": {
       "supply": 1,
       "policy": 2,
-      "dist": 2,
-      "pest": 2
+      "dist": 0,
+      "pest": 1
     },
     "commodity_by_section": {
-      "supply": 21,
-      "policy": 9,
-      "dist": 4,
-      "pest": 7
+      "supply": 32,
+      "policy": 19,
+      "dist": 1,
+      "pest": 15
     },
     "raw_by_section": {
-      "supply": 109,
-      "policy": 61,
-      "dist": 26,
-      "pest": 21
+      "supply": 147,
+      "policy": 187,
+      "dist": 17,
+      "pest": 73
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
-      "dist": 3,
-      "pest": 2
+      "dist": 2,
+      "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7143,
-    "surface_reuse_penalty": 0.0545,
+    "briefing_domain_diversity_rate": 1.0,
+    "surface_reuse_penalty": 0.012,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.7143,
-    "summary_opening_diversity": 1.0,
+    "summary_numeric_rate": 0.625,
+    "summary_opening_diversity": 0.9375,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.7857,
+    "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "freshness_window_mode": "weekend_span",
-    "seed_coverage_score": 0.4792,
-    "section_alignment_fit_avg": 4.0379,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.9706,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.1429,
+    "section_alignment_weak_stage_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.7443,
-    "core_rank_percentile_avg": 0.9008,
+    "core_fit_avg": 5.525,
+    "core_rank_percentile_avg": 0.9458,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
-    "commodity_primary_item_focus_rate": 0.9412,
-    "commodity_primary_issue_signal_rate": 0.9412,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8824,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 1.3571,
-    "commodity_primary_rank_avg": 2.3529
+    "commodity_primary_fit_avg": 0.4818,
+    "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
     "briefing_fill": {
@@ -89,7 +89,7 @@
     "core_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.0,
       "pest": 1.0
     },
     "retrieval_pool": {
@@ -99,9 +99,9 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.4167,
-      "policy": 0.6667,
-      "dist": 0.4167,
+      "supply": 0.6667,
+      "policy": 0.5833,
+      "dist": 0.5,
       "pest": 0.4167
     },
     "section_alignment": {
@@ -111,57 +111,57 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 0.9428,
+      "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.9354
+      "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "임실군, 고품질 고추 생산 기반 구축에 '잰걸음'",
+      "title": "경기농기원, 과수화상병 차단 총력…15개 시군 집중점검",
       "section": "pest",
-      "age_hours": 66.9
+      "age_hours": 21.2
     },
     {
-      "title": "“농가 피땀 지켜라”… 마늘 밭에 AI 치안 드론 띄운다",
-      "section": "supply",
-      "age_hours": 64.0
-    },
-    {
-      "title": "압구정역 한편에 자리잡은 ‘이 매장’…도농상생 유통 모델 ‘눈길’",
-      "section": "dist",
-      "age_hours": 61.0
-    },
-    {
-      "title": "[자막뉴스] 수출 호황 속 가슴 졸이는 상황...사실상 대란 임박",
-      "section": "dist",
-      "age_hours": 22.4
-    },
-    {
-      "title": "대경 사과 원예농협 상주지점, 산지유통센터(APC) 준공",
-      "section": "dist",
-      "age_hours": 19.8
-    },
-    {
-      "title": "농진청 \"사과·배 새순기 화상병 방제 …비 전후 2회 약제 살포해야\"",
-      "section": "pest",
-      "age_hours": 19.0
-    },
-    {
-      "title": "2026년 농축산물 가격 안정 기금 운용심의위원회 개최",
+      "title": "중동發 오일쇼크 현실화…4월 물가 2.6% 급등, 21개월 만에 최고",
       "section": "policy",
-      "age_hours": 18.0
+      "age_hours": 20.5
     },
     {
-      "title": "영양군, 농축산물 가격안정기금 심의…고추· 사과 ·한우 기준가격 확정",
-      "section": "supply",
-      "age_hours": 15.9
+      "title": "중동 변수에도 농축산물 물가 1.1% ↓…축산물 5.5% 상승",
+      "section": "policy",
+      "age_hours": 20.1
+    },
+    {
+      "title": "국제유가 '직격탄'에 4월 물가 2.6%↑… 농산물은 하락 안정",
+      "section": "policy",
+      "age_hours": 19.5
+    },
+    {
+      "title": "단양군, 과수화상병 집중 예찰… 과수농가 352곳 대상",
+      "section": "pest",
+      "age_hours": 18.8
+    },
+    {
+      "title": "정영철 영동군수 예비후보, 10대 대표 공약 발표",
+      "section": "dist",
+      "age_hours": 18.5
+    },
+    {
+      "title": "기후 위기의 습격과 신고의 한계, 신품종 배가 여는 새로운 소비 지도",
+      "section": "dist",
+      "age_hours": 16.5
+    },
+    {
+      "title": "청송군 미생물배양실, 농가 호응 속 이용 증가",
+      "section": "pest",
+      "age_hours": 15.1
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: supply, dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
