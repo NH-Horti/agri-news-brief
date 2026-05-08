@@ -1,24 +1,24 @@
 {
   "report_date": "2026-05-08",
-  "generated_at_kst": "2026-05-08T07:25:12+09:00",
+  "generated_at_kst": "2026-05-09T00:59:44+09:00",
   "status": "pass",
-  "overall_score": 97.71,
+  "overall_score": 98.31,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 85.0,
-    "section_alignment": 97.43,
-    "core_quality": 95.12,
-    "commodity_board_quality": 91.26
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 90.6
   },
   "counts": {
-    "briefing_total": 17,
-    "commodity_total": 71,
+    "briefing_total": 16,
+    "commodity_total": 72,
     "commodity_primary_total": 21,
     "briefing_by_section": {
-      "supply": 5,
+      "supply": 4,
       "policy": 4,
       "dist": 3,
       "pest": 5
@@ -27,12 +27,12 @@
       "supply": 2,
       "policy": 2,
       "dist": 1,
-      "pest": 2
+      "pest": 1
     },
     "commodity_by_section": {
-      "supply": 48,
-      "policy": 12,
-      "dist": 4,
+      "supply": 43,
+      "policy": 17,
+      "dist": 5,
       "pest": 7
     },
     "raw_by_section": {
@@ -50,11 +50,11 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.9412,
+    "briefing_domain_diversity_rate": 0.875,
     "surface_reuse_penalty": 0.0227,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 1.0,
+    "summary_numeric_rate": 0.9375,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -62,20 +62,22 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5,
-    "section_alignment_fit_avg": 3.4747,
-    "section_alignment_low_fit_rate": 0.1176,
+    "section_alignment_fit_avg": 4.3069,
+    "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0588,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 4.0586,
-    "core_rank_percentile_avg": 0.8967,
-    "core_stage_core_rate": 0.8571,
-    "weak_core_rate": 0.1429,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.6,
+    "core_rank_percentile_avg": 0.9007,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 0.9524,
     "commodity_primary_issue_signal_rate": 0.9524,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 1.0276,
-    "commodity_primary_rank_avg": 2.6667
+    "commodity_primary_fit_avg": 1.1276,
+    "commodity_primary_rank_avg": 2.619
   },
   "section_scores": {
     "briefing_fill": {
@@ -104,13 +106,13 @@
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 0.7682,
+      "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.8364
+      "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.7766,
+      "policy": 0.9766,
       "dist": 0.9385,
       "pest": 1.0
     }
@@ -120,11 +122,6 @@
       "title": "‘재배면적’ 마늘 늘고 양파 줄고…가격도 희비 교차",
       "section": "supply",
       "age_hours": 22.1
-    },
-    {
-      "title": "강원도농업기술원, 과수화상병 예방 수칙 준수 당부",
-      "section": "pest",
-      "age_hours": 22.0
     },
     {
       "title": "단양군, 과수화상병 차단 위해 개화기 집중 예찰 총력",
@@ -142,11 +139,6 @@
       "age_hours": 20.2
     },
     {
-      "title": "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
-      "section": "supply",
-      "age_hours": 20.0
-    },
-    {
       "title": "배추·무 내리고 참외·수박 오르고…5월 장바구니 품목별 '명암'",
       "section": "supply",
       "age_hours": 19.6
@@ -155,8 +147,19 @@
       "title": "채소값, 5월도 안정 세 전망…곡물·육계는 중동·변수에 '들썩'",
       "section": "policy",
       "age_hours": 19.1
+    },
+    {
+      "title": "도매시장 법인협회, 청년 농업인 육성 박차",
+      "section": "dist",
+      "age_hours": 18.5
+    },
+    {
+      "title": "[녹색] \"새순 자랄 때도 방제 \"... 과수화상병 예방 효과",
+      "section": "pest",
+      "age_hours": 17.6
     }
   ],
+  "content_false_positive_samples": [],
   "improvement_hints": [
     "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
