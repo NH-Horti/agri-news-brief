@@ -1,22 +1,22 @@
 {
-  "report_date": "2026-05-07",
-  "generated_at_kst": "2026-05-09T00:59:31+09:00",
+  "report_date": "2026-05-08",
+  "generated_at_kst": "2026-05-09T00:59:44+09:00",
   "status": "pass",
-  "overall_score": 97.34,
+  "overall_score": 98.31,
   "scores": {
-    "completeness": 93.0,
+    "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 86.25,
+    "retrieval_support": 85.0,
     "section_alignment": 99.86,
     "core_quality": 100.0,
-    "commodity_board_quality": 97.22
+    "commodity_board_quality": 90.6
   },
   "counts": {
     "briefing_total": 16,
-    "commodity_total": 67,
-    "commodity_primary_total": 17,
+    "commodity_total": 72,
+    "commodity_primary_total": 21,
     "briefing_by_section": {
       "supply": 4,
       "policy": 4,
@@ -24,60 +24,60 @@
       "pest": 5
     },
     "core_by_section": {
-      "supply": 1,
+      "supply": 2,
       "policy": 2,
-      "dist": 0,
+      "dist": 1,
       "pest": 1
     },
     "commodity_by_section": {
-      "supply": 32,
-      "policy": 19,
-      "dist": 1,
-      "pest": 15
+      "supply": 43,
+      "policy": 17,
+      "dist": 5,
+      "pest": 7
     },
     "raw_by_section": {
-      "supply": 147,
-      "policy": 187,
-      "dist": 17,
-      "pest": 73
+      "supply": 168,
+      "policy": 162,
+      "dist": 43,
+      "pest": 30
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
-      "dist": 2,
+      "dist": 3,
       "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 1.0,
-    "surface_reuse_penalty": 0.012,
+    "briefing_domain_diversity_rate": 0.875,
+    "surface_reuse_penalty": 0.0227,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.625,
-    "summary_opening_diversity": 0.9375,
+    "summary_numeric_rate": 0.9375,
+    "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.5417,
-    "section_alignment_fit_avg": 3.9706,
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 4.3069,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 5.525,
-    "core_rank_percentile_avg": 0.9458,
+    "core_fit_avg": 4.6,
+    "core_rank_percentile_avg": 0.9007,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
-    "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8824,
+    "commodity_primary_item_focus_rate": 0.9524,
+    "commodity_primary_issue_signal_rate": 0.9524,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.4818,
-    "commodity_primary_rank_avg": 3.0
+    "commodity_primary_fit_avg": 1.1276,
+    "commodity_primary_rank_avg": 2.619
   },
   "section_scores": {
     "briefing_fill": {
@@ -89,7 +89,7 @@
     "core_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.0,
+      "dist": 1.0,
       "pest": 1.0
     },
     "retrieval_pool": {
@@ -99,9 +99,9 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.6667,
+      "supply": 0.5833,
       "policy": 0.5833,
-      "dist": 0.5,
+      "dist": 0.4167,
       "pest": 0.4167
     },
     "section_alignment": {
@@ -112,56 +112,56 @@
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 1.0,
-      "dist": 1.0,
+      "policy": 0.9766,
+      "dist": 0.9385,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "경기농기원, 과수화상병 차단 총력…15개 시군 집중점검",
+      "title": "‘재배면적’ 마늘 늘고 양파 줄고…가격도 희비 교차",
+      "section": "supply",
+      "age_hours": 22.1
+    },
+    {
+      "title": "단양군, 과수화상병 차단 위해 개화기 집중 예찰 총력",
       "section": "pest",
-      "age_hours": 21.2
+      "age_hours": 21.7
     },
     {
-      "title": "중동發 오일쇼크 현실화…4월 물가 2.6% 급등, 21개월 만에 최고",
+      "title": "중동전쟁에 비료·비닐·사료까지 줄인상…농가 덮친 '3중고'",
       "section": "policy",
-      "age_hours": 20.5
+      "age_hours": 20.8
     },
     {
-      "title": "중동 변수에도 농축산물 물가 1.1% ↓…축산물 5.5% 상승",
+      "title": "정부, 할당관세 설탕 시중 방출 4개월로 단축…부당이득 차단",
       "section": "policy",
-      "age_hours": 20.1
+      "age_hours": 20.2
     },
     {
-      "title": "국제유가 '직격탄'에 4월 물가 2.6%↑… 농산물은 하락 안정",
+      "title": "배추·무 내리고 참외·수박 오르고…5월 장바구니 품목별 '명암'",
+      "section": "supply",
+      "age_hours": 19.6
+    },
+    {
+      "title": "채소값, 5월도 안정 세 전망…곡물·육계는 중동·변수에 '들썩'",
       "section": "policy",
-      "age_hours": 19.5
+      "age_hours": 19.1
     },
     {
-      "title": "단양군, 과수화상병 집중 예찰… 과수농가 352곳 대상",
-      "section": "pest",
-      "age_hours": 18.8
-    },
-    {
-      "title": "정영철 영동군수 예비후보, 10대 대표 공약 발표",
+      "title": "도매시장 법인협회, 청년 농업인 육성 박차",
       "section": "dist",
       "age_hours": 18.5
     },
     {
-      "title": "기후 위기의 습격과 신고의 한계, 신품종 배가 여는 새로운 소비 지도",
-      "section": "dist",
-      "age_hours": 16.5
-    },
-    {
-      "title": "청송군 미생물배양실, 농가 호응 속 이용 증가",
+      "title": "[녹색] \"새순 자랄 때도 방제 \"... 과수화상병 예방 효과",
       "section": "pest",
-      "age_hours": 15.1
+      "age_hours": 17.6
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
