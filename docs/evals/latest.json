@@ -1,81 +1,83 @@
 {
-  "report_date": "2026-05-08",
-  "generated_at_kst": "2026-05-08T07:25:12+09:00",
+  "report_date": "2026-04-24",
+  "generated_at_kst": "2026-05-09T00:57:43+09:00",
   "status": "pass",
-  "overall_score": 97.71,
+  "overall_score": 97.25,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 85.0,
-    "section_alignment": 97.43,
-    "core_quality": 95.12,
-    "commodity_board_quality": 91.26
+    "retrieval_support": 86.25,
+    "section_alignment": 91.55,
+    "core_quality": 100.0,
+    "commodity_board_quality": 87.19
   },
   "counts": {
-    "briefing_total": 17,
-    "commodity_total": 71,
-    "commodity_primary_total": 21,
+    "briefing_total": 15,
+    "commodity_total": 49,
+    "commodity_primary_total": 18,
     "briefing_by_section": {
-      "supply": 5,
-      "policy": 4,
-      "dist": 3,
-      "pest": 5
+      "supply": 3,
+      "policy": 3,
+      "dist": 5,
+      "pest": 4
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 1,
+      "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 48,
-      "policy": 12,
-      "dist": 4,
-      "pest": 7
+      "supply": 28,
+      "policy": 10,
+      "dist": 5,
+      "pest": 6
     },
     "raw_by_section": {
-      "supply": 168,
-      "policy": 162,
-      "dist": 43,
-      "pest": 30
+      "supply": 139,
+      "policy": 138,
+      "dist": 32,
+      "pest": 20
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
       "dist": 3,
-      "pest": 3
+      "pest": 2
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.9412,
-    "surface_reuse_penalty": 0.0227,
+    "briefing_domain_diversity_rate": 0.8667,
+    "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 1.0,
+    "summary_numeric_rate": 0.8,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.5,
-    "section_alignment_fit_avg": 3.4747,
-    "section_alignment_low_fit_rate": 0.1176,
-    "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0588,
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.5913,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0667,
+    "section_alignment_weak_stage_rate": 0.1333,
+    "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 4.0586,
-    "core_rank_percentile_avg": 0.8967,
-    "core_stage_core_rate": 0.8571,
-    "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.9524,
-    "commodity_primary_issue_signal_rate": 0.9524,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.6425,
+    "core_rank_percentile_avg": 0.9394,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 1.0276,
-    "commodity_primary_rank_avg": 2.6667
+    "commodity_primary_fit_avg": 1.0083,
+    "commodity_primary_rank_avg": 2.2778
   },
   "section_scores": {
     "briefing_fill": {
@@ -97,68 +99,69 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.5833,
+      "supply": 0.75,
       "policy": 0.5833,
-      "dist": 0.4167,
-      "pest": 0.4167
+      "dist": 0.3333,
+      "pest": 0.5
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 0.7682,
+      "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.8364
+      "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.7766,
-      "dist": 0.9385,
+      "policy": 1.0,
+      "dist": 0.9598,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "‘재배면적’ 마늘 늘고 양파 줄고…가격도 희비 교차",
-      "section": "supply",
-      "age_hours": 22.1
-    },
-    {
-      "title": "강원도농업기술원, 과수화상병 예방 수칙 준수 당부",
+      "title": "미래유산 지켜야 하는데 ‘ 뿔나방 ’에 화들짝···‘짭짤이 토마토 ’ ...",
       "section": "pest",
-      "age_hours": 22.0
+      "age_hours": 24.0
     },
     {
-      "title": "단양군, 과수화상병 차단 위해 개화기 집중 예찰 총력",
+      "title": "[산지 확대경] 시설봄 배추 , 작황 대체로 양호…재배면적은 줄어",
+      "section": "supply",
+      "age_hours": 23.0
+    },
+    {
+      "title": "LPG부탄 유류세 추가 인하, 리터당 51원↓…석유제품 불법행위 99건 적발",
+      "section": "policy",
+      "age_hours": 21.0
+    },
+    {
+      "title": "[녹색] 농진청 \" 배추 아주심기 전 씨스트선충 방제 꼭 하세요\"",
       "section": "pest",
-      "age_hours": 21.7
+      "age_hours": 20.9
     },
     {
-      "title": "중동전쟁에 비료·비닐·사료까지 줄인상…농가 덮친 '3중고'",
+      "title": "[곡성소식]수출 차질 중소기업 지방세 납부 기한 연장 등",
+      "section": "dist",
+      "age_hours": 18.7
+    },
+    {
+      "title": "\"과수화상병, 개화기 방제에 사활 걸어야\"",
+      "section": "pest",
+      "age_hours": 18.6
+    },
+    {
+      "title": "국산참외 베트남 수출 기간 연장 추진",
       "section": "policy",
-      "age_hours": 20.8
+      "age_hours": 16.8
     },
     {
-      "title": "정부, 할당관세 설탕 시중 방출 4개월로 단축…부당이득 차단",
-      "section": "policy",
-      "age_hours": 20.2
-    },
-    {
-      "title": "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
+      "title": "제주 육성 만감류 4품종 시장 안착 기대",
       "section": "supply",
-      "age_hours": 20.0
-    },
-    {
-      "title": "배추·무 내리고 참외·수박 오르고…5월 장바구니 품목별 '명암'",
-      "section": "supply",
-      "age_hours": 19.6
-    },
-    {
-      "title": "채소값, 5월도 안정 세 전망…곡물·육계는 중동·변수에 '들썩'",
-      "section": "policy",
-      "age_hours": 19.1
+      "age_hours": 14.7
     }
   ],
+  "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
