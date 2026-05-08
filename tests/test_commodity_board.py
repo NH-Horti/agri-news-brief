@@ -732,6 +732,29 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(cucumber["article_count"], 0)
         self.assertEqual(len(cucumber["extra_articles"]), 0)
 
+    def test_board_rejects_spaced_cucumber_company_stock_story_with_scraped_agri_junk(self):
+        article = self._make_article(
+            "supply",
+            "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
+            "오이솔루션 주가와 광통신 장비 기대감을 다룬 증권 기사다. 페이지 하단에는 가락시장 종사자와 농산물 유통 기사 목록이 섞여 있다.",
+            "https://www.cbci.co.kr/news/articleView.html?idxno=572803",
+        )
+        article.topic = "오이"
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        cucumber = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "cucumber"
+        )
+
+        self.assertFalse(cucumber["active"])
+        self.assertEqual(cucumber["article_count"], 0)
+        self.assertEqual(len(cucumber["extra_articles"]), 0)
+
     def test_board_rejects_foodservice_dinner_story_for_napa_cabbage(self):
         article = self._make_article(
             "dist",

@@ -798,6 +798,28 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://www.mt.co.kr/politics/2026/01/01/market-visit")
         self.assertIsNone(best, msg=f"scores={scores}")
 
+    def test_supply_cucumber_company_stock_story_is_rejected_even_with_scraped_agri_junk(self):
+        title = "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에"
+        desc = (
+            "오이솔루션 주가는 광통신 장비 기대감과 거래대금 증가로 장중 상한가를 기록했다. "
+            "기사 하단에는 가락시장 종사자와 농산물 유통 기사 목록이 함께 노출됐다."
+        )
+        url = "https://www.cbci.co.kr/news/articleView.html?idxno=572803"
+        best, scores = self._best_section(title, desc, url)
+        self.assertIsNone(best, msg=f"scores={scores}")
+        self.assertTrue(main.is_commodity_corporate_stock_context(title, desc))
+
+    def test_dist_political_market_redevelopment_pledge_is_rejected(self):
+        title = "영등포 지도가 바뀐다... 김종길 의원, ‘영등포구청역~ 청과 시장 ’ 1호..."
+        desc = (
+            "국민의힘 김종길 서울시의원이 재선 도전을 앞두고 제1호 공약으로 영등포청과시장 일대 "
+            "용적률 1000% 개발, 대단지 주거지구, 첨단 물류 시설 조성을 발표했다."
+        )
+        url = "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202605071103059370818"
+        best, scores = self._best_section(title, desc, url)
+        self.assertIsNone(best, msg=f"scores={scores}")
+        self.assertTrue(main.is_dist_political_visit_context(title, desc))
+
     def test_supply_price_outlook_story_prefers_supply(self):
         title = "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락"
         desc = "저장채소와 시설채소 가격 흐름이 엇갈리고 오이와 청양고추 시세 하락 폭이 커졌다는 품목별 수급 전망 기사다."

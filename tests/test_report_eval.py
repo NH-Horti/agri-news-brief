@@ -56,6 +56,30 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(article.selection_stage, "core_final")
         self.assertTrue(article.is_core)
 
+    def test_parse_report_html_extracts_briefing_selection_metadata(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="supply"
+          data-article-title="양파 가격 폭락 우려"
+          data-href="https://example.com/onion-core"
+          data-article-id="brief123"
+          data-target-domain="example.com"
+          data-selection-fit="1.72"
+          data-selection-stage="core_final"
+          data-is-core="1"
+        >
+          <span class="badgeCore">핵심</span>
+          <div class="sum">양파 가격과 산지 출하 조절을 다룬 기사다.</div>
+        </div>
+        """
+
+        article = report_eval.parse_report_html(html)[0]
+
+        self.assertTrue(article.is_core)
+        self.assertAlmostEqual(article.selection_fit_score, 1.72)
+        self.assertEqual(article.selection_stage, "core_final")
+
     def test_evaluate_report_returns_scores_and_feedback(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
 
@@ -174,6 +198,115 @@ class ReportEvalTests(unittest.TestCase):
         self.assertTrue(any("섹션 오배치" in hint for hint in result["improvement_hints"]))
         self.assertTrue(any("핵심기사 품질" in hint for hint in result["improvement_hints"]))
         self.assertTrue(any("품목 보드 대표기사" in hint for hint in result["improvement_hints"]))
+
+    def test_evaluate_report_flags_semantic_false_positive_news(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="supply"
+          data-article-title="오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에"
+          data-href="https://www.cbci.co.kr/news/articleView.html?idxno=572803"
+          data-article-id="cbci-stock"
+          data-target-domain="cbci.co.kr"
+        >
+          <div class="sum">오이솔루션 주가와 광통신 기대감을 다룬 증권 기사다.</div>
+        </div>
+        <div
+          data-surface="briefing_card"
+          data-section="dist"
+          data-article-title="영등포 지도가 바뀐다... 김종길 의원, ‘영등포구청역~ 청과 시장 ’ 1호..."
+          data-href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202605071103059370818"
+          data-article-id="dnews-pledge"
+          data-target-domain="dnews.co.kr"
+        >
+          <div class="sum">청과시장 일대 개발 공약을 발표한 정치 기사다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-05-08T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
+                        "link": "https://www.cbci.co.kr/news/articleView.html?idxno=572803",
+                        "description": "오이솔루션 주가와 광통신 장비 기대감을 다룬 증권 기사다. 페이지 하단에 가락시장 종사자와 농산물 기사 목록이 섞였다.",
+                        "selection_fit_score": 1.9,
+                        "selection_stage": "supply_board_bridge",
+                        "score": 11.68,
+                        "pub_dt_kst": "2026-05-07T12:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [
+                    {
+                        "section": "dist",
+                        "title": "영등포 지도가 바뀐다... 김종길 의원, ‘영등포구청역~ 청과 시장 ’ 1호...",
+                        "link": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202605071103059370818",
+                        "description": "국민의힘 김종길 의원이 재선 도전을 앞두고 제1호 공약으로 영등포청과시장 일대 용적률 1000% 개발과 대단지 조성을 발표했다.",
+                        "selection_fit_score": 1.14,
+                        "selection_stage": "underfill",
+                        "score": 17.76,
+                        "pub_dt_kst": "2026-05-07T11:03:00+09:00",
+                    }
+                ],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-05-08", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["content_false_positive_rate"], 1.0)
+        reasons = {sample["reason"] for sample in result["content_false_positive_samples"]}
+        self.assertIn("finance_company_noise", reasons)
+        self.assertIn("political_market_pledge_noise", reasons)
+        self.assertLess(result["overall_score"], 85.0)
+        self.assertIn("semantic_false_positive", result["selection_guardrails"]["driver_tags"])
+        self.assertTrue(any("금융·정치성 오탐" in hint for hint in result["improvement_hints"]))
+
+    def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="supply"
+          data-article-title="[D리포트] 중국산 사과 묘목 밀수 일당 16명 적발…63만 주 압수"
+          data-href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008539140"
+          data-article-id="sbs-seedling"
+          data-target-domain="news.sbs.co.kr"
+          data-selection-fit="2.2"
+          data-selection-stage="core"
+          data-is-core="1"
+        >
+          <span class="badgeCore">핵심</span>
+          <div class="sum">사과 묘목 밀수와 과수화상병 검역 위험을 전했다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-04-30T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "[D리포트] 중국산 사과 묘목 밀수 일당 16명 적발…63만 주 압수",
+                        "link": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008539140",
+                        "description": "중국산 사과 묘목과 복숭아 묘목을 밀수한 일당이 적발됐고 검역본부가 과수화상병 유입 위험을 설명했다.",
+                        "selection_fit_score": 0.0,
+                        "selection_stage": "",
+                        "score": 88.0,
+                        "pub_dt_kst": "2026-04-30T05:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-04-30", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["content_false_positive_rate"], 0.0)
+        self.assertEqual(result["content_false_positive_samples"], [])
+        self.assertGreater(result["scores"]["core_quality"], 80.0)
 
     def test_commodity_item_focus_uses_snapshot_body_context(self) -> None:
         html = """
