@@ -1,83 +1,83 @@
 {
-  "report_date": "2026-05-06",
-  "generated_at_kst": "2026-05-09T00:59:18+09:00",
+  "report_date": "2026-05-07",
+  "generated_at_kst": "2026-05-09T00:59:31+09:00",
   "status": "pass",
-  "overall_score": 97.78,
+  "overall_score": 97.34,
   "scores": {
-    "completeness": 100.0,
+    "completeness": 93.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 83.75,
+    "retrieval_support": 86.25,
     "section_alignment": 99.86,
-    "core_quality": 93.3,
-    "commodity_board_quality": 91.35
+    "core_quality": 100.0,
+    "commodity_board_quality": 97.22
   },
   "counts": {
     "briefing_total": 16,
-    "commodity_total": 43,
+    "commodity_total": 67,
     "commodity_primary_total": 17,
     "briefing_by_section": {
-      "supply": 3,
+      "supply": 4,
       "policy": 4,
-      "dist": 4,
+      "dist": 3,
       "pest": 5
     },
     "core_by_section": {
-      "supply": 2,
+      "supply": 1,
       "policy": 2,
-      "dist": 1,
-      "pest": 2
+      "dist": 0,
+      "pest": 1
     },
     "commodity_by_section": {
-      "supply": 25,
-      "policy": 10,
-      "dist": 5,
-      "pest": 3
+      "supply": 32,
+      "policy": 19,
+      "dist": 1,
+      "pest": 15
     },
     "raw_by_section": {
-      "supply": 141,
-      "policy": 121,
-      "dist": 38,
-      "pest": 13
+      "supply": 147,
+      "policy": 187,
+      "dist": 17,
+      "pest": 73
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
-      "dist": 3,
-      "pest": 2
+      "dist": 2,
+      "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8125,
-    "surface_reuse_penalty": 0.0,
+    "briefing_domain_diversity_rate": 1.0,
+    "surface_reuse_penalty": 0.012,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.6875,
-    "summary_opening_diversity": 1.0,
+    "summary_numeric_rate": 0.625,
+    "summary_opening_diversity": 0.9375,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.4583,
-    "section_alignment_fit_avg": 3.7319,
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.9706,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.0643,
-    "core_rank_percentile_avg": 0.8712,
+    "core_fit_avg": 5.525,
+    "core_rank_percentile_avg": 0.9458,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.1429,
+    "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.8824,
-    "commodity_primary_weak_rate": 0.0588,
-    "commodity_primary_fit_avg": 1.0982,
-    "commodity_primary_rank_avg": 2.6471
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.4818,
+    "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
     "briefing_fill": {
@@ -89,7 +89,7 @@
     "core_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.0,
       "pest": 1.0
     },
     "retrieval_pool": {
@@ -99,10 +99,10 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.4167,
-      "policy": 0.75,
-      "dist": 0.4167,
-      "pest": 0.25
+      "supply": 0.6667,
+      "policy": 0.5833,
+      "dist": 0.5,
+      "pest": 0.4167
     },
     "section_alignment": {
       "supply": 1.0,
@@ -113,55 +113,55 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.9774,
-      "pest": 0.6516
+      "dist": 1.0,
+      "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "과수화상병 방제, ‘새순’ 자랄 때도 약제 쓰면 효과",
+      "title": "경기농기원, 과수화상병 차단 총력…15개 시군 집중점검",
       "section": "pest",
-      "age_hours": 47.3
+      "age_hours": 21.2
     },
     {
-      "title": "과수화상병 방제, 꽃 진 뒤 ‘새순’ 자랄 때 방제",
-      "section": "pest",
-      "age_hours": 44.8
-    },
-    {
-      "title": "\"오늘 저녁은 미나리 삼겹살?\" 미나리·대파값 내렸다던데...",
+      "title": "중동發 오일쇼크 현실화…4월 물가 2.6% 급등, 21개월 만에 최고",
       "section": "policy",
-      "age_hours": 41.3
+      "age_hours": 20.5
     },
     {
-      "title": "고온·건조 날씨에 응애 비상, 방제전략 달라져야",
+      "title": "중동 변수에도 농축산물 물가 1.1% ↓…축산물 5.5% 상승",
+      "section": "policy",
+      "age_hours": 20.1
+    },
+    {
+      "title": "국제유가 '직격탄'에 4월 물가 2.6%↑… 농산물은 하락 안정",
+      "section": "policy",
+      "age_hours": 19.5
+    },
+    {
+      "title": "단양군, 과수화상병 집중 예찰… 과수농가 352곳 대상",
       "section": "pest",
-      "age_hours": 40.9
+      "age_hours": 18.8
     },
     {
-      "title": "양파 경남협의회, 정기총회 개최… 수급 안정 대책 논의",
-      "section": "supply",
-      "age_hours": 40.7
-    },
-    {
-      "title": "민형배, 각화 농산물 도매시장 찾아 \"유통구조 혁신\" 강조",
+      "title": "정영철 영동군수 예비후보, 10대 대표 공약 발표",
       "section": "dist",
-      "age_hours": 39.6
+      "age_hours": 18.5
     },
     {
-      "title": "[2026 지방선거] [전남광주특별시장] 민형배, 각화도매시장 방문…\"AI 유...",
-      "section": "supply",
-      "age_hours": 39.3
-    },
-    {
-      "title": "호남청과 \"감귤 신품종, 온라인 판로 뚫는다\"",
+      "title": "기후 위기의 습격과 신고의 한계, 신품종 배가 여는 새로운 소비 지도",
       "section": "dist",
-      "age_hours": 36.7
+      "age_hours": 16.5
+    },
+    {
+      "title": "청송군 미생물배양실, 농가 호응 속 이용 증가",
+      "section": "pest",
+      "age_hours": 15.1
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: supply, dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
