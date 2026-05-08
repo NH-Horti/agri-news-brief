@@ -1,22 +1,22 @@
 {
   "report_date": "2026-04-27",
-  "generated_at_kst": "2026-04-27T07:44:24+09:00",
+  "generated_at_kst": "2026-05-09T00:57:56+09:00",
   "status": "pass",
-  "overall_score": 96.76,
+  "overall_score": 96.49,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 90.0,
     "retrieval_support": 83.75,
-    "section_alignment": 99.37,
-    "core_quality": 95.36,
-    "commodity_board_quality": 97.22
+    "section_alignment": 95.4,
+    "core_quality": 100.0,
+    "commodity_board_quality": 94.77
   },
   "counts": {
     "briefing_total": 14,
-    "commodity_total": 29,
-    "commodity_primary_total": 15,
+    "commodity_total": 54,
+    "commodity_primary_total": 17,
     "briefing_by_section": {
       "supply": 4,
       "policy": 3,
@@ -30,10 +30,10 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 15,
-      "policy": 6,
-      "dist": 3,
-      "pest": 5
+      "supply": 23,
+      "policy": 14,
+      "dist": 7,
+      "pest": 10
     },
     "raw_by_section": {
       "supply": 231,
@@ -54,7 +54,7 @@
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9286,
+    "summary_numeric_rate": 0.8571,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 0.3571,
@@ -62,20 +62,22 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "weekend_span",
     "seed_coverage_score": 0.4583,
-    "section_alignment_fit_avg": 2.9457,
-    "section_alignment_low_fit_rate": 0.0714,
+    "section_alignment_fit_avg": 3.3257,
+    "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0714,
+    "section_alignment_weak_stage_rate": 0.1429,
+    "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
-    "core_fit_avg": 3.0014,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 3.7614,
     "core_rank_percentile_avg": 0.9549,
-    "core_stage_core_rate": 0.8571,
-    "weak_core_rate": 0.1429,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 0.966,
-    "commodity_primary_rank_avg": 3.0
+    "commodity_primary_fit_avg": 1.1176,
+    "commodity_primary_rank_avg": 2.8235
   },
   "section_scores": {
     "briefing_fill": {
@@ -104,13 +106,13 @@
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 0.7,
+      "policy": 1.0,
       "dist": 1.0,
       "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.8,
+      "policy": 1.0,
       "dist": 0.9753,
       "pest": 1.0
     }
@@ -157,6 +159,7 @@
       "age_hours": 58.1
     }
   ],
+  "content_false_positive_samples": [],
   "improvement_hints": [
     "리콜 시드 결손이 보입니다: policy, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
