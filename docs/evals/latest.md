@@ -1,9 +1,9 @@
-## Daily Eval (2026-04-30)
-- Overall: **97.86** (pass)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=86.2, section_fit=99.9, core=91.4, commodity=91.7
-- Briefing cards: 16 / Commodity cards: 105
-- Sections: supply:4/3 raw=197, policy:4/3 raw=131, dist:4/3 raw=45, pest:4/3 raw=64
-- Metrics: title_unique=1.00, domain_diversity=0.88, summary_presence=1.00, summary_numeric=0.94, fresh_72h=1.00, fit_avg=3.18, false_positive=0.00, weak_core=0.17, commodity_weak=0.05, semantic_penalty=0.0
+## Daily Eval (2026-05-01)
+- Overall: **95.91** (pass)
+- Scores: completeness=100.0, diversity=92.5, summary=100.0, freshness=100.0, retrieval=86.2, section_fit=100.0, core=88.8, commodity=82.9
+- Briefing cards: 16 / Commodity cards: 46
+- Sections: supply:5/3 raw=169, policy:3/3 raw=83, dist:4/3 raw=34, pest:4/2 raw=14
+- Metrics: title_unique=1.00, domain_diversity=0.62, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=3.55, false_positive=0.00, weak_core=0.17, commodity_weak=0.12, semantic_penalty=0.0
 
 ### Improvement Hints
 - 리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
