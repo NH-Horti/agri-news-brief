@@ -77,6 +77,136 @@ _COMMODITY_WEAK_TERMS = (
     "브랜드",
     "시식",
 )
+_FALSE_POSITIVE_AGRI_TITLE_KEEP_TERMS = (
+    "농산물",
+    "농업",
+    "농가",
+    "원예",
+    "과수",
+    "과일",
+    "채소",
+    "화훼",
+    "도매시장",
+    "공판장",
+    "수급",
+    "출하",
+    "반입",
+    "경락",
+    "경매",
+    "작황",
+    "재배",
+    "시세",
+    "도매가격",
+    "병해충",
+    "방제",
+)
+_FALSE_POSITIVE_FINANCE_TERMS = (
+    "증권",
+    "리포트",
+    "목표주가",
+    "투자의견",
+    "매수",
+    "매도",
+    "실적",
+    "영업이익",
+    "주가",
+    "주식",
+    "코스피",
+    "코스닥",
+    "밸류에이션",
+    "시총",
+    "상장",
+    "상한가",
+    "장중",
+    "거래대금",
+    "거래량",
+    "투자자",
+    "테마주",
+    "종목",
+    "광통신",
+    "레이저다이오드",
+    "주파수",
+    "데이터센터",
+    "ai 인프라",
+)
+_FALSE_POSITIVE_COMPANY_SUFFIX_RE = re.compile(
+    r"[가-힣a-z0-9]{1,}(?:\s+)?(?:솔루션|테크|전자|바이오|시스템|홀딩스|통신|네트웍스|네트워크|장비|반도체|모빌리티|미디어|로보틱스)"
+)
+_FALSE_POSITIVE_MARKET_VENUE_TERMS = (
+    "가락시장",
+    "도매시장",
+    "공영도매시장",
+    "공판장",
+    "농산물시장",
+    "농산물 시장",
+    "청과시장",
+    "청과 시장",
+)
+_FALSE_POSITIVE_POLITICAL_ACTOR_TERMS = (
+    "의원",
+    "시의원",
+    "도의원",
+    "구의원",
+    "대표",
+    "후보",
+    "예비후보",
+    "위원장",
+    "당대표",
+    "구청장",
+    "도지사",
+    "국힘",
+    "국민의힘",
+    "민주당",
+    "더불어민주당",
+)
+_FALSE_POSITIVE_POLITICAL_TERMS = (
+    "공약",
+    "1호 공약",
+    "제1호 공약",
+    "선거",
+    "지방선거",
+    "총선",
+    "지선",
+    "재선",
+    "출마",
+    "도전",
+    "공천",
+    "민심",
+    "현장행보",
+    "비전",
+)
+_FALSE_POSITIVE_REDEVELOPMENT_TERMS = (
+    "용적률",
+    "재개발",
+    "도시혁신구역",
+    "화이트조닝",
+    "주거지구",
+    "대단지",
+    "역세권",
+    "준공업지역",
+    "개발 계획",
+    "개발계획",
+    "개발 공약",
+)
+_FALSE_POSITIVE_REAL_MARKET_TITLE_TERMS = (
+    "가격",
+    "수급",
+    "경락",
+    "경매",
+    "반입",
+    "출하",
+    "하역",
+    "물량",
+    "물류",
+    "운영",
+    "제도개선",
+    "검역",
+    "원산지",
+    "단속",
+    "거래",
+    "차질",
+    "점검",
+)
 
 
 @dataclass
@@ -140,6 +270,9 @@ class ReportHTMLParser(HTMLParser):
                 href=str(attr_map.get("data-href", "")).strip(),
                 article_id=str(attr_map.get("data-article-id", "")).strip(),
                 domain=str(attr_map.get("data-target-domain", "")).strip(),
+                is_core=_bool_attr(attr_map.get("data-is-core")),
+                selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
+                selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
             )
             self._card_div_depth = 1
             self._summary_div_depth = 0
@@ -213,6 +346,49 @@ def _normalize_spaces(text: str) -> str:
 def normalize_title_key(text: str) -> str:
     value = _normalize_spaces(unescape(str(text or "")).lower())
     return _NON_KO_WORD_RE.sub("", value)
+
+
+def _term_hits(text: str, terms: tuple[str, ...]) -> int:
+    value = str(text or "").lower()
+    return sum(1 for term in terms if term and term in value)
+
+
+def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str) -> str:
+    title_l = str(article.title or "").lower()
+    body_l = str(snapshot_body or "").lower()
+    combined = f"{title_l} {body_l}".strip()
+    if not combined:
+        return ""
+
+    if article.section in {"supply", "policy", "dist"}:
+        title_agri_keep = _term_hits(title_l, _FALSE_POSITIVE_AGRI_TITLE_KEEP_TERMS)
+        finance_hits = _term_hits(combined, _FALSE_POSITIVE_FINANCE_TERMS)
+        finance_title_hits = _term_hits(title_l, _FALSE_POSITIVE_FINANCE_TERMS)
+        strong_finance_title_hits = _term_hits(
+            title_l,
+            tuple(term for term in _FALSE_POSITIVE_FINANCE_TERMS if term != "리포트"),
+        )
+        company_suffix_hit = _FALSE_POSITIVE_COMPANY_SUFFIX_RE.search(title_l) is not None
+        if title_agri_keep == 0 and strong_finance_title_hits >= 1:
+            return "finance_company_noise"
+        if title_agri_keep == 0 and company_suffix_hit and finance_hits >= 2:
+            return "finance_company_noise"
+
+    if article.section == "dist":
+        venue_hits = _term_hits(title_l, _FALSE_POSITIVE_MARKET_VENUE_TERMS)
+        actor_hits = _term_hits(title_l, _FALSE_POSITIVE_POLITICAL_ACTOR_TERMS)
+        politics_hits = _term_hits(combined, _FALSE_POSITIVE_POLITICAL_TERMS)
+        redevelopment_hits = _term_hits(combined, _FALSE_POSITIVE_REDEVELOPMENT_TERMS)
+        real_market_title_hits = _term_hits(title_l, _FALSE_POSITIVE_REAL_MARKET_TITLE_TERMS)
+        if (
+            venue_hits >= 1
+            and actor_hits >= 1
+            and real_market_title_hits == 0
+            and (politics_hits >= 1 or redevelopment_hits >= 2)
+        ):
+            return "political_market_pledge_noise"
+
+    return ""
 
 
 def normalize_summary_opening(text: str) -> str:
@@ -607,16 +783,16 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "age_hours": round(age_hours, 1),
             }
         )
+        fit_score = article.selection_fit_score if float(article.selection_fit_score or 0.0) > 0.0 else _selection_fit(match)
+        stage = article.selection_stage or _selection_stage(match)
         title_candidates = list(by_title.get(normalize_title_key(article.title), []))
-        best_fit = _selection_fit(match)
+        best_fit = fit_score
         best_section = str(match.get("section", "")).strip() or article.section
         for candidate in title_candidates:
             candidate_fit = _selection_fit(candidate)
             if candidate_fit > best_fit:
                 best_fit = candidate_fit
                 best_section = str(candidate.get("section", "")).strip() or best_section
-        fit_score = _selection_fit(match)
-        stage = _selection_stage(match)
         # 콘텐츠 관련성 검증: 매칭된 스냅샷 기사의 description으로 농업 관련성 체크
         _desc_text = _normalize_spaces(str(match.get("description", "") or ""))
         _combined_text = f"{article.title} {_desc_text}".lower()
@@ -627,6 +803,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "산지", "가락시장", "유통", "농협", "농식품", "과일", "청과",
         )
         _agri_hits = sum(1 for t in _AGRI_RELEVANCE_TERMS if t in _combined_text)
+        false_positive_reason = _semantic_false_positive_reason(article, _desc_text)
         briefing_match_records.append(
             {
                 "title": article.title,
@@ -638,6 +815,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "cross_section_gap": max(0.0, best_fit - fit_score),
                 "best_section": best_section,
                 "agri_relevance_hits": _agri_hits,
+                "false_positive_reason": false_positive_reason,
             }
         )
 
@@ -692,8 +870,18 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         len(briefing_match_records),
         default=0.0,
     )
+    content_false_positive_count = sum(1 for record in briefing_match_records if str(record.get("false_positive_reason") or ""))
+    content_false_positive_rate = _rate(
+        content_false_positive_count,
+        len(briefing_match_records),
+        default=0.0,
+    )
     content_irrelevant_rate = _rate(
-        sum(1 for record in briefing_match_records if int(record.get("agri_relevance_hits", 0)) < 1),
+        sum(
+            1
+            for record in briefing_match_records
+            if int(record.get("agri_relevance_hits", 0)) < 1 or str(record.get("false_positive_reason") or "")
+        ),
         len(briefing_match_records),
         default=0.0,
     )
@@ -840,6 +1028,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     else:
         commodity_board_quality_score = 100.0
 
+    semantic_false_positive_penalty = min(18.0, content_false_positive_rate * 120.0)
     overall_score = (
         completeness_score * 0.20
         + diversity_score * 0.18
@@ -850,6 +1039,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + core_quality_score * 0.07
         + commodity_board_quality_score * 0.05
     )
+    overall_score = max(0.0, min(100.0, overall_score - semantic_false_positive_penalty))
 
     if overall_score >= 85.0:
         status = "pass"
@@ -888,6 +1078,11 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         weak_seed_sections = [section for section, score in seed_section_scores.items() if score < 0.5]
         improvement_hints.append("리콜 시드 결손이 보입니다: " + ", ".join(weak_seed_sections) + ". query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.")
 
+    if content_false_positive_rate > 0.0:
+        improvement_hints.append(
+            f"금융·정치성 오탐이 브리핑에 섞였습니다 (비율 {content_false_positive_rate:.0%}). "
+            "제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요."
+        )
     if content_irrelevant_rate > 0.0:
         improvement_hints.append(
             f"농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 {content_irrelevant_rate:.0%}). "
@@ -939,7 +1134,9 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "section_alignment_low_fit_rate": round(section_alignment_low_fit_rate, 4),
             "section_alignment_cross_gap_rate": round(section_alignment_cross_gap_rate, 4),
             "section_alignment_weak_stage_rate": round(section_alignment_weak_stage_rate, 4),
+            "content_false_positive_rate": round(content_false_positive_rate, 4),
             "content_irrelevant_rate": round(content_irrelevant_rate, 4),
+            "semantic_false_positive_penalty": round(semantic_false_positive_penalty, 4),
             "core_fit_avg": round(core_fit_avg, 4),
             "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
             "core_stage_core_rate": round(core_stage_core_rate, 4),
@@ -959,6 +1156,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "core_quality": {section: round(core_quality_section_scores[section], 4) for section in SECTION_KEYS},
         },
         "freshness_samples": sorted(freshness_samples, key=lambda item: item["age_hours"], reverse=True)[:8],
+        "content_false_positive_samples": [
+            {
+                "title": str(record.get("title") or ""),
+                "section": str(record.get("section") or ""),
+                "reason": str(record.get("false_positive_reason") or ""),
+            }
+            for record in briefing_match_records
+            if str(record.get("false_positive_reason") or "")
+        ][:8],
         "improvement_hints": improvement_hints,
     }
     result["selection_guardrails"] = build_selection_guardrails(result)
@@ -1002,6 +1208,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
 
     section_alignment_low_fit_rate = float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0)
     section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
+    content_false_positive_rate = float(metrics.get("content_false_positive_rate", 0.0) or 0.0)
     weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
@@ -1038,6 +1245,22 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_require_direct_item_focus = False
 
     reasons: list[str] = []
+
+    if content_false_positive_rate > 0.0:
+        reasons.append("semantic_false_positive")
+        for key, delta in (("supply", 0.08), ("policy", 0.06), ("dist", 0.1)):
+            section_card_min_fit[key] += delta
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.35)
+        high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.4)
+        tail_score_floor_delta += 0.5
+
+    if content_false_positive_rate >= 0.08:
+        reasons.append("semantic_false_positive_severe")
+        for key, delta in (("supply", 0.05), ("policy", 0.04), ("dist", 0.06)):
+            section_card_min_fit[key] += delta
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.45)
+        high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 5.0)
+        tail_score_floor_delta += 0.3
 
     if (
         section_alignment_score < 78.0
@@ -1157,6 +1380,7 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
         "metrics": {
             "section_alignment_low_fit_rate": round(float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0), 4),
             "section_alignment_cross_gap_rate": round(float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0), 4),
+            "content_false_positive_rate": round(float(metrics.get("content_false_positive_rate", 0.0) or 0.0), 4),
             "weak_core_rate": round(float(metrics.get("weak_core_rate", 0.0) or 0.0), 4),
             "commodity_primary_item_focus_rate": round(float(metrics.get("commodity_primary_item_focus_rate", 0.0) or 0.0), 4),
             "commodity_primary_issue_signal_rate": round(float(metrics.get("commodity_primary_issue_signal_rate", 0.0) or 0.0), 4),
@@ -1201,8 +1425,10 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"summary_numeric={metrics.get('summary_numeric_rate', 0):.2f}, "
         f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
         f"fit_avg={metrics.get('section_alignment_fit_avg', 0):.2f}, "
+        f"false_positive={metrics.get('content_false_positive_rate', 0):.2f}, "
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
-        f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}\n\n"
+        f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
+        f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
         f"### Improvement Hints\n"
         f"{hint_lines}\n\n"
         f"### Next Summary Feedback\n"
@@ -1226,6 +1452,7 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
+        "content_false_positive_rate": metrics.get("content_false_positive_rate", 0),
         "guardrail_driver_tags": (result.get("selection_guardrails") or {}).get("driver_tags", []),
     }
 

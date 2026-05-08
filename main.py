@@ -41,6 +41,7 @@ import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
+from functools import lru_cache
 from typing import Any, Callable, Sequence, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
 import xml.etree.ElementTree as ET
@@ -2579,7 +2580,7 @@ def build_managed_commodity_board_source_by_section(
                 continue
             if not managed_commodity_board_keys_for_article(article):
                 continue
-            if _postbuild_article_reject_reason(article, section_key):
+            if _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False):
                 continue
             eligible_articles.append(article)
             source_key = article_source_bucket_key(article)
@@ -3826,7 +3827,8 @@ _COMMODITY_CORPORATE_STOCK_TERMS = tuple(
         "증권", "리포트", "목표주가", "투자의견", "매수", "매도", "상향", "하향", "실적", "영업이익",
         "주가", "주식", "코스피", "코스닥", "밸류에이션", "per", "pbr", "roe", "시총", "상장",
         "흑자", "적자", "매출", "회사", "기업", "업체", "대표이사", "솔루션", "테크", "칩", "반도체", "장비",
-        "5g", "6g", "레이저다이오드", "주파수",
+        "5g", "6g", "레이저다이오드", "주파수", "상한가", "장중", "거래대금", "거래량", "투자자",
+        "투자심리", "차익", "광통신", "ai 인프라", "데이터센터", "테마주", "종목",
     )
 )
 _COMMODITY_FOODSERVICE_HOSPITALITY_TERMS = tuple(
@@ -3931,20 +3933,40 @@ def is_commodity_corporate_stock_context(title: str, desc: str) -> bool:
     txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     if not txt:
         return False
+    title_keep_hits = count_any(ttl, list(_COMMODITY_BOARD_DIRECT_AGRI_KEEP_TERMS))
     keep_hits = count_any(txt, list(_COMMODITY_BOARD_DIRECT_AGRI_KEEP_TERMS))
-    if keep_hits >= 1:
-        return False
     finance_hits = count_any(txt, list(_COMMODITY_CORPORATE_STOCK_TERMS))
     corp_title_hits = count_any(ttl, list(_COMMODITY_CORPORATE_STOCK_TERMS))
+    finance_market_hits = count_any(
+        txt,
+        [
+            "주가", "주식", "증권", "상한가", "장중", "거래대금", "거래량", "코스피", "코스닥",
+            "목표주가", "투자의견", "영업이익", "밸류에이션", "시총", "상장", "투자자",
+            "테마주", "종목", "광통신", "레이저다이오드", "주파수", "데이터센터", "ai 인프라",
+        ],
+    )
     company_suffix_hit = re.search(
-        r"[가-힣a-z0-9]{2,}(?:솔루션|테크|전자|바이오|시스템|홀딩스|통신|네트웍스|네트워크|장비|반도체|모빌리티|미디어|로보틱스)",
+        r"[가-힣a-z0-9]{1,}(?:\s+)?(?:솔루션|테크|전자|바이오|시스템|홀딩스|통신|네트웍스|네트워크|장비|반도체|모빌리티|미디어|로보틱스)",
         ttl,
     ) is not None
     explicit_finance_title_hit = re.search(
-        r"(?:목표주가|투자의견|매수|매도|실적|영업이익|주가|증권|상향|하향|밸류에이션)",
+        r"(?:목표주가|투자의견|매수|매도|실적|영업이익|주가|증권|상향|하향|밸류에이션|상한가|장중|거래대금|거래량|테마주|종목|광통신|데이터센터)",
         ttl,
     ) is not None
-    return company_suffix_hit or explicit_finance_title_hit or finance_hits >= 2 or (finance_hits >= 1 and corp_title_hits >= 1)
+    if title_keep_hits == 0 and explicit_finance_title_hit:
+        return True
+    if title_keep_hits == 0 and company_suffix_hit and finance_market_hits >= 2:
+        return True
+    if keep_hits >= 1:
+        return False
+    return (
+        title_keep_hits == 0
+        and (
+            finance_market_hits >= 3
+            or (company_suffix_hit and finance_market_hits >= 1)
+            or (finance_hits >= 3 and corp_title_hits >= 1)
+        )
+    )
 
 
 def is_commodity_foodservice_lifestyle_context(title: str, desc: str) -> bool:
@@ -4611,6 +4633,7 @@ def _managed_commodity_item_for_seed(seed: str) -> dict[str, Any] | None:
         return None
     return MANAGED_COMMODITY_BY_KEY.get(keys[0])
 
+@lru_cache(maxsize=8192)
 def _topic_scores(title: str, desc: str) -> dict[str, float]:
     t = (title + " " + desc).lower()
     tl = (title or "").lower()
@@ -6581,12 +6604,15 @@ _POLICY_BUDGET_DRIVE_TERMS = (
     "신규사업", "신규 사업", "사업 발굴", "현안 사업",
 )
 _DIST_POLITICAL_VISIT_TITLE_TERMS = (
-    "정청래", "의원", "대표", "후보", "예비후보", "위원장", "당대표",
+    "정청래", "의원", "시의원", "도의원", "구의원", "대표", "후보", "예비후보", "위원장", "당대표",
+    "구청장", "도지사",
     "국힘", "국민의힘", "민주당", "더불어민주당",
 )
 _DIST_POLITICAL_VISIT_TERMS = (
     "찾은", "찾아", "방문", "현장행보", "민심", "민생 속으로", "시동", "공약",
     "비상계엄", "탄핵", "계엄", "사과하라", "선거", "지선", "총선",
+    "재선", "출마", "도전", "공천", "공약 발표", "1호 공약", "제1호 공약",
+    "개발 공약", "선거구", "지방선거", "국민의힘", "더불어민주당",
 )
 _DIST_POLITICAL_VISIT_KEEP_TERMS = (
     "가격", "수급", "경락", "경매", "반입", "출하", "하역", "물량", "운영",
@@ -6874,9 +6900,41 @@ def is_dist_political_visit_context(title: str, desc: str) -> bool:
     politics_hits = count_any(txt, [w.lower() for w in _DIST_POLITICAL_VISIT_TERMS])
     keep_hits = count_any(txt, [w.lower() for w in _DIST_POLITICAL_VISIT_KEEP_TERMS])
     agri_hits = count_any(txt, [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼")])
-    title_keep_hits = count_any(ttl, [w.lower() for w in ("가격", "수급", "경락", "경매", "반입", "출하", "하역", "운영", "제도개선", "제도 개선")])
+    title_agri_hits = count_any(ttl, [w.lower() for w in ("농산물", "원예", "과수", "과일", "채소", "화훼")])
+    title_keep_hits = count_any(
+        ttl,
+        [
+            w.lower()
+            for w in (
+                "가격", "수급", "경락", "경매", "반입", "출하", "하역", "운영", "제도개선",
+                "제도 개선", "검역", "원산지", "단속", "거래", "물량", "물류", "차질", "점검",
+            )
+        ],
+    )
     title_visit_hits = count_any(ttl, [w.lower() for w in ("찾은", "찾아", "방문", "민심", "지선", "시동", "사과하라", "계엄")])
-    if venue_hits >= 1 and title_keep_hits == 0 and agri_hits == 0:
+    title_campaign_hits = count_any(
+        ttl,
+        [w.lower() for w in ("공약", "1호", "제1호", "의원", "후보", "재선", "선거", "출마", "도전", "비전", "국민의힘", "민주당")],
+    )
+    redevelopment_hits = count_any(
+        txt,
+        [
+            w.lower()
+            for w in (
+                "용적률", "재개발", "도시혁신구역", "화이트조닝", "주거지구", "대단지",
+                "역세권", "준공업지역", "개발 계획", "개발계획", "개발 공약",
+            )
+        ],
+    )
+    if (
+        venue_hits >= 1
+        and title_keep_hits == 0
+        and actor_hits >= 1
+        and (title_campaign_hits >= 1 or redevelopment_hits >= 2)
+        and (politics_hits >= 1 or redevelopment_hits >= 2)
+    ):
+        return True
+    if venue_hits >= 1 and title_keep_hits == 0 and title_agri_hits == 0 and agri_hits == 0:
         if (actor_hits >= 1 or politics_hits >= 2) and politics_hits >= 1 and keep_hits < 2:
             return True
         if count_any(ttl, [w.lower() for w in ("찾은", "찾아", "방문")]) >= 1 and count_any(ttl, [w.lower() for w in ("민심", "지선", "시동", "사과하라", "계엄")]) >= 1:
@@ -11919,6 +11977,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     # ✅ '사과' 동음이의어(사과대/사과문 등) 오탐 차단: 과일/시장 맥락일 때만 통과
     if "사과" in text and not is_edible_apple_context(text) and (not policy_macro_keep):
         return _reject("apple_non_edible_context")
+    if key in ("supply", "policy", "dist") and is_commodity_corporate_stock_context(ttl, desc):
+        return _reject("commodity_corporate_stock_context")
     if key in ("supply", "policy", "dist") and is_agri_training_recruitment_context(ttl, desc):
         return _reject("agri_training_recruitment")
     if key in ("supply", "dist") and is_dist_political_visit_context(ttl, desc):
@@ -19067,11 +19127,16 @@ def _enforce_pest_priority_over_policy(raw_by_section: dict[str, list["Article"]
     return moved
 
 
-def _postbuild_article_reject_reason(a: "Article", section_key: str) -> str:
+def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
+    if section_key in ("supply", "policy", "dist") and is_commodity_corporate_stock_context(a.title or "", a.description or ""):
+        return "commodity_corporate_stock_context"
+    if section_key == "dist" and is_dist_political_visit_context(a.title or "", a.description or ""):
+        return "dist_political_visit"
+
     min_fit = _selection_guardrail_number("section_card_min_fit", 0.0, section_key=section_key)
     core_min_fit = _selection_guardrail_number("core_relaxed_min_fit", min_fit, section_key=section_key)
-    if min_fit > 0.0:
+    if apply_selection_fit and min_fit > 0.0:
         fit_sc = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
         if fit_sc <= 0.0:
             try:
