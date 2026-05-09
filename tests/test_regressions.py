@@ -14,6 +14,7 @@ CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
 DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
 DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
+PROD_INDEX_HTML = ROOT / "docs" / "index.html"
 
 class TestRegressions(unittest.TestCase):
     @classmethod
@@ -30,6 +31,7 @@ class TestRegressions(unittest.TestCase):
         cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
         cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
         cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
+        cls.prod_index_text = PROD_INDEX_HTML.read_text(encoding="utf-8")
 
     def test_has_data_nav_buttons(self):
         self.assertIn('data-nav="prev"', self.text)
@@ -274,6 +276,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('data-selection-fit="', self.text)
         self.assertIn('data-selection-stage="', self.text)
         self.assertIn('data-is-core="', self.text)
+
+    def test_archive_search_allows_single_character_terms(self):
+        self.assertIn("function hasSearchText(q)", self.text)
+        self.assertNotIn("q.length < 2", self.text)
+        self.assertIn("function hasSearchText(q)", self.prod_index_text)
+        self.assertNotIn("q.length < 2", self.prod_index_text)
 
     def test_maintenance_workflow_runs_tests_and_debuggable_backfill(self):
         self.assertIn("requirements-dev.txt", self.maintenance_text)

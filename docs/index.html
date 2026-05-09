@@ -892,6 +892,7 @@
         });
       }
       function norm(s) { return (s || "").toLowerCase(); }
+      function hasSearchText(q) { return !!(q && String(q).trim()); }
       function buildArticleTrackingAttrs(item, surface) {
         if (!item) return "";
         var attrs = [];
@@ -914,7 +915,7 @@
       }
       function trackSearchSubmit(resultCount, source) {
         var q = (input && input.value ? input.value : "").trim();
-        if (!q || q.length < 2) return;
+        if (!hasSearchText(q)) return;
         var eventKey = [
           q,
           secSel ? (secSel.value || "") : "",
@@ -947,7 +948,7 @@
         var out = escHtml(text || "");
         for (var i=0; i<tokens.length; i++) {
           var t = tokens[i];
-          if (!t || t.length < 2) continue;
+          if (!t) continue;
           try {
             var re = new RegExp(escapeRegExp(t), "gi");
             out = out.replace(re, function(m) { return "<mark>" + m + "</mark>"; });
@@ -995,7 +996,7 @@
       function setMeta(tokens, resCount, showCount) {
         metaLeft.innerHTML = "";
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) {
+        if (!hasSearchText(q)) {
           metaRight.textContent = "";
           return;
         }
@@ -1046,7 +1047,7 @@
         var res = [];
 
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) return res;
+        if (!hasSearchText(q)) return res;
 
         // AND search
         for (var i=0; i<items.length; i++) {
@@ -1234,7 +1235,7 @@
 
       function runSearch(triggerSource) {
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) {
+        if (!hasSearchText(q)) {
           box.innerHTML = "";
           metaLeft.innerHTML = "";
           metaRight.textContent = "";
