@@ -25468,6 +25468,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         }});
       }}
       function norm(s) {{ return (s || "").toLowerCase(); }}
+      function hasSearchText(q) {{ return !!(q && String(q).trim()); }}
       function buildArticleTrackingAttrs(item, surface) {{
         if (!item) return "";
         var attrs = [];
@@ -25490,7 +25491,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       }}
       function trackSearchSubmit(resultCount, source) {{
         var q = (input && input.value ? input.value : "").trim();
-        if (!q || q.length < 2) return;
+        if (!hasSearchText(q)) return;
         var eventKey = [
           q,
           secSel ? (secSel.value || "") : "",
@@ -25523,7 +25524,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         var out = escHtml(text || "");
         for (var i=0; i<tokens.length; i++) {{
           var t = tokens[i];
-          if (!t || t.length < 2) continue;
+          if (!t) continue;
           try {{
             var re = new RegExp(escapeRegExp(t), "gi");
             out = out.replace(re, function(m) {{ return "<mark>" + m + "</mark>"; }});
@@ -25571,7 +25572,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       function setMeta(tokens, resCount, showCount) {{
         metaLeft.innerHTML = "";
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) {{
+        if (!hasSearchText(q)) {{
           metaRight.textContent = "";
           return;
         }}
@@ -25622,7 +25623,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         var res = [];
 
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) return res;
+        if (!hasSearchText(q)) return res;
 
         // AND search
         for (var i=0; i<items.length; i++) {{
@@ -25810,7 +25811,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
       function runSearch(triggerSource) {{
         var q = (input.value || "").trim();
-        if (!q || q.length < 2) {{
+        if (!hasSearchText(q)) {{
           box.innerHTML = "";
           metaLeft.innerHTML = "";
           metaRight.textContent = "";
