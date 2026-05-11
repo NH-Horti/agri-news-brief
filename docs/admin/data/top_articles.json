@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T00:15:35+09:00",
+  "generated_at": "2026-05-12T01:48:49+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -702,6 +702,45 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-05-06.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=318563"
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "620d14f91676",
+      "title": "'5년 내 최저가' 시설봄 배추 산지폐기···\"노지 물량도 시장격리를\"",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-11.html#sec-supply",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=403950"
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "a644b3637a51",
+      "title": "“1㎏ 경락값 400원대” 양파 값 바닥…약발 없는 수급책",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "fbc66a69909b",
+      "title": "무려 12억원… 세계 최고가 와인이 부르고뉴에서 생산되는 이유",
+      "report_date": "2026-05-11",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.chosun.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -3068,6 +3107,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-05-08.html#sec-supply",
       "source_url": "https://www.jejumaeil.net/news/articleView.html?idxno=400630"
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "620d14f91676",
+      "title": "'5년 내 최저가' 시설봄 배추 산지폐기···\"노지 물량도 시장격리를\"",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-11.html#sec-supply",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=403950"
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "89369c97f101",
+      "title": "천안시, '하늘그린 멜론 ' 첫 수확…봄철 출하 본격화",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "9862c7eeab2c",
+      "title": "\"'까데기'에 멍든 제주 농심\"... 김성범 '서귀포 물류 혁명' 선언",
+      "report_date": "2026-05-11",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.ohmynews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "a644b3637a51",
+      "title": "“1㎏ 경락값 400원대” 양파 값 바닥…약발 없는 수급책",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-11",
+      "article_id": "f2c21e0d40fa",
+      "title": "농협 조합구조개선부, 서류 대신 사과 나무 잡았다… '현장 밀착' 상생 경...",
+      "report_date": "2026-05-11",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.thepublic.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
