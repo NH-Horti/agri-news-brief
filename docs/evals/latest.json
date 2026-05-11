@@ -1,45 +1,45 @@
 {
-  "report_date": "2026-05-11",
-  "generated_at_kst": "2026-05-11T06:18:52+09:00",
+  "report_date": "2026-05-12",
+  "generated_at_kst": "2026-05-12T06:21:06+09:00",
   "status": "pass",
-  "overall_score": 95.69,
+  "overall_score": 98.14,
   "scores": {
-    "completeness": 93.0,
+    "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 97.14,
-    "retrieval_support": 85.0,
-    "section_alignment": 92.4,
+    "freshness": 100.0,
+    "retrieval_support": 84.38,
+    "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 91.98
+    "commodity_board_quality": 87.75
   },
   "counts": {
-    "briefing_total": 16,
-    "commodity_total": 57,
-    "commodity_primary_total": 18,
+    "briefing_total": 17,
+    "commodity_total": 66,
+    "commodity_primary_total": 22,
     "briefing_by_section": {
-      "supply": 5,
+      "supply": 3,
       "policy": 4,
-      "dist": 3,
-      "pest": 4
+      "dist": 5,
+      "pest": 5
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 0,
+      "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 41,
-      "policy": 6,
-      "dist": 5,
-      "pest": 5
+      "supply": 35,
+      "policy": 15,
+      "dist": 3,
+      "pest": 13
     },
     "raw_by_section": {
-      "supply": 192,
-      "policy": 168,
-      "dist": 43,
-      "pest": 27
+      "supply": 165,
+      "policy": 119,
+      "dist": 32,
+      "pest": 60
     },
     "expected_briefing_by_section": {
       "supply": 3,
@@ -50,34 +50,34 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8125,
-    "surface_reuse_penalty": 0.0,
+    "briefing_domain_diversity_rate": 0.8824,
+    "surface_reuse_penalty": 0.012,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9375,
+    "summary_numeric_rate": 0.9412,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.75,
+    "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "freshness_window_mode": "weekend_span",
-    "seed_coverage_score": 0.5,
-    "section_alignment_fit_avg": 3.4431,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.4792,
+    "section_alignment_fit_avg": 3.5665,
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0625,
-    "section_alignment_weak_stage_rate": 0.125,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0588,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.3267,
-    "core_rank_percentile_avg": 0.9418,
+    "core_fit_avg": 3.9188,
+    "core_rank_percentile_avg": 0.9375,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8889,
-    "commodity_primary_weak_rate": 0.0556,
-    "commodity_primary_fit_avg": 0.8411,
-    "commodity_primary_rank_avg": 2.6667
+    "commodity_primary_issue_signal_rate": 0.9091,
+    "commodity_primary_weak_rate": 0.0455,
+    "commodity_primary_fit_avg": 1.1582,
+    "commodity_primary_rank_avg": 2.3182
   },
   "section_scores": {
     "briefing_fill": {
@@ -89,7 +89,7 @@
     "core_fill": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.0,
+      "dist": 1.0,
       "pest": 1.0
     },
     "retrieval_pool": {
@@ -100,9 +100,9 @@
     },
     "seed_coverage": {
       "supply": 0.5833,
-      "policy": 0.6667,
-      "dist": 0.5,
-      "pest": 0.25
+      "policy": 0.4167,
+      "dist": 0.4167,
+      "pest": 0.5
     },
     "section_alignment": {
       "supply": 1.0,
@@ -111,7 +111,7 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 1.0,
+      "supply": 0.84,
       "policy": 1.0,
       "dist": 1.0,
       "pest": 1.0
@@ -119,49 +119,49 @@
   },
   "freshness_samples": [
     {
-      "title": "경남교육청, 영농철 맞아 고성 단감 농가 일손 돕기 나서",
-      "section": "supply",
-      "age_hours": 61.7
-    },
-    {
-      "title": "상반기 농업 외국인력 10.4만명 배정…국내인력에 교통비·숙박비 지원...",
+      "title": "전남도, “농가 시름 던다” 농업용 면세유 구입비 지원… 10월 말까지 ...",
       "section": "policy",
-      "age_hours": 61.0
+      "age_hours": 22.5
     },
     {
-      "title": "'5년 내 최저가' 시설봄 배추 산지폐기···\"노지 물량도 시장격리를\"",
-      "section": "supply",
-      "age_hours": 58.8
-    },
-    {
-      "title": "무려 12억원… 세계 최고가 와인이 부르고뉴에서 생산되는 이유",
+      "title": "제1차 농산물 유통혁신 TF 회의 개최",
       "section": "dist",
-      "age_hours": 53.5
+      "age_hours": 20.8
     },
     {
-      "title": "[비바100] 이 밥상, 언제까지 가능할까?",
-      "section": "policy",
-      "age_hours": 47.0
-    },
-    {
-      "title": "세계 식량가격 3개월 연속 상승···원유 상승에 유지류 5.9% 급등",
-      "section": "policy",
-      "age_hours": 37.5
-    },
-    {
-      "title": "“1㎏ 경락값 400원대” 양파 값 바닥…약발 없는 수급책",
+      "title": "원유도 암호화폐도 아니었다…이달 최고 수익률 ' 감자 ' 705% 폭등",
       "section": "supply",
-      "age_hours": 34.0
+      "age_hours": 20.1
     },
     {
-      "title": "치솟는 비료·농약 가격 …특허받은 미생물로 해결",
+      "title": "전남농기원, 과수화상병 유입 차단 현장 모의훈련",
       "section": "pest",
-      "age_hours": 32.6
+      "age_hours": 16.5
+    },
+    {
+      "title": "외국인 계절근로 역대 최대 배정…농촌 인력난 대응 강화",
+      "section": "policy",
+      "age_hours": 15.6
+    },
+    {
+      "title": "올해 첫 단감 탄저병 포자 비산 확인, 방제 비상",
+      "section": "pest",
+      "age_hours": 15.6
+    },
+    {
+      "title": "광양농협, 매실 생산농가 워크숍 개최",
+      "section": "pest",
+      "age_hours": 15.3
+    },
+    {
+      "title": "[단독] 고령 우곡수박 상표 도용한 수박, 포항·영덕 등 전국 유통",
+      "section": "dist",
+      "age_hours": 14.6
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: policy, dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
