@@ -820,6 +820,50 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIsNone(best, msg=f"scores={scores}")
         self.assertTrue(main.is_dist_political_visit_context(title, desc))
 
+    def test_low_value_quality_noise_is_rejected_across_top_sections(self):
+        samples = [
+            (
+                "경남교육청, 영농철 맞아 고성 단감 농가 일손 돕기 나서",
+                "직원들이 단감 농가를 찾아 일손돕기 봉사활동을 벌였다는 지역 단신이다.",
+                "low_value_labor_help",
+                main.is_low_value_agri_labor_help_context,
+            ),
+            (
+                "안재민 \"농업은 상주의 근간… 경쟁력 확 끌어올리겠다\"",
+                "상주시장 예비후보가 지방선거 공약으로 농업 경쟁력 강화를 약속했다.",
+                "local_political_campaign_noise",
+                main.is_low_value_local_political_context,
+            ),
+            (
+                "‘영주사과’ 똘똘한 고향기부 답례품 인기",
+                "지역 사과가 고향사랑기부제 답례품으로 인기를 끌고 있다는 홍보성 기사다.",
+                "low_value_local_promo",
+                main.is_low_value_local_promo_context,
+            ),
+            (
+                "무려 12억원… 세계 최고가 와인이 부르고뉴에서 생산되는 이유",
+                "프랑스 부르고뉴 와인과 빈티지, 소믈리에 평가를 소개하는 해외 라이프스타일 기사다.",
+                "wine_lifestyle_noise",
+                main.is_wine_lifestyle_noise_context,
+            ),
+        ]
+        for title, desc, reason, predicate in samples:
+            url = f"https://example.com/{reason}"
+            dom = main.domain_of(url)
+            press = main.normalize_press_label(main.press_name_from_url(url), url)
+            self.assertTrue(predicate(title, desc), msg=reason)
+            for section_key in ("supply", "policy", "dist"):
+                self.assertFalse(
+                    main.is_relevant(title, desc, dom, url, self.conf[section_key], press),
+                    msg=f"{section_key} should reject {reason}",
+                )
+
+    def test_structural_labor_policy_is_not_treated_as_labor_help_noise(self):
+        title = "상반기 농업 외국인력 10.4만명 배정…농번기 인력난 대응"
+        desc = "정부가 계절근로와 농촌인력중개센터를 통해 농가 인력수요에 대응하는 구조적 정책 기사다."
+        self.assertTrue(main.is_agri_structural_labor_policy_context(title, desc))
+        self.assertFalse(main.is_low_value_agri_labor_help_context(title, desc))
+
     def test_supply_price_outlook_story_prefers_supply(self):
         title = "저장채소 오르고 시설채소 하락…오이·청양고추 큰 폭 하락"
         desc = "저장채소와 시설채소 가격 흐름이 엇갈리고 오이와 청양고추 시세 하락 폭이 커졌다는 품목별 수급 전망 기사다."
@@ -3699,6 +3743,182 @@ class TestManagedCommoditySectionBehavior(unittest.TestCase):
         )
         metrics = main._commodity_board_item_article_representative_metrics(item, article)
         self.assertFalse(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+
+    def test_commodity_representative_rejects_labor_help_story(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "sweet_persimmon")
+        article = self._make_article(
+            "supply",
+            "경남교육청, 영농철 맞아 고성 단감 농가 일손 돕기 나서",
+            "경남교육청 직원들이 고성 단감 농가를 찾아 일손돕기 봉사활동을 벌였다는 지역 단신이다.",
+            "https://example.com/sweet-persimmon-labor-help",
+            press="연합뉴스",
+            score=42.0,
+        )
+        article.selection_stage = "core_final"
+        article.selection_fit_score = 1.6
+
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+        self.assertTrue(metrics.get("weak_labor_help_story"))
+        self.assertEqual(metrics.get("representative_rank"), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+        self.assertFalse(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+
+    def test_commodity_representative_rejects_flower_lifestyle_story(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "flowers")
+        article = self._make_article(
+            "supply",
+            "어버이날, 카네이션 생화·화분·쿠키까지…꽃말은 ‘어머니의 사랑’",
+            "화훼 유통정보시스템과 공판장 가격도 언급하지만 제목은 카네이션 꽃말과 선물을 소개하는 소비자 라이프스타일 기사다.",
+            "https://example.com/flower-lifestyle",
+            press="BNT뉴스",
+            score=35.0,
+        )
+        article.selection_stage = "core"
+        article.selection_fit_score = 0.0
+
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+        self.assertTrue(main.is_low_value_flower_consumer_lifestyle_context(article.title, article.description))
+        self.assertTrue(metrics.get("weak_flower_consumer_lifestyle_story"))
+        self.assertEqual(metrics.get("representative_rank"), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
+    def test_commodity_active_candidate_requires_direct_or_operational_item_focus(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "peach")
+        article = self._make_article(
+            "supply",
+            "[산지 확대경] 하우스감귤, 작황 좋지만 수확 늦어…여름 홍수출하 우려",
+            "감귤 작황과 출하 지연이 핵심이고 복숭아는 주변 품목으로만 언급된다.",
+            "https://example.com/citrus-with-peach-mention",
+            press="농민신문",
+            score=55.0,
+        )
+        metrics = {
+            "board_eligible": True,
+            "representative_rank": 3,
+            "title_primary_hits": 0,
+            "match_count": 2,
+            "direct_item_focus": False,
+            "single_focus": False,
+            "primary_focus": False,
+        }
+
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
+    def test_commodity_representative_rejects_research_award_story(self):
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "flowers")
+        article = self._make_article(
+            "supply",
+            "박정민 제주대 박사과정생, 한국 화훼 학회 우수발표상 수상",
+            "화훼 학회에서 연구 발표로 수상했다는 인물·학술 단신이다.",
+            "https://example.com/flower-award",
+            press="뉴스제주",
+            score=25.0,
+        )
+        article.selection_stage = "core"
+        article.selection_fit_score = 0.0
+
+        metrics = main._commodity_board_item_article_representative_metrics(item, article)
+        self.assertTrue(main.is_low_value_research_award_context(article.title, article.description))
+        self.assertTrue(metrics.get("weak_research_award_story"))
+        self.assertEqual(metrics.get("representative_rank"), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
+    def test_dist_underfill_rebalance_does_not_steal_supply_price_story(self):
+        cabbage = self._make_article(
+            "supply",
+            "'5년 내 최저가' 시설봄 배추 산지폐기···\"노지 물량도 시장격리를\"",
+            "시설봄 배추 가격 폭락으로 산지폐기와 시장격리 요구가 커지는 수급 기사다.",
+            "https://example.com/supply-cabbage-disposal",
+            press="한국농어민신문",
+            score=50.0,
+        )
+        onion = self._make_article(
+            "supply",
+            "양파 값 바닥…경락값 1kg 400원대",
+            "양파 경락가격이 약세를 보이며 산지 수급 대책 요구가 이어진다.",
+            "https://example.com/supply-onion-price",
+            press="농민신문",
+            score=42.0,
+        )
+        apple = self._make_article(
+            "supply",
+            "하우스 감귤 작황 좋지만 수확 늦어 여름 홍수출하 우려",
+            "감귤 작황과 수확 지연으로 여름 출하 물량이 몰릴 우려가 제기된다.",
+            "https://example.com/supply-citrus-outlook",
+            press="농민신문",
+            score=40.0,
+        )
+        final = {"supply": [cabbage, onion, apple], "dist": [], "policy": [], "pest": []}
+        moved = main._rebalance_underfilled_dist_from_supply(final)
+        self.assertEqual(moved, 0)
+        self.assertIn(cabbage, final["supply"])
+        self.assertEqual(final["dist"], [])
+
+    def test_dist_selection_restores_wholesale_field_articles_without_supply_bleed(self):
+        citrus_supply = self._make_article(
+            "dist",
+            "[산지 확대경] 하우스감귤, 작황 좋지만 수확 늦어…여름 홍수출하 우려",
+            "하우스감귤 작황은 양호하지만 수확이 늦어 여름철 홍수출하와 산지 출하량 조절 우려가 커지고 있다.",
+            "https://example.com/citrus-supply",
+            score=60.0,
+        )
+        cabbage_supply = self._make_article(
+            "dist",
+            "'5년 내 최저가' 시설봄배추 산지폐기···\"노지 물량도 시장 격리를\"",
+            "시설봄배추 가격이 5년 내 최저가로 떨어지며 산지폐기와 노지 물량 시장 격리 요구가 나왔다.",
+            "https://example.com/cabbage-supply",
+            score=57.0,
+        )
+        association_training = self._make_article(
+            "dist",
+            "도매시장 법인협회, 5주간 실무형 교육 운영한다",
+            "한국농수산물도매시장법인협회가 농산물 도매시장 법인 실무형 교육을 열고 경매, 정산, 출하 절차와 온라인도매시장 대응을 다룬다.",
+            "http://www.newsfarm.co.kr/news/articleView.html?idxno=100925",
+            press="한국농업신문",
+            score=28.18,
+        )
+        gangseo_market = self._make_article(
+            "dist",
+            "강서 시장 '공간 분리' 논의···유통 주체별 입장차 여전",
+            "강서농산물도매시장에서 시장도매인과 도매시장법인 등 유통 주체별 공간 분리 방안과 입장차가 논의되고 있다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=403963",
+            press="한국농어민신문",
+            score=20.01,
+        )
+        online_wholesale = self._make_article(
+            "dist",
+            "도매 법인협회, 청년농 온라인도매시장 창업 지원한다",
+            "도매시장법인협회가 청년농의 온라인도매시장 창업을 지원하고 출하·정산·거래 실무 교육을 진행한다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=403949",
+            press="한국농어민신문",
+            score=19.22,
+        )
+
+        picked = main.select_top_articles(
+            [citrus_supply, cabbage_supply, association_training, gangseo_market, online_wholesale],
+            "dist",
+            3,
+        )
+        picked_titles = [article.title for article in picked]
+
+        self.assertGreaterEqual(len(picked), 2, msg=str([(article.title, article.score, article.selection_stage) for article in picked]))
+        self.assertIn(association_training.title, picked_titles)
+        self.assertIn(gangseo_market.title, picked_titles)
+        self.assertNotIn(citrus_supply.title, picked_titles)
+        self.assertNotIn(cabbage_supply.title, picked_titles)
+
+    def test_dist_postbuild_keeps_wholesale_market_space_split_article(self):
+        article = self._make_article(
+            "dist",
+            "강서 시장 '공간 분리' 논의···유통 주체별 입장차 여전",
+            "강서농산물도매시장에서 시장도매인과 도매시장법인 등 유통 주체별 공간 분리 방안과 입장차가 논의되고 있다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=403963",
+            press="한국농어민신문",
+            score=20.01,
+        )
+
+        self.assertTrue(main.is_dist_quality_field_ops_context(article.title, article.description, article.domain, article.press))
+        self.assertFalse(main._postbuild_article_reject_reason(article, "dist"))
 
     def test_supply_seed_prioritization_no_longer_frontloads_feature_profiles(self):
         query_seed_terms = ["토마토", "양파", "감귤", "배추", "화훼", "마늘"]

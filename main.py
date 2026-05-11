@@ -3219,6 +3219,23 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
             org_key = re.sub(r"\s+", "", org_match.group(1).lower())
             return f"EV:DIST:{org_key}:ORG_FEATURE"
 
+    if is_dist_quality_field_ops_context(title, desc):
+        compact = re.sub(r"\s+", "", text)
+        if "강서시장" in compact and ("공간분리" in compact or "유통주체" in compact):
+            return "EV:DIST:GANGSEO_MARKET_SPACE_SPLIT"
+        if ("도매시장법인협회" in compact or "도매법인협회" in compact or "법인협회" in compact) and ("온라인도매시장" in compact or "창업지원" in compact):
+            return "EV:DIST:WHOLESALE_ASSOC_ONLINE_STARTUP"
+        if ("도매시장법인협회" in compact or "도매법인협회" in compact or "법인협회" in compact) and ("교육" in text or "실무" in text):
+            return "EV:DIST:WHOLESALE_ASSOC_EDU"
+        if "동화청과" in text and ("청년농" in text or "교육" in text or "유통전략" in compact):
+            return "EV:DIST:DONGHWA_YOUNG_FARMER_EDU"
+        if ("농특위" in text or "농어업농어촌특별위원회" in compact) and ("농산물유통혁신" in compact or "유통혁신" in compact):
+            return "EV:DIST:AGRI_DISTRIBUTION_REFORM"
+        if "물류기자재" in compact and "청과" in text:
+            actor_match = re.search(r"([가-힣]{2,12}청과)", title or "")
+            actor_key = actor_match.group(1) if actor_match else "청과"
+            return f"EV:DIST:{actor_key}:LOGISTICS_EQUIPMENT_SUPPORT"
+
     return None
 
 def _policy_story_signature(title: str, desc: str, dom: str = "", press: str = "") -> str | None:
@@ -7175,6 +7192,8 @@ def is_dist_non_horti_anchorless_noise_context(title: str, desc: str, dom: str =
         return False
     dom_norm = normalize_host(dom or "")
     press_norm = (press or "").strip()
+    if is_dist_quality_field_ops_context(ttl, desc or "", dom_norm, press_norm):
+        return False
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
     horti_sc = best_horti_score(ttl, desc or "")
     horti_title_sc = best_horti_score(ttl, "")
@@ -8889,6 +8908,315 @@ def is_remote_foreign_horti(text: str) -> bool:
     return False
 
 
+_AGRI_LABOR_HELP_TERMS = (
+    "일손돕기", "일손 돕기", "농촌 일손", "농가 일손", "영농철 일손", "일손 지원",
+    "일손 부족 해소", "인력 부족 해소", "농번기 일손", "구슬땀", "봉사활동", "봉사",
+    "찾아 일손", "일손 보태",
+)
+_AGRI_STRUCTURAL_LABOR_TERMS = (
+    "외국인력", "외국인 인력", "계절근로", "공공형 계절근로", "근로자 배정",
+    "고용허가", "인력수요", "인력 수요", "인력중개센터", "농촌인력중개",
+    "농촌인력", "교통비", "숙박비", "법무부", "농식품부", "정부", "비상관리",
+    "인력지원 대책", "인력 지원 대책",
+)
+_QUALITY_DIRECT_SUPPLY_TERMS = (
+    "가격", "시세", "수급", "작황", "출하", "출하량", "반입", "물량", "재고",
+    "경락", "경매", "도매", "도매시장", "공판장", "산지유통", "생산량", "재배면적",
+    "폐기", "산지폐기", "폭락", "폭등", "급락", "급등", "검역", "통관", "수출",
+)
+
+
+def is_agri_structural_labor_policy_context(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not any(term in text for term in _AGRI_STRUCTURAL_LABOR_TERMS):
+        return False
+    return count_any(text, ("농업", "농가", "농촌", "농번기", "원예", "과수", "채소", "농식품")) >= 1
+
+
+def is_agri_labor_help_context(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    return any(term in text for term in _AGRI_LABOR_HELP_TERMS)
+
+
+def is_low_value_agri_labor_help_context(title: str, desc: str) -> bool:
+    """단순 일손돕기/봉사 단신을 수급·정책 핵심 기사에서 제외한다.
+
+    구조적 인력정책(외국인력·계절근로·인력중개 등)은 별도 이슈로 볼 수 있어
+    봉사 단신으로 취급하지 않는다.
+    """
+    if not is_agri_labor_help_context(title, desc):
+        return False
+    if is_agri_structural_labor_policy_context(title, desc):
+        return False
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    help_action_terms = ("일손돕기", "일손 돕기", "봉사", "봉사활동", "찾아 일손", "구슬땀", "일손 보태")
+    if not any(term in text for term in help_action_terms):
+        shortage_terms = ("일손 부족", "인력난", "인력 부족")
+        if any(term in text for term in shortage_terms) and count_any(text, _QUALITY_DIRECT_SUPPLY_TERMS) >= 1:
+            return False
+    return True
+
+
+def is_low_value_local_political_context(title: str, desc: str) -> bool:
+    """선거·공약·지역 정치 발언 중심의 농업 부분언급 기사를 낮은 가치로 본다."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    campaign_terms = (
+        "후보", "예비후보", "지방선거", "선거", "출마", "공약", "민생투어",
+        "정책 간담회", "정책간담회", "보수 결집", "대도약", "혁명 선언", "선언",
+        "끌어올리겠다", "키우겠다", "만들겠다", "약속했다",
+    )
+    hard_campaign_terms = ("예비후보", " 후보", "후보 ", "후보는", "후보가", "후보,", "지방선거", "선거", "출마", "공약", "민생투어", "보수 결집")
+    office_terms = ("도지사", "시장", "군수", "도의원", "시의원", "국회의원", "위원장", "정당", "국민의힘", "더불어민주당")
+    campaign_hits = count_any(text, campaign_terms)
+    if campaign_hits == 0:
+        return False
+    if any(term in text for term in hard_campaign_terms):
+        return True
+    strong_public_action = count_any(
+        text,
+        (
+            "농식품부", "정부", "고시", "시행", "공고", "보도자료", "브리핑", "대책",
+            "지원사업", "할인지원", "할당관세", "검역", "단속", "수급안정",
+        ),
+    )
+    direct_supply_hits = count_any(text, _QUALITY_DIRECT_SUPPLY_TERMS)
+    strong_market_context = (
+        has_direct_supply_chain_signal(text)
+        or is_dist_market_ops_context(title or "", desc or "")
+        or is_dist_field_market_response_context(title or "", desc or "")
+    )
+    if strong_public_action >= 2 and direct_supply_hits >= 1:
+        return False
+    if strong_market_context and direct_supply_hits >= 2 and best_horti_score(title or "", desc or "") >= 1.8:
+        return False
+    title_campaignish = any(term in title_l for term in campaign_terms) or any(term in title_l for term in office_terms)
+    agri_partial = count_any(text, ("농업", "농산물", "농가", "원예", "과수", "과일", "채소", "유통", "물류")) >= 1
+    return bool(title_campaignish or agri_partial)
+
+
+def is_low_value_local_promo_context(title: str, desc: str) -> bool:
+    """답례품·홍보 판매전·지역 브랜드 알림처럼 수급/유통 실무성이 낮은 기사."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    promo_terms = (
+        "고향기부 답례품", "고향사랑 답례품", "답례품", "답례품 인기",
+        "홍보 판매전", "홍보판매전", "특별 판매전", "판매전 진행", "기획전",
+        "가정의 달", "브랜드 홍보", "소비촉진 홍보", "홍보 행사", "장터 개장",
+        "원산지 표시 점검",
+    )
+    if not any(term in text for term in promo_terms):
+        return False
+    direct_supply_hits = count_any(text, _QUALITY_DIRECT_SUPPLY_TERMS)
+    market_ops = (
+        is_dist_market_ops_context(title or "", desc or "")
+        or is_dist_sales_channel_ops_context(title or "", desc or "")
+        or is_dist_field_market_response_context(title or "", desc or "")
+    )
+    return not (market_ops and direct_supply_hits >= 2)
+
+
+def is_wine_lifestyle_noise_context(title: str, desc: str) -> bool:
+    """국내 포도 수급이 아닌 와인·주류 라이프스타일 기사를 제외한다."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    wine_terms = ("와인", "wine", "부르고뉴", "보르도", "샤또", "샤토", "소믈리에", "빈티지", "와이너리", "winery", "양조장")
+    if not any(term in text for term in wine_terms):
+        return False
+    domestic_supply_terms = (
+        "국산 포도", "국내 포도", "포도 농가", "포도 재배", "포도 출하", "포도 수급",
+        "포도 가격", "양조용 포도", "와인포도 재배", "와인 포도 재배",
+    )
+    if any(term in text for term in domestic_supply_terms):
+        return False
+    return True
+
+
+def is_low_value_flower_consumer_lifestyle_context(title: str, desc: str) -> bool:
+    """꽃말·선물·라이프스타일형 화훼 기사는 품목 대표기사에서 제외한다."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text:
+        return False
+    flower_terms = ("화훼", "꽃", "절화", "카네이션", "장미", "국화", "백합", "꽃다발", "화분")
+    if not any(term in text for term in flower_terms):
+        return False
+    lifestyle_terms = (
+        "꽃말", "감사의 꽃", "어머니의 사랑", "생화·화분·쿠키", "생화 화분 쿠키",
+        "선물", "부케", "인테리어", "반려식물", "정원박람회", "정원 박람회",
+        "선봬", "추천", "기념일", "어버이날",
+    )
+    if not any(term in text for term in lifestyle_terms):
+        return False
+    market_terms = (
+        "가격", "시세", "경락", "출하", "반입", "수급", "소비", "수요", "생산비",
+        "농가", "업계", "수입산", "원산지", "도매", "공판장", "유통", "판매량",
+    )
+    title_lifestyle_terms = ("꽃말", "어머니의 사랑", "생화·화분·쿠키", "생화 화분 쿠키", "선물", "부케")
+    title_market_terms = ("가격", "시세", "수급", "소비", "생산비", "농가", "업계", "도매", "유통")
+    if any(term in title_l for term in title_lifestyle_terms) and not any(term in title_l for term in title_market_terms):
+        return True
+    market_hits = count_any(text, market_terms)
+    if market_hits >= 2 or has_direct_supply_chain_signal(text):
+        return False
+    return True
+
+
+def is_low_value_research_award_context(title: str, desc: str) -> bool:
+    """학회 수상·연구자 소개처럼 시장/수급성이 약한 단신을 품목 대표기사에서 제외한다."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text:
+        return False
+    award_terms = (
+        "우수발표상", "학술대회", "논문상", "연구상", "수상", "박사과정생",
+        "석사과정생", "교수팀", "연구팀", "학회",
+    )
+    if count_any(text, award_terms) < 2:
+        return False
+    if count_any(title_l, award_terms) >= 2:
+        return True
+    operational_terms = (
+        "가격", "시세", "수급", "출하", "경락", "반입", "재배면적", "생산량",
+        "농가 소득", "현장 적용", "방제", "병해충", "기술 보급", "표준화",
+    )
+    if count_any(text, operational_terms) >= 2 or has_direct_supply_chain_signal(text):
+        return False
+    return True
+
+
+_DIST_QUALITY_FIELD_MARKET_TERMS = (
+    "가락시장", "강서시장", "강서 시장", "도매시장", "공영도매시장", "농산물도매시장",
+    "온라인도매시장", "온라인 도매시장", "공판장", "청과", "도매법인", "시장도매인",
+    "중도매인", "경매사", "경락", "경매", "반입", "출하", "산지유통", "농산물 유통",
+)
+_DIST_QUALITY_FIELD_OPS_TERMS = (
+    "공간 분리", "공간분리", "입장차", "유통 주체", "유통주체", "운영", "제도개선",
+    "제도 개선", "유통 구조", "유통구조", "유통 혁신", "유통혁신", "출하 전략",
+    "유통 전략", "유통구조 이해", "유통 구조 이해", "실무형 교육", "실무 교육",
+    "교육 운영", "역량 강화", "창업 지원", "시장 정착", "가격 형성", "정산",
+    "정보 제공", "거래 흐름", "출하 절차", "물류기자재", "물류·영농기자재",
+)
+_DIST_QUALITY_FIELD_ACTOR_TERMS = (
+    "도매시장 법인협회", "도매 법인협회", "법인협회", "도매시장법인", "도매법인",
+    "동화청과", "중앙청과", "대아청과", "한국청과", "농협공판장", "농특위",
+    "농어업·농어촌특별위원회", "농어업농어촌특별위원회", "생산자", "소비자",
+)
+_DIST_QUALITY_FIELD_AGRI_TERMS = (
+    "농산물", "농수산물", "농업", "농가", "농식품", "원예", "과수", "과일",
+    "채소", "청과", "출하", "도매시장", "공판장", "청년농", "생산자",
+)
+_DIST_PRIMARY_SUPPLY_TITLE_TERMS = (
+    "작황", "수확", "홍수출하", "산지폐기", "시장 격리", "시장격리", "최저가",
+    "가격", "시세", "물량", "출하 우려", "급락", "폭락", "약세", "생산량",
+)
+
+
+def is_dist_quality_field_ops_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    """도매시장·청과법인·농산물 유통 제도처럼 유통/현장 섹션에 직접 맞는 기사.
+
+    품목 가격 기사나 지역 홍보 단신을 끌어오지 않으면서, 제목에 '농산물'이 없더라도
+    도매시장 운영·교육·공간 재배치·출하 실무처럼 유통 현장의 실제 작동과 연결된
+    후보를 살리기 위한 품질 신호다.
+    """
+    ttl = title or ""
+    ttl_l = _nfkc_lower(ttl)
+    text = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not text:
+        return False
+    compact = re.sub(r"\s+", "", text)
+    dom_norm = normalize_host(dom or "")
+    press_norm = (press or "").strip()
+
+    if is_remote_foreign_trade_brief_context(ttl, desc or "", dom_norm):
+        return False
+    if is_wine_lifestyle_noise_context(ttl, desc or ""):
+        return False
+    if is_low_value_agri_labor_help_context(ttl, desc or ""):
+        return False
+    if is_low_value_local_promo_context(ttl, desc or ""):
+        return False
+    if is_dist_political_visit_context(ttl, desc or ""):
+        return False
+    if is_title_livestock_dominant_context(ttl, desc or ""):
+        return False
+
+    primary_supply_title_hits = count_any(ttl_l, [w.lower() for w in _DIST_PRIMARY_SUPPLY_TITLE_TERMS])
+    title_quality_anchor_hits = count_any(
+        ttl_l,
+        [w.lower() for w in (
+            "가락시장", "강서시장", "강서 시장", "도매시장", "공판장", "청과",
+            "도매법인", "법인협회", "온라인도매시장", "온라인 도매시장",
+            "유통 주체", "공간 분리", "유통 혁신", "농산물 유통",
+        )],
+    )
+    if primary_supply_title_hits >= 1 and title_quality_anchor_hits == 0:
+        supply_signal_hits = count_any(text, [w.lower() for w in _QUALITY_DIRECT_SUPPLY_TERMS])
+        if supply_signal_hits >= 2 and best_horti_score(ttl, desc or "") >= 1.4:
+            return False
+
+    hard_title_market = count_any(ttl_l, [w.lower() for w in _DIST_QUALITY_FIELD_MARKET_TERMS])
+    hard_title_ops = count_any(ttl_l, [w.lower() for w in _DIST_QUALITY_FIELD_OPS_TERMS])
+    if (is_low_value_local_political_context(ttl, desc or "") or is_commodity_political_statement_context(ttl, desc or "")) and (hard_title_market + hard_title_ops) < 2:
+        return False
+
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_field_market_response_context(ttl, desc or "", dom_norm, press_norm)
+        or is_dist_market_disruption_context(ttl, desc or "")
+    ):
+        return True
+
+    market_hits = count_any(text, [w.lower() for w in _DIST_QUALITY_FIELD_MARKET_TERMS])
+    ops_hits = count_any(text, [w.lower() for w in _DIST_QUALITY_FIELD_OPS_TERMS])
+    actor_hits = count_any(text, [w.lower() for w in _DIST_QUALITY_FIELD_ACTOR_TERMS])
+    agri_hits = count_any(text, [w.lower() for w in _DIST_QUALITY_FIELD_AGRI_TERMS])
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits += managed_count
+
+    if "강서시장" in compact or "강서 시장" in ttl_l:
+        market_hits += 2
+    if "법인협회" in text and ("도매" in text or "청과" in text or "온라인도매시장" in compact):
+        actor_hits += 1
+        market_hits += 1
+    if "농산물유통혁신" in compact or "농산물 유통 혁신" in text:
+        ops_hits += 2
+        agri_hits += 1
+    if "물류기자재" in compact or "물류·영농기자재" in text:
+        ops_hits += 1
+        if "청과" in text or "가락" in text:
+            market_hits += 1
+
+    if hard_title_market >= 1 and (hard_title_ops >= 1 or ops_hits >= 2 or actor_hits >= 1) and (agri_hits >= 1 or actor_hits >= 1):
+        return True
+    if market_hits >= 2 and ops_hits >= 2 and (agri_hits >= 1 or actor_hits >= 1):
+        return True
+    if actor_hits >= 1 and market_hits >= 1 and ops_hits >= 2:
+        return True
+    if ("농특위" in text or "농어업농어촌특별위원회" in compact) and ("농산물유통혁신" in compact or ("농산물" in text and "유통 혁신" in text)):
+        return True
+    if ("강서시장" in compact or "강서 시장" in ttl_l) and ("공간분리" in compact or "유통주체" in compact or "입장차" in text):
+        return True
+    return False
+
+
+def is_dist_primary_supply_price_story(title: str, desc: str) -> bool:
+    """가격·작황·산지폐기 중심의 수급 기사가 dist 빈칸을 잠식하지 않도록 분리한다."""
+    ttl_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not text:
+        return False
+    if is_dist_quality_field_ops_context(title, desc):
+        return False
+    title_supply_hits = count_any(ttl_l, [w.lower() for w in _DIST_PRIMARY_SUPPLY_TITLE_TERMS])
+    if title_supply_hits == 0:
+        return False
+    dist_ops_hits = count_any(text, [w.lower() for w in _DIST_QUALITY_FIELD_OPS_TERMS])
+    if dist_ops_hits >= 2:
+        return False
+    return has_direct_supply_chain_signal(text) or best_horti_score(title or "", desc or "") >= 1.4
+
+
 
 def is_blocked_domain(dom: str) -> bool:
     if not dom:
@@ -8968,12 +9296,22 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
     dist_supply_center = is_dist_supply_management_center_context(title, desc)
     dist_sales_channel_ops = is_dist_sales_channel_ops_context(title, desc)
     dist_field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
+    dist_quality_field_ops = is_dist_quality_field_ops_context(title, desc, dom, press)
     dist_anchor_hits = count_any(
         txt,
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "온라인 도매시장")],
     )
     macro_policy = is_macro_policy_issue(txt)
     policy_export_support = is_policy_export_support_brief_context(title, desc)
+    if key in ("supply", "policy", "dist"):
+        if is_wine_lifestyle_noise_context(title, desc):
+            base -= 3.4
+        if is_low_value_local_political_context(title, desc):
+            base -= 2.6
+        if is_low_value_agri_labor_help_context(title, desc):
+            base -= 3.0 if key == "supply" else 1.8
+        if is_low_value_local_promo_context(title, desc):
+            base -= 2.2 if key in ("supply", "dist") else 1.2
     if key == "policy":
         if is_title_livestock_dominant_context(title, desc):
             base -= 1.4
@@ -9019,6 +9357,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
             base += 1.15
         if dist_field_market_response:
             base += 1.25
+        if dist_quality_field_ops:
+            base += 1.35
         dist_disruption_scope = dist_market_disruption_scope(title, desc)
         if dist_disruption_scope == "systemic":
             base += 1.9
@@ -11831,6 +12171,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
     policy_market_brief = is_policy_market_brief_context(text, dom, press)
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
     local_org_feature = is_local_agri_org_feature_context(title, desc)
+    dist_quality_field_ops = key == "dist" and is_dist_quality_field_ops_context(title, desc, dom, press)
     policy_macro_keep = (
         key == "policy"
         and (
@@ -11870,6 +12211,15 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("supply_tourism_event")
     if key in ("supply", "dist") and is_fruit_blossom_tourism_context(ttl, desc):
         return _reject("fruit_blossom_tourism")
+    if key in ("supply", "policy", "dist") and is_wine_lifestyle_noise_context(ttl, desc):
+        return _reject("wine_lifestyle_noise")
+    if key in ("supply", "policy", "dist") and is_low_value_local_political_context(ttl, desc):
+        if not (key == "policy" and (policy_market_brief or policy_major_issue)):
+            return _reject("local_political_campaign_noise")
+    if key in ("supply", "policy", "dist") and is_low_value_agri_labor_help_context(ttl, desc):
+        return _reject("low_value_labor_help")
+    if key in ("supply", "policy", "dist") and is_low_value_local_promo_context(ttl, desc):
+        return _reject("low_value_local_promo")
 
     # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
     if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
@@ -12080,6 +12430,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             (energy_hits >= 1 or agri_ctx_hits == 0)
             and (not is_dist_export_field_context(ttl, desc, dom, press))
             and (not is_dist_market_ops_context(ttl, desc, dom, press))
+            and (not dist_quality_field_ops)
         ):
             return _reject("dist_wholesale_ambiguous_no_agri")
 
@@ -12241,6 +12592,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             if key == "dist":
                 if (("유통" in text) or ("도매" in text) or ("출하" in text) or ("하역" in text) or ("물류" in text)) and (horti_sc >= 1.8 or agri_ctx_hits >= 1):
                     dist_soft_ok = True
+                if dist_quality_field_ops:
+                    dist_soft_ok = True
                 if is_dist_export_field_context(ttl, desc, dom, press):
                     dist_soft_ok = True
                 if is_dist_field_market_response_context(ttl, desc, dom, press):
@@ -12399,15 +12752,15 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         dist_field_market_response = is_dist_field_market_response_context(ttl, desc, dom, press)
         dist_local_field_profile = is_dist_local_field_profile_context(title, desc)
         dist_local_org_tail = is_dist_local_org_tail_context(title, desc)
-        if dist_local_org_tail:
+        if dist_local_org_tail and not dist_quality_field_ops:
             return _reject("dist_local_org_profile")
         if is_dist_macro_export_noise_context(title, desc, dom, press):
             return _reject("dist_macro_export_noise")
         if is_dist_campaign_noise_context(title, desc):
             return _reject("dist_campaign_noise")
-        if is_dist_non_horti_anchorless_noise_context(title, desc, dom, press):
+        if is_dist_non_horti_anchorless_noise_context(title, desc, dom, press) and not dist_quality_field_ops:
             return _reject("dist_non_horti_anchorless")
-        if is_dist_program_event_noise_context(title, desc, dom, press):
+        if is_dist_program_event_noise_context(title, desc, dom, press) and not dist_quality_field_ops:
             return _reject("dist_program_event_noise")
         if is_dist_unanchored_agritech_noise_context(title, desc, dom, press):
             return _reject("dist_unanchored_agritech_noise")
@@ -12445,6 +12798,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             soft_hits = max(soft_hits, 2)
             hard_hits = max(hard_hits, 1)
             agri_anchor_hits = max(agri_anchor_hits, 1)
+        if dist_quality_field_ops:
+            soft_hits = max(soft_hits, 2)
+            hard_hits = max(hard_hits, 1)
+            agri_anchor_hits = max(agri_anchor_hits, 1)
 
         # 농산물 시장 이전/현대화/재배치 성격 기사는 유통·현장으로 허용
         relocation_hint = any(w in text for w in ("이전", "옮긴", "이전지", "현대화", "재배치", "신설", "개장", "개소"))
@@ -12455,7 +12812,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         # ✅ 가장 중요한 원칙: '농산물/원예' 앵커가 없고(agri_anchor_hits==0),
         # 도매시장/산지유통/품목 점수도 약하면 일반 물류/경제 기사로 보고 컷
-        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6 and (not local_org_feature):
+        if agri_anchor_hits == 0 and market_hits == 0 and horti_sc < 1.6 and (not local_org_feature) and (not dist_quality_field_ops):
             return _reject("dist_no_agri_anchor")
 
         # 수출/검역/원산지 단속 등 '운영/집행' 키워드만으로 걸린 일반 기사 차단
@@ -12489,6 +12846,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
             # soft-only는 (인프라 + (농업앵커 or 품목점수)) 또는 (품목점수 매우 강함 + soft 2개 이상)에서만 허용
             if not (
                 local_org_feature
+                or dist_quality_field_ops
                 or is_dist_sales_channel_ops_context(title, desc)
                 or dist_field_market_response
                 or (has_infra and (agri_anchor_hits >= 1 or horti_sc >= 1.9 or apc_ctx))
@@ -12571,6 +12929,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     supply_accusatory_quote = is_supply_accusatory_quote_context(title, desc)
     supply_program_brand_action = is_supply_program_brand_action_context(title, desc)
     supply_price_support_event = is_supply_price_support_event_context(title, desc)
+    dist_quality_field_ops = is_dist_quality_field_ops_context(title, desc, dom, press)
     dist_program_event_noise = is_dist_program_event_noise_context(title, desc, dom, press)
     dist_unanchored_agritech_noise = is_dist_unanchored_agritech_noise_context(title, desc, dom, press)
     managed_summary = _managed_commodity_match_summary(title, desc)
@@ -12705,6 +13064,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             _supply_dist_penalties.append(7.4 + (4.0 if sales_channel_signature_hits >= 2 else 0.0))
         if dist_field_market_response:
             _supply_dist_penalties.append(9.0)
+        if dist_quality_field_ops:
+            _supply_dist_penalties.append(7.2)
         if _supply_dist_penalties:
             score -= max(_supply_dist_penalties)
         if is_dist_export_shipping_context(title, desc) and supply_issue_bucket != "export_recovery":
@@ -12769,12 +13130,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 8.4
         if is_dist_campaign_noise_context(title, desc):
             score -= 7.2
-        if dist_program_event_noise:
+        if dist_program_event_noise and not dist_quality_field_ops:
             score -= 10.6
         if dist_unanchored_agritech_noise:
             score -= 10.2
         if dist_local_field_profile:
             score += 2.2
+        if dist_quality_field_ops:
+            score += 8.2
         # 농업자원 활용/혁신 기사 보너스 (못난이 채소, 규격외 농산물 자원화 등)
         _AGRI_RESOURCE_UTIL_KWS = ("못난이", "비상품", "규격외", "자원화", "사료화", "퇴비화", "부산물 활용", "부산물활용")
         if any(kw in text for kw in _AGRI_RESOURCE_UTIL_KWS):
@@ -12819,7 +13182,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 4.8
         if infra_designation:
             score -= 3.0
-        if managed_count and (market_hits >= 1 or dist_market_ops or dist_supply_center or dist_sales_channel_ops or dist_field_market_response or dist_export_field or dist_market_disruption):
+        if managed_count and (market_hits >= 1 or dist_market_ops or dist_supply_center or dist_sales_channel_ops or dist_field_market_response or dist_quality_field_ops or dist_export_field or dist_market_disruption):
             score += min(1.2, 0.22 * managed_count)
             score += min(0.9, 0.42 * program_core_count)
     elif key == "policy":
@@ -12845,6 +13208,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 10.0
         if dist_sales_channel_ops:
             score -= 9.0
+        if dist_quality_field_ops:
+            score -= 7.0
         if dist_field_market_response:
             score -= 7.4
         if dist_export_field:
@@ -13601,6 +13966,15 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         return False
     if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=False):
         return False
+    if section_key in ("supply", "policy", "dist"):
+        if is_wine_lifestyle_noise_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_local_political_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_agri_labor_help_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_local_promo_context(a.title or "", a.description or ""):
+            return False
 
     # (핵심) 코어2는 "정말 핵심"만 올리기 위해, 품목/도매/원예 신호를 재확인
     horti_sc = best_horti_score(a.title or "", a.description or "")
@@ -13812,6 +14186,15 @@ def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
         return False
     if _hf_semantic_noise_blocks_top_selection(a, section_key, relaxed=True):
         return False
+    if section_key in ("supply", "policy", "dist"):
+        if is_wine_lifestyle_noise_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_local_political_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_agri_labor_help_context(a.title or "", a.description or ""):
+            return False
+        if is_low_value_local_promo_context(a.title or "", a.description or ""):
+            return False
 
     # 1) 칼럼/사설/기고/인물/부고/인사류는 코어가 아니어도 상단 노출을 막는다(거의 항상 노이즈)
     hard_stop = ("칼럼", "사설", "오피니언", "기고", "독자기고", "기자수첩",
@@ -14616,6 +14999,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if section_key != "supply":
             return False
         title_local = (a.title or "").lower()
+        if (
+            is_wine_lifestyle_noise_context(a.title or "", a.description or "")
+            or is_low_value_agri_labor_help_context(a.title or "", a.description or "")
+            or is_low_value_local_political_context(a.title or "", a.description or "")
+            or is_low_value_local_promo_context(a.title or "", a.description or "")
+        ):
+            return True
         # 2026-04-10: 정치 발언 차단 (기존 dist 필터에만 있던 로직을 supply에도 적용)
         if is_commodity_political_statement_context(a.title or "", a.description or ""):
             return True
@@ -14746,6 +15136,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         txt_local = ((a.title or "") + " " + (a.description or "")).lower()
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
+        quality_field_ops = is_dist_quality_field_ops_context(a.title or "", a.description or "", dom_local, pr_local)
         strong_dist_signal = (
             is_dist_market_ops_context(a.title or "", a.description or "", dom_local, pr_local)
             or is_dist_supply_management_center_context(a.title or "", a.description or "")
@@ -14755,9 +15146,32 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             or is_dist_export_shipping_context(a.title or "", a.description or "")
             or is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
             or is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local)
+            or quality_field_ops
         )
+        if is_dist_primary_supply_price_story(a.title or "", a.description or "") and not (
+            quality_field_ops
+            or is_dist_market_ops_context(a.title or "", a.description or "", dom_local, pr_local)
+            or is_dist_supply_management_center_context(a.title or "", a.description or "")
+            or is_dist_sales_channel_ops_context(a.title or "", a.description or "")
+        ):
+            return True
         if _has_hard_opinion_column_marker(a.title or ""):
             return True
+        if is_wine_lifestyle_noise_context(a.title or "", a.description or ""):
+            return True
+        if is_low_value_local_political_context(a.title or "", a.description or ""):
+            return True
+        if is_low_value_local_promo_context(a.title or "", a.description or "") and not strong_dist_signal:
+            return True
+        if is_low_value_agri_labor_help_context(a.title or "", a.description or "") and not strong_dist_signal:
+            return True
+        if ("하나로마트" in txt_local or "공익적 역할" in txt_local) and not strong_dist_signal:
+            hard_wholesale_hits = count_any(
+                txt_local,
+                [w.lower() for w in ("가락시장", "도매시장", "공판장", "청과", "경락", "경매", "온라인도매시장", "온라인 도매시장", "산지유통", "출하", "물류")],
+            )
+            if hard_wholesale_hits == 0:
+                return True
         if is_commodity_political_statement_context(a.title or "", a.description or ""):
             return True
         if is_title_livestock_dominant_context(a.title or "", a.description or ""):
@@ -14822,6 +15236,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             return False
         dom_local = normalize_host(a.domain or "")
         pr_local = (a.press or "").strip()
+        if (
+            is_wine_lifestyle_noise_context(a.title or "", a.description or "")
+            or is_low_value_agri_labor_help_context(a.title or "", a.description or "")
+            or is_low_value_local_political_context(a.title or "", a.description or "")
+            or is_low_value_local_promo_context(a.title or "", a.description or "")
+        ):
+            return True
         return is_policy_general_macro_tail_context(
             a.title or "",
             a.description or "",
@@ -14930,6 +15351,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             supply_center = is_dist_supply_management_center_context(a.title or "", a.description or "")
             sales_channel_ops = is_dist_sales_channel_ops_context(a.title or "", a.description or "")
             field_market_response = is_dist_field_market_response_context(a.title or "", a.description or "", dom_local, pr_local)
+            quality_field_ops = is_dist_quality_field_ops_context(a.title or "", a.description or "", dom_local, pr_local)
             export_shipping = is_dist_export_shipping_context(a.title or "", a.description or "")
             export_field = is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
             export_support_hub = is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local)
@@ -14944,12 +15366,15 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 market_anchor_hits = max(market_anchor_hits, 1)
             if local_field_profile:
                 market_anchor_hits = max(market_anchor_hits, 1)
+            if quality_field_ops:
+                market_anchor_hits = max(market_anchor_hits, 1)
             if not (
                 disruption_rank
                 or market_ops
                 or supply_center
                 or sales_channel_ops
                 or field_market_response
+                or quality_field_ops
                 or local_field_profile
                 or export_shipping
                 or export_field
@@ -14964,6 +15389,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 1 if supply_center else 0,
                 1 if sales_channel_ops else 0,
                 1 if field_market_response else 0,
+                1 if quality_field_ops else 0,
                 1 if market_anchor_hits >= 2 else 0,
                 1 if local_field_profile else 0,
                 1 if strong_local_org else 0,
@@ -15172,6 +15598,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if a.score < core_min:
                 continue
+            if _is_dist_weak_tail_story(a):
+                continue
             if _already_used(a):
                 continue
             if not _low_core_allowed(a):
@@ -15209,7 +15637,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if section_key == "policy" and _is_policy_noncore_only_story(a):
             continue
-        if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
+        if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")) and not is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
             continue
         if section_key == "supply" and (is_flower_consumer_trend_context((a.title + " " + a.description).lower()) or is_fruit_foodservice_event_context((a.title + " " + a.description).lower())):
             continue
@@ -15331,7 +15759,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if section_key == "policy" and _is_policy_noncore_only_story(a):
                 continue
-            if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")):
+            if section_key == "dist" and (is_local_agri_infra_designation_context(a.title or "", a.description or "") or is_local_agri_org_feature_context(a.title or "", a.description or "")) and not is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                 continue
             if section_key == "supply" and is_flower_consumer_trend_context((a.title + " " + a.description).lower()):
                 continue
@@ -15773,6 +16201,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 or is_dist_export_field_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
                 or is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
                 or is_dist_local_field_profile_context(a.title or "", a.description or "")
+                or is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
             )
             if (not strong_dist_signal) and fit_sc_underfill < 1.0:
                 continue
@@ -15978,7 +16407,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 4.6) underfill 강신호 백필:
     # - 섹션이 2~3건 수준에서 끝날 때, threshold/tail-cut 바로 아래의 강한 기사 1건을 추가로 살린다.
     # - dist도 시장 충격/현장 기사 쪽으로 1건 보강하고, policy는 공공/기관발 강기사 중심으로만 보강한다.
-    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "dist": 5, "pest": 3}
+    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "dist": 4, "pest": 3}
     strong_underfill_target = min(max_n, strong_underfill_target_by_section.get(section_key, 0))
     if strong_underfill_target and len(final) < strong_underfill_target:
         need = strong_underfill_target - len(final)
@@ -16023,6 +16452,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if is_dist_supply_management_center_context(a.title or "", a.description or ""):
                     return -20.0
                 if is_dist_sales_channel_ops_context(a.title or "", a.description or ""):
+                    return -20.0
+                if is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                     return -20.0
                 if is_dist_export_support_hub_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
                     return min(cut, max(BASE_MIN_SCORE.get("dist", 6.0) + 0.2, thr - 10.0))
@@ -19133,6 +19564,14 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "commodity_corporate_stock_context"
     if section_key == "dist" and is_dist_political_visit_context(a.title or "", a.description or ""):
         return "dist_political_visit"
+    if section_key in ("supply", "policy", "dist") and is_wine_lifestyle_noise_context(a.title or "", a.description or ""):
+        return "wine_lifestyle_noise"
+    if section_key in ("supply", "policy", "dist") and is_low_value_local_political_context(a.title or "", a.description or ""):
+        return "local_political_campaign_noise"
+    if section_key in ("supply", "policy", "dist") and is_low_value_agri_labor_help_context(a.title or "", a.description or ""):
+        return "low_value_labor_help"
+    if section_key in ("supply", "policy", "dist") and is_low_value_local_promo_context(a.title or "", a.description or ""):
+        return "low_value_local_promo"
 
     min_fit = _selection_guardrail_number("section_card_min_fit", 0.0, section_key=section_key)
     core_min_fit = _selection_guardrail_number("core_relaxed_min_fit", min_fit, section_key=section_key)
@@ -19233,6 +19672,51 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
     if section_key == "dist":
         # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
         _ttl_dist = (a.title or "").lower()
+        _dist_quality_field_ops = is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+        _title_dist_agri_hits = count_any(
+            _ttl_dist,
+            (
+                "농산물", "농식품", "농업", "농가", "원예", "과수", "과일", "채소",
+                "화훼", "청과", "사과", "배", "감귤", "배추", "양파", "마늘",
+                "대파", "수박", "참외", "토마토", "딸기",
+            ),
+        )
+        _title_dist_market_hits = count_any(
+            _ttl_dist,
+            (
+                "가락시장", "도매시장", "공판장", "청과", "경락", "경매", "반입",
+                "온라인도매시장", "온라인 도매시장", "산지유통", "농산물 물류",
+                "농식품 수출", "원산지", "부정유통", "강서 시장", "강서시장",
+                "도매법인", "법인협회", "유통 주체", "유통 혁신", "농산물 유통",
+            ),
+        )
+        if _title_dist_agri_hits == 0 and _title_dist_market_hits == 0 and not _dist_quality_field_ops:
+            return "dist_title_anchorless"
+        _dist_agri_anchor_hits = count_any(
+            text,
+            (
+                "농산물", "농식품", "농업", "농가", "원예", "과수", "과일", "채소",
+                "화훼", "청과", "사과", "배", "감귤", "배추", "양파", "마늘",
+                "대파", "수박", "참외", "토마토", "딸기",
+            ),
+        )
+        _dist_market_anchor_hits = count_any(
+            text,
+            (
+                "가락시장", "도매시장", "공판장", "경락", "경매", "반입",
+                "온라인 도매시장", "온라인도매시장", "산지유통", "산지유통센터",
+                "농산물 물류", "농식품 수출", "원산지", "부정유통", "강서 시장",
+                "강서시장", "도매법인", "법인협회", "유통 주체", "유통 혁신",
+                "농산물 유통",
+            ),
+        )
+        if (
+            _dist_agri_anchor_hits == 0
+            and _dist_market_anchor_hits == 0
+            and best_horti_score(a.title or "", a.description or "") < 1.4
+            and not _dist_quality_field_ops
+        ):
+            return "dist_non_agri_anchorless"
         _COOP_REFORM_KWS = ("농협개혁", "농협 개혁", "조직개편", "조직 개편", "거버넌스", "임원 선임", "인사 개편",
                             "농협중앙회 회장", "농협 회장", "선거관리위원회", "대의원", "농협법 개정")
         if any(kw in _ttl_dist for kw in _COOP_REFORM_KWS):
@@ -19253,9 +19737,9 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             return "dist_local_roundup"
         if is_dist_official_cost_response_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
             return "dist_official_cost_response"
-        if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+        if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()) and not _dist_quality_field_ops:
             return "dist_non_horti_anchorless"
-        if is_dist_program_event_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+        if is_dist_program_event_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()) and not _dist_quality_field_ops:
             return "dist_program_event_noise"
         if is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
             return "dist_unanchored_agritech_noise"
@@ -19403,6 +19887,9 @@ def _sync_debug_with_final_sections(final_by_section: dict[str, list["Article"]]
 def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Article"]]) -> int:
     if not isinstance(final_by_section, dict):
         return 0
+    # Quality-first mode: do not move supply stories into distribution merely to fill a section.
+    if _selection_guardrail_bool("quality_first_disable_supply_to_dist_underfill", True):
+        return 0
     dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), None)
     supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), None)
     if not dist_conf or not supply_conf:
@@ -19446,7 +19933,31 @@ def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Ar
         systemic = 1 if dist_market_disruption_scope(a.title or "", a.description or "") == "systemic" else 0
         hub_hint = 1 if any(term in txt for term in ("\uc720\ud1b5 \uac70\uc810", "\uc0b0\uc9c0\uc720\ud1b5 \uac70\uc810")) else 0
         action_hint = 1 if is_horti_market_action_context(a.title or "", a.description or "") else 0
-        strong_signal = systemic or market_ops or supply_center or sales_channel or field_response or export_shipping or export_field or local_field or hub_hint or action_hint
+        dist_anchor_hits = count_any(
+            txt,
+            (
+                "가락시장", "도매시장", "공판장", "공영도매시장", "경락", "경매", "반입",
+                "온라인 도매시장", "온라인도매시장", "산지유통", "산지유통센터", "물류",
+                "수출", "선적", "검역", "통관", "원산지", "부정유통", "단속",
+            ),
+        )
+        direct_supply_story = has_direct_supply_chain_signal(txt)
+        allowed_cross_signal = bool(supply_center or sales_channel or field_response or export_shipping or export_field or local_field or hub_hint)
+        if direct_supply_story and not allowed_cross_signal:
+            continue
+        hard_dist_signal = bool(
+            systemic
+            or allowed_cross_signal
+            or (market_ops and not direct_supply_story)
+            or (dist_anchor_hits >= 2 and not direct_supply_story)
+        )
+        if not hard_dist_signal:
+            continue
+        if direct_supply_story and fit_supply >= 2.0 and not (
+            market_ops or supply_center or sales_channel or field_response or export_shipping or export_field or local_field or hub_hint
+        ):
+            continue
+        strong_signal = hard_dist_signal or action_hint
         if not strong_signal and fit_dist < 1.25:
             continue
         if (not strong_signal) and (fit_dist + 0.15 < fit_supply):
@@ -19515,8 +20026,14 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
     _sec_conf_map = {str(s.get("key") or "").strip(): s for s in SECTIONS if str(s.get("key") or "").strip()}
     for key, items in list((final_by_section or {}).items()):
         keep: list[Article] = []
+        seen_title_keys: list[str] = []
         for a in (items or []):
             if not isinstance(a, Article):
+                continue
+            title_key = getattr(a, "title_key", "") or norm_title_key(a.title or "")
+            if title_key and any(_is_similar_title(title_key, seen_key) for seen_key in seen_title_keys):
+                pruned += 1
+                log.info("[AUDIT] drop section=%s reason=duplicate_title title=%s", key, (a.title or "")[:120])
                 continue
             reason = _postbuild_article_reject_reason(a, str(key))
             if reason:
@@ -19562,6 +20079,8 @@ def _audit_final_sections(final_by_section: dict[str, list["Article"]]) -> int:
                     log.info("[AUDIT] drop section=%s reason=%s fit=%.2f score=%.2f core=%s title=%s",
                              key, _drop_reason, _audit_fit, _audit_score, _audit_is_core, (a.title or "")[:120])
                     continue
+            if title_key:
+                seen_title_keys.append(title_key)
             keep.append(a)
         final_by_section[str(key)] = keep
     return pruned
@@ -21967,6 +22486,12 @@ def _commodity_board_item_article_representative_metrics(
         and (match_count >= 2 or (not single_focus) or title_primary_hits == 0)
         and not market_response
     )
+    weak_labor_help = is_low_value_agri_labor_help_context(title, desc)
+    weak_local_political = is_low_value_local_political_context(title, desc)
+    weak_local_promo = is_low_value_local_promo_context(title, desc) and not market_response
+    weak_wine_lifestyle = is_wine_lifestyle_noise_context(title, desc)
+    weak_flower_consumer_lifestyle = is_low_value_flower_consumer_lifestyle_context(title, desc) and not market_response
+    weak_research_award = is_low_value_research_award_context(title, desc) and not market_response
     strong_price_support_response = bool(
         weak_price_support_event
         and title_primary_hits >= 1
@@ -22008,6 +22533,12 @@ def _commodity_board_item_article_representative_metrics(
                 weak_processed_panic,
                 weak_program_brand,
                 weak_generic_market_watch,
+                weak_labor_help,
+                weak_local_political,
+                weak_local_promo,
+                weak_wine_lifestyle,
+                weak_flower_consumer_lifestyle,
+                weak_research_award,
             )
         )
     )
@@ -22034,7 +22565,7 @@ def _commodity_board_item_article_representative_metrics(
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch:
+    elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch or weak_labor_help or weak_local_political or weak_local_promo or weak_wine_lifestyle or weak_flower_consumer_lifestyle or weak_research_award:
         representative_rank = 0
     elif stage_core_story and selection_fit_score >= 1.45 and (
         issue_bucket in ("commodity_issue", "farm_action", "export_recovery")
@@ -22135,6 +22666,18 @@ def _commodity_board_item_article_representative_metrics(
         representative_score -= 26.0
     if weak_generic_market_watch:
         representative_score -= 24.0
+    if weak_labor_help:
+        representative_score -= 42.0
+    if weak_local_political:
+        representative_score -= 38.0
+    if weak_local_promo:
+        representative_score -= 30.0
+    if weak_wine_lifestyle:
+        representative_score -= 50.0
+    if weak_flower_consumer_lifestyle:
+        representative_score -= 38.0
+    if weak_research_award:
+        representative_score -= 34.0
     if is_nh_internal_negative(title, desc):
         representative_score -= 50.0
     # 품목명이 제목+본문 어디에도 없으면 대표기사로 부적합 (범용 정책/물가 기사 방지)
@@ -22170,6 +22713,12 @@ def _commodity_board_item_article_representative_metrics(
             "weak_program_brand_story": bool(weak_program_brand),
             "weak_price_support_event_story": bool(weak_price_support_event),
             "weak_generic_market_watch_story": bool(weak_generic_market_watch),
+            "weak_labor_help_story": bool(weak_labor_help),
+            "weak_local_political_story": bool(weak_local_political),
+            "weak_local_promo_story": bool(weak_local_promo),
+            "weak_wine_lifestyle_story": bool(weak_wine_lifestyle),
+            "weak_flower_consumer_lifestyle_story": bool(weak_flower_consumer_lifestyle),
+            "weak_research_award_story": bool(weak_research_award),
         }
     )
     if _item_key and _art_key:
@@ -22200,6 +22749,18 @@ def _commodity_board_article_is_active_candidate(
         return False
     if is_commodity_foodservice_lifestyle_context(_cb_title, _cb_desc):
         return False
+    if is_wine_lifestyle_noise_context(_cb_title, _cb_desc):
+        return False
+    if is_low_value_agri_labor_help_context(_cb_title, _cb_desc):
+        return False
+    if is_low_value_local_political_context(_cb_title, _cb_desc):
+        return False
+    if is_low_value_local_promo_context(_cb_title, _cb_desc) and not bool(article_metrics.get("market_response")):
+        return False
+    if is_low_value_flower_consumer_lifestyle_context(_cb_title, _cb_desc):
+        return False
+    if is_low_value_research_award_context(_cb_title, _cb_desc):
+        return False
     _cb_text_l = (_cb_title + " " + _cb_desc).lower()
     _WINE_BRAND_KWS = ("와인", "wine", "소믈리에", "빈티지", "수도사", "양조장", "와이너리", "winery", "브랜드 언박싱")
     _wine_hits = sum(1 for w in _WINE_BRAND_KWS if w in _cb_text_l)
@@ -22213,6 +22774,18 @@ def _commodity_board_article_is_active_candidate(
     _title_hits = int(article_metrics.get("title_primary_hits") or 0)
     _match_count = int(article_metrics.get("match_count") or 0)
     if _title_hits == 0 and _match_count == 0:
+        return False
+    _direct_focus_ok = bool(
+        article_metrics.get("direct_item_focus")
+        or _title_hits >= 1
+        or bool(article_metrics.get("single_focus"))
+    )
+    _indirect_operational_focus_ok = bool(
+        bool(article_metrics.get("primary_focus"))
+        and representative_rank >= 3
+        and _commodity_board_has_operational_issue_signal(article_metrics)
+    )
+    if not (_direct_focus_ok or _indirect_operational_focus_ok):
         return False
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
@@ -22512,6 +23085,14 @@ def _normalize_supply_section_from_board(
                 continue
             if article_key in current_supply_keys:
                 continue
+            if (
+                is_wine_lifestyle_noise_context(article.title or "", article.description or "")
+                or is_low_value_agri_labor_help_context(article.title or "", article.description or "")
+                or is_low_value_local_political_context(article.title or "", article.description or "")
+                or is_low_value_local_promo_context(article.title or "", article.description or "")
+            ):
+                log.info("[REBALANCE] blocked low-value board promote: %s", (article.title or "")[:60])
+                continue
             # 거버넌스/인사 기사 board promote 차단
             if _title_has_mgmt_item(article.title or "") and not _title_has_horti_item(article.title or ""):
                 log.info("[REBALANCE] blocked governance article from board promote: %s", (article.title or "")[:60])
@@ -22673,6 +23254,12 @@ def _normalize_supply_section_from_board(
                     or metrics.get("weak_program_brand_story")
                     or metrics.get("weak_price_support_event_story")
                     or metrics.get("weak_generic_market_watch_story")
+                    or metrics.get("weak_labor_help_story")
+                    or metrics.get("weak_local_political_story")
+                    or metrics.get("weak_local_promo_story")
+                    or metrics.get("weak_wine_lifestyle_story")
+                    or metrics.get("weak_flower_consumer_lifestyle_story")
+                    or metrics.get("weak_research_award_story")
                 )
             )
             if weak_story:
@@ -23017,7 +23604,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             _fallback_candidates = [
                 (article, metrics)
                 for article, metrics in _all_repr_metrics
-                if bool(metrics.get("board_eligible")) and int(metrics.get("representative_rank", -1)) >= 0
+                if bool(metrics.get("board_eligible")) and int(metrics.get("representative_rank", -1)) >= 1
             ]
             if _fallback_candidates:
                 _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
