@@ -1,12 +1,12 @@
-## Daily Eval (2026-05-12)
-- Overall: **97.28** (pass)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=84.4, section_fit=91.4, core=100.0, commodity=91.2
-- Briefing cards: 14 / Commodity cards: 32
-- Sections: supply:3/3 raw=145, policy:4/3 raw=90, dist:3/2 raw=21, pest:4/3 raw=54
-- Metrics: title_unique=1.00, domain_diversity=1.00, summary_presence=1.00, summary_numeric=0.93, fresh_72h=1.00, fit_avg=3.87, false_positive=0.00, weak_core=0.00, commodity_weak=0.08, semantic_penalty=0.0
+## Daily Eval (2026-05-13)
+- Overall: **98.42** (pass)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=90.0, section_fit=100.0, core=100.0, commodity=84.5
+- Briefing cards: 15 / Commodity cards: 63
+- Sections: supply:4/3 raw=188, policy:3/3 raw=112, dist:3/3 raw=41, pest:5/3 raw=29
+- Metrics: title_unique=1.00, domain_diversity=0.80, summary_presence=1.00, summary_numeric=0.93, fresh_72h=1.00, fit_avg=3.82, false_positive=0.00, weak_core=0.00, commodity_weak=0.06, semantic_penalty=0.0
 
 ### Improvement Hints
-- 리콜 시드 결손이 보입니다: policy, dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
