@@ -1,83 +1,83 @@
 {
-  "report_date": "2026-05-12",
-  "generated_at_kst": "2026-05-12T06:50:19+09:00",
+  "report_date": "2026-05-13",
+  "generated_at_kst": "2026-05-13T06:21:11+09:00",
   "status": "pass",
-  "overall_score": 97.28,
+  "overall_score": 98.42,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 84.38,
-    "section_alignment": 91.43,
+    "retrieval_support": 90.0,
+    "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 91.24
+    "commodity_board_quality": 84.46
   },
   "counts": {
-    "briefing_total": 14,
-    "commodity_total": 32,
-    "commodity_primary_total": 12,
+    "briefing_total": 15,
+    "commodity_total": 63,
+    "commodity_primary_total": 16,
     "briefing_by_section": {
-      "supply": 3,
-      "policy": 4,
+      "supply": 4,
+      "policy": 3,
       "dist": 3,
-      "pest": 4
+      "pest": 5
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 1,
+      "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 19,
-      "policy": 6,
-      "dist": 1,
+      "supply": 39,
+      "policy": 15,
+      "dist": 3,
       "pest": 6
     },
     "raw_by_section": {
-      "supply": 145,
-      "policy": 90,
-      "dist": 21,
-      "pest": 54
+      "supply": 188,
+      "policy": 112,
+      "dist": 41,
+      "pest": 29
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
-      "dist": 2,
+      "dist": 3,
       "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 1.0,
-    "surface_reuse_penalty": 0.0,
+    "briefing_domain_diversity_rate": 0.8,
+    "surface_reuse_penalty": 0.0128,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9286,
+    "summary_numeric_rate": 0.9333,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.4792,
-    "section_alignment_fit_avg": 3.8707,
+    "seed_coverage_score": 0.6667,
+    "section_alignment_fit_avg": 3.8233,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.2143,
+    "section_alignment_weak_stage_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.3829,
-    "core_rank_percentile_avg": 0.9209,
+    "core_fit_avg": 4.075,
+    "core_rank_percentile_avg": 0.9581,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9167,
-    "commodity_primary_weak_rate": 0.0833,
-    "commodity_primary_fit_avg": 1.7175,
-    "commodity_primary_rank_avg": 2.8333
+    "commodity_primary_issue_signal_rate": 0.75,
+    "commodity_primary_weak_rate": 0.0625,
+    "commodity_primary_fit_avg": 1.0669,
+    "commodity_primary_rank_avg": 2.4375
   },
   "section_scores": {
     "briefing_fill": {
@@ -99,9 +99,9 @@
       "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.5833,
-      "policy": 0.4167,
-      "dist": 0.4167,
+      "supply": 0.6667,
+      "policy": 0.9167,
+      "dist": 0.5833,
       "pest": 0.5
     },
     "section_alignment": {
@@ -113,55 +113,55 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.8673,
+      "dist": 1.0,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "수박 한 통에 3만원 넘어… 이른 더위에 과일값 폭등",
-      "section": "supply",
-      "age_hours": 18.0
-    },
-    {
-      "title": "군위군-경북대, '고추 탄저병 ' 잡는 친환경 드론 방제 맞손",
-      "section": "pest",
-      "age_hours": 17.9
-    },
-    {
-      "title": "중간유통상 없어 농가·소비자 만족… 농산물 직매장 는다",
+      "title": "홈플러스익스프레스 ‘손바뀜’…산지 판로회복은 시일 걸릴듯",
       "section": "dist",
-      "age_hours": 17.4
+      "age_hours": 23.0
     },
     {
-      "title": "가락시장, 입차하역 스케줄링 서비스 확대…스마트 물류체계 구축 속도",
+      "title": "롯데온, '뷰세라' 릴레이 라방→롯데마트, 강원 찰 토마토 ·초당옥수수 ...",
       "section": "supply",
-      "age_hours": 16.9
+      "age_hours": 22.8
     },
     {
-      "title": "[패트롤]영천시-경산시-칠곡군-달서구-대구대- 대구도시개발공사",
-      "section": "policy",
-      "age_hours": 15.0
-    },
-    {
-      "title": "함평군, '탄저병 사전 대응' 본격 가동... 적기 예찰·약제 살포 총력",
+      "title": "전남농기원, 과수화상병 유입 차단 현장 모의훈련 실시",
       "section": "pest",
-      "age_hours": 15.0
+      "age_hours": 20.7
     },
     {
-      "title": "경산시, 시설원예 농가 난방비 긴급 지원…면세유 인상분 보전 나선다",
-      "section": "policy",
-      "age_hours": 13.9
-    },
-    {
-      "title": "동화청과, 청년농 유통· 출하 역량 강화 위해 단계별 교육 나서",
+      "title": "가락시장 , 원로 예우로 뭉쳐…'노을마당' 어버이날 행사 성료",
       "section": "dist",
-      "age_hours": 13.4
+      "age_hours": 19.2
+    },
+    {
+      "title": "“지금은 남아돈다, 여름엔 없다”…정부, 배추·양파 가격 방어 총력",
+      "section": "supply",
+      "age_hours": 19.0
+    },
+    {
+      "title": "반값된 양파…정부, 중·만생종 1.5만t 긴급 수매",
+      "section": "policy",
+      "age_hours": 19.0
+    },
+    {
+      "title": "정부, 여름철 '채소 대란' 막는다… 배추 ·무 비축 물량 15% 확대",
+      "section": "pest",
+      "age_hours": 19.0
+    },
+    {
+      "title": "농식품부, 채소 수급 안정 추진…배추·무 비축 2만 1천t으로 확대",
+      "section": "pest",
+      "age_hours": 18.3
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: policy, dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
   ],
   "selection_guardrails": {
     "driver_tags": [],
