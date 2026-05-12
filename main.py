@@ -8372,6 +8372,8 @@ def dist_operational_diversity_bucket(title: str, desc: str, dom: str = "", pres
         or is_low_value_local_promo_context(ttl, desc or "")
         or is_dist_political_visit_context(ttl, desc or "")
         or is_title_livestock_dominant_context(ttl, desc or "")
+        or is_dist_program_event_noise_context(ttl, desc or "", dom_norm, pr_norm)
+        or is_dist_unanchored_agritech_noise_context(ttl, desc or "", dom_norm, pr_norm)
     ):
         return ""
 
@@ -15267,6 +15269,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         if is_title_livestock_dominant_context(a.title or "", a.description or ""):
             return True
         if is_dist_governance_policy_noise_context(a.title or "", a.description or "", dom_local, pr_local):
+            return True
+        if is_dist_program_event_noise_context(a.title or "", a.description or "", dom_local, pr_local):
+            return True
+        if is_dist_unanchored_agritech_noise_context(a.title or "", a.description or "", dom_local, pr_local):
             return True
         org_performance_noise = (
             is_local_agri_org_feature_context(a.title or "", a.description or "")
