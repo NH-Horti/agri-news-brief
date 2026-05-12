@@ -1,60 +1,60 @@
 {
   "report_date": "2026-05-12",
-  "generated_at_kst": "2026-05-12T06:21:06+09:00",
+  "generated_at_kst": "2026-05-12T06:50:19+09:00",
   "status": "pass",
-  "overall_score": 98.14,
+  "overall_score": 97.28,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 84.38,
-    "section_alignment": 100.0,
+    "section_alignment": 91.43,
     "core_quality": 100.0,
-    "commodity_board_quality": 87.75
+    "commodity_board_quality": 91.24
   },
   "counts": {
-    "briefing_total": 17,
-    "commodity_total": 66,
-    "commodity_primary_total": 22,
+    "briefing_total": 14,
+    "commodity_total": 32,
+    "commodity_primary_total": 12,
     "briefing_by_section": {
       "supply": 3,
       "policy": 4,
-      "dist": 5,
-      "pest": 5
+      "dist": 3,
+      "pest": 4
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 2,
+      "dist": 1,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 35,
-      "policy": 15,
-      "dist": 3,
-      "pest": 13
+      "supply": 19,
+      "policy": 6,
+      "dist": 1,
+      "pest": 6
     },
     "raw_by_section": {
-      "supply": 165,
-      "policy": 119,
-      "dist": 32,
-      "pest": 60
+      "supply": 145,
+      "policy": 90,
+      "dist": 21,
+      "pest": 54
     },
     "expected_briefing_by_section": {
       "supply": 3,
       "policy": 3,
-      "dist": 3,
+      "dist": 2,
       "pest": 3
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8824,
-    "surface_reuse_penalty": 0.012,
+    "briefing_domain_diversity_rate": 1.0,
+    "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9412,
+    "summary_numeric_rate": 0.9286,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -62,22 +62,22 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.4792,
-    "section_alignment_fit_avg": 3.5665,
+    "section_alignment_fit_avg": 3.8707,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0588,
+    "section_alignment_weak_stage_rate": 0.2143,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 3.9188,
-    "core_rank_percentile_avg": 0.9375,
+    "core_fit_avg": 4.3829,
+    "core_rank_percentile_avg": 0.9209,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9091,
-    "commodity_primary_weak_rate": 0.0455,
-    "commodity_primary_fit_avg": 1.1582,
-    "commodity_primary_rank_avg": 2.3182
+    "commodity_primary_issue_signal_rate": 0.9167,
+    "commodity_primary_weak_rate": 0.0833,
+    "commodity_primary_fit_avg": 1.7175,
+    "commodity_primary_rank_avg": 2.8333
   },
   "section_scores": {
     "briefing_fill": {
@@ -111,52 +111,52 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 0.84,
+      "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.8673,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "전남도, “농가 시름 던다” 농업용 면세유 구입비 지원… 10월 말까지 ...",
-      "section": "policy",
-      "age_hours": 22.5
-    },
-    {
-      "title": "제1차 농산물 유통혁신 TF 회의 개최",
-      "section": "dist",
-      "age_hours": 20.8
-    },
-    {
-      "title": "원유도 암호화폐도 아니었다…이달 최고 수익률 ' 감자 ' 705% 폭등",
+      "title": "수박 한 통에 3만원 넘어… 이른 더위에 과일값 폭등",
       "section": "supply",
-      "age_hours": 20.1
+      "age_hours": 18.0
     },
     {
-      "title": "전남농기원, 과수화상병 유입 차단 현장 모의훈련",
+      "title": "군위군-경북대, '고추 탄저병 ' 잡는 친환경 드론 방제 맞손",
       "section": "pest",
-      "age_hours": 16.5
+      "age_hours": 17.9
     },
     {
-      "title": "외국인 계절근로 역대 최대 배정…농촌 인력난 대응 강화",
-      "section": "policy",
-      "age_hours": 15.6
-    },
-    {
-      "title": "올해 첫 단감 탄저병 포자 비산 확인, 방제 비상",
-      "section": "pest",
-      "age_hours": 15.6
-    },
-    {
-      "title": "광양농협, 매실 생산농가 워크숍 개최",
-      "section": "pest",
-      "age_hours": 15.3
-    },
-    {
-      "title": "[단독] 고령 우곡수박 상표 도용한 수박, 포항·영덕 등 전국 유통",
+      "title": "중간유통상 없어 농가·소비자 만족… 농산물 직매장 는다",
       "section": "dist",
-      "age_hours": 14.6
+      "age_hours": 17.4
+    },
+    {
+      "title": "가락시장, 입차하역 스케줄링 서비스 확대…스마트 물류체계 구축 속도",
+      "section": "supply",
+      "age_hours": 16.9
+    },
+    {
+      "title": "[패트롤]영천시-경산시-칠곡군-달서구-대구대- 대구도시개발공사",
+      "section": "policy",
+      "age_hours": 15.0
+    },
+    {
+      "title": "함평군, '탄저병 사전 대응' 본격 가동... 적기 예찰·약제 살포 총력",
+      "section": "pest",
+      "age_hours": 15.0
+    },
+    {
+      "title": "경산시, 시설원예 농가 난방비 긴급 지원…면세유 인상분 보전 나선다",
+      "section": "policy",
+      "age_hours": 13.9
+    },
+    {
+      "title": "동화청과, 청년농 유통· 출하 역량 강화 위해 단계별 교육 나서",
+      "section": "dist",
+      "age_hours": 13.4
     }
   ],
   "content_false_positive_samples": [],
