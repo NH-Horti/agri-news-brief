@@ -2895,6 +2895,70 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(center.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertIn(sales_ops.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_dist_core_limits_tier1_when_mid_tier_alternative_exists(self):
+        tier1_a = self._make_article(
+            "dist",
+            "도매시장 법인협회, 5주간 실무형 교육 운영한다",
+            "한국농수산물도매시장법인협회가 농산물 도매시장 법인 실무형 교육을 열고 경매, 정산, 출하 절차와 온라인도매시장 대응을 다룬다.",
+            "https://www.newsfarm.co.kr/news/articleView.html?idxno=99001",
+        )
+        tier1_b = self._make_article(
+            "dist",
+            "유통 교육 '1타 법인' 동화청과, 청년농 육성 본격화",
+            "동화청과가 청년농을 대상으로 도매시장 출하 전략과 가격 형성, 정산 실무 교육을 진행한다.",
+            "https://www.newsfarm.co.kr/news/articleView.html?idxno=99002",
+        )
+        mid_tier = self._make_article(
+            "dist",
+            "강서 시장 '공간 분리' 논의···유통 주체별 입장차 여전",
+            "강서농산물도매시장에서 시장도매인과 도매시장법인 등 유통 주체별 공간 분리 방안과 입장차가 논의되고 있다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=99003",
+        )
+        tier1_a.score = 35.9
+        tier1_b.score = 34.8
+        mid_tier.score = 28.4
+
+        picked = main.select_top_articles([tier1_a, tier1_b, mid_tier], "dist", 2)
+        picked_links = {x.link for x in picked}
+        self.assertIn(tier1_a.link, picked_links, msg=str([(x.link, x.score, x.press, x.title) for x in picked]))
+        self.assertIn(mid_tier.link, picked_links, msg=str([(x.link, x.score, x.press, x.title) for x in picked]))
+        self.assertNotIn(tier1_b.link, picked_links, msg=str([(x.link, x.score, x.press, x.title) for x in picked]))
+
+    def test_dist_selection_adds_apc_nh_diversity_when_market_articles_dominate(self):
+        market_a = self._make_article(
+            "dist",
+            "도매시장 법인협회, 5주간 실무형 교육 운영한다",
+            "한국농수산물도매시장법인협회가 농산물 도매시장 법인 실무형 교육을 열고 경매, 정산, 출하 절차와 온라인도매시장 대응을 다룬다.",
+            "https://www.newsfarm.co.kr/news/articleView.html?idxno=99101",
+        )
+        market_b = self._make_article(
+            "dist",
+            "강서 시장 '공간 분리' 논의···유통 주체별 입장차 여전",
+            "강서농산물도매시장에서 시장도매인과 도매시장법인 등 유통 주체별 공간 분리 방안과 입장차가 논의되고 있다.",
+            "https://www.agrinet.co.kr/news/articleView.html?idxno=99102",
+        )
+        market_c = self._make_article(
+            "dist",
+            "대구도매시장, 무인 로봇 하역 실험 본격화",
+            "대구농수산물도매시장이 스마트 도매시장 구현을 위해 자동화 기술과 하역 실증을 포함한 유통·물류 효율화 시범사업을 추진한다.",
+            "https://www.amnews.co.kr/news/articleView.html?idxno=99103",
+        )
+        apc_nh = self._make_article(
+            "dist",
+            "원주 원예농협, 강원 사과 유통 거점 부상",
+            "원주원예농협이 강원 사과 산지유통센터를 중심으로 공동선별과 판매사업, 판로 확대를 강화한다는 현장 기사다.",
+            "https://www.nongmin.com/article/20260312500991",
+        )
+        market_a.score = 35.9
+        market_b.score = 34.1
+        market_c.score = 32.4
+        apc_nh.score = 28.6
+
+        picked = main.select_top_articles([market_a, market_b, market_c, apc_nh], "dist", 3)
+        picked_links = {x.link for x in picked}
+        self.assertIn(apc_nh.link, picked_links, msg=str([(x.link, x.score, x.selection_stage, x.title) for x in picked]))
+        self.assertEqual(len(picked), 3, msg=str([(x.link, x.score, x.title) for x in picked]))
+
     def test_pest_same_region_duplicate_prefers_single_story(self):
         brief = self._make_article(
             "pest",

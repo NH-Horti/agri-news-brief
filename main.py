@@ -2396,6 +2396,10 @@ SECTIONS: list[SectionConfig] = [
             "스마트 apc",
             "직거래",
             "연합판매사업",
+            "판매사업",
+            "경제사업",
+            "품목농협",
+            "원예농협",
             "광역수급관리센터",
             "수급관리센터",
             "준공",
@@ -8338,6 +8342,69 @@ def is_dist_export_shipping_context(title: str, desc: str) -> bool:
     return export_hits >= 1 and (shipping_hits >= 1 or destination_hit or chain_hits >= 2)
 
 
+_DIST_APC_NH_DIVERSITY_TERMS = (
+    "apc", "산지유통센터", "산지유통", "유통센터", "화훼 유통센터", "스마트 apc", "선별", "선과", "저온저장", "저장고",
+    "품목농협", "원예농협", "연합판매사업", "판매사업", "경제사업", "공동선별", "공선출하",
+    "통합마케팅", "공동판매", "공동사업법인", "농가조직화", "판로 확대", "거래처 다변화",
+)
+_DIST_MARKET_DIVERSITY_TERMS = (
+    "가락시장", "도매시장", "공영도매시장", "공판장", "도매법인", "시장도매인",
+    "중도매인", "경락", "경매", "반입", "온라인도매시장", "온라인 도매시장",
+)
+
+
+def dist_operational_diversity_bucket(title: str, desc: str, dom: str = "", press: str = "") -> str:
+    """유통 섹션 내부 다양성 보정용 버킷.
+
+    도매시장 운영 기사만 연속 노출되는 것을 완화하되, 단순 판매행사·지역 홍보를
+    끌어올리지 않도록 이미 쓰는 강한 유통 판정 함수들을 우선 활용한다.
+    """
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    if not txt:
+        return ""
+    dom_norm = normalize_host(dom or "")
+    pr_norm = (press or "").strip()
+
+    if (
+        is_wine_lifestyle_noise_context(ttl, desc or "")
+        or is_low_value_agri_labor_help_context(ttl, desc or "")
+        or is_low_value_local_promo_context(ttl, desc or "")
+        or is_dist_political_visit_context(ttl, desc or "")
+        or is_title_livestock_dominant_context(ttl, desc or "")
+    ):
+        return ""
+
+    if (
+        is_dist_supply_management_center_context(ttl, desc or "")
+        or is_dist_sales_channel_ops_context(ttl, desc or "")
+        or is_dist_local_field_profile_context(ttl, desc or "")
+    ):
+        return "apc_nh"
+
+    apc_nh_hits = count_any(txt, [w.lower() for w in _DIST_APC_NH_DIVERSITY_TERMS])
+    agri_hits = count_any(txt, [w.lower() for w in ("농산물", "농식품", "농업", "농가", "원예", "과수", "과일", "채소", "청과")])
+    if (has_apc_agri_context(txt) or apc_nh_hits >= 2) and agri_hits >= 1:
+        if not is_dist_program_event_noise_context(ttl, desc or "", dom_norm, pr_norm):
+            return "apc_nh"
+
+    if (
+        is_dist_export_shipping_context(ttl, desc or "")
+        or is_dist_export_field_context(ttl, desc or "", dom_norm, pr_norm)
+        or is_dist_export_support_hub_context(ttl, desc or "", dom_norm, pr_norm)
+    ):
+        return "export"
+
+    if (
+        is_dist_market_ops_context(ttl, desc or "", dom_norm, pr_norm)
+        or is_dist_quality_field_ops_context(ttl, desc or "", dom_norm, pr_norm)
+        or count_any(txt, [w.lower() for w in _DIST_MARKET_DIVERSITY_TERMS]) >= 2
+    ):
+        return "market"
+
+    return ""
+
+
 def is_dist_market_disruption_context(title: str, desc: str) -> bool:
     """도매시장 운영 충격으로 산지/가격 흐름이 흔들리는 유통 기사인지 판정."""
     ttl = title or ""
@@ -9297,6 +9364,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
     dist_sales_channel_ops = is_dist_sales_channel_ops_context(title, desc)
     dist_field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
     dist_quality_field_ops = is_dist_quality_field_ops_context(title, desc, dom, press)
+    dist_diversity_bucket = dist_operational_diversity_bucket(title, desc, dom, press) if key == "dist" else ""
     dist_anchor_hits = count_any(
         txt,
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "경락", "경매", "반입", "산지유통", "산지유통센터", "온라인 도매시장")],
@@ -9359,6 +9427,10 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
             base += 1.25
         if dist_quality_field_ops:
             base += 1.35
+        if dist_diversity_bucket == "apc_nh":
+            base += 0.45
+        elif dist_diversity_bucket == "export":
+            base += 0.35
         dist_disruption_scope = dist_market_disruption_scope(title, desc)
         if dist_disruption_scope == "systemic":
             base += 1.9
@@ -9520,7 +9592,11 @@ DIST_WEIGHT_MAP = {
     '통합': 0.8,
     '브랜드': 1.6,
     '판매농협': 1.2,
+    '품목농협': 1.5,
     '원예농협': 1.6,
+    '연합판매사업': 1.8,
+    '판매사업': 1.5,
+    '경제사업': 1.4,
     '작목반': 1.2,
     '자조금': 1.4,
     '화훼': 1.2,
@@ -12932,6 +13008,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     dist_quality_field_ops = is_dist_quality_field_ops_context(title, desc, dom, press)
     dist_program_event_noise = is_dist_program_event_noise_context(title, desc, dom, press)
     dist_unanchored_agritech_noise = is_dist_unanchored_agritech_noise_context(title, desc, dom, press)
+    dist_diversity_bucket = dist_operational_diversity_bucket(title, desc, dom, press)
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
@@ -13138,6 +13215,14 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 2.2
         if dist_quality_field_ops:
             score += 8.2
+        if dist_diversity_bucket == "apc_nh":
+            score += 1.8
+            if press_priority(press, dom) >= 2:
+                score += 0.5
+        elif dist_diversity_bucket == "export":
+            score += 1.3
+            if press_priority(press, dom) >= 2:
+                score += 0.4
         # 농업자원 활용/혁신 기사 보너스 (못난이 채소, 규격외 농산물 자원화 등)
         _AGRI_RESOURCE_UTIL_KWS = ("못난이", "비상품", "규격외", "자원화", "사료화", "퇴비화", "부산물 활용", "부산물활용")
         if any(kw in text for kw in _AGRI_RESOURCE_UTIL_KWS):
@@ -14686,7 +14771,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if wire_count >= 1:
                 return False
         t = press_priority(a.press, a.domain)
-        if t == 1 and tier_count[1] >= tier1_limit:
+        effective_tier1_limit = tier1_limit
+        if section_key == "dist" and t == 1:
+            bucket = dist_operational_diversity_bucket(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+            if bucket in {"apc_nh", "export"}:
+                effective_tier1_limit = max(effective_tier1_limit, 2)
+        if t == 1 and tier_count[1] >= effective_tier1_limit:
             return False
         if t == 2 and tier_count[2] >= tier2_limit:
             return False
@@ -15355,6 +15445,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             export_shipping = is_dist_export_shipping_context(a.title or "", a.description or "")
             export_field = is_dist_export_field_context(a.title or "", a.description or "", dom_local, pr_local)
             export_support_hub = is_dist_export_support_hub_context(a.title or "", a.description or "", dom_local, pr_local)
+            diversity_bucket = dist_operational_diversity_bucket(a.title or "", a.description or "", dom_local, pr_local)
             if _is_dist_weak_tail_story(a):
                 return None
             if is_dist_non_horti_anchorless_noise_context(a.title or "", a.description or "", dom_local, pr_local):
@@ -15385,6 +15476,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 return None
             return (
                 disruption_rank,
+                1 if diversity_bucket == "apc_nh" else 0,
+                1 if diversity_bucket == "export" else 0,
                 1 if market_ops else 0,
                 1 if supply_center else 0,
                 1 if sales_channel_ops else 0,
@@ -15576,6 +15669,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _base_source_cap() -> int:
         if distinct_source_count <= 1:
             return max_n
+        if section_key == "dist" and distinct_source_count >= 2:
+            return 1
         if section_key == "pest":
             if distinct_source_count >= max(max_n, 4):
                 return 1
@@ -16822,6 +16917,84 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             dist_unique.append(a)
         deduped = dist_unique
+
+        selected_buckets = {
+            dist_operational_diversity_bucket(x.title or "", x.description or "", normalize_host(x.domain or ""), (x.press or "").strip())
+            for x in deduped
+        }
+        if len(deduped) >= min(3, max_n) and not (selected_buckets & {"apc_nh", "export"}):
+            selected_keys = {x.canon_url or _dup_key(x) for x in deduped}
+            diversity_floor = max(BASE_MIN_SCORE.get("dist", 4.5) + 1.5, tail_cut - 3.5)
+            ranked_diversity: list[tuple[tuple[Any, ...], Article, str]] = []
+            for a in candidates_sorted:
+                a_key = a.canon_url or _dup_key(a)
+                if a_key in selected_keys:
+                    continue
+                bucket = dist_operational_diversity_bucket(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+                if bucket not in {"apc_nh", "export"}:
+                    continue
+                if float(getattr(a, "score", 0.0) or 0.0) < diversity_floor:
+                    continue
+                if _is_dist_weak_tail_story(a):
+                    continue
+                try:
+                    if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
+                        continue
+                except Exception:
+                    pass
+                if not _headline_gate_relaxed(a, section_key):
+                    continue
+                if not _passes_section_fit_gate(a, score_floor=max(BASE_MIN_SCORE.get("dist", 4.5), tail_cut - 2.0)):
+                    continue
+                if press_priority(a.press, a.domain) < 2 and float(getattr(a, "score", 0.0) or 0.0) < (tail_cut + 1.0):
+                    continue
+                if any(_is_similar_title(a.title_key, b.title_key) for b in deduped):
+                    continue
+                if any(_is_similar_story(a, b, "dist") for b in deduped):
+                    continue
+                fit_sc = _fit_score_local(a)
+                ranked_diversity.append((
+                    (
+                        1 if bucket == "apc_nh" else 0,
+                        1 if press_priority(a.press, a.domain) >= 2 else 0,
+                        round(float(fit_sc or 0.0), 3),
+                        round(float(getattr(a, "score", 0.0) or 0.0), 3),
+                        getattr(a, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+                    ),
+                    a,
+                    bucket,
+                ))
+
+            if ranked_diversity:
+                ranked_diversity.sort(key=lambda item: item[0], reverse=True)
+                candidate = ranked_diversity[0][1]
+                candidate_bucket = ranked_diversity[0][2]
+                if len(deduped) < max_n:
+                    candidate.is_core = False
+                    _record_selection(candidate, "dist_diversity_backfill", candidate_bucket)
+                    deduped.append(candidate)
+                    _mark_used(candidate)
+                    _source_take(candidate)
+                else:
+                    replaceable = [
+                        i for i, x in enumerate(deduped)
+                        if dist_operational_diversity_bucket(x.title or "", x.description or "", normalize_host(x.domain or ""), (x.press or "").strip()) in ("", "market")
+                        and dist_market_disruption_scope(x.title or "", x.description or "") != "systemic"
+                    ]
+                    if replaceable:
+                        repl_idx = min(
+                            replaceable,
+                            key=lambda i: (
+                                1 if getattr(deduped[i], "is_core", False) else 0,
+                                float(getattr(deduped[i], "score", 0.0) or 0.0),
+                            ),
+                        )
+                        if float(getattr(candidate, "score", 0.0) or 0.0) >= (float(getattr(deduped[repl_idx], "score", 0.0) or 0.0) - 6.0):
+                            candidate.is_core = False
+                            _record_selection(candidate, "dist_diversity_swap", candidate_bucket)
+                            deduped[repl_idx] = candidate
+                            _mark_used(candidate)
+                            _source_take(candidate)
 
     # 2026-04-10: supply/policy story-level dedup — 제거됨 (2026-04-11 회귀 수정)
     # 이유: _is_similar_story의 anchor+action 규칙이 너무 공격적으로
@@ -19887,9 +20060,9 @@ def _sync_debug_with_final_sections(final_by_section: dict[str, list["Article"]]
 def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Article"]]) -> int:
     if not isinstance(final_by_section, dict):
         return 0
-    # Quality-first mode: do not move supply stories into distribution merely to fill a section.
-    if _selection_guardrail_bool("quality_first_disable_supply_to_dist_underfill", True):
-        return 0
+    # Quality-first mode: do not move generic supply stories into distribution merely to fill a section.
+    # Explicit APC/sales-channel/export execution stories may still move because they are distribution work.
+    quality_first_dist_crossfill = _selection_guardrail_bool("quality_first_disable_supply_to_dist_underfill", True)
     dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), None)
     supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), None)
     if not dist_conf or not supply_conf:
@@ -19943,6 +20116,8 @@ def _rebalance_underfilled_dist_from_supply(final_by_section: dict[str, list["Ar
         )
         direct_supply_story = has_direct_supply_chain_signal(txt)
         allowed_cross_signal = bool(supply_center or sales_channel or field_response or export_shipping or export_field or local_field or hub_hint)
+        if quality_first_dist_crossfill and not allowed_cross_signal:
+            continue
         if direct_supply_story and not allowed_cross_signal:
             continue
         hard_dist_signal = bool(
