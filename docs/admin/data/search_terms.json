@@ -1,11 +1,25 @@
 {
-  "generated_at": "2026-05-12T01:48:49+09:00",
+  "generated_at": "2026-05-13T01:33:15+09:00",
   "rows": [
     {
       "date": "2026-04-30",
       "query": "사과",
       "section_filter": "(not set)",
       "result_count": 123,
+      "count": 1
+    },
+    {
+      "date": "2026-05-12",
+      "query": "샤인머스",
+      "section_filter": "",
+      "result_count": 10,
+      "count": 1
+    },
+    {
+      "date": "2026-05-12",
+      "query": "포도",
+      "section_filter": "",
+      "result_count": 32,
       "count": 1
     }
   ]
