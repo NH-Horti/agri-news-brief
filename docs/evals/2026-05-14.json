@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-05-14",
+  "generated_at_kst": "2026-05-14T06:20:38+09:00",
+  "status": "pass",
+  "overall_score": 98.65,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 93.95
+  },
+  "counts": {
+    "briefing_total": 17,
+    "commodity_total": 44,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 22,
+      "policy": 8,
+      "dist": 5,
+      "pest": 9
+    },
+    "raw_by_section": {
+      "supply": 183,
+      "policy": 121,
+      "dist": 38,
+      "pest": 36
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8235,
+    "surface_reuse_penalty": 0.0328,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8824,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 3.6794,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0588,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 3.5663,
+    "core_rank_percentile_avg": 0.9253,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.3882,
+    "commodity_primary_rank_avg": 2.7647
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.75,
+      "dist": 0.4167,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 0.9875,
+      "policy": 1.0,
+      "dist": 0.9962,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "농어촌 기본소득, 지역 소멸 위기 속 '경제 선순환' 불씨",
+      "section": "supply",
+      "age_hours": 21.2
+    },
+    {
+      "title": "김상경 농촌진흥청 차장, 강원 씨스트선충 방제 점검",
+      "section": "pest",
+      "age_hours": 19.6
+    },
+    {
+      "title": "\"배춧값이 왜 이래?\" 너무 싸서 비상…'특단의 조치' 내렸다 [프라이스...",
+      "section": "dist",
+      "age_hours": 19.0
+    },
+    {
+      "title": "5월 과일류 농업관측",
+      "section": "supply",
+      "age_hours": 18.4
+    },
+    {
+      "title": "가락시장, '입차하역 스케줄링 서비스' 확대 속도",
+      "section": "dist",
+      "age_hours": 18.4
+    },
+    {
+      "title": "전남농기원, 과수화상병 유입 차단 현장 모의훈련 실시",
+      "section": "pest",
+      "age_hours": 18.4
+    },
+    {
+      "title": "그을음병, 바이러스 일으키는 ‘진딧물’, 발생 초기 방제가 중요!",
+      "section": "pest",
+      "age_hours": 18.3
+    },
+    {
+      "title": "“고기보다 채소가 싸요”…밥상에 봄이 피었다 [푸드360]",
+      "section": "supply",
+      "age_hours": 17.0
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}
