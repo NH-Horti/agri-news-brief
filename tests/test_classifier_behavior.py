@@ -72,6 +72,59 @@ class TestClassifierBehavior(unittest.TestCase):
         best2, scores2 = self._best_section(t2, d2, "https://mobile.newsis.com/view/NISX20260228_0003530198")
         self.assertEqual(best2, "pest", msg=f"scores={scores2}")
 
+    def test_crypto_asset_story_is_not_policy_candidate(self):
+        title = "비트코인 8만달러 횡보…ETF 유입·물가 부담 변수"
+        desc = "가상자산 시장은 비트코인 가격과 ETF 자금 흐름, 환율 부담을 주시하고 있다."
+        url = "https://www.newstomato.com/ReadNews.aspx?no=1300788&inflow=N"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["policy"], press))
+
+    def test_rural_basic_income_story_does_not_bridge_into_supply(self):
+        title = "농어촌 기본소득, 지역 소멸 위기 속 '경제 선순환' 불씨"
+        desc = "지역 소멸 위기 대응과 기본소득 논의를 다룬 사회정책 기사다."
+        url = "https://www.farmnmarket.com/news/article.html?no=26431"
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        self.assertFalse(main.is_relevant(title, desc, dom, url, self.conf["supply"], press))
+
+    def test_broadcast_price_collapse_story_prefers_supply(self):
+        title = "채솟값 반토막에 통째로 폐기…“팔아도 적자”"
+        desc = "채소 가격이 폭락해 농가가 출하해도 적자를 보는 상황과 산지 폐기 현장을 전했다."
+        best, scores = self._best_section(title, desc, "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8559620")
+        self.assertEqual(best, "supply", msg=f"scores={scores}")
+        self.assertGreaterEqual(scores["supply"], 39.0, msg=f"scores={scores}")
+
+    def test_apc_item_coop_story_prefers_distribution_over_donation_tail(self):
+        apc_title = "지역경제 선도하는 품목농협 - 아산원예농협 거점산지유통센터"
+        apc_desc = "원예농협의 거점산지유통센터 운영과 공동선별, 출하 체계를 소개했다."
+        donation_title = "서울청과(주), 서상주농협에 2,000만원 상당 영농자재 전달"
+        donation_desc = "지역 농협에 영농자재를 전달한 사회공헌 소식이다."
+        apc = self._make_article("dist", apc_title, apc_desc, "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64662")
+        donation = self._make_article("dist", donation_title, donation_desc, "https://www.farminsight.net/news/articleView.html?idxno=16411")
+        self.assertGreater(main.section_fit_score(apc.title, apc.description, self.conf["dist"], apc.domain, apc.press), 1.6)
+        self.assertGreater(apc.score, donation.score, msg=f"apc={apc.score} donation={donation.score}")
+        picked = main.select_top_articles([donation, apc], "dist", 2)
+        self.assertIn(apc.link, {x.link for x in picked}, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+        self.assertNotIn(donation.link, {x.link for x in picked}, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+
+    def test_fire_blight_reporting_risk_beats_official_photo_check(self):
+        risk = self._make_article(
+            "pest",
+            "“신고해 봐야 빚더미” 화상병 숨기는 농가들 … 방역망 ‘비상’",
+            "과수화상병 신고 기피와 보상 부담으로 농가가 방역망 밖에 놓일 수 있다는 현장 리스크를 짚었다.",
+            "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64673",
+        )
+        photo = self._make_article(
+            "pest",
+            "김상경 농촌진흥청 차장, 강원 씨스트선충 방제 점검",
+            "농촌진흥청 차장이 강원지역 씨스트선충 방제 현장을 점검했다.",
+            "https://www.yna.co.kr/view/PYH20260513055000062?input=1196m",
+        )
+        self.assertGreater(risk.score, photo.score, msg=f"risk={risk.score} photo={photo.score}")
+        picked = main.select_top_articles([photo, risk], "pest", 2)
+        self.assertIn(risk.link, {x.link for x in picked}, msg=str([(x.title, x.score, x.selection_stage) for x in picked]))
+
     def test_youngnong_tomato_moth_control_article_prefers_pest(self):
         title = "경기도, 토마토 재배 농가 전수조사… 토마토뿔나방 방제 지원"
         desc = "경기도는 토마토뿔나방 확산 대응을 위해 재배 농가 전수조사를 실시하고 예찰·방제 자료를 제공한다."
