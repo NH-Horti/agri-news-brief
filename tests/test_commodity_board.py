@@ -874,6 +874,26 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(onion_item["article_count"], 1)
         self.assertEqual(onion_item["preview_articles"][0].title, onion_article.title)
 
+    def test_board_source_builder_keeps_direct_item_story_regardless_of_rank_score(self):
+        apple = self._item("apple")["short_label"]
+        article = self._make_article(
+            "supply",
+            f"{apple} 가격 급락에 산지 출하 조절 확대",
+            f"{apple} 농가가 가격 하락과 물량 부담에 대응해 산지 출하 조절에 나섰다.",
+            "https://www.nongmin.com/article/20260514555555",
+        )
+        article.score = -10.0
+        raw_by_section = {key: [] for key in self.conf}
+        raw_by_section["supply"] = [article]
+
+        board_source = main.build_managed_commodity_board_source_by_section(raw_by_section, per_section_cap=12)
+        ctx = main.build_managed_commodity_board_context(board_source)
+        apple_item = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "apple")
+
+        self.assertTrue(apple_item["active"])
+        self.assertEqual(apple_item["article_count"], 1)
+        self.assertEqual(apple_item["preview_articles"][0].title, article.title)
+
     def test_supply_final_normalization_promotes_program_core_board_story(self):
         weak_supply = self._make_article(
             "supply",
