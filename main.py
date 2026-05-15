@@ -46,8 +46,8 @@ from typing import Any, Callable, Sequence, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
 import xml.etree.ElementTree as ET
 
-import requests  # type: ignore[import-untyped]
-from requests.adapters import HTTPAdapter  # type: ignore[import-untyped]
+import requests  # type: ignore[import-untyped, unused-ignore]
+from requests.adapters import HTTPAdapter  # type: ignore[import-untyped, unused-ignore]
 from urllib3.util.retry import Retry
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
