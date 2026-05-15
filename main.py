@@ -4361,7 +4361,11 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         and body_focus_hits >= 1
         and focus_score >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN
         and not is_commodity_broad_price_roundup_context(title, desc)
-        and (agri_anchor_hits >= 1 or issue_anchor_hits >= 1 or market_anchor_hits >= 1)
+        and (
+            has_direct_supply_chain_signal(text_l)
+            or market_anchor_hits >= 1
+            or (issue_anchor_hits >= 2 and agri_anchor_hits >= 1)
+        )
     )
     body_policy_roundup_match = bool(
         item.get("program_core")
@@ -9120,7 +9124,7 @@ def is_fruit_foodservice_event_context(text: str) -> bool:
     brand_hit = any(w.lower() in t for w in _FRUIT_FOODSERVICE_EVENT_BRANDS)
     marker_hit = any(w.lower() in t for w in _FRUIT_FOODSERVICE_EVENT_MARKERS)
     # '딸기' 등 과일 키워드가 함께 있을 때만 활성화(일반 외식 기사 오탐 방지)
-    fruit_hit = any(k in t for k in ("딸기", "과일", "생딸기", "딸기 디저트"))
+    fruit_hit = any(k in t for k in ("딸기", "과일", "생딸기", "딸기 디저트", "키위", "참다래", "제스프리", "썬골드키위", "골드키위"))
     return fruit_hit and (brand_hit or marker_hit)
 
 
@@ -17108,6 +17112,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     for fa in forced_items:
         if fa in final:
             continue
+        if section_key == "pest":
+            fa_is_fire_blight = is_pest_fire_blight_farmer_risk_context(fa.title or "", fa.description or "")
+            if fa_is_fire_blight:
+                if len(final) >= min(4, max_n):
+                    continue
+                if any(is_pest_fire_blight_farmer_risk_context(x.title or "", x.description or "") for x in final):
+                    continue
         # forced_section 기사도 해당 섹션에 relevant해야 포함 (관광/외교 등 무관 기사 차단)
         try:
             if not is_relevant(fa.title or "", fa.description or "", normalize_host(fa.domain or ""), fa.link or "", sec_conf, (fa.press or "").strip()):
@@ -17234,9 +17245,28 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             dist_operational_diversity_bucket(x.title or "", x.description or "", normalize_host(x.domain or ""), (x.press or "").strip())
             for x in deduped
         }
-        if len(deduped) >= min(3, max_n) and not (selected_buckets & {"apc_nh", "export"}):
+        dist_diversity_target = min(4, max_n)
+        try:
+            _dist_postbuild_reject = globals().get("_postbuild_article_reject_reason")
+            dist_postbuild_clean_count = sum(
+                1
+                for x in deduped
+                if not callable(_dist_postbuild_reject) or not _dist_postbuild_reject(x, "dist")
+            )
+        except Exception:
+            dist_postbuild_clean_count = len(deduped)
+        dist_underfilled_after_audit = dist_postbuild_clean_count < dist_diversity_target
+        needs_dist_diversity = bool(
+            dist_underfilled_after_audit
+            or (len(deduped) >= min(3, max_n) and not (selected_buckets & {"apc_nh", "export"}))
+        )
+        if needs_dist_diversity:
             selected_keys = {x.canon_url or _dup_key(x) for x in deduped}
-            diversity_floor = max(BASE_MIN_SCORE.get("dist", 4.5) + 1.5, tail_cut - 3.5)
+            diversity_floor = max(
+                BASE_MIN_SCORE.get("dist", 4.5) + 1.5,
+                tail_cut - (19.0 if dist_underfilled_after_audit else 3.5),
+            )
+            fit_gate_floor = diversity_floor if dist_underfilled_after_audit else max(BASE_MIN_SCORE.get("dist", 4.5), tail_cut - 2.0)
             ranked_diversity: list[tuple[tuple[Any, ...], Article, str]] = []
             for a in candidates_sorted:
                 a_key = a.canon_url or _dup_key(a)
@@ -17254,17 +17284,29 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                         continue
                 except Exception:
                     pass
+                try:
+                    _dist_postbuild_reject = globals().get("_postbuild_article_reject_reason")
+                    if callable(_dist_postbuild_reject) and _dist_postbuild_reject(a, "dist"):
+                        continue
+                except Exception:
+                    pass
                 if not _headline_gate_relaxed(a, section_key):
                     continue
-                if not _passes_section_fit_gate(a, score_floor=max(BASE_MIN_SCORE.get("dist", 4.5), tail_cut - 2.0)):
+                if not _passes_section_fit_gate(a, score_floor=fit_gate_floor):
                     continue
+                fit_sc = _fit_score_local(a)
                 if press_priority(a.press, a.domain) < 2 and float(getattr(a, "score", 0.0) or 0.0) < (tail_cut + 1.0):
-                    continue
+                    if not (
+                        dist_underfilled_after_audit
+                        and bucket in {"apc_nh", "export"}
+                        and float(getattr(a, "score", 0.0) or 0.0) >= diversity_floor
+                        and float(fit_sc or 0.0) >= 3.0
+                    ):
+                        continue
                 if any(_is_similar_title(a.title_key, b.title_key) for b in deduped):
                     continue
                 if any(_is_similar_story(a, b, "dist") for b in deduped):
                     continue
-                fit_sc = _fit_score_local(a)
                 ranked_diversity.append((
                     (
                         1 if bucket == "apc_nh" else 0,
@@ -17279,15 +17321,23 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
             if ranked_diversity:
                 ranked_diversity.sort(key=lambda item: item[0], reverse=True)
-                candidate = ranked_diversity[0][1]
-                candidate_bucket = ranked_diversity[0][2]
-                if len(deduped) < max_n:
+                diversity_slots = max(1, dist_diversity_target - dist_postbuild_clean_count) if dist_underfilled_after_audit else 1
+                for _, candidate, candidate_bucket in ranked_diversity:
+                    if diversity_slots <= 0:
+                        break
+                    if len(deduped) >= max_n:
+                        break
                     candidate.is_core = False
                     _record_selection(candidate, "dist_diversity_backfill", candidate_bucket)
                     deduped.append(candidate)
                     _mark_used(candidate)
                     _source_take(candidate)
-                else:
+                    selected_keys.add(candidate.canon_url or _dup_key(candidate))
+                    dist_postbuild_clean_count += 1
+                    diversity_slots -= 1
+                if diversity_slots > 0 and len(deduped) >= max_n:
+                    candidate = ranked_diversity[0][1]
+                    candidate_bucket = ranked_diversity[0][2]
                     replaceable = [
                         i for i, x in enumerate(deduped)
                         if dist_operational_diversity_bucket(x.title or "", x.description or "", normalize_host(x.domain or ""), (x.press or "").strip()) in ("", "market")
@@ -17496,6 +17546,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         fa_key = fa.canon_url or _dup_key(fa)
         if any((x.canon_url or _dup_key(x)) == fa_key for x in deduped):
             continue
+        if section_key == "pest":
+            fa_is_fire_blight = is_pest_fire_blight_farmer_risk_context(fa.title or "", fa.description or "")
+            if fa_is_fire_blight:
+                if len(deduped) >= min(4, max_n):
+                    continue
+                if any(is_pest_fire_blight_farmer_risk_context(x.title or "", x.description or "") for x in deduped):
+                    continue
         if len(deduped) < max_n:
             _record_selection(fa, "forced_section", getattr(fa, "forced_section", "") or section_key)
             deduped.append(fa)
@@ -23052,6 +23109,15 @@ def _commodity_board_item_article_metrics(
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
     direct_item_focus = bool(title_primary_hits >= 1 or (primary_focus and body_primary_hits >= 1))
     section_key = str(getattr(article, "section", "") or "").strip()
+    if selection_fit_score <= 0.0 and section_key:
+        try:
+            sec_conf = next((s for s in SECTIONS if s.get("key") == section_key), {})
+            selection_fit_score = round(
+                float(section_fit_score(title, desc, sec_conf, normalize_host(getattr(article, "domain", "") or ""), getattr(article, "press", "") or "")),
+                3,
+            )
+        except Exception:
+            selection_fit_score = 0.0
     board_penalty = float(board_metrics.get("board_penalty") or 0.0)
     board_eligible = bool(board_metrics.get("board_eligible"))
     story_metrics = _managed_article_significance_metrics(
@@ -23518,22 +23584,35 @@ def _commodity_board_article_is_active_candidate(
     _match_count = int(article_metrics.get("match_count") or 0)
     if _title_hits == 0 and _match_count == 0:
         return False
+    _has_operational_issue = _commodity_board_has_operational_issue_signal(article_metrics)
+    _fit_score = float(article_metrics.get("selection_fit_score") or 0.0)
+    _body_only_direct_focus = bool(article_metrics.get("direct_item_focus")) and _title_hits == 0
     _direct_focus_ok = bool(
-        article_metrics.get("direct_item_focus")
-        or _title_hits >= 1
-        or bool(article_metrics.get("single_focus"))
+        _title_hits >= 1
+        or (
+            bool(article_metrics.get("single_focus"))
+            and (_title_hits >= 1 or _has_operational_issue or _fit_score >= 0.8)
+        )
+        or (
+            bool(article_metrics.get("direct_item_focus"))
+            and (
+                not _body_only_direct_focus
+                or (_has_operational_issue and _fit_score >= 0.65)
+            )
+        )
     )
     _indirect_operational_focus_ok = bool(
         bool(article_metrics.get("primary_focus"))
         and representative_rank >= 3
-        and _commodity_board_has_operational_issue_signal(article_metrics)
+        and _has_operational_issue
+        and _fit_score >= 0.65
     )
     if not (_direct_focus_ok or _indirect_operational_focus_ok):
         return False
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
     if _selection_guardrail_bool("commodity_require_issue_signal", False):
-        if not _commodity_board_has_operational_issue_signal(article_metrics):
+        if not _has_operational_issue:
             return False
     if _selection_guardrail_bool("commodity_require_direct_item_focus", False):
         has_direct_item_focus = bool(
@@ -23550,7 +23629,8 @@ def _commodity_board_article_is_active_candidate(
         has_indirect_issue_focus = bool(
             representative_rank >= 4
             and bool(article_metrics.get("strong_focus"))
-            and _commodity_board_has_operational_issue_signal(article_metrics)
+            and _has_operational_issue
+            and _fit_score >= 0.65
         )
         if not has_direct_item_focus and not has_indirect_issue_focus:
             return False

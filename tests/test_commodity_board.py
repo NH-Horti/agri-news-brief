@@ -777,6 +777,51 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(napa_cabbage["article_count"], 0)
         self.assertEqual(len(napa_cabbage["extra_articles"]), 0)
 
+    def test_board_rejects_kiwi_foodservice_menu_story(self):
+        article = self._make_article(
+            "dist",
+            "이랜드이츠 애슐리퀸즈, 제스프리 썬골드키위 활용한 신메뉴 선보여",
+            "뷔페 브랜드가 키위 디저트와 샐러드 신메뉴를 출시하는 외식 프로모션 기사다.",
+            "https://example.com/kiwi-foodservice-menu",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["dist"] = [article]
+
+        ctx = main.build_managed_commodity_board_context(by_section)
+        kiwifruit = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "kiwifruit"
+        )
+
+        self.assertFalse(kiwifruit["active"])
+        self.assertEqual(kiwifruit["article_count"], 0)
+
+    def test_board_rejects_body_only_macro_story_for_radish(self):
+        article = self._make_article(
+            "policy",
+            "관광객 증가폭 둔화...중동전쟁 경제 여파 본격",
+            "고물가와 소비 둔화, 무 등 농산물 가격 부담이 경제 전반에 영향을 줄 수 있다는 전망을 다뤘다.",
+            "https://example.com/macro-radish-body-only",
+        )
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("radish"), article)
+
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("radish"), article, metrics))
+
+    def test_board_metrics_compute_fit_for_unselected_supply_article(self):
+        article = self._make_article(
+            "supply",
+            "농협 경남본부, 마늘 수급·가격안정 논의",
+            "마늘 산지 작황과 출하량, 가격안정을 위한 농협 수급 대응 방안을 점검했다.",
+            "https://www.nongmin.com/article/20260515500001",
+        )
+        article.selection_fit_score = 0.0
+
+        metrics = main._commodity_board_item_article_metrics(self._item("garlic"), article)
+
+        self.assertGreater(float(metrics["selection_fit_score"]), 0.0)
+
     def test_generic_category_watch_story_is_not_representative_for_program_core_item(self):
         title = "채소값 곤두박질…공급·소비·정책 삼중고"
         desc = "풋고추와 오이 등 채소류 가격이 흔들리고 공급과 소비, 정책 부담이 함께 겹치고 있다."
