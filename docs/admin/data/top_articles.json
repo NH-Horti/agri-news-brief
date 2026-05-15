@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T01:22:10+09:00",
+  "generated_at": "2026-05-16T01:16:41+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -182,6 +182,19 @@
       "users": 3,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "7bdcc6515513",
+      "title": "[충격 고발]세계 최고 ‘가격의 섬’ 갇힌 한국의 과일, 국가는 존재하...",
+      "report_date": "2026-05-15",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.breaknews.com",
+      "clicks": 4,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-supply",
+      "source_url": "http://www.breaknews.com/1207067"
     },
     {
       "date": "2026-04-01",
@@ -858,6 +871,19 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "7bdcc6515513",
+      "title": "[충격 고발]세계 최고 ‘가격의 섬’ 갇힌 한국의 과일, 국가는 존재하...",
+      "report_date": "2026-05-15",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.breaknews.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-supply",
+      "source_url": "http://www.breaknews.com/1207067"
     },
     {
       "date": "2026-03-30",
@@ -3532,6 +3558,45 @@
       "section": "policy",
       "surface": "briefing_card",
       "target_domain": "www.korea.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "d97b51879568",
+      "title": "“한포기도 포기 못해”…여름배추 복병 ‘씨스트선충’ 방제 현장 가보...",
+      "report_date": "2026-05-15",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "ea56299921b0",
+      "title": "올 ‘대파’ 매취사업 본격 돌입",
+      "report_date": "2026-05-15",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "f136cfca72b1",
+      "title": "“외국인 계절 근로자 없으면 이젠 농업도 다 죽습니다”",
+      "report_date": "2026-05-15",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.kmib.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
