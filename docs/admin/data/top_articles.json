@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T01:34:49+09:00",
+  "generated_at": "2026-05-15T01:22:10+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -26,6 +26,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-04-16.html#sec-dist",
       "source_url": "https://daily.hankooki.com/news/articleView.html?idxno=1358454"
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "97f017716285",
+      "title": "5월 과일류 농업관측",
+      "report_date": "2026-05-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 6,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-05-14.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64644"
     },
     {
       "date": "2026-04-01",
@@ -65,6 +78,19 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "80138719694a",
+      "title": "\"농산물 전 품목에 걸친 폭락, 책임자 송미령을 해임하라\"",
+      "report_date": "2026-05-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 5,
+      "users": 4,
+      "archive_url": "/agri-news-brief/archive/2026-05-14.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70383"
     },
     {
       "date": "2026-04-20",
@@ -815,6 +841,19 @@
       "section": "supply",
       "surface": "briefing_open",
       "target_domain": "biz.heraldcorp.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "0589c571a78e",
+      "title": "과수 종묘협회 \"수십억 원치 묘목 밀수…엄정 처벌해야\"",
+      "report_date": "2026-05-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
       "clicks": 2,
       "users": 2,
       "archive_url": "",
@@ -3393,6 +3432,110 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-05-13.html#sec-policy",
       "source_url": "https://www.ajunews.com/view/20260512101823146"
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "51b3bb613e7a",
+      "title": "밀양 얼음골 사과 , 5년 연속 냉해 직격탄…'명품 사과 ' 생산 비상",
+      "report_date": "2026-05-14",
+      "section": "pest",
+      "surface": "commodity_primary",
+      "target_domain": "www.kpinews.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "5517263d3cf7",
+      "title": "\"배춧값이 왜 이래?\" 너무 싸서 비상…'특단의 조치' 내렸다 [프라이스...",
+      "report_date": "2026-05-14",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.hankyung.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "5ebb9ca7b394",
+      "title": "[경남소식]농협 경남본부, 마늘 수급 안정방안 논의 등",
+      "report_date": "2026-05-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "5ebb9ca7b394",
+      "title": "[경남소식]농협 경남본부, 마늘 수급 안정방안 논의 등",
+      "report_date": "2026-05-14",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "61816f11b916",
+      "title": "“추경 돈 풀어 수출·물가 잡는다”…aT, 농식품 ‘긴급 대응 모드’",
+      "report_date": "2026-05-14",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "biz.heraldcorp.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "64c554ea0da6",
+      "title": "김상경 농촌진흥청 차장, 강원 씨스트선충 방제 점검",
+      "report_date": "2026-05-14",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "80138719694a",
+      "title": "\"농산물 전 품목에 걸친 폭락, 책임자 송미령을 해임하라\"",
+      "report_date": "2026-05-14",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-14.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70383"
+    },
+    {
+      "date": "2026-05-14",
+      "article_id": "bfbb61b0ace0",
+      "title": "농식품부, 태풍·폭염 대비 여름철 농업재해 대응체계 가동",
+      "report_date": "2026-05-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.korea.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
