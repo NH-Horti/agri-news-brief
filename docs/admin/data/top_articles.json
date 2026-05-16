@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T01:16:41+09:00",
+  "generated_at": "2026-05-17T00:18:02+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -93,6 +93,19 @@
       "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70383"
     },
     {
+      "date": "2026-05-15",
+      "article_id": "7bdcc6515513",
+      "title": "[충격 고발]세계 최고 ‘가격의 섬’ 갇힌 한국의 과일, 국가는 존재하...",
+      "report_date": "2026-05-15",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.breaknews.com",
+      "clicks": 5,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-supply",
+      "source_url": "http://www.breaknews.com/1207067"
+    },
+    {
       "date": "2026-04-20",
       "article_id": "5f2272ba6432",
       "title": "이상기후 유탄 맞은 마늘 …작황 부진 우려",
@@ -182,19 +195,6 @@
       "users": 3,
       "archive_url": "",
       "source_url": ""
-    },
-    {
-      "date": "2026-05-15",
-      "article_id": "7bdcc6515513",
-      "title": "[충격 고발]세계 최고 ‘가격의 섬’ 갇힌 한국의 과일, 국가는 존재하...",
-      "report_date": "2026-05-15",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.breaknews.com",
-      "clicks": 4,
-      "users": 3,
-      "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-supply",
-      "source_url": "http://www.breaknews.com/1207067"
     },
     {
       "date": "2026-04-01",
@@ -3562,6 +3562,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-15",
+      "article_id": "63053d03030d",
+      "title": "엇갈린 국내외 먹거리 물가 흐름",
+      "report_date": "2026-05-15",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.fsnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-policy",
+      "source_url": "http://www.fsnews.co.kr/news/articleView.html?idxno=60916"
     },
     {
       "date": "2026-05-15",
