@@ -122,20 +122,20 @@
     .chipTitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .chipN,.commodityGroupChip span{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;text-align:center;color:#fff;padding:0 8px;border-radius:999px;font-size:11px}
     .chipN{background:var(--chip-color, #111827)}
-    .chipDock{position:fixed;top:var(--sticky-nav-offset);left:0;right:0;z-index:11;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .18s ease, transform .18s ease}
+    .chipDock{display:none}
     .chipDock.isVisible{opacity:1;transform:translateY(0);pointer-events:auto}
     .chipDockInner{max-width:var(--page-max);margin:0 auto;padding:0 20px}
     .chipDock .chipbar{margin:0;box-shadow:0 18px 38px rgba(15,23,42,.14);background:rgba(248,250,252,.98)}
     .chipDock .briefingChipbar,
     .chipDock .commodityBoardNav{margin:0}
     body.quickNavOpen{overflow:hidden}
-    .mobileQuickNav{display:none}
-    .mobileQuickNavToggle{pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .18s ease, transform .18s ease}
+    .mobileQuickNav{display:block;position:fixed;right:18px;bottom:20px;z-index:13}
+    .mobileQuickNavToggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:calc(100vw - 32px);padding:0 14px;border:1px solid #0f172a;border-radius:999px;background:#0f172a;color:#fff;font-size:13px;font-weight:900;box-shadow:0 18px 38px rgba(15,23,42,.28);pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .18s ease, transform .18s ease}
     .mobileQuickNav.isVisible .mobileQuickNavToggle{pointer-events:auto;opacity:1;transform:translateY(0)}
     .mobileQuickNavSheet{position:fixed;inset:0;display:none;z-index:14}
     .mobileQuickNavSheet.isOpen{display:block}
     .mobileQuickNavBackdrop{position:absolute;inset:0;border:0;background:rgba(15,23,42,.42)}
-    .mobileQuickNavPanel{position:absolute;left:12px;right:12px;bottom:14px;padding:16px;border:1px solid #dbe4ee;border-radius:24px;background:#ffffff;box-shadow:0 22px 56px rgba(15,23,42,.24)}
+    .mobileQuickNavPanel{position:absolute;left:12px;right:12px;bottom:14px;max-height:min(72vh, 560px);overflow:auto;padding:16px;border:1px solid #dbe4ee;border-radius:24px;background:#ffffff;box-shadow:0 22px 56px rgba(15,23,42,.24)}
     .mobileQuickNavHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
     .mobileQuickNavHead strong{font-size:15px;letter-spacing:-0.2px}
     .mobileQuickNavClose{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#111827;font-size:12px;font-weight:800}
@@ -2391,7 +2391,7 @@
 
       function syncStickyOffsets() {
         if (!rootEl || !topbarEl) return;
-        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var topbarHeight = Math.ceil(topbarEl ? (topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0) : 0);
         if (!topbarHeight) return;
         var activeChipbar = getActiveChipbar();
         var compactViewport = isCompactViewport();
@@ -2399,52 +2399,20 @@
         rootEl.style.setProperty("--topbar-height", topbarHeight + "px");
         rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
         rootEl.style.setProperty("--sticky-nav-offset", (topbarHeight + 12) + "px");
-        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : chipbarHeight + 30)) + "px");
+        rootEl.style.setProperty("--anchor-offset", (topbarHeight + (compactViewport ? 20 : 28)) + "px");
       }
 
       function syncFloatingChipbar() {
-        if (!chipDockEl || !chipDockInnerEl || !topbarEl) return;
-        if (isCompactViewport()) {
-          chipDockEl.classList.remove("isVisible");
-          chipDockEl.setAttribute("aria-hidden", "true");
-          chipDockEl.dataset.source = "";
-          chipDockInnerEl.innerHTML = "";
-          return;
-        }
-        var activeChipbar = getActiveChipbar();
-        if (!activeChipbar) {
-          chipDockEl.classList.remove("isVisible");
-          chipDockEl.setAttribute("aria-hidden", "true");
-          chipDockEl.dataset.source = "";
-          chipDockInnerEl.innerHTML = "";
-          return;
-        }
-        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
-        var dockTop = topbarHeight + 12;
-        var chipbarHeight = Math.ceil(activeChipbar.getBoundingClientRect().height || activeChipbar.offsetHeight || 0);
-        if (chipbarHeight) {
-          rootEl.style.setProperty("--chipbar-height", chipbarHeight + "px");
-          rootEl.style.setProperty("--anchor-offset", (topbarHeight + chipbarHeight + 30) + "px");
-        }
-        var sourceKey = [
-          activeChipbar.getAttribute("data-view-pane-anchor") || "",
-          activeChipbar.className || "",
-          activeChipbar.querySelectorAll("a").length,
-        ].join("|");
-        if (chipDockEl.dataset.source !== sourceKey) {
-          chipDockInnerEl.innerHTML = activeChipbar.outerHTML;
-          chipDockEl.dataset.source = sourceKey;
-        }
-        var rect = activeChipbar.getBoundingClientRect();
-        var shouldShow = rect.top < dockTop && rect.bottom <= dockTop;
-        chipDockEl.classList.toggle("isVisible", shouldShow);
-        chipDockEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+        if (!chipDockEl || !chipDockInnerEl) return;
+        chipDockEl.classList.remove("isVisible");
+        chipDockEl.setAttribute("aria-hidden", "true");
+        chipDockEl.dataset.source = "";
+        chipDockInnerEl.innerHTML = "";
       }
       function syncMobileQuickNav() {
         if (!mobileQuickNavEl || !mobileQuickNavToggleEl || !mobileQuickNavSheetEl || !mobileQuickNavBodyEl) return;
-        var mobileViewport = isCompactViewport();
         var activeChipbar = getActiveChipbar();
-        if (!mobileViewport || !activeChipbar) {
+        if (!activeChipbar) {
           mobileQuickNavEl.classList.remove("isVisible");
           mobileQuickNavEl.setAttribute("aria-hidden", "true");
           mobileQuickNavEl.dataset.source = "";
@@ -2464,11 +2432,12 @@
           mobileQuickNavBodyEl.innerHTML = activeChipbar.outerHTML;
           mobileQuickNavEl.dataset.source = sourceKey;
         }
-        var topbarHeight = Math.ceil(topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0);
+        var topbarHeight = Math.ceil(topbarEl ? (topbarEl.getBoundingClientRect().height || topbarEl.offsetHeight || 0) : 0);
         var rect = activeChipbar.getBoundingClientRect();
         var shouldShow = rect.bottom <= (topbarHeight + 8);
         mobileQuickNavEl.classList.toggle("isVisible", shouldShow);
         mobileQuickNavEl.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+        if (!shouldShow) closeMobileQuickNavSheet();
       }
 
       syncStickyOffsets();
