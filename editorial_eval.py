@@ -26,6 +26,81 @@ EDITORIAL_COMPONENTS = (
 )
 
 
+def _score_schema() -> dict[str, Any]:
+    return {"type": "number", "minimum": 0, "maximum": 100}
+
+
+def _editorial_response_format() -> dict[str, Any]:
+    return {
+        "format": {
+            "type": "json_schema",
+            "name": "editorial_quality_eval",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "score",
+                    "scores",
+                    "summary",
+                    "issues",
+                    "section_notes",
+                    "improvement_suggestions",
+                ],
+                "properties": {
+                    "score": _score_schema(),
+                    "scores": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": list(EDITORIAL_COMPONENTS),
+                        "properties": {
+                            key: _score_schema()
+                            for key in EDITORIAL_COMPONENTS
+                        },
+                    },
+                    "summary": {"type": "string"},
+                    "issues": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "required": [
+                                "type",
+                                "severity",
+                                "section",
+                                "title",
+                                "reason",
+                                "suggested_action",
+                            ],
+                            "properties": {
+                                "type": {"type": "string"},
+                                "severity": {"type": "string"},
+                                "section": {"type": "string"},
+                                "title": {"type": "string"},
+                                "reason": {"type": "string"},
+                                "suggested_action": {"type": "string"},
+                            },
+                        },
+                    },
+                    "section_notes": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": list(SECTION_KEYS),
+                        "properties": {
+                            section: {"type": "string"}
+                            for section in SECTION_KEYS
+                        },
+                    },
+                    "improvement_suggestions": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                },
+            },
+        }
+    }
+
+
 def _truncate(value: Any, limit: int) -> str:
     text = re.sub(r"\s+", " ", str(value or "")).strip()
     if len(text) <= limit:
@@ -294,7 +369,9 @@ def evaluate_editorial_quality(
         "Penalize wrong-section stories, promotional/local-event filler, stale or duplicated items, weak core picks, "
         "and missed better candidates visible in the raw candidate pools. "
         "Return JSON only with keys: score, scores, summary, issues, section_notes, improvement_suggestions. "
+        "section_notes must include supply, policy, dist, and pest. "
         "scores must include article_selection, section_fit, core_pick_quality, summary_usefulness, missed_opportunity, noise_control, each 0-100. "
+        "Return at most 8 issues and at most 6 improvement suggestions. Keep every reason and suggested_action concise. "
         "issues should be objects with type, severity, section, title, reason, suggested_action."
     )
     request_body = {
@@ -303,10 +380,12 @@ def evaluate_editorial_quality(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "max_output_tokens": 2200,
+        "max_output_tokens": 5000,
+        "text": _editorial_response_format(),
     }
 
     session = session_factory()
+    raw_text = ""
     try:
         response = session.post(
             "https://api.openai.com/v1/responses",
@@ -329,6 +408,7 @@ def evaluate_editorial_quality(
             "rubric_version": EDITORIAL_RUBRIC_VERSION,
             "model": resolved_model,
             "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+            "raw_response_excerpt": _truncate(raw_text, 1200),
         }
 
 
@@ -347,7 +427,7 @@ def build_editorial_improvement_plan(
     actions: list[dict[str, Any]] = []
     guardrail_focus: list[str] = []
 
-    if {"weak_core_pick", "core_pick_quality", "missed_better_core"} & issue_types:
+    if {"weak_core", "weak_core_pick", "core_pick_quality", "missed_better_core"} & issue_types:
         actions.append(
             {
                 "kind": "selection_guardrail",
@@ -367,7 +447,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("missed_opportunity")
-    if {"duplicate_topic", "duplicate_story", "same_issue_repeated"} & issue_types:
+    if {"duplicate", "duplication", "duplicate_topic", "duplicate_story", "same_issue_repeated"} & issue_types:
         actions.append(
             {
                 "kind": "story_dedupe",
@@ -377,7 +457,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("article_selection")
-    if {"noisy_article", "irrelevant_article", "promotional_filler"} & issue_types:
+    if {"noisy_article", "irrelevant_article", "promotional", "promotional_filler", "weak_selection"} & issue_types:
         actions.append(
             {
                 "kind": "noise_filter",
