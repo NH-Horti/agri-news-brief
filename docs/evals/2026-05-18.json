@@ -1,45 +1,45 @@
 {
   "report_date": "2026-05-18",
-  "generated_at_kst": "2026-05-18T06:23:20+09:00",
+  "generated_at_kst": "2026-05-18T14:12:54+09:00",
   "status": "pass",
-  "overall_score": 96.5,
+  "overall_score": 97.15,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 90.0,
-    "retrieval_support": 83.75,
-    "section_alignment": 95.25,
+    "retrieval_support": 85.0,
+    "section_alignment": 99.86,
     "core_quality": 100.0,
     "commodity_board_quality": 95.37
   },
   "counts": {
-    "briefing_total": 15,
-    "commodity_total": 61,
+    "briefing_total": 16,
+    "commodity_total": 60,
     "commodity_primary_total": 15,
     "briefing_by_section": {
       "supply": 4,
-      "policy": 3,
-      "dist": 4,
-      "pest": 4
+      "policy": 4,
+      "dist": 3,
+      "pest": 5
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 1,
+      "policy": 2,
       "dist": 2,
       "pest": 2
     },
     "commodity_by_section": {
       "supply": 37,
-      "policy": 10,
+      "policy": 9,
       "dist": 4,
       "pest": 10
     },
     "raw_by_section": {
-      "supply": 215,
-      "policy": 115,
-      "dist": 43,
-      "pest": 63
+      "supply": 207,
+      "policy": 114,
+      "dist": 35,
+      "pest": 65
     },
     "expected_briefing_by_section": {
       "supply": 3,
@@ -50,33 +50,33 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8,
+    "briefing_domain_diversity_rate": 0.75,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.6667,
+    "summary_numeric_rate": 0.6875,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.4,
+    "within_48h_rate": 0.375,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "weekend_span",
-    "seed_coverage_score": 0.4583,
-    "section_alignment_fit_avg": 4.4613,
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 4.4231,
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0667,
-    "section_alignment_weak_stage_rate": 0.0667,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.87,
-    "core_rank_percentile_avg": 0.9278,
+    "core_fit_avg": 4.9488,
+    "core_rank_percentile_avg": 0.9467,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9333,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.1107,
+    "commodity_primary_fit_avg": 2.9507,
     "commodity_primary_rank_avg": 2.8667
   },
   "section_scores": {
@@ -98,12 +98,7 @@
       "dist": 1.0,
       "pest": 1.0
     },
-    "seed_coverage": {
-      "supply": 0.4167,
-      "policy": 0.5833,
-      "dist": 0.5,
-      "pest": 0.3333
-    },
+    "seed_coverage": {},
     "section_alignment": {
       "supply": 1.0,
       "policy": 1.0,
@@ -113,7 +108,7 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.9468,
+      "dist": 1.0,
       "pest": 1.0
     }
   },
@@ -124,12 +119,12 @@
       "age_hours": 67.7
     },
     {
-      "title": "aT, 농식품 온라인 마케터 육성사업 참여사 300여 개소 모집",
-      "section": "dist",
-      "age_hours": 67.7
+      "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+      "section": "pest",
+      "age_hours": 64.7
     },
     {
-      "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+      "title": "충북 충주서 올해 첫 과수화상병 발생…위기 단계 ‘주의’ 격상",
       "section": "pest",
       "age_hours": 64.7
     },
@@ -155,13 +150,13 @@
     },
     {
       "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
-      "section": "dist",
+      "section": "policy",
       "age_hours": 57.3
     }
   ],
   "content_false_positive_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -199,5 +194,17 @@
     "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
-  ]
+  ],
+  "operational_score": 97.15,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  },
+  "editorial": {
+    "status": "error",
+    "reason": "Expecting ',' delimiter: line 1 column 4266 (char 4265)",
+    "rubric_version": 1,
+    "model": "gpt-5.4",
+    "generated_at_kst": "2026-05-18T14:13:32+09:00"
+  }
 }
