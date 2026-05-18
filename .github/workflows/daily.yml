@@ -133,6 +133,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_OPENAI_MODEL: gpt-5.4
         run: |
           set -euo pipefail
 
@@ -153,6 +155,8 @@ jobs:
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
+            --editorial-eval \
+            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
             --fail-under 55
 
       - name: Resolve Kakao status
