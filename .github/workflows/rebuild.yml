@@ -186,6 +186,38 @@ jobs:
             --input "$snapshot_path" \
             --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
 
+      - name: Evaluate rebuilt report quality
+        if: steps.rebuild.outcome == 'success'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_OPENAI_MODEL: gpt-5.4
+        run: |
+          set -euo pipefail
+
+          snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          if [ ! -f "$snapshot_path" ]; then
+            echo "Replay snapshot was not generated: $snapshot_path"
+            exit 1
+          fi
+
+          python scripts/evaluate_daily_report.py \
+            --report-date "${{ steps.vars.outputs.report_date }}" \
+            --snapshot-path "$snapshot_path" \
+            --repo "$REPO" \
+            --token "$GITHUB_TOKEN" \
+            --ref main \
+            --publish-branch main \
+            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json" \
+            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
+            --feedback-out "reports/evals/latest-feedback.txt" \
+            --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
+            --editorial-eval \
+            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
+            --fail-under 55
+
       - name: Resolve Kakao status
         if: always()
         id: kakao_status
@@ -261,6 +293,7 @@ jobs:
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- Smoke checks: ${{ steps.smoke.outcome }}"
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
+            echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
             echo "- OpenAI model: gpt-5.4"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
@@ -268,3 +301,7 @@ jobs:
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
             echo "- Debug JSON: https://nh-horti.github.io/agri-news-brief/debug/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.md" ]; then
+            cat "reports/evals/${{ steps.vars.outputs.report_date }}.md" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from io_github import github_get_file, github_put_file
+from editorial_eval import build_editorial_improvement_plan, evaluate_editorial_quality
 from report_eval import (
     build_selection_feedback_payload,
     evaluate_report,
@@ -159,6 +160,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--publish-branch", default="")
     parser.add_argument("--publish-prefix", default="docs/evals")
     parser.add_argument("--fail-under", type=float, default=0.0)
+    parser.add_argument("--editorial-eval", action="store_true")
+    parser.add_argument("--editorial-model", default="")
+    parser.add_argument("--editorial-max-raw-per-section", type=int, default=24)
     return parser
 
 
@@ -181,6 +185,25 @@ def main() -> int:
         html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
 
     result = evaluate_report(report_date, html_text, snapshot_payload)
+    result["operational_score"] = result.get("overall_score")
+    result["score_notes"] = {
+        "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+        "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
+    }
+    if args.editorial_eval:
+        editorial_result = evaluate_editorial_quality(
+            report_date,
+            html_text,
+            snapshot_payload,
+            result,
+            model=args.editorial_model or None,
+            max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 24)),
+        )
+        result["editorial"] = editorial_result
+        if editorial_result.get("status") == "success":
+            result["editorial_score"] = editorial_result.get("score")
+            result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
+
     markdown = render_evaluation_markdown(result)
     feedback_text = render_summary_feedback_text(result)
     selection_feedback_payload = build_selection_feedback_payload(result)

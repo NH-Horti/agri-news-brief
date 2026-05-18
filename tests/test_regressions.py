@@ -266,6 +266,10 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("scripts/evaluate_daily_report.py", self.daily_text)
         self.assertIn("latest-selection-feedback.json", self.daily_text)
         self.assertIn("docs/evals", self.daily_text)
+        self.assertIn("--editorial-eval", self.daily_text)
+        self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.4", self.daily_text)
+        self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)
+        self.assertIn("--editorial-eval", self.rebuild_text)
 
     def test_dev_verify_workflow_evaluates_preview_report(self):
         self.assertIn("Evaluate rebuilt preview report", self.dev_verify_text)
