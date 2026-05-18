@@ -396,14 +396,34 @@ class ReportEvalTests(unittest.TestCase):
 
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
+        result["operational_score"] = result["overall_score"]
+        result["editorial_score"] = 91.0
+        result["editorial"] = {
+            "status": "success",
+            "score": 91.0,
+            "target_score": 95.0,
+            "target_status": "needs_minor_iteration",
+            "scores": {
+                "article_selection": 91.0,
+                "section_fit": 92.0,
+                "core_pick_quality": 90.0,
+                "summary_usefulness": 93.0,
+                "missed_opportunity": 88.0,
+                "noise_control": 94.0,
+            },
+            "summary": "Good but not perfect.",
+            "issues": [{"type": "missed_better_candidate", "severity": "medium", "title": "candidate", "reason": "better option visible"}],
+        }
         markdown = report_eval.render_evaluation_markdown(result)
         history_entry = report_eval.result_to_history_entry(result)
 
         self.assertIn("## Daily Eval", markdown)
         self.assertIn(self.report_date, markdown)
         self.assertIn("section_fit=", markdown)
+        self.assertIn("Editorial Shadow Eval", markdown)
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
+        self.assertEqual(history_entry["editorial_score"], 91.0)
 
 
 if __name__ == "__main__":

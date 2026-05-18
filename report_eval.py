@@ -1368,8 +1368,10 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
     guardrails = result.get("selection_guardrails")
     if not isinstance(guardrails, dict):
         guardrails = build_selection_guardrails(result)
+    editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    editorial_plan = result.get("editorial_improvement_plan", {}) if isinstance(result, dict) else {}
 
-    return {
+    payload = {
         "report_date": result.get("report_date"),
         "generated_at_kst": result.get("generated_at_kst"),
         "scores": {
@@ -1388,6 +1390,17 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
         },
         "selection_guardrails": guardrails,
     }
+    if isinstance(editorial, dict) and editorial.get("status") == "success":
+        payload["editorial"] = {
+            "score": editorial.get("score"),
+            "target_score": editorial.get("target_score"),
+            "target_status": editorial.get("target_status"),
+            "scores": editorial.get("scores", {}),
+            "issues": editorial.get("issues", [])[:8] if isinstance(editorial.get("issues"), list) else [],
+        }
+    if isinstance(editorial_plan, dict):
+        payload["editorial_improvement_plan"] = editorial_plan
+    return payload
 
 
 def render_summary_feedback_text(result: dict[str, Any]) -> str:
@@ -1409,10 +1422,42 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
     )
     hint_lines = "\n".join(f"- {item}" for item in result.get("improvement_hints", []))
     feedback_lines = "\n".join(f"- {item}" for item in result.get("summary_prompt_feedback", []))
+    editorial = result.get("editorial", {})
+    editorial_block = ""
+    if isinstance(editorial, dict) and editorial:
+        if editorial.get("status") == "success":
+            editorial_scores = editorial.get("scores", {})
+            editorial_issues = editorial.get("issues", [])
+            issue_lines = "\n".join(
+                f"- [{item.get('severity', 'medium')}] {item.get('type', 'issue')}: {item.get('title', '')} - {item.get('reason', '')}"
+                for item in editorial_issues[:5]
+                if isinstance(item, dict)
+            )
+            if not issue_lines:
+                issue_lines = "- No major editorial issues reported."
+            editorial_block = (
+                f"\n### Editorial Shadow Eval\n"
+                f"- Editorial: **{float(editorial.get('score', 0.0) or 0.0):.2f}** "
+                f"(target {float(editorial.get('target_score', 95.0) or 95.0):.0f}, {editorial.get('target_status', 'unknown')})\n"
+                f"- Components: article_selection={float(editorial_scores.get('article_selection', 0.0) or 0.0):.1f}, "
+                f"section_fit={float(editorial_scores.get('section_fit', 0.0) or 0.0):.1f}, "
+                f"core={float(editorial_scores.get('core_pick_quality', 0.0) or 0.0):.1f}, "
+                f"summary={float(editorial_scores.get('summary_usefulness', 0.0) or 0.0):.1f}, "
+                f"missed={float(editorial_scores.get('missed_opportunity', 0.0) or 0.0):.1f}, "
+                f"noise={float(editorial_scores.get('noise_control', 0.0) or 0.0):.1f}\n"
+                f"- Summary: {editorial.get('summary', '')}\n"
+                f"{issue_lines}\n"
+            )
+        else:
+            editorial_block = (
+                f"\n### Editorial Shadow Eval\n"
+                f"- Editorial: {editorial.get('status', 'unknown')} ({editorial.get('reason', 'no reason provided')})\n"
+            )
 
     return (
         f"## Daily Eval ({result.get('report_date', '')})\n"
         f"- Overall: **{result.get('overall_score', 0):.2f}** ({result.get('status', 'unknown')})\n"
+        f"- Operational: **{float(result.get('operational_score', result.get('overall_score', 0.0)) or 0.0):.2f}**\n"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
         f"retrieval={scores.get('retrieval_support', 0):.1f}, section_fit={scores.get('section_alignment', 0):.1f}, "
@@ -1429,6 +1474,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
         f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
+        f"{editorial_block}\n"
         f"### Improvement Hints\n"
         f"{hint_lines}\n\n"
         f"### Next Summary Feedback\n"
@@ -1443,6 +1489,9 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "report_date": result.get("report_date"),
         "generated_at_kst": result.get("generated_at_kst"),
         "overall_score": result.get("overall_score"),
+        "operational_score": result.get("operational_score", result.get("overall_score")),
+        "editorial_score": result.get("editorial_score"),
+        "editorial_status": (result.get("editorial") or {}).get("target_status") if isinstance(result.get("editorial"), dict) else None,
         "status": result.get("status"),
         "section_alignment": result.get("scores", {}).get("section_alignment", 0),
         "core_quality": result.get("scores", {}).get("core_quality", 0),
