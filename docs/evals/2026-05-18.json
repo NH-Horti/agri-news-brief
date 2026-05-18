@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-18",
-  "generated_at_kst": "2026-05-18T14:12:54+09:00",
+  "generated_at_kst": "2026-05-18T14:24:32+09:00",
   "status": "pass",
   "overall_score": 97.15,
   "scores": {
@@ -201,10 +201,183 @@
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
   },
   "editorial": {
-    "status": "error",
-    "reason": "Expecting ',' delimiter: line 1 column 4266 (char 4265)",
+    "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-18T14:13:32+09:00"
+    "generated_at_kst": "2026-05-18T14:24:52+09:00",
+    "score": 73.0,
+    "target_score": 95.0,
+    "target_status": "needs_major_iteration",
+    "scores": {
+      "article_selection": 72.0,
+      "section_fit": 66.0,
+      "core_pick_quality": 70.0,
+      "summary_usefulness": 82.0,
+      "missed_opportunity": 68.0,
+      "noise_control": 61.0
+    },
+    "summary": "형식은 갖췄지만 기사 고르기는 아쉽다. 공급은 양파 사태 중복과 마늘 현장 기사의 약한 코어가 문제고, 정책은 이해당사자 요구·스마트팜 백필로 힘이 빠졌다. 유통은 농협 홍보성 기사 비중이 높고, 병해충은 사실상 동일한 과수화상병 기사 반복으로 지면 효율이 낮다. 원시 후보군에 보이는 더 나은 가격·수급 총괄 기사와 과수화상병 대표 기사로 더 날카롭게 짤 수 있었다.",
+    "issues": [
+      {
+        "type": "duplication",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개 / ‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+        "reason": "같은 사건을 같은 섹션에 중복 배치했다.",
+        "suggested_action": "둘 중 하나만 남기고 다른 공급 이슈로 교체."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장",
+        "reason": "현장 르포 성격이 강해 공급 핵심 이슈 대표성이 약하다.",
+        "suggested_action": "배추·무·양파 가격하락 등 총괄 수급 기사로 코어 교체."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "medium",
+        "section": "policy",
+        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
+        "reason": "정책보다 유통업계 요구·시장 인프라 기사에 가깝다.",
+        "suggested_action": "dist로 이동하거나 정책성 강한 정부 결정 기사로 대체."
+      },
+      {
+        "type": "weak_selection",
+        "severity": "medium",
+        "section": "policy",
+        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
+        "reason": "당일 핵심 농정 현안 대비 우선순위가 낮은 백필성 기사다.",
+        "suggested_action": "양파 수급대책·필름 공급 등 직접 정책 기사로 교체."
+      },
+      {
+        "type": "promotional",
+        "severity": "high",
+        "section": "dist",
+        "title": "서익산 농협 , 블루베리 육성사업으로 농가소득 견인",
+        "reason": "개별 농협 성공사례 홍보 성격이 강하다.",
+        "suggested_action": "시장 구조 변화나 판로 제도 기사로 교체."
+      },
+      {
+        "type": "promotional",
+        "severity": "medium",
+        "section": "dist",
+        "title": "동화청과, 자체 기획· 운영 청년농 교육",
+        "reason": "업체 활동 소개 중심으로 뉴스 가치가 제한적이다.",
+        "suggested_action": "가락시장 물류·온라인도매시장 제도 기사 우선."
+      },
+      {
+        "type": "duplication",
+        "severity": "high",
+        "section": "pest",
+        "title": "과수화상병 관련 4건 반복 배치",
+        "reason": "첫 발생·주의 격상·긴급방제 내용이 거의 동일하다.",
+        "suggested_action": "대표 기사 2건만 남기고 다른 병해충 이슈 보강."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "supply",
+        "title": "배추·무·양파 가격 하락.. 정부, 비축 확대·출하 조절",
+        "reason": "가격 하락과 정부 대응을 함께 담아 briefing 가치가 높다.",
+        "suggested_action": "중복 양파 기사 1건 대신 채택."
+      }
+    ],
+    "section_notes": {
+      "supply": "가격·수급 큰 흐름보다 제주 마늘 현장과 양파 중복에 치우쳤다. 공급 섹션이라면 채소 전반 가격 하락, 정부 비축·출하조절 같은 총괄성이 더 필요했다.",
+      "policy": "산란계협회 제재는 적절한 톱기사다. 다만 가락시장 지원 요구는 유통색이 강하고 스마트팜 백필은 현안성이 떨어져 정책 섹션의 무게를 약하게 했다.",
+      "dist": "온라인도매시장과 파렛트 운송지원은 적합하다. 반면 서익산농협·동화청과는 홍보성/기관활동 소개가 강해 유통 구조 변화 섹션의 밀도를 떨어뜨렸다.",
+      "pest": "과수화상병 첫 발생 자체는 당연히 잡아야 하지만, 동일 팩트의 변주를 4건 이상 실어 비효율적이다. 대표 기사와 수급 영향 분석 기사 정도로 압축하는 편이 낫다."
+    },
+    "improvement_suggestions": [
+      "같은 사건은 한 섹션 1건 원칙으로 압축하라.",
+      "공급 코어는 현장 르포보다 가격·물량·정부 대응이 함께 담긴 총괄 기사 우선.",
+      "정책 섹션은 정부 결정·제도 변화 중심으로, 이해단체 요구성 기사는 후순위로 둬라.",
+      "유통 섹션에서 개별 농협·기업 홍보성 성공사례는 엄격히 감점하라.",
+      "병해충 섹션은 동일 확진 기사 반복 대신 대표 기사+영향 분석 조합으로 구성하라.",
+      "원시 후보군에서 보이는 전국 단위 가격동향 기사들을 더 적극적으로 핵심 카드에 반영하라."
+    ],
+    "raw_response_excerpt": "{\"score\":73,\"scores\":{\"article_selection\":72,\"section_fit\":66,\"core_pick_quality\":70,\"summary_usefulness\":82,\"missed_opportunity\":68,\"noise_control\":61},\"summary\":\"형식은 갖췄지만 기사 고르기는 아쉽다. 공급은 양파 사태 중복과 마늘 현장 기사의 약한 코어가 문제고, 정책은 이해당사자 요구·스마트팜 백필로 힘이 빠졌다. 유통은 농협 홍보성 기사 비중이 높고, 병해충은 사실상 동일한 과수화상병 기사 반복으로 지면 효율이 낮다. 원시 후보군에 보이는 더 나은 가격·수급 총괄 기사와 과수화상병 대표 기사로 더 날카롭게 짤 수 있었다.\",\"issues\":[{\"type\":\"duplication\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"양파 농가들, '양파밭 갈아엎기 투쟁' 전개 / ‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?\",\"reason\":\"같은 사건을 같은 섹션에 중복 배치했다.\",\"suggested_action\":\"둘 중 하나만 남기고 다른 공급 이슈로 교체.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장\",\"reason\":\"현장 르포 성격이 강해 공급 핵심 이슈 대표성이 약하다.\",\"suggested_action\":\"배추·무·양파 가격하락 등 총괄 수급 기사로 코어 교체.\"},{\"type\":\"wrong_section\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"가락시장 유통인, \\\"시설현대화 국비 지원 확대·융자 금리 인하\\\" 촉구\",\"reason\":\"정책보다 유통업계 요구·시장 인프라 기사에 가깝다.\",\"suggested_action\":\"dist로 이동하거나 정책성 강한 정부 결정 기사로 대체.\"},{\"type\":\"weak_selection\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야\",\"reason\":\"당일 핵심 농정 현안 대비 우선순위가 낮은 백필성 기사다.\",\"suggested_action\":\"양파 수급대책·필름 공급 등 직접 정책 기사로 교체.\"..."
+  },
+  "editorial_score": 73.0,
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 73.0,
+    "target_status": "needs_major_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "core_quality",
+      "missed_opportunity",
+      "article_selection",
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
   }
 }
