@@ -1,14 +1,14 @@
 {
   "report_date": "2026-05-18",
-  "generated_at_kst": "2026-05-18T06:23:20+09:00",
+  "generated_at_kst": "2026-05-18T14:12:54+09:00",
   "scores": {
-    "section_alignment": 95.25,
+    "section_alignment": 99.86,
     "core_quality": 100.0,
     "commodity_board_quality": 95.37
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0667,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -46,5 +46,6 @@
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false
-  }
+  },
+  "editorial_improvement_plan": {}
 }
