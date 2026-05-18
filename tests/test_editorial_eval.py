@@ -113,6 +113,7 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(result["scores"]["core_pick_quality"], 89)
         self.assertEqual(result["issues"][0]["type"], "missed_better_candidate")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
+        self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
 
     def test_editorial_improvement_plan_maps_issues_to_shadow_actions(self):

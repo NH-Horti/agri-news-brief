@@ -412,10 +412,14 @@ class ReportEvalTests(unittest.TestCase):
                 "noise_control": 94.0,
             },
             "summary": "Good but not perfect.",
-            "issues": [{"type": "missed_better_candidate", "severity": "medium", "title": "candidate", "reason": "better option visible"}],
+            "issues": [
+                {"type": "missed_better_candidate", "severity": "medium", "title": "candidate", "reason": "better option visible"},
+                {"type": "duplicate", "severity": "high", "title": "same issue", "reason": "same event repeated"},
+            ],
         }
         markdown = report_eval.render_evaluation_markdown(result)
         history_entry = report_eval.result_to_history_entry(result)
+        selection_feedback = report_eval.build_selection_feedback_payload(result)
 
         self.assertIn("## Daily Eval", markdown)
         self.assertIn(self.report_date, markdown)
@@ -424,6 +428,7 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
+        self.assertIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
 
 
 if __name__ == "__main__":

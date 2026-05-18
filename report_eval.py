@@ -1370,6 +1370,9 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
         guardrails = build_selection_guardrails(result)
     editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
     editorial_plan = result.get("editorial_improvement_plan", {}) if isinstance(result, dict) else {}
+    guardrails = dict(guardrails)
+    if isinstance(editorial, dict) and editorial.get("status") == "success":
+        guardrails = _apply_editorial_feedback_to_guardrails(guardrails, editorial)
 
     payload = {
         "report_date": result.get("report_date"),
@@ -1401,6 +1404,100 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(editorial_plan, dict):
         payload["editorial_improvement_plan"] = editorial_plan
     return payload
+
+
+def _editorial_issue_types(editorial: dict[str, Any]) -> set[str]:
+    issues = editorial.get("issues", [])
+    if not isinstance(issues, list):
+        return set()
+    issue_types: set[str] = set()
+    for item in issues:
+        if not isinstance(item, dict):
+            continue
+        normalized = re.sub(r"[^a-z0-9_]+", "_", str(item.get("type") or "").strip().lower()).strip("_")
+        if normalized:
+            issue_types.add(normalized)
+    return issue_types
+
+
+def _apply_editorial_feedback_to_guardrails(guardrails: dict[str, Any], editorial: dict[str, Any]) -> dict[str, Any]:
+    try:
+        editorial_score = float(editorial.get("score", 100.0) or 100.0)
+    except (TypeError, ValueError):
+        editorial_score = 100.0
+    if editorial_score >= 95.0:
+        return guardrails
+
+    issue_types = _editorial_issue_types(editorial)
+    if not issue_types:
+        return guardrails
+
+    driver_tags = list(guardrails.get("driver_tags", [])) if isinstance(guardrails.get("driver_tags"), list) else []
+
+    def _tag(value: str) -> None:
+        if value not in driver_tags:
+            driver_tags.append(value)
+
+    section_fit = guardrails.get("section_card_min_fit", {})
+    if not isinstance(section_fit, dict):
+        section_fit = {}
+    section_fit = {key: float(value) for key, value in section_fit.items() if isinstance(value, (int, float))}
+
+    core_fit = guardrails.get("core_fit_min", {})
+    if not isinstance(core_fit, dict):
+        core_fit = {}
+    core_fit = {key: float(value) for key, value in core_fit.items() if isinstance(value, (int, float))}
+
+    def _bump_section(section: str, delta: float, cap: float = 1.18) -> None:
+        base = float(section_fit.get(section, section_fit.get("default", 0.8)) or 0.8)
+        section_fit[section] = round(min(cap, base + delta), 3)
+
+    def _bump_all_sections(delta: float) -> None:
+        for section in ("default",) + SECTION_KEYS:
+            _bump_section(section, delta)
+
+    if issue_types & {"wrong_section", "section_mismatch", "section_fit", "weak_section_pick"}:
+        _tag("editorial_section_fit")
+        for section, delta in (("default", 0.05), ("supply", 0.08), ("policy", 0.08), ("dist", 0.1), ("pest", 0.06)):
+            _bump_section(section, delta)
+        guardrails["high_score_low_fit_rescue_margin"] = round(
+            max(float(guardrails.get("high_score_low_fit_rescue_margin", 3.0) or 3.0), 4.2),
+            3,
+        )
+
+    if issue_types & {"promotional", "promotional_filler", "noisy_article", "irrelevant_article", "weak_selection"}:
+        _tag("editorial_noise_filter")
+        _bump_all_sections(0.05)
+        guardrails["section_low_fit_rescue_min"] = round(
+            max(float(guardrails.get("section_low_fit_rescue_min", 0.15) or 0.15), 0.35),
+            3,
+        )
+        guardrails["tail_score_floor_delta"] = round(
+            min(1.2, float(guardrails.get("tail_score_floor_delta", 0.0) or 0.0) + 0.4),
+            3,
+        )
+
+    if issue_types & {"duplicate", "duplication", "duplicate_topic", "duplicate_story", "same_issue_repeated"}:
+        _tag("editorial_duplicate_topic")
+        guardrails["tail_score_floor_delta"] = round(
+            min(1.2, float(guardrails.get("tail_score_floor_delta", 0.0) or 0.0) + 0.4),
+            3,
+        )
+
+    if issue_types & {"weak_core", "weak_core_pick", "core_pick_quality", "missed_better_core"}:
+        _tag("editorial_core_pick")
+        for section in ("default",) + SECTION_KEYS:
+            base = float(core_fit.get(section, core_fit.get("default", 1.2)) or 1.2)
+            core_fit[section] = round(min(1.75, base + 0.1), 3)
+        guardrails["disable_relaxed_core_fill"] = True
+
+    if issue_types & {"missed_opportunity", "missed_better_candidate", "under_selected_high_value"}:
+        _tag("editorial_missed_opportunity")
+
+    guardrails["driver_tags"] = driver_tags
+    guardrails["section_card_min_fit"] = section_fit
+    guardrails["core_fit_min"] = core_fit
+    return guardrails
 
 
 def render_summary_feedback_text(result: dict[str, Any]) -> str:
