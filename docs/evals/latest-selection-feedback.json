@@ -1,10 +1,10 @@
 {
-  "report_date": "2026-05-18",
-  "generated_at_kst": "2026-05-18T14:44:35+09:00",
+  "report_date": "2026-05-19",
+  "generated_at_kst": "2026-05-19T06:21:23+09:00",
   "scores": {
-    "section_alignment": 99.86,
+    "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 95.37
+    "commodity_board_quality": 97.22
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -20,7 +20,6 @@
       "editorial_section_fit",
       "editorial_noise_filter",
       "editorial_duplicate_topic",
-      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
@@ -34,11 +33,11 @@
     "high_score_low_fit_rescue_margin": 4.2,
     "tail_score_floor_delta": 0.8,
     "core_fit_min": {
-      "default": 1.3,
-      "supply": 1.5,
-      "policy": 1.5,
-      "dist": 1.7,
-      "pest": 1.3
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -47,88 +46,88 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": true,
+    "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false
   },
   "editorial": {
-    "score": 78.0,
+    "score": 72.0,
     "target_score": 95.0,
     "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 74.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 72.0,
-      "summary_usefulness": 86.0,
-      "missed_opportunity": 68.0,
-      "noise_control": 73.0
+      "article_selection": 70.0,
+      "section_fit": 68.0,
+      "core_pick_quality": 66.0,
+      "summary_usefulness": 84.0,
+      "missed_opportunity": 63.0,
+      "noise_control": 67.0
     },
     "issues": [
       {
-        "type": "weak_core",
+        "type": "wrong_section",
         "severity": "high",
-        "section": "supply",
-        "title": "“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장",
-        "reason": "현장 스케치 성격이 강해 전국 수급 이슈 대표성이 약함.",
-        "suggested_action": "양파 폭락·채소 가격 하락 같은 시장 영향 큰 기사로 교체."
+        "section": "policy",
+        "title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구",
+        "reason": "현장 촉구성 발언 기사로 정책 확정·집행 정보가 약함.",
+        "suggested_action": "정책 시행·대책 발표 기사로 교체."
       },
       {
-        "type": "duplication",
+        "type": "wrong_section",
         "severity": "high",
-        "section": "supply",
-        "title": "양파 갈아엎기 기사 2건 동시 선정",
-        "reason": "같은 사건을 공급 섹션에 중복 배치해 지면 효율이 떨어짐.",
-        "suggested_action": "한 건만 남기고 나머지는 다른 품목·수급 기사로 대체."
-      },
-      {
-        "type": "section_mismatch",
-        "severity": "medium",
-        "section": "supply",
-        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
-        "reason": "물류·시장 운영 성격이 강해 유통 섹션이 더 자연스러움.",
-        "suggested_action": "유통으로 이동하고 공급에는 산지 생산·가격 기사 보강."
+        "section": "dist",
+        "title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매",
+        "reason": "출하 개시·지역 특산 홍보 성격이 강함.",
+        "suggested_action": "도매시장·물류·수출 구조 기사로 대체."
       },
       {
         "type": "promotional",
         "severity": "high",
         "section": "dist",
-        "title": "서익산 농협 , 블루베리 육성사업으로 농가소득 견인",
-        "reason": "조합 성과 소개 중심의 홍보성 기사로 유통 현안성이 낮음.",
-        "suggested_action": "온라인도매시장·군급식 조달·가락시장 운영 등 구조 기사 우선."
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "업체 프로그램 소개로 공익적 유통 이슈성 낮음.",
+        "suggested_action": "시장 제도·물류 변화 기사 우선 선별."
       },
       {
-        "type": "weak_selection",
+        "type": "duplicate",
         "severity": "medium",
-        "section": "policy",
-        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
-        "reason": "이해관계자 요구 기사로 정책 확정·제도 변화 정보가 제한적.",
-        "suggested_action": "정부 수급대책·가격안정 대책 기사로 우선순위 조정."
-      },
-      {
-        "type": "backfill_noise",
-        "severity": "medium",
-        "section": "policy",
-        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
-        "reason": "상시형 현장 리포트로 당일 정책 브리프의 긴급성이 약함.",
-        "suggested_action": "정책 공문·제도 변경·수급 대응 기사로 교체."
-      },
-      {
-        "type": "duplication",
-        "severity": "high",
         "section": "pest",
-        "title": "과수화상병 첫 발생 기사 4건 반복",
-        "reason": "사실상 동일 팩트 반복으로 정보 증분이 거의 없음.",
-        "suggested_action": "대표 2건만 남기고 돌발해충·다른 병해 기사로 분산."
+        "title": "충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
+        "reason": "같은 화상병 발생 축을 반복해 정보 증분이 작음.",
+        "suggested_action": "한 건만 남기고 방제 대응 기사로 보완."
+      },
+      {
+        "type": "duplicate",
+        "severity": "medium",
+        "section": "supply",
+        "title": "한 통에 3만원… 이른 더위에 수박값 껑충 / [친절한 경제] 수박 한 통에 3만 원… 가격 널뛰는 여름 과일들",
+        "reason": "같은 가격 급등 이슈를 두 장으로 반복.",
+        "suggested_action": "한 건으로 압축하고 다른 품목 이슈 추가."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
-        "section": "supply",
-        "title": "배추·무·양파 가격 하락.. 정부, 비축 확대·출하 조절",
-        "reason": "공급 섹션에서 더 큰 시장 총괄 기사와 정부 대응을 놓침.",
-        "suggested_action": "품목 현장 스케치 대신 수급 전반 기사 1건 이상 반영."
+        "section": "dist",
+        "title": "서울시공사, 물류 선진화 위해 순회수집 운송지원 확대",
+        "reason": "raw에 더 직접적인 물류 개선 기사 있었는데 미채택.",
+        "suggested_action": "행사성 카드 대신 해당 기사 채택."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농식품부 규제합리화/온라인 도매시장 완화 관련 후보",
+        "reason": "유통·판로 제도 변화가 큰데 정책 섹션 반영이 없음.",
+        "suggested_action": "규제완화·온라인 도매시장 기사 1건 반영."
+      },
+      {
+        "type": "noise",
+        "severity": "medium",
+        "section": "policy",
+        "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+        "reason": "해외 농가 동향으로 국내 농정 독자 연관성이 약함.",
+        "suggested_action": "국내 수급·방역·지원 정책 기사로 교체."
       }
     ]
   },
@@ -136,23 +135,16 @@
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 78.0,
+    "current_editorial_score": 72.0,
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "article_selection",
       "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
