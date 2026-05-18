@@ -1,12 +1,17 @@
 ## Daily Eval (2026-05-18)
-- Overall: **96.50** (pass)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=90.0, retrieval=83.8, section_fit=95.2, core=100.0, commodity=95.4
-- Briefing cards: 15 / Commodity cards: 61
-- Sections: supply:4/3 raw=215, policy:3/3 raw=115, dist:4/3 raw=43, pest:4/3 raw=63
-- Metrics: title_unique=1.00, domain_diversity=0.80, summary_presence=1.00, summary_numeric=0.67, fresh_72h=1.00, fit_avg=4.46, false_positive=0.00, weak_core=0.00, commodity_weak=0.00, semantic_penalty=0.0
+- Overall: **97.15** (pass)
+- Operational: **97.15**
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=90.0, retrieval=85.0, section_fit=99.9, core=100.0, commodity=95.4
+- Briefing cards: 16 / Commodity cards: 60
+- Sections: supply:4/3 raw=207, policy:4/3 raw=114, dist:3/3 raw=35, pest:5/3 raw=65
+- Metrics: title_unique=1.00, domain_diversity=0.75, summary_presence=1.00, summary_numeric=0.69, fresh_72h=1.00, fit_avg=4.42, false_positive=0.00, weak_core=0.00, commodity_weak=0.00, semantic_penalty=0.0
+
+
+### Editorial Shadow Eval
+- Editorial: error (Expecting ',' delimiter: line 1 column 4266 (char 4265))
 
 ### Improvement Hints
-- 리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
