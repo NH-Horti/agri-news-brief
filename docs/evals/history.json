@@ -2,10 +2,10 @@
   "reports": [
     {
       "report_date": "2026-05-18",
-      "generated_at_kst": "2026-05-18T14:24:32+09:00",
+      "generated_at_kst": "2026-05-18T14:44:35+09:00",
       "overall_score": 97.15,
       "operational_score": 97.15,
-      "editorial_score": 73.0,
+      "editorial_score": 78.0,
       "editorial_status": "needs_major_iteration",
       "status": "pass",
       "section_alignment": 99.86,
@@ -499,5 +499,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-05-18T14:24:32+09:00"
+  "updated_at_kst": "2026-05-18T14:44:35+09:00"
 }
