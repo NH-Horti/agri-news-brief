@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T00:18:51+09:00",
+  "generated_at": "2026-05-19T02:12:33+09:00",
   "rows": [
     {
       "date": "2026-04-30",
@@ -20,6 +20,20 @@
       "query": "포도",
       "section_filter": "(not set)",
       "result_count": 32,
+      "count": 1
+    },
+    {
+      "date": "2026-05-18",
+      "query": "안산",
+      "section_filter": "",
+      "result_count": 1,
+      "count": 1
+    },
+    {
+      "date": "2026-05-18",
+      "query": "팜",
+      "section_filter": "",
+      "result_count": 10,
       "count": 1
     }
   ]
