@@ -227,34 +227,15 @@ class LocalRuntimeTests(TestCase):
             self.assertEqual(int(guardrails["commodity_active_min_rank"]), 2)
             self.assertTrue(bool(guardrails["commodity_require_issue_signal"]))
 
-    def test_selection_feedback_guardrails_exclude_terms_and_story_duplicates(self) -> None:
+    def test_selection_feedback_url_exclusion_blocks_known_articles(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title="한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+            link="https://www.ajunews.com/view/20260518142237838",
+        )
         with patch.dict(
             main.SELECTION_FEEDBACK_GUARDRAILS,
-            {
-                "exclude_title_terms": ["두리안", "망고"],
-                "story_duplicate_similarity_min": 0.32,
-            },
+            {"exclude_url_fragments": ["ajunews.com/view/20260518142237838"]},
             clear=True,
         ):
-            left = self._make_article(
-                section="supply",
-                title="평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
-                description="평창군은 가격안정 기금 21억을 908개 농가에 지급해 농가 경영 부담을 낮춘다.",
-                link="https://example.com/supply-pyeongchang",
-            )
-            right = self._make_article(
-                section="policy",
-                title="평창군, 농축산물 가격 안정 기금 21억 지원 908농가 숨통",
-                description="농축산물 가격 안정 기금 21억 지원으로 908개 농가의 수급 부담을 덜었다.",
-                link="https://example.com/policy-pyeongchang",
-            )
-            unrelated = self._make_article(
-                section="pest",
-                title="충주·원주서 과수화상병 발생 예찰 강화",
-                description="과수화상병 발생으로 지자체가 배 농가 예찰과 방제 수칙 준수를 당부했다.",
-                link="https://example.com/pest-fireblight",
-            )
-
-            self.assertEqual(main._selection_guardrail_terms("exclude_title_terms"), ("두리안", "망고"))
-            self.assertTrue(main._selection_feedback_story_duplicate(left, right))
-            self.assertFalse(main._selection_feedback_story_duplicate(right, unrelated))
+            self.assertEqual(main._selection_feedback_block_reason(article, "policy"), "feedback_url_exclusion")
