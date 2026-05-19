@@ -226,3 +226,28 @@ class LocalRuntimeTests(TestCase):
                 guardrails = main._load_selection_feedback_guardrails()
             self.assertEqual(int(guardrails["commodity_active_min_rank"]), 2)
             self.assertTrue(bool(guardrails["commodity_require_issue_signal"]))
+
+    def test_selection_feedback_guardrails_exclude_terms_and_story_duplicates(self) -> None:
+        with patch.dict(
+            main.SELECTION_FEEDBACK_GUARDRAILS,
+            {
+                "exclude_title_terms": ["두리안", "망고"],
+                "story_duplicate_similarity_min": 0.32,
+            },
+            clear=True,
+        ):
+            left = self._make_article(
+                section="supply",
+                title="평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
+                description="평창군은 가격안정 기금 21억을 908개 농가에 지급해 농가 경영 부담을 낮춘다.",
+                link="https://example.com/supply-pyeongchang",
+            )
+            right = self._make_article(
+                section="policy",
+                title="평창군, 농축산물 가격 안정 기금 21억 지원 908농가 숨통",
+                description="농축산물 가격 안정 기금 21억 지원으로 908개 농가의 수급 부담을 덜었다.",
+                link="https://example.com/policy-pyeongchang",
+            )
+
+            self.assertEqual(main._selection_guardrail_terms("exclude_title_terms"), ("두리안", "망고"))
+            self.assertTrue(main._selection_feedback_story_duplicate(left, right))

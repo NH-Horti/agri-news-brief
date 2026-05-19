@@ -3444,6 +3444,79 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
         out.append(a)
     return out
 
+
+_FEEDBACK_STORY_STOPWORDS = frozenset(
+    {
+        "기자",
+        "뉴스",
+        "오늘",
+        "올해",
+        "이번",
+        "대한",
+        "관련",
+        "통해",
+        "위해",
+        "지원",
+        "사업",
+        "추진",
+        "진행",
+        "확대",
+        "시작",
+        "본격",
+        "전국",
+        "지역",
+        "지난",
+        "오는",
+        "한편",
+    }
+)
+
+
+def _feedback_story_words(text: str) -> set[str]:
+    words: set[str] = set()
+    for raw in re.findall(r"\d+(?:[.,]\d+)?|[^\W\d_]{2,}", _nfkc_lower(text), flags=re.UNICODE):
+        token = raw.strip(".,%…'\"")
+        if token and token not in _FEEDBACK_STORY_STOPWORDS:
+            words.add(token)
+    return words
+
+
+def _feedback_story_numbers(text: str) -> set[str]:
+    return set(re.findall(r"\d+(?:[.,]\d+)?", str(text or "")))
+
+
+def _feedback_story_ngrams(text: str, n: int = 3) -> set[str]:
+    compact = norm_title_key(text)
+    if len(compact) < n:
+        return {compact} if compact else set()
+    return {compact[idx : idx + n] for idx in range(0, len(compact) - n + 1)}
+
+
+def _selection_feedback_story_duplicate(a: "Article", b: "Article") -> bool:
+    try:
+        threshold = float(_selection_guardrail_number("story_duplicate_similarity_min", 0.0) or 0.0)
+    except Exception:
+        threshold = 0.0
+    if threshold <= 0.0:
+        return False
+    text_a = f"{getattr(a, 'title', '') or ''} {getattr(a, 'description', '') or ''}"
+    text_b = f"{getattr(b, 'title', '') or ''} {getattr(b, 'description', '') or ''}"
+    words_a = _feedback_story_words(text_a)
+    words_b = _feedback_story_words(text_b)
+    shared_words = words_a & words_b
+    shared_numbers = _feedback_story_numbers(text_a) & _feedback_story_numbers(text_b)
+    grams_a = _feedback_story_ngrams(text_a)
+    grams_b = _feedback_story_ngrams(text_b)
+    containment = 0.0
+    if grams_a and grams_b:
+        containment = len(grams_a & grams_b) / max(1, min(len(grams_a), len(grams_b)))
+    if len(shared_numbers) >= 2 and (len(shared_words) >= 2 or containment >= max(0.16, threshold - 0.14)):
+        return True
+    if len(shared_words) >= 4 and containment >= threshold:
+        return True
+    return containment >= max(0.46, threshold + 0.12) and len(shared_words) >= 2
+
+
 def _has_trade_signal(txt: str) -> bool:
     t = (txt or "").lower()
     return any(x in t for x in (
@@ -14886,6 +14959,21 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     if section_key in _EVENT_KEY_SECTIONS:
         pre_pool = _dedupe_by_event_key(pre_pool, section_key)
 
+    feedback_exclude_terms = tuple(term.lower() for term in _selection_guardrail_terms("exclude_title_terms"))
+
+    def _blocked_by_selection_feedback(a: Article) -> bool:
+        if not feedback_exclude_terms:
+            return False
+        text = _nfkc_lower(f"{a.title or ''} {a.description or ''}")
+        if not text:
+            return False
+        return any(term and term in text for term in feedback_exclude_terms)
+
+    if feedback_exclude_terms:
+        filtered_pre_pool = [a for a in pre_pool if not _blocked_by_selection_feedback(a)]
+        if filtered_pre_pool:
+            pre_pool = filtered_pre_pool
+
     if not pre_pool:
         return []
 
@@ -14999,6 +15087,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         )
 
     candidates_sorted = sorted(candidates, key=_selection_sort_key, reverse=True)
+    if feedback_exclude_terms:
+        filtered_candidates_sorted = [a for a in candidates_sorted if not _blocked_by_selection_feedback(a)]
+        if filtered_candidates_sorted:
+            candidates_sorted = filtered_candidates_sorted
     pool = sorted(pool, key=_selection_sort_key, reverse=True)
 
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
@@ -21441,6 +21533,8 @@ def _build_sections_phase123(
                             topic_dup = True
                     except Exception:
                         pass
+                if not topic_dup and _selection_feedback_story_duplicate(articles[i], articles[j]):
+                    topic_dup = True
                 if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
                     score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
@@ -21486,6 +21580,8 @@ def _build_sections_phase123(
                     # title 유사도 체크 (같은 뉴스 다른 매체)
                     if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in kept):
                         continue
+                    if any(_selection_feedback_story_duplicate(a, b) for b in kept):
+                        continue
                     kept.append(a)
                     _existing_idents.add(ident)
                     log.info("[WITHIN-DEDUP-BACKFILL] section=%s title=%s", key, (a.title or "")[:80])
@@ -21526,6 +21622,9 @@ def _build_sections_phase123(
                             _is_title_dup = _is_similar_title(art_a.title_key or "", art_b.title_key or "")
                         except Exception:
                             pass
+                    if not is_same_url and not _is_topic_dup and not _is_title_dup:
+                        if _selection_feedback_story_duplicate(art_a, art_b):
+                            _is_topic_dup = True
                     if not is_same_url and not _is_topic_dup and not _is_title_dup:
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
@@ -21598,6 +21697,10 @@ def _build_sections_phase123(
                         _backfill_cross_skip = True
                         log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
                         break
+                    if _selection_feedback_story_duplicate(a, b):
+                        _backfill_cross_skip = True
+                        log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s feedback-duplicate: %s", sec_key, (a.title or "")[:80])
+                        break
                 if _backfill_cross_skip:
                     continue
                 # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크 (title만 사용)
@@ -21607,6 +21710,9 @@ def _build_sections_phase123(
                     _a_url = getattr(a, 'canon_url', '') or ''
                     _b_url = getattr(b, 'canon_url', '') or ''
                     if _a_url and _b_url and _a_url == _b_url:
+                        _backfill_cross_skip = True
+                        break
+                    if _selection_feedback_story_duplicate(a, b):
                         _backfill_cross_skip = True
                         break
                     # 품목+이슈 중복 체크 (지역 없어도 OK)
@@ -21892,6 +21998,22 @@ def _selection_guardrail_bool(key: str, default: bool = False) -> bool:
     if isinstance(payload, str):
         return payload.strip().lower() in ("1", "true", "yes", "y")
     return bool(payload) if payload is not None else bool(default)
+
+
+def _selection_guardrail_terms(key: str) -> tuple[str, ...]:
+    payload = SELECTION_FEEDBACK_GUARDRAILS.get(str(key or "").strip())
+    if isinstance(payload, str):
+        raw_items = [payload]
+    elif isinstance(payload, list):
+        raw_items = payload
+    else:
+        raw_items = []
+    terms: list[str] = []
+    for item in raw_items:
+        term = str(item or "").strip()
+        if term and term not in terms:
+            terms.append(term)
+    return tuple(terms[:32])
 
 
 def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
