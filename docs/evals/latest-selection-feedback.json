@@ -1,14 +1,14 @@
 {
   "report_date": "2026-05-19",
-  "generated_at_kst": "2026-05-19T06:21:23+09:00",
+  "generated_at_kst": "2026-05-19T13:21:22+09:00",
   "scores": {
-    "section_alignment": 100.0,
+    "section_alignment": 92.4,
     "core_quality": 100.0,
     "commodity_board_quality": 97.22
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -19,7 +19,6 @@
     "driver_tags": [
       "editorial_section_fit",
       "editorial_noise_filter",
-      "editorial_duplicate_topic",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
@@ -31,7 +30,7 @@
     },
     "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.8,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -50,88 +49,76 @@
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false,
-    "exclude_url_fragments": [
-      "ajunews.com/view/20260518142237838",
-      "enewstoday.co.kr/news/articleView.html?idxno=2430514"
-    ]
+    "commodity_require_direct_item_focus": false
   },
   "editorial": {
-    "score": 72.0,
+    "score": 83.0,
     "target_score": 95.0,
-    "target_status": "needs_major_iteration",
+    "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 70.0,
-      "section_fit": 68.0,
-      "core_pick_quality": 66.0,
-      "summary_usefulness": 84.0,
-      "missed_opportunity": 63.0,
-      "noise_control": 67.0
+      "article_selection": 81.0,
+      "section_fit": 79.0,
+      "core_pick_quality": 84.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 80.0,
+      "noise_control": 76.0
     },
     "issues": [
       {
         "type": "wrong_section",
         "severity": "high",
-        "section": "policy",
-        "title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구",
-        "reason": "현장 촉구성 발언 기사로 정책 확정·집행 정보가 약함.",
-        "suggested_action": "정책 시행·대책 발표 기사로 교체."
-      },
-      {
-        "type": "wrong_section",
-        "severity": "high",
         "section": "dist",
         "title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매",
-        "reason": "출하 개시·지역 특산 홍보 성격이 강함.",
-        "suggested_action": "도매시장·물류·수출 구조 기사로 대체."
+        "reason": "출하 개시·지역 특산 홍보 성격이 강해 유통 구조 이슈로 약함.",
+        "suggested_action": "dist 대신 supply로 돌리거나 제외."
       },
       {
-        "type": "promotional",
+        "type": "promotional_filler",
         "severity": "high",
         "section": "dist",
         "title": "동화청과, 청년농 경매 실전교육",
-        "reason": "업체 프로그램 소개로 공익적 유통 이슈성 낮음.",
-        "suggested_action": "시장 제도·물류 변화 기사 우선 선별."
+        "reason": "교육 프로그램 소개로 뉴스 임팩트가 약하다.",
+        "suggested_action": "물류·도매제도 변화 기사로 교체."
       },
       {
-        "type": "duplicate",
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "dist",
+        "title": "풍양농협, 2026년산 햇 마늘 산지경매장 개징",
+        "reason": "개장 행사성 지역 기사로 전국 독자 효용이 낮다.",
+        "suggested_action": "시장 제도·물류 효율 기사 우선."
+      },
+      {
+        "type": "weak_policy_pick",
+        "severity": "medium",
+        "section": "policy",
+        "title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구",
+        "reason": "의원 촉구성 발언은 정책 결정·집행 기사보다 한 단계 약하다.",
+        "suggested_action": "정부 소비촉진·수급대응 기사로 대체."
+      },
+      {
+        "type": "duplicate_theme",
         "severity": "medium",
         "section": "pest",
-        "title": "충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
-        "reason": "같은 화상병 발생 축을 반복해 정보 증분이 작음.",
-        "suggested_action": "한 건만 남기고 방제 대응 기사로 보완."
-      },
-      {
-        "type": "duplicate",
-        "severity": "medium",
-        "section": "supply",
-        "title": "한 통에 3만원… 이른 더위에 수박값 껑충 / [친절한 경제] 수박 한 통에 3만 원… 가격 널뛰는 여름 과일들",
-        "reason": "같은 가격 급등 이슈를 두 장으로 반복.",
-        "suggested_action": "한 건으로 압축하고 다른 품목 이슈 추가."
+        "title": "원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
+        "reason": "1번 화상병 기사와 겹침이 커 정보 추가가 제한적이다.",
+        "suggested_action": "충주 현장점검이나 권역 대응 기사로 차별화."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
         "section": "dist",
         "title": "서울시공사, 물류 선진화 위해 순회수집 운송지원 확대",
-        "reason": "raw에 더 직접적인 물류 개선 기사 있었는데 미채택.",
-        "suggested_action": "행사성 카드 대신 해당 기사 채택."
+        "reason": "가락시장 팰릿·순회수집 지원은 dist 섹션 적합도가 더 높다.",
+        "suggested_action": "행사성 출하 기사 대신 채택."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "policy",
-        "title": "농식품부 규제합리화/온라인 도매시장 완화 관련 후보",
-        "reason": "유통·판로 제도 변화가 큰데 정책 섹션 반영이 없음.",
-        "suggested_action": "규제완화·온라인 도매시장 기사 1건 반영."
-      },
-      {
-        "type": "noise",
-        "severity": "medium",
-        "section": "policy",
-        "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
-        "reason": "해외 농가 동향으로 국내 농정 독자 연관성이 약함.",
-        "suggested_action": "국내 수급·방역·지원 정책 기사로 교체."
+        "title": "농식품부, 양파 소비 촉진 행사…농산물 할인 이달 말까지 연장",
+        "reason": "양파 폭락 대응의 실제 정부 조치를 직접 보여준다.",
+        "suggested_action": "촉구성 지방정치 기사보다 우선 채택."
       }
     ]
   },
@@ -139,12 +126,11 @@
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 72.0,
-    "target_status": "needs_major_iteration",
+    "current_editorial_score": 83.0,
+    "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
       "missed_opportunity",
-      "article_selection",
       "noise_control",
       "section_fit"
     ],
@@ -154,12 +140,6 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "noise_filter",
