@@ -3445,78 +3445,24 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
     return out
 
 
-_FEEDBACK_STORY_STOPWORDS = frozenset(
-    {
-        "기자",
-        "뉴스",
-        "오늘",
-        "올해",
-        "이번",
-        "대한",
-        "관련",
-        "통해",
-        "위해",
-        "지원",
-        "사업",
-        "추진",
-        "진행",
-        "확대",
-        "시작",
-        "본격",
-        "전국",
-        "지역",
-        "지난",
-        "오는",
-        "한편",
-    }
-)
+def _selection_feedback_block_reason(article: "Article", section_key: str) -> str:
+    if section_key not in {"supply", "policy", "dist", "pest"}:
+        return ""
+    url_text = " ".join(
+        str(getattr(article, attr, "") or "")
+        for attr in ("canon_url", "originallink", "link")
+    ).lower()
+    for fragment in _selection_guardrail_terms("exclude_url_fragments"):
+        frag = str(fragment or "").strip().lower()
+        if frag and frag in url_text:
+            return "feedback_url_exclusion"
 
-
-def _feedback_story_words(text: str) -> set[str]:
-    words: set[str] = set()
-    for raw in re.findall(r"\d+(?:[.,]\d+)?|[^\W\d_]{2,}", _nfkc_lower(text), flags=re.UNICODE):
-        token = raw.strip(".,%…'\"")
-        if token and token not in _FEEDBACK_STORY_STOPWORDS:
-            words.add(token)
-    return words
-
-
-def _feedback_story_numbers(text: str) -> set[str]:
-    return set(re.findall(r"\d+(?:[.,]\d+)?", str(text or "")))
-
-
-def _feedback_story_ngrams(text: str, n: int = 3) -> set[str]:
-    compact = norm_title_key(text)
-    if len(compact) < n:
-        return {compact} if compact else set()
-    return {compact[idx : idx + n] for idx in range(0, len(compact) - n + 1)}
-
-
-def _selection_feedback_story_duplicate(a: "Article", b: "Article") -> bool:
-    try:
-        threshold = float(_selection_guardrail_number("story_duplicate_similarity_min", 0.0) or 0.0)
-    except Exception:
-        threshold = 0.0
-    if threshold <= 0.0:
-        return False
-    text_a = f"{getattr(a, 'title', '') or ''} {getattr(a, 'description', '') or ''}"
-    text_b = f"{getattr(b, 'title', '') or ''} {getattr(b, 'description', '') or ''}"
-    words_a = _feedback_story_words(text_a)
-    words_b = _feedback_story_words(text_b)
-    shared_words = words_a & words_b
-    shared_numbers = _feedback_story_numbers(text_a) & _feedback_story_numbers(text_b)
-    grams_a = _feedback_story_ngrams(text_a)
-    grams_b = _feedback_story_ngrams(text_b)
-    containment = 0.0
-    if grams_a and grams_b:
-        containment = len(grams_a & grams_b) / max(1, min(len(grams_a), len(grams_b)))
-    if len(shared_numbers) >= 2 and (len(shared_words) >= 2 or containment >= max(0.18, threshold - 0.10)):
-        return True
-    if len(shared_numbers) >= 1 and len(shared_words) >= 4 and containment >= max(0.38, threshold + 0.06):
-        return True
-    if len(shared_words) >= 6 and containment >= max(0.42, threshold + 0.08):
-        return True
-    return False
+    title_terms = tuple(term.lower() for term in _selection_guardrail_terms("exclude_title_terms"))
+    if title_terms:
+        text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        if any(term and term in text for term in title_terms):
+            return "feedback_title_exclusion"
+    return ""
 
 
 def _has_trade_signal(txt: str) -> bool:
@@ -14936,6 +14882,23 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         a.semantic_boost = 0.0
         a.semantic_model = ""
 
+    feedback_filtered: list[Article] = []
+    feedback_blocked = 0
+    for a in candidates:
+        reason = _selection_feedback_block_reason(a, section_key)
+        if reason:
+            feedback_blocked += 1
+            log.info(
+                "[EVAL-FEEDBACK-FILTER] section=%s reason=%s title=%s",
+                section_key,
+                reason,
+                (a.title or "")[:90],
+            )
+            continue
+        feedback_filtered.append(a)
+    if feedback_blocked:
+        candidates = feedback_filtered
+
     candidates_sorted_raw = sorted(candidates, key=_sort_key_major_first, reverse=True)
 
     # 동적 임계치: 상위권 점수가 낮은 날은 더 엄격하게 컷하여 '억지 채움'을 막는다
@@ -14960,21 +14923,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # '이벤트 키'로 먼저 1차 클러스터링하여 중복으로 핵심이 밀리는 문제를 완화한다.
     if section_key in _EVENT_KEY_SECTIONS:
         pre_pool = _dedupe_by_event_key(pre_pool, section_key)
-
-    feedback_exclude_terms = tuple(term.lower() for term in _selection_guardrail_terms("exclude_title_terms"))
-
-    def _blocked_by_selection_feedback(a: Article) -> bool:
-        if not feedback_exclude_terms:
-            return False
-        text = _nfkc_lower(f"{a.title or ''} {a.description or ''}")
-        if not text:
-            return False
-        return any(term and term in text for term in feedback_exclude_terms)
-
-    if feedback_exclude_terms:
-        filtered_pre_pool = [a for a in pre_pool if not _blocked_by_selection_feedback(a)]
-        if filtered_pre_pool:
-            pre_pool = filtered_pre_pool
 
     if not pre_pool:
         return []
@@ -15089,10 +15037,6 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         )
 
     candidates_sorted = sorted(candidates, key=_selection_sort_key, reverse=True)
-    if feedback_exclude_terms:
-        filtered_candidates_sorted = [a for a in candidates_sorted if not _blocked_by_selection_feedback(a)]
-        if filtered_candidates_sorted:
-            candidates_sorted = filtered_candidates_sorted
     pool = sorted(pool, key=_selection_sort_key, reverse=True)
 
     # '최대 max_n'은 상한(cap)이며, 뒤쪽 약한 기사로 억지 채우기 방지를 위해 tail-cut을 둔다
@@ -21497,27 +21441,6 @@ def _build_sections_phase123(
         "폭락", "폭등", "급등", "급락", "하락", "상승", "안정", "불안정", "과잉", "부족",
         "경매", "경락", "반입", "도매", "수출", "품질",
     ))
-    def _cross_section_topic_duplicate(art_a: Article, art_b: Article) -> bool:
-        # Cross-section dedup needs an event anchor too; broad commodity+issue overlap
-        # can collapse unrelated section coverage.
-        text_a = (art_a.title or "").lower()
-        text_b = (art_b.title or "").lower()
-        comm_a = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in text_a)
-        comm_b = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in text_b)
-        if not (comm_a & comm_b):
-            return False
-        issue_a = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in text_a)
-        issue_b = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in text_b)
-        if not (issue_a & issue_b):
-            return False
-        region_a = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in text_a)
-        region_b = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in text_b)
-        if region_a & region_b:
-            return True
-        nums_a = frozenset(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text_a) if len(n.replace(",", "")) >= 2)
-        nums_b = frozenset(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text_b) if len(n.replace(",", "")) >= 2)
-        return bool(nums_a & nums_b)
-
     for key in list(final_by_section.keys()):
         articles = final_by_section.get(key, [])
         if len(articles) <= 1:
@@ -21556,8 +21479,6 @@ def _build_sections_phase123(
                             topic_dup = True
                     except Exception:
                         pass
-                if not topic_dup and _selection_feedback_story_duplicate(articles[i], articles[j]):
-                    topic_dup = True
                 if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
                     score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
@@ -21603,8 +21524,6 @@ def _build_sections_phase123(
                     # title 유사도 체크 (같은 뉴스 다른 매체)
                     if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in kept):
                         continue
-                    if any(_selection_feedback_story_duplicate(a, b) for b in kept):
-                        continue
                     kept.append(a)
                     _existing_idents.add(ident)
                     log.info("[WITHIN-DEDUP-BACKFILL] section=%s title=%s", key, (a.title or "")[:80])
@@ -21613,7 +21532,7 @@ def _build_sections_phase123(
                         break
             final_by_section[key] = kept
 
-    # ── Phase 4: Cross-section conservative story dedup + backfill ──
+    # ── Phase 4: Cross-section similar-story dedup + backfill ──
     _all_section_keys = [s["key"] for s in SECTIONS]
     _cross_removals: list[tuple[str, int]] = []  # (section_key, index)
     for i, key_a in enumerate(_all_section_keys):
@@ -21624,16 +21543,28 @@ def _build_sections_phase123(
                     url_a = getattr(art_a, 'canon_url', '') or ''
                     url_b = getattr(art_b, 'canon_url', '') or ''
                     is_same_url = bool(url_a and url_b and url_a == url_b)
-                    # 품목+이슈에 숫자/지역 앵커가 함께 겹치는 경우만 cross-section 중복으로 본다.
+                    # 품목+지역+이슈 토픽 중복 (cross-section에서도 적용)
                     _is_topic_dup = False
                     if not is_same_url:
-                        _is_topic_dup = _cross_section_topic_duplicate(art_a, art_b)
-                    # Cross-section drops are intentionally conservative:
-                    # exact URL, anchored topic overlap, or explicit eval feedback only.
-                    if not is_same_url and not _is_topic_dup:
-                        if _selection_feedback_story_duplicate(art_a, art_b):
+                        _ta = (art_a.title or "").lower()
+                        _tb = (art_b.title or "").lower()
+                        _ca = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _ta)
+                        _cb = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _tb)
+                        _ra = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _ta)
+                        _rb = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _tb)
+                        _ia = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _ta)
+                        _ib = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _tb)
+                        # cross-section: 품목+이슈만 겹쳐도 중복 (지역 없어도 OK)
+                        if (_ca & _cb) and len(_ia & _ib) >= 1:
                             _is_topic_dup = True
+                    # cross-section: URL/토픽/제목 유사도만 사용 (anchor+Jaccard 폴백 제거 — 오탐 방지)
+                    _is_title_dup = False
                     if not is_same_url and not _is_topic_dup:
+                        try:
+                            _is_title_dup = _is_similar_title(art_a.title_key or "", art_b.title_key or "")
+                        except Exception:
+                            pass
+                    if not is_same_url and not _is_topic_dup and not _is_title_dup:
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
@@ -21692,6 +21623,9 @@ def _build_sections_phase123(
                 if _backfill_within_skip:
                     continue
                 # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
+                _BACKFILL_REGION_TERMS = ("구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
+                                          "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
+                _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
                 _backfill_cross_skip = False
                 # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완, title만 사용)
                 for b in final_by_section[sec_key]:
@@ -21702,29 +21636,38 @@ def _build_sections_phase123(
                         _backfill_cross_skip = True
                         log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s same-topic: %s", sec_key, (a.title or "")[:80])
                         break
-                    if _selection_feedback_story_duplicate(a, b):
-                        _backfill_cross_skip = True
-                        log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s feedback-duplicate: %s", sec_key, (a.title or "")[:80])
-                        break
                 if _backfill_cross_skip:
                     continue
-                # 다른 섹션과 품목+이슈 또는 URL 중복 체크 (title similarity는 cross-section에서 제외)
+                # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크 (title만 사용)
                 for b in _other_section_articles:
+                    _b_txt = (b.title or "").lower()
                     # URL 중복 체크
                     _a_url = getattr(a, 'canon_url', '') or ''
                     _b_url = getattr(b, 'canon_url', '') or ''
                     if _a_url and _b_url and _a_url == _b_url:
                         _backfill_cross_skip = True
                         break
-                    if _selection_feedback_story_duplicate(a, b):
+                    # 품목+이슈 중복 체크 (지역 없어도 OK)
+                    _b_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt)
+                    _b_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt)
+                    if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
                         _backfill_cross_skip = True
                         break
-                    # 품목+이슈에 숫자/지역 이벤트 앵커가 함께 겹치는 경우만 cross-section 중복으로 본다.
-                    if _cross_section_topic_duplicate(a, b):
-                        _backfill_cross_skip = True
-                        break
+                    # 품목+지역 중복 체크 (이슈 없어도 OK)
+                    if _a_commodities and _a_regions:
+                        _b_regions = {r for r in _BACKFILL_REGION_TERMS if r in _b_txt}
+                        if (_a_commodities & _b_commodities) and (_a_regions & _b_regions):
+                            _backfill_cross_skip = True
+                            break
+                    # title 유사도 체크
+                    try:
+                        if _is_similar_title(a.title_key or "", b.title_key or ""):
+                            _backfill_cross_skip = True
+                            break
+                    except Exception:
+                        pass
                 if _backfill_cross_skip:
-                    log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (same story as other section)", sec_key, (a.title or "")[:80])
+                    log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (similar to other section)", sec_key, (a.title or "")[:80])
                     continue
                 final_by_section[sec_key].append(a)
                 existing_idents.add(ident)
@@ -21991,18 +21934,26 @@ def _selection_guardrail_bool(key: str, default: bool = False) -> bool:
 
 def _selection_guardrail_terms(key: str) -> tuple[str, ...]:
     payload = SELECTION_FEEDBACK_GUARDRAILS.get(str(key or "").strip())
+    if payload is None:
+        return ()
     if isinstance(payload, str):
-        raw_items = [payload]
+        values = [payload]
     elif isinstance(payload, list):
-        raw_items = payload
+        values = [str(item or "") for item in payload]
     else:
-        raw_items = []
-    terms: list[str] = []
-    for item in raw_items:
-        term = str(item or "").strip()
-        if term and term not in terms:
-            terms.append(term)
-    return tuple(terms[:32])
+        return ()
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        term = value.strip()
+        if not term:
+            continue
+        key_l = term.lower()
+        if key_l in seen:
+            continue
+        seen.add(key_l)
+        out.append(term)
+    return tuple(out)
 
 
 def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:

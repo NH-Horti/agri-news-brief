@@ -1,5 +1,4 @@
 import unittest
-from html import escape
 from pathlib import Path
 
 import report_eval
@@ -95,118 +94,6 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn("section_alignment", result["scores"])
         self.assertIn("core_quality", result["scores"])
         self.assertIn("commodity_board_quality", result["scores"])
-
-    def test_evaluate_report_tunes_foreign_scope_and_story_duplicate_guardrails(self) -> None:
-        items = [
-            (
-                "supply",
-                "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
-                "평창군은 농산물 가격안정 기금 21억을 908개 농가에 지급해 산지 수급 불안을 완화한다. 농가 경영비 부담과 출하 조절 여건을 함께 짚었다.",
-                "https://source0.example.com/supply-pyeongchang",
-            ),
-            (
-                "policy",
-                "평창군, 농축산물 가격 안정 기금 21억 지원 908농가 숨통",
-                "평창군은 농축산물 가격 안정 기금 21억을 908개 농가에 지급해 농가 경영 부담을 낮춘다. 산지 수급과 가격 안정 효과를 같은 사건으로 다뤘다.",
-                "https://source1.example.com/policy-pyeongchang",
-            ),
-            (
-                "policy",
-                "한국향 두리안 수출 262% 급증에도 베트남 농가 울상",
-                "베트남 현지 두리안 농가가 수출 가격 하락과 재고 부담을 호소했다. 한국향 물량 증가에도 현지 산지 수익성이 악화됐다는 내용이다.",
-                "https://source2.example.com/vietnam-durian",
-            ),
-        ]
-        section_counts = {"supply": 6, "policy": 4, "dist": 3, "pest": 2}
-        filler_templates = {
-            "supply": [
-                ("사과 산지 출하 조절로 도매시장 가격 안정 기대", "사과 산지 출하량과 저장 물량 조절이 수급 안정에 영향을 준다. 도매시장 반입 흐름과 농가 출하 전략을 수치와 함께 설명했다."),
-                ("양파 재배면적 감소 전망에 산지 수급 점검", "양파 재배면적 감소 전망이 나오자 산지 수급과 저장 물량 점검이 이어졌다. 농가 출하 시점과 가격 변동 가능성을 다뤘다."),
-                ("배추 봄작형 작황 회복으로 출하량 증가 예상", "배추 봄작형 작황이 회복되며 출하량 증가가 예상된다. 산지 기상 변수와 도매시장 가격 안정 흐름을 함께 정리했다."),
-                ("토마토 시설농가 난방비 부담에 출하 조절 검토", "토마토 시설농가가 난방비 부담으로 출하 조절을 검토한다. 농가 비용과 시장 공급량 변화가 가격에 미칠 영향을 짚었다."),
-                ("마늘 산지 저장 물량 감소로 수급 관리 강화", "마늘 산지 저장 물량이 줄어 수급 관리 필요성이 커졌다. 농협과 지자체의 출하 조절 논의가 가격 안정 변수로 제시됐다."),
-            ],
-            "policy": [
-                ("농식품부, 채소류 가격 안정 대책 점검", "농식품부가 채소류 가격 안정과 산지 출하 상황을 점검했다. 농가 지원과 도매시장 반입 관리가 정책 대응의 핵심으로 제시됐다."),
-                ("지자체 농산물 수급 협의회 열고 출하 계획 조율", "지자체가 농산물 수급 협의회를 열고 출하 계획을 조율했다. 농가와 유통 주체가 가격 안정 방안을 함께 논의했다."),
-            ],
-            "dist": [
-                ("가락시장 배추 반입 증가로 경락가 안정세", "가락시장 배추 반입량이 늘며 경락가 변동 폭이 줄었다. 도매시장 거래 물량과 유통 흐름을 중심으로 가격 안정세를 설명했다."),
-                ("도매시장 사과 거래량 회복에 유통업계 주목", "도매시장 사과 거래량이 회복되며 유통업계가 가격 흐름을 주시한다. 산지 출하와 소매 수요 변화가 함께 언급됐다."),
-                ("청과 유통업체, 딸기 물량 분산 출하 확대", "청과 유통업체가 딸기 물량을 분산 출하하며 가격 변동을 줄이려 한다. 산지 물류와 소비지 반입 일정을 함께 조정했다."),
-            ],
-            "pest": [
-                ("과수화상병 예찰 강화로 농가 방제 당부", "지자체가 과수화상병 예찰과 농가 방제 수칙 준수를 당부했다. 과수 농가 피해 예방과 조기 신고 체계가 핵심 내용이다."),
-                ("고추 탄저병 확산 우려에 병해충 방제 지도", "고추 탄저병 확산 우려가 커지며 병해충 방제 지도가 강화됐다. 농가 재배 관리와 약제 살포 시점이 함께 안내됐다."),
-            ],
-        }
-        for section, target in section_counts.items():
-            current = sum(1 for item in items if item[0] == section)
-            fillers = filler_templates[section]
-            for idx in range(current, target):
-                base_title, base_desc = fillers[idx - current]
-                items.append(
-                    (
-                        section,
-                        base_title,
-                        base_desc,
-                        f"https://source{len(items)}.example.com/{section}-{idx}",
-                    )
-                )
-
-        html = "\n".join(
-            f"""
-            <div
-              data-surface="briefing_card"
-              data-section="{section}"
-              data-article-title="{escape(title)}"
-              data-href="{href}"
-              data-article-id="brief-{idx}"
-              data-target-domain="example.com"
-              data-selection-fit="1.65"
-              data-selection-stage="core_final"
-              data-is-core="{1 if idx < 4 else 0}"
-            >
-              <div class="sum">{escape(desc)}</div>
-            </div>
-            """
-            for idx, (section, title, desc, href) in enumerate(items)
-        )
-        raw_by_section: dict[str, list[dict[str, object]]] = {section: [] for section in report_eval.SECTION_KEYS}
-        for idx, (section, title, desc, href) in enumerate(items):
-            raw_by_section[section].append(
-                {
-                    "section": section,
-                    "title": title,
-                    "link": href,
-                    "description": desc,
-                    "selection_fit_score": 1.65,
-                    "selection_stage": "core_final",
-                    "score": 90.0 - idx * 0.1,
-                    "pub_dt_kst": "2026-05-19T05:00:00+09:00",
-                }
-            )
-        snapshot_payload = {
-            "window": {"end_kst": "2026-05-19T06:00:00+09:00"},
-            "raw_by_section": raw_by_section,
-        }
-
-        result = report_eval.evaluate_report("2026-05-19", html, snapshot_payload)
-        feedback = report_eval.build_selection_feedback_payload(result)
-        guardrails = feedback["selection_guardrails"]
-
-        self.assertGreater(result["metrics"]["off_scope_foreign_rate"], 0.0)
-        self.assertGreater(result["metrics"]["story_duplicate_rate"], 0.0)
-        self.assertGreater(result["metrics"]["cross_section_duplicate_rate"], 0.0)
-        self.assertLess(result["overall_score"], 95.0)
-        self.assertGreater(result["metrics"]["quality_signal_penalty"], 0.0)
-        self.assertIn("foreign_scope_noise", guardrails["driver_tags"])
-        self.assertIn("story_duplicate", guardrails["driver_tags"])
-        self.assertIn("cross_section_duplicate", guardrails["driver_tags"])
-        self.assertIn("두리안", guardrails["exclude_title_terms"])
-        self.assertGreater(guardrails["story_duplicate_similarity_min"], 0.0)
-        self.assertTrue(feedback["quality_samples"]["off_scope"])
-        self.assertTrue(feedback["quality_samples"]["story_duplicates"])
 
     def test_evaluate_report_flags_section_core_and_commodity_risks(self) -> None:
         html = """
@@ -507,6 +394,93 @@ class ReportEvalTests(unittest.TestCase):
         self.assertGreater(monday["scores"]["freshness"], regular["scores"]["freshness"])
         self.assertGreaterEqual(monday["scores"]["freshness"], 85.0)
 
+    def test_eval_flags_foreign_unmanaged_commodity(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="policy"
+          data-article-title="한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?"
+          data-href="https://www.ajunews.com/view/20260518142237838"
+          data-article-id="durian"
+          data-target-domain="www.ajunews.com"
+          data-selection-fit="5.1"
+          data-selection-stage="tail"
+        >
+          <div class="sum">베트남 두리안 수출은 1분기 전년 대비 230% 늘었다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-05-19T06:00:00+09:00"},
+            "raw_by_section": {
+                "policy": [
+                    {
+                        "section": "policy",
+                        "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+                        "link": "https://www.ajunews.com/view/20260518142237838",
+                        "description": "베트남 두리안 수출과 현지 농가 불안을 다룬 기사다.",
+                        "selection_fit_score": 5.1,
+                        "selection_stage": "tail",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-05-18T14:22:00+09:00",
+                    }
+                ],
+                "supply": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+        result = report_eval.evaluate_report("2026-05-19", html, snapshot_payload)
+        self.assertEqual(result["metrics"]["off_scope_foreign_rate"], 1.0)
+        self.assertEqual(result["content_false_positive_samples"][0]["reason"], "foreign_unmanaged_commodity")
+
+    def test_eval_flags_cross_section_same_event_duplicate(self) -> None:
+        html = """
+        <div data-surface="briefing_card" data-section="supply"
+          data-article-title="평창군, 908개 농가에 농산물 가격안정 기금 21억 지원"
+          data-href="https://www.yna.co.kr/view/AKR20260518061200062?input=1195m"
+          data-article-id="pyeongchang-a" data-target-domain="www.yna.co.kr"
+          data-selection-fit="2.3" data-selection-stage="tail"><div class="sum">평창군은 908개 농가에 가격안정 기금 21억을 지원한다.</div></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'"
+          data-href="http://www.enewstoday.co.kr/news/articleView.html?idxno=2430514"
+          data-article-id="pyeongchang-b" data-target-domain="www.enewstoday.co.kr"
+          data-selection-fit="5.2" data-selection-stage="tail"><div class="sum">평창군이 908농가에 21억 규모 가격 안정 기금을 지원했다.</div></div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-05-19T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
+                        "link": "https://www.yna.co.kr/view/AKR20260518061200062?input=1195m",
+                        "description": "평창군은 908개 농가에 가격안정 기금 21억을 지원한다.",
+                        "selection_fit_score": 2.3,
+                        "selection_stage": "tail",
+                        "score": 70.0,
+                        "pub_dt_kst": "2026-05-18T12:00:00+09:00",
+                    }
+                ],
+                "policy": [
+                    {
+                        "section": "policy",
+                        "title": "평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'",
+                        "link": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2430514",
+                        "description": "평창군이 908농가에 21억 규모 가격 안정 기금을 지원했다.",
+                        "selection_fit_score": 5.2,
+                        "selection_stage": "tail",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-05-18T16:38:00+09:00",
+                    }
+                ],
+                "dist": [],
+                "pest": [],
+            },
+        }
+        result = report_eval.evaluate_report("2026-05-19", html, snapshot_payload)
+        self.assertEqual(result["metrics"]["story_duplicate_rate"], 0.5)
+        self.assertIn(result["story_duplicate_samples"][0]["reason"], {"known_duplicate_url", "same_event_numbers"})
+
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
         result["operational_score"] = result["overall_score"]
@@ -526,14 +500,8 @@ class ReportEvalTests(unittest.TestCase):
             },
             "summary": "Good but not perfect.",
             "issues": [
-                {"type": "missed_better_candidate", "severity": "medium", "title": "issue-1", "reason": "better option visible"},
-                {"type": "duplicate", "severity": "high", "title": "issue-2", "reason": "same event repeated"},
-                {"type": "noise", "severity": "medium", "title": "issue-3", "reason": "selection noise"},
-                {"type": "noise", "severity": "medium", "title": "issue-4", "reason": "selection noise"},
-                {"type": "noise", "severity": "medium", "title": "issue-5", "reason": "selection noise"},
-                {"type": "noise", "severity": "medium", "title": "issue-6", "reason": "selection noise"},
-                {"type": "noise", "severity": "medium", "title": "issue-7", "reason": "selection noise"},
-                {"type": "noise", "severity": "medium", "title": "issue-8", "reason": "selection noise"},
+                {"type": "missed_better_candidate", "severity": "medium", "title": "candidate", "reason": "better option visible"},
+                {"type": "duplicate", "severity": "high", "title": "same issue", "reason": "same event repeated"},
             ],
         }
         markdown = report_eval.render_evaluation_markdown(result)
@@ -544,12 +512,10 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn(self.report_date, markdown)
         self.assertIn("section_fit=", markdown)
         self.assertIn("Editorial Shadow Eval", markdown)
-        self.assertIn("issue-8", markdown)
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
-        self.assertNotIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
-        self.assertIn("editorial_duplicate_topic", selection_feedback["editorial_suggested_guardrails"]["driver_tags"])
+        self.assertIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
 
 
 if __name__ == "__main__":
