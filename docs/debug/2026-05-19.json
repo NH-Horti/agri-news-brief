@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-05-19T11:55:13+09:00",
-  "build_tag": "215108d",
+  "generated_at_kst": "2026-05-19T12:16:08+09:00",
+  "build_tag": "d422a69",
   "filter_rejects": [
     {
       "section": "policy",
@@ -444,21 +444,21 @@
     },
     {
       "section": "policy",
-      "reason": "policy_retail_sales_trend",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
-      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
-      "source_query": "농산물 유통 구조 개선",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "agri_training_recruitment",
       "press": "식품음료신문",
       "domain": "foodnews.co.kr",
       "title": "푸드테크 기업 컨설팅ㆍ판로 개척 지원, 배달음식 원산지 표시 중복 규...",
       "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118609",
+      "source_query": "농산물 유통 구조 개선",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
+      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
       "source_query": "농산물 유통 구조 개선",
       "source_channel": "naver_api"
     },
@@ -3094,21 +3094,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "POINTE",
-      "domain": "pointe.co.kr",
-      "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
-      "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
-      "source_query": "봄무 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_title_dominant",
       "press": "EBN산업뉴스",
       "domain": "ebn.co.kr",
       "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
       "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
+      "source_query": "봄무 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
+      "press": "POINTE",
+      "domain": "pointe.co.kr",
+      "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
+      "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
       "source_query": "봄무 가격",
       "source_channel": "naver_api"
     },
@@ -3544,21 +3544,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_title_dominant",
-      "press": "EBN산업뉴스",
-      "domain": "ebn.co.kr",
-      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
-      "source_query": "봄무 출하",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_only_supply",
       "press": "POINTE",
       "domain": "pointe.co.kr",
       "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
       "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
+      "source_query": "봄무 출하",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "EBN산업뉴스",
+      "domain": "ebn.co.kr",
+      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
       "source_query": "봄무 출하",
       "source_channel": "naver_api"
     },
@@ -5094,21 +5094,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_title_dominant",
-      "press": "EBN산업뉴스",
-      "domain": "ebn.co.kr",
-      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
-      "source_query": "배추 수급 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_only_supply",
       "press": "POINTE",
       "domain": "pointe.co.kr",
       "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
       "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
+      "source_query": "배추 수급 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "EBN산업뉴스",
+      "domain": "ebn.co.kr",
+      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
       "source_query": "배추 수급 안정",
       "source_channel": "naver_api"
     },
@@ -5224,21 +5224,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_title_dominant",
-      "press": "EBN산업뉴스",
-      "domain": "ebn.co.kr",
-      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
-      "source_query": "배추 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_only_supply",
       "press": "POINTE",
       "domain": "pointe.co.kr",
       "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
       "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
+      "source_query": "배추 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "EBN산업뉴스",
+      "domain": "ebn.co.kr",
+      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
       "source_query": "배추 가격 안정",
       "source_channel": "naver_api"
     },
@@ -5564,21 +5564,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_title_dominant",
-      "press": "EBN산업뉴스",
-      "domain": "ebn.co.kr",
-      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
-      "source_query": "봄배추 출하",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_only_supply",
       "press": "POINTE",
       "domain": "pointe.co.kr",
       "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
       "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
+      "source_query": "봄배추 출하",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "EBN산업뉴스",
+      "domain": "ebn.co.kr",
+      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
       "source_query": "봄배추 출하",
       "source_channel": "naver_api"
     },
@@ -5784,21 +5784,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_title_dominant",
-      "press": "EBN산업뉴스",
-      "domain": "ebn.co.kr",
-      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
-      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
-      "source_query": "봄배추 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "carrot_non_edible_context",
       "press": "POINTE",
       "domain": "pointe.co.kr",
       "title": "정부, 오늘부터 미국산 계란 224만개 푼다... 30구 5990원",
       "url": "https://www.pointe.co.kr/news/articleView.html?idxno=79605",
+      "source_query": "봄배추 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_title_dominant",
+      "press": "EBN산업뉴스",
+      "domain": "ebn.co.kr",
+      "title": "정부, 미국산 계란 224만개 공급…30구당 5990원에 유통",
+      "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1709234",
       "source_query": "봄배추 가격 안정",
       "source_channel": "naver_api"
     },
@@ -7835,16 +7835,6 @@
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "[무안소식]전남농협·광주대, 복숭아 농가 일손 돕기 등",
-      "url": "https://www.newsis.com/view/NISX20260518_0003634165",
-      "source_query": "양파 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "low_value_labor_help",
       "press": "뉴스경남",
       "domain": "newsgn.com",
       "title": "합천군, 봄철 농촌일손돕기 추진",
@@ -8955,20 +8945,20 @@
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "[무안소식]전남농협·광주대, 복숭아 농가 일손 돕기 등",
-      "url": "https://www.newsis.com/view/NISX20260518_0003634165",
+      "press": "뉴스경남",
+      "domain": "newsgn.com",
+      "title": "합천군, 봄철 농촌일손돕기 추진",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=552753",
       "source_query": "마늘 농가",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "뉴스경남",
-      "domain": "newsgn.com",
-      "title": "합천군, 봄철 농촌일손돕기 추진",
-      "url": "https://www.newsgn.com/news/articleView.html?idxno=552753",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "[무안소식]전남농협·광주대, 복숭아 농가 일손 돕기 등",
+      "url": "https://www.newsis.com/view/NISX20260518_0003634165",
       "source_query": "마늘 농가",
       "source_channel": "naver_api"
     },
@@ -9079,26 +9069,6 @@
       "domain": "cctimes.kr",
       "title": "단양군, 농촌 일손돕기 본격 추진",
       "url": "http://www.cctimes.kr/news/articleView.html?idxno=907224",
-      "source_query": "마늘 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "low_value_labor_help",
-      "press": "충남일보",
-      "domain": "chungnamilbo.co.kr",
-      "title": "단양군, 농번기 `함께하는 농촌 일손 돕기` 본격 추진",
-      "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=888880",
-      "source_query": "마늘 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "low_value_labor_help",
-      "press": "신아일보",
-      "domain": "shinailbo.co.kr",
-      "title": "단양 마늘 수확 앞둔 농가 에 숨통…단양군, 농촌 일손 지원 확대",
-      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5021688",
       "source_query": "마늘 농가",
       "source_channel": "naver_api"
     },
@@ -10254,6 +10224,16 @@
     },
     {
       "section": "supply",
+      "reason": "opinion_or_editorial",
+      "press": "E2NEWS",
+      "domain": "e2news.com",
+      "title": "[기자수첩] 아직도 '우리가 왜 지방으로 가냐' 되묻는 분산전원 정책",
+      "url": "http://www.e2news.com/news/articleView.html?idxno=330520",
+      "source_query": "가지 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
       "reason": "livestock_title_dominant",
       "press": "농수축산신문",
       "domain": "aflnews.co.kr",
@@ -10269,16 +10249,6 @@
       "domain": "e2news.com",
       "title": "[사설] 제자리 찾아가는 에너지정책 가속화시키자",
       "url": "http://www.e2news.com/news/articleView.html?idxno=330516",
-      "source_query": "가지 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "E2NEWS",
-      "domain": "e2news.com",
-      "title": "[기자수첩] 아직도 '우리가 왜 지방으로 가냐' 되묻는 분산전원 정책",
-      "url": "http://www.e2news.com/news/articleView.html?idxno=330520",
       "source_query": "가지 가격",
       "source_channel": "naver_api"
     },
@@ -10694,21 +10664,21 @@
     },
     {
       "section": "supply",
-      "reason": "local_political_campaign_noise",
-      "press": "m-economynews",
-      "domain": "m-economynews.com",
-      "title": "손훈모 후보, ‘최저소득보장·24시의료’ 순천 혁신 공약 내놔",
-      "url": "https://www.m-economynews.com/news/article.html?no=67270",
-      "source_query": "가지 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "must_terms_fail",
       "press": "GAMEVU",
       "domain": "gamevu.co.kr",
       "title": "[게임뉴스] 컴투스홀딩스 및 넷이즈게임즈 소식 외",
       "url": "https://www.gamevu.co.kr/news/articleView.html?idxno=57994",
+      "source_query": "가지 산업",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "local_political_campaign_noise",
+      "press": "m-economynews",
+      "domain": "m-economynews.com",
+      "title": "손훈모 후보, ‘최저소득보장·24시의료’ 순천 혁신 공약 내놔",
+      "url": "https://www.m-economynews.com/news/article.html?no=67270",
       "source_query": "가지 산업",
       "source_channel": "naver_api"
     },
@@ -10894,16 +10864,6 @@
     },
     {
       "section": "supply",
-      "reason": "local_political_campaign_noise",
-      "press": "아시아투데이",
-      "domain": "asiatoday.co.kr",
-      "title": "김태흠 \"물도 전기도 없는 상태에서 AI 산업 공약은 의미 없어\"",
-      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260518010004813",
-      "source_query": "가지 산업",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "opinion_or_editorial",
       "press": "경상일보",
       "domain": "ksilbo.co.kr",
@@ -11004,21 +10964,21 @@
     },
     {
       "section": "supply",
-      "reason": "opinion_or_editorial",
-      "press": "E2NEWS",
-      "domain": "e2news.com",
-      "title": "[사설] 제자리 찾아가는 에너지정책 가속화시키자",
-      "url": "http://www.e2news.com/news/articleView.html?idxno=330516",
-      "source_query": "가지 기후변화",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_title_dominant",
       "press": "농수축산신문",
       "domain": "aflnews.co.kr",
       "title": "[창간2특집] 축산업 선도하는 기술 혁신 주역들",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320739",
+      "source_query": "가지 기후변화",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "opinion_or_editorial",
+      "press": "E2NEWS",
+      "domain": "e2news.com",
+      "title": "[사설] 제자리 찾아가는 에너지정책 가속화시키자",
+      "url": "http://www.e2news.com/news/articleView.html?idxno=330516",
       "source_query": "가지 기후변화",
       "source_channel": "naver_api"
     },
@@ -11864,21 +11824,21 @@
     },
     {
       "section": "supply",
-      "reason": "hardblock_entertainment",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "'제8회 밀양한우 축산물 페스티벌'… 맛·우수성 알려",
-      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320705",
-      "source_query": "농가 생산비 부담",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "livestock_title_dominant",
       "press": "농수축산신문",
       "domain": "aflnews.co.kr",
       "title": "[창간2특집] 축산업 선도하는 기술 혁신 주역들",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320739",
+      "source_query": "농가 생산비 부담",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "hardblock_entertainment",
+      "press": "농수축산신문",
+      "domain": "aflnews.co.kr",
+      "title": "'제8회 밀양한우 축산물 페스티벌'… 맛·우수성 알려",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320705",
       "source_query": "농가 생산비 부담",
       "source_channel": "naver_api"
     },
@@ -12499,16 +12459,6 @@
       "domain": "ccdailynews.com",
       "title": "충북 충주서 올해 첫 과수 화상병 발생",
       "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2416707",
-      "source_query": "과수 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "뉴스핌",
-      "domain": "newspim.com",
-      "title": "밀양시, '2050 미래농업 프로젝트' 추진…기후위기 대응·고령화 문제 해...",
-      "url": "https://www.newspim.com/news/view/20260518001042",
       "source_query": "과수 농가",
       "source_channel": "naver_api"
     },
@@ -13154,21 +13104,21 @@
     },
     {
       "section": "dist",
-      "reason": "must_terms_fail",
-      "press": "E2NEWS",
-      "domain": "e2news.com",
-      "title": "[창간 19주년 축사] 이영기 한국전력수요관리협회 회장",
-      "url": "http://www.e2news.com/news/articleView.html?idxno=330239",
-      "source_query": "도매시장 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "opinion_or_editorial",
       "press": "팜인사이트",
       "domain": "farminsight.net",
       "title": "[시론] 'PC주의 농정'의 덫…도덕적 단죄로는 농민을 살릴 수 없다",
       "url": "https://www.farminsight.net/news/articleView.html?idxno=16425",
+      "source_query": "도매시장 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "must_terms_fail",
+      "press": "E2NEWS",
+      "domain": "e2news.com",
+      "title": "[창간 19주년 축사] 이영기 한국전력수요관리협회 회장",
+      "url": "http://www.e2news.com/news/articleView.html?idxno=330239",
       "source_query": "도매시장 수급",
       "source_channel": "naver_api"
     },
@@ -13424,21 +13374,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_consumer_tail",
-      "press": "경남도민신문",
-      "domain": "gndomin.com",
-      "title": "경남도, 2026년 농정 핵심과제 상반기 성과 가시화",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=475974",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_county_local_weak_dist_signal",
       "press": "경남도민신문",
       "domain": "gndomin.com",
       "title": "함양군, 해외시장 공략 '양파 가격 안정' 도모",
       "url": "http://www.gndomin.com/news/articleView.html?idxno=475933",
+      "source_query": "농산물 판로 확대",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_consumer_tail",
+      "press": "경남도민신문",
+      "domain": "gndomin.com",
+      "title": "경남도, 2026년 농정 핵심과제 상반기 성과 가시화",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=475974",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -13504,11 +13454,11 @@
     },
     {
       "section": "dist",
-      "reason": "dist_consumer_tail",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
-      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
+      "reason": "dist_non_horti_anchorless",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "햇빛소득마을 위해 농지 빌릴땐 종부세 면제…정부, 규제개선 50개 과제...",
+      "url": "https://view.asiae.co.kr/article/2026051816515228215",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -13524,11 +13474,11 @@
     },
     {
       "section": "dist",
-      "reason": "dist_non_horti_anchorless",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "햇빛소득마을 위해 농지 빌릴땐 종부세 면제…정부, 규제개선 50개 과제...",
-      "url": "https://view.asiae.co.kr/article/2026051816515228215",
+      "reason": "dist_consumer_tail",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
+      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -13654,21 +13604,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "경북신문",
-      "domain": "kbsm.net",
-      "title": "경주시정보화농업인연합회, 경북 스마트경영 혁신대회 2관왕 달성",
-      "url": "https://www.kbsm.net/news/view.php?idx=519932",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "fishery_title_only",
       "press": "매일신문",
       "domain": "imaeil.com",
       "title": "대구 농수산물유통공사-경북 농식품유통진흥원 \"유통 효율화하고 상생...",
       "url": "https://www.imaeil.com/page/view/2026051815311294065",
+      "source_query": "농산물 판로 확대",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_program_event_noise",
+      "press": "경북신문",
+      "domain": "kbsm.net",
+      "title": "경주시정보화농업인연합회, 경북 스마트경영 혁신대회 2관왕 달성",
+      "url": "https://www.kbsm.net/news/view.php?idx=519932",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -13689,16 +13639,6 @@
       "domain": "jeonmae.co.kr",
       "title": "평창군, 농축산물 가격안정기금 21억여 원 지급",
       "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1257452",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "논산시, 스마트 유통·정밀 시비로 농가 경쟁력 높인다",
-      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320815",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -14164,21 +14104,21 @@
     },
     {
       "section": "dist",
-      "reason": "agri_training_recruitment",
-      "press": "식품음료신문",
-      "domain": "foodnews.co.kr",
-      "title": "푸드테크 기업 컨설팅ㆍ판로 개척 지원, 배달음식 원산지 표시 중복 규...",
-      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118609",
-      "source_query": "농산물 온라인도매시장 거래",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_non_horti_anchorless",
       "press": "아시아경제",
       "domain": "view.asiae.co.kr",
       "title": "햇빛소득마을 위해 농지 빌릴땐 종부세 면제…정부, 규제개선 50개 과제...",
       "url": "https://view.asiae.co.kr/article/2026051816515228215",
+      "source_query": "농산물 온라인도매시장 거래",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "agri_training_recruitment",
+      "press": "식품음료신문",
+      "domain": "foodnews.co.kr",
+      "title": "푸드테크 기업 컨설팅ㆍ판로 개척 지원, 배달음식 원산지 표시 중복 규...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118609",
       "source_query": "농산물 온라인도매시장 거래",
       "source_channel": "naver_api"
     },
@@ -14584,6 +14524,16 @@
     },
     {
       "section": "dist",
+      "reason": "dist_non_horti_anchorless",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "햇빛소득마을 위해 농지 빌릴땐 종부세 면제…정부, 규제개선 50개 과제...",
+      "url": "https://view.asiae.co.kr/article/2026051816515228215",
+      "source_query": "농산물 유통 현장",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
       "reason": "agri_training_recruitment",
       "press": "식품음료신문",
       "domain": "foodnews.co.kr",
@@ -14599,16 +14549,6 @@
       "domain": "newsis.com",
       "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
       "url": "https://www.newsis.com/view/NISX20260518_0003633599",
-      "source_query": "농산물 유통 현장",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_non_horti_anchorless",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "햇빛소득마을 위해 농지 빌릴땐 종부세 면제…정부, 규제개선 50개 과제...",
-      "url": "https://view.asiae.co.kr/article/2026051816515228215",
       "source_query": "농산물 유통 현장",
       "source_channel": "naver_api"
     },
@@ -15029,16 +14969,6 @@
       "domain": "job-post.co.kr",
       "title": "대구농수산물 유통 관리공사, 경상북도 및 경북농식품 유통 교육진흥원과 ...",
       "url": "https://www.job-post.co.kr/news/articleView.html?idxno=216114",
-      "source_query": "농산물 산지 유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "local_political_campaign_noise",
-      "press": "더파워뉴스",
-      "domain": "thepowernews.co.kr",
-      "title": "[6·3 현장]박우량 신안군수 후보, “천일염 가격 유지로 어가 안전 소득...",
-      "url": "https://www.thepowernews.co.kr/view.php?ud=202605172143438421caa2b7671d_7",
       "source_query": "농산물 산지 유통",
       "source_channel": "naver_api"
     },
@@ -15475,20 +15405,20 @@
     {
       "section": "dist",
       "reason": "agri_training_recruitment",
-      "press": "식품음료신문",
-      "domain": "foodnews.co.kr",
-      "title": "푸드테크 기업 컨설팅ㆍ판로 개척 지원, 배달음식 원산지 표시 중복 규...",
-      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118609",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
+      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
       "source_query": "온라인도매시장 거래",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "agri_training_recruitment",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "농업진흥지역 카페·빵집 허용…규제완화 과제 50건 확정",
-      "url": "https://www.newsis.com/view/NISX20260518_0003633599",
+      "press": "식품음료신문",
+      "domain": "foodnews.co.kr",
+      "title": "푸드테크 기업 컨설팅ㆍ판로 개척 지원, 배달음식 원산지 표시 중복 규...",
+      "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118609",
       "source_query": "온라인도매시장 거래",
       "source_channel": "naver_api"
     },
@@ -17165,6 +17095,16 @@
     {
       "section": "supply",
       "reason": "livestock_only_supply",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
+      "url": "https://sedaily.com/article/20045520",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
       "press": "신아일보",
       "domain": "shinailbo.co.kr",
       "title": "정부, 미국산 계란 224만개 푼다…30구에 5990원",
@@ -17259,6 +17199,26 @@
       "domain": "ohmynews.com",
       "title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원",
       "url": "https://ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003235292&CMPT_CD=P0010",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
+      "url": "https://sedaily.com/article/20045520",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
+      "url": "https://sedaily.com/article/20045520",
       "source_query": "",
       "source_channel": ""
     },
@@ -17863,6 +17823,16 @@
       "source_channel": ""
     },
     {
+      "section": "policy",
+      "reason": "policy_retail_sales_trend",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란...",
+      "url": "https://sedaily.com/article/20045421",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "dist",
       "reason": "dist_consumer_tail",
       "press": "YTN",
@@ -18423,22 +18393,22 @@
       "source_channel": ""
     },
     {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "뉴스워커",
-      "domain": "newsworker.co.kr",
-      "title": "곡성군, 첫 출하 돌입... '곡성멜론' 해외 공략 박차",
-      "url": "https://newsworker.co.kr/news/articleView.html?idxno=427209",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "policy",
       "reason": "ban_keywords",
       "press": "헤럴드경제",
       "domain": "biz.heraldcorp.com",
       "title": "“반려동물 출장 미용 허용”…농식품부, ‘손톱 밑 가시’ 규제 50건 푼...",
       "url": "https://biz.heraldcorp.com/article/10739824",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "뉴스워커",
+      "domain": "newsworker.co.kr",
+      "title": "곡성군, 첫 출하 돌입... '곡성멜론' 해외 공략 박차",
+      "url": "https://newsworker.co.kr/news/articleView.html?idxno=427209",
       "source_query": "",
       "source_channel": ""
     },
@@ -18594,6 +18564,16 @@
     },
     {
       "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "서울경제",
+      "domain": "sedaily.com",
+      "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
+      "url": "https://sedaily.com/article/20045520",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
       "reason": "must_terms_fail",
       "press": "대한무역투자진흥공사",
       "domain": "dream.kotra.or.kr",
@@ -18700,9 +18680,41 @@
       "core_min": 33.13,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
-      "total_candidates": 145,
+      "total_candidates": 146,
       "total_selected": 3,
       "top": [
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 59.09,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "서울경제",
+          "domain": "sedaily.com",
+          "title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란...",
+          "url": "https://www.sedaily.com/article/20045421",
+          "reason": "",
+          "fit_score": 4.7,
+          "selection_stage": "supply_underfill_recovery",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "키위 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.64,
+            "market_hits": 1,
+            "strength": 11,
+            "korea": 5,
+            "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 5.5
+          }
+        },
         {
           "selected": false,
           "is_core": false,
@@ -18749,9 +18761,9 @@
           "domain": "knnews.co.kr",
           "title": "한 통에 3만원… 이른 더위에 수박값 껑충",
           "url": "http://www.knnews.co.kr/news/articleView.php?idxno=1541892",
-          "reason": "postbuild_pruned",
+          "reason": "similar_story",
           "fit_score": 2.9,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "similar_story",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -18971,38 +18983,6 @@
           "tier": 3,
           "press": "SBS",
           "domain": "biz.sbs.co.kr",
-          "title": "수박 한통에 3만원, 가격 널뛰는 여름 음식들",
-          "url": "https://biz.sbs.co.kr/article_hub/20000310992?division=NAVER",
-          "reason": "tail_cut",
-          "fit_score": 1.49,
-          "selection_stage": "tail_cut",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "참외 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.4,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 36.6,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "SBS",
-          "domain": "biz.sbs.co.kr",
           "title": "수박 한통에 3만원…여름 음식 가격 '들썩'",
           "url": "https://biz.sbs.co.kr/article_hub/20000311114?division=NAVER",
           "reason": "tail_cut",
@@ -19019,6 +18999,38 @@
             "strength": 1,
             "korea": 2,
             "offtopic_pen": 1,
+            "press_tier": 3,
+            "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 36.4,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "SBS",
+          "domain": "biz.sbs.co.kr",
+          "title": "수박 한통에 3만원, 가격 널뛰는 여름 음식들",
+          "url": "https://biz.sbs.co.kr/article_hub/20000310992?division=NAVER",
+          "reason": "tail_cut",
+          "fit_score": 1.49,
+          "selection_stage": "tail_cut",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "참외 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.4,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
           }
@@ -19053,38 +19065,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 1.7
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 34.73,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "서울경제",
-          "domain": "sedaily.com",
-          "title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란...",
-          "url": "https://www.sedaily.com/article/20045421",
-          "reason": "",
-          "fit_score": 2.8,
-          "selection_stage": "supply_underfill_recovery",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "키위 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.64,
-            "market_hits": 0,
-            "strength": 6,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
           }
         },
         {
@@ -20656,28 +20636,28 @@
       ],
       "coverage_ledger": [
         {
-          "seed": "양파",
-          "rep": "양파",
-          "hits": 33,
-          "selected_hits": 3,
-          "missing": false,
-          "sample_title": "[전국 톡톡] 전국서 갈아엎는 양파 밭‥\"생산비도 못 건져\""
-        },
-        {
           "seed": "키위",
           "rep": "키위",
-          "hits": 1,
+          "hits": 2,
+          "selected_hits": 1,
+          "missing": false,
+          "sample_title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란..."
+        },
+        {
+          "seed": "포도",
+          "rep": "포도",
+          "hits": 5,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "[전지적 참견 미식] 스타벅스 '모닝세트'·애슐리퀸즈 '썬골드키위'"
+          "sample_title": "거창군, 샤인머스캣 가격 하락 대응 '만전'"
         },
         {
           "seed": "참외",
           "rep": "참외",
-          "hits": 2,
-          "selected_hits": 0,
+          "hits": 3,
+          "selected_hits": 1,
           "missing": false,
-          "sample_title": "여주 '제20회 금사 참외 축제'...면민 단합과 외부 손님맞이 마무리"
+          "sample_title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란..."
         },
         {
           "seed": "딸기",
@@ -20706,7 +20686,7 @@
         {
           "seed": "멜론",
           "rep": "멜론",
-          "hits": 7,
+          "hits": 8,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "\"비료값 걱정 안 해요\"…주목받는 '순환식 수경재배'"
@@ -20725,7 +20705,7 @@
           "hits": 13,
           "selected_hits": 2,
           "missing": false,
-          "sample_title": "한 통에 3만원… 이른 더위에 수박값 껑충"
+          "sample_title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란..."
         },
         {
           "seed": "과수",
@@ -20759,7 +20739,7 @@
       "core_min": 39.52,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
-      "total_candidates": 110,
+      "total_candidates": 109,
       "total_selected": 1,
       "top": [
         {
@@ -20792,6 +20772,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 65.01,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "서울경제",
+          "domain": "sedaily.com",
+          "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
+          "url": "https://www.sedaily.com/article/20045520",
+          "reason": "policy_tail_gate",
+          "fit_score": 5.54,
+          "selection_stage": "policy_tail_gate",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "배추 수급 안정",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.2,
+            "market_hits": 0,
+            "strength": 15,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
@@ -21112,38 +21124,6 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 34.91,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "서울경제",
-          "domain": "sedaily.com",
-          "title": "미국산 계란 30구 5990원...여름철 수급 불안 선제 대응",
-          "url": "https://www.sedaily.com/article/20045520",
-          "reason": "below_threshold",
-          "fit_score": 2.19,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "배추 수급 안정",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.2,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 1,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
           }
         },
         {
@@ -21757,38 +21737,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.26,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "예산군 곳곳 농번기 일손돕기 총력...\"사과 적과 한창인데 사람 없다\"",
-          "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=320818",
-          "reason": "below_threshold",
-          "fit_score": 1.79,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "과수 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 24.02,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -22237,38 +22185,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.19,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "아주경제",
-          "domain": "ajunews.com",
-          "title": "농지 내 카페 허용· 도매 판매자 요건 폐지… 농식품부 , 규제합리화 과제...",
-          "url": "https://www.ajunews.com/view/20260518170712207",
-          "reason": "below_threshold",
-          "fit_score": 1.96,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "온라인 도매시장 농식품부",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 2,
-            "strength": 13,
-            "korea": 5,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 17.63,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -22296,6 +22212,38 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 17.52,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "아주경제",
+          "domain": "ajunews.com",
+          "title": "농지 내 카페 허용· 도매 판매자 요건 폐지… 농식품부 , 규제합리화 과제...",
+          "url": "https://www.ajunews.com/view/20260518170712207",
+          "reason": "below_threshold",
+          "fit_score": 1.68,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "온라인 도매시장 농식품부",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 13,
+            "korea": 5,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -22681,6 +22629,38 @@
             "press_tier": 2,
             "press_weight": 2.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 13.96,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "이른 폭염 온다…호텔가, 금(金)빙수·풀캉스 '얼리 서머' 경쟁",
+          "url": "https://www.news1.kr/industry/hotel-tourism/6167495",
+          "reason": "below_threshold",
+          "fit_score": 2.44,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "토마토 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 5,
+            "press_tier": 2,
+            "press_weight": 1.7
+          }
         }
       ],
       "coverage_ledger": [
@@ -22693,20 +22673,20 @@
           "sample_title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원"
         },
         {
-          "seed": "산지",
-          "rep": "산지",
-          "hits": 18,
-          "selected_hits": 2,
+          "seed": "가격안정",
+          "rep": "가격안정",
+          "hits": 6,
+          "selected_hits": 3,
           "missing": false,
-          "sample_title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원"
+          "sample_title": "평창군, 농축산물 가격 안정 기금 농산물 차액 21억 지원"
         },
         {
-          "seed": "과일류",
-          "rep": "과일류",
-          "hits": 1,
+          "seed": "사과",
+          "rep": "사과",
+          "hits": 8,
           "selected_hits": 1,
           "missing": false,
-          "sample_title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원"
+          "sample_title": "거창군 주요 농산물 기준 가격 차액지원금 지급"
         },
         {
           "seed": "파프리카",
@@ -22757,28 +22737,28 @@
           "sample_title": "[유통·외식업계] 농협유통·CJ푸드빌·교촌, 농가 지원·사회공헌·가맹..."
         },
         {
-          "seed": "과수",
-          "rep": "과수",
+          "seed": "복숭아",
+          "rep": "복숭아",
+          "hits": 3,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "평창군, 농축산물 가격 안정 기금 농산물 차액 21억 지원"
+        },
+        {
+          "seed": "딸기",
+          "rep": "딸기",
           "hits": 6,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "2000년 철원서 시작된 농번기 공동급식…전국으로 확대, 도시락 배달까..."
+          "sample_title": "평창군, 농축산물 가격 안정 기금 농산물 차액 21억 지원"
         },
         {
-          "seed": "무",
-          "rep": "무",
-          "hits": 55,
-          "selected_hits": 3,
+          "seed": "화훼",
+          "rep": "화훼",
+          "hits": 5,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원"
-        },
-        {
-          "seed": "구조",
-          "rep": "구조",
-          "hits": 14,
-          "selected_hits": 1,
-          "missing": false,
-          "sample_title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구"
+          "sample_title": "농촌 카페 허용하고, 동물병원 진료비 공개… 농식품부 , 현장규제 50건 손..."
         }
       ]
     },
@@ -23242,38 +23222,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.9,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "아주경제",
-          "domain": "ajunews.com",
-          "title": "농지 내 카페 허용· 도매 판매자 요건 폐지…농식품부, 규제합리화 과제...",
-          "url": "https://www.ajunews.com/view/20260518170712207",
-          "reason": "tail_cut",
-          "fit_score": 3.2,
-          "selection_stage": "tail_cut",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "도매시장 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 2,
-            "strength": 13,
-            "korea": 5,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 31.41,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -23301,6 +23249,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 31.26,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "아주경제",
+          "domain": "ajunews.com",
+          "title": "농지 내 카페 허용· 도매 판매자 요건 폐지…농식품부, 규제합리화 과제...",
+          "url": "https://www.ajunews.com/view/20260518170712207",
+          "reason": "below_threshold",
+          "fit_score": 2.94,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "도매시장 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 2,
+            "strength": 13,
+            "korea": 5,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -23562,7 +23542,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.99,
+          "score": 19.79,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23946,38 +23926,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.51,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "팍스경제TV",
-          "domain": "paxetv.com",
-          "title": "곡성 멜론 출하 시작…여름 시장 공략 본격화",
-          "url": "http://www.paxetv.com/news/articleView.html?idxno=272348",
-          "reason": "below_threshold",
-          "fit_score": 2.38,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "멜론 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.63,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.72,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -24234,6 +24182,38 @@
         {
           "selected": false,
           "is_core": false,
+          "score": -1.33,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "팍스경제TV",
+          "domain": "paxetv.com",
+          "title": "곡성멜론 출하 시작…여름 시장 공략 본격화",
+          "url": "http://www.paxetv.com/news/articleView.html?idxno=272348",
+          "reason": "below_threshold",
+          "fit_score": 0.38,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 물류비",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": -2.4,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -24428,7 +24408,7 @@
         {
           "seed": "무",
           "rep": "무",
-          "hits": 24,
+          "hits": 23,
           "selected_hits": 3,
           "missing": false,
           "sample_title": "논산 비타베리 냉동딸기, 인도네시아 첫 수출길 올라"
@@ -24442,18 +24422,18 @@
           "sample_title": ""
         },
         {
-          "seed": "수출",
-          "rep": "수출",
-          "hits": 20,
-          "selected_hits": 2,
+          "seed": "물류비",
+          "rep": "물류비",
+          "hits": 8,
+          "selected_hits": 1,
           "missing": false,
-          "sample_title": "논산 비타베리 냉동딸기, 인도네시아 첫 수출길 올라"
+          "sample_title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매"
         },
         {
-          "seed": "농협",
-          "rep": "농협",
-          "hits": 23,
-          "selected_hits": 3,
+          "seed": "수출",
+          "rep": "수출",
+          "hits": 19,
+          "selected_hits": 2,
           "missing": false,
           "sample_title": "논산 비타베리 냉동딸기, 인도네시아 첫 수출길 올라"
         }
@@ -26411,11 +26391,11 @@
           50
         ],
         [
-          "사과 작황",
+          "사과 가격",
           50
         ],
         [
-          "사과 가격",
+          "사과 작황",
           50
         ],
         [
@@ -26798,7 +26778,7 @@
           "피망"
         ]
       },
-      "items_total": 249,
+      "items_total": 248,
       "seed_coverage": [
         {
           "seed": "건고추",
@@ -26851,7 +26831,7 @@
         {
           "seed": "사과",
           "rep": "사과",
-          "hits": 7,
+          "hits": 6,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "\"산지서 농산물 품질 직접 확인\"… 온라인 도매거래 신뢰 키웠다"
