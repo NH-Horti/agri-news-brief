@@ -1214,12 +1214,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     else:
         commodity_board_quality_score = 100.0
 
+    coverage_underfill_penalty = 0.0
+    if completeness_score < 85.0:
+        coverage_underfill_penalty = max(0.0, (85.0 - completeness_score) * 1.5)
     semantic_false_positive_penalty = min(
         18.0,
         semantic_false_positive_rate * 120.0 + off_scope_foreign_rate * 70.0,
     )
     story_duplicate_penalty = min(8.0, story_duplicate_rate * 28.0 + cross_section_duplicate_rate * 18.0)
-    quality_signal_penalty = semantic_false_positive_penalty + story_duplicate_penalty
+    quality_signal_penalty = semantic_false_positive_penalty + story_duplicate_penalty + coverage_underfill_penalty
     overall_score = (
         completeness_score * 0.20
         + diversity_score * 0.18
@@ -1343,6 +1346,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "content_irrelevant_rate": round(content_irrelevant_rate, 4),
             "semantic_false_positive_penalty": round(semantic_false_positive_penalty, 4),
             "story_duplicate_penalty": round(story_duplicate_penalty, 4),
+            "coverage_underfill_penalty": round(coverage_underfill_penalty, 4),
             "quality_signal_penalty": round(quality_signal_penalty, 4),
             "core_fit_avg": round(core_fit_avg, 4),
             "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
@@ -1626,8 +1630,9 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
     editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
     editorial_plan = result.get("editorial_improvement_plan", {}) if isinstance(result, dict) else {}
     guardrails = dict(guardrails)
+    editorial_suggested_guardrails: dict[str, Any] = {}
     if isinstance(editorial, dict) and editorial.get("status") == "success":
-        guardrails = _apply_editorial_feedback_to_guardrails(guardrails, editorial)
+        editorial_suggested_guardrails = _apply_editorial_feedback_to_guardrails(dict(guardrails), editorial)
 
     payload = {
         "report_date": result.get("report_date"),
@@ -1656,6 +1661,8 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "story_duplicates": result.get("story_duplicate_samples", [])[:8] if isinstance(result.get("story_duplicate_samples"), list) else [],
         },
     }
+    if editorial_suggested_guardrails and editorial_suggested_guardrails != guardrails:
+        payload["editorial_suggested_guardrails"] = editorial_suggested_guardrails
     if isinstance(editorial, dict) and editorial.get("status") == "success":
         payload["editorial"] = {
             "score": editorial.get("score"),
