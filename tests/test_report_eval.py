@@ -548,7 +548,8 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
-        self.assertIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
+        self.assertNotIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
+        self.assertIn("editorial_duplicate_topic", selection_feedback["editorial_suggested_guardrails"]["driver_tags"])
 
 
 if __name__ == "__main__":
