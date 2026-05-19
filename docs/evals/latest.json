@@ -1,44 +1,44 @@
 {
   "report_date": "2026-05-19",
-  "generated_at_kst": "2026-05-19T06:21:23+09:00",
+  "generated_at_kst": "2026-05-19T11:14:32+09:00",
   "status": "pass",
-  "overall_score": 98.81,
+  "overall_score": 90.29,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 86.87,
-    "section_alignment": 100.0,
+    "section_alignment": 89.44,
     "core_quality": 100.0,
     "commodity_board_quality": 97.22
   },
   "counts": {
-    "briefing_total": 17,
+    "briefing_total": 16,
     "commodity_total": 57,
     "commodity_primary_total": 15,
     "briefing_by_section": {
       "supply": 5,
       "policy": 4,
-      "dist": 4,
+      "dist": 3,
       "pest": 4
     },
     "core_by_section": {
       "supply": 2,
       "policy": 2,
-      "dist": 2,
+      "dist": 1,
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 30,
+      "supply": 31,
       "policy": 12,
-      "dist": 12,
+      "dist": 11,
       "pest": 3
     },
     "raw_by_section": {
       "supply": 146,
-      "policy": 113,
-      "dist": 51,
+      "policy": 110,
+      "dist": 49,
       "pest": 47
     },
     "expected_briefing_by_section": {
@@ -50,11 +50,11 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7647,
+    "briefing_domain_diversity_rate": 0.75,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.9412,
+    "summary_numeric_rate": 0.9375,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -62,15 +62,21 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 4.5759,
+    "section_alignment_fit_avg": 4.5694,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.0588,
-    "content_false_positive_rate": 0.0,
-    "content_irrelevant_rate": 0.0,
-    "semantic_false_positive_penalty": 0.0,
-    "core_fit_avg": 4.685,
-    "core_rank_percentile_avg": 0.9494,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0625,
+    "semantic_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0625,
+    "story_duplicate_rate": 0.0625,
+    "cross_section_duplicate_rate": 0.0625,
+    "content_irrelevant_rate": 0.0625,
+    "semantic_false_positive_penalty": 4.375,
+    "story_duplicate_penalty": 2.875,
+    "quality_signal_penalty": 7.25,
+    "core_fit_avg": 4.6043,
+    "core_rank_percentile_avg": 0.9435,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -113,7 +119,7 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.9985,
       "pest": 1.0
     }
   },
@@ -122,11 +128,6 @@
       "title": "[전국 톡톡] 전국서 갈아엎는 양파 밭‥\"생산비도 못 건져\"",
       "section": "supply",
       "age_hours": 23.4
-    },
-    {
-      "title": "[친절한 경제] 수박 한 통에 3만 원… 가격 널뛰는 여름 과일들",
-      "section": "supply",
-      "age_hours": 20.8
     },
     {
       "title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매",
@@ -157,24 +158,63 @@
       "title": "원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
       "section": "pest",
       "age_hours": 14.8
+    },
+    {
+      "title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란...",
+      "section": "supply",
+      "age_hours": 13.9
     }
   ],
-  "content_false_positive_samples": [],
+  "content_false_positive_samples": [
+    {
+      "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+      "href": "https://www.ajunews.com/view/20260518142237838",
+      "section": "policy",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "off_scope_samples": [
+    {
+      "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+      "href": "https://www.ajunews.com/view/20260518142237838",
+      "section": "policy",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "story_duplicate_samples": [
+    {
+      "reason": "same_event_numbers",
+      "left_title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
+      "left_section": "supply",
+      "left_href": "https://www.yna.co.kr/view/AKR20260518061200062?input=1195m",
+      "right_title": "평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'",
+      "right_section": "policy",
+      "right_href": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2430514",
+      "cross_section": true
+    }
+  ],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "동일 사건 카드가 반복 노출됩니다 (비율 6%). URL·제목만 보지 말고 숫자·지역·주체를 묶은 story signature로 섹션 간 중복을 줄이세요.",
+    "해외 비관리 품목 카드가 브리핑에 섞였습니다 (비율 6%). 국내 정책·수급·가격 안정 연결고리가 없으면 해당 품목어를 다음 선별 가드레일에 반영하세요.",
+    "국내 원예·수급 브리핑 범위 밖 기사가 포함되어 있습니다 (비율 6%). 해외 품목 동향, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
   ],
   "selection_guardrails": {
-    "driver_tags": [],
+    "driver_tags": [
+      "foreign_scope_noise",
+      "story_duplicate",
+      "cross_section_duplicate"
+    ],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
+      "supply": 0.86,
+      "policy": 0.88,
+      "dist": 0.99,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.4,
     "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "tail_score_floor_delta": 0.65,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -193,14 +233,18 @@
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false
+    "commodity_require_direct_item_focus": false,
+    "exclude_title_terms": [
+      "두리안"
+    ],
+    "story_duplicate_similarity_min": 0.32
   },
   "summary_prompt_feedback": [
     "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 98.81,
+  "operational_score": 90.29,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -209,100 +253,100 @@
     "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-19T06:21:42+09:00",
+    "generated_at_kst": "2026-05-19T11:14:53+09:00",
     "score": 72.0,
     "target_score": 95.0,
     "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 70.0,
-      "section_fit": 68.0,
-      "core_pick_quality": 66.0,
-      "summary_usefulness": 84.0,
-      "missed_opportunity": 63.0,
-      "noise_control": 67.0
+      "article_selection": 68.0,
+      "section_fit": 61.0,
+      "core_pick_quality": 58.0,
+      "summary_usefulness": 82.0,
+      "missed_opportunity": 66.0,
+      "noise_control": 54.0
     },
-    "summary": "핵심 이슈인 양파 폭락·과수화상병은 잡았지만, 유통·정책 섹션에 행사성·지역 홍보성 카드가 섞였고 같은 이슈의 중복도 보인다. 특히 dist는 시장 구조·물류 변화보다 출하 시작/교육 기사 비중이 커 약하다. raw pool에 보이는 더 적합한 정책·유통 후보를 일부 놓쳐 목표점수에는 못 미친다.",
+    "summary": "핵심 기사 선택이 전반적으로 약합니다. 공급·유통에서 홍보성/출하개시성 기사와 잘못된 섹션 배치가 많고, 방제 섹션은 화상병 중복 비중이 높습니다. 정책 섹션의 계란 수급 대책은 적절하지만, 더 직접적인 유통·물류 개선 기사와 양파 소비촉진/수급대책을 더 잘 배치할 수 있었습니다.",
     "issues": [
       {
         "type": "wrong_section",
         "severity": "high",
-        "section": "policy",
-        "title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구",
-        "reason": "현장 촉구성 발언 기사로 정책 확정·집행 정보가 약함.",
-        "suggested_action": "정책 시행·대책 발표 기사로 교체."
+        "section": "supply",
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "수급 이슈보다 유통교육 기사다.",
+        "suggested_action": "dist로 이동하거나 제외."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "공급 섹션 코어로는 시장 영향이 약하다.",
+        "suggested_action": "양파·수박 등 수급충격 기사로 교체."
       },
       {
         "type": "wrong_section",
         "severity": "high",
         "section": "dist",
         "title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매",
-        "reason": "출하 개시·지역 특산 홍보 성격이 강함.",
-        "suggested_action": "도매시장·물류·수출 구조 기사로 대체."
-      },
-      {
-        "type": "promotional",
-        "severity": "high",
-        "section": "dist",
-        "title": "동화청과, 청년농 경매 실전교육",
-        "reason": "업체 프로그램 소개로 공익적 유통 이슈성 낮음.",
-        "suggested_action": "시장 제도·물류 변화 기사 우선 선별."
-      },
-      {
-        "type": "duplicate",
-        "severity": "medium",
-        "section": "pest",
-        "title": "충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
-        "reason": "같은 화상병 발생 축을 반복해 정보 증분이 작음.",
-        "suggested_action": "한 건만 남기고 방제 대응 기사로 보완."
-      },
-      {
-        "type": "duplicate",
-        "severity": "medium",
-        "section": "supply",
-        "title": "한 통에 3만원… 이른 더위에 수박값 껑충 / [친절한 경제] 수박 한 통에 3만 원… 가격 널뛰는 여름 과일들",
-        "reason": "같은 가격 급등 이슈를 두 장으로 반복.",
-        "suggested_action": "한 건으로 압축하고 다른 품목 이슈 추가."
+        "reason": "단순 출하 개시·지역 홍보성에 가깝다.",
+        "suggested_action": "핵심에서 내리고 물류·도매 구조 기사로 대체."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
         "section": "dist",
         "title": "서울시공사, 물류 선진화 위해 순회수집 운송지원 확대",
-        "reason": "raw에 더 직접적인 물류 개선 기사 있었는데 미채택.",
-        "suggested_action": "행사성 카드 대신 해당 기사 채택."
+        "reason": "유통 섹션에 더 직접적인 시장 인프라 기사였다.",
+        "suggested_action": "멜론 출하 기사 대신 채택."
       },
       {
-        "type": "missed_opportunity",
+        "type": "duplicate",
         "severity": "medium",
-        "section": "policy",
-        "title": "농식품부 규제합리화/온라인 도매시장 완화 관련 후보",
-        "reason": "유통·판로 제도 변화가 큰데 정책 섹션 반영이 없음.",
-        "suggested_action": "규제완화·온라인 도매시장 기사 1건 반영."
+        "section": "pest",
+        "title": "충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
+        "reason": "동일 이슈 중복으로 정보 효율이 낮다.",
+        "suggested_action": "종합 1건+후속 1건만 유지."
       },
       {
         "type": "noise",
         "severity": "medium",
         "section": "policy",
         "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
-        "reason": "해외 농가 동향으로 국내 농정 독자 연관성이 약함.",
-        "suggested_action": "국내 수급·방역·지원 정책 기사로 교체."
+        "reason": "국내 농정 독자 관점에서 비중이 낮다.",
+        "suggested_action": "국내 정책·제도 기사로 교체."
+      },
+      {
+        "type": "duplicate",
+        "severity": "medium",
+        "section": "policy",
+        "title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원 / 평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'",
+        "reason": "유사 기사 중복 채택이다.",
+        "suggested_action": "한 건만 남기고 다른 정책 기사 보강."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농식품부, 양파 소비 촉진 행사…농산물 할인 이달 말까지 연장",
+        "reason": "양파 가격 급락 대응의 직접 정책기사인데 빠졌다.",
+        "suggested_action": "의원 촉구성 기사보다 우선 채택."
       }
     ],
     "section_notes": {
-      "supply": "양파 폭락 코어는 적절하다. 다만 수박 급등 2건 중복이 크고, 감귤 경매 분석은 공급보다 유통 성격도 강하다.",
-      "policy": "계란 수입은 적절한 톱픽이지만 나머지는 지역 지원·촉구성 기사 비중이 높다. 중앙정부 대책·규제 변화 반영이 더 필요하다.",
-      "dist": "가장 약한 섹션. 출하 시작·교육·개장 같은 홍보성 기사보다 가락시장 물류, 온라인 도매시장, 군납 변화 같은 구조 이슈를 골랐어야 한다.",
-      "pest": "화상병 전국 첫 발생과 확산 조짐은 잘 잡았다. 다만 원주 단독 기사 중복을 줄이고 충주 현장 점검이나 권역 대응 기사로 다양화하면 더 좋다."
+      "supply": "양파 폭락·수박 급등 같은 실제 수급 충격은 잡았지만, 핵심 카드가 유통교육과 감귤 데이터 해설로 흩어졌다. 공급 섹션은 가격 급등락과 출하조절, 소비촉진 등 직접 수급 이슈 중심으로 재정렬이 필요하다.",
+      "policy": "계란 수입 대책은 적절한 1번감이다. 다만 지방의원 촉구성 기사와 평창 기금 중복이 아쉽고, 양파 소비촉진·규제합리화 등 더 실질적인 정책 집행 기사가 보강돼야 한다.",
+      "dist": "가장 약한 섹션이다. 멜론 초매식·마늘 경매장 개장은 지역 홍보성 성격이 강하다. 가락시장 물류 선진화, 군납 변화, 온라인도매시장 규제완화 등 구조 기사 중심으로 바꾸는 것이 맞다.",
+      "pest": "과수화상병 자체는 당일 핵심 이슈다. 그러나 원주 관련 중복이 있고, 다른 병해충 스펙트럼이 전혀 없다. 종합 기사 1건과 현장 대응 1건 정도로 압축하는 편이 낫다."
     },
     "improvement_suggestions": [
-      "dist는 '출하 개시'보다 물류·도매시장·수출 구조 변화 우선 원칙을 세울 것.",
-      "policy는 의원 촉구·지자체 지원금보다 중앙정부 결정·제도 변화 기사 비중을 높일 것.",
-      "동일 품목 가격 기사 중복은 한 건만 남기고 다른 품목 수급 이슈로 분산할 것.",
-      "raw pool의 서울시공사 순회수집·파렛트 지원 기사를 dist 핵심 카드로 활용할 것.",
-      "규제합리화 중 온라인 도매시장·원산지 표시 완화 등 독자 효용 큰 제도 기사를 반영할 것.",
-      "pest는 동일 발생 지역 기사 2건 대신 발생+방제대응 조합으로 구성할 것."
+      "공급 코어는 가격 급등락·출하조절·정부 대응 등 직접 수급영향 기사로만 선정하세요.",
+      "dist 섹션에서 초매식·첫 출하·MOU성 지역 홍보 기사는 원칙적으로 감점하세요.",
+      "같은 사안을 지역판·통신판으로 중복 채택하지 말고 가장 정보량 많은 1건만 고르세요.",
+      "정책 섹션은 촉구·성명보다 실제 시행 대책과 제도 변경 기사를 우선하세요.",
+      "해외 농산물 동향은 국내 수급·통상 파급이 분명할 때만 채택하세요.",
+      "pest 섹션은 동일 병해 후속 중복을 줄이고 방제 체계 변화나 확산 위험 정보를 우선하세요."
     ],
-    "raw_response_excerpt": "{\"score\":72,\"scores\":{\"article_selection\":70,\"section_fit\":68,\"core_pick_quality\":66,\"summary_usefulness\":84,\"missed_opportunity\":63,\"noise_control\":67},\"summary\":\"핵심 이슈인 양파 폭락·과수화상병은 잡았지만, 유통·정책 섹션에 행사성·지역 홍보성 카드가 섞였고 같은 이슈의 중복도 보인다. 특히 dist는 시장 구조·물류 변화보다 출하 시작/교육 기사 비중이 커 약하다. raw pool에 보이는 더 적합한 정책·유통 후보를 일부 놓쳐 목표점수에는 못 미친다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"권요안 전북도의원, 양파 가격 폭락 대응 촉구\",\"reason\":\"현장 촉구성 발언 기사로 정책 확정·집행 정보가 약함.\",\"suggested_action\":\"정책 시행·대책 발표 기사로 교체.\"},{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"\\\"당도 꽉 찬 명품 멜론 출하 시작\\\" 곡성멜론 본격 판매\",\"reason\":\"출하 개시·지역 특산 홍보 성격이 강함.\",\"suggested_action\":\"도매시장·물류·수출 구조 기사로 대체.\"},{\"type\":\"promotional\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"업체 프로그램 소개로 공익적 유통 이슈성 낮음.\",\"suggested_action\":\"시장 제도·물류 변화 기사 우선 선별.\"},{\"type\":\"duplicate\",\"severity\":\"medium\",\"section\":\"pest\",\"title\":\"충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모\",\"reason\":\"같은 화상병 발생 축을 반복해 정보 증분이 작음.\",\"suggested_action\":\"한 건만 남기고 방제 대응 기사로 보완.\"},{\"type\":\"duplicate\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"한 통에 3만원… 이른 더위에 수박값 껑충 / [친절한 경제] 수박 한 통에 3..."
+    "raw_response_excerpt": "{\"score\":72,\"scores\":{\"article_selection\":68,\"section_fit\":61,\"core_pick_quality\":58,\"summary_usefulness\":82,\"missed_opportunity\":66,\"noise_control\":54},\"summary\":\"핵심 기사 선택이 전반적으로 약합니다. 공급·유통에서 홍보성/출하개시성 기사와 잘못된 섹션 배치가 많고, 방제 섹션은 화상병 중복 비중이 높습니다. 정책 섹션의 계란 수급 대책은 적절하지만, 더 직접적인 유통·물류 개선 기사와 양파 소비촉진/수급대책을 더 잘 배치할 수 있었습니다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"수급 이슈보다 유통교육 기사다.\",\"suggested_action\":\"dist로 이동하거나 제외.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"공급 섹션 코어로는 시장 영향이 약하다.\",\"suggested_action\":\"양파·수박 등 수급충격 기사로 교체.\"},{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"\\\"당도 꽉 찬 명품 멜론 출하 시작\\\" 곡성멜론 본격 판매\",\"reason\":\"단순 출하 개시·지역 홍보성에 가깝다.\",\"suggested_action\":\"핵심에서 내리고 물류·도매 구조 기사로 대체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"서울시공사, 물류 선진화 위해 순회수집 운송지원 확대\",\"reason\":\"유통 섹션에 더 직접적인 시장 인프라 기사였다.\",\"suggested_action\":\"멜론 출하 기사 대신 채택.\"},{\"type\":\"duplicate\",\"severity\":\"medium\",\"section\":\"pest\",\"title\":\"충주·원주서 ‘과수화상병’…이른 더위에 예상보다 발생 빨라 / 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모\",\"reason\":\"동일 이슈 중복으로 정보 효율이 낮다.\",\"suggested_action\":..."
   },
   "editorial_score": 72.0,
   "editorial_improvement_plan": {
@@ -313,12 +357,18 @@
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "article_selection",
-      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -332,12 +382,6 @@
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
-        "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
-      },
-      {
         "kind": "section_fit",
         "target": "section_card_min_fit",
         "direction": "tighten",
@@ -345,17 +389,21 @@
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [],
+      "driver_tags": [
+        "foreign_scope_noise",
+        "story_duplicate",
+        "cross_section_duplicate"
+      ],
       "section_card_min_fit": {
         "default": 0.8,
-        "supply": 0.82,
-        "policy": 0.82,
-        "dist": 0.95,
+        "supply": 0.86,
+        "policy": 0.88,
+        "dist": 0.99,
         "pest": 0.78
       },
-      "section_low_fit_rescue_min": 0.15,
+      "section_low_fit_rescue_min": 0.4,
       "high_score_low_fit_rescue_margin": 3.0,
-      "tail_score_floor_delta": 0.0,
+      "tail_score_floor_delta": 0.65,
       "core_fit_min": {
         "default": 1.2,
         "supply": 1.4,
@@ -374,7 +422,11 @@
       "commodity_active_min_rank": 1,
       "commodity_program_core_min_rank": 1,
       "commodity_require_issue_signal": false,
-      "commodity_require_direct_item_focus": false
+      "commodity_require_direct_item_focus": false,
+      "exclude_title_terms": [
+        "두리안"
+      ],
+      "story_duplicate_similarity_min": 0.32
     },
     "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
   }
