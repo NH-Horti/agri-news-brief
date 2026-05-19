@@ -21497,6 +21497,27 @@ def _build_sections_phase123(
         "폭락", "폭등", "급등", "급락", "하락", "상승", "안정", "불안정", "과잉", "부족",
         "경매", "경락", "반입", "도매", "수출", "품질",
     ))
+    def _cross_section_topic_duplicate(art_a: Article, art_b: Article) -> bool:
+        # Cross-section dedup needs an event anchor too; broad commodity+issue overlap
+        # can collapse unrelated section coverage.
+        text_a = (art_a.title or "").lower()
+        text_b = (art_b.title or "").lower()
+        comm_a = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in text_a)
+        comm_b = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in text_b)
+        if not (comm_a & comm_b):
+            return False
+        issue_a = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in text_a)
+        issue_b = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in text_b)
+        if not (issue_a & issue_b):
+            return False
+        region_a = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in text_a)
+        region_b = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in text_b)
+        if region_a & region_b:
+            return True
+        nums_a = frozenset(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text_a) if len(n.replace(",", "")) >= 2)
+        nums_b = frozenset(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text_b) if len(n.replace(",", "")) >= 2)
+        return bool(nums_a & nums_b)
+
     for key in list(final_by_section.keys()):
         articles = final_by_section.get(key, [])
         if len(articles) <= 1:
@@ -21592,7 +21613,7 @@ def _build_sections_phase123(
                         break
             final_by_section[key] = kept
 
-    # ── Phase 4: Cross-section similar-story dedup + backfill ──
+    # ── Phase 4: Cross-section conservative story dedup + backfill ──
     _all_section_keys = [s["key"] for s in SECTIONS]
     _cross_removals: list[tuple[str, int]] = []  # (section_key, index)
     for i, key_a in enumerate(_all_section_keys):
@@ -21603,31 +21624,16 @@ def _build_sections_phase123(
                     url_a = getattr(art_a, 'canon_url', '') or ''
                     url_b = getattr(art_b, 'canon_url', '') or ''
                     is_same_url = bool(url_a and url_b and url_a == url_b)
-                    # 품목+지역+이슈 토픽 중복 (cross-section에서도 적용)
+                    # 품목+이슈에 숫자/지역 앵커가 함께 겹치는 경우만 cross-section 중복으로 본다.
                     _is_topic_dup = False
                     if not is_same_url:
-                        _ta = (art_a.title or "").lower()
-                        _tb = (art_b.title or "").lower()
-                        _ca = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _ta)
-                        _cb = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _tb)
-                        _ra = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _ta)
-                        _rb = frozenset(r for r in _TOPIC_DEDUP_REGION_TERMS if r in _tb)
-                        _ia = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _ta)
-                        _ib = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _tb)
-                        # cross-section: 품목+이슈만 겹쳐도 중복 (지역 없어도 OK)
-                        if (_ca & _cb) and len(_ia & _ib) >= 1:
-                            _is_topic_dup = True
-                    # cross-section: URL/토픽/제목 유사도만 사용 (anchor+Jaccard 폴백 제거 — 오탐 방지)
-                    _is_title_dup = False
+                        _is_topic_dup = _cross_section_topic_duplicate(art_a, art_b)
+                    # Cross-section drops are intentionally conservative:
+                    # exact URL, anchored topic overlap, or explicit eval feedback only.
                     if not is_same_url and not _is_topic_dup:
-                        try:
-                            _is_title_dup = _is_similar_title(art_a.title_key or "", art_b.title_key or "")
-                        except Exception:
-                            pass
-                    if not is_same_url and not _is_topic_dup and not _is_title_dup:
                         if _selection_feedback_story_duplicate(art_a, art_b):
                             _is_topic_dup = True
-                    if not is_same_url and not _is_topic_dup and not _is_title_dup:
+                    if not is_same_url and not _is_topic_dup:
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
@@ -21686,9 +21692,6 @@ def _build_sections_phase123(
                 if _backfill_within_skip:
                     continue
                 # backfill 시 다른 섹션과도 유사 기사 체크 (cross-section 재유입 방지)
-                _BACKFILL_REGION_TERMS = ("구미", "무안", "제주", "해남", "진도", "영천", "상주", "성주", "합천", "고흥",
-                                          "안동", "영양", "창녕", "함평", "남해", "밀양", "나주", "의성", "신안", "완도")
-                _a_regions = {r for r in _BACKFILL_REGION_TERMS if r in _a_txt}
                 _backfill_cross_skip = False
                 # 같은 섹션 기존 기사와 품목+이슈 중복 체크 (within-section 보완, title만 사용)
                 for b in final_by_section[sec_key]:
@@ -21705,9 +21708,8 @@ def _build_sections_phase123(
                         break
                 if _backfill_cross_skip:
                     continue
-                # 다른 섹션과 품목+이슈 또는 URL/title 중복 체크 (title만 사용)
+                # 다른 섹션과 품목+이슈 또는 URL 중복 체크 (title similarity는 cross-section에서 제외)
                 for b in _other_section_articles:
-                    _b_txt = (b.title or "").lower()
                     # URL 중복 체크
                     _a_url = getattr(a, 'canon_url', '') or ''
                     _b_url = getattr(b, 'canon_url', '') or ''
@@ -21717,27 +21719,12 @@ def _build_sections_phase123(
                     if _selection_feedback_story_duplicate(a, b):
                         _backfill_cross_skip = True
                         break
-                    # 품목+이슈 중복 체크 (지역 없어도 OK)
-                    _b_commodities = frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in HORTI_ITEM_TERMS_L if t in _b_txt)
-                    _b_issues = frozenset(k for k in _TOPIC_DEDUP_ISSUE_TERMS if k in _b_txt)
-                    if (_a_commodities & _b_commodities) and (_a_issues & _b_issues):
+                    # 품목+이슈에 숫자/지역 이벤트 앵커가 함께 겹치는 경우만 cross-section 중복으로 본다.
+                    if _cross_section_topic_duplicate(a, b):
                         _backfill_cross_skip = True
                         break
-                    # 품목+지역 중복 체크 (이슈 없어도 OK)
-                    if _a_commodities and _a_regions:
-                        _b_regions = {r for r in _BACKFILL_REGION_TERMS if r in _b_txt}
-                        if (_a_commodities & _b_commodities) and (_a_regions & _b_regions):
-                            _backfill_cross_skip = True
-                            break
-                    # title 유사도 체크
-                    try:
-                        if _is_similar_title(a.title_key or "", b.title_key or ""):
-                            _backfill_cross_skip = True
-                            break
-                    except Exception:
-                        pass
                 if _backfill_cross_skip:
-                    log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (similar to other section)", sec_key, (a.title or "")[:80])
+                    log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (same story as other section)", sec_key, (a.title or "")[:80])
                     continue
                 final_by_section[sec_key].append(a)
                 existing_idents.add(ident)
