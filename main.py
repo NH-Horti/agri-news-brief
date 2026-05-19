@@ -3510,11 +3510,13 @@ def _selection_feedback_story_duplicate(a: "Article", b: "Article") -> bool:
     containment = 0.0
     if grams_a and grams_b:
         containment = len(grams_a & grams_b) / max(1, min(len(grams_a), len(grams_b)))
-    if len(shared_numbers) >= 2 and (len(shared_words) >= 2 or containment >= max(0.16, threshold - 0.14)):
+    if len(shared_numbers) >= 2 and (len(shared_words) >= 2 or containment >= max(0.18, threshold - 0.10)):
         return True
-    if len(shared_words) >= 4 and containment >= threshold:
+    if len(shared_numbers) >= 1 and len(shared_words) >= 4 and containment >= max(0.38, threshold + 0.06):
         return True
-    return containment >= max(0.46, threshold + 0.12) and len(shared_words) >= 2
+    if len(shared_words) >= 6 and containment >= max(0.42, threshold + 0.08):
+        return True
+    return False
 
 
 def _has_trade_signal(txt: str) -> bool:
