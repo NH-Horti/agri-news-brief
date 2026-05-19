@@ -248,6 +248,13 @@ class LocalRuntimeTests(TestCase):
                 description="농축산물 가격 안정 기금 21억 지원으로 908개 농가의 수급 부담을 덜었다.",
                 link="https://example.com/policy-pyeongchang",
             )
+            unrelated = self._make_article(
+                section="pest",
+                title="충주·원주서 과수화상병 발생 예찰 강화",
+                description="과수화상병 발생으로 지자체가 배 농가 예찰과 방제 수칙 준수를 당부했다.",
+                link="https://example.com/pest-fireblight",
+            )
 
             self.assertEqual(main._selection_guardrail_terms("exclude_title_terms"), ("두리안", "망고"))
             self.assertTrue(main._selection_feedback_story_duplicate(left, right))
+            self.assertFalse(main._selection_feedback_story_duplicate(right, unrelated))
