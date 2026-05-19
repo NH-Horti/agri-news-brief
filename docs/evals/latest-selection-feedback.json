@@ -1,40 +1,36 @@
 {
   "report_date": "2026-05-19",
-  "generated_at_kst": "2026-05-19T11:58:00+09:00",
+  "generated_at_kst": "2026-05-19T12:16:19+09:00",
   "scores": {
-    "section_alignment": 90.0,
-    "core_quality": 100.0,
-    "commodity_board_quality": 97.0
+    "section_alignment": 100.0,
+    "core_quality": 98.33,
+    "commodity_board_quality": 97.22
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "content_false_positive_rate": 0.0588,
+    "content_false_positive_rate": 0.0,
     "semantic_false_positive_rate": 0.0,
-    "off_scope_foreign_rate": 0.0588,
-    "story_duplicate_rate": 0.0588,
-    "cross_section_duplicate_rate": 0.0588,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9333,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "foreign_scope_noise",
-      "story_duplicate",
-      "cross_section_duplicate"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.86,
-      "policy": 0.88,
-      "dist": 0.99,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.4,
+    "section_low_fit_rescue_min": 0.15,
     "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.65,
+    "tail_score_floor_delta": 0.0,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -54,32 +50,196 @@
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
-    "exclude_title_terms": [
-      "두리안"
-    ],
-    "story_duplicate_similarity_min": 0.32
+    "exclude_title_terms": [],
+    "story_duplicate_similarity_min": 0.0
   },
   "quality_samples": {
-    "off_scope": [
-      {
-        "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
-        "href": "https://www.ajunews.com/view/20260518142237838",
-        "section": "policy",
-        "reason": "foreign_unmanaged_commodity"
-      }
+    "off_scope": [],
+    "story_duplicates": []
+  },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_section_fit",
+      "editorial_noise_filter",
+      "editorial_core_pick",
+      "editorial_missed_opportunity"
     ],
-    "story_duplicates": [
+    "section_card_min_fit": {
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.4,
+    "core_fit_min": {
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "exclude_title_terms": [],
+    "story_duplicate_similarity_min": 0.0
+  },
+  "editorial": {
+    "score": 41.0,
+    "target_score": 95.0,
+    "target_status": "needs_major_iteration",
+    "scores": {
+      "article_selection": 35.0,
+      "section_fit": 30.0,
+      "core_pick_quality": 28.0,
+      "summary_usefulness": 70.0,
+      "missed_opportunity": 20.0,
+      "noise_control": 32.0
+    },
+    "issues": [
       {
-        "reason": "same_event_numbers",
-        "left_title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
-        "left_section": "supply",
-        "left_href": "https://www.yna.co.kr/view/AKR20260518061200062?input=1195m",
-        "right_title": "평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'",
-        "right_section": "policy",
-        "right_href": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2430514",
-        "cross_section": true
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "supply",
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "수급 동향보다 교육·홍보성 도매시장 기사다.",
+        "suggested_action": "dist로 돌리거나 제외하고 수급 이슈로 교체."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "당일 시장가격·출하량·작황 충격이 없어 코어 가치가 낮다.",
+        "suggested_action": "양파 산지 폐기나 가격 급락 기사로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "supply",
+        "title": "[전국 톡톡] 전국서 갈아엎는 양파 밭",
+        "reason": "양파값 폭락의 현장성과 피해 강도가 직거래장터 기사보다 크다.",
+        "suggested_action": "소비촉진 기사보다 우선 반영."
+      },
+      {
+        "type": "coverage_gap",
+        "severity": "high",
+        "section": "dist",
+        "title": "유통 섹션 공란",
+        "reason": "논산 냉동딸기 수출, 가락시장 물류지원 등 쓸 만한 후보가 있었다.",
+        "suggested_action": "dist 1~2건 이상 반드시 채워 구조 복원."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "policy",
+        "title": "정책 선택 부족",
+        "reason": "계란 수입만으로는 정책면이 협소하고 양파 대책·규제합리화·가격안정기금 누락이 크다.",
+        "suggested_action": "정책 카드 수를 늘리고 축산 외 원예 정책도 포함."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "supply",
+        "title": "세종청사 햇 양파 직거래장터… 양파 값 폭락에 최대 40% 할인",
+        "reason": "이슈는 있으나 행사 중심 서술이 강하다.",
+        "suggested_action": "행사보다 수급대책·출하조절 기사와 묶어 다뤄라."
+      },
+      {
+        "type": "noise",
+        "severity": "medium",
+        "section": "supply",
+        "title": "벌써 3만 원 돌파라니…수박 가격 보고 깜짝",
+        "reason": "자극적 제목의 생활물가형 기사로 전문 브리핑 톤에 약하다.",
+        "suggested_action": "보다 건조한 원문 또는 관측 기반 기사로 교체."
       }
     ]
   },
-  "notes": "Seed deterministic selection guardrails for the next 2026-05-19 rebuild. Editorial shadow feedback remains advisory after PR #79."
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 41.0,
+    "target_status": "needs_major_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "core_quality",
+      "missed_opportunity",
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false,
+      "exclude_title_terms": [],
+      "story_duplicate_similarity_min": 0.0
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
 }
