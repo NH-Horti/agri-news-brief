@@ -272,6 +272,18 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json", self.rebuild_text)
         self.assertIn("--editorial-eval", self.rebuild_text)
 
+    def test_cross_section_dedup_requires_event_anchor(self):
+        helper_idx = self.text.find("def _cross_section_topic_duplicate")
+        phase_idx = self.text.find("Phase 4: Cross-section conservative story dedup")
+        self.assertNotEqual(helper_idx, -1)
+        self.assertNotEqual(phase_idx, -1)
+        helper_block = self.text[helper_idx:self.text.find("for key in list(final_by_section.keys())", helper_idx)]
+        phase_block = self.text[phase_idx:self.text.find("# Deduplicate removal indices", phase_idx)]
+        self.assertIn("region_a & region_b", helper_block)
+        self.assertIn("nums_a & nums_b", helper_block)
+        self.assertIn("_cross_section_topic_duplicate(art_a, art_b)", phase_block)
+        self.assertNotIn("_is_similar_title(art_a.title_key", phase_block)
+
     def test_dev_verify_workflow_evaluates_preview_report(self):
         self.assertIn("Evaluate rebuilt preview report", self.dev_verify_text)
         self.assertIn("docs/dev/index.html", self.dev_verify_text)
