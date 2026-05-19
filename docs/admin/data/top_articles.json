@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T00:18:51+09:00",
+  "generated_at": "2026-05-19T02:12:33+09:00",
   "rows": [
     {
       "date": "2026-04-02",
@@ -323,6 +323,32 @@
       "target_domain": "www.munhwa.com",
       "clicks": 3,
       "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "04e6f283aded",
+      "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "b908fc7b7dbb",
+      "title": "“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 3,
+      "users": 3,
       "archive_url": "",
       "source_url": ""
     },
@@ -884,6 +910,58 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-05-15.html#sec-supply",
       "source_url": "http://www.breaknews.com/1207067"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "04e6f283aded",
+      "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "1cb4462a6e60",
+      "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-05-18.html#sec-supply",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=72557"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "1cb4462a6e60",
+      "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-18.html#sec-supply",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=72557"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "523105d0a37e",
+      "title": "\"金 사과 재현?\"… 가격 안정세 사과 '과수화상병' 변수 등장",
+      "report_date": "2026-05-18",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -3614,6 +3692,110 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "0b9086817938",
+      "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
+      "report_date": "2026-05-18",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.phmbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "174abf0ee53b",
+      "title": "동화청과, 자체 기획· 운영 청년농 교육",
+      "report_date": "2026-05-18",
+      "section": "dist",
+      "surface": "search_result",
+      "target_domain": "www.farmnmarket.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-18.html#sec-dist",
+      "source_url": "https://www.farmnmarket.com/news/article.html?no=26461"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "26bd458dfea5",
+      "title": "과수화상병 방제, 꽃 진 뒤 ‘새순’ 자랄 때 방제",
+      "report_date": "2026-05-06",
+      "section": "pest",
+      "surface": "search_result",
+      "target_domain": "www.farmnmarket.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-06.html#sec-pest",
+      "source_url": "https://www.farmnmarket.com/news/article.html?no=26368"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "523105d0a37e",
+      "title": "\"金 사과 재현?\"… 가격 안정세 사과 '과수화상병' 변수 등장",
+      "report_date": "2026-05-18",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "a7b4adcbb612",
+      "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+      "report_date": "2026-05-18",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.khan.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "b908fc7b7dbb",
+      "title": "“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "d47f04d76089",
+      "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.livesnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-18.html#sec-supply",
+      "source_url": "https://www.livesnews.com/news/article.html?no=61480"
+    },
+    {
+      "date": "2026-05-18",
+      "article_id": "d47f04d76089",
+      "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+      "report_date": "2026-05-18",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.livesnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-18.html#sec-supply",
+      "source_url": "https://www.livesnews.com/news/article.html?no=61480"
     }
   ]
 }

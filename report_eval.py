@@ -209,6 +209,68 @@ _FALSE_POSITIVE_REAL_MARKET_TITLE_TERMS = (
 )
 
 
+_OFF_SCOPE_FOREIGN_TERMS = (
+    "베트남",
+    "중국",
+    "태국",
+    "미국",
+    "일본",
+    "호주",
+    "동남아",
+    "해외",
+    "현지",
+    "대중국",
+)
+_OFF_SCOPE_UNMANAGED_COMMODITY_TERMS = (
+    "두리안",
+    "망고",
+    "바나나",
+    "아보카도",
+    "파인애플",
+    "커피",
+    "카카오",
+)
+_DOMESTIC_POLICY_KEEP_TERMS = (
+    "농식품부",
+    "농림축산식품부",
+    "검역본부",
+    "aT",
+    "한국농수산식품유통공사",
+    "할당관세",
+    "국내 가격",
+    "국내 수급",
+    "수입 물량",
+    "수입량",
+    "정부 대책",
+    "가격 안정",
+)
+_STORY_TOKEN_STOPWORDS = frozenset(
+    {
+        "기자",
+        "뉴스",
+        "오늘",
+        "올해",
+        "이번",
+        "대한",
+        "관련",
+        "통해",
+        "위해",
+        "지원",
+        "사업",
+        "추진",
+        "진행",
+        "확대",
+        "시작",
+        "본격",
+        "전국",
+        "지역",
+        "지난",
+        "오는",
+        "한편",
+    }
+)
+
+
 @dataclass
 class SurfaceArticle:
     tag: str
@@ -389,6 +451,104 @@ def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str)
             return "political_market_pledge_noise"
 
     return ""
+
+
+def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> str:
+    if article.section not in {"supply", "policy", "dist"}:
+        return ""
+    title = _normalize_spaces(str(article.title or ""))
+    signal = _normalize_spaces(f"{title} {article.summary or ''}").lower()
+    body = _normalize_spaces(str(snapshot_body or article.summary or ""))
+    combined = f"{title} {body}".lower()
+    if not signal.strip():
+        return ""
+
+    unmanaged_hits = [term for term in _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS if term.lower() in signal]
+    if not unmanaged_hits:
+        return ""
+    foreign_hits = [term for term in _OFF_SCOPE_FOREIGN_TERMS if term.lower() in signal]
+    if not foreign_hits:
+        return ""
+    domestic_keep = [term for term in _DOMESTIC_POLICY_KEEP_TERMS if term.lower() in combined]
+    if domestic_keep:
+        return ""
+    return "foreign_unmanaged_commodity"
+
+
+def _story_numbers(text: str) -> set[str]:
+    return set(re.findall(r"\d+(?:[.,]\d+)?", str(text or "")))
+
+
+def _story_words(text: str) -> set[str]:
+    words = set()
+    for raw in re.findall(r"\d+(?:[.,]\d+)?|[^\W\d_]{2,}", _normalize_spaces(text).lower(), flags=re.UNICODE):
+        token = raw.strip(".,%…'\"")
+        if not token or token in _STORY_TOKEN_STOPWORDS:
+            continue
+        words.add(token)
+    return words
+
+
+def _story_ngrams(text: str, n: int = 3) -> set[str]:
+    compact = normalize_title_key(text)
+    if len(compact) < n:
+        return {compact} if compact else set()
+    return {compact[idx : idx + n] for idx in range(0, len(compact) - n + 1)}
+
+
+def _story_duplicate_reason(left: SurfaceArticle, right: SurfaceArticle) -> str:
+    left_url = normalize_url(left.href)
+    right_url = normalize_url(right.href)
+    if left_url and right_url and left_url == right_url:
+        return "same_url_duplicate"
+
+    left_text = f"{left.title} {left.summary}"
+    right_text = f"{right.title} {right.summary}"
+    left_words = _story_words(left_text)
+    right_words = _story_words(right_text)
+    shared_words = left_words & right_words
+    left_numbers = _story_numbers(left_text)
+    right_numbers = _story_numbers(right_text)
+    shared_numbers = left_numbers & right_numbers
+
+    left_grams = _story_ngrams(left_text)
+    right_grams = _story_ngrams(right_text)
+    gram_containment = 0.0
+    if left_grams and right_grams:
+        gram_containment = len(left_grams & right_grams) / max(1, min(len(left_grams), len(right_grams)))
+
+    if len(shared_numbers) >= 2 and (len(shared_words) >= 2 or gram_containment >= 0.18):
+        return "same_event_numbers"
+    if len(shared_words) >= 4 and gram_containment >= 0.34:
+        return "same_event_terms"
+    if gram_containment >= 0.48 and len(shared_words) >= 2:
+        return "same_event_title"
+    return ""
+
+
+def _briefing_story_duplicate_samples(articles: list[SurfaceArticle]) -> tuple[list[dict[str, Any]], set[int]]:
+    samples: list[dict[str, Any]] = []
+    duplicate_indices: set[int] = set()
+    for left_idx, left in enumerate(articles):
+        for right_idx in range(left_idx + 1, len(articles)):
+            right = articles[right_idx]
+            reason = _story_duplicate_reason(left, right)
+            if not reason:
+                continue
+            duplicate_indices.add(right_idx)
+            samples.append(
+                {
+                    "reason": reason,
+                    "left_title": left.title,
+                    "left_section": left.section,
+                    "left_href": left.href,
+                    "right_title": right.title,
+                    "right_section": right.section,
+                    "right_href": right.href,
+                    "cross_section": left.section != right.section,
+                }
+            )
+    return samples[:12], duplicate_indices
 
 
 def normalize_summary_opening(text: str) -> str:
@@ -760,6 +920,13 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     stale_older_than_96h = 0
     freshness_samples: list[dict[str, Any]] = []
     briefing_match_records: list[dict[str, Any]] = []
+    story_duplicate_samples, story_duplicate_indices = _briefing_story_duplicate_samples(briefing_articles)
+    story_duplicate_rate = _rate(len(story_duplicate_indices), len(briefing_articles), default=0.0)
+    cross_section_duplicate_rate = _rate(
+        sum(1 for sample in story_duplicate_samples if bool(sample.get("cross_section"))),
+        len(briefing_articles),
+        default=0.0,
+    )
 
     for article in briefing_articles:
         match = _find_snapshot_match(article, by_url, by_title)
@@ -803,10 +970,13 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "산지", "가락시장", "유통", "농협", "농식품", "과일", "청과",
         )
         _agri_hits = sum(1 for t in _AGRI_RELEVANCE_TERMS if t in _combined_text)
-        false_positive_reason = _semantic_false_positive_reason(article, _desc_text)
+        semantic_reason = _semantic_false_positive_reason(article, _desc_text)
+        off_scope_reason = _off_scope_content_reason(article, _desc_text)
+        false_positive_reason = semantic_reason or off_scope_reason
         briefing_match_records.append(
             {
                 "title": article.title,
+                "href": article.href,
                 "section": article.section,
                 "is_core": bool(article.is_core),
                 "fit_score": fit_score,
@@ -815,6 +985,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "cross_section_gap": max(0.0, best_fit - fit_score),
                 "best_section": best_section,
                 "agri_relevance_hits": _agri_hits,
+                "semantic_false_positive_reason": semantic_reason,
+                "off_scope_reason": off_scope_reason,
                 "false_positive_reason": false_positive_reason,
             }
         )
@@ -873,6 +1045,20 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     content_false_positive_count = sum(1 for record in briefing_match_records if str(record.get("false_positive_reason") or ""))
     content_false_positive_rate = _rate(
         content_false_positive_count,
+        len(briefing_match_records),
+        default=0.0,
+    )
+    semantic_false_positive_count = sum(
+        1 for record in briefing_match_records if str(record.get("semantic_false_positive_reason") or "")
+    )
+    semantic_false_positive_rate = _rate(
+        semantic_false_positive_count,
+        len(briefing_match_records),
+        default=0.0,
+    )
+    off_scope_foreign_count = sum(1 for record in briefing_match_records if str(record.get("off_scope_reason") or ""))
+    off_scope_foreign_rate = _rate(
+        off_scope_foreign_count,
         len(briefing_match_records),
         default=0.0,
     )
@@ -1028,7 +1214,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     else:
         commodity_board_quality_score = 100.0
 
-    semantic_false_positive_penalty = min(18.0, content_false_positive_rate * 120.0)
+    semantic_false_positive_penalty = min(
+        18.0,
+        semantic_false_positive_rate * 120.0 + off_scope_foreign_rate * 70.0,
+    )
+    story_duplicate_penalty = min(8.0, story_duplicate_rate * 28.0 + cross_section_duplicate_rate * 18.0)
+    quality_signal_penalty = semantic_false_positive_penalty + story_duplicate_penalty
     overall_score = (
         completeness_score * 0.20
         + diversity_score * 0.18
@@ -1039,7 +1230,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + core_quality_score * 0.07
         + commodity_board_quality_score * 0.05
     )
-    overall_score = max(0.0, min(100.0, overall_score - semantic_false_positive_penalty))
+    overall_score = max(0.0, min(100.0, overall_score - quality_signal_penalty))
 
     if overall_score >= 85.0:
         status = "pass"
@@ -1078,15 +1269,25 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         weak_seed_sections = [section for section, score in seed_section_scores.items() if score < 0.5]
         improvement_hints.append("리콜 시드 결손이 보입니다: " + ", ".join(weak_seed_sections) + ". query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.")
 
-    if content_false_positive_rate > 0.0:
+    if story_duplicate_rate > 0.0:
         improvement_hints.append(
-            f"금융·정치성 오탐이 브리핑에 섞였습니다 (비율 {content_false_positive_rate:.0%}). "
+            f"동일 사건 카드가 반복 노출됩니다 (비율 {story_duplicate_rate:.0%}). "
+            "URL·제목만 보지 말고 숫자·지역·주체를 묶은 story signature로 섹션 간 중복을 줄이세요."
+        )
+    if off_scope_foreign_rate > 0.0:
+        improvement_hints.append(
+            f"해외 비관리 품목 카드가 브리핑에 섞였습니다 (비율 {off_scope_foreign_rate:.0%}). "
+            "국내 정책·수급·가격 안정 연결고리가 없으면 해당 품목어를 다음 선별 가드레일에 반영하세요."
+        )
+    if semantic_false_positive_rate > 0.0:
+        improvement_hints.append(
+            f"금융·정치성 오탐이 브리핑에 섞였습니다 (비율 {semantic_false_positive_rate:.0%}). "
             "제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요."
         )
     if content_irrelevant_rate > 0.0:
         improvement_hints.append(
-            f"농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 {content_irrelevant_rate:.0%}). "
-            "해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+            f"국내 원예·수급 브리핑 범위 밖 기사가 포함되어 있습니다 (비율 {content_irrelevant_rate:.0%}). "
+            "해외 품목 동향, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
         )
     if not improvement_hints:
         improvement_hints.append("전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.")
@@ -1135,8 +1336,14 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "section_alignment_cross_gap_rate": round(section_alignment_cross_gap_rate, 4),
             "section_alignment_weak_stage_rate": round(section_alignment_weak_stage_rate, 4),
             "content_false_positive_rate": round(content_false_positive_rate, 4),
+            "semantic_false_positive_rate": round(semantic_false_positive_rate, 4),
+            "off_scope_foreign_rate": round(off_scope_foreign_rate, 4),
+            "story_duplicate_rate": round(story_duplicate_rate, 4),
+            "cross_section_duplicate_rate": round(cross_section_duplicate_rate, 4),
             "content_irrelevant_rate": round(content_irrelevant_rate, 4),
             "semantic_false_positive_penalty": round(semantic_false_positive_penalty, 4),
+            "story_duplicate_penalty": round(story_duplicate_penalty, 4),
+            "quality_signal_penalty": round(quality_signal_penalty, 4),
             "core_fit_avg": round(core_fit_avg, 4),
             "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
             "core_stage_core_rate": round(core_stage_core_rate, 4),
@@ -1159,12 +1366,24 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         "content_false_positive_samples": [
             {
                 "title": str(record.get("title") or ""),
+                "href": str(record.get("href") or ""),
                 "section": str(record.get("section") or ""),
                 "reason": str(record.get("false_positive_reason") or ""),
             }
             for record in briefing_match_records
             if str(record.get("false_positive_reason") or "")
         ][:8],
+        "off_scope_samples": [
+            {
+                "title": str(record.get("title") or ""),
+                "href": str(record.get("href") or ""),
+                "section": str(record.get("section") or ""),
+                "reason": str(record.get("off_scope_reason") or ""),
+            }
+            for record in briefing_match_records
+            if str(record.get("off_scope_reason") or "")
+        ][:8],
+        "story_duplicate_samples": story_duplicate_samples,
         "improvement_hints": improvement_hints,
     }
     result["selection_guardrails"] = build_selection_guardrails(result)
@@ -1209,6 +1428,16 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     section_alignment_low_fit_rate = float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0)
     section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
     content_false_positive_rate = float(metrics.get("content_false_positive_rate", 0.0) or 0.0)
+    semantic_false_positive_rate = float(
+        metrics.get(
+            "semantic_false_positive_rate",
+            max(0.0, content_false_positive_rate - float(metrics.get("off_scope_foreign_rate", 0.0) or 0.0)),
+        )
+        or 0.0
+    )
+    off_scope_foreign_rate = float(metrics.get("off_scope_foreign_rate", 0.0) or 0.0)
+    story_duplicate_rate = float(metrics.get("story_duplicate_rate", 0.0) or 0.0)
+    cross_section_duplicate_rate = float(metrics.get("cross_section_duplicate_rate", 0.0) or 0.0)
     weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
@@ -1243,10 +1472,12 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_program_core_min_rank = 1
     commodity_require_issue_signal = False
     commodity_require_direct_item_focus = False
+    exclude_title_terms: list[str] = []
+    story_duplicate_similarity_min = 0.0
 
     reasons: list[str] = []
 
-    if content_false_positive_rate > 0.0:
+    if semantic_false_positive_rate > 0.0:
         reasons.append("semantic_false_positive")
         for key, delta in (("supply", 0.08), ("policy", 0.06), ("dist", 0.1)):
             section_card_min_fit[key] += delta
@@ -1254,13 +1485,35 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.4)
         tail_score_floor_delta += 0.5
 
-    if content_false_positive_rate >= 0.08:
+    if semantic_false_positive_rate >= 0.08:
         reasons.append("semantic_false_positive_severe")
         for key, delta in (("supply", 0.05), ("policy", 0.04), ("dist", 0.06)):
             section_card_min_fit[key] += delta
         low_fit_rescue_min = max(low_fit_rescue_min, 0.45)
         high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 5.0)
         tail_score_floor_delta += 0.3
+
+    if off_scope_foreign_rate > 0.0:
+        reasons.append("foreign_scope_noise")
+        for key, delta in (("policy", 0.06), ("supply", 0.04), ("dist", 0.04)):
+            section_card_min_fit[key] += delta
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.4)
+        tail_score_floor_delta += 0.25
+        for sample in result.get("off_scope_samples", []) if isinstance(result.get("off_scope_samples"), list) else []:
+            text = f"{sample.get('title', '')} {sample.get('reason', '')}" if isinstance(sample, dict) else str(sample)
+            text_l = text.lower()
+            for term in _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS:
+                if term.lower() in text_l and term not in exclude_title_terms:
+                    exclude_title_terms.append(term)
+
+    if story_duplicate_rate > 0.0:
+        reasons.append("story_duplicate")
+        tail_score_floor_delta += 0.25
+        story_duplicate_similarity_min = 0.34
+    if cross_section_duplicate_rate > 0.0:
+        reasons.append("cross_section_duplicate")
+        tail_score_floor_delta += 0.15
+        story_duplicate_similarity_min = 0.32 if story_duplicate_similarity_min else 0.32
 
     if (
         section_alignment_score < 78.0
@@ -1359,6 +1612,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         "commodity_program_core_min_rank": int(commodity_program_core_min_rank),
         "commodity_require_issue_signal": bool(commodity_require_issue_signal),
         "commodity_require_direct_item_focus": bool(commodity_require_direct_item_focus),
+        "exclude_title_terms": list(dict.fromkeys(exclude_title_terms))[:12],
+        "story_duplicate_similarity_min": round(float(story_duplicate_similarity_min or 0.0), 3),
     }
 
 
@@ -1386,12 +1641,20 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "section_alignment_low_fit_rate": round(float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0), 4),
             "section_alignment_cross_gap_rate": round(float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0), 4),
             "content_false_positive_rate": round(float(metrics.get("content_false_positive_rate", 0.0) or 0.0), 4),
+            "semantic_false_positive_rate": round(float(metrics.get("semantic_false_positive_rate", 0.0) or 0.0), 4),
+            "off_scope_foreign_rate": round(float(metrics.get("off_scope_foreign_rate", 0.0) or 0.0), 4),
+            "story_duplicate_rate": round(float(metrics.get("story_duplicate_rate", 0.0) or 0.0), 4),
+            "cross_section_duplicate_rate": round(float(metrics.get("cross_section_duplicate_rate", 0.0) or 0.0), 4),
             "weak_core_rate": round(float(metrics.get("weak_core_rate", 0.0) or 0.0), 4),
             "commodity_primary_item_focus_rate": round(float(metrics.get("commodity_primary_item_focus_rate", 0.0) or 0.0), 4),
             "commodity_primary_issue_signal_rate": round(float(metrics.get("commodity_primary_issue_signal_rate", 0.0) or 0.0), 4),
             "commodity_primary_weak_rate": round(float(metrics.get("commodity_primary_weak_rate", 0.0) or 0.0), 4),
         },
         "selection_guardrails": guardrails,
+        "quality_samples": {
+            "off_scope": result.get("off_scope_samples", [])[:8] if isinstance(result.get("off_scope_samples"), list) else [],
+            "story_duplicates": result.get("story_duplicate_samples", [])[:8] if isinstance(result.get("story_duplicate_samples"), list) else [],
+        },
     }
     if isinstance(editorial, dict) and editorial.get("status") == "success":
         payload["editorial"] = {
@@ -1527,7 +1790,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
             editorial_issues = editorial.get("issues", [])
             issue_lines = "\n".join(
                 f"- [{item.get('severity', 'medium')}] {item.get('type', 'issue')}: {item.get('title', '')} - {item.get('reason', '')}"
-                for item in editorial_issues[:5]
+                for item in editorial_issues[:8]
                 if isinstance(item, dict)
             )
             if not issue_lines:
@@ -1568,9 +1831,11 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
         f"fit_avg={metrics.get('section_alignment_fit_avg', 0):.2f}, "
         f"false_positive={metrics.get('content_false_positive_rate', 0):.2f}, "
+        f"off_scope={metrics.get('off_scope_foreign_rate', 0):.2f}, "
+        f"story_dup={metrics.get('story_duplicate_rate', 0):.2f}, "
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
-        f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
+        f"quality_penalty={metrics.get('quality_signal_penalty', metrics.get('semantic_false_positive_penalty', 0)):.1f}\n\n"
         f"{editorial_block}\n"
         f"### Improvement Hints\n"
         f"{hint_lines}\n\n"
@@ -1599,6 +1864,9 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
         "content_false_positive_rate": metrics.get("content_false_positive_rate", 0),
+        "off_scope_foreign_rate": metrics.get("off_scope_foreign_rate", 0),
+        "story_duplicate_rate": metrics.get("story_duplicate_rate", 0),
+        "quality_signal_penalty": metrics.get("quality_signal_penalty", metrics.get("semantic_false_positive_penalty", 0)),
         "guardrail_driver_tags": (result.get("selection_guardrails") or {}).get("driver_tags", []),
     }
 

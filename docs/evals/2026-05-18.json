@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-18",
-  "generated_at_kst": "2026-05-18T14:24:32+09:00",
+  "generated_at_kst": "2026-05-18T14:44:35+09:00",
   "status": "pass",
   "overall_score": 97.15,
   "scores": {
@@ -37,8 +37,8 @@
     },
     "raw_by_section": {
       "supply": 207,
-      "policy": 114,
-      "dist": 35,
+      "policy": 113,
+      "dist": 33,
       "pest": 65
     },
     "expected_briefing_by_section": {
@@ -54,8 +54,8 @@
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.6875,
-    "summary_opening_diversity": 1.0,
+    "summary_numeric_rate": 0.75,
+    "summary_opening_diversity": 0.9375,
     "matched_article_rate": 1.0,
     "within_48h_rate": 0.375,
     "within_72h_rate": 1.0,
@@ -70,7 +70,7 @@
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
     "core_fit_avg": 4.9488,
-    "core_rank_percentile_avg": 0.9467,
+    "core_rank_percentile_avg": 0.9457,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -108,7 +108,7 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.9957,
       "pest": 1.0
     }
   },
@@ -204,107 +204,107 @@
     "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-18T14:24:52+09:00",
-    "score": 73.0,
+    "generated_at_kst": "2026-05-18T14:45:20+09:00",
+    "score": 78.0,
     "target_score": 95.0,
     "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 72.0,
-      "section_fit": 66.0,
-      "core_pick_quality": 70.0,
-      "summary_usefulness": 82.0,
+      "article_selection": 74.0,
+      "section_fit": 79.0,
+      "core_pick_quality": 72.0,
+      "summary_usefulness": 86.0,
       "missed_opportunity": 68.0,
-      "noise_control": 61.0
+      "noise_control": 73.0
     },
-    "summary": "형식은 갖췄지만 기사 고르기는 아쉽다. 공급은 양파 사태 중복과 마늘 현장 기사의 약한 코어가 문제고, 정책은 이해당사자 요구·스마트팜 백필로 힘이 빠졌다. 유통은 농협 홍보성 기사 비중이 높고, 병해충은 사실상 동일한 과수화상병 기사 반복으로 지면 효율이 낮다. 원시 후보군에 보이는 더 나은 가격·수급 총괄 기사와 과수화상병 대표 기사로 더 날카롭게 짤 수 있었다.",
+    "summary": "형식은 갖췄지만 기사 고르기가 보수적이고 중복·홍보성 선택이 섞였다. 특히 공급은 핵심 이슈인 양파 가격 폭락·정부 수급대응보다 제주 마늘 현장 스케치가 1순위 코어로 올라 약하다. 유통은 블루베리 육성사업이 조합 홍보성에 가깝고, 병해충은 같은 과수화상병 첫 발생 기사 중복이 과하다. 정책은 산란계협회 제재는 좋았지만 나머지 축은 상대적으로 힘이 떨어진다.",
     "issues": [
-      {
-        "type": "duplication",
-        "severity": "high",
-        "section": "supply",
-        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개 / ‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
-        "reason": "같은 사건을 같은 섹션에 중복 배치했다.",
-        "suggested_action": "둘 중 하나만 남기고 다른 공급 이슈로 교체."
-      },
       {
         "type": "weak_core",
         "severity": "high",
         "section": "supply",
         "title": "“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장",
-        "reason": "현장 르포 성격이 강해 공급 핵심 이슈 대표성이 약하다.",
-        "suggested_action": "배추·무·양파 가격하락 등 총괄 수급 기사로 코어 교체."
+        "reason": "현장 스케치 성격이 강해 전국 수급 이슈 대표성이 약함.",
+        "suggested_action": "양파 폭락·채소 가격 하락 같은 시장 영향 큰 기사로 교체."
       },
       {
-        "type": "wrong_section",
-        "severity": "medium",
-        "section": "policy",
-        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
-        "reason": "정책보다 유통업계 요구·시장 인프라 기사에 가깝다.",
-        "suggested_action": "dist로 이동하거나 정책성 강한 정부 결정 기사로 대체."
+        "type": "duplication",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 갈아엎기 기사 2건 동시 선정",
+        "reason": "같은 사건을 공급 섹션에 중복 배치해 지면 효율이 떨어짐.",
+        "suggested_action": "한 건만 남기고 나머지는 다른 품목·수급 기사로 대체."
       },
       {
-        "type": "weak_selection",
+        "type": "section_mismatch",
         "severity": "medium",
-        "section": "policy",
-        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
-        "reason": "당일 핵심 농정 현안 대비 우선순위가 낮은 백필성 기사다.",
-        "suggested_action": "양파 수급대책·필름 공급 등 직접 정책 기사로 교체."
+        "section": "supply",
+        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+        "reason": "물류·시장 운영 성격이 강해 유통 섹션이 더 자연스러움.",
+        "suggested_action": "유통으로 이동하고 공급에는 산지 생산·가격 기사 보강."
       },
       {
         "type": "promotional",
         "severity": "high",
         "section": "dist",
         "title": "서익산 농협 , 블루베리 육성사업으로 농가소득 견인",
-        "reason": "개별 농협 성공사례 홍보 성격이 강하다.",
-        "suggested_action": "시장 구조 변화나 판로 제도 기사로 교체."
+        "reason": "조합 성과 소개 중심의 홍보성 기사로 유통 현안성이 낮음.",
+        "suggested_action": "온라인도매시장·군급식 조달·가락시장 운영 등 구조 기사 우선."
       },
       {
-        "type": "promotional",
+        "type": "weak_selection",
         "severity": "medium",
-        "section": "dist",
-        "title": "동화청과, 자체 기획· 운영 청년농 교육",
-        "reason": "업체 활동 소개 중심으로 뉴스 가치가 제한적이다.",
-        "suggested_action": "가락시장 물류·온라인도매시장 제도 기사 우선."
+        "section": "policy",
+        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
+        "reason": "이해관계자 요구 기사로 정책 확정·제도 변화 정보가 제한적.",
+        "suggested_action": "정부 수급대책·가격안정 대책 기사로 우선순위 조정."
+      },
+      {
+        "type": "backfill_noise",
+        "severity": "medium",
+        "section": "policy",
+        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
+        "reason": "상시형 현장 리포트로 당일 정책 브리프의 긴급성이 약함.",
+        "suggested_action": "정책 공문·제도 변경·수급 대응 기사로 교체."
       },
       {
         "type": "duplication",
         "severity": "high",
         "section": "pest",
-        "title": "과수화상병 관련 4건 반복 배치",
-        "reason": "첫 발생·주의 격상·긴급방제 내용이 거의 동일하다.",
-        "suggested_action": "대표 기사 2건만 남기고 다른 병해충 이슈 보강."
+        "title": "과수화상병 첫 발생 기사 4건 반복",
+        "reason": "사실상 동일 팩트 반복으로 정보 증분이 거의 없음.",
+        "suggested_action": "대표 2건만 남기고 돌발해충·다른 병해 기사로 분산."
       },
       {
         "type": "missed_opportunity",
-        "severity": "medium",
+        "severity": "high",
         "section": "supply",
         "title": "배추·무·양파 가격 하락.. 정부, 비축 확대·출하 조절",
-        "reason": "가격 하락과 정부 대응을 함께 담아 briefing 가치가 높다.",
-        "suggested_action": "중복 양파 기사 1건 대신 채택."
+        "reason": "공급 섹션에서 더 큰 시장 총괄 기사와 정부 대응을 놓침.",
+        "suggested_action": "품목 현장 스케치 대신 수급 전반 기사 1건 이상 반영."
       }
     ],
     "section_notes": {
-      "supply": "가격·수급 큰 흐름보다 제주 마늘 현장과 양파 중복에 치우쳤다. 공급 섹션이라면 채소 전반 가격 하락, 정부 비축·출하조절 같은 총괄성이 더 필요했다.",
-      "policy": "산란계협회 제재는 적절한 톱기사다. 다만 가락시장 지원 요구는 유통색이 강하고 스마트팜 백필은 현안성이 떨어져 정책 섹션의 무게를 약하게 했다.",
-      "dist": "온라인도매시장과 파렛트 운송지원은 적합하다. 반면 서익산농협·동화청과는 홍보성/기관활동 소개가 강해 유통 구조 변화 섹션의 밀도를 떨어뜨렸다.",
-      "pest": "과수화상병 첫 발생 자체는 당연히 잡아야 하지만, 동일 팩트의 변주를 4건 이상 실어 비효율적이다. 대표 기사와 수급 영향 분석 기사 정도로 압축하는 편이 낫다."
+      "supply": "양파 가격 폭락과 채소류 하락이 창을 지배했는데, 1순위가 제주 마늘 현장 기사라 무게중심이 어긋났다. 양파 중복도 과했다. 공급은 전국 수급·가격 변화와 정부 대응을 먼저 세워야 한다.",
+      "policy": "산란계협회 제재는 강한 정책 기사다. 다만 가락시장 지원 촉구는 요구 기사 성격이 강하고 스마트팜은 백필 느낌이 강하다. 수급안정 대책이나 주산지협의체 등 직접 정책집행 기사가 더 적합했다.",
+      "dist": "온라인도매시장 기사는 좋다. 반면 블루베리 육성사업, 청년농 교육은 구조 변화보다 기관 활동 소개에 가깝다. 유통 구조, 거래 방식, 조달 변화 중심으로 더 날카롭게 좁혀야 한다.",
+      "pest": "과수화상병 첫 발생 자체는 당연히 잡아야 하나 동일 사실 반복이 심하다. 대표 기사 1~2건이면 충분했고, 나머지는 돌발해충·지역 확산 가능성·방제 현장 기사로 다양화했어야 한다."
     },
     "improvement_suggestions": [
-      "같은 사건은 한 섹션 1건 원칙으로 압축하라.",
-      "공급 코어는 현장 르포보다 가격·물량·정부 대응이 함께 담긴 총괄 기사 우선.",
-      "정책 섹션은 정부 결정·제도 변화 중심으로, 이해단체 요구성 기사는 후순위로 둬라.",
-      "유통 섹션에서 개별 농협·기업 홍보성 성공사례는 엄격히 감점하라.",
-      "병해충 섹션은 동일 확진 기사 반복 대신 대표 기사+영향 분석 조합으로 구성하라.",
-      "원시 후보군에서 보이는 전국 단위 가격동향 기사들을 더 적극적으로 핵심 카드에 반영하라."
+      "공급 톱은 현장 르포보다 전국 가격·수급 충격이 큰 기사로 선정하라.",
+      "동일 사건은 섹션별 1건 원칙을 두고 후속·해설이 아니면 중복 배치를 피하라.",
+      "유통 섹션에서 조합 홍보·행사성 기사 비중을 줄여라.",
+      "정책 섹션은 요구·성명보다 정부 결정, 제도 변경, 집행 착수 기사를 우선하라.",
+      "병해충 섹션은 같은 보도자료 전재 기사 다건 선정을 제한하라.",
+      "원시 후보군에서 더 강한 총괄 기사 존재 시 지역 미담형 기사는 과감히 탈락시켜라."
     ],
-    "raw_response_excerpt": "{\"score\":73,\"scores\":{\"article_selection\":72,\"section_fit\":66,\"core_pick_quality\":70,\"summary_usefulness\":82,\"missed_opportunity\":68,\"noise_control\":61},\"summary\":\"형식은 갖췄지만 기사 고르기는 아쉽다. 공급은 양파 사태 중복과 마늘 현장 기사의 약한 코어가 문제고, 정책은 이해당사자 요구·스마트팜 백필로 힘이 빠졌다. 유통은 농협 홍보성 기사 비중이 높고, 병해충은 사실상 동일한 과수화상병 기사 반복으로 지면 효율이 낮다. 원시 후보군에 보이는 더 나은 가격·수급 총괄 기사와 과수화상병 대표 기사로 더 날카롭게 짤 수 있었다.\",\"issues\":[{\"type\":\"duplication\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"양파 농가들, '양파밭 갈아엎기 투쟁' 전개 / ‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?\",\"reason\":\"같은 사건을 같은 섹션에 중복 배치했다.\",\"suggested_action\":\"둘 중 하나만 남기고 다른 공급 이슈로 교체.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장\",\"reason\":\"현장 르포 성격이 강해 공급 핵심 이슈 대표성이 약하다.\",\"suggested_action\":\"배추·무·양파 가격하락 등 총괄 수급 기사로 코어 교체.\"},{\"type\":\"wrong_section\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"가락시장 유통인, \\\"시설현대화 국비 지원 확대·융자 금리 인하\\\" 촉구\",\"reason\":\"정책보다 유통업계 요구·시장 인프라 기사에 가깝다.\",\"suggested_action\":\"dist로 이동하거나 정책성 강한 정부 결정 기사로 대체.\"},{\"type\":\"weak_selection\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야\",\"reason\":\"당일 핵심 농정 현안 대비 우선순위가 낮은 백필성 기사다.\",\"suggested_action\":\"양파 수급대책·필름 공급 등 직접 정책 기사로 교체.\"..."
+    "raw_response_excerpt": "{\"score\":78,\"scores\":{\"article_selection\":74,\"section_fit\":79,\"core_pick_quality\":72,\"summary_usefulness\":86,\"missed_opportunity\":68,\"noise_control\":73},\"summary\":\"형식은 갖췄지만 기사 고르기가 보수적이고 중복·홍보성 선택이 섞였다. 특히 공급은 핵심 이슈인 양파 가격 폭락·정부 수급대응보다 제주 마늘 현장 스케치가 1순위 코어로 올라 약하다. 유통은 블루베리 육성사업이 조합 홍보성에 가깝고, 병해충은 같은 과수화상병 첫 발생 기사 중복이 과하다. 정책은 산란계협회 제재는 좋았지만 나머지 축은 상대적으로 힘이 떨어진다.\",\"issues\":[{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"“작황 아쉽지만 값 잘 받았으면”…제주 남도종 마늘 수확 현장\",\"reason\":\"현장 스케치 성격이 강해 전국 수급 이슈 대표성이 약함.\",\"suggested_action\":\"양파 폭락·채소 가격 하락 같은 시장 영향 큰 기사로 교체.\"},{\"type\":\"duplication\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"양파 갈아엎기 기사 2건 동시 선정\",\"reason\":\"같은 사건을 공급 섹션에 중복 배치해 지면 효율이 떨어짐.\",\"suggested_action\":\"한 건만 남기고 나머지는 다른 품목·수급 기사로 대체.\"},{\"type\":\"section_mismatch\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진\",\"reason\":\"물류·시장 운영 성격이 강해 유통 섹션이 더 자연스러움.\",\"suggested_action\":\"유통으로 이동하고 공급에는 산지 생산·가격 기사 보강.\"},{\"type\":\"promotional\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"서익산 농협 , 블루베리 육성사업으로 농가소득 견인\",\"reason\":\"조합 성과 소개 중심의 홍보성 기사로 유통 현안성이 낮음.\",\"suggested_action\":\"온라인도매시장·군급식 조달·가락시장 운영 등 구조 기사 우선.\"},{\"type\":\"weak_selection\",\"severity..."
   },
-  "editorial_score": 73.0,
+  "editorial_score": 78.0,
   "editorial_improvement_plan": {
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 73.0,
+    "current_editorial_score": 78.0,
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
