@@ -1,8 +1,8 @@
 {
   "report_date": "2026-05-19",
-  "generated_at_kst": "2026-05-19T11:32:13+09:00",
-  "status": "pass",
-  "overall_score": 90.29,
+  "generated_at_kst": "2026-05-19T11:55:22+09:00",
+  "status": "fail",
+  "overall_score": 49.79,
   "scores": {
     "completeness": 58.0,
     "diversity": 100.0,
@@ -36,8 +36,8 @@
       "pest": 3
     },
     "raw_by_section": {
-      "supply": 149,
-      "policy": 107,
+      "supply": 145,
+      "policy": 110,
       "dist": 49,
       "pest": 47
     },
@@ -62,7 +62,7 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 4.852,
+    "section_alignment_fit_avg": 4.472,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -74,15 +74,16 @@
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
-    "quality_signal_penalty": 0.0,
+    "coverage_underfill_penalty": 40.5,
+    "quality_signal_penalty": 40.5,
     "core_fit_avg": 4.89,
-    "core_rank_percentile_avg": 0.9899,
+    "core_rank_percentile_avg": 0.9931,
     "core_stage_core_rate": 0.75,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9333,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.628,
+    "commodity_primary_fit_avg": 3.754,
     "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
@@ -196,7 +197,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 90.29,
+  "operational_score": 49.79,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -205,113 +206,112 @@
     "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-19T11:32:35+09:00",
-    "score": 72.0,
+    "generated_at_kst": "2026-05-19T11:55:44+09:00",
+    "score": 54.0,
     "target_score": 95.0,
     "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 68.0,
-      "section_fit": 54.0,
-      "core_pick_quality": 60.0,
-      "summary_usefulness": 83.0,
-      "missed_opportunity": 62.0,
-      "noise_control": 50.0
+      "article_selection": 46.0,
+      "section_fit": 40.0,
+      "core_pick_quality": 38.0,
+      "summary_usefulness": 74.0,
+      "missed_opportunity": 30.0,
+      "noise_control": 45.0
     },
-    "summary": "핵심 이슈인 양파 가격 급락과 과수화상병은 잡았지만, 전체적으로 섹션 편성이 크게 흔들렸다. 유통(dist) 카드가 아예 없는데 도매시장 교육성 기사를 supply 핵심으로 올렸고, supply도 시장 수급 본류보다 행사·교육성 소재 비중이 높다. policy는 계란 수입 1건만으로는 약하며, 같은 풀에 있던 규제완화·가격안정기금 등 보완 후보를 놓쳤다. 요약문 자체는 수치와 맥락이 대체로 충실하다.",
+    "summary": "핵심 이슈를 제대로 집지 못한 편집이다. 공급 섹션의 코어가 행사성·교육성 기사로 빗나갔고, 유통(dist) 섹션이 통째로 비어 있는 반면 더 적합한 후보들이 풀에 있었다. 정책·병해충은 그나마 의미 있는 현안이 들어갔지만, 전체적으로 농가·시장 영향이 큰 기사보다 홍보성·가벼운 소비 기사에 우선순위를 준 점이 크게 감점된다.",
     "issues": [
       {
         "type": "wrong_section",
         "severity": "high",
         "section": "supply",
         "title": "동화청과, 청년농 경매 실전교육",
-        "reason": "도매시장 유통교육 기사로 supply보다 dist 성격이 강함.",
-        "suggested_action": "dist로 이동하고 supply 핵심에서 제외."
+        "reason": "수급 이슈가 아닌 교육·홍보성 도매시장 기사다.",
+        "suggested_action": "dist로 돌리거나 제외하고 양파 수급 기사로 교체."
       },
       {
-        "type": "missing_section",
+        "type": "weak_core",
         "severity": "high",
-        "section": "dist",
-        "title": "유통 섹션 공백",
-        "reason": "가공수출·물류개선·군납 변화 등 dist 후보가 있었는데 카드가 없음.",
-        "suggested_action": "dist 핵심 1~2건을 반드시 편성."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "medium",
         "section": "supply",
-        "title": "세종청사 햇 양파 직거래장터… 양파 값 폭락에 최대 40% 할인",
-        "reason": "행사 자체보다 판촉 중심이라 이슈 구조 설명이 약함.",
-        "suggested_action": "농가 피해·출하조절 중심 기사로 대체 또는 보조 카드화."
+        "title": "동화청과, 청년농 경매 실전교육",
+        "reason": "농가 피해·가격 급변보다 파급력이 약한 행사 기사다.",
+        "suggested_action": "코어에서 제외."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
         "section": "supply",
         "title": "[전국 톡톡] 전국서 갈아엎는 양파 밭‥\"생산비도 못 건져\"",
-        "reason": "양파 급락의 현장성과 심각도를 더 직접적으로 보여주는 후보를 놓침.",
-        "suggested_action": "행사 기사보다 우선 반영."
+        "reason": "같은 날 가장 강한 현장형 수급 기사인데 미선정됐다.",
+        "suggested_action": "공급 섹션 최우선으로 채택."
       },
       {
-        "type": "weak_core",
+        "type": "missing_section",
         "severity": "high",
-        "section": "policy",
-        "title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원",
-        "reason": "정책 섹션 단독 핵심으로는 범위가 좁고 공급 기사와 경계가 흐림.",
-        "suggested_action": "규제완화·가격안정기금 등 제도성 기사와 함께 구성."
-      },
-      {
-        "type": "section_balance",
-        "severity": "medium",
-        "section": "policy",
-        "title": "정책 섹션 과소선정",
-        "reason": "정책 후보풀이 충분했는데 1건만 채택해 정부 대응 스펙트럼이 빈약함.",
-        "suggested_action": "최소 2~3건으로 보강."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "policy",
-        "title": "농식품부 규제합리화 50건",
-        "reason": "온라인 도매시장 참여 문턱 완화 등 업계 파급력이 큰 정책을 놓침.",
-        "suggested_action": "정책 핵심 또는 보조 카드로 추가."
+        "section": "dist",
+        "title": "유통 섹션 공란",
+        "reason": "가락시장 물류·냉동딸기 수출 등 적합 후보가 있었는데 비웠다.",
+        "suggested_action": "dist 카드 최소 1~2건 채우기."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
         "title": "논산 비타베리 냉동딸기, 인도네시아 첫 수출길 올라",
-        "reason": "가공형 수출·연중 공급체계라는 유통 의미가 뚜렷한 후보를 미반영.",
-        "suggested_action": "dist 대표 카드로 채택."
+        "reason": "판로 다변화·가공수출 구조 전환 의미가 뚜렷했다.",
+        "suggested_action": "dist 대표 기사로 채택."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "서울시공사, 물류 선진화 위해 순회수집 운송지원 확대",
+        "reason": "도매시장 물류개선이라는 정통 유통 기사였다.",
+        "suggested_action": "dist 보조 기사로 채택."
+      },
+      {
+        "type": "noise",
+        "severity": "medium",
+        "section": "supply",
+        "title": "벌써 3만 원 돌파라니 무섭다...마트 갔다가 수박 가격 보고 깜짝 놀란...",
+        "reason": "제목이 자극적이고 소비자 체감 기사 성격이 강하다.",
+        "suggested_action": "보다 데이터·산지 중심 기사로 교체."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
+        "section": "policy",
+        "title": "계란값 안정 위해 신선란 224만개 수입... 한 판 5990원",
+        "reason": "정책성은 있으나 단일 유통조치 중심으로 정책 폭이 좁다.",
+        "suggested_action": "규제·기금·수급대책 기사와 균형 보강."
       }
     ],
     "section_notes": {
-      "supply": "양파 급락·수박 강세라는 시의성은 맞았지만, 1번 카드는 사실상 유통 교육 기사다. 공급 섹션은 산지 피해, 작황, 가격 변동의 본류를 더 직접 다뤄야 한다.",
-      "policy": "계란 수입은 정책 뉴스로 성립하지만 단독으론 약하다. 같은 풀의 가격안정기금, 규제완화, 양파 수급대책을 조합했어야 정책면이 살아난다.",
-      "dist": "가장 큰 문제 구간. 실제로는 동화청과 교육, 논산 냉동딸기 수출, 가락시장 물류개선 등 후보가 있었는데 완전히 비어 있다.",
-      "pest": "과수화상병 조기 발생을 잡은 선택은 적절하다. 충주와 원주를 묶어 전국 확산 신호로 정리한 점도 좋다."
+      "supply": "양파 가격 폭락·밭 갈아엎기라는 더 큰 수급 현안을 두고 교육 행사와 수박 소비자 체감 기사를 전면에 둔 판단이 아쉽다. 공급 섹션의 뉴스 가치가 가장 약하다.",
+      "policy": "계란 수입 안정화 조치는 시의성 있다. 다만 정책 섹션이 1건뿐이고, 평창 가격안정기금이나 규제 합리화처럼 제도 폭을 보여줄 후보를 놓쳤다.",
+      "dist": "가장 큰 결함. 실제로는 냉동딸기 수출, 가락시장 순회수집·파렛트 물류 개선 등 적합 후보가 충분했는데 섹션이 비었다.",
+      "pest": "과수화상병 첫 발생과 확산 우려를 잡은 것은 적절하다. 충주+원주를 함께 묶은 기사 선택도 단건 지역 기사보다 낫다."
     },
     "improvement_suggestions": [
-      "섹션별 최소 1건 편성을 지키고 dist 공백을 허용하지 말 것.",
-      "supply에서는 행사성 기사보다 산지 피해·가격 붕괴·출하 동향 기사를 우선할 것.",
-      "도매시장 교육·물류·수출 기사는 supply로 올리기보다 dist로 엄격히 분리할 것.",
-      "policy는 단일 품목 가격대응 1건에 그치지 말고 제도·예산·규제완화 기사를 함께 묶을 것.",
-      "양파 이슈는 판촉행사보다 갈아엎기, 출하조절 요구, 수입 영향 등 구조 기사로 핵심화할 것.",
-      "핵심 카드 선정 시 후보풀에서 더 강한 현장성·파급력 기사가 있는지 우선 비교할 것."
+      "공급 코어는 행사성 기사보다 가격 급락·출하 차질·산지 피해 같은 직접 현안을 우선 선별할 것.",
+      "dist 섹션 공란을 허용하지 말고 수출·도매시장 물류·산지유통 개선 기사로 최소 1건 이상 채울 것.",
+      "제목이 자극적인 소비 기사보다 공신력 있는 데이터·현장 취재 기사로 교체할 것.",
+      "같은 이슈에서 정부 판촉 기사보다 농가 피해 현장 기사와 정책 대응 기사를 함께 배치해 균형을 맞출 것.",
+      "코어 지정 기준을 강화해 홍보·교육·MOU성 기사의 코어 편입을 제한할 것.",
+      "섹션별 대표성 점검을 통해 supply/policy/dist/pest 최소 기본 구성을 유지할 것."
     ],
-    "raw_response_excerpt": "{\"score\":72,\"scores\":{\"article_selection\":68,\"section_fit\":54,\"core_pick_quality\":60,\"summary_usefulness\":83,\"missed_opportunity\":62,\"noise_control\":50},\"summary\":\"핵심 이슈인 양파 가격 급락과 과수화상병은 잡았지만, 전체적으로 섹션 편성이 크게 흔들렸다. 유통(dist) 카드가 아예 없는데 도매시장 교육성 기사를 supply 핵심으로 올렸고, supply도 시장 수급 본류보다 행사·교육성 소재 비중이 높다. policy는 계란 수입 1건만으로는 약하며, 같은 풀에 있던 규제완화·가격안정기금 등 보완 후보를 놓쳤다. 요약문 자체는 수치와 맥락이 대체로 충실하다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"도매시장 유통교육 기사로 supply보다 dist 성격이 강함.\",\"suggested_action\":\"dist로 이동하고 supply 핵심에서 제외.\"},{\"type\":\"missing_section\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"유통 섹션 공백\",\"reason\":\"가공수출·물류개선·군납 변화 등 dist 후보가 있었는데 카드가 없음.\",\"suggested_action\":\"dist 핵심 1~2건을 반드시 편성.\"},{\"type\":\"promotional_filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"세종청사 햇 양파 직거래장터… 양파 값 폭락에 최대 40% 할인\",\"reason\":\"행사 자체보다 판촉 중심이라 이슈 구조 설명이 약함.\",\"suggested_action\":\"농가 피해·출하조절 중심 기사로 대체 또는 보조 카드화.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"[전국 톡톡] 전국서 갈아엎는 양파 밭‥\\\"생산비도 못 건져\\\"\",\"reason\":\"양파 급락의 현장성과 심각도를 더 직접적으로 보여주는 후보를 놓침.\",\"suggested_action\":\"행사 기사보다 우선 반영.\"},{\"type\":\"weak_core\",\"severity\":..."
+    "raw_response_excerpt": "{\"score\":54,\"scores\":{\"article_selection\":46,\"section_fit\":40,\"core_pick_quality\":38,\"summary_usefulness\":74,\"missed_opportunity\":30,\"noise_control\":45},\"summary\":\"핵심 이슈를 제대로 집지 못한 편집이다. 공급 섹션의 코어가 행사성·교육성 기사로 빗나갔고, 유통(dist) 섹션이 통째로 비어 있는 반면 더 적합한 후보들이 풀에 있었다. 정책·병해충은 그나마 의미 있는 현안이 들어갔지만, 전체적으로 농가·시장 영향이 큰 기사보다 홍보성·가벼운 소비 기사에 우선순위를 준 점이 크게 감점된다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"수급 이슈가 아닌 교육·홍보성 도매시장 기사다.\",\"suggested_action\":\"dist로 돌리거나 제외하고 양파 수급 기사로 교체.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"동화청과, 청년농 경매 실전교육\",\"reason\":\"농가 피해·가격 급변보다 파급력이 약한 행사 기사다.\",\"suggested_action\":\"코어에서 제외.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"[전국 톡톡] 전국서 갈아엎는 양파 밭‥\\\"생산비도 못 건져\\\"\",\"reason\":\"같은 날 가장 강한 현장형 수급 기사인데 미선정됐다.\",\"suggested_action\":\"공급 섹션 최우선으로 채택.\"},{\"type\":\"missing_section\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"유통 섹션 공란\",\"reason\":\"가락시장 물류·냉동딸기 수출 등 적합 후보가 있었는데 비웠다.\",\"suggested_action\":\"dist 카드 최소 1~2건 채우기.\"},{\"type\":\"missed_opportunity\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"논산 비타베리 냉동딸기, 인도네시아 첫 수출길 올라\",\"reason\":\"판로 다변화·가공수출 구조 전환 의미가 뚜렷했다.\",..."
   },
-  "editorial_score": 72.0,
+  "editorial_score": 54.0,
   "editorial_improvement_plan": {
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 72.0,
+    "current_editorial_score": 54.0,
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
@@ -326,12 +326,6 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
-        "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",
