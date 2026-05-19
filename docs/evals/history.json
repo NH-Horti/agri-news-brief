@@ -1,6 +1,25 @@
 {
   "reports": [
     {
+      "report_date": "2026-05-20",
+      "generated_at_kst": "2026-05-20T06:22:20+09:00",
+      "overall_score": 98.93,
+      "operational_score": 98.93,
+      "editorial_score": 72.0,
+      "editorial_status": "needs_major_iteration",
+      "status": "pass",
+      "section_alignment": 99.86,
+      "core_quality": 100.0,
+      "commodity_board_quality": 100.0,
+      "briefing_total": 16,
+      "commodity_total": 43,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "content_false_positive_rate": 0.0,
+      "guardrail_driver_tags": []
+    },
+    {
       "report_date": "2026-05-19",
       "generated_at_kst": "2026-05-19T13:21:22+09:00",
       "overall_score": 97.85,
@@ -518,5 +537,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-05-19T13:21:22+09:00"
+  "updated_at_kst": "2026-05-20T06:22:20+09:00"
 }
