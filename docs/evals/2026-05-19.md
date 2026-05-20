@@ -1,27 +1,24 @@
 ## Daily Eval (2026-05-19)
-- Overall: **49.79** (fail)
-- Operational: **49.79**
-- Scores: completeness=58.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=86.9, section_fit=100.0, core=98.3, commodity=97.2
-- Briefing cards: 5 / Commodity cards: 56
-- Sections: supply:3/3 raw=144, policy:1/3 raw=109, dist:0/3 raw=48, pest:1/3 raw=47
-- Metrics: title_unique=1.00, domain_diversity=1.00, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=4.85, false_positive=0.00, off_scope=0.00, story_dup=0.00, weak_core=0.00, commodity_weak=0.00, quality_penalty=40.5
+- Overall: **97.85** (pass)
+- Operational: **97.85**
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=86.2, section_fit=92.4, core=100.0, commodity=97.2
+- Briefing cards: 16 / Commodity cards: 56
+- Sections: supply:5/3 raw=145, policy:3/3 raw=108, dist:4/3 raw=48, pest:4/3 raw=46
+- Metrics: title_unique=1.00, domain_diversity=0.81, summary_presence=1.00, summary_numeric=0.94, fresh_72h=1.00, fit_avg=4.31, false_positive=0.00, weak_core=0.00, commodity_weak=0.00, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **34.00** (target 95, needs_major_iteration)
-- Components: article_selection=28.0, section_fit=22.0, core=26.0, summary=66.0, missed=18.0, noise=20.0
-- Summary: 핵심 이슈가 보이는 후보풀을 두고도 섹션 구성이 크게 어긋났습니다. 공급에 도매법인 교육·직거래 장터·수박 소비물가를 몰아넣고, 정작 유통(dist) 섹션은 비워 두었으며 정책도 계란 1건만 골라 양파·규제완화·가격안정기금 등 더 강한 정책 후보를 놓쳤습니다. 요약문 자체는 수치와 맥락이 있어 읽히지만, 기사 선정이 신문형 브리핑 기준에서 약합니다.
-- [high] wrong_section: 동화청과, 청년농 경매 실전교육 - 도매시장 유통·교육 기사로 공급 수급 핵심이 아님.
-- [high] missing_section: 유통 섹션 공백 - dist 후보군에 수출·산지경매·물류개선 기사가 충분한데 0건 선택.
-- [high] weak_core: 세종청사 햇 양파 직거래장터… 양파 값 폭락에 최대 40% 할인 - 정책성 소비촉진 행사 성격이 강하고 공급 섹션 대표성은 약함.
-- [high] promotional_filler: 동화청과, 청년농 경매 실전교육 - 기업 프로그램 소개 성격이 강한 홍보성 기사.
-- [high] missed_opportunity: [전국 톡톡] 전국서 갈아엎는 양파 밭 - 가격 폭락의 현장성과 심각도가 직거래장터보다 훨씬 큼.
-- [high] missed_opportunity: 농식품규제 합리화 50건 / 평창 가격안정기금 - 정책 섹션에 계란 1건만 넣어 정책 폭과 무게감이 부족.
-- [medium] selection_balance: 수박 가격 급등 기사 편중 - 공급 3건 중 2건이 소비가격·판촉 성격으로 수급 구조 정보가 빈약.
+- Editorial: **83.00** (target 95, needs_iteration)
+- Components: article_selection=81.0, section_fit=79.0, core=84.0, summary=89.0, missed=80.0, noise=76.0
+- Summary: 핵심 이슈인 양파 폭락과 과수화상병은 잘 잡았지만, 유통·정책 섹션에서 기사 성격이 약한 홍보성/지역 단신 비중이 높고 더 나은 후보를 일부 놓쳤다. 특히 dist는 실무 유통구조 기사보다 출하 개시·교육·선적식 중심으로 구성돼 섹션 정체성이 약해졌다.
+- [high] wrong_section: "당도 꽉 찬 명품 멜론 출하 시작" 곡성멜론 본격 판매 - 출하 개시·지역 특산 홍보 성격이 강해 유통 구조 이슈로 약함.
+- [high] promotional_filler: 동화청과, 청년농 경매 실전교육 - 교육 프로그램 소개로 뉴스 임팩트가 약하다.
+- [medium] promotional_filler: 풍양농협, 2026년산 햇 마늘 산지경매장 개징 - 개장 행사성 지역 기사로 전국 독자 효용이 낮다.
+- [medium] weak_policy_pick: 권요안 전북도의원, 양파 가격 폭락 대응 촉구 - 의원 촉구성 발언은 정책 결정·집행 기사보다 한 단계 약하다.
+- [medium] duplicate_theme: 원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모 - 1번 화상병 기사와 겹침이 커 정보 추가가 제한적이다.
 
 ### Improvement Hints
-- 선정 결과가 약한 섹션이 있습니다: policy, dist, pest. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.
-- 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.

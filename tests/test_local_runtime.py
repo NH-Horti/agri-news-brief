@@ -239,3 +239,43 @@ class LocalRuntimeTests(TestCase):
             clear=True,
         ):
             self.assertEqual(main._selection_feedback_block_reason(article, "policy"), "feedback_url_exclusion")
+
+    def test_editorial_safe_demotes_price_report_without_policy_action(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title="5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+            description="도매시장 입하와 품종 교체 영향으로 일부 농산물 가격 오름세가 나타났다.",
+        )
+
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(article, "policy"),
+            "policy_price_report_without_policy_action",
+        )
+        self.assertGreater(main._editorial_safe_soft_penalty(article, "policy"), 0.0)
+
+    def test_editorial_safe_keeps_policy_action_article(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title="계란 224만개 추가 수입, 가공용 돼지ㆍ닭고기 할당관세 추가 적용",
+            description="정부가 수급 안정을 위해 추가 수입과 할당관세 적용 대책을 발표했다.",
+        )
+
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "policy"), "")
+
+    def test_editorial_safe_demotes_promotional_and_weak_dist_items(self) -> None:
+        supply_article = self._make_article(
+            section="supply",
+            title="NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+            description="지역 농업인을 대상으로 마늘 망 지원 행사를 열었다.",
+        )
+        dist_article = self._make_article(
+            section="dist",
+            title="강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+            description="협의회가 산지 유통 현장투어를 개최했다.",
+        )
+
+        self.assertEqual(main._editorial_safe_core_demote_reason(supply_article, "supply"), "promotional_or_event_filler")
+        self.assertIn(
+            main._editorial_safe_core_demote_reason(dist_article, "dist"),
+            {"promotional_or_event_filler", "dist_event_or_development_without_ops"},
+        )
