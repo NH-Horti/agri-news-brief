@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-20",
-  "generated_at_kst": "2026-05-20T13:53:56+09:00",
+  "generated_at_kst": "2026-05-20T14:59:31+09:00",
   "scores": {
     "section_alignment": 99.86,
     "core_quality": 100.0,
@@ -13,10 +13,11 @@
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0625,
     "promotional_filler_rate": 0.125,
+    "promotional_core_rate": 0.1429,
     "weak_core_editorial_rate": 0.1429,
     "pest_theme_duplicate_rate": 0.0625,
     "dist_weak_ops_rate": 0.0625,
-    "editorial_quality_penalty": 4.6786,
+    "editorial_quality_penalty": 4.8214,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9444,
     "commodity_primary_weak_rate": 0.0
@@ -97,77 +98,77 @@
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 78.0,
+      "article_selection": 80.0,
       "section_fit": 76.0,
-      "core_pick_quality": 80.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 79.0,
+      "core_pick_quality": 74.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 83.0,
       "noise_control": 72.0
     },
     "issues": [
       {
-        "type": "promotional_filler",
+        "type": "wrong_section",
         "severity": "high",
         "section": "supply",
         "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "지역성 강한 지원 행사로 수급 뉴스 가치 낮음.",
-        "suggested_action": "공급 영향이 큰 가격·출하·재배면적 기사로 교체."
+        "reason": "지역 지원행사성 기사로 수급 이슈성이 약함.",
+        "suggested_action": "공급 동향·가격·출하 영향 기사로 교체."
       },
       {
-        "type": "wrong_section",
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+        "reason": "코어로 둘 수준의 파급력과 데이터가 부족함.",
+        "suggested_action": "비코어 또는 제외 처리."
+      },
+      {
+        "type": "promotional_filler",
         "severity": "high",
         "section": "dist",
         "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
-        "reason": "유통 구조보다 지역 출하 홍보에 가까움.",
-        "suggested_action": "경매·APC·도매시장 구조 기사로 대체."
+        "reason": "브랜드 출하 홍보에 가까워 유통 구조 변화 정보가 약함.",
+        "suggested_action": "도매시장·APC·수출·온라인유통 변화 기사 우선."
       },
       {
-        "type": "promotional_filler",
+        "type": "weak_core",
+        "severity": "medium",
+        "section": "dist",
+        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
+        "reason": "유통 섹션 코어치고 운영·제도·채널 변화가 빈약함.",
+        "suggested_action": "비코어로 내리거나 더 강한 유통 기사 교체."
+      },
+      {
+        "type": "duplicate_theme",
+        "severity": "medium",
+        "section": "pest",
+        "title": "“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생 / ‘ 과수화상병 ’ 주의보",
+        "reason": "동일 화상병 이슈를 비슷한 각도로 중복 배치.",
+        "suggested_action": "하나는 발생 총괄, 하나는 대응/약제/추가 확산 기사로 분산."
+      },
+      {
+        "type": "section_drift",
+        "severity": "medium",
+        "section": "policy",
+        "title": "수급 대책 약발 안먹히는 ‘햇 양파 ’…“수출로 값 안정 도모하자”",
+        "reason": "정책보다는 산지 수급·출하 대응 기사 성격이 강함.",
+        "suggested_action": "공급으로 이동하거나 정책성 stronger 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
         "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
-        "reason": "벤치마킹 행사 기사로 실질 유통 변화 정보 부족.",
-        "suggested_action": "실거래·시설개선·수출물류 성과 기사 우선."
-      },
-      {
-        "type": "theme_duplication",
-        "severity": "medium",
-        "section": "pest",
-        "title": "‘ 과수화상병 ’ 주의보",
-        "reason": "1번 화상병 발생 기사와 정보 중복, 신문 내 B컷 성격 강함.",
-        "suggested_action": "추가 확산·방제제·현장진단실 기사로 차별화."
-      },
-      {
-        "type": "weak_core",
-        "severity": "high",
-        "section": "supply",
-        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "코어로 둘 만한 전국성·시장성 부족.",
-        "suggested_action": "코어 해제하고 양파·폭염·안전성 조사 등 대체 검토."
-      },
-      {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "policy",
-        "title": "계란 224만개 추가 수입, 가공용 돼지ㆍ닭고기 할당관세 추가 적용",
-        "reason": "원예 독자 기준에서 축산 중심, 농산물 정책축과 거리 있음.",
-        "suggested_action": "원예 수급·유통 제도 변화 기사 비중 확대."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "dist",
-        "title": "미선정: ‘블루베리’ 소득작목 육성 온힘",
-        "reason": "농협의 품종·출하시기·판매 책임까지 담아 유통 관점이 더 선명함.",
-        "suggested_action": "행사성 현장투어 대신 검토."
+        "reason": "후보풀에 있었는데도 유통 섹션에 더 적합한 운영 기사 활용이 약함.",
+        "suggested_action": "홍보성 출하 기사 대신 산지유통 고도화 기사 전진 배치."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "policy",
-        "title": "미선정: 농식품부 , 양곡 수급 계획 조정 논의…\"논타작물 재배 확대 필요\"",
-        "reason": "정부 수급 계획 조정은 정책 파급력이 더 큼.",
-        "suggested_action": "부차적 백필 기사 대신 우선 검토."
+        "title": "농식품부 , ‘황당 규제’ 50개 개선",
+        "reason": "온라인도매시장 가입기준 완화 등 제도 기사보다 현재 선택안의 정책성 밀도가 낮음.",
+        "suggested_action": "정책 섹션에 제도 변화 기사 반영."
       }
     ]
   },
