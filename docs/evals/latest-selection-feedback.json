@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-20",
-  "generated_at_kst": "2026-05-20T06:22:20+09:00",
+  "generated_at_kst": "2026-05-20T13:53:56+09:00",
   "scores": {
     "section_alignment": 99.86,
     "core_quality": 100.0,
@@ -11,11 +11,167 @@
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
+    "policy_wrong_section_rate": 0.0625,
+    "promotional_filler_rate": 0.125,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.0625,
+    "dist_weak_ops_rate": 0.0625,
+    "editorial_quality_penalty": 4.6786,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9444,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_quality_samples": [
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3586011",
+      "section": "supply",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320854",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+      "href": "https://www.yna.co.kr/view/AKR20260519112200062?input=1195m",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "충북 충주 과수 원서 과수화상병 올 첫 발생",
+      "href": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101053",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "editorial": {
+    "score": 82.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 78.0,
+      "section_fit": 76.0,
+      "core_pick_quality": 80.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 72.0
+    },
+    "issues": [
+      {
+        "type": "promotional_filler",
+        "severity": "high",
+        "section": "supply",
+        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+        "reason": "지역성 강한 지원 행사로 수급 뉴스 가치 낮음.",
+        "suggested_action": "공급 영향이 큰 가격·출하·재배면적 기사로 교체."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "dist",
+        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
+        "reason": "유통 구조보다 지역 출하 홍보에 가까움.",
+        "suggested_action": "경매·APC·도매시장 구조 기사로 대체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "dist",
+        "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+        "reason": "벤치마킹 행사 기사로 실질 유통 변화 정보 부족.",
+        "suggested_action": "실거래·시설개선·수출물류 성과 기사 우선."
+      },
+      {
+        "type": "theme_duplication",
+        "severity": "medium",
+        "section": "pest",
+        "title": "‘ 과수화상병 ’ 주의보",
+        "reason": "1번 화상병 발생 기사와 정보 중복, 신문 내 B컷 성격 강함.",
+        "suggested_action": "추가 확산·방제제·현장진단실 기사로 차별화."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+        "reason": "코어로 둘 만한 전국성·시장성 부족.",
+        "suggested_action": "코어 해제하고 양파·폭염·안전성 조사 등 대체 검토."
+      },
+      {
+        "type": "weak_core",
+        "severity": "medium",
+        "section": "policy",
+        "title": "계란 224만개 추가 수입, 가공용 돼지ㆍ닭고기 할당관세 추가 적용",
+        "reason": "원예 독자 기준에서 축산 중심, 농산물 정책축과 거리 있음.",
+        "suggested_action": "원예 수급·유통 제도 변화 기사 비중 확대."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "미선정: ‘블루베리’ 소득작목 육성 온힘",
+        "reason": "농협의 품종·출하시기·판매 책임까지 담아 유통 관점이 더 선명함.",
+        "suggested_action": "행사성 현장투어 대신 검토."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "미선정: 농식품부 , 양곡 수급 계획 조정 논의…\"논타작물 재배 확대 필요\"",
+        "reason": "정부 수급 계획 조정은 정책 파급력이 더 큼.",
+        "suggested_action": "부차적 백필 기사 대신 우선 검토."
+      }
+    ]
+  },
+  "editorial_suggested_guardrails": {
     "driver_tags": [
       "editorial_section_fit",
       "editorial_noise_filter",
@@ -52,91 +208,13 @@
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false
   },
-  "editorial": {
-    "score": 72.0,
-    "target_score": 95.0,
-    "target_status": "needs_major_iteration",
-    "scores": {
-      "article_selection": 68.0,
-      "section_fit": 70.0,
-      "core_pick_quality": 63.0,
-      "summary_usefulness": 83.0,
-      "missed_opportunity": 66.0,
-      "noise_control": 58.0
-    },
-    "issues": [
-      {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "policy",
-        "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
-        "reason": "지역 가격동향 소식지 기사로 정책성 약함.",
-        "suggested_action": "공급 섹션으로 돌리거나 제외."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "high",
-        "section": "supply",
-        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "지역 농협 지원행사성 기사로 전국 수급 정보가 약함.",
-        "suggested_action": "수급 영향 기사로 교체."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "medium",
-        "section": "dist",
-        "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
-        "reason": "벤치마킹 행사 소개 중심, 실제 유통 변화 정보 빈약.",
-        "suggested_action": "출하·경매·APC 운영 변화 기사 우선."
-      },
-      {
-        "type": "wrong_section",
-        "severity": "medium",
-        "section": "dist",
-        "title": "‘블루베리’ 소득작목 육성 온힘",
-        "reason": "생산·품목육성 성격이 강하고 유통 구조 변화는 제한적.",
-        "suggested_action": "유통 성과 수치가 크지 않으면 공급으로 이동."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "high",
-        "section": "pest",
-        "title": "과수화상병 3건 동시 선택",
-        "reason": "핵심 사실이 대부분 겹쳐 섹션 효율 저하.",
-        "suggested_action": "발생 총괄 1건+추가 확산/방제 1건으로 압축."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "medium",
-        "section": "supply",
-        "title": "“양파는 식탁 위 불로초”…송미령 장관의 ‘깜짝’ 홈쇼핑",
-        "reason": "소비촉진 이벤트성 기사로 정보가 얕음.",
-        "suggested_action": "양파 가격폭락 구조나 수출대응 기사로 대체."
-      },
-      {
-        "type": "weak_core",
-        "severity": "high",
-        "section": "supply",
-        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "코어로 둘 만큼 시장 파급력 부족.",
-        "suggested_action": "양파 수확포기·폭락 등 더 큰 이슈를 코어화."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "dist",
-        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
-        "reason": "실제 출하 개시와 물량 정보가 현장투어보다 유통 적합성 높음.",
-        "suggested_action": "행사성 기사 대신 우선 검토."
-      }
-    ]
-  },
+  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 72.0,
-    "target_status": "needs_major_iteration",
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
       "core_quality",
