@@ -24185,12 +24185,18 @@ def _normalize_supply_section_from_board(
         best = _best_program_core_board_metrics_for_article(article)
         ranked_metrics.append((article, best[1] if best is not None else None))
 
+    def _is_supply_core_blocked_by_editorial_demotion(article: Article) -> bool:
+        return bool(_editorial_safe_core_demote_reason(article, "supply"))
+
     supply_by_key = {
         _article_selection_identity(article): article
         for article in deduped_supply
         if _article_selection_identity(article)
     }
-    core_target = min(2, len(deduped_supply))
+    eligible_core_supply = [
+        article for article in deduped_supply if not _is_supply_core_blocked_by_editorial_demotion(article)
+    ]
+    core_target = min(2, len(eligible_core_supply))
     core_candidates: list[Article] = []
 
     for record in winners:
@@ -24203,12 +24209,16 @@ def _normalize_supply_section_from_board(
         selected_article = supply_by_key.get(_article_selection_identity(article))
         if selected_article is None or selected_article in core_candidates:
             continue
+        if _is_supply_core_blocked_by_editorial_demotion(selected_article):
+            continue
         core_candidates.append(selected_article)
         if len(core_candidates) >= core_target:
             break
 
     for article, metrics in ranked_metrics:
         if article in core_candidates:
+            continue
+        if _is_supply_core_blocked_by_editorial_demotion(article):
             continue
         if isinstance(metrics, dict) and int(metrics.get("representative_rank", -1)) >= 2:
             core_candidates.append(article)
@@ -24217,6 +24227,8 @@ def _normalize_supply_section_from_board(
     if len(core_candidates) < core_target:
         for article, metrics in ranked_metrics:
             if article in core_candidates:
+                continue
+            if _is_supply_core_blocked_by_editorial_demotion(article):
                 continue
             weak_story = bool(
                 isinstance(metrics, dict)
@@ -24412,9 +24424,13 @@ def _recover_supply_underfill_from_raw(
         return 0
 
     if supply_items and not any(bool(getattr(article, "is_core", False)) for article in supply_items):
-        core_pick = max(supply_items, key=_final_supply_article_sort_key)
-        core_pick.is_core = True
-        core_pick.selection_stage = "core_final"
+        core_pick_pool = [
+            article for article in supply_items if not _editorial_safe_core_demote_reason(article, "supply")
+        ]
+        if core_pick_pool:
+            core_pick = max(core_pick_pool, key=_final_supply_article_sort_key)
+            core_pick.is_core = True
+            core_pick.selection_stage = "core_final"
 
     final_by_section["supply"] = sorted(
         supply_items,
