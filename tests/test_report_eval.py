@@ -539,6 +539,7 @@ class ReportEvalTests(unittest.TestCase):
         metrics = result["metrics"]
         self.assertGreater(metrics["policy_wrong_section_rate"], 0.0)
         self.assertGreater(metrics["promotional_filler_rate"], 0.0)
+        self.assertGreater(metrics["promotional_core_rate"], 0.0)
         self.assertGreater(metrics["dist_weak_ops_rate"], 0.0)
         self.assertGreater(metrics["pest_theme_duplicate_rate"], 0.0)
         self.assertGreater(metrics["weak_core_editorial_rate"], 0.0)

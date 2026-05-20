@@ -1170,6 +1170,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         len(briefing_match_records),
         default=0.0,
     )
+    promotional_core_rate = _rate(
+        sum(
+            1
+            for record in core_match_records
+            if "promotional_or_event_filler" in (record.get("editorial_issue_reasons") or [])
+        ),
+        len(core_match_records),
+        default=0.0,
+    )
     dist_weak_ops_rate = _rate(
         sum(
             1
@@ -1306,7 +1315,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     editorial_quality_penalty = min(
         10.0,
         policy_wrong_section_rate * 16.0
-        + promotional_filler_rate * 10.0
+        + promotional_core_rate * 8.0
+        + promotional_filler_rate * 2.0
         + dist_weak_ops_rate * 8.0
         + pest_theme_duplicate_rate * 8.0
         + weak_core_editorial_rate * 10.0,
@@ -1455,6 +1465,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "story_duplicate_penalty": round(story_duplicate_penalty, 4),
             "policy_wrong_section_rate": round(policy_wrong_section_rate, 4),
             "promotional_filler_rate": round(promotional_filler_rate, 4),
+            "promotional_core_rate": round(promotional_core_rate, 4),
             "weak_core_editorial_rate": round(weak_core_editorial_rate, 4),
             "pest_theme_duplicate_rate": round(pest_theme_duplicate_rate, 4),
             "dist_weak_ops_rate": round(dist_weak_ops_rate, 4),
@@ -1724,6 +1735,7 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "weak_core_rate": round(float(metrics.get("weak_core_rate", 0.0) or 0.0), 4),
             "policy_wrong_section_rate": round(float(metrics.get("policy_wrong_section_rate", 0.0) or 0.0), 4),
             "promotional_filler_rate": round(float(metrics.get("promotional_filler_rate", 0.0) or 0.0), 4),
+            "promotional_core_rate": round(float(metrics.get("promotional_core_rate", 0.0) or 0.0), 4),
             "weak_core_editorial_rate": round(float(metrics.get("weak_core_editorial_rate", 0.0) or 0.0), 4),
             "pest_theme_duplicate_rate": round(float(metrics.get("pest_theme_duplicate_rate", 0.0) or 0.0), 4),
             "dist_weak_ops_rate": round(float(metrics.get("dist_weak_ops_rate", 0.0) or 0.0), 4),
@@ -1948,6 +1960,7 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "editorial_quality_penalty": metrics.get("editorial_quality_penalty", 0),
         "policy_wrong_section_rate": metrics.get("policy_wrong_section_rate", 0),
         "promotional_filler_rate": metrics.get("promotional_filler_rate", 0),
+        "promotional_core_rate": metrics.get("promotional_core_rate", 0),
         "pest_theme_duplicate_rate": metrics.get("pest_theme_duplicate_rate", 0),
         "guardrail_driver_tags": (result.get("selection_guardrails") or {}).get("driver_tags", []),
     }
