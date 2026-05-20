@@ -1,8 +1,8 @@
 {
   "report_date": "2026-05-20",
-  "generated_at_kst": "2026-05-20T14:59:31+09:00",
+  "generated_at_kst": "2026-05-20T15:29:06+09:00",
   "scores": {
-    "section_alignment": 99.86,
+    "section_alignment": 96.39,
     "core_quality": 100.0,
     "commodity_board_quality": 100.0
   },
@@ -13,13 +13,13 @@
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0625,
     "promotional_filler_rate": 0.125,
-    "promotional_core_rate": 0.1429,
-    "weak_core_editorial_rate": 0.1429,
-    "pest_theme_duplicate_rate": 0.0625,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.125,
     "dist_weak_ops_rate": 0.0625,
-    "editorial_quality_penalty": 4.8214,
+    "editorial_quality_penalty": 2.75,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9444,
+    "commodity_primary_issue_signal_rate": 0.9474,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
@@ -56,10 +56,10 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3586011",
+      "title": "사과 장기저장 솔루션 제안, 숨쉬는 저장비닐 ‘그린라이트’",
+      "href": "https://www.newsam.co.kr/news/article.html?no=42968",
       "section": "supply",
-      "is_core": true,
+      "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
@@ -91,6 +91,15 @@
       "reasons": [
         "pest_theme_duplicate:fire_blight"
       ]
+    },
+    {
+      "title": "충북도, 과수화상병 확산 차단 총력…7월까지 현장진단실 운영",
+      "href": "http://www.cctimes.kr/news/articleView.html?idxno=907646",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
     }
   ],
   "editorial": {
@@ -99,76 +108,76 @@
     "target_status": "needs_iteration",
     "scores": {
       "article_selection": 80.0,
-      "section_fit": 76.0,
-      "core_pick_quality": 74.0,
-      "summary_usefulness": 89.0,
-      "missed_opportunity": 83.0,
-      "noise_control": 72.0
+      "section_fit": 78.0,
+      "core_pick_quality": 81.0,
+      "summary_usefulness": 90.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 80.0
     },
     "issues": [
       {
         "type": "wrong_section",
         "severity": "high",
         "section": "supply",
-        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "지역 지원행사성 기사로 수급 이슈성이 약함.",
-        "suggested_action": "공급 동향·가격·출하 영향 기사로 교체."
-      },
-      {
-        "type": "weak_core",
-        "severity": "high",
-        "section": "supply",
-        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
-        "reason": "코어로 둘 수준의 파급력과 데이터가 부족함.",
-        "suggested_action": "비코어 또는 제외 처리."
+        "title": "치솟는 감자 값에 단오 물가 비상…강릉시·단오제위 안정화 안간힘",
+        "reason": "지역 축제 물가 기사로 전국 수급 대표성이 약함.",
+        "suggested_action": "전국 산지·도매가격 중심 기사로 교체."
       },
       {
         "type": "promotional_filler",
         "severity": "high",
-        "section": "dist",
-        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
-        "reason": "브랜드 출하 홍보에 가까워 유통 구조 변화 정보가 약함.",
-        "suggested_action": "도매시장·APC·수출·온라인유통 변화 기사 우선."
+        "section": "supply",
+        "title": "사과 장기저장 솔루션 제안, 숨쉬는 저장비닐 ‘그린라이트’",
+        "reason": "제품 소개성 홍보 기사로 뉴스 가치가 낮음.",
+        "suggested_action": "삭제하고 실제 수급·가격 기사로 대체."
       },
       {
         "type": "weak_core",
-        "severity": "medium",
+        "severity": "high",
         "section": "dist",
         "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
-        "reason": "유통 섹션 코어치고 운영·제도·채널 변화가 빈약함.",
-        "suggested_action": "비코어로 내리거나 더 강한 유통 기사 교체."
+        "reason": "단순 브랜드 출하 알림으로 유통 구조 변화 정보가 부족함.",
+        "suggested_action": "공판장·APC·수출 구조 기사로 코어 교체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "dist",
+        "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+        "reason": "견학 행사성 기사로 실질 유통 이슈 밀도가 낮음.",
+        "suggested_action": "행사성 기사 비중 축소."
       },
       {
         "type": "duplicate_theme",
         "severity": "medium",
         "section": "pest",
         "title": "“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생 / ‘ 과수화상병 ’ 주의보",
-        "reason": "동일 화상병 이슈를 비슷한 각도로 중복 배치.",
-        "suggested_action": "하나는 발생 총괄, 하나는 대응/약제/추가 확산 기사로 분산."
+        "reason": "같은 화상병 이슈를 유사하게 중복 소비함.",
+        "suggested_action": "발생 기사 1건 + 추가 확산/방제 후속 1건으로 재구성."
       },
       {
-        "type": "section_drift",
+        "type": "weak_section_fit",
         "severity": "medium",
         "section": "policy",
-        "title": "수급 대책 약발 안먹히는 ‘햇 양파 ’…“수출로 값 안정 도모하자”",
-        "reason": "정책보다는 산지 수급·출하 대응 기사 성격이 강함.",
-        "suggested_action": "공급으로 이동하거나 정책성 stronger 기사로 교체."
+        "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+        "reason": "정책보다 시황 브리프 성격이 강함.",
+        "suggested_action": "정책·제도 변화 기사 우선 배치."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
-        "reason": "후보풀에 있었는데도 유통 섹션에 더 적합한 운영 기사 활용이 약함.",
-        "suggested_action": "홍보성 출하 기사 대신 산지유통 고도화 기사 전진 배치."
+        "title": "미선정 유통 대안 기사",
+        "reason": "후보풀의 하우스과일 조기출하, 마늘 산지경매장, 냉동딸기 수출이 더 실질적 유통 흐름을 보여줌.",
+        "suggested_action": "단순 출하홍보·견학 대신 거래·수출 기사 반영."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "policy",
-        "title": "농식품부 , ‘황당 규제’ 50개 개선",
-        "reason": "온라인도매시장 가입기준 완화 등 제도 기사보다 현재 선택안의 정책성 밀도가 낮음.",
-        "suggested_action": "정책 섹션에 제도 변화 기사 반영."
+        "section": "pest",
+        "title": "미선정 과수화상병 후속 기사",
+        "reason": "충주 추가 발생·원주 현장 폐원 등 후속 전개가 있었는데 반영이 약함.",
+        "suggested_action": "단순 주의보 대신 추가 발생 또는 현장 대응 기사 채택."
       }
     ]
   },
