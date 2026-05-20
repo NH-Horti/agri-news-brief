@@ -963,6 +963,29 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(final_by_section["supply"][0].title, strong_supply.title)
         self.assertTrue(final_by_section["supply"][0].is_core)
 
+    def test_supply_final_normalization_keeps_support_filler_out_of_core(self):
+        support_article = self._make_article(
+            "supply",
+            "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+            "지역 농업인을 대상으로 마늘 망 지원 행사를 열었다.",
+            "https://example.com/garlic-support-final",
+        )
+        strong_supply = self._make_article(
+            "supply",
+            "양배추 1포기 2600원대로 뚝…재고에 봄철 출하 물량 겹치며 가격 급락",
+            "양배추 재고와 봄철 출하 물량 증가가 겹치며 도매가격과 소매가격이 급락했다.",
+            "https://example.com/cabbage-price-collapse-final",
+        )
+        final_by_section = {key: [] for key in self.conf}
+        final_by_section["supply"] = [support_article, strong_supply]
+        board_source = {key: [] for key in self.conf}
+
+        main._normalize_supply_section_from_board(final_by_section, board_source, max_items=2)
+
+        by_title = {article.title: article for article in final_by_section["supply"]}
+        self.assertFalse(by_title[support_article.title].is_core)
+        self.assertTrue(by_title[strong_supply.title].is_core)
+
     def test_supply_final_normalization_can_pull_dist_representative_into_supply(self):
         weak_supply = self._make_article(
             "supply",
