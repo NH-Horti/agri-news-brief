@@ -16,6 +16,27 @@ class ReportEvalTests(unittest.TestCase):
             ROOT / "docs" / "replay" / f"{cls.report_date}.snapshot.json"
         )
 
+    @staticmethod
+    def _briefing_card(section: str, title: str, href: str, *, core: bool = False, stage: str = "tail") -> str:
+        core_attr = ' data-is-core="1"' if core else ""
+        badge = '<span class="badgeCore">핵심</span>' if core else ""
+        return f"""
+        <div
+          data-surface="briefing_card"
+          data-section="{section}"
+          data-article-title="{title}"
+          data-href="{href}"
+          data-article-id="{href}"
+          data-target-domain="example.com"
+          data-selection-fit="1.6"
+          data-selection-stage="{stage}"
+          {core_attr}
+        >
+          {badge}
+          <div class="sum">{title} 관련 수급과 현장 변화가 보고됐다.</div>
+        </div>
+        """
+
     def test_parse_report_html_extracts_briefing_cards_and_summaries(self) -> None:
         articles = report_eval.parse_report_html(self.html_text)
         briefing = [article for article in articles if article.surface == report_eval.BRIEFING_SURFACE]
@@ -481,6 +502,49 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["story_duplicate_rate"], 0.5)
         self.assertIn(result["story_duplicate_samples"][0]["reason"], {"known_duplicate_url", "same_event_numbers"})
 
+    def test_eval_scores_editorial_selection_risks(self) -> None:
+        articles = [
+            ("policy", "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세", "https://example.com/policy-price", True, "core"),
+            ("supply", "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대", "https://example.com/garlic-support", True, "core"),
+            ("dist", "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최", "https://example.com/dist-tour", True, "core"),
+            ("dist", "블루베리 소득작목 육성 온힘", "https://example.com/blueberry-dev", False, "tail"),
+            ("pest", "예측보다 빨랐다…과수화상병 충주·원주서 잇따라 발생", "https://example.com/fire-1", True, "core"),
+            ("pest", "과수화상병 주의보", "https://example.com/fire-2", True, "core"),
+            ("pest", "충북 충주 과수원서 과수화상병 올 첫 발생", "https://example.com/fire-3", False, "tail"),
+        ]
+        html = "\n".join(
+            self._briefing_card(section, title, href, core=core, stage=stage)
+            for section, title, href, core, stage in articles
+        )
+        raw_by_section = {section: [] for section in report_eval.SECTION_KEYS}
+        for section, title, href, _core, stage in articles:
+            raw_by_section[section].append(
+                {
+                    "section": section,
+                    "title": title,
+                    "link": href,
+                    "description": title,
+                    "selection_fit_score": 1.6,
+                    "selection_stage": stage,
+                    "score": 88.0,
+                    "pub_dt_kst": "2026-05-20T05:00:00+09:00",
+                }
+            )
+        result = report_eval.evaluate_report(
+            "2026-05-20",
+            html,
+            {"window": {"end_kst": "2026-05-20T06:00:00+09:00"}, "raw_by_section": raw_by_section},
+        )
+
+        metrics = result["metrics"]
+        self.assertGreater(metrics["policy_wrong_section_rate"], 0.0)
+        self.assertGreater(metrics["promotional_filler_rate"], 0.0)
+        self.assertGreater(metrics["dist_weak_ops_rate"], 0.0)
+        self.assertGreater(metrics["pest_theme_duplicate_rate"], 0.0)
+        self.assertGreater(metrics["weak_core_editorial_rate"], 0.0)
+        self.assertGreater(metrics["editorial_quality_penalty"], 0.0)
+        self.assertTrue(result["editorial_quality_samples"])
+
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
         result["operational_score"] = result["overall_score"]
@@ -515,7 +579,9 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
-        self.assertIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
+        self.assertNotIn("editorial_duplicate_topic", selection_feedback["selection_guardrails"]["driver_tags"])
+        self.assertEqual(selection_feedback["editorial_guardrail_mode"], "advisory_only")
+        self.assertIn("editorial_duplicate_topic", selection_feedback["editorial_suggested_guardrails"]["driver_tags"])
 
 
 if __name__ == "__main__":

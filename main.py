@@ -3465,6 +3465,82 @@ def _selection_feedback_block_reason(article: "Article", section_key: str) -> st
     return ""
 
 
+_EDITORIAL_SAFE_POLICY_ACTION_TERMS = (
+    "정부", "농식품부", "농림축산식품부", "기재부",
+    "대책", "정책", "수입", "관세", "할당관세", "법안", "발의", "개정", "규제",
+    "보조", "공고", "고시", "시행", "검역", "방역", "수출",
+    "자조금", "비축", "방출", "회의", "발표",
+)
+_EDITORIAL_SAFE_POLICY_PRICE_TERMS = (
+    "가격 오름세", "오름세", "가격 상승", "가격 강세", "가격 동향", "시세", "입하", "반입",
+    "품종 교체", "주산지 변동", "주산지", "출하량", "도매가격", "경락", "경매",
+)
+_EDITORIAL_SAFE_PROMO_TERMS = (
+    "홈쇼핑", "라이브커머스", "쇼호스트", "소비촉진", "판촉", "홍보", "캠페인",
+    "행사", "현장투어", "협의회", "간담회", "업무협약", "협약", "교육", "기탁",
+    "전달", "나눔", "후원", "지원", "선정", "육성", "개최",
+)
+_EDITORIAL_SAFE_MARKET_TERMS = (
+    "가격", "수급", "출하", "반입", "경매", "경락", "도매", "공판", "물량",
+    "재고", "생산량", "피해", "발생", "확산", "방제", "검역", "수출", "계약",
+)
+_EDITORIAL_SAFE_DIST_WEAK_TERMS = (
+    "현장투어", "협의회", "간담회", "업무협약", "협약", "교육", "육성", "소득작목",
+    "브랜드", "선정", "개최", "견학", "컨설팅",
+)
+_EDITORIAL_SAFE_DIST_OPS_TERMS = (
+    "출하", "공선", "공동선별", "경매", "경락", "도매시장", "공판장", "apc",
+    "물류", "저장", "선별", "온라인도매", "수출", "입점", "판매액", "계약",
+    "운영", "처리물량", "연합판매",
+)
+
+
+def _editorial_safe_text(article: "Article") -> str:
+    return _nfkc_lower(f"{getattr(article, 'title', '') or ''} {getattr(article, 'description', '') or ''}")
+
+
+def _editorial_safe_has_any(text: str, terms: tuple[str, ...]) -> bool:
+    return any(term and term.lower() in text for term in terms)
+
+
+def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> str:
+    if section_key not in {"supply", "policy", "dist"}:
+        return ""
+    text = _editorial_safe_text(article)
+    title_l = _nfkc_lower(getattr(article, "title", "") or "")
+    if section_key == "policy":
+        if _editorial_safe_has_any(text, _EDITORIAL_SAFE_POLICY_PRICE_TERMS) and not _editorial_safe_has_any(text, _EDITORIAL_SAFE_POLICY_ACTION_TERMS):
+            return "policy_price_report_without_policy_action"
+    if any(term in text for term in ("홈쇼핑", "라이브커머스", "쇼호스트", "현장투어")):
+        return "promotional_or_event_filler"
+    promo_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_PROMO_TERMS))
+    if promo_hits:
+        market_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_MARKET_TERMS))
+        title_market_hits = count_any(title_l, tuple(term.lower() for term in _EDITORIAL_SAFE_MARKET_TERMS))
+        if market_hits <= 1 and title_market_hits == 0:
+            return "promotional_or_event_filler"
+        if section_key in {"supply", "dist"} and market_hits <= 2 and _editorial_safe_has_any(text, ("지원", "행사", "협의회", "개최")):
+            return "promotional_or_event_filler"
+    if section_key == "dist":
+        weak_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_DIST_WEAK_TERMS))
+        if weak_hits:
+            ops_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_DIST_OPS_TERMS))
+            if "현장투어" in text or "소득작목" in text or ops_hits <= 1:
+                return "dist_event_or_development_without_ops"
+    return ""
+
+
+def _editorial_safe_soft_penalty(article: "Article", section_key: str) -> float:
+    reason = _editorial_safe_core_demote_reason(article, section_key)
+    if not reason:
+        return 0.0
+    if reason == "policy_price_report_without_policy_action":
+        return 2.4
+    if reason == "dist_event_or_development_without_ops":
+        return 2.2
+    return 1.8
+
+
 def _has_trade_signal(txt: str) -> bool:
     t = (txt or "").lower()
     return any(x in t for x in (
@@ -15029,7 +15105,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     def _selection_sort_key(a: Article) -> Any:
         fit_sc = _fit_score_local(a)
         return (
-            _semantic_adjusted_score(a),
+            _semantic_adjusted_score(a) - _editorial_safe_soft_penalty(a, section_key),
+            0 if _editorial_safe_core_demote_reason(a, section_key) else 1,
             _nh_major_core_priority(a),
             float(getattr(a, "semantic_similarity", 0.0) or 0.0),
             round(float(fit_sc or 0.0), 3),
@@ -15150,6 +15227,17 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # supply/policy에서는 trade-press 코어를 1건으로 제한(필요시 완화)
     trade_core_cap = 1 if section_key in ("supply", "policy") else 2
     trade_core_count = 0
+
+    editorial_clean_core_candidate_count = sum(
+        1
+        for x in pool
+        if not _editorial_safe_core_demote_reason(x, section_key)
+        and _semantic_adjusted_score(x) >= core_min
+    )
+
+    def _skip_editorial_demoted_core(a: Article) -> bool:
+        return bool(_editorial_safe_core_demote_reason(a, section_key)) and editorial_clean_core_candidate_count > len(core)
+
     def _is_trade_press(a: Article) -> bool:
         try:
             d = normalize_host(a.domain or "")
@@ -15283,6 +15371,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             key=lambda a: (
                 float(supply_board_bridge_boosts.get(_dup_key(a)) or 0.0),
                 _supply_core_priority_score(a),
+                0 if _editorial_safe_core_demote_reason(a, section_key) else 1,
+                -_editorial_safe_soft_penalty(a, section_key),
                 _nh_major_core_priority(a),
                 _semantic_adjusted_score(a),
                 float(getattr(a, "semantic_similarity", 0.0) or 0.0),
@@ -16060,6 +16150,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             continue
         if not _low_core_allowed(a):
             continue
+        if _skip_editorial_demoted_core(a):
+            continue
         # 콘텐츠 관련성 게이트: core 기사는 반드시 해당 섹션에 relevant해야 함
         try:
             if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
@@ -16182,6 +16274,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 continue
             if not _low_core_allowed(a):
                 continue
+            if _skip_editorial_demoted_core(a):
+                continue
             # 콘텐츠 관련성 게이트
             try:
                 if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
@@ -16275,6 +16369,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         for a in pool:
             if _already_used(a):
                 continue
+            if _skip_editorial_demoted_core(a):
+                continue
             # 콘텐츠 관련성 게이트
             try:
                 if not is_relevant(a.title or "", a.description or "", normalize_host(a.domain or ""), a.link or "", sec_conf, (a.press or "").strip()):
@@ -16326,6 +16422,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if len(core) >= 2:
                 break
             if _already_used(a):
+                continue
+            if _skip_editorial_demoted_core(a):
                 continue
             fit_sc_core = _fit_score_local(a)
             if fit_sc_core < core_relaxed_min_fit:
@@ -17619,11 +17717,18 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     if section_key == "supply":
         core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
+        final_clean_core_candidates = sum(
+            1
+            for a in deduped
+            if not _editorial_safe_core_demote_reason(a, section_key)
+        )
         if core_count < min(2, len(deduped)):
             for a in _core_iteration_pool(list(deduped)):
                 if core_count >= 2:
                     break
                 if getattr(a, "is_core", False):
+                    continue
+                if _editorial_safe_core_demote_reason(a, section_key) and final_clean_core_candidates > core_count:
                     continue
                 a.is_core = True
                 _record_selection(a, "core_promote")
