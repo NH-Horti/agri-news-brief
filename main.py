@@ -15228,15 +15228,10 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     trade_core_cap = 1 if section_key in ("supply", "policy") else 2
     trade_core_count = 0
 
-    editorial_clean_core_candidate_count = sum(
-        1
-        for x in pool
-        if not _editorial_safe_core_demote_reason(x, section_key)
-        and _semantic_adjusted_score(x) >= core_min
-    )
-
     def _skip_editorial_demoted_core(a: Article) -> bool:
-        return bool(_editorial_safe_core_demote_reason(a, section_key)) and editorial_clean_core_candidate_count > len(core)
+        # Editorially weak articles may still be useful as tail cards on thin news days,
+        # but they should not consume scarce core slots.
+        return bool(_editorial_safe_core_demote_reason(a, section_key))
 
     def _is_trade_press(a: Article) -> bool:
         try:
@@ -17717,18 +17712,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
     if section_key == "supply":
         core_count = sum(1 for a in deduped if getattr(a, "is_core", False))
-        final_clean_core_candidates = sum(
-            1
-            for a in deduped
-            if not _editorial_safe_core_demote_reason(a, section_key)
-        )
         if core_count < min(2, len(deduped)):
             for a in _core_iteration_pool(list(deduped)):
                 if core_count >= 2:
                     break
                 if getattr(a, "is_core", False):
                     continue
-                if _editorial_safe_core_demote_reason(a, section_key) and final_clean_core_candidates > core_count:
+                if _editorial_safe_core_demote_reason(a, section_key):
                     continue
                 a.is_core = True
                 _record_selection(a, "core_promote")
