@@ -274,8 +274,36 @@ class LocalRuntimeTests(TestCase):
             description="협의회가 산지 유통 현장투어를 개최했다.",
         )
 
+        mou_article = self._make_article(
+            section="dist",
+            title="강릉도매시장-미스터아빠, 미래형 북상 사과 SCM 혁신 프로젝트 업무협약",
+            description="양측이 사과 유통 혁신 프로젝트 추진을 위한 업무협약을 맺었다.",
+        )
+        raw_like_mou_article = self._make_article(
+            section="dist",
+            title="강릉도매시장-미스터아빠, 미래형 북상 사과 SCM 혁신 프로젝트 업무협약",
+            description=(
+                "지난 19일 업무협약을 체결했다. 온라인도매시장 플랫폼을 기반으로 AI 물류 "
+                "프로세싱 기술을 결합하고 사과 전문 선별 출하 거점센터를 구축한다."
+            ),
+        )
+        dist_ops_article = self._make_article(
+            section="dist",
+            title="가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+            description="가락시장 채소 반입과 물류비 절감을 위해 파렛트 운송지원 물량을 확대한다.",
+        )
+
         self.assertEqual(main._editorial_safe_core_demote_reason(supply_article, "supply"), "promotional_or_event_filler")
         self.assertIn(
             main._editorial_safe_core_demote_reason(dist_article, "dist"),
             {"promotional_or_event_filler", "dist_event_or_development_without_ops"},
         )
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(mou_article, "dist"),
+            "dist_event_or_development_without_ops",
+        )
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(raw_like_mou_article, "dist"),
+            "dist_event_or_development_without_ops",
+        )
+        self.assertEqual(main._editorial_safe_core_demote_reason(dist_ops_article, "dist"), "")
