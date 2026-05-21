@@ -1,8 +1,8 @@
 {
   "report_date": "2026-05-21",
-  "generated_at_kst": "2026-05-21T12:49:12+09:00",
+  "generated_at_kst": "2026-05-21T13:33:18+09:00",
   "scores": {
-    "section_alignment": 92.22,
+    "section_alignment": 91.43,
     "core_quality": 100.0,
     "commodity_board_quality": 93.95
   },
@@ -12,12 +12,12 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.2,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
-    "pest_theme_duplicate_rate": 0.1333,
+    "promotional_filler_rate": 0.2143,
+    "promotional_core_rate": 0.2,
+    "weak_core_editorial_rate": 0.2,
+    "pest_theme_duplicate_rate": 0.1429,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 4.4667,
+    "editorial_quality_penalty": 5.1714,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9412,
     "commodity_primary_weak_rate": 0.0
@@ -65,19 +65,19 @@
       ]
     },
     {
-      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
-      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
-      "section": "dist",
-      "is_core": true,
+      "title": "시설 원예 농가 경영비 절감·안정 생산 총력 지원",
+      "href": "http://www.amnews.co.kr/news/articleView.html?idxno=72617",
+      "section": "policy",
+      "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-      "href": "http://www.domin.co.kr/news/articleView.html?idxno=1556123",
+      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
       "section": "dist",
-      "is_core": false,
+      "is_core": true,
       "reasons": [
         "promotional_or_event_filler"
       ]
@@ -102,105 +102,108 @@
     }
   ],
   "editorial": {
-    "score": 84.0,
+    "score": 83.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
       "article_selection": 82.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 85.0,
-      "summary_usefulness": 90.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 78.0
+      "section_fit": 84.0,
+      "core_pick_quality": 80.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 81.0
     },
     "issues": [
       {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "policy",
-        "title": "무안 양파 값 폭락…\"캘수록 손해, 갈아엎어도 소용없다\"",
-        "reason": "정책 발표보다 산지 가격 급락 현장 기사 성격이 강함.",
-        "suggested_action": "supply로 이동하거나 정책 카드와 통합 재구성."
-      },
-      {
-        "type": "promotional_core",
+        "type": "weak_core",
         "severity": "high",
         "section": "supply",
         "title": "마늘의무자조금관리위원회, \"마늘가격 지킬 수 있어요\"",
-        "reason": "이해관계 단체 입장문 중심의 홍보성 기사다.",
-        "suggested_action": "비핵심 처리하고 객관적 수급·가격 기사로 교체."
+        "reason": "자조금발 안심 메시지 중심의 홍보성 기사다.",
+        "suggested_action": "산지 거래·재고·정부 방출 여부를 교차검증한 기사로 교체."
       },
       {
-        "type": "filler",
+        "type": "wrong_priority",
         "severity": "high",
         "section": "supply",
         "title": "무주군, 사과 ·포도 등 60억 규모 농산물 가격안정 지원…29일까지 신청",
-        "reason": "지역 사업 신청 공고성 기사로 전국 브리핑 가치가 낮다.",
-        "suggested_action": "제외하고 전국 수급 영향 기사로 대체."
+        "reason": "지역 신청 공고성 기사로 전국 브리핑 가치가 낮다.",
+        "suggested_action": "양파 산지폐기·생산비 쟁점 기사로 대체."
       },
       {
         "type": "wrong_section",
         "severity": "medium",
         "section": "supply",
         "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
-        "reason": "공급 동향보다 재배기술·현장지원 기사에 가깝다.",
-        "suggested_action": "policy 또는 제외 검토."
+        "reason": "생산기술·재배관리 성격이 강해 공급 수급 카드와 거리가 있다.",
+        "suggested_action": "수급·출하·가격 직접 이슈로 교체."
       },
       {
-        "type": "filler",
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "policy",
+        "title": "국제 밀·대두 추가 상승 전망…정부 \"8∼11월 물량 확보\"",
+        "reason": "무난한 선택이나 밀가루 담합 제재 후속이 더 강한 정책 이슈였다.",
+        "suggested_action": "담합 제재·정책자금 배제 기사와 병행 또는 교체."
+      },
+      {
+        "type": "duplication",
+        "severity": "medium",
+        "section": "policy",
+        "title": "무안 양파 값 폭락…\"캘수록 손해, 갈아엎어도 소용없다\"",
+        "reason": "공급 섹션 핵심 양파 기사와 주제가 과도하게 겹친다.",
+        "suggested_action": "정책 섹션은 제도·규제·가격관리 기사로 차별화."
+      },
+      {
+        "type": "weak_selection",
         "severity": "medium",
         "section": "dist",
         "title": "강원 농협 , 선진 산지유통 현장 벤치마킹…농산물 경쟁력 강화 모색",
-        "reason": "견학·벤치마킹 행사성 기사로 실질 유통 변화가 약하다.",
-        "suggested_action": "실제 제도·물류 변화 기사로 교체."
+        "reason": "현장 견학 기사로 실질 유통 변화나 수치가 약하다.",
+        "suggested_action": "물류제도·온라인도매·APC 운영 변화 기사 우선."
       },
       {
-        "type": "filler",
+        "type": "promotional",
         "severity": "medium",
         "section": "dist",
-        "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-        "reason": "간담회성 기사로 정보 밀도가 낮다.",
-        "suggested_action": "삭제하고 시장 구조 변화 기사 보강."
+        "title": "강릉도매시장-미스터아빠, 기후변화 대응 '강원권 사과 SCM 혁신 프로젝...",
+        "reason": "협약 발표 성격이 강하고 실행 근거가 부족하다.",
+        "suggested_action": "사업 착수·예산·물동량 근거 있는 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "policy",
-        "title": "정부 보조금 받고 담합… 농식품부, 제분사 지원 배제",
-        "reason": "밀가루 담합 제재는 정책성·파급력이 큰데 누락됐다.",
-        "suggested_action": "시설원예 지원이나 양파 중복 서사를 줄여 반영."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "dist",
-        "title": "지역경제 선도하는 품목농협 - 성주참외원예농협",
-        "reason": "산지유통 대응과 가격 방어 내용이 더 구체적이다.",
-        "suggested_action": "견학·간담회 카드 중 하나와 교체 검토."
+        "type": "theme_duplication",
+        "severity": "low",
+        "section": "pest",
+        "title": "원주에 반복되는 과수화상병 …“농가 초긴장”",
+        "reason": "과수화상병 단일 테마 반복으로 새 정보가 제한적이다.",
+        "suggested_action": "진단실 운영·예찰 강화 같은 대응 기사와 균형화."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "editorial_section_fit",
+      "editorial_noise_filter",
+      "editorial_duplicate_topic",
+      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.0,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -209,7 +212,7 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -220,19 +223,40 @@
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 83.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
+      "article_selection",
+      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",
