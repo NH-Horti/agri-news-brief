@@ -1691,6 +1691,49 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn(supply_bridge, final_by_section["dist"])
         self.assertTrue(supply_bridge.is_core)
 
+    def test_dist_core_recovery_uses_raw_hard_ops_but_not_generic_supply_story(self):
+        supply_core = self._make_article(
+            "supply",
+            "공급과잉 양파 농식품부 수출 지원",
+            "양파 생산량 증가로 가격이 하락해 농식품부가 수출 물량을 지원한다.",
+            "https://example.com/supply-onion",
+        )
+        generic_supply = self._make_article(
+            "supply",
+            "국내 육성 사과 보급 확산 위한 전제 조건",
+            "국내 육성 사과 품종의 보급과 출하 확대를 위한 과제가 제시됐다.",
+            "https://example.com/supply-apple-generic",
+        )
+        raw_dist_ops = self._make_article(
+            "dist",
+            "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+            "가락시장 채소 반입과 물류비 절감을 위해 파렛트 운송지원 물량을 확대한다.",
+            "https://example.com/dist-pallet-ops",
+        )
+        dist_tail = self._make_article(
+            "dist",
+            "강릉도매시장-미스터아빠 사과 SCM 혁신 프로젝트 업무협약",
+            "업무협약을 맺고 사과 유통 프로젝트를 추진한다.",
+            "https://example.com/dist-mou",
+        )
+        supply_core.is_core = True
+        final_by_section = {
+            "supply": [supply_core],
+            "policy": [],
+            "dist": [dist_tail],
+            "pest": [],
+        }
+
+        moved = main._recover_dist_core_from_supply_ops(
+            final_by_section,
+            {"supply": [generic_supply], "policy": [], "dist": [raw_dist_ops], "pest": []},
+        )
+
+        self.assertEqual(moved, 1)
+        self.assertIn(raw_dist_ops, final_by_section["dist"])
+        self.assertTrue(raw_dist_ops.is_core)
+        self.assertNotIn(generic_supply, final_by_section["dist"])
+
     def test_supply_seed_extraction_spreads_across_query_list(self):
         queries = [
             "사과 가격",
