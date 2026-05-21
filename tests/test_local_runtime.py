@@ -292,6 +292,11 @@ class LocalRuntimeTests(TestCase):
             title="가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
             description="가락시장 채소 반입과 물류비 절감을 위해 파렛트 운송지원 물량을 확대한다.",
         )
+        field_policy_article = self._make_article(
+            section="policy",
+            title='무안 양파 값 폭락…"캘수록 손해, 갈아엎어도 소용없다"',
+            description="양파 생산량 증가로 가격이 폭락해 농가가 밭을 갈아엎고 정부 대응을 요구했다.",
+        )
 
         self.assertEqual(main._editorial_safe_core_demote_reason(supply_article, "supply"), "promotional_or_event_filler")
         self.assertIn(
@@ -307,3 +312,7 @@ class LocalRuntimeTests(TestCase):
             "dist_event_or_development_without_ops",
         )
         self.assertEqual(main._editorial_safe_core_demote_reason(dist_ops_article, "dist"), "")
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(field_policy_article, "policy"),
+            "policy_field_price_collapse_without_policy_lead",
+        )
