@@ -1564,6 +1564,133 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertNotIn(major1.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertNotIn(major2.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_policy_final_recovery_backfills_central_grain_supply_story(self):
+        weak_tail = self._make_article(
+            "policy",
+            "시설 원예 농가 경영비 절감 안정 생산 총력 지원",
+            "시설 원예 농가를 대상으로 에너지 절감 장비와 컨설팅을 지원한다.",
+            "https://example.com/policy-existing-tail",
+        )
+        grain_policy = self._make_article(
+            "policy",
+            "중동발 국제곡물가 최대 12.1% 상승…농식품부 11월까지 물량 확보",
+            "농식품부가 국제 곡물 가격 상승에 대응해 사료와 식품 원료 물량을 확보하고 수급 점검을 강화한다고 밝혔다.",
+            "https://www.news1.kr/economy/food/999921",
+        )
+        final_by_section = {"supply": [], "policy": [weak_tail], "dist": [], "pest": []}
+
+        inserted = main._recover_policy_underfill_from_raw(
+            final_by_section,
+            {"supply": [], "policy": [weak_tail, grain_policy], "dist": [], "pest": []},
+            max_items=3,
+        )
+
+        self.assertEqual(inserted, 1)
+        self.assertIn(grain_policy.link, {article.link for article in final_by_section["policy"]})
+        self.assertTrue(any(article.link == grain_policy.link and article.is_core for article in final_by_section["policy"]))
+
+    def test_pest_priority_moves_supply_fire_blight_story_to_pest_raw_pool(self):
+        fire_blight = self._make_article(
+            "supply",
+            "[르포] 새벽마다 소독해도 속수무책…사과산지 충주 비상",
+            "충주 사과 산지에서 과수화상병이 확산돼 농가가 매일 소독과 방제에 나서고 있다.",
+            "https://www.yna.co.kr/view/AKR20260520123100064",
+        )
+        raw_by_section = {"supply": [fire_blight], "policy": [], "dist": [], "pest": []}
+
+        moved = main._enforce_pest_priority_over_policy(raw_by_section)
+
+        self.assertEqual(moved, 1)
+        self.assertEqual(raw_by_section["supply"], [])
+        self.assertEqual(raw_by_section["pest"][0].section, "pest")
+
+    def test_final_cleanup_drops_supply_fire_blight_duplicate_and_demotes_dist_mou_core(self):
+        fire_blight_supply = self._make_article(
+            "supply",
+            "[르포] 새벽마다 소독해도 속수무책…사과산지 충주 비상",
+            "충주 사과 산지에서 과수화상병이 확산돼 농가가 매일 소독과 방제에 나서고 있다.",
+            "https://www.yna.co.kr/view/AKR20260520123100064",
+        )
+        fire_blight_pest = self._make_article(
+            "pest",
+            "새벽마다 소독해도 속수무책…사과산지 충주 비상",
+            "충주 사과 산지에서 과수화상병이 확산돼 농가 방제 부담이 커지고 있다.",
+            "https://news.sbs.co.kr/news/endPage.do?news_id=N1008572225",
+        )
+        mou_core = self._make_article(
+            "dist",
+            "강릉도매시장-미스터아빠, 미래형 북상 사과 SCM 혁신 프로젝트 업무협약",
+            "양측이 사과 유통 혁신 프로젝트 추진을 위한 업무협약을 맺었다.",
+            "https://example.com/dist-mou-core",
+        )
+        ops_tail = self._make_article(
+            "dist",
+            "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+            "가락시장 채소 반입과 물류비 절감을 위해 파렛트 운송지원 물량을 확대한다.",
+            "https://example.com/dist-pallet-ops",
+        )
+        fire_blight_supply.is_core = True
+        fire_blight_pest.is_core = True
+        mou_core.is_core = True
+        ops_tail.is_core = False
+        final_by_section = {
+            "supply": [fire_blight_supply],
+            "policy": [],
+            "dist": [mou_core, ops_tail],
+            "pest": [fire_blight_pest],
+        }
+
+        self.assertEqual(main._remove_supply_pest_priority_cards(final_by_section), 1)
+        self.assertEqual(final_by_section["supply"], [])
+        self.assertEqual(main._demote_dist_editorial_weak_core(final_by_section), 1)
+        self.assertFalse(mou_core.is_core)
+        self.assertTrue(ops_tail.is_core)
+
+    def test_dist_core_recovery_moves_operational_supply_bridge_when_dist_has_no_core(self):
+        supply_core = self._make_article(
+            "supply",
+            "공급과잉 양파 농식품부 수출 지원",
+            "양파 생산량 증가로 가격이 하락해 농식품부가 수출 물량을 지원한다.",
+            "https://example.com/supply-onion",
+        )
+        supply_tail = self._make_article(
+            "supply",
+            "마늘가격 지킬 수 있어요",
+            "마늘가격 안정 캠페인을 진행한다.",
+            "https://example.com/supply-garlic",
+        )
+        supply_bridge = self._make_article(
+            "supply",
+            "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+            "가락시장 채소 반입과 물류비 절감을 위해 파렛트 운송지원 물량을 확대한다.",
+            "https://example.com/dist-pallet-ops",
+        )
+        supply_filler = self._make_article(
+            "supply",
+            "시설채소 현장기술지원단 가동",
+            "토마토와 오이 농가 현장기술지원단을 가동한다.",
+            "https://example.com/supply-veg",
+        )
+        dist_tail = self._make_article(
+            "dist",
+            "강원 농협 선진 산지유통 현장 벤치마킹",
+            "농협 관계자들이 산지유통 현장을 벤치마킹했다.",
+            "https://example.com/dist-benchmark",
+        )
+        supply_core.is_core = True
+        supply_bridge.selection_stage = "supply_board_bridge"
+        final_by_section = {
+            "supply": [supply_core, supply_tail, supply_bridge, supply_filler],
+            "policy": [],
+            "dist": [dist_tail],
+            "pest": [],
+        }
+
+        self.assertEqual(main._recover_dist_core_from_supply_ops(final_by_section), 1)
+        self.assertNotIn(supply_bridge, final_by_section["supply"])
+        self.assertIn(supply_bridge, final_by_section["dist"])
+        self.assertTrue(supply_bridge.is_core)
+
     def test_supply_seed_extraction_spreads_across_query_list(self):
         queries = [
             "사과 가격",
