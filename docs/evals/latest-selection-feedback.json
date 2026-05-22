@@ -1,10 +1,10 @@
 {
   "report_date": "2026-05-22",
-  "generated_at_kst": "2026-05-22T06:21:39+09:00",
+  "generated_at_kst": "2026-05-22T16:39:44+09:00",
   "scores": {
-    "section_alignment": 95.93,
+    "section_alignment": 95.4,
     "core_quality": 100.0,
-    "commodity_board_quality": 97.22
+    "commodity_board_quality": 93.96
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,14 +12,14 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0667,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.1333,
+    "promotional_filler_rate": 0.1429,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.1429,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 1.2,
+    "editorial_quality_penalty": 4.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8462,
+    "commodity_primary_issue_signal_rate": 0.7692,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
@@ -56,6 +56,15 @@
   },
   "editorial_quality_samples": [
     {
+      "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+      "href": "http://www.amnews.co.kr/news/articleView.html?idxno=72651",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
       "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
       "href": "https://www.nongmin.com/article/20260520500650",
       "section": "dist",
@@ -84,81 +93,73 @@
     }
   ],
   "editorial": {
-    "score": 82.0,
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 76.0,
-      "core_pick_quality": 81.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 79.0,
-      "noise_control": 84.0
+      "article_selection": 84.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 83.0,
+      "summary_usefulness": 90.0,
+      "missed_opportunity": 82.0,
+      "noise_control": 79.0
     },
     "issues": [
       {
-        "type": "wrong_core",
-        "severity": "high",
-        "section": "supply",
-        "title": "국산 감귤 , 기능성 화장품으로 대변신",
-        "reason": "수급보다 바이오소재 홍보성에 가까워 핵심 공급 기사로 부적절.",
-        "suggested_action": "공급 코어에서 제외하고 산업·R&D성 보조로만 검토."
-      },
-      {
         "type": "missed_opportunity",
         "severity": "high",
-        "section": "supply",
+        "section": "policy",
         "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
-        "reason": "양파 폭락 국면과 직접 맞닿은 제도 변화인데 미선정.",
-        "suggested_action": "공급 또는 정책 핵심 카드로 우선 반영."
+        "reason": "정책 영향력이 가장 큰데 비코어 처리됐다.",
+        "suggested_action": "정책 섹션 최상단 코어로 승격."
       },
       {
-        "type": "section_mismatch",
+        "type": "weak_core",
+        "severity": "high",
+        "section": "policy",
+        "title": "“농협, 직선제 받겠다”…강호동 회장 '진짜 농협' 개혁안 발표",
+        "reason": "농정 핵심보다 기관 거버넌스 성격이 강하다.",
+        "suggested_action": "코어 우선순위를 낮추고 보조 카드화."
+      },
+      {
+        "type": "wrong_section",
         "severity": "high",
         "section": "dist",
         "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
-        "reason": "유통보다 생산기술·기후대응 성격이 강함.",
-        "suggested_action": "유통에서 빼고 정책/생산 섹션 후보로 재배치."
-      },
-      {
-        "type": "weak_pick",
-        "severity": "high",
-        "section": "dist",
-        "title": "[동화청과 유통교육] \"맛·품질은 기본…소비자 선택 기준까지 설계 필...",
-        "reason": "교육 행사성 기사로 유통 섹션 대표성 부족.",
-        "suggested_action": "가락시장 물류, 수출, 도매시장 구조 기사로 대체."
+        "reason": "유통보다 기후대응·생산기반 정책 기사다.",
+        "suggested_action": "dist 제외, policy나 별도 기획으로 이동."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다",
-        "reason": "지자체 소비촉진 보도자료 성격이 강함.",
-        "suggested_action": "판로 성과가 검증된 경우만 짧게 처리."
+        "reason": "지자체 소비촉진 보도자료 성격이 짙다.",
+        "suggested_action": "더 구조적 유통 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
+        "type": "weak_core",
         "severity": "medium",
-        "section": "policy",
-        "title": "'6710억 과징금' 밀가루 담합, 가격재결정 명령",
-        "reason": "민생물가·농식품 연계성이 높은 정책 이슈를 놓침.",
-        "suggested_action": "거시물가 기사 1건과 교체 검토."
+        "section": "dist",
+        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+        "reason": "실무성은 있으나 섹션 대표 코어로는 임팩트가 약하다.",
+        "suggested_action": "가락시장 구조 변화·수출물류 등 더 큰 기사 우선."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "pest",
-        "title": "과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
-        "reason": "개별 발생보다 전국 경보 상향이 더 상위 이슈.",
-        "suggested_action": "개별 사례 1건 대신 경보 상향 기사를 채택."
+        "title": "세종서 과수화상병 발생…역대 첫 감염 / 위기단계 경계 상향",
+        "reason": "전국 확산 신호가 더 큰데 빠졌다.",
+        "suggested_action": "지역발생 기사 1건 대신 전국 경보 기사 반영."
       },
       {
         "type": "duplication_theme",
         "severity": "medium",
         "section": "pest",
-        "title": "화상병 지역발생 기사 2건 동시 채택",
-        "reason": "화성·원주 사례 모두 지역 단신성으로 메시지 중복.",
-        "suggested_action": "전국 경보 1건+지역 사례 1건 조합으로 압축."
+        "title": "화성 첫 발생 / 원주 미살포",
+        "reason": "둘 다 과수화상병 지역 단신으로 주제 폭이 좁다.",
+        "suggested_action": "한 건은 전국 확산·방제체계 기사로 대체."
       }
     ]
   },
@@ -166,6 +167,7 @@
     "driver_tags": [
       "editorial_section_fit",
       "editorial_noise_filter",
+      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
@@ -179,11 +181,11 @@
     "high_score_low_fit_rescue_margin": 4.2,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -192,7 +194,7 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -203,15 +205,22 @@
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 82.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
