@@ -1564,6 +1564,27 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertNotIn(major1.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
         self.assertNotIn(major2.link, picked_links, msg=str([(x.link, x.score, x.title) for x in picked]))
 
+    def test_supply_nonfood_product_story_is_never_promoted_to_core(self):
+        onion = self._make_article(
+            "supply",
+            "양파 공급과잉에 kg당 500원 붕괴…산지폐기 확대 요구",
+            "양파 생산량 증가와 반입 물량 확대로 도매가격이 하락해 농가와 산지가 수급 안정 대책을 요구한다.",
+            "https://example.com/supply-onion-price",
+        )
+        citrus_cosmetic = self._make_article(
+            "supply",
+            "국산 감귤, 기능성 화장품으로 대변신",
+            "감귤 추출물을 활용해 기능성 화장품과 스킨케어 제품을 개발했다는 소개 기사다.",
+            "https://example.com/supply-citrus-cosmetic",
+        )
+        onion.score = 20.0
+        citrus_cosmetic.score = 60.0
+
+        picked = main.select_top_articles([citrus_cosmetic, onion], "supply", 5)
+
+        self.assertFalse(any(article.link == citrus_cosmetic.link and article.is_core for article in picked))
+        self.assertTrue(any(article.link == onion.link and article.is_core for article in picked))
+
     def test_policy_final_recovery_backfills_central_grain_supply_story(self):
         weak_tail = self._make_article(
             "policy",
@@ -1588,6 +1609,83 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(inserted, 1)
         self.assertIn(grain_policy.link, {article.link for article in final_by_section["policy"]})
         self.assertTrue(any(article.link == grain_policy.link and article.is_core for article in final_by_section["policy"]))
+
+    def test_policy_recovery_ranks_price_stabilization_system_story(self):
+        weak_tail = self._make_article(
+            "policy",
+            "농산물 소비자물가 안정세 지속",
+            "농산물 물가 동향을 짚는 짧은 기사다.",
+            "https://example.com/policy-weak-tail",
+        )
+        stabilization_system = self._make_article(
+            "policy",
+            "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+            (
+                "농식품부가 농안법 시행령 개정안을 입법예고했다. 농산물 평균가격이 기준가격보다 "
+                "낮으면 차액을 지원하고 기준가격은 경영비 이상으로 정한다."
+            ),
+            "https://v.daum.net/v/20260521070052640",
+        )
+        final_by_section = {"supply": [], "policy": [weak_tail], "dist": [], "pest": []}
+
+        self.assertTrue(main.is_policy_price_stabilization_system_context(
+            stabilization_system.title,
+            stabilization_system.description,
+            stabilization_system.domain,
+            stabilization_system.press,
+        ))
+        self.assertIsNotNone(main._policy_underfill_recovery_rank(stabilization_system, self.conf["policy"]))
+        inserted = main._recover_policy_underfill_from_raw(
+            final_by_section,
+            {"supply": [], "policy": [weak_tail, stabilization_system], "dist": [], "pest": []},
+            max_items=3,
+        )
+
+        self.assertEqual(inserted, 1)
+        self.assertIn(stabilization_system.link, {article.link for article in final_by_section["policy"]})
+        self.assertTrue(any(article.link == stabilization_system.link and article.is_core for article in final_by_section["policy"]))
+
+    def test_policy_priority_recovery_replaces_weak_noncore_tail(self):
+        core_policy = self._make_article(
+            "policy",
+            "농협, 조합원 직선제 수용 등 개혁안 발표",
+            "농협중앙회가 조합원 직선제 수용과 내부 통제 개선 방안을 발표했다.",
+            "https://example.com/policy-nh-core",
+        )
+        macro_tail = self._make_article(
+            "policy",
+            "중동發 원자재 충격 현실화···생산자물가 상승",
+            "중동 사태와 원자재 가격 상승으로 생산자물가 부담이 커졌다는 거시경제 기사다.",
+            "https://example.com/policy-macro-tail",
+        )
+        other_tail = self._make_article(
+            "policy",
+            "농산물 수급 안정 점검 회의 개최",
+            "정부가 농산물 수급 안정 상황을 점검했다.",
+            "https://example.com/policy-other-tail",
+        )
+        stabilization_system = self._make_article(
+            "policy",
+            "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+            (
+                "농식품부가 농안법 시행령 개정안을 입법예고했다. 농산물 평균가격이 기준가격보다 "
+                "낮으면 차액을 지원하고 기준가격은 경영비 이상으로 정한다."
+            ),
+            "https://v.daum.net/v/20260521070052640",
+        )
+        core_policy.is_core = True
+        final_by_section = {"supply": [], "policy": [core_policy, macro_tail, other_tail], "dist": [], "pest": []}
+
+        inserted = main._recover_priority_policy_from_raw(
+            final_by_section,
+            {"supply": [stabilization_system], "policy": [], "dist": [], "pest": []},
+            max_items=3,
+        )
+
+        picked_links = {article.link for article in final_by_section["policy"]}
+        self.assertEqual(inserted, 1)
+        self.assertIn(stabilization_system.link, picked_links)
+        self.assertEqual(len(final_by_section["policy"]), 3)
 
     def test_pest_priority_moves_supply_fire_blight_story_to_pest_raw_pool(self):
         fire_blight = self._make_article(

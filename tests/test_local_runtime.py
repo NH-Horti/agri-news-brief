@@ -316,3 +316,79 @@ class LocalRuntimeTests(TestCase):
             main._editorial_safe_core_demote_reason(field_policy_article, "policy"),
             "policy_field_price_collapse_without_policy_lead",
         )
+
+    def test_editorial_safe_demotes_nonfood_supply_and_training_dist_core(self) -> None:
+        citrus_cosmetic = self._make_article(
+            section="supply",
+            title="국산 감귤, 기능성 화장품으로 대변신",
+            description="감귤 추출물을 활용해 스킨케어 제품을 개발했다는 소개 기사다.",
+        )
+        dist_training = self._make_article(
+            section="dist",
+            title='[동화청과 유통교육] "맛· 품질 은 기본…소비자 선택 기준까지 설계 필요"',
+            description=(
+                "미래농업인을 대상으로 소비자 선택 기준과 상품 기획 교육을 진행했다. "
+                "강연에서는 AI 선별, 포장, 물류, 산지 거래 전략도 소개됐다."
+            ),
+        )
+        dist_ops_article = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 반입 물류 효율화를 위해 파렛트 운송지원 물량을 확대한다.",
+        )
+
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(citrus_cosmetic, "supply"),
+            "supply_nonfood_promo_without_market_signal",
+        )
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(dist_training, "dist"),
+            "dist_education_or_training_without_ops",
+        )
+        self.assertEqual(main._editorial_safe_core_demote_reason(dist_ops_article, "dist"), "")
+
+    def test_optional_supply_nonfood_tail_drops_only_above_minimum(self) -> None:
+        onion_core = self._make_article(title="양파 가격 급락…산지폐기 확대 요구")
+        cabbage = self._make_article(title="양배추 반입량 증가에 도매가격 약세", link="https://example.com/cabbage")
+        garlic = self._make_article(title="마늘 저장 물량 감소로 시세 강세", link="https://example.com/garlic")
+        citrus_cosmetic = self._make_article(
+            title="국산 감귤, 기능성 화장품으로 대변신",
+            description="감귤 추출물을 활용해 스킨케어 제품을 개발했다는 소개 기사다.",
+            link="https://example.com/citrus-cosmetic",
+        )
+        onion_core.is_core = True
+        final_by_section = {"supply": [onion_core, cabbage, garlic, citrus_cosmetic]}
+
+        self.assertEqual(main._drop_optional_supply_nonfood_tail(final_by_section, min_items=3), 1)
+        self.assertEqual(len(final_by_section["supply"]), 3)
+        self.assertNotIn(citrus_cosmetic, final_by_section["supply"])
+
+        final_by_section = {"supply": [onion_core, cabbage, citrus_cosmetic]}
+        self.assertEqual(main._drop_optional_supply_nonfood_tail(final_by_section, min_items=3), 0)
+        self.assertIn(citrus_cosmetic, final_by_section["supply"])
+
+    def test_optional_dist_training_tail_drops_only_above_minimum(self) -> None:
+        dist_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 반입 물류 효율화를 위해 파렛트 운송지원 물량을 확대한다.",
+            link="https://example.com/dist-core",
+        )
+        dist_training = self._make_article(
+            section="dist",
+            title='[동화청과 유통교육] "맛·품질은 기본…소비자 선택 기준까지 설계 필요"',
+            description="청년농 유통 교육에서 상품 기획과 선별, 포장, 물류 전략을 공유했다.",
+            link="https://example.com/dist-training",
+        )
+        dist_tail_a = self._make_article(section="dist", title="농산물 직거래로 양파 100톤 판로 확보", link="https://example.com/dist-a")
+        dist_tail_b = self._make_article(section="dist", title="스마트 APC 운영 개선 필요", link="https://example.com/dist-b")
+        dist_core.is_core = True
+        final_by_section = {"dist": [dist_core, dist_training, dist_tail_a, dist_tail_b]}
+
+        self.assertEqual(main._drop_optional_dist_editorial_tail(final_by_section, min_items=3), 1)
+        self.assertEqual(len(final_by_section["dist"]), 3)
+        self.assertNotIn(dist_training, final_by_section["dist"])
+
+        final_by_section = {"dist": [dist_core, dist_training, dist_tail_a]}
+        self.assertEqual(main._drop_optional_dist_editorial_tail(final_by_section, min_items=3), 0)
+        self.assertIn(dist_training, final_by_section["dist"])
