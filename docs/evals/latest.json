@@ -1,26 +1,26 @@
 {
   "report_date": "2026-05-22",
-  "generated_at_kst": "2026-05-22T06:21:39+09:00",
+  "generated_at_kst": "2026-05-22T16:39:44+09:00",
   "status": "pass",
-  "overall_score": 97.12,
+  "overall_score": 94.15,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 86.87,
-    "section_alignment": 95.93,
+    "retrieval_support": 87.5,
+    "section_alignment": 95.4,
     "core_quality": 100.0,
-    "commodity_board_quality": 97.22
+    "commodity_board_quality": 93.96
   },
   "counts": {
-    "briefing_total": 15,
-    "commodity_total": 44,
+    "briefing_total": 14,
+    "commodity_total": 43,
     "commodity_primary_total": 13,
     "briefing_by_section": {
-      "supply": 4,
-      "policy": 3,
-      "dist": 4,
+      "supply": 3,
+      "policy": 4,
+      "dist": 3,
       "pest": 4
     },
     "core_by_section": {
@@ -30,16 +30,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 30,
+      "supply": 29,
       "policy": 2,
       "dist": 5,
       "pest": 7
     },
     "raw_by_section": {
-      "supply": 170,
-      "policy": 169,
-      "dist": 60,
-      "pest": 45
+      "supply": 160,
+      "policy": 170,
+      "dist": 52,
+      "pest": 43
     },
     "expected_briefing_by_section": {
       "supply": 3,
@@ -50,22 +50,22 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7333,
+    "briefing_domain_diversity_rate": 0.7143,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.8667,
+    "summary_numeric_rate": 0.9286,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 4.7493,
+    "seed_coverage_score": 0.5833,
+    "section_alignment_fit_avg": 5.2271,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.1333,
+    "section_alignment_weak_stage_rate": 0.1429,
     "content_false_positive_rate": 0.0,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
@@ -74,21 +74,21 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0667,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.1333,
+    "promotional_filler_rate": 0.1429,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.1429,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 1.2,
-    "core_fit_avg": 5.05,
-    "core_rank_percentile_avg": 0.9649,
+    "editorial_quality_penalty": 4.0,
+    "core_fit_avg": 5.0457,
+    "core_rank_percentile_avg": 0.9629,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8462,
+    "commodity_primary_issue_signal_rate": 0.7692,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 2.8838,
-    "commodity_primary_rank_avg": 3.0
+    "commodity_primary_fit_avg": 3.1385,
+    "commodity_primary_rank_avg": 2.9231
   },
   "section_scores": {
     "briefing_fill": {
@@ -112,7 +112,7 @@
     "seed_coverage": {
       "supply": 0.5833,
       "policy": 0.6667,
-      "dist": 0.5,
+      "dist": 0.5833,
       "pest": 0.5
     },
     "section_alignment": {
@@ -124,7 +124,7 @@
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 1.0,
+      "dist": 0.9615,
       "pest": 1.0
     }
   },
@@ -132,6 +132,11 @@
     {
       "title": "햇 양파 보관 어쩌라고...지난해산 비축분 폐기 ‘세월아 네월아’",
       "section": "supply",
+      "age_hours": 23.0
+    },
+    {
+      "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+      "section": "policy",
       "age_hours": 23.0
     },
     {
@@ -155,11 +160,6 @@
       "age_hours": 17.1
     },
     {
-      "title": "국산 감귤 , 기능성 화장품으로 대변신",
-      "section": "supply",
-      "age_hours": 15.2
-    },
-    {
       "title": "홍천군, ‘영농현장 기술보급확산지원단’ 가동… 이상기후·병해충 선...",
       "section": "pest",
       "age_hours": 15.1
@@ -173,6 +173,15 @@
   "content_false_positive_samples": [],
   "story_duplicate_samples": [],
   "editorial_quality_samples": [
+    {
+      "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+      "href": "http://www.amnews.co.kr/news/articleView.html?idxno=72651",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
     {
       "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
       "href": "https://www.nongmin.com/article/20260520500650",
@@ -202,7 +211,7 @@
     }
   ],
   "improvement_hints": [
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=7%, pest_theme_duplicate=13%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=14%, pest_theme_duplicate=14%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -241,7 +250,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 97.12,
+  "operational_score": 94.15,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -250,115 +259,114 @@
     "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-22T06:22:09+09:00",
-    "score": 82.0,
+    "generated_at_kst": "2026-05-22T16:40:07+09:00",
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 76.0,
-      "core_pick_quality": 81.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 79.0,
-      "noise_control": 84.0
+      "article_selection": 84.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 83.0,
+      "summary_usefulness": 90.0,
+      "missed_opportunity": 82.0,
+      "noise_control": 79.0
     },
-    "summary": "전반적으로 당일 농업 현안은 포착했지만, 섹션별 편집 판단은 들쭉날쭉했다. 공급은 양파 약세 이슈를 잘 잡았으나 비핵심보다 약한 감귤 화장품 기사를 코어로 둔 점이 치명적이다. 정책은 농협 개혁·애그플레이션을 담아 무난했지만, 농안법 가격안정제도나 밀가루 담합 같은 더 농업정책 밀착형 후보를 놓쳤다. 유통은 교육·직거래성 기사 비중이 높아 산업 구조 변화나 물류 이슈 중심성이 약했다. 병해충은 과수화상병 축을 잡았지만 전국 확산 경보·세종 첫 발생 같은 상위 이슈를 비켜가 중복 대비 효율이 떨어졌다.",
+    "summary": "양파 수급 이슈와 과수화상병 흐름은 대체로 잘 잡았지만, 정책·유통 섹션에서 기사 성격이 흐려졌고 핵심 기사 우선순위도 아쉽다. 특히 정책 섹션은 농산물가격안정제도 시행 기사보다 농협 개혁안을 더 강한 코어로 둔 판단이 약했고, 유통 섹션은 비유통성 기사와 지자체 판촉성 기사가 섞여 완성도가 떨어진다.",
     "issues": [
-      {
-        "type": "wrong_core",
-        "severity": "high",
-        "section": "supply",
-        "title": "국산 감귤 , 기능성 화장품으로 대변신",
-        "reason": "수급보다 바이오소재 홍보성에 가까워 핵심 공급 기사로 부적절.",
-        "suggested_action": "공급 코어에서 제외하고 산업·R&D성 보조로만 검토."
-      },
       {
         "type": "missed_opportunity",
         "severity": "high",
-        "section": "supply",
+        "section": "policy",
         "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
-        "reason": "양파 폭락 국면과 직접 맞닿은 제도 변화인데 미선정.",
-        "suggested_action": "공급 또는 정책 핵심 카드로 우선 반영."
+        "reason": "정책 영향력이 가장 큰데 비코어 처리됐다.",
+        "suggested_action": "정책 섹션 최상단 코어로 승격."
       },
       {
-        "type": "section_mismatch",
+        "type": "weak_core",
+        "severity": "high",
+        "section": "policy",
+        "title": "“농협, 직선제 받겠다”…강호동 회장 '진짜 농협' 개혁안 발표",
+        "reason": "농정 핵심보다 기관 거버넌스 성격이 강하다.",
+        "suggested_action": "코어 우선순위를 낮추고 보조 카드화."
+      },
+      {
+        "type": "wrong_section",
         "severity": "high",
         "section": "dist",
         "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
-        "reason": "유통보다 생산기술·기후대응 성격이 강함.",
-        "suggested_action": "유통에서 빼고 정책/생산 섹션 후보로 재배치."
-      },
-      {
-        "type": "weak_pick",
-        "severity": "high",
-        "section": "dist",
-        "title": "[동화청과 유통교육] \"맛·품질은 기본…소비자 선택 기준까지 설계 필...",
-        "reason": "교육 행사성 기사로 유통 섹션 대표성 부족.",
-        "suggested_action": "가락시장 물류, 수출, 도매시장 구조 기사로 대체."
+        "reason": "유통보다 기후대응·생산기반 정책 기사다.",
+        "suggested_action": "dist 제외, policy나 별도 기획으로 이동."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다",
-        "reason": "지자체 소비촉진 보도자료 성격이 강함.",
-        "suggested_action": "판로 성과가 검증된 경우만 짧게 처리."
+        "reason": "지자체 소비촉진 보도자료 성격이 짙다.",
+        "suggested_action": "더 구조적 유통 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
+        "type": "weak_core",
         "severity": "medium",
-        "section": "policy",
-        "title": "'6710억 과징금' 밀가루 담합, 가격재결정 명령",
-        "reason": "민생물가·농식품 연계성이 높은 정책 이슈를 놓침.",
-        "suggested_action": "거시물가 기사 1건과 교체 검토."
+        "section": "dist",
+        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+        "reason": "실무성은 있으나 섹션 대표 코어로는 임팩트가 약하다.",
+        "suggested_action": "가락시장 구조 변화·수출물류 등 더 큰 기사 우선."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "pest",
-        "title": "과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
-        "reason": "개별 발생보다 전국 경보 상향이 더 상위 이슈.",
-        "suggested_action": "개별 사례 1건 대신 경보 상향 기사를 채택."
+        "title": "세종서 과수화상병 발생…역대 첫 감염 / 위기단계 경계 상향",
+        "reason": "전국 확산 신호가 더 큰데 빠졌다.",
+        "suggested_action": "지역발생 기사 1건 대신 전국 경보 기사 반영."
       },
       {
         "type": "duplication_theme",
         "severity": "medium",
         "section": "pest",
-        "title": "화상병 지역발생 기사 2건 동시 채택",
-        "reason": "화성·원주 사례 모두 지역 단신성으로 메시지 중복.",
-        "suggested_action": "전국 경보 1건+지역 사례 1건 조합으로 압축."
+        "title": "화성 첫 발생 / 원주 미살포",
+        "reason": "둘 다 과수화상병 지역 단신으로 주제 폭이 좁다.",
+        "suggested_action": "한 건은 전국 확산·방제체계 기사로 대체."
       }
     ],
     "section_notes": {
-      "supply": "양파 가격 폭락과 저장창고 문제는 적절했다. 다만 감귤 화장품은 공급 섹션 핵심성과 거리가 멀고, 양파 폭락과 직접 연결되는 가격안정제도 기사 미반영이 아쉽다.",
-      "policy": "농협 개혁과 애그플레이션은 시의성 있다. 그러나 농업 독자 관점에선 농안법 시행령, 밀가루 담합 제재처럼 제도·가격 형성에 직접 연결되는 이슈가 더 우선순위가 높았다.",
-      "dist": "유통 섹션이 가장 약하다. 교육·직거래·일반론 비중이 높아 도매시장 운영, 물류개선, 수출·판로 구조 변화 같은 산업형 기사 중심 편성이 필요하다.",
-      "pest": "과수화상병 자체는 맞는 축이다. 하지만 전국 경계 상향·세종 첫 발생 같은 상위 신호를 놓치고 지역 발생 기사 위주로 채워 중복감이 생겼다."
+      "supply": "양파 가격 폭락과 저장공간 문제를 함께 잡은 점은 좋다. 다만 양배추 시세 기사까지 넣어 품목 분산은 했지만, 공급 과잉 원인·정부 대응을 더 압축적으로 연결해주면 더 강해진다.",
+      "policy": "정책 섹션은 가장 큰 제도 변화인 농산물가격안정제도 시행 기사를 중심으로 재구성했어야 한다. 농협 개혁안과 애그플레이션은 보조 이슈로는 가능하나 농정 독자 체감도는 상대적으로 낮다.",
+      "dist": "섹션 완성도가 가장 약하다. 물류 지원 기사는 맞지만 코어 임팩트가 약하고, 스마트팜 기사는 오배치이며, 무안군 직거래는 판촉성이다. 유통 구조·도매시장·수출물류 기사로 재편이 필요하다.",
+      "pest": "과수화상병 자체는 핵심 이슈를 잘 잡았지만 지역 발생 2건 중심으로 좁아졌다. 세종 첫 발생과 위기단계 상향 같은 전국 단위 기사로 확장했어야 한다."
     },
     "improvement_suggestions": [
-      "공급 코어는 가격·출하·재고·수급정책 직결 기사만 우선 선발할 것.",
-      "정책 섹션은 거시물가 일반론보다 농업 제도 변화와 가격결정 이슈를 우선할 것.",
-      "유통 섹션에서 교육·행사성 기사는 코어 금지 기준을 두는 것이 좋다.",
-      "지자체 보도자료형 소비촉진 기사는 실적 검증 없으면 후순위로 내릴 것.",
-      "병해충은 전국 경보/첫 발생/확산 규모 같은 상위 이슈를 먼저 잡고 지역 사례는 1건만 보완할 것.",
-      "같은 품목·같은 메시지의 중복 카드가 생기면 원인-영향-대응 구도로 역할을 분리할 것."
+      "정책 섹션은 제도 시행·법 개정 등 직접 영향 기사를 최우선 코어로 배치.",
+      "dist 섹션은 생산기술·지자체 홍보성 기사를 배제하고 도매시장·물류·수출 구조 기사만 선별.",
+      "코어 선정 시 기관 발표보다 농가 영향도와 시장 파급력을 더 크게 반영.",
+      "pest 섹션은 지역 발생 단신 2건보다 전국 경보·확산 현황 기사 1건을 반드시 포함.",
+      "같은 양파 이슈를 여러 섹션에 넣을 때는 공급·정책·유통 관점 차이가 분명한 기사만 채택.",
+      "저적합 기사라도 빈칸 채우기보다 카드 수를 줄여 섹션 순도를 높일 것."
     ],
-    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":80,\"section_fit\":76,\"core_pick_quality\":81,\"summary_usefulness\":88,\"missed_opportunity\":79,\"noise_control\":84},\"summary\":\"전반적으로 당일 농업 현안은 포착했지만, 섹션별 편집 판단은 들쭉날쭉했다. 공급은 양파 약세 이슈를 잘 잡았으나 비핵심보다 약한 감귤 화장품 기사를 코어로 둔 점이 치명적이다. 정책은 농협 개혁·애그플레이션을 담아 무난했지만, 농안법 가격안정제도나 밀가루 담합 같은 더 농업정책 밀착형 후보를 놓쳤다. 유통은 교육·직거래성 기사 비중이 높아 산업 구조 변화나 물류 이슈 중심성이 약했다. 병해충은 과수화상병 축을 잡았지만 전국 확산 경보·세종 첫 발생 같은 상위 이슈를 비켜가 중복 대비 효율이 떨어졌다.\",\"issues\":[{\"type\":\"wrong_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"국산 감귤 , 기능성 화장품으로 대변신\",\"reason\":\"수급보다 바이오소재 홍보성에 가까워 핵심 공급 기사로 부적절.\",\"suggested_action\":\"공급 코어에서 제외하고 산업·R&D성 보조로만 검토.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”\",\"reason\":\"양파 폭락 국면과 직접 맞닿은 제도 변화인데 미선정.\",\"suggested_action\":\"공급 또는 정책 핵심 카드로 우선 반영.\"},{\"type\":\"section_mismatch\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"“스마트팜·신품종 보급…품목맞춤형 접근 필요”\",\"reason\":\"유통보다 생산기술·기후대응 성격이 강함.\",\"suggested_action\":\"유통에서 빼고 정책/생산 섹션 후보로 재배치.\"},{\"type\":\"weak_pick\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"[동화청과 유통교육] \\\"맛·품질은 기본…소비자 선택 기준까지 설계 필...\",\"reason\":\"교육 행사성 기사로 유통 섹션 대표성 부족.\",\"suggested_action\":\"가락시장 물류,..."
+    "raw_response_excerpt": "{\"score\":86,\"scores\":{\"article_selection\":84,\"section_fit\":78,\"core_pick_quality\":83,\"summary_usefulness\":90,\"missed_opportunity\":82,\"noise_control\":79},\"summary\":\"양파 수급 이슈와 과수화상병 흐름은 대체로 잘 잡았지만, 정책·유통 섹션에서 기사 성격이 흐려졌고 핵심 기사 우선순위도 아쉽다. 특히 정책 섹션은 농산물가격안정제도 시행 기사보다 농협 개혁안을 더 강한 코어로 둔 판단이 약했고, 유통 섹션은 비유통성 기사와 지자체 판촉성 기사가 섞여 완성도가 떨어진다.\",\"issues\":[{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”\",\"reason\":\"정책 영향력이 가장 큰데 비코어 처리됐다.\",\"suggested_action\":\"정책 섹션 최상단 코어로 승격.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"“농협, 직선제 받겠다”…강호동 회장 '진짜 농협' 개혁안 발표\",\"reason\":\"농정 핵심보다 기관 거버넌스 성격이 강하다.\",\"suggested_action\":\"코어 우선순위를 낮추고 보조 카드화.\"},{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"“스마트팜·신품종 보급…품목맞춤형 접근 필요”\",\"reason\":\"유통보다 기후대응·생산기반 정책 기사다.\",\"suggested_action\":\"dist 제외, policy나 별도 기획으로 이동.\"},{\"type\":\"promotional_filler\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다\",\"reason\":\"지자체 소비촉진 보도자료 성격이 짙다.\",\"suggested_action\":\"더 구조적 유통 기사로 교체.\"},{\"type\":\"weak_core\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"\\\"가락시장 물류 선진화 속도\\\"…파렛트 운송지원 확대\",\"reason\":\"실무성은 있으나 섹션 대표..."
   },
-  "editorial_score": 82.0,
+  "editorial_score": 86.0,
   "editorial_improvement_plan": {
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 82.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
