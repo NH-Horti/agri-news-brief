@@ -401,6 +401,28 @@ def _has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term and term.lower() in text for term in terms)
 
 
+def _editorial_dist_hard_logistics_metric(text: str) -> bool:
+    text_l = _normalize_spaces(text).lower()
+    if not text_l:
+        return False
+    if not (_has_any(text_l, ("가락시장", "도매시장", "공판장")) and _has_any(text_l, ("파렛트", "팰릿", "물류", "운송지원", "운송 지원"))):
+        return False
+    hard_hits = _term_hits(
+        text_l,
+        (
+            "출하량", "출하율", "거래액", "물류비", "운송비", "물동량", "반입량", "처리물량",
+            "지원금", "하역", "정산", "감축", "절감", "순회수집",
+        ),
+    )
+    metric_hit = re.search(
+        r"(?:출하량|출하율|거래액|물류비|운송비|지원금|물동량|반입량|처리물량|경매가|경락가).{0,24}\d"
+        r"|\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|억원|만원|원|%|%포인트|포인트|건|상자|박스|ha|㏊).{0,24}"
+        r"(?:출하|거래|물류|반입|정산|경매|경락|수출|운송|처리|하역|파렛트|팰릿|지원)",
+        text_l,
+    )
+    return hard_hits >= 2 or bool(metric_hit)
+
+
 def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section != "policy":
         return ""
@@ -417,6 +439,8 @@ def _editorial_promotional_filler_reason(article: SurfaceArticle, snapshot_body:
         return ""
     text = _editorial_text(article, snapshot_body)
     title_l = str(article.title or "").lower()
+    if article.section == "dist" and _editorial_dist_hard_logistics_metric(text):
+        return ""
     if any(term in text for term in ("홈쇼핑", "라이브커머스", "쇼호스트", "현장투어")):
         return "promotional_or_event_filler"
     if not _has_any(text, _EDITORIAL_PROMO_TERMS):
@@ -434,6 +458,8 @@ def _editorial_dist_weak_ops_reason(article: SurfaceArticle, snapshot_body: str)
     if article.section != "dist":
         return ""
     text = _editorial_text(article, snapshot_body)
+    if _editorial_dist_hard_logistics_metric(text):
+        return ""
     weak_hits = _term_hits(text, tuple(term.lower() for term in _EDITORIAL_DIST_WEAK_TERMS))
     if weak_hits <= 0:
         return ""

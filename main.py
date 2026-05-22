@@ -3531,6 +3531,45 @@ def _editorial_safe_has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term and term.lower() in text for term in terms)
 
 
+def is_dist_hard_logistics_metric_context(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text:
+        return False
+    if not (
+        _editorial_safe_has_any(text, ("가락시장", "도매시장", "공판장"))
+        and _editorial_safe_has_any(text, ("파렛트", "팰릿", "물류", "운송지원", "운송 지원"))
+    ):
+        return False
+    hard_ops_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "출하량", "출하율", "거래액", "물류비", "운송비", "물동량", "반입량", "처리물량",
+            "지원금", "하역", "정산", "감축", "절감", "순회수집",
+        )],
+    )
+    has_metric_ops = bool(re.search(
+        r"(?:출하량|출하율|거래액|물류비|운송비|지원금|물동량|반입량|처리물량|경매가|경락가).{0,24}\d"
+        r"|\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|억원|만원|원|%|%포인트|포인트|건|상자|박스|ha|㏊).{0,24}"
+        r"(?:출하|거래|물류|반입|정산|경매|경락|수출|운송|처리|하역|파렛트|팰릿|지원)",
+        text,
+        re.IGNORECASE,
+    ))
+    return hard_ops_hits >= 2 or has_metric_ops
+
+
+def is_dist_labor_issue_without_logistics_action(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text:
+        return False
+    if is_dist_hard_logistics_metric_context(title, desc):
+        return False
+    return (
+        _editorial_safe_has_any(text, ("가락시장", "도매시장"))
+        and _editorial_safe_has_any(text, ("하역노동", "하역 노동", "노동자", "주5일", "근무", "인력"))
+        and not _editorial_safe_has_any(text, ("물류비", "운송지원", "파렛트", "정산", "출하율", "반입량", "처리물량"))
+    )
+
+
 def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> str:
     if section_key not in {"supply", "policy", "dist"}:
         return ""
@@ -3546,30 +3585,22 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
                 return "supply_nonfood_promo_without_market_signal"
     if section_key == "dist":
         if "물류 선진화" in title_l and "파렛트" in title_l and "운송지원" in title_l and "확대" in title_l:
-            return "promotional_or_event_filler"
+            if not is_dist_hard_logistics_metric_context(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
+                return "promotional_or_event_filler"
+        if is_dist_labor_issue_without_logistics_action(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
+            return "dist_labor_issue_without_logistics_action"
         if (
             _editorial_safe_has_any(text, ("운송지원", "운송 지원"))
             and _editorial_safe_has_any(text, ("파렛트", "팰릿", "물류 선진화", "운송지원 확대", "운송 지원 확대"))
         ):
-            hard_ops_hits = count_any(
-                text,
-                [w.lower() for w in (
-                    "출하량", "거래액", "물류비", "물동량", "반입량", "처리물량",
-                    "경매가", "경락가", "하역", "정산", "감축", "절감",
-                )],
-            )
-            has_metric_ops = bool(re.search(
-                r"(?:출하량|거래액|물류비|물동량|반입량|처리물량|경매가|경락가).{0,16}\d"
-                r"|\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|억원|만원|원|%|건|상자|박스|ha|㏊).{0,16}"
-                r"(?:출하|거래|물류|반입|정산|경매|경락|수출|운송|처리|하역)",
-                text,
-                re.IGNORECASE,
-            ))
-            if hard_ops_hits <= 1 and not has_metric_ops:
+            if not is_dist_hard_logistics_metric_context(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
                 return "promotional_or_event_filler"
         if (
             _editorial_safe_has_any(text, _EDITORIAL_SAFE_DIST_PRODUCTION_POLICY_TERMS)
-            and not _editorial_safe_has_any(title_l, ("가락시장", "도매시장", "공판장", "apc", "산지유통", "파렛트", "물류", "출하", "반입", "경락", "수출", "검역"))
+            and not _editorial_safe_has_any(title_l, (
+                "가락시장", "도매시장", "공판장", "apc", "산지유통", "농산물 유통", "유통협력",
+                "유통 협력", "유통 효율", "온라인도매시장", "파렛트", "물류", "출하", "반입", "경락", "수출", "검역",
+            ))
         ):
             return "dist_production_policy_without_ops"
         dist_event_core_terms = (
@@ -21278,23 +21309,35 @@ def _drop_optional_dist_editorial_tail(final_by_section: dict[str, list["Article
     floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
     if len(dist_items) <= floor:
         return 0
-    keep: list[Article] = []
-    dropped = 0
-    remaining = len(dist_items)
-    for article in dist_items:
-        optional_training_tail = (
-            not bool(getattr(article, "is_core", False))
-            and _editorial_safe_core_demote_reason(article, "dist") in {
-                "dist_education_or_training_without_ops",
-                "dist_production_policy_without_ops",
-                "dist_event_or_development_without_ops",
-            }
-        )
-        if optional_training_tail and remaining > floor:
-            dropped += 1
-            remaining -= 1
+    optional: list[tuple[tuple[Any, ...], int, Article]] = []
+    reason_priority = {
+        "dist_production_policy_without_ops": 0,
+        "dist_education_or_training_without_ops": 1,
+        "dist_event_or_development_without_ops": 2,
+        "dist_labor_issue_without_logistics_action": 3,
+        "promotional_or_event_filler": 4,
+    }
+    for idx, article in enumerate(dist_items):
+        if bool(getattr(article, "is_core", False)):
             continue
-        keep.append(article)
+        reason = _editorial_safe_core_demote_reason(article, "dist")
+        if reason not in reason_priority and not _is_optional_dist_editorial_tail(article):
+            continue
+        optional.append((
+            (
+                reason_priority.get(reason, 1),
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            idx,
+            article,
+        ))
+    dropped = min(len(optional), len(dist_items) - floor)
+    if dropped <= 0:
+        return 0
+    drop_indexes = {idx for _rank, idx, _article in sorted(optional, key=lambda item: item[0])[:dropped]}
+    keep = [article for idx, article in enumerate(dist_items) if idx not in drop_indexes]
     if dropped:
         final_by_section["dist"] = keep
     return dropped
@@ -21307,6 +21350,7 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
         "dist_education_or_training_without_ops",
         "dist_production_policy_without_ops",
         "promotional_or_event_filler",
+        "dist_labor_issue_without_logistics_action",
     }:
         return True
     title = article.title or ""
@@ -21315,7 +21359,7 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
     if (
         count_any(text, [w.lower() for w in ("하나로마트", "농협유통", "농협 유통", "마트")]) >= 1
         and count_any(text, [w.lower() for w in ("사전 예약", "사전예약", "예약 판매", "예약판매")]) >= 1
-        and count_any(text, [w.lower() for w in ("가격", "수급", "도매시장", "경락", "반입", "물량", "출하량")]) == 0
+        and count_any(text, [w.lower() for w in ("수급", "도매시장", "공판장", "경락", "경매", "반입", "반입량", "물량", "출하량", "산지유통")]) == 0
     ):
         return True
     dom = normalize_host(article.domain or "")
@@ -21332,6 +21376,8 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         return None
     if _editorial_safe_core_demote_reason(article, "dist"):
         return None
+    if _is_optional_dist_editorial_tail(article):
+        return None
     if _postbuild_article_reject_reason(article, "dist"):
         return None
     title = article.title or ""
@@ -21339,8 +21385,25 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
     dom = normalize_host(article.domain or "")
     press = (article.press or "").strip()
     title_l = _nfkc_lower(title)
+    text_l = _nfkc_lower(f"{title} {desc}")
     if any(term.lower() in title_l for term in OPINION_BAN_TERMS):
         return None
+    if is_dist_primary_supply_price_story(title, desc):
+        return None
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    direct_agri_ops = count_any(
+        text_l,
+        [w.lower() for w in (
+            "농산물", "원예", "과수", "과일", "채소", "양파", "감자", "단감", "멜론", "참외",
+            "가락시장", "도매시장", "공판장", "산지유통", "apc", "파렛트", "팰릿",
+        )],
+    )
+    if managed_count <= 0 and direct_agri_ops <= 0:
+        return None
+    structural_market_ops = _editorial_safe_has_any(
+        text_l,
+        ("농산물 유통 효율", "유통협력", "유통 협력", "온라인도매시장", "도매시장 거래", "물량 분산", "산지-소비지"),
+    )
     ops_signal = (
         is_dist_market_ops_context(title, desc, dom, press)
         or is_dist_supply_management_center_context(title, desc)
@@ -21349,28 +21412,48 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         or is_dist_export_field_context(title, desc, dom, press)
         or is_dist_export_support_hub_context(title, desc, dom, press)
         or is_dist_market_disruption_context(title, desc)
+        or structural_market_ops
     )
+    hard_logistics = is_dist_hard_logistics_metric_context(title, desc)
     if not ops_signal:
         return None
     try:
         fit_sc = float(section_fit_score(title, desc, dist_conf, dom, press))
     except Exception:
         fit_sc = 0.0
-    if fit_sc < 2.2 and not is_dist_market_ops_context(title, desc, dom, press):
+    if fit_sc < 2.2 and not is_dist_market_ops_context(title, desc, dom, press) and not structural_market_ops:
         return None
     title_ops_hits = count_any(
         _nfkc_lower(title),
         [t.lower() for t in ("가락시장", "도매시장", "공판장", "apc", "산지유통", "물류", "파렛트", "출하", "직거래", "수출", "검역")],
     )
     return (
+        1 if hard_logistics else 0,
         1 if is_dist_market_ops_context(title, desc, dom, press) else 0,
         1 if is_dist_quality_field_ops_context(title, desc, dom, press) else 0,
+        1 if managed_count >= 1 else 0,
         1 if title_ops_hits >= 1 else 0,
         round(fit_sc, 3),
         press_priority(press, dom),
         round(float(getattr(article, "score", 0.0) or 0.0), 3),
         getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
     )
+
+
+def _allow_dist_replacement_story_overlap(candidate: "Article", existing: "Article") -> bool:
+    if _is_similar_title(candidate.title_key or "", existing.title_key or ""):
+        return False
+    cand_text = _nfkc_lower(f"{candidate.title or ''} {candidate.description or ''}")
+    existing_text = _nfkc_lower(f"{existing.title or ''} {existing.description or ''}")
+    candidate_structural = _editorial_safe_has_any(
+        cand_text,
+        ("유통협력", "유통 협력", "온라인도매시장", "소비지 연계", "상생형 유통", "경매 현장"),
+    )
+    existing_logistics = _editorial_safe_has_any(
+        existing_text,
+        ("파렛트", "팰릿", "운송지원", "물류 선진화", "순회수집"),
+    )
+    return bool(candidate_structural and existing_logistics)
 
 
 def _replace_optional_dist_tail_from_raw(
@@ -21404,7 +21487,12 @@ def _replace_optional_dist_tail_from_raw(
                 continue
             if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in dist_items):
                 continue
-            if any(_is_similar_story(article, existing, "dist") for existing in dist_items if not _is_optional_dist_editorial_tail(existing)):
+            if any(
+                _is_similar_story(article, existing, "dist")
+                and not _allow_dist_replacement_story_overlap(article, existing)
+                for existing in dist_items
+                if not _is_optional_dist_editorial_tail(existing)
+            ):
                 continue
             rank = _dist_replacement_candidate_rank(article, dist_conf)
             if rank is None:
@@ -21458,6 +21546,143 @@ def _replace_optional_dist_tail_from_raw(
             reverse=True,
         )
     return replaced
+
+
+def _promote_dist_hard_logistics_core(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
+    if any(
+        bool(getattr(article, "is_core", False))
+        and is_dist_hard_logistics_metric_context(article.title or "", article.description or "")
+        for article in dist_items
+    ):
+        return 0
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in dist_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article, bool]] = []
+
+    def _maybe_add(article: Article, *, already_final: bool) -> None:
+        if not isinstance(article, Article):
+            return
+        ident = _article_selection_identity(article)
+        if not already_final and ident and ident in existing_keys:
+            return
+        if not is_dist_hard_logistics_metric_context(article.title or "", article.description or ""):
+            return
+        if _editorial_safe_core_demote_reason(article, "dist"):
+            return
+        if _postbuild_article_reject_reason(article, "dist"):
+            return
+        try:
+            fit_sc = float(section_fit_score(article.title or "", article.description or "", dist_conf, article.domain or "", article.press or ""))
+        except Exception:
+            fit_sc = 0.0
+        if fit_sc < 1.0:
+            return
+        ranked.append((
+            (
+                1 if already_final else 0,
+                round(fit_sc, 3),
+                press_priority(article.press, article.domain),
+                round(float(getattr(article, "score", 0.0) or 0.0), 3),
+                getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+            ),
+            article,
+            already_final,
+        ))
+
+    for article in dist_items:
+        _maybe_add(article, already_final=True)
+    if raw_by_section:
+        for source_section in ("dist", "supply"):
+            for article in raw_by_section.get(source_section, []) or []:
+                if isinstance(article, Article):
+                    _maybe_add(article, already_final=False)
+    if not ranked:
+        return 0
+
+    _rank, picked, already_final = max(ranked, key=lambda item: item[0])
+    if not already_final:
+        if not getattr(picked, "origin_section", ""):
+            picked.origin_section = picked.section or "dist"
+        picked.reassigned_from = picked.section or "dist"
+        picked.section = "dist"
+        replaceable = [
+            (idx, article)
+            for idx, article in enumerate(dist_items)
+            if not bool(getattr(article, "is_core", False))
+        ]
+        optional_replaceable = [
+            (idx, article)
+            for idx, article in replaceable
+            if _is_optional_dist_editorial_tail(article)
+        ]
+        if optional_replaceable or (len(dist_items) >= MAX_PER_SECTION and replaceable):
+            def _hard_logistics_victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+                article = item[1]
+                reason = _editorial_safe_core_demote_reason(article, "dist")
+                reason_priority = {
+                    "dist_production_policy_without_ops": 0,
+                    "dist_education_or_training_without_ops": 1,
+                    "dist_event_or_development_without_ops": 2,
+                    "dist_labor_issue_without_logistics_action": 3,
+                    "promotional_or_event_filler": 4,
+                }.get(reason, 5)
+                return (
+                    reason_priority,
+                    float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                    press_priority(article.press, article.domain),
+                    float(getattr(article, "score", 0.0) or 0.0),
+                )
+
+            replace_idx, _victim = min(
+                optional_replaceable or replaceable,
+                key=_hard_logistics_victim_rank,
+            )
+            dist_items[replace_idx] = picked
+        elif len(dist_items) < MAX_PER_SECTION:
+            dist_items.append(picked)
+        else:
+            return 0
+    for article in dist_items:
+        if article is picked:
+            continue
+        if bool(getattr(article, "is_core", False)):
+            article.is_core = False
+            if str(getattr(article, "selection_stage", "") or "").startswith("core"):
+                article.selection_stage = "tail_dist_hard_logistics_core"
+    picked.is_core = True
+    picked.selection_stage = "core_dist_hard_logistics"
+    picked.selection_note = "hard_logistics_metric_core"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "",
+            picked.description or "",
+            dist_conf,
+            picked.domain or "",
+            picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+    final_by_section["dist"] = sorted(
+        dist_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            press_priority(article.press, article.domain),
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )
+    return 1
 
 
 def _is_policy_governance_weaker_core(article: "Article") -> bool:
@@ -22943,6 +23168,12 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] dist ops core recovery failed: %s", e)
     try:
+        promoted_dist_logistics = _promote_dist_hard_logistics_core(final_by_section, raw_by_section)
+        if promoted_dist_logistics:
+            log.info("[REBALANCE] promoted %d hard-metric dist logistics core item(s)", promoted_dist_logistics)
+    except Exception as e:
+        log.warning("[WARN] dist hard logistics core promotion failed: %s", e)
+    try:
         moved_supply_pest = _remove_supply_pest_priority_cards(final_by_section)
         if moved_supply_pest:
             log.info("[REBALANCE] removed/moved %d pest-priority item(s) from final supply", moved_supply_pest)
@@ -22970,6 +23201,12 @@ def _build_sections_phase123(
             log.info("[REBALANCE] dropped %d optional weak dist tail item(s)", dropped_dist_tail)
     except Exception as e:
         log.warning("[WARN] optional dist tail cleanup failed: %s", e)
+    try:
+        replaced_dist_tail_after_drop = _replace_optional_dist_tail_from_raw(final_by_section, raw_by_section)
+        if replaced_dist_tail_after_drop:
+            log.info("[REBALANCE] replaced %d optional weak dist tail item(s) after cleanup", replaced_dist_tail_after_drop)
+    except Exception as e:
+        log.warning("[WARN] optional dist tail post-cleanup replacement failed: %s", e)
     post_recovery_pruned = _audit_final_sections(final_by_section)
     if post_recovery_pruned:
         log.info("[AUDIT] pruned %d final item(s) after underfill recovery", post_recovery_pruned)
