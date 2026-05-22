@@ -350,6 +350,22 @@ class LocalRuntimeTests(TestCase):
             "promotional_or_event_filler",
         )
 
+    def test_editorial_safe_keeps_metric_dist_logistics_article(self) -> None:
+        metric_ops_article = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description=(
+                "가락시장 농산물 물류체계 개선을 위해 근교산 채소류와 햇감자 파렛트 운송지원 사업을 확대한다. "
+                "청과부류 전체 파렛트 출하율은 88%로 전년보다 5.3%포인트 올랐고, "
+                "운송비 지원금은 파렛트 1장당 평균 5500원으로 확대된다."
+            ),
+            link="http://www.amnews.co.kr/news/articleView.html?idxno=72651",
+            press="농축유통신문",
+        )
+
+        self.assertTrue(main.is_dist_hard_logistics_metric_context(metric_ops_article.title, metric_ops_article.description))
+        self.assertEqual(main._editorial_safe_core_demote_reason(metric_ops_article, "dist"), "")
+
     def test_editorial_safe_demotes_dist_production_policy_tail(self) -> None:
         smartfarm_policy = self._make_article(
             section="dist",
@@ -363,6 +379,19 @@ class LocalRuntimeTests(TestCase):
             main._editorial_safe_core_demote_reason(smartfarm_policy, "dist"),
             "dist_production_policy_without_ops",
         )
+
+    def test_editorial_safe_keeps_dist_distribution_cooperation_tail(self) -> None:
+        cooperation = self._make_article(
+            section="dist",
+            title='"대구·경북 농산물 유통협력 강화"',
+            description=(
+                "대구농수산물유통관리공사와 경상북도가 농산물 유통 효율화와 상생 협력을 논의했다. "
+                "도매시장 물류시설과 경매 현장을 둘러보고 온라인도매시장 활용과 산지-소비지 연계 모델을 협의했다."
+            ),
+            link="https://example.com/dist-cooperation",
+        )
+
+        self.assertEqual(main._editorial_safe_core_demote_reason(cooperation, "dist"), "")
 
     def test_optional_supply_nonfood_tail_drops_only_above_minimum(self) -> None:
         onion_core = self._make_article(title="양파 가격 급락…산지폐기 확대 요구")
@@ -562,7 +591,7 @@ class LocalRuntimeTests(TestCase):
         reservation_tail = self._make_article(
             section="dist",
             title="농협 유통 하나로마트, '매실' 본격출하!..사전 예약 중",
-            description="하나로마트가 햇매실 사전 예약 판매를 진행한다는 안내성 기사다.",
+            description="하나로마트가 햇매실 사전 예약 판매를 진행하며 행사 가격을 안내한다는 기사다.",
             link="https://example.com/reservation",
         )
         replacement = self._make_article(
@@ -582,6 +611,88 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(len(final_by_section["dist"]), 2)
         self.assertIn(replacement.link, {article.link for article in final_by_section["dist"]})
         self.assertNotIn(reservation_tail.link, {article.link for article in final_by_section["dist"]})
+
+    def test_dist_replacement_allows_distinct_structural_market_story(self) -> None:
+        pallet_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 파렛트 운송지원 사업으로 출하율 88%와 운송비 지원금 확대가 제시됐다.",
+            link="https://example.com/pallet",
+        )
+        weak_training = self._make_article(
+            section="dist",
+            title='[동화청과 유통교육] "맛·품질은 기본…소비자 선택 기준까지 설계 필요"',
+            description="청년농 교육에서 소비자 선택 기준과 상품 기획 강연이 진행됐다.",
+            link="https://example.com/training",
+        )
+        cooperation = self._make_article(
+            section="dist",
+            title='"대구·경북 농산물 유통협력 강화"',
+            description=(
+                "대구농수산물유통관리공사와 경상북도가 농산물 유통 효율화와 상생형 유통체계 구축을 논의했다. "
+                "도매시장 거래 활성화, 출하 집중 시 물량 분산과 가격 안정, 온라인도매시장 활용 및 "
+                "산지-소비지 연계 유통모델 구축 방안을 협의했다."
+            ),
+            link="https://example.com/cooperation",
+            press="농축유통신문",
+        )
+        pallet_core.is_core = True
+        cooperation.score = 27.21
+        final_by_section = {"dist": [pallet_core, weak_training]}
+
+        self.assertEqual(main._replace_optional_dist_tail_from_raw(final_by_section, {"dist": [cooperation]}), 1)
+        self.assertIn(cooperation.link, {article.link for article in final_by_section["dist"]})
+        self.assertNotIn(weak_training.link, {article.link for article in final_by_section["dist"]})
+
+    def test_hard_metric_dist_logistics_promotes_over_labor_core(self) -> None:
+        labor_core = self._make_article(
+            section="dist",
+            title="가락시장 하역노동자, 주5일 일할 수 있을까?",
+            description="가락시장 하역노동자의 주5일 근무 전환을 둘러싼 노동 현안을 다뤘다.",
+            link="https://www.laborplus.co.kr/news/articleView.html?idxno=40833",
+            press="참여와혁신",
+        )
+        weak_tail = self._make_article(
+            section="dist",
+            title="스마트팜·신품종 보급…품목맞춤형 접근 필요",
+            description="기후변화 대응을 위해 시설원예 스마트팜과 신품종 보급 지원체계를 제안했다.",
+            link="https://example.com/dist-weak-smartfarm",
+        )
+        market_tail = self._make_article(
+            section="dist",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 확보",
+            description="양파 농가 판로 확보를 위해 수도권 직거래 판매를 추진했다.",
+            link="https://example.com/dist-market-tail",
+        )
+        metric_ops = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description=(
+                "가락시장 농산물 물류체계 개선을 위해 근교산 채소류와 햇감자 파렛트 운송지원 사업을 확대한다. "
+                "청과부류 전체 파렛트 출하율은 88%로 전년보다 5.3%포인트 증가했고 "
+                "운송비 지원금은 파렛트 1장당 평균 5500원으로 확대된다."
+            ),
+            link="http://www.amnews.co.kr/news/articleView.html?idxno=72651",
+            press="농축유통신문",
+        )
+        metric_ops.score = 34.31
+        labor_core.is_core = True
+        final_by_section = {"dist": [labor_core, market_tail, weak_tail]}
+
+        self.assertTrue(main.is_dist_hard_logistics_metric_context(metric_ops.title, metric_ops.description))
+        self.assertEqual(main._editorial_safe_core_demote_reason(metric_ops, "dist"), "")
+        self.assertEqual(main._postbuild_article_reject_reason(metric_ops, "dist"), "")
+        dist_conf = next((s for s in main.SECTIONS if s.get("key") == "dist"), {})
+        self.assertGreaterEqual(
+            main.section_fit_score(metric_ops.title, metric_ops.description, dist_conf, metric_ops.domain, metric_ops.press),
+            1.0,
+        )
+        self.assertEqual(main._promote_dist_hard_logistics_core(final_by_section, {"dist": [metric_ops]}), 1)
+
+        dist_titles = {article.title: article for article in final_by_section["dist"]}
+        self.assertTrue(dist_titles[metric_ops.title].is_core)
+        self.assertFalse(labor_core.is_core)
+        self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["dist"]})
 
     def test_pest_tail_replacement_prefers_real_fire_blight_candidate(self) -> None:
         pest_core = self._make_article(

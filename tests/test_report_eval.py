@@ -546,6 +546,26 @@ class ReportEvalTests(unittest.TestCase):
         self.assertGreater(metrics["editorial_quality_penalty"], 0.0)
         self.assertTrue(result["editorial_quality_samples"])
 
+    def test_eval_keeps_metric_pallet_logistics_core_clean(self) -> None:
+        article = report_eval.SurfaceArticle(
+            tag="div",
+            surface=report_eval.BRIEFING_SURFACE,
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            href="http://www.amnews.co.kr/news/articleView.html?idxno=72651",
+            article_id="pallet",
+            domain="amnews.co.kr",
+            summary="가락시장 파렛트 출하율과 운송비 지원 확대를 다룬 기사다.",
+            is_core=True,
+        )
+        body = (
+            "가락시장 농산물 물류체계 개선을 위해 파렛트 운송지원 사업을 확대한다. "
+            "청과부류 전체 파렛트 출하율은 88%로 전년보다 5.3%포인트 증가했고 "
+            "운송비 지원금은 파렛트 1장당 평균 5500원으로 확대된다."
+        )
+
+        self.assertEqual(report_eval._editorial_base_issue_reasons(article, body), [])
+
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
         result["operational_score"] = result["overall_score"]
