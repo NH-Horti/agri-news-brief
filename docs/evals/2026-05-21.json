@@ -1,42 +1,42 @@
 {
   "report_date": "2026-05-21",
-  "generated_at_kst": "2026-05-21T12:49:12+09:00",
+  "generated_at_kst": "2026-05-21T13:33:18+09:00",
   "status": "pass",
-  "overall_score": 93.4,
+  "overall_score": 92.6,
   "scores": {
     "completeness": 100.0,
     "diversity": 100.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 88.75,
-    "section_alignment": 92.22,
+    "section_alignment": 91.43,
     "core_quality": 100.0,
     "commodity_board_quality": 93.95
   },
   "counts": {
-    "briefing_total": 15,
-    "commodity_total": 60,
+    "briefing_total": 14,
+    "commodity_total": 59,
     "commodity_primary_total": 17,
     "briefing_by_section": {
       "supply": 4,
       "policy": 3,
-      "dist": 4,
+      "dist": 3,
       "pest": 4
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 2,
+      "policy": 1,
       "dist": 1,
       "pest": 1
     },
     "commodity_by_section": {
-      "supply": 30,
+      "supply": 29,
       "policy": 11,
       "dist": 5,
       "pest": 14
     },
     "raw_by_section": {
-      "supply": 155,
+      "supply": 153,
       "policy": 101,
       "dist": 38,
       "pest": 72
@@ -50,8 +50,8 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8667,
-    "surface_reuse_penalty": 0.0133,
+    "briefing_domain_diversity_rate": 0.8571,
+    "surface_reuse_penalty": 0.0137,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
     "summary_numeric_rate": 1.0,
@@ -62,10 +62,10 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.625,
-    "section_alignment_fit_avg": 4.502,
+    "section_alignment_fit_avg": 4.3929,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "section_alignment_weak_stage_rate": 0.2,
+    "section_alignment_weak_stage_rate": 0.2143,
     "content_false_positive_rate": 0.0,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
@@ -74,20 +74,20 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.2,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
-    "pest_theme_duplicate_rate": 0.1333,
+    "promotional_filler_rate": 0.2143,
+    "promotional_core_rate": 0.2,
+    "weak_core_editorial_rate": 0.2,
+    "pest_theme_duplicate_rate": 0.1429,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 4.4667,
-    "core_fit_avg": 4.2167,
-    "core_rank_percentile_avg": 0.9399,
+    "editorial_quality_penalty": 5.1714,
+    "core_fit_avg": 3.948,
+    "core_rank_percentile_avg": 0.9277,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9412,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.0459,
+    "commodity_primary_fit_avg": 2.8953,
     "commodity_primary_rank_avg": 2.7647
   },
   "section_scores": {
@@ -123,7 +123,7 @@
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 1.0,
+      "policy": 0.9866,
       "dist": 0.9586,
       "pest": 1.0
     }
@@ -183,19 +183,19 @@
       ]
     },
     {
-      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
-      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
-      "section": "dist",
-      "is_core": true,
+      "title": "시설 원예 농가 경영비 절감·안정 생산 총력 지원",
+      "href": "http://www.amnews.co.kr/news/articleView.html?idxno=72617",
+      "section": "policy",
+      "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-      "href": "http://www.domin.co.kr/news/articleView.html?idxno=1556123",
+      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
       "section": "dist",
-      "is_core": false,
+      "is_core": true,
       "reasons": [
         "promotional_or_event_filler"
       ]
@@ -220,7 +220,7 @@
     }
   ],
   "improvement_hints": [
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=20%, pest_theme_duplicate=13%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=21%, pest_theme_duplicate=14%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -259,7 +259,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 93.4,
+  "operational_score": 92.6,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -268,119 +268,140 @@
     "status": "success",
     "rubric_version": 1,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-21T12:49:31+09:00",
-    "score": 84.0,
+    "generated_at_kst": "2026-05-21T13:33:40+09:00",
+    "score": 83.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
       "article_selection": 82.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 85.0,
-      "summary_usefulness": 90.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 78.0
+      "section_fit": 84.0,
+      "core_pick_quality": 80.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 81.0
     },
-    "summary": "핵심 이슈인 양파 공급과잉·과수화상병은 잘 잡았지만, 섹션 배치와 후순위 카드의 편집력이 아쉽다. 특히 policy에 현장 수급 기사(무안 양파)를 넣고, supply·dist에 지자체 신청/견학/간담회성 기사들이 섞이면서 섹션 정체성이 흐려졌다. raw pool상 더 강한 대체 후보가 일부 보였고, 홍보성 마늘 기사와 지역 행정성 기사 비중도 감점 요소다.",
+    "summary": "핵심 이슈인 양파 공급과잉, 국제곡물, 과수화상병은 대체로 잘 잡았지만 섹션 간 중복된 양파 서사가 많고, 공급·유통 섹션에 지역사업·홍보성 카드가 섞였다. 특히 공급의 마늘 자조금 기사와 유통의 벤치마킹 기사는 핵심성·정보 밀도가 약하다. 원시 후보군에 보인 더 강한 대안들(양파 산지 폐기/최저생산비 요구, 밀가루 담합 후속 등)을 충분히 반영하지 못해 목표점수에는 못 미친다.",
     "issues": [
       {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "policy",
-        "title": "무안 양파 값 폭락…\"캘수록 손해, 갈아엎어도 소용없다\"",
-        "reason": "정책 발표보다 산지 가격 급락 현장 기사 성격이 강함.",
-        "suggested_action": "supply로 이동하거나 정책 카드와 통합 재구성."
-      },
-      {
-        "type": "promotional_core",
+        "type": "weak_core",
         "severity": "high",
         "section": "supply",
         "title": "마늘의무자조금관리위원회, \"마늘가격 지킬 수 있어요\"",
-        "reason": "이해관계 단체 입장문 중심의 홍보성 기사다.",
-        "suggested_action": "비핵심 처리하고 객관적 수급·가격 기사로 교체."
+        "reason": "자조금발 안심 메시지 중심의 홍보성 기사다.",
+        "suggested_action": "산지 거래·재고·정부 방출 여부를 교차검증한 기사로 교체."
       },
       {
-        "type": "filler",
+        "type": "wrong_priority",
         "severity": "high",
         "section": "supply",
         "title": "무주군, 사과 ·포도 등 60억 규모 농산물 가격안정 지원…29일까지 신청",
-        "reason": "지역 사업 신청 공고성 기사로 전국 브리핑 가치가 낮다.",
-        "suggested_action": "제외하고 전국 수급 영향 기사로 대체."
+        "reason": "지역 신청 공고성 기사로 전국 브리핑 가치가 낮다.",
+        "suggested_action": "양파 산지폐기·생산비 쟁점 기사로 대체."
       },
       {
         "type": "wrong_section",
         "severity": "medium",
         "section": "supply",
         "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
-        "reason": "공급 동향보다 재배기술·현장지원 기사에 가깝다.",
-        "suggested_action": "policy 또는 제외 검토."
+        "reason": "생산기술·재배관리 성격이 강해 공급 수급 카드와 거리가 있다.",
+        "suggested_action": "수급·출하·가격 직접 이슈로 교체."
       },
       {
-        "type": "filler",
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "policy",
+        "title": "국제 밀·대두 추가 상승 전망…정부 \"8∼11월 물량 확보\"",
+        "reason": "무난한 선택이나 밀가루 담합 제재 후속이 더 강한 정책 이슈였다.",
+        "suggested_action": "담합 제재·정책자금 배제 기사와 병행 또는 교체."
+      },
+      {
+        "type": "duplication",
+        "severity": "medium",
+        "section": "policy",
+        "title": "무안 양파 값 폭락…\"캘수록 손해, 갈아엎어도 소용없다\"",
+        "reason": "공급 섹션 핵심 양파 기사와 주제가 과도하게 겹친다.",
+        "suggested_action": "정책 섹션은 제도·규제·가격관리 기사로 차별화."
+      },
+      {
+        "type": "weak_selection",
         "severity": "medium",
         "section": "dist",
         "title": "강원 농협 , 선진 산지유통 현장 벤치마킹…농산물 경쟁력 강화 모색",
-        "reason": "견학·벤치마킹 행사성 기사로 실질 유통 변화가 약하다.",
-        "suggested_action": "실제 제도·물류 변화 기사로 교체."
+        "reason": "현장 견학 기사로 실질 유통 변화나 수치가 약하다.",
+        "suggested_action": "물류제도·온라인도매·APC 운영 변화 기사 우선."
       },
       {
-        "type": "filler",
+        "type": "promotional",
         "severity": "medium",
         "section": "dist",
-        "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-        "reason": "간담회성 기사로 정보 밀도가 낮다.",
-        "suggested_action": "삭제하고 시장 구조 변화 기사 보강."
+        "title": "강릉도매시장-미스터아빠, 기후변화 대응 '강원권 사과 SCM 혁신 프로젝...",
+        "reason": "협약 발표 성격이 강하고 실행 근거가 부족하다.",
+        "suggested_action": "사업 착수·예산·물동량 근거 있는 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "policy",
-        "title": "정부 보조금 받고 담합… 농식품부, 제분사 지원 배제",
-        "reason": "밀가루 담합 제재는 정책성·파급력이 큰데 누락됐다.",
-        "suggested_action": "시설원예 지원이나 양파 중복 서사를 줄여 반영."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "dist",
-        "title": "지역경제 선도하는 품목농협 - 성주참외원예농협",
-        "reason": "산지유통 대응과 가격 방어 내용이 더 구체적이다.",
-        "suggested_action": "견학·간담회 카드 중 하나와 교체 검토."
+        "type": "theme_duplication",
+        "severity": "low",
+        "section": "pest",
+        "title": "원주에 반복되는 과수화상병 …“농가 초긴장”",
+        "reason": "과수화상병 단일 테마 반복으로 새 정보가 제한적이다.",
+        "suggested_action": "진단실 운영·예찰 강화 같은 대응 기사와 균형화."
       }
     ],
     "section_notes": {
-      "supply": "양파 과잉 이슈 포착은 좋지만, 마늘 단체발 기사와 무주군 신청 공고, 충남 기술지원 기사까지 섞여 섹션 순도가 떨어진다.",
-      "policy": "국제곡물 수급 점검은 적절하다. 다만 무안 양파 현장 기사는 supply 성격이 더 강하고, 밀가루 담합 후속 정책 누락이 아쉽다.",
-      "dist": "가락시장 파렛트 지원은 적절한 핵심 카드다. 반면 벤치마킹·간담회 비중이 높아 실제 유통 제도/물류 변화 포착력이 약하다.",
-      "pest": "세종 첫 과수화상병을 코어로 잡은 판단은 좋다. 다만 나머지 카드들이 화상병 지역 확산 반복 서사로 유사성이 높아 약간 과밀하다."
+      "supply": "양파 공급과잉 핵심 포착은 좋았지만 마늘 자조금·무주군 공고·시설채소 기술지원은 전국 수급 브리핑 기준에서 약하다. 양파 산지 폐기, 최저생산비 요구 같은 현장 충격 기사 반영이 필요했다.",
+      "policy": "국제곡물 확보 기사는 적절하다. 다만 양파 현장 기사와 중복됐고, 같은 날 나온 밀가루 담합 제재·정책자금 배제 후속을 놓친 점이 아쉽다.",
+      "dist": "가락시장 파렛트 지원은 유통 실무성이 있어 적절하다. 반면 벤치마킹·MOU성 기사가 2장이나 들어가 유통 구조 변화보다 홍보성 비중이 높다.",
+      "pest": "세종 첫 발생을 코어로 잡은 것은 적절하다. 다만 후속 3건 모두 과수화상병 지역 사례 반복이라 대응 체계·진단 역량 등 정보 다양성이 조금 부족하다."
     },
     "improvement_suggestions": [
-      "supply는 전국 수급 충격 기사 위주로 정리하고 지자체 신청·기술지원성 기사는 줄이기.",
-      "policy는 현장 르포보다 정부 조치·제재·제도 변화 기사 우선 원칙을 강화하기.",
-      "이해관계 단체 발언만 있는 기사는 core에서 배제하고 교차 검증 기사로 대체하기.",
-      "dist는 견학·간담회보다 물류비, 온라인도매시장, APC, 도매시장 제도 변화 중심으로 선별하기.",
-      "동일 이슈를 여러 섹션에 나눌 때는 supply=현장, policy=정부대응으로 역할을 명확히 분리하기.",
-      "raw pool 상위 후보 중 파급력 큰 누락 기사(예: 밀가루 담합 후속)를 체크하는 최종 검수 단계를 두기."
+      "공급은 전국 수급 충격 기사 우선, 지자체 신청공고는 제외.",
+      "정책은 현장 르포보다 제도·규제·가격관리 후속으로 차별화.",
+      "자조금·협약·벤치마킹 등 홍보성 소스는 비핵심으로만 제한.",
+      "같은 양파 이슈를 공급·정책에 이중 배치할 땐 각도 차이를 명확히 할 것.",
+      "유통은 APC·도매시장·온라인도매의 실제 운영 변화와 수치가 있는 기사 중심으로 선별.",
+      "병해충은 발생 현황 1건 + 현장 사례 1건 + 방제 대응 1건 조합으로 구성."
     ],
-    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":82,\"section_fit\":79,\"core_pick_quality\":85,\"summary_usefulness\":90,\"missed_opportunity\":80,\"noise_control\":78},\"summary\":\"핵심 이슈인 양파 공급과잉·과수화상병은 잘 잡았지만, 섹션 배치와 후순위 카드의 편집력이 아쉽다. 특히 policy에 현장 수급 기사(무안 양파)를 넣고, supply·dist에 지자체 신청/견학/간담회성 기사들이 섞이면서 섹션 정체성이 흐려졌다. raw pool상 더 강한 대체 후보가 일부 보였고, 홍보성 마늘 기사와 지역 행정성 기사 비중도 감점 요소다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"무안 양파 값 폭락…\\\"캘수록 손해, 갈아엎어도 소용없다\\\"\",\"reason\":\"정책 발표보다 산지 가격 급락 현장 기사 성격이 강함.\",\"suggested_action\":\"supply로 이동하거나 정책 카드와 통합 재구성.\"},{\"type\":\"promotional_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"마늘의무자조금관리위원회, \\\"마늘가격 지킬 수 있어요\\\"\",\"reason\":\"이해관계 단체 입장문 중심의 홍보성 기사다.\",\"suggested_action\":\"비핵심 처리하고 객관적 수급·가격 기사로 교체.\"},{\"type\":\"filler\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"무주군, 사과 ·포도 등 60억 규모 농산물 가격안정 지원…29일까지 신청\",\"reason\":\"지역 사업 신청 공고성 기사로 전국 브리핑 가치가 낮다.\",\"suggested_action\":\"제외하고 전국 수급 영향 기사로 대체.\"},{\"type\":\"wrong_section\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"충남도농기원, 시설채소 현장기술지원단 가동...\\\"폭염 속 토마토 ·오이...\",\"reason\":\"공급 동향보다 재배기술·현장지원 기사에 가깝다.\",\"suggested_action\":\"policy 또는 제외 검토.\"},{\"type\":\"filler\",\"severity\":\"medium\",\"section\"..."
+    "raw_response_excerpt": "{\"score\":83,\"scores\":{\"article_selection\":82,\"section_fit\":84,\"core_pick_quality\":80,\"summary_usefulness\":88,\"missed_opportunity\":79,\"noise_control\":81},\"summary\":\"핵심 이슈인 양파 공급과잉, 국제곡물, 과수화상병은 대체로 잘 잡았지만 섹션 간 중복된 양파 서사가 많고, 공급·유통 섹션에 지역사업·홍보성 카드가 섞였다. 특히 공급의 마늘 자조금 기사와 유통의 벤치마킹 기사는 핵심성·정보 밀도가 약하다. 원시 후보군에 보인 더 강한 대안들(양파 산지 폐기/최저생산비 요구, 밀가루 담합 후속 등)을 충분히 반영하지 못해 목표점수에는 못 미친다.\",\"issues\":[{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"마늘의무자조금관리위원회, \\\"마늘가격 지킬 수 있어요\\\"\",\"reason\":\"자조금발 안심 메시지 중심의 홍보성 기사다.\",\"suggested_action\":\"산지 거래·재고·정부 방출 여부를 교차검증한 기사로 교체.\"},{\"type\":\"wrong_priority\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"무주군, 사과 ·포도 등 60억 규모 농산물 가격안정 지원…29일까지 신청\",\"reason\":\"지역 신청 공고성 기사로 전국 브리핑 가치가 낮다.\",\"suggested_action\":\"양파 산지폐기·생산비 쟁점 기사로 대체.\"},{\"type\":\"wrong_section\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"충남도농기원, 시설채소 현장기술지원단 가동...\\\"폭염 속 토마토 ·오이...\",\"reason\":\"생산기술·재배관리 성격이 강해 공급 수급 카드와 거리가 있다.\",\"suggested_action\":\"수급·출하·가격 직접 이슈로 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"국제 밀·대두 추가 상승 전망…정부 \\\"8∼11월 물량 확보\\\"\",\"reason\":\"무난한 선택이나 밀가루 담합 제재 후속이 더 강한 정책 이슈였다.\",\"suggested_action\":\"담합 제재·정책자금 배제 기사와 병행 또는 교체.\"},{\"type..."
   },
-  "editorial_score": 84.0,
+  "editorial_score": 83.0,
   "editorial_improvement_plan": {
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 83.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
+      "article_selection",
+      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",

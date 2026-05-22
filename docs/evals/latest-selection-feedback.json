@@ -1,10 +1,10 @@
 {
-  "report_date": "2026-05-21",
-  "generated_at_kst": "2026-05-21T12:49:12+09:00",
+  "report_date": "2026-05-22",
+  "generated_at_kst": "2026-05-22T06:21:39+09:00",
   "scores": {
-    "section_alignment": 92.22,
+    "section_alignment": 95.93,
     "core_quality": 100.0,
-    "commodity_board_quality": 93.95
+    "commodity_board_quality": 97.22
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,14 +12,14 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.2,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
+    "promotional_filler_rate": 0.0667,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.1333,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 4.4667,
+    "editorial_quality_penalty": 1.2,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9412,
+    "commodity_primary_issue_signal_rate": 0.8462,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
@@ -56,26 +56,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
-      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320988",
-      "section": "supply",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
-      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-      "href": "http://www.domin.co.kr/news/articleView.html?idxno=1556123",
+      "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
+      "href": "https://www.nongmin.com/article/20260520500650",
       "section": "dist",
       "is_core": false,
       "reasons": [
@@ -83,8 +65,8 @@
       ]
     },
     {
-      "title": "\"새벽마다 소독해도 속수무책\"…사과산지 충주 비상",
-      "href": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008572225&plink=ORI&cooper=NAVER",
+      "title": "홍천군, ‘영농현장 기술보급확산지원단’ 가동… 이상기후·병해충 선...",
+      "href": "http://www.breaknews.com/1208911",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -92,8 +74,8 @@
       ]
     },
     {
-      "title": "해마다 찾아오는 과수화상병 ...충북서 4건 발생",
-      "href": "https://www.seoul.co.kr/news/society/2026/05/20/20260520500136?wlog_tag3=naver",
+      "title": "시설하우스 자두 ‘출격’",
+      "href": "https://www.nongmin.com/article/20260520500720",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -102,99 +84,100 @@
     }
   ],
   "editorial": {
-    "score": 84.0,
+    "score": 82.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 82.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 85.0,
-      "summary_usefulness": 90.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 78.0
+      "article_selection": 80.0,
+      "section_fit": 76.0,
+      "core_pick_quality": 81.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 84.0
     },
     "issues": [
       {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "policy",
-        "title": "무안 양파 값 폭락…\"캘수록 손해, 갈아엎어도 소용없다\"",
-        "reason": "정책 발표보다 산지 가격 급락 현장 기사 성격이 강함.",
-        "suggested_action": "supply로 이동하거나 정책 카드와 통합 재구성."
-      },
-      {
-        "type": "promotional_core",
+        "type": "wrong_core",
         "severity": "high",
         "section": "supply",
-        "title": "마늘의무자조금관리위원회, \"마늘가격 지킬 수 있어요\"",
-        "reason": "이해관계 단체 입장문 중심의 홍보성 기사다.",
-        "suggested_action": "비핵심 처리하고 객관적 수급·가격 기사로 교체."
+        "title": "국산 감귤 , 기능성 화장품으로 대변신",
+        "reason": "수급보다 바이오소재 홍보성에 가까워 핵심 공급 기사로 부적절.",
+        "suggested_action": "공급 코어에서 제외하고 산업·R&D성 보조로만 검토."
       },
       {
-        "type": "filler",
+        "type": "missed_opportunity",
         "severity": "high",
         "section": "supply",
-        "title": "무주군, 사과 ·포도 등 60억 규모 농산물 가격안정 지원…29일까지 신청",
-        "reason": "지역 사업 신청 공고성 기사로 전국 브리핑 가치가 낮다.",
-        "suggested_action": "제외하고 전국 수급 영향 기사로 대체."
+        "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+        "reason": "양파 폭락 국면과 직접 맞닿은 제도 변화인데 미선정.",
+        "suggested_action": "공급 또는 정책 핵심 카드로 우선 반영."
       },
       {
-        "type": "wrong_section",
-        "severity": "medium",
-        "section": "supply",
-        "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
-        "reason": "공급 동향보다 재배기술·현장지원 기사에 가깝다.",
-        "suggested_action": "policy 또는 제외 검토."
+        "type": "section_mismatch",
+        "severity": "high",
+        "section": "dist",
+        "title": "“스마트팜·신품종 보급…품목맞춤형 접근 필요”",
+        "reason": "유통보다 생산기술·기후대응 성격이 강함.",
+        "suggested_action": "유통에서 빼고 정책/생산 섹션 후보로 재배치."
       },
       {
-        "type": "filler",
+        "type": "weak_pick",
+        "severity": "high",
+        "section": "dist",
+        "title": "[동화청과 유통교육] \"맛·품질은 기본…소비자 선택 기준까지 설계 필...",
+        "reason": "교육 행사성 기사로 유통 섹션 대표성 부족.",
+        "suggested_action": "가락시장 물류, 수출, 도매시장 구조 기사로 대체."
+      },
+      {
+        "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
-        "title": "강원 농협 , 선진 산지유통 현장 벤치마킹…농산물 경쟁력 강화 모색",
-        "reason": "견학·벤치마킹 행사성 기사로 실질 유통 변화가 약하다.",
-        "suggested_action": "실제 제도·물류 변화 기사로 교체."
-      },
-      {
-        "type": "filler",
-        "severity": "medium",
-        "section": "dist",
-        "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
-        "reason": "간담회성 기사로 정보 밀도가 낮다.",
-        "suggested_action": "삭제하고 시장 구조 변화 기사 보강."
+        "title": "무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다",
+        "reason": "지자체 소비촉진 보도자료 성격이 강함.",
+        "suggested_action": "판로 성과가 검증된 경우만 짧게 처리."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "policy",
-        "title": "정부 보조금 받고 담합… 농식품부, 제분사 지원 배제",
-        "reason": "밀가루 담합 제재는 정책성·파급력이 큰데 누락됐다.",
-        "suggested_action": "시설원예 지원이나 양파 중복 서사를 줄여 반영."
+        "title": "'6710억 과징금' 밀가루 담합, 가격재결정 명령",
+        "reason": "민생물가·농식품 연계성이 높은 정책 이슈를 놓침.",
+        "suggested_action": "거시물가 기사 1건과 교체 검토."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "dist",
-        "title": "지역경제 선도하는 품목농협 - 성주참외원예농협",
-        "reason": "산지유통 대응과 가격 방어 내용이 더 구체적이다.",
-        "suggested_action": "견학·간담회 카드 중 하나와 교체 검토."
+        "section": "pest",
+        "title": "과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
+        "reason": "개별 발생보다 전국 경보 상향이 더 상위 이슈.",
+        "suggested_action": "개별 사례 1건 대신 경보 상향 기사를 채택."
+      },
+      {
+        "type": "duplication_theme",
+        "severity": "medium",
+        "section": "pest",
+        "title": "화상병 지역발생 기사 2건 동시 채택",
+        "reason": "화성·원주 사례 모두 지역 단신성으로 메시지 중복.",
+        "suggested_action": "전국 경보 1건+지역 사례 1건 조합으로 압축."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "editorial_section_fit",
+      "editorial_noise_filter",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.0,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -220,11 +203,12 @@
     "mode": "shadow_proposal",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 82.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "guardrail_focus": [
       "missed_opportunity",
+      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
@@ -233,6 +217,12 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",

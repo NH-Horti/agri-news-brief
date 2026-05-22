@@ -2264,6 +2264,12 @@ POLICY_MAJOR_ISSUE_QUERIES = [
     "농산물 유통 전문가 협의체",
     "농산물 유통 구조 개선",
     "농산물 가격 결정 구조 개선",
+    "농산물가격안정제도",
+    "농산물 가격안정제도",
+    "농산물가격안정제도 차액 지원",
+    "농산물 가격안정제도 차액 지원",
+    "농안법 시행령 농산물가격안정제도",
+    "평균가격 경영비 차액 지원 농산물",
     "농산물 최소가격 보전제",
     "주요 농산물 가격안정 지원사업",
     "농산물 가격안정 지원사업",
@@ -2312,6 +2318,7 @@ SECTIONS: list[SectionConfig] = [
             "통계", "KOSIS",
             "협의체", "위원회", "출범", "특별관리", "최소가격", "보전제",
             "제도 개선", "제도개선", "구조 개선", "구조개선", "가격 결정 구조",
+            "농안법", "시행령", "입법예고", "가격안정제도", "평균가격", "기준가격", "경영비", "차액 지원",
         ],
     },
     {
@@ -3493,6 +3500,23 @@ _EDITORIAL_SAFE_DIST_OPS_TERMS = (
     "물류", "저장", "선별", "온라인도매", "수출", "입점", "판매액", "계약",
     "운영", "처리물량", "연합판매",
 )
+_EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS = (
+    "화장품", "기능성 화장품", "기능성화장품", "코스메틱", "뷰티", "스킨케어",
+    "추출물", "크림", "에센스", "마스크팩", "제품화", "대변신",
+)
+_EDITORIAL_SAFE_SUPPLY_CORE_MARKET_TERMS = (
+    "가격", "시세", "수급", "출하", "반입", "경락", "경매", "도매시장", "공판장",
+    "물량", "생산량", "재고", "저장", "비축", "시장격리", "산지폐기", "폐기",
+    "가격안정", "수출", "검역", "피해", "작황",
+)
+_EDITORIAL_SAFE_DIST_EDUCATION_TERMS = (
+    "유통교육", "교육", "현장 교육", "현장교육", "미래농업인", "교육생", "교육 과정",
+    "교육과정", "소비자 선택 기준", "품질은 기본", "맛·품질", "맛 품질",
+)
+_EDITORIAL_SAFE_DIST_HARD_METRIC_TERMS = (
+    "출하량", "거래액", "물류비", "물동량", "반입량", "처리물량", "수출 물량",
+    "수출물량", "정산액", "경매가", "경락가", "운송지원", "운송 지원",
+)
 
 
 def _editorial_safe_text(article: "Article") -> str:
@@ -3508,6 +3532,14 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
         return ""
     text = _editorial_safe_text(article)
     title_l = _nfkc_lower(getattr(article, "title", "") or "")
+    if section_key == "supply":
+        nonfood_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS))
+        nonfood_compact_hit = _contains_compact_marker(text, _EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS)
+        if nonfood_hits or nonfood_compact_hit:
+            market_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_SUPPLY_CORE_MARKET_TERMS))
+            title_market_hits = count_any(title_l, tuple(term.lower() for term in _EDITORIAL_SAFE_SUPPLY_CORE_MARKET_TERMS))
+            if title_market_hits == 0 and market_hits <= 1:
+                return "supply_nonfood_promo_without_market_signal"
     if section_key == "dist":
         dist_event_core_terms = (
             "업무협약", "협약", "mou", "프로젝트", "벤치마킹", "간담회", "협의회", "현장투어",
@@ -3530,6 +3562,27 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
             ))
             if concrete_ops_hits < 2 and not has_metric_ops:
                 return "dist_event_or_development_without_ops"
+        if (
+            _editorial_safe_has_any(text, _EDITORIAL_SAFE_DIST_EDUCATION_TERMS)
+            or _contains_compact_marker(text, _EDITORIAL_SAFE_DIST_EDUCATION_TERMS)
+        ):
+            ops_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_DIST_OPS_TERMS))
+            title_education_hit = (
+                _editorial_safe_has_any(title_l, _EDITORIAL_SAFE_DIST_EDUCATION_TERMS)
+                or _contains_compact_marker(title_l, _EDITORIAL_SAFE_DIST_EDUCATION_TERMS)
+            )
+            has_hard_metric = (
+                _editorial_safe_has_any(text, _EDITORIAL_SAFE_DIST_HARD_METRIC_TERMS)
+                or bool(re.search(
+                    r"(?:출하량|거래액|물류비|물동량|반입량|처리물량|수출\s*물량|정산액|경매가|경락가).{0,16}\d"
+                    r"|\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|억원|만원|원|%|건|상자|박스|ha|㏊).{0,16}"
+                    r"(?:출하|거래|물류|반입|정산|경매|경락|수출|운송|처리)",
+                    text,
+                    re.IGNORECASE,
+                ))
+            )
+            if not has_hard_metric and (title_education_hit or ops_hits <= 1):
+                return "dist_education_or_training_without_ops"
     if section_key == "policy":
         title_field_price = count_any(
             title_l,
@@ -3594,7 +3647,9 @@ def _editorial_safe_soft_penalty(article: "Article", section_key: str) -> float:
         return 2.4
     if reason == "policy_field_price_collapse_without_policy_lead":
         return 2.8
-    if reason == "dist_event_or_development_without_ops":
+    if reason in {"dist_event_or_development_without_ops", "dist_education_or_training_without_ops"}:
+        return 2.2
+    if reason == "supply_nonfood_promo_without_market_signal":
         return 2.2
     return 1.8
 
@@ -5922,6 +5977,45 @@ def is_policy_local_price_support_context(title: str, desc: str) -> bool:
     )
 
 
+_POLICY_PRICE_STABILIZATION_SYSTEM_TERMS = (
+    "농산물가격안정제도", "농산물 가격안정제도", "가격안정제도", "가격 안정제도",
+    "농산물가격안정심의위원회", "가격안정심의위원회", "가격 안정 심의위원회",
+    "평균가격", "기준가격", "경영비", "차액 지원", "차액 지급", "농안법",
+)
+_POLICY_PRICE_STABILIZATION_SYSTEM_ACTION_TERMS = (
+    "시행", "입법예고", "개정안", "시행령", "지원", "지급", "보장", "보전",
+    "수급계획", "수급 계획", "수급정책", "수급 정책", "후속 조치",
+)
+_POLICY_PRICE_STABILIZATION_SYSTEM_ACTOR_TERMS = (
+    "농식품부", "농림축산식품부", "정부", "국회", "농안법", "농산물가격안정심의위원회",
+    "가격안정심의위원회", "장관",
+)
+
+
+def is_policy_price_stabilization_system_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    ttl = title or ""
+    txt = f"{ttl} {desc or ''}".lower()
+    if not txt:
+        return False
+    if is_policy_event_tail_context(ttl, desc or "", normalize_host(dom or ""), press or ""):
+        return False
+    system_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_STABILIZATION_SYSTEM_TERMS])
+    action_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_STABILIZATION_SYSTEM_ACTION_TERMS])
+    actor_hits = count_any(txt, [w.lower() for w in _POLICY_PRICE_STABILIZATION_SYSTEM_ACTOR_TERMS])
+    managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
+    agri_hits = count_any(txt, [w.lower() for w in _POLICY_MAJOR_ISSUE_AGRI_TERMS]) + managed_count
+    title_system_hits = count_any((ttl or "").lower(), [w.lower() for w in ("농산물가격안정제도", "가격안정제도", "평균가격", "경영비", "차액 지원")])
+    return (
+        agri_hits >= 1
+        and actor_hits >= 1
+        and (
+            system_hits >= 3
+            or (system_hits >= 2 and action_hits >= 1)
+            or (title_system_hits >= 1 and system_hits >= 2)
+        )
+    )
+
+
 _LOCAL_AGRI_ORG_IN_TITLE_RX = re.compile(
     r"(?:^|[\s·,，])(?:[가-힣]{2,4}\s+)?[가-힣]{2,12}(?:(?:품목\s*)?농협|원예\s*농협|영농조합법인|농업회사법인|조합|작목반|공선회)(?=$|[\s·,，])"
 )
@@ -7472,7 +7566,8 @@ _POLICY_MAJOR_ISSUE_AGRI_TERMS = (
 _POLICY_MAJOR_ISSUE_TERMS = (
     "협의체", "전문가 협의체", "위원회", "출범", "발족", "특별관리", "집중관리",
     "제도 개선", "제도개선", "구조 개선", "구조개선", "유통 구조 개선", "가격 결정 구조",
-    "최소가격", "최소가격 보전제", "보전제", "가격안정제",
+    "최소가격", "최소가격 보전제", "보전제", "가격안정제", "가격안정제도",
+    "농산물가격안정제도", "평균가격", "기준가격", "경영비", "차액 지원", "농안법", "시행령",
     "개선 계획", "개선안", "개편안", "도입", "제안", "촉구", "대응 방안",
     "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
     "수급 안정 대책", "수급안정 대책", "대책 촉구", "대책 마련",
@@ -7481,12 +7576,13 @@ _POLICY_MAJOR_ISSUE_TERMS = (
 )
 _POLICY_MAJOR_ISSUE_TITLE_TERMS = (
     "협의체", "위원회", "출범", "특별관리", "최소가격", "보전제",
+    "농산물가격안정제도", "가격안정제도", "평균가격", "경영비", "차액 지원",
     "제도 개선", "제도개선", "구조 개선", "구조개선", "가격 결정 구조",
     "가격 폭락", "가격폭락", "가격 붕괴", "가격붕괴", "폭락 방지",
     "대책 촉구", "건의안", "건의안 발의",
 )
 _POLICY_MAJOR_ISSUE_PROPOSAL_TERMS = (
-    "제안", "촉구", "도입", "법안", "개정안", "최소가격", "보전제", "가격안정제", "특별관리",
+    "제안", "촉구", "도입", "법안", "개정안", "최소가격", "보전제", "가격안정제", "가격안정제도", "특별관리",
     "건의안", "건의안 발의", "대정부 건의안", "결의안", "대책 촉구", "대책 마련",
 )
 
@@ -7571,6 +7667,8 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
     if is_policy_market_brief_context(txt, dom_norm, press_norm):
         return True
     if is_policy_export_support_brief_context(ttl, desc or "", dom_norm, press_norm):
+        return True
+    if is_policy_price_stabilization_system_context(ttl, desc or "", dom_norm, press_norm):
         return True
     if is_policy_local_price_support_context(ttl, desc or ""):
         return True
@@ -18752,6 +18850,10 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "농식품부 가격 점검",
             "농산물 소비자물가",
             "농산물 수급 안정 대책",
+            "농산물가격안정제도",
+            "농산물 가격안정제도",
+            "농산물가격안정제도 차액 지원",
+            "평균가격 경영비 차액 지원 농산물",
             "농산물 가격안정 지원",
             "농산물 최저가격 지원",
             "농산물 가격안정 지원사업",
@@ -18827,6 +18929,11 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "농식품부 가격 점검",
             "농산물 소비자물가",
             "농산물 수급 안정 대책",
+            "농산물가격안정제도",
+            "농산물 가격안정제도",
+            "농산물가격안정제도 차액 지원",
+            "농안법 시행령 농산물가격안정제도",
+            "평균가격 경영비 차액 지원 농산물",
             "농산물 가격안정 지원",
             "농산물 최저가격 지원",
             "농산물 가격안정 지원사업",
@@ -21067,6 +21174,56 @@ def _demote_dist_editorial_weak_core(final_by_section: dict[str, list["Article"]
     return demoted
 
 
+def _drop_optional_supply_nonfood_tail(final_by_section: dict[str, list["Article"]], *, min_items: int | None = None) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
+    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    if len(supply_items) <= floor:
+        return 0
+    keep: list[Article] = []
+    dropped = 0
+    remaining = len(supply_items)
+    for article in supply_items:
+        is_optional_nonfood = (
+            not bool(getattr(article, "is_core", False))
+            and _editorial_safe_core_demote_reason(article, "supply") == "supply_nonfood_promo_without_market_signal"
+        )
+        if is_optional_nonfood and remaining > floor:
+            dropped += 1
+            remaining -= 1
+            continue
+        keep.append(article)
+    if dropped:
+        final_by_section["supply"] = keep
+    return dropped
+
+
+def _drop_optional_dist_editorial_tail(final_by_section: dict[str, list["Article"]], *, min_items: int | None = None) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
+    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    if len(dist_items) <= floor:
+        return 0
+    keep: list[Article] = []
+    dropped = 0
+    remaining = len(dist_items)
+    for article in dist_items:
+        optional_training_tail = (
+            not bool(getattr(article, "is_core", False))
+            and _editorial_safe_core_demote_reason(article, "dist") == "dist_education_or_training_without_ops"
+        )
+        if optional_training_tail and remaining > floor:
+            dropped += 1
+            remaining -= 1
+            continue
+        keep.append(article)
+    if dropped:
+        final_by_section["dist"] = keep
+    return dropped
+
+
 def _recover_dist_core_from_supply_ops(
     final_by_section: dict[str, list["Article"]],
     raw_by_section: dict[str, list["Article"]] | None = None,
@@ -22113,6 +22270,12 @@ def _build_sections_phase123(
     if post_norm_pruned:
         log.info("[AUDIT] pruned %d final item(s) after section normalization", post_norm_pruned)
     try:
+        dropped_supply_nonfood = _drop_optional_supply_nonfood_tail(final_by_section)
+        if dropped_supply_nonfood:
+            log.info("[REBALANCE] dropped %d optional nonfood supply tail item(s)", dropped_supply_nonfood)
+    except Exception as e:
+        log.warning("[WARN] optional supply nonfood cleanup failed: %s", e)
+    try:
         recovered_supply = _recover_supply_underfill_from_raw(final_by_section, raw_by_section)
         if recovered_supply:
             log.info("[REBALANCE] recovered %d supply underfill item(s) from raw pool", recovered_supply)
@@ -22124,6 +22287,12 @@ def _build_sections_phase123(
             log.info("[REBALANCE] recovered %d policy underfill item(s) from raw pool", recovered_policy)
     except Exception as e:
         log.warning("[WARN] policy underfill recovery failed: %s", e)
+    try:
+        recovered_priority_policy = _recover_priority_policy_from_raw(final_by_section, raw_by_section)
+        if recovered_priority_policy:
+            log.info("[REBALANCE] recovered %d priority policy item(s) from raw pool", recovered_priority_policy)
+    except Exception as e:
+        log.warning("[WARN] priority policy recovery failed: %s", e)
     try:
         recovered_dist_core = _recover_dist_core_from_supply_ops(final_by_section, raw_by_section)
         if recovered_dist_core:
@@ -22140,8 +22309,18 @@ def _build_sections_phase123(
         demoted_dist_core = _demote_dist_editorial_weak_core(final_by_section)
         if demoted_dist_core:
             log.info("[REBALANCE] demoted %d weak editorial dist core item(s)", demoted_dist_core)
+            if not any(bool(getattr(article, "is_core", False)) for article in (final_by_section.get("dist") or [])):
+                recovered_after_demote = _recover_dist_core_from_supply_ops(final_by_section, raw_by_section)
+                if recovered_after_demote:
+                    log.info("[REBALANCE] recovered %d dist ops core item(s) after weak-core demotion", recovered_after_demote)
     except Exception as e:
         log.warning("[WARN] final dist core demotion failed: %s", e)
+    try:
+        dropped_dist_tail = _drop_optional_dist_editorial_tail(final_by_section)
+        if dropped_dist_tail:
+            log.info("[REBALANCE] dropped %d optional weak dist tail item(s)", dropped_dist_tail)
+    except Exception as e:
+        log.warning("[WARN] optional dist tail cleanup failed: %s", e)
     post_recovery_pruned = _audit_final_sections(final_by_section)
     if post_recovery_pruned:
         log.info("[AUDIT] pruned %d final item(s) after underfill recovery", post_recovery_pruned)
@@ -24843,6 +25022,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     macro = is_macro_policy_issue(text)
     major_issue = is_policy_major_issue_context(title, desc, dom, press)
     export_support = is_policy_export_support_brief_context(title, desc, dom, press)
+    price_stabilization_system = is_policy_price_stabilization_system_context(title, desc, dom, press)
     local_price_support = is_policy_local_price_support_context(title, desc)
     local_program = is_local_agri_policy_program_context(text)
     price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
@@ -24858,19 +25038,20 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         or macro
         or major_issue
         or export_support
+        or price_stabilization_system
         or local_price_support
         or local_program
         or price_collapse_issue
     ):
         return None
-    if not (grain_macro_policy or central_agri_macro or export_support or anchor_ok):
+    if not (grain_macro_policy or central_agri_macro or export_support or price_stabilization_system or anchor_ok):
         return None
 
     try:
         fit_sc = float(section_fit_score(title, desc, policy_conf, article.domain or "", article.press or ""))
     except Exception:
         fit_sc = 0.0
-    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish):
+    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish or price_stabilization_system):
         return None
 
     tier = press_priority(article.press, article.domain)
@@ -24878,6 +25059,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     return (
         1 if grain_macro_policy else 0,
         1 if central_agri_macro else 0,
+        1 if price_stabilization_system else 0,
         1 if officialish else 0,
         1 if major_issue else 0,
         1 if market_brief else 0,
@@ -24978,6 +25160,7 @@ def _recover_policy_underfill_from_raw(
             rank = (
                 0,
                 0,
+                0,
                 1 if _is_policy_official(article) else 0,
                 0,
                 0,
@@ -25008,6 +25191,7 @@ def _recover_policy_underfill_from_raw(
             or (
                 0,
                 0,
+                0,
                 1 if _is_policy_official(article) else 0,
                 0,
                 0,
@@ -25027,6 +25211,106 @@ def _recover_policy_underfill_from_raw(
         reverse=True,
     )[:max_n]
     return inserted
+
+
+def _recover_priority_policy_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    policy_items = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
+    if any(is_policy_price_stabilization_system_context(a.title or "", a.description or "", a.domain or "", a.press or "") for a in policy_items):
+        return 0
+
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for _source_section, source_articles in (raw_by_section or {}).items():
+        for article in source_articles or []:
+            if not isinstance(article, Article):
+                continue
+            if not is_policy_price_stabilization_system_context(article.title or "", article.description or "", article.domain or "", article.press or ""):
+                continue
+            article_key = _article_selection_identity(article)
+            if article_key and article_key in all_final_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in policy_items):
+                continue
+            if _editorial_safe_core_demote_reason(article, "policy"):
+                continue
+            if _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False):
+                continue
+            rank = _policy_underfill_recovery_rank(article, policy_conf)
+            if rank is None:
+                continue
+            ranked.append((rank, article))
+    if not ranked:
+        return 0
+
+    rank, article = max(ranked, key=lambda item: item[0])
+    prev_section = str(getattr(article, "section", "") or "")
+    if not getattr(article, "origin_section", ""):
+        article.origin_section = prev_section or "policy"
+    if prev_section and prev_section != "policy":
+        article.reassigned_from = prev_section
+    article.section = "policy"
+    article.is_core = False
+    article.selection_stage = "policy_priority_recovery"
+    article.selection_note = "price_stabilization_system"
+    try:
+        article.selection_fit_score = round(float(section_fit_score(
+            article.title or "",
+            article.description or "",
+            policy_conf,
+            article.domain or "",
+            article.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    if len(policy_items) < max_n:
+        policy_items.append(article)
+    else:
+        replaceable = [
+            (idx, existing)
+            for idx, existing in enumerate(policy_items)
+            if not bool(getattr(existing, "is_core", False))
+        ]
+        if not replaceable:
+            return 0
+
+        def _victim_rank(existing: Article) -> tuple[Any, ...]:
+            existing_rank = _policy_underfill_recovery_rank(existing, policy_conf)
+            return (
+                1 if is_policy_price_stabilization_system_context(existing.title or "", existing.description or "", existing.domain or "", existing.press or "") else 0,
+                existing_rank or (),
+                press_priority(existing.press, existing.domain),
+                float(getattr(existing, "score", 0.0) or 0.0),
+            )
+
+        replace_idx, _victim = min(replaceable, key=lambda item: _victim_rank(item[1]))
+        policy_items[replace_idx] = article
+
+    final_by_section["policy"] = sorted(
+        policy_items,
+        key=lambda a: (
+            1 if getattr(a, "is_core", False) else 0,
+            _policy_underfill_recovery_rank(a, policy_conf) or (),
+            press_priority(a.press, a.domain),
+            float(getattr(a, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )[:max_n]
+    return 1
 
 
 def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Article]) -> list[Article]:
