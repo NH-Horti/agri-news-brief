@@ -3545,6 +3545,28 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
             if title_market_hits == 0 and market_hits <= 1:
                 return "supply_nonfood_promo_without_market_signal"
     if section_key == "dist":
+        if "물류 선진화" in title_l and "파렛트" in title_l and "운송지원" in title_l and "확대" in title_l:
+            return "promotional_or_event_filler"
+        if (
+            _editorial_safe_has_any(text, ("운송지원", "운송 지원"))
+            and _editorial_safe_has_any(text, ("파렛트", "팰릿", "물류 선진화", "운송지원 확대", "운송 지원 확대"))
+        ):
+            hard_ops_hits = count_any(
+                text,
+                [w.lower() for w in (
+                    "출하량", "거래액", "물류비", "물동량", "반입량", "처리물량",
+                    "경매가", "경락가", "하역", "정산", "감축", "절감",
+                )],
+            )
+            has_metric_ops = bool(re.search(
+                r"(?:출하량|거래액|물류비|물동량|반입량|처리물량|경매가|경락가).{0,16}\d"
+                r"|\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|억원|만원|원|%|건|상자|박스|ha|㏊).{0,16}"
+                r"(?:출하|거래|물류|반입|정산|경매|경락|수출|운송|처리|하역)",
+                text,
+                re.IGNORECASE,
+            ))
+            if hard_ops_hits <= 1 and not has_metric_ops:
+                return "promotional_or_event_filler"
         if (
             _editorial_safe_has_any(text, _EDITORIAL_SAFE_DIST_PRODUCTION_POLICY_TERMS)
             and not _editorial_safe_has_any(title_l, ("가락시장", "도매시장", "공판장", "apc", "산지유통", "파렛트", "물류", "출하", "반입", "경락", "수출", "검역"))
@@ -7679,6 +7701,8 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
         return True
     if is_policy_price_stabilization_system_context(ttl, desc or "", dom_norm, press_norm):
         return True
+    if is_policy_legislative_reform_context(ttl, desc or "", dom_norm, press_norm):
+        return True
     if is_policy_local_price_support_context(ttl, desc or ""):
         return True
     if is_local_agri_policy_program_context(txt):
@@ -9496,8 +9520,44 @@ def is_low_value_agri_labor_help_context(title: str, desc: str) -> bool:
     return True
 
 
+_POLICY_LEGISLATIVE_LAW_TERMS = (
+    "농업민생", "농업 민생", "농정 입법", "농업 입법", "농협법", "농지법", "농안법",
+    "농어업회의소법", "농업재해보험법", "농업재해대책법",
+)
+_POLICY_LEGISLATIVE_ACTION_TERMS = (
+    "입법", "법안", "개정", "개정안", "처리", "논의", "쟁점", "난제", "합의",
+    "여야", "국회", "상임위", "본회의",
+)
+_POLICY_LEGISLATIVE_AGRI_TERMS = (
+    "농업", "농정", "농가", "농민", "농촌", "농산물", "농협", "농지", "농안법",
+)
+
+
+def is_policy_legislative_reform_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    """Agriculture-law reform stories are policy issues, not low-value campaign noise."""
+    if is_policy_price_stabilization_system_context(title, desc, dom, press):
+        return False
+    ttl = title or ""
+    txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
+    ttl_l = _nfkc_lower(ttl)
+    if not txt:
+        return False
+    law_hits = count_any(txt, [w.lower() for w in _POLICY_LEGISLATIVE_LAW_TERMS])
+    action_hits = count_any(txt, [w.lower() for w in _POLICY_LEGISLATIVE_ACTION_TERMS])
+    agri_hits = count_any(txt, [w.lower() for w in _POLICY_LEGISLATIVE_AGRI_TERMS])
+    title_hits = count_any(
+        ttl_l,
+        [w.lower() for w in ("입법", "농협법", "농지법", "농안법", "개정", "법안", "농업민생")],
+    )
+    if law_hits >= 1 and action_hits >= 1 and agri_hits >= 1:
+        return True
+    return title_hits >= 2 and agri_hits >= 1
+
+
 def is_low_value_local_political_context(title: str, desc: str) -> bool:
     """선거·공약·지역 정치 발언 중심의 농업 부분언급 기사를 낮은 가치로 본다."""
+    if is_policy_legislative_reform_context(title, desc):
+        return False
     title_l = _nfkc_lower(title or "")
     text = _nfkc_lower(f"{title or ''} {desc or ''}")
     campaign_terms = (
@@ -9829,6 +9889,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
     policy_stabilization = is_supply_stabilization_policy_context(txt, dom, press)
     policy_market_brief = is_policy_market_brief_context(txt, dom, press)
     policy_major_issue = is_policy_major_issue_context(title, desc, dom, press)
+    policy_legislative_reform = is_policy_legislative_reform_context(title, desc, dom, press)
     managed_summary = _managed_commodity_match_summary(title, desc)
     managed_count = int(managed_summary.get("count") or 0)
     program_core_count = int(managed_summary.get("program_core_count") or 0)
@@ -9873,6 +9934,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
                 base += 0.95
         if policy_major_issue:
             base += 1.05
+        if policy_legislative_reform:
+            base += 1.45
         if policy_export_support:
             base += 0.85
         if is_dist_export_field_context(title, desc):
@@ -21248,6 +21311,13 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
         return True
     title = article.title or ""
     desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    if (
+        count_any(text, [w.lower() for w in ("하나로마트", "농협유통", "농협 유통", "마트")]) >= 1
+        and count_any(text, [w.lower() for w in ("사전 예약", "사전예약", "예약 판매", "예약판매")]) >= 1
+        and count_any(text, [w.lower() for w in ("가격", "수급", "도매시장", "경락", "반입", "물량", "출하량")]) == 0
+    ):
+        return True
     dom = normalize_host(article.domain or "")
     press = (article.press or "").strip()
     return bool(
@@ -21268,6 +21338,9 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
     desc = article.description or ""
     dom = normalize_host(article.domain or "")
     press = (article.press or "").strip()
+    title_l = _nfkc_lower(title)
+    if any(term.lower() in title_l for term in OPINION_BAN_TERMS):
+        return None
     ops_signal = (
         is_dist_market_ops_context(title, desc, dom, press)
         or is_dist_supply_management_center_context(title, desc)
@@ -21435,6 +21508,8 @@ def _promote_priority_policy_core(final_by_section: dict[str, list["Article"]], 
         victim = min(
             demote_candidates,
             key=lambda article: (
+                0 if _is_weaker_policy_macro_story(article) else 1,
+                0 if not is_policy_legislative_reform_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 1,
                 0 if _is_policy_governance_weaker_core(article) else 1,
                 _policy_underfill_recovery_rank(article, policy_conf) or (),
                 press_priority(article.press, article.domain),
@@ -21455,6 +21530,45 @@ def _promote_priority_policy_core(final_by_section: dict[str, list["Article"]], 
         ),
         reverse=True,
     )[:MAX_PER_SECTION]
+    return 1
+
+
+def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]], *, min_items: int | None = None) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    policy_items = [a for a in (final_by_section.get("policy") or []) if isinstance(a, Article)]
+    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    if len(policy_items) <= floor:
+        return 0
+    candidates = [
+        article
+        for article in policy_items
+        if (
+            not bool(getattr(article, "is_core", False))
+            and _is_weaker_policy_macro_story(article)
+            and not is_policy_price_stabilization_system_context(article.title or "", article.description or "", article.domain or "", article.press or "")
+            and not is_policy_legislative_reform_context(article.title or "", article.description or "", article.domain or "", article.press or "")
+        )
+    ]
+    if not candidates:
+        return 0
+
+    def _drop_rank(article: Article) -> tuple[Any, ...]:
+        title_l = _nfkc_lower(article.title or "")
+        issue_explainer = count_any(
+            title_l,
+            [w.lower() for w in ("애그플레이션", "엘리뇨", "이란전쟁", "중동전쟁", "전쟁 장기화")],
+        )
+        return (
+            0 if issue_explainer >= 1 else 1,
+            0 if is_policy_general_macro_tail_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 1,
+            -float(getattr(article, "score", 0.0) or 0.0),
+        )
+
+    victim = min(candidates, key=_drop_rank)
+    if len(policy_items) - 1 < floor:
+        return 0
+    final_by_section["policy"] = [article for article in policy_items if article is not victim]
     return 1
 
 
@@ -21507,6 +21621,39 @@ def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) ->
         press_priority(article.press, article.domain),
         round(float(getattr(article, "score", 0.0) or 0.0), 3),
         getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _pest_editorial_theme_key(article: "Article") -> str:
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    if is_pest_fire_blight_farmer_risk_context(title, desc) or "과수화상병" in text or "화상병" in text:
+        return "fire_blight"
+    if "벼" in text and "병해충" in text:
+        return "rice_pest"
+    if any(term in text for term in ("병해충", "탄저병", "총채벌레", "진딧물", "흰비단병", "방제", "예찰")):
+        return "general_pest"
+    return ""
+
+
+def _pest_diversity_replacement_rank(article: "Article", pest_conf: JsonDict) -> tuple[Any, ...] | None:
+    base_rank = _pest_replacement_candidate_rank(article, pest_conf)
+    if base_rank is None:
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    horti_named = managed_count >= 1 or best_horti_score(title, desc) >= 1.6
+    named_pest = _has_named_pest_signal(title) or count_any(
+        _nfkc_lower(f"{title} {desc}"),
+        [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "과수화상병")],
+    ) >= 1
+    return (
+        1 if horti_named else 0,
+        1 if named_pest else 0,
+        1 if is_pest_story_focus_strong(title, desc) else 0,
+        *base_rank[1:],
     )
 
 
@@ -21582,6 +21729,117 @@ def _replace_weak_pest_tail_from_raw(
             key=lambda article: (
                 1 if getattr(article, "is_core", False) else 0,
                 0 if _is_weak_pest_tail(article) else 1,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    return replaced
+
+
+def _replace_duplicate_pest_theme_tail_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+    *,
+    max_theme_cards: int = 2,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+    if len(pest_items) <= max_theme_cards:
+        return 0
+
+    theme_counts: dict[str, int] = {}
+    duplicate_indexes: list[tuple[int, str]] = []
+    for idx, article in enumerate(pest_items):
+        theme = _pest_editorial_theme_key(article)
+        if not theme:
+            continue
+        theme_counts[theme] = theme_counts.get(theme, 0) + 1
+        if theme_counts[theme] > max_theme_cards and not bool(getattr(article, "is_core", False)):
+            duplicate_indexes.append((idx, theme))
+    if not duplicate_indexes:
+        return 0
+
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article, str]] = []
+    overrepresented_themes = {theme for _idx, theme in duplicate_indexes}
+    for source_section in ("pest", "supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            candidate_theme = _pest_editorial_theme_key(article)
+            if candidate_theme in overrepresented_themes:
+                continue
+            rank = _pest_diversity_replacement_rank(article, pest_conf)
+            if rank is None:
+                continue
+            ranked.append((rank, article, candidate_theme))
+    if not ranked:
+        return 0
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    replaced = 0
+    used_idents = set(existing_keys)
+    current_items = list(pest_items)
+    for replace_idx, duplicate_theme in duplicate_indexes:
+        pick: Article | None = None
+        pick_theme = ""
+        for _rank, candidate, candidate_theme in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used_idents:
+                continue
+            if candidate_theme == duplicate_theme:
+                continue
+            if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in current_items):
+                continue
+            if any(_is_similar_story(candidate, existing, "pest") for existing in current_items if _pest_editorial_theme_key(existing) != duplicate_theme):
+                continue
+            pick = candidate
+            pick_theme = candidate_theme
+            break
+        if pick is None:
+            break
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = pick.section or "pest"
+        pick.reassigned_from = pick.section or "pest"
+        pick.section = "pest"
+        pick.forced_section = "pest"
+        pick.is_core = False
+        pick.selection_stage = "pest_theme_diversity_replacement"
+        pick.selection_note = f"replace_duplicate_{duplicate_theme}_tail"
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", pest_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+        current_items[replace_idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_idents.add(ident)
+        if pick_theme:
+            overrepresented_themes.discard(pick_theme)
+        replaced += 1
+
+    if replaced:
+        final_by_section["pest"] = sorted(
+            current_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                0 if _is_weak_pest_tail(article) else 1,
+                1 if _pest_editorial_theme_key(article) != "fire_blight" else 0,
                 float(getattr(article, "selection_fit_score", 0.0) or 0.0),
                 press_priority(article.press, article.domain),
                 float(getattr(article, "score", 0.0) or 0.0),
@@ -22661,11 +22919,23 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] priority policy recovery failed: %s", e)
     try:
+        recovered_legislative_policy = _recover_legislative_policy_from_raw(final_by_section, raw_by_section)
+        if recovered_legislative_policy:
+            log.info("[REBALANCE] recovered %d legislative policy item(s) from raw pool", recovered_legislative_policy)
+    except Exception as e:
+        log.warning("[WARN] legislative policy recovery failed: %s", e)
+    try:
         promoted_priority_policy = _promote_priority_policy_core(final_by_section)
         if promoted_priority_policy:
             log.info("[REBALANCE] promoted %d priority policy item(s) to core", promoted_priority_policy)
     except Exception as e:
         log.warning("[WARN] priority policy core promotion failed: %s", e)
+    try:
+        dropped_policy_macro_tail = _drop_optional_policy_macro_tail(final_by_section)
+        if dropped_policy_macro_tail:
+            log.info("[REBALANCE] dropped %d optional weak policy macro tail item(s)", dropped_policy_macro_tail)
+    except Exception as e:
+        log.warning("[WARN] optional policy macro tail cleanup failed: %s", e)
     try:
         recovered_dist_core = _recover_dist_core_from_supply_ops(final_by_section, raw_by_section)
         if recovered_dist_core:
@@ -22776,6 +23046,12 @@ def _build_sections_phase123(
             log.info("[REBALANCE] replaced %d weak pest tail item(s)", replaced_pest_tail)
     except Exception as e:
         log.warning("[WARN] weak pest tail replacement failed: %s", e)
+    try:
+        replaced_pest_theme_tail = _replace_duplicate_pest_theme_tail_from_raw(final_by_section, raw_by_section)
+        if replaced_pest_theme_tail:
+            log.info("[REBALANCE] replaced %d duplicate-theme pest tail item(s)", replaced_pest_theme_tail)
+    except Exception as e:
+        log.warning("[WARN] duplicate-theme pest replacement failed: %s", e)
 
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
@@ -25411,6 +25687,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     local_price_support = is_policy_local_price_support_context(title, desc)
     local_program = is_local_agri_policy_program_context(text)
     price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
+    legislative_reform = is_policy_legislative_reform_context(title, desc, dom, press)
     policy_anchor_stats = _policy_horti_anchor_stats(title, desc, dom, press)
     anchor_ok = bool(policy_anchor_stats.get("anchor_ok"))
 
@@ -25424,19 +25701,20 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         or major_issue
         or export_support
         or price_stabilization_system
+        or legislative_reform
         or local_price_support
         or local_program
         or price_collapse_issue
     ):
         return None
-    if not (grain_macro_policy or central_agri_macro or export_support or price_stabilization_system or anchor_ok):
+    if not (grain_macro_policy or central_agri_macro or export_support or price_stabilization_system or legislative_reform or anchor_ok):
         return None
 
     try:
         fit_sc = float(section_fit_score(title, desc, policy_conf, article.domain or "", article.press or ""))
     except Exception:
         fit_sc = 0.0
-    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish or price_stabilization_system):
+    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish or price_stabilization_system or legislative_reform):
         return None
 
     tier = press_priority(article.press, article.domain)
@@ -25445,6 +25723,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         1 if grain_macro_policy else 0,
         1 if central_agri_macro else 0,
         1 if price_stabilization_system else 0,
+        1 if legislative_reform else 0,
         1 if officialish else 0,
         1 if major_issue else 0,
         1 if market_brief else 0,
@@ -25689,6 +25968,228 @@ def _recover_priority_policy_from_raw(
         policy_items,
         key=lambda a: (
             1 if getattr(a, "is_core", False) else 0,
+            _policy_underfill_recovery_rank(a, policy_conf) or (),
+            press_priority(a.press, a.domain),
+            float(getattr(a, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )[:max_n]
+    return 1
+
+
+def _is_weaker_policy_macro_story(article: "Article") -> bool:
+    title = article.title or ""
+    desc = article.description or ""
+    dom = normalize_host(article.domain or "")
+    press = (article.press or "").strip()
+    if is_policy_price_stabilization_system_context(title, desc, dom, press):
+        return False
+    if is_policy_legislative_reform_context(title, desc, dom, press):
+        return False
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if count_any(title_l, [w.lower() for w in ("애그플레이션", "엘리뇨", "이란전쟁", "중동전쟁", "전쟁 장기화")]) >= 1:
+        return True
+    return bool(
+        is_policy_general_macro_tail_context(title, desc, dom, press)
+        or (
+            count_any(text, [w.lower() for w in ("애그플레이션", "엘니뇨", "중동전쟁", "이란전쟁", "원자재", "생산자물가")]) >= 1
+            and count_any(text, [w.lower() for w in ("농협법", "농지법", "농안법", "가격안정제도", "농식품부", "국회")]) == 0
+        )
+    )
+
+
+def _recover_legislative_policy_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+    max_core: int = 2,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    policy_items = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
+    existing_legislative = [
+        article for article in policy_items
+        if is_policy_legislative_reform_context(article.title or "", article.description or "", article.domain or "", article.press or "")
+    ]
+    if existing_legislative:
+        target = max(
+            existing_legislative,
+            key=lambda article: (
+                _policy_underfill_recovery_rank(article, policy_conf) or (),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+        )
+        changed = 0
+        if not bool(getattr(target, "is_core", False)):
+            target.is_core = True
+            target.selection_stage = "policy_legislative_core"
+            target.selection_note = "legislative_policy_core"
+            changed = 1
+        try:
+            target.selection_fit_score = round(float(section_fit_score(
+                target.title or "", target.description or "", policy_conf, target.domain or "", target.press or "",
+            )), 3)
+        except Exception:
+            pass
+        core_items = [existing for existing in policy_items if bool(getattr(existing, "is_core", False))]
+        while len(core_items) > max_core:
+            demote_candidates = [
+                existing for existing in core_items
+                if existing is not target
+                and not is_policy_price_stabilization_system_context(existing.title or "", existing.description or "", existing.domain or "", existing.press or "")
+            ]
+            if not demote_candidates:
+                break
+            victim = min(
+                demote_candidates,
+                key=lambda existing: (
+                    0 if _is_weaker_policy_macro_story(existing) else 1,
+                    0 if _is_policy_governance_weaker_core(existing) else 1,
+                    _policy_underfill_recovery_rank(existing, policy_conf) or (),
+                    press_priority(existing.press, existing.domain),
+                    float(getattr(existing, "score", 0.0) or 0.0),
+                ),
+            )
+            victim.is_core = False
+            if str(getattr(victim, "selection_stage", "") or "").startswith("core"):
+                victim.selection_stage = "policy_legislative_core_demoted_tail"
+            changed = 1
+            core_items = [existing for existing in policy_items if bool(getattr(existing, "is_core", False))]
+        if changed:
+            final_by_section["policy"] = sorted(
+                policy_items,
+                key=lambda a: (
+                    1 if getattr(a, "is_core", False) else 0,
+                    1 if is_policy_legislative_reform_context(a.title or "", a.description or "", a.domain or "", a.press or "") else 0,
+                    1 if is_policy_price_stabilization_system_context(a.title or "", a.description or "", a.domain or "", a.press or "") else 0,
+                    _policy_underfill_recovery_rank(a, policy_conf) or (),
+                    press_priority(a.press, a.domain),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                ),
+                reverse=True,
+            )[:max_n]
+        return changed
+
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for _source_section, source_articles in (raw_by_section or {}).items():
+        for article in source_articles or []:
+            if not isinstance(article, Article):
+                continue
+            if not is_policy_legislative_reform_context(article.title or "", article.description or "", article.domain or "", article.press or ""):
+                continue
+            article_key = _article_selection_identity(article)
+            if article_key and article_key in all_final_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in policy_items):
+                continue
+            if any(_is_similar_story(article, existing, "policy") for existing in policy_items):
+                continue
+            if _editorial_safe_core_demote_reason(article, "policy"):
+                continue
+            if _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False):
+                continue
+            rank = _policy_underfill_recovery_rank(article, policy_conf)
+            if rank is None:
+                continue
+            ranked.append((rank, article))
+    if not ranked:
+        return 0
+
+    _rank, article = max(ranked, key=lambda item: item[0])
+    prev_section = str(getattr(article, "section", "") or "")
+    if not getattr(article, "origin_section", ""):
+        article.origin_section = prev_section or "policy"
+    if prev_section and prev_section != "policy":
+        article.reassigned_from = prev_section
+    article.section = "policy"
+    article.is_core = True
+    article.selection_stage = "policy_legislative_recovery"
+    article.selection_note = "legislative_policy_core"
+    try:
+        article.selection_fit_score = round(float(section_fit_score(
+            article.title or "",
+            article.description or "",
+            policy_conf,
+            article.domain or "",
+            article.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    if len(policy_items) < max_n:
+        policy_items.append(article)
+    else:
+        replaceable = [
+            (idx, existing)
+            for idx, existing in enumerate(policy_items)
+            if not is_policy_price_stabilization_system_context(existing.title or "", existing.description or "", existing.domain or "", existing.press or "")
+            and not is_policy_legislative_reform_context(existing.title or "", existing.description or "", existing.domain or "", existing.press or "")
+        ]
+        if not replaceable:
+            return 0
+
+        def _victim_rank(existing: Article) -> tuple[Any, ...]:
+            try:
+                fit_sc = float(section_fit_score(existing.title or "", existing.description or "", policy_conf, existing.domain or "", existing.press or ""))
+            except Exception:
+                fit_sc = float(getattr(existing, "selection_fit_score", 0.0) or 0.0)
+            existing_rank = _policy_underfill_recovery_rank(existing, policy_conf) or ()
+            return (
+                0 if _is_weaker_policy_macro_story(existing) else 1,
+                0 if bool(getattr(existing, "is_core", False)) else 1,
+                0 if _is_policy_governance_weaker_core(existing) else 1,
+                existing_rank,
+                round(fit_sc, 3),
+                press_priority(existing.press, existing.domain),
+                float(getattr(existing, "score", 0.0) or 0.0),
+            )
+
+        replace_idx, victim = min(replaceable, key=lambda item: _victim_rank(item[1]))
+        if bool(getattr(victim, "is_core", False)):
+            victim.is_core = False
+        policy_items[replace_idx] = article
+
+    core_items = [existing for existing in policy_items if bool(getattr(existing, "is_core", False))]
+    while len(core_items) > max_core:
+        demote_candidates = [
+            existing for existing in core_items
+            if existing is not article
+            and not is_policy_price_stabilization_system_context(existing.title or "", existing.description or "", existing.domain or "", existing.press or "")
+        ]
+        if not demote_candidates:
+            break
+        victim = min(
+            demote_candidates,
+            key=lambda existing: (
+                0 if _is_weaker_policy_macro_story(existing) else 1,
+                0 if _is_policy_governance_weaker_core(existing) else 1,
+                _policy_underfill_recovery_rank(existing, policy_conf) or (),
+                press_priority(existing.press, existing.domain),
+                float(getattr(existing, "score", 0.0) or 0.0),
+            ),
+        )
+        victim.is_core = False
+        if str(getattr(victim, "selection_stage", "") or "").startswith("core"):
+            victim.selection_stage = "policy_legislative_core_demoted_tail"
+        core_items = [existing for existing in policy_items if bool(getattr(existing, "is_core", False))]
+
+    final_by_section["policy"] = sorted(
+        policy_items,
+        key=lambda a: (
+            1 if getattr(a, "is_core", False) else 0,
+            1 if is_policy_legislative_reform_context(a.title or "", a.description or "", a.domain or "", a.press or "") else 0,
+            1 if is_policy_price_stabilization_system_context(a.title or "", a.description or "", a.domain or "", a.press or "") else 0,
             _policy_underfill_recovery_rank(a, policy_conf) or (),
             press_priority(a.press, a.domain),
             float(getattr(a, "score", 0.0) or 0.0),
