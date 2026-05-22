@@ -347,6 +347,20 @@ class LocalRuntimeTests(TestCase):
         )
         self.assertEqual(main._editorial_safe_core_demote_reason(dist_ops_article, "dist"), "")
 
+    def test_editorial_safe_demotes_dist_production_policy_tail(self) -> None:
+        smartfarm_policy = self._make_article(
+            section="dist",
+            title="스마트팜·신품종 보급…품목맞춤형 접근 필요",
+            description=(
+                "기후변화 대응을 위해 시설원예 스마트팜과 복합형질 품종 보급, "
+                "품목맞춤형 지원체계가 필요하다는 연구 분석이다."
+            ),
+        )
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(smartfarm_policy, "dist"),
+            "dist_production_policy_without_ops",
+        )
+
     def test_optional_supply_nonfood_tail_drops_only_above_minimum(self) -> None:
         onion_core = self._make_article(title="양파 가격 급락…산지폐기 확대 요구")
         cabbage = self._make_article(title="양배추 반입량 증가에 도매가격 약세", link="https://example.com/cabbage")
@@ -392,3 +406,92 @@ class LocalRuntimeTests(TestCase):
         final_by_section = {"dist": [dist_core, dist_training, dist_tail_a]}
         self.assertEqual(main._drop_optional_dist_editorial_tail(final_by_section, min_items=3), 0)
         self.assertIn(dist_training, final_by_section["dist"])
+
+    def test_priority_policy_price_system_promotes_to_core_without_growing_core_count(self) -> None:
+        governance_core = self._make_article(
+            section="policy",
+            title="농협, 조합원 직선제 수용 등 개혁안 발표",
+            description="농협중앙회가 조합원 직선제 수용과 내부 지배구조 개선 방안을 발표했다.",
+            link="https://example.com/nh-governance",
+        )
+        macro_core = self._make_article(
+            section="policy",
+            title="슈퍼 엘리뇨·이란전쟁 장기화…애그플레이션 우려",
+            description="기후와 원자재 가격 상승으로 농산물 물가 부담이 커질 수 있다는 분석이다.",
+            link="https://example.com/agflation",
+        )
+        price_system = self._make_article(
+            section="policy",
+            title="농산물가격안정제도 8월 시행…평균가격, 경영비 밑돌땐 차액 지원",
+            description="농식품부가 농안법 시행령 개정안을 입법예고하고 기준가격과 차액 지원 방식을 정했다.",
+            link="https://example.com/price-system",
+        )
+        governance_core.is_core = True
+        macro_core.is_core = True
+        final_by_section = {"policy": [governance_core, macro_core, price_system]}
+
+        self.assertEqual(main._promote_priority_policy_core(final_by_section, max_core=2), 1)
+
+        core_titles = {article.title for article in final_by_section["policy"] if article.is_core}
+        self.assertIn(price_system.title, core_titles)
+        self.assertEqual(len(core_titles), 2)
+        self.assertFalse(governance_core.is_core)
+
+    def test_dist_tail_replacement_preserves_count_when_better_raw_candidate_exists(self) -> None:
+        dist_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 반입 물류 효율화를 위해 파렛트 운송지원 물량을 확대한다.",
+            link="https://example.com/dist-core",
+        )
+        weak_tail = self._make_article(
+            section="dist",
+            title="스마트팜·신품종 보급…품목맞춤형 접근 필요",
+            description="기후변화 대응을 위해 시설원예 스마트팜과 신품종 보급 지원체계를 제안했다.",
+            link="https://example.com/dist-weak",
+        )
+        replacement = self._make_article(
+            section="dist",
+            title="가락시장 채소류 반입 물류비 정산 개선",
+            description="가락시장 채소 반입과 하역, 물류비 정산 절차를 개선해 도매시장 운영 효율을 높인다.",
+            link="https://example.com/dist-replacement",
+        )
+        dist_core.is_core = True
+        final_by_section = {"dist": [dist_core, weak_tail]}
+
+        self.assertEqual(
+            main._replace_optional_dist_tail_from_raw(final_by_section, {"dist": [replacement]}),
+            1,
+        )
+        self.assertEqual(len(final_by_section["dist"]), 2)
+        self.assertIn(replacement.link, {article.link for article in final_by_section["dist"]})
+        self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["dist"]})
+
+    def test_pest_tail_replacement_prefers_real_fire_blight_candidate(self) -> None:
+        pest_core = self._make_article(
+            section="pest",
+            title="화성서 올해 첫 경기도 과수화상병 발생…확산 차단 총력",
+            description="사과 과원에서 과수화상병이 발생해 방역당국이 매몰과 예찰을 강화했다.",
+            link="https://example.com/pest-core",
+        )
+        weak_tail = self._make_article(
+            section="pest",
+            title="시설하우스 자두 출격",
+            description="시설하우스 자두 출하가 시작됐다는 산지 소식이다.",
+            link="https://example.com/plum-tail",
+        )
+        replacement = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단…세종서 첫 과수화상병 확진",
+            description="농촌진흥청이 위기단계를 높이고 세종 첫 확진 농가 주변 예찰과 방제를 강화했다.",
+            link="https://example.com/fire-blight-replacement",
+        )
+        pest_core.is_core = True
+        final_by_section = {"pest": [pest_core, weak_tail]}
+
+        self.assertEqual(
+            main._replace_weak_pest_tail_from_raw(final_by_section, {"pest": [replacement]}),
+            1,
+        )
+        self.assertIn(replacement.link, {article.link for article in final_by_section["pest"]})
+        self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["pest"]})
