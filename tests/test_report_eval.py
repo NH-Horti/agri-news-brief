@@ -115,6 +115,16 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn("section_alignment", result["scores"])
         self.assertIn("core_quality", result["scores"])
         self.assertIn("commodity_board_quality", result["scores"])
+        self.assertIn("soft_fallback_briefing_by_section", result["counts"])
+        self.assertIn("minimum_fallback_briefing_by_section", result["counts"])
+
+    def test_expected_briefing_count_prefers_five_with_adaptive_fallbacks(self) -> None:
+        self.assertEqual(report_eval._expected_briefing_count(20), 5)
+        self.assertEqual(report_eval._expected_briefing_count(5), 5)
+        self.assertEqual(report_eval._expected_briefing_count(4), 4)
+        self.assertEqual(report_eval._expected_briefing_count(3), 3)
+        self.assertEqual(report_eval._soft_fallback_briefing_count(20), 4)
+        self.assertEqual(report_eval._minimum_fallback_briefing_count(20), 3)
 
     def test_evaluate_report_flags_section_core_and_commodity_risks(self) -> None:
         html = """

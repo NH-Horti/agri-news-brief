@@ -16,6 +16,9 @@ KST = timezone(timedelta(hours=9))
 SECTION_KEYS = ("supply", "policy", "dist", "pest")
 BRIEFING_SURFACE = "briefing_card"
 COMMODITY_SURFACES = frozenset({"commodity_primary", "commodity_support", "commodity_more"})
+PREFERRED_BRIEFING_COUNT_PER_SECTION = 5
+SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION = 4
+MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION = 3
 TRACKING_QUERY_KEYS = frozenset(
     {
         "utm_source",
@@ -692,13 +695,24 @@ def _score_inverse(value: float, good: float, high: float) -> float:
 
 
 def _expected_briefing_count(raw_count: int) -> int:
-    if raw_count >= 24:
-        return 3
-    if raw_count >= 10:
-        return 2
-    if raw_count >= 3:
-        return 1
-    return 0
+    raw = max(0, int(raw_count or 0))
+    if raw <= 0:
+        return 0
+    return min(PREFERRED_BRIEFING_COUNT_PER_SECTION, raw)
+
+
+def _soft_fallback_briefing_count(raw_count: int) -> int:
+    raw = max(0, int(raw_count or 0))
+    if raw <= 0:
+        return 0
+    return min(SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION, raw)
+
+
+def _minimum_fallback_briefing_count(raw_count: int) -> int:
+    raw = max(0, int(raw_count or 0))
+    if raw <= 0:
+        return 0
+    return min(MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION, raw)
 
 
 def _iter_snapshot_items(snapshot_payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -904,6 +918,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         for section in SECTION_KEYS
     }
     expected_counts = {section: _expected_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
+    soft_fallback_counts = {section: _soft_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
+    minimum_fallback_counts = {section: _minimum_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
     briefing_counts = _section_counts(briefing_articles)
     core_counts = _section_counts([article for article in briefing_articles if article.is_core])
     commodity_counts = _section_counts(commodity_articles)
@@ -1456,6 +1472,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "commodity_by_section": commodity_counts,
             "raw_by_section": raw_counts,
             "expected_briefing_by_section": expected_counts,
+            "soft_fallback_briefing_by_section": soft_fallback_counts,
+            "minimum_fallback_briefing_by_section": minimum_fallback_counts,
         },
         "metrics": {
             "briefing_title_unique_rate": round(title_unique_rate, 4),

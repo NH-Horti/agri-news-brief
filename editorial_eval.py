@@ -8,13 +8,23 @@ from typing import Any
 
 import requests
 
-from report_eval import BRIEFING_SURFACE, KST, SECTION_KEYS, parse_report_html
+from report_eval import (
+    BRIEFING_SURFACE,
+    KST,
+    MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION,
+    PREFERRED_BRIEFING_COUNT_PER_SECTION,
+    SECTION_KEYS,
+    SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION,
+    parse_report_html,
+)
 
 
 EDITORIAL_RUBRIC_VERSION = 2
 DEFAULT_EDITORIAL_MODEL = "gpt-5.4"
 DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
+SECTION_COUNT_TARGET_SCORE = 95.0
+COMMODITY_BOARD_TARGET_SCORE = 95.0
 
 EDITORIAL_COMPONENTS = (
     "article_selection",
@@ -154,6 +164,20 @@ def _clean_issue(item: Any) -> dict[str, Any]:
     }
 
 
+def _section_count_row_score(got: int, preferred: int, soft: int, minimum: int) -> float:
+    if preferred <= 0:
+        return 100.0
+    if got >= preferred:
+        return 100.0
+    if soft > 0 and got >= soft:
+        return 96.0
+    if minimum > 0 and got >= minimum:
+        return 90.0
+    if minimum > 0:
+        return round(max(0.0, min(1.0, got / minimum)) * 75.0, 2)
+    return 0.0
+
+
 def _section_count_context(operational_result: dict[str, Any]) -> dict[str, Any]:
     counts = operational_result.get("counts", {}) if isinstance(operational_result, dict) else {}
     if not isinstance(counts, dict):
@@ -172,35 +196,64 @@ def _section_count_context(operational_result: dict[str, Any]) -> dict[str, Any]
         core_counts = {}
 
     rows: dict[str, dict[str, Any]] = {}
-    weighted_actual = 0.0
-    weighted_expected = 0.0
+    section_scores: list[float] = []
     underfilled: list[str] = []
+    soft_fallback_sections: list[str] = []
+    minimum_fallback_sections: list[str] = []
+    severe_underfilled_sections: list[str] = []
     for section in SECTION_KEYS:
         exp = max(0, int(_as_float(expected.get(section), 0.0)))
         raw = max(0, int(_as_float(raw_counts.get(section), 0.0)))
-        target = min(exp, raw) if exp > 0 else 0
+        preferred = min(PREFERRED_BRIEFING_COUNT_PER_SECTION, raw)
+        if exp > 0:
+            preferred = max(preferred, min(exp, raw))
+        soft = min(SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION, raw)
+        minimum = min(MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION, raw)
         got = max(0, int(_as_float(actual.get(section), 0.0)))
         core = max(0, int(_as_float(core_counts.get(section), 0.0)))
-        fill_ratio = 1.0 if target <= 0 else min(1.0, got / target)
-        weighted_actual += min(got, target)
-        weighted_expected += target
-        if target > 0 and got < target:
+        row_score = _section_count_row_score(got, preferred, soft, minimum)
+        section_scores.append(row_score)
+        fill_ratio = 1.0 if preferred <= 0 else min(1.0, got / preferred)
+        if preferred > 0 and got < preferred:
             underfilled.append(section)
+            if got >= soft:
+                soft_fallback_sections.append(section)
+            elif got >= minimum:
+                minimum_fallback_sections.append(section)
+            else:
+                severe_underfilled_sections.append(section)
         rows[section] = {
             "actual": got,
             "expected": exp,
             "raw_candidates": raw,
-            "count_floor": target,
+            "preferred_count": preferred,
+            "soft_fallback_count": soft,
+            "minimum_fallback_count": minimum,
+            "count_floor": minimum,
             "core_count": core,
             "fill_ratio": round(fill_ratio, 3),
+            "score": row_score,
         }
-    score = 100.0 if weighted_expected <= 0 else round(100.0 * weighted_actual / weighted_expected, 2)
+    score = round(sum(section_scores) / len(section_scores), 2) if section_scores else 100.0
+    status = "target_met" if score >= SECTION_COUNT_TARGET_SCORE and not severe_underfilled_sections else "underfilled"
+    if status != "target_met" and score >= 90.0 and not severe_underfilled_sections:
+        status = "minimum_fallback"
     return {
         "score": score,
-        "status": "target_met" if score >= 100.0 else "underfilled",
+        "status": status,
         "sections": rows,
         "underfilled_sections": underfilled,
-        "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95.",
+        "soft_fallback_sections": soft_fallback_sections,
+        "minimum_fallback_sections": minimum_fallback_sections,
+        "severe_underfilled_sections": severe_underfilled_sections,
+        "preferred_count": PREFERRED_BRIEFING_COUNT_PER_SECTION,
+        "soft_fallback_count": SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION,
+        "minimum_fallback_count": MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION,
+        "target_score": SECTION_COUNT_TARGET_SCORE,
+        "scoring_rule": (
+            "Each section should try to carry 5 briefing cards when raw candidates exist. "
+            "4 cards is a soft fallback, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+        ),
     }
 
 
@@ -211,7 +264,7 @@ def _apply_section_count_gate(result: dict[str, Any], operational_result: dict[s
     result["section_count_context"] = context
     score = _clamp_score(result.get("score"), 0.0)
     count_score = _as_float(context.get("score"), 100.0)
-    if count_score >= 100.0:
+    if count_score >= SECTION_COUNT_TARGET_SCORE:
         return result
     if count_score >= 90.0:
         cap = 94.0
@@ -238,7 +291,12 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
         return result
     if score < 80.0:
         return result
-    if _as_float(result.get("section_count_score"), 0.0) < 100.0:
+    section_count_context = result.get("section_count_context")
+    if not isinstance(section_count_context, dict):
+        section_count_context = _section_count_context(operational_result)
+    if _as_float(section_count_context.get("score"), 0.0) < SECTION_COUNT_TARGET_SCORE:
+        return result
+    if section_count_context.get("severe_underfilled_sections"):
         return result
 
     op_score = _as_float(operational_result.get("overall_score"), _as_float(operational_result.get("operational_score"), 0.0))
@@ -252,29 +310,17 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
     if not isinstance(counts, dict):
         counts = {}
 
-    actual = counts.get("briefing_by_section", {})
-    expected = counts.get("expected_briefing_by_section", {})
-    raw = counts.get("raw_by_section", {})
-    if not isinstance(actual, dict):
-        actual = {}
-    if not isinstance(expected, dict):
-        expected = {}
-    if not isinstance(raw, dict):
-        raw = {}
-    section_counts_met = True
-    for section in SECTION_KEYS:
-        exp = int(_as_float(expected.get(section), 0.0))
-        raw_count = int(_as_float(raw.get(section), 0.0))
-        floor = min(exp, raw_count) if exp > 0 else 0
-        got = int(_as_float(actual.get(section), 0.0))
-        if floor > 0 and got < floor:
-            section_counts_met = False
-            break
+    section_counts_met = (
+        _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE
+        and not section_count_context.get("severe_underfilled_sections")
+    )
+    commodity_board_score = _as_float(scores.get("commodity_board_quality"), 0.0)
 
     deterministic_gates = {
         "operational_score_min": op_score >= 95.0,
-        "section_count_score_min": _as_float(result.get("section_count_score"), 0.0) >= 100.0,
+        "section_count_score_min": _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE,
         "section_counts_met": section_counts_met,
+        "commodity_board_score_min": commodity_board_score >= COMMODITY_BOARD_TARGET_SCORE,
         "section_fit_min": _as_float(scores.get("section_fit"), _as_float(scores.get("section_alignment"), 0.0)) >= 98.0,
         "core_score_min": _as_float(scores.get("core"), _as_float(scores.get("core_quality"), 0.0)) >= 98.0,
         "summary_score_min": _as_float(scores.get("summary"), _as_float(scores.get("summary_quality"), 0.0)) >= 98.0,
@@ -317,7 +363,7 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
         "gates": deterministic_gates,
         "note": (
             "LLM shadow issues are retained for review, but the final editorial shadow score is floored "
-            "because operational, section-count, section-fit, core, summary, and noise gates all passed."
+            "because operational, preferred section-count, commodity-board, section-fit, core, summary, and noise gates all passed."
         ),
     }
     return result
@@ -548,9 +594,10 @@ def evaluate_editorial_quality(
         "Judge whether the selected articles are the right articles, not just whether the report format is valid. "
         "Penalize wrong-section stories, promotional/local-event filler, stale or duplicated items, weak core picks, "
         "and missed better candidates visible in the raw candidate pools. "
-        "Section counts are part of editorial quality: if section_count_targets shows enough raw candidates but a section is under its count_floor, "
-        "do not award 95 or higher. Conversely, when a raw pool is weak, concrete support/event articles may be acceptable as non-core tails "
-        "to preserve the section count, but they should not displace stronger national or operational candidates. "
+        "Section counts are part of editorial quality: if section_count_targets shows enough raw candidates, expect 5 selected cards when possible; "
+        "4 is a soft fallback and 3 is a minimum fallback. Do not award 95 or higher when broad fallback use pulls section_count_targets below target. "
+        "Conversely, when a raw pool is weak, concrete support/event articles may be acceptable as non-core tails to preserve the section count, "
+        "but they should not displace stronger national or operational candidates. "
         "For dist, prefer concrete distribution, logistics, export-disruption, market-operation, and sales-channel stories over local promotions. "
         "For pest, prefer fire-blight escalation/response and named crop pest risks over generic local notices. "
         "Return JSON only with keys: score, scores, summary, issues, section_notes, improvement_suggestions. "
@@ -700,7 +747,8 @@ def build_editorial_improvement_plan(
         "promotion_gates": {
             "editorial_score_min": float(target_score),
             "operational_score_min": 95.0,
-            "section_count_score_min": 100.0,
+            "section_count_score_min": SECTION_COUNT_TARGET_SCORE,
+            "commodity_board_score_min": COMMODITY_BOARD_TARGET_SCORE,
             "no_section_underfill": True,
         },
         "section_count_context": section_count_context,
@@ -709,6 +757,6 @@ def build_editorial_improvement_plan(
         "current_selection_guardrails": current_guardrails if isinstance(current_guardrails, dict) else {},
         "notes": (
             "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only "
-            "when editorial, operational, and section-count gates all pass."
+            "when editorial, operational, preferred section-count, and commodity-board gates all pass."
         ),
     }
