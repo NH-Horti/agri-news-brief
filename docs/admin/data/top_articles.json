@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-23T01:38:19+09:00",
+  "generated_at": "2026-05-24T00:32:56+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1272,8 +1272,8 @@
       "target_domain": "www.newsworker.co.kr",
       "clicks": 2,
       "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-05-22.html#sec-dist",
-      "source_url": "http://www.newsworker.co.kr/news/articleView.html?idxno=427898"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -4561,8 +4561,8 @@
       "target_domain": "www.enewstoday.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-05-22.html#sec-policy",
-      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2431558"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-05-22",
@@ -4572,6 +4572,19 @@
       "section": "policy",
       "surface": "briefing_open",
       "target_domain": "www.etnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-23",
+      "article_id": "db7a17e80f72",
+      "title": "중동發 원자재 충격 현실화···4월 생산자물가 28년 만에 최대 상승",
+      "report_date": "2026-05-22",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.enewstoday.co.kr",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
