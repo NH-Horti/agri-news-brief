@@ -1,26 +1,25 @@
 ## Daily Eval (2026-05-22)
-- Overall: **98.15** (pass)
-- Operational: **98.15**
-- Scores: completeness=100.0, diversity=96.7, summary=100.0, freshness=100.0, retrieval=86.9, section_fit=100.0, core=99.1, commodity=97.2
-- Briefing cards: 12 / Commodity cards: 43
-- Sections: supply:3/3 raw=158, policy:3/3 raw=169, dist:3/3 raw=54, pest:3/3 raw=43
-- Metrics: title_unique=1.00, domain_diversity=0.67, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=4.86, false_positive=0.00, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, semantic_penalty=0.0
+- Overall: **96.15** (pass)
+- Operational: **96.15**
+- Scores: completeness=89.2, diversity=100.0, summary=100.0, freshness=100.0, retrieval=86.9, section_fit=100.0, core=99.6, commodity=97.2
+- Briefing cards: 17 / Commodity cards: 44
+- Sections: supply:4/5 raw=159, policy:4/5 raw=166, dist:4/5 raw=53, pest:5/5 raw=44
+- Metrics: title_unique=1.00, domain_diversity=0.71, summary_presence=1.00, summary_numeric=0.94, fresh_72h=1.00, fit_avg=4.44, false_positive=0.00, weak_core=0.00, editorial_penalty=0.5, commodity_weak=0.00, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **95.00** (target 95, target_met)
-- Section count gate: 100.0 (target_met)
-- Score calibration: 88.0 -> 95.0 (deterministic_publish_gates_passed)
-- Components: article_selection=87.0, section_fit=90.0, core=88.0, summary=92.0, missed=84.0, noise=89.0
-- Summary: 전반적으로 당일 농정 핵심 이슈를 잘 잡았고 섹션 수량도 충족했다. 다만 공급 섹션이 양파 3건으로 과밀해 중복감이 크고, 유통 섹션은 물류·수출 기사 선택은 맞지만 가락시장 운영·도매시세 등 더 직접적인 운영 기사 활용 여지가 있었다. 병해충은 과수화상병 경계 격상과 지역 발생을 잡은 점은 좋으나, 경기 첫 발생 기사 등 더 강한 전국 확산 신호를 놓친 점이 아쉽다. 그래서 90점대 초반은 가능하지만 95점 이상급 편집이라고 보긴 어렵다.
-- [medium] duplication: 양파 3건 집중 편성 - 가격폭락·비축지연·정부대응이 모두 양파로 묶여 섹션 다양성이 약하다.
-- [medium] missed_opportunity: [한눈에 보는 시세] 양배추 약세 기사 미채택 - 도매시세 기반의 직접 가격 기사로 공급 섹션 균형 보완 가치가 있었다.
-- [medium] weak_tail: 햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색 - 앞선 두 양파 기사와 내용 중복이 크고 새 정보 밀도가 낮다.
-- [medium] missed_opportunity: 유통 섹션 핵심감 다소 약함 - 파렛트 지원은 적합하지만 임팩트가 약하고 더 직접적인 도매시장 운영·시세 기사 풀이 있었다.
-- [low] duplication: 중동 수출·물류 기사 2건 병행 - 두 기사 모두 같은 정부 메시지와 수출 증가 프레임이 겹친다.
+- Editorial: **88.00** (target 95, needs_iteration)
+- Section count gate: 97.0 (target_met)
+- Components: article_selection=87.0, section_fit=85.0, core=90.0, summary=93.0, missed=82.0, noise=84.0
+- Summary: 핵심 이슈 축은 대체로 맞췄다. 공급은 양파 가격 폭락·비축 지연을 잘 잡았고, 정책은 가격안정제·국회 입법을 중심으로 무게감이 있다. 병해충도 과수화상병 경계 격상과 지역 발생을 적절히 반영했다. 다만 3개 섹션이 5건 목표를 채우지 못한 데다, 공급·정책 꼬리 기사에 지역 홍보성/접수형 filler가 섞였고, 유통은 물류·수출 차질보다 약한 카드 비중이 높아 편집 완성도가 떨어진다. raw pool상 더 나은 유통/정책 후보가 보이므로 95급은 어렵다.
+- [medium] underfill: 섹션 4건만 편성 - raw 후보가 충분한데 5건 목표 미달
+- [high] wrong_fit: 경산시 와촌면 지역 대표 특산품 자두 본격 출하 - 단순 지역 출하 소개로 수급 이슈성이 약함
+- [medium] underfill: 섹션 4건만 편성 - raw 후보가 충분한데 5건 목표 미달
+- [high] promotional_filler: 정선군, 친환경농업 직불제 접수 - 지자체 접수 안내성 기사로 전국 정책 가치 낮음
+- [medium] underfill: 섹션 4건만 편성 - raw 후보가 충분한데 5건 목표 미달
 
 ### Improvement Hints
-- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
