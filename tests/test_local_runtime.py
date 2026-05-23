@@ -366,6 +366,176 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main.is_dist_hard_logistics_metric_context(metric_ops_article.title, metric_ops_article.description))
         self.assertEqual(main._editorial_safe_core_demote_reason(metric_ops_article, "dist"), "")
 
+    def test_dist_national_export_logistics_is_kept_and_promoted(self) -> None:
+        kfood = self._make_article(
+            section="dist",
+            title='K-푸드는 "전쟁 영향? 글쎄요"…중동 물류난에도 GCC 수출 37.6%↑',
+            description=(
+                "중동전쟁에 따른 해상 물류 차질과 운임 급등에도 올해 K-푸드 수출이 증가세를 이어갔다. "
+                "정부는 물류비 지원 등을 담은 72억원 규모 수출바우처 추경 사업으로 수출기업 부담을 완화한다."
+            ),
+            link="https://newsis.com/view/NISX20260521_0003638627",
+            press="뉴시스",
+            topic="농식품",
+        )
+        local_tail = self._make_article(
+            section="dist",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 뚫었다",
+            description="전남 무안군이 양파 소비촉진 캠페인과 온라인 할인행사를 추진했다.",
+            link="https://example.com/muan-onion",
+        )
+        pallet_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 농산물 물류체계 개선을 위해 파렛트 운송지원 사업을 확대한다.",
+            link="https://example.com/pallet",
+            press="농축유통신문",
+        )
+        pallet_core.is_core = True
+        final_by_section = {"dist": [pallet_core, local_tail]}
+
+        dist_conf = next((s for s in main.SECTIONS if s.get("key") == "dist"), {})
+        self.assertTrue(main.is_dist_national_export_logistics_context(kfood.title, kfood.description, kfood.domain, kfood.press))
+        self.assertFalse(main.is_dist_macro_export_noise_context(kfood.title, kfood.description, kfood.domain, kfood.press))
+        self.assertTrue(main.is_relevant(kfood.title, kfood.description, kfood.domain, kfood.link, dist_conf, kfood.press))
+        self.assertEqual(main._promote_dist_national_export_logistics_core(final_by_section, {"dist": [kfood]}), 1)
+
+        dist_titles = {article.title: article for article in final_by_section["dist"]}
+        self.assertTrue(dist_titles[kfood.title].is_core)
+        self.assertFalse(pallet_core.is_core)
+        self.assertNotIn(local_tail.link, {article.link for article in final_by_section["dist"]})
+
+    def test_dist_response_logistics_and_market_education_replace_local_promo_tail(self) -> None:
+        response = self._make_article(
+            section="policy",
+            title="중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+            description=(
+                "중동 전쟁 장기화 여파로 K-푸드 수출 물류 부담이 커지자 정부가 수출바우처와 물류비 지원을 확대한다. "
+                "농식품 수출기업 지원 예산은 72억원 규모로 편성됐다."
+            ),
+            link="https://example.com/kfood-response",
+            press="전자신문",
+        )
+        education = self._make_article(
+            section="dist",
+            title='[동화청과 유통교육] "맛·품질은 기본…소비자 선택 기준까지 설계 필요"',
+            description="동화청과가 청년농에게 도매시장 유통 구조와 대형 유통업체 구매·판매 전략, 출하 전략을 교육했다.",
+            link="https://example.com/education",
+            press="한국농업신문",
+        )
+        local_tail = self._make_article(
+            section="dist",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 뚫었다",
+            description="전남 무안군이 양파 소비촉진 캠페인과 온라인 할인행사를 추진했다.",
+            link="https://example.com/muan-onion",
+        )
+        pallet = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 농산물 물류체계 개선을 위해 파렛트 운송지원 사업을 확대한다.",
+            link="https://example.com/pallet",
+            press="농축유통신문",
+        )
+        pallet.is_core = True
+        response.section = "dist"
+        response.is_core = True
+        final_by_section = {"dist": [response, pallet, local_tail]}
+
+        self.assertTrue(main.is_dist_national_export_logistics_context(response.title, response.description, response.domain, response.press))
+        self.assertTrue(main.is_dist_market_education_tail_context(education.title, education.description))
+        self.assertTrue(main._is_optional_dist_editorial_tail(local_tail))
+        self.assertEqual(main._replace_optional_dist_tail_from_raw(final_by_section, {"dist": [education]}), 1)
+
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertIn(response.link, links)
+        self.assertIn(education.link, links)
+        self.assertNotIn(local_tail.link, links)
+
+    def test_dist_hard_logistics_core_is_not_displaced_by_export_logistics(self) -> None:
+        pallet_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description=(
+                "가락시장 농산물 물류체계 개선을 위해 근교산 채소류와 햇감자 파렛트 운송지원 사업을 확대한다. "
+                "청과부류 전체 파렛트 출하율은 88%로 전년보다 5.3%포인트 올랐고, "
+                "운송비 지원금은 파렛트 1장당 평균 5500원으로 확대된다."
+            ),
+            link="https://example.com/pallet-core",
+            press="농축유통신문",
+        )
+        kfood = self._make_article(
+            section="policy",
+            title="중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+            description=(
+                "중동 전쟁 장기화 여파로 K-푸드 수출 물류 부담이 커지자 정부가 수출바우처와 물류비 지원을 확대한다. "
+                "농식품 수출기업 지원 예산은 72억원 규모로 편성됐다."
+            ),
+            link="https://example.com/kfood-response-core-check",
+            press="전자신문",
+        )
+        local_tail = self._make_article(
+            section="dist",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 뚫었다",
+            description="전남 무안군이 양파 소비촉진 캠페인과 온라인 할인행사를 추진했다.",
+            link="https://example.com/muan-onion-hard-core",
+        )
+        pallet_core.is_core = True
+        final_by_section = {"dist": [pallet_core, local_tail]}
+
+        self.assertTrue(main.is_dist_hard_logistics_metric_context(pallet_core.title, pallet_core.description))
+        self.assertEqual(main._promote_dist_national_export_logistics_core(final_by_section, {"policy": [kfood]}), 1)
+
+        titles = {article.title: article for article in final_by_section["dist"]}
+        self.assertTrue(titles[pallet_core.title].is_core)
+        self.assertFalse(titles[kfood.title].is_core)
+        self.assertNotIn(local_tail.link, {article.link for article in final_by_section["dist"]})
+
+    def test_dist_specific_export_logistics_tail_prefers_concrete_wire_story(self) -> None:
+        response = self._make_article(
+            section="dist",
+            title="중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+            description=(
+                "중동 전쟁 장기화 여파로 K-푸드 수출 물류 부담이 커지자 정부가 수출바우처와 물류비 지원을 확대한다. "
+                "농식품 수출기업 지원 예산은 72억원 규모로 편성됐다."
+            ),
+            link="https://example.com/kfood-response",
+            press="전자신문",
+        )
+        vague_specific = self._make_article(
+            section="dist",
+            title="K-푸드 수출, 중동 물류난 속 37.6% 성장 기록",
+            description="중동 수출 물류난에도 K-푸드 수출이 성장했다는 업계 동향을 전했다.",
+            link="https://www.cooknchefnews.com/news/view/1065599999999999",
+            press="Cook&Chef",
+        )
+        concrete_wire = self._make_article(
+            section="dist",
+            title='K-푸드는 "전쟁 영향? 글쎄요"…중동 물류난에도 GCC 수출 37.6%↑',
+            description=(
+                "중동전쟁에 따른 해상 물류 차질과 운임 급등에도 K-푸드 수출이 증가세를 보였다. "
+                "정부는 딸기 등 농식품 수출기업에 수출바우처와 물류비 지원을 확대한다."
+            ),
+            link="https://newsis.com/view/NISX20260521_0003638627",
+            press="뉴시스",
+        )
+        pallet = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 농산물 물류체계 개선을 위해 파렛트 운송지원 사업을 확대한다.",
+            link="https://example.com/pallet",
+            press="농축유통신문",
+        )
+        response.is_core = True
+        final_by_section = {"dist": [response, vague_specific, pallet]}
+
+        self.assertTrue(main.is_dist_specific_kfood_export_logistics_context(vague_specific.title, vague_specific.description))
+        self.assertTrue(main.is_dist_specific_kfood_export_logistics_context(concrete_wire.title, concrete_wire.description))
+        self.assertEqual(main._ensure_dist_specific_export_logistics_tail(final_by_section, {"dist": [concrete_wire]}), 1)
+
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertIn(concrete_wire.link, links)
+        self.assertNotIn(vague_specific.link, links)
+
     def test_editorial_safe_demotes_dist_production_policy_tail(self) -> None:
         smartfarm_policy = self._make_article(
             section="dist",
@@ -551,6 +721,45 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._drop_optional_policy_macro_tail(final_by_section, min_items=3), 0)
         self.assertIn(macro_tail, final_by_section["policy"])
 
+    def test_supply_board_price_tail_replaced_by_response_story_without_underfill(self) -> None:
+        onion_core = self._make_article(
+            section="supply",
+            title='"㎏당 500원도 안해… 양파 농사 포기하고 싶다"',
+            description="양파 산지 가격 급락으로 농가 손실이 커지고 있다.",
+            link="https://example.com/onion-core",
+        )
+        storage_core = self._make_article(
+            section="supply",
+            title="햇 양파 보관 어쩌라고...지난해산 비축분 폐기 ‘세월아 네월아’",
+            description="지난해산 양파 비축분 폐기가 지연되며 햇양파 보관 공간 부족이 우려된다.",
+            link="https://example.com/onion-storage",
+            press="농민신문",
+        )
+        board_tail = self._make_article(
+            section="supply",
+            title="[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…‘약세늪’서 허덕",
+            description="양배추 반입량과 소비 부진으로 도매가격이 약세를 보였다.",
+            link="https://example.com/cabbage-board",
+            press="농민신문",
+        )
+        response = self._make_article(
+            section="supply",
+            title="고흥군, 양파 400톤 시장격리…수급 안정 대책 본격화",
+            description="양파 공급과잉과 가격 급락에 대응해 400톤 시장격리와 수급 안정 대책을 추진한다.",
+            link="https://example.com/onion-market-isolation",
+            press="아시아투데이",
+        )
+        onion_core.is_core = True
+        storage_core.is_core = True
+        final_by_section = {"supply": [onion_core, storage_core, board_tail]}
+
+        self.assertEqual(main._replace_supply_board_price_tail_from_raw(final_by_section, {"supply": [response]}), 1)
+
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertEqual(len(final_by_section["supply"]), 3)
+        self.assertIn(response.link, links)
+        self.assertNotIn(board_tail.link, links)
+
     def test_dist_tail_replacement_preserves_count_when_better_raw_candidate_exists(self) -> None:
         dist_core = self._make_article(
             section="dist",
@@ -722,6 +931,204 @@ class LocalRuntimeTests(TestCase):
         )
         self.assertIn(replacement.link, {article.link for article in final_by_section["pest"]})
         self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["pest"]})
+
+    def test_priority_fire_blight_promotes_national_escalation_to_core(self) -> None:
+        local_core = self._make_article(
+            section="pest",
+            title="원주시 “과수화상병 농가, 예방 약제 미살포”",
+            description="원주 과수 농가에서 과수화상병이 확인돼 예방 약제 미살포 행정 처분을 검토한다.",
+            link="https://example.com/wonju-fire",
+            press="KBS",
+        )
+        hwaseong_core = self._make_article(
+            section="pest",
+            title="화성서 올해 첫 경기도 과수화상병 발생…도농기원 확산 차단 총력",
+            description="경기도 사과 과원에서 과수화상병이 발생해 매몰과 주변 예찰을 강화했다.",
+            link="https://example.com/hwaseong-fire",
+            press="경기일보",
+        )
+        national = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계 상향",
+            description="농촌진흥청은 세종 첫 확진에 따라 위기단계를 경계로 높이고 반경 2km 농가 정밀 예찰에 나섰다.",
+            link="https://example.com/national-fire",
+            press="농축유통신문",
+        )
+        pepper_tail = self._make_article(
+            section="pest",
+            title="고추 총채벌레 확산 우려…적기 방제 당부",
+            description="고추 시설하우스에서 총채벌레와 바이러스 확산 우려가 커지고 있다.",
+            link="https://example.com/pepper",
+        )
+        local_core.is_core = True
+        hwaseong_core.is_core = True
+        final_by_section = {"pest": [local_core, hwaseong_core, pepper_tail]}
+
+        self.assertTrue(main.is_pest_national_fire_blight_escalation_context(national.title, national.description))
+        self.assertEqual(main._promote_pest_priority_fire_blight_from_raw(final_by_section, {"pest": [national]}), 1)
+
+        core_titles = {article.title for article in final_by_section["pest"] if article.is_core}
+        self.assertIn(national.title, core_titles)
+        self.assertLessEqual(len(core_titles), 2)
+
+    def test_priority_fire_blight_prefers_national_alert_over_first_case_only(self) -> None:
+        hwaseong_core = self._make_article(
+            section="pest",
+            title="화성서 올해 첫 경기도 과수화상병 발생…도농기원 확산 차단 총력",
+            description="경기도 사과 과원에서 과수화상병이 발생해 매몰과 주변 예찰을 강화했다.",
+            link="https://example.com/hwaseong-fire-alert",
+            press="경기일보",
+        )
+        first_case_national = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계 상향",
+            description="농촌진흥청은 세종 첫 확진에 따라 위기단계를 경계로 높이고 정밀 예찰에 나섰다.",
+            link="https://example.com/national-fire-first-case",
+            press="농축유통신문",
+        )
+        national_alert = self._make_article(
+            section="pest",
+            title="과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
+            description="농촌진흥청이 과수화상병 위기 경보를 경계로 상향했고 전국 7개 농가 2.5헥타르에서 발생했다.",
+            link="https://example.com/national-fire-alert",
+            press="KBS",
+        )
+        pepper_tail = self._make_article(
+            section="pest",
+            title="고추 총채벌레 확산 우려…적기 방제 당부",
+            description="고추 시설하우스에서 총채벌레와 바이러스 확산 우려가 커지고 있다.",
+            link="https://example.com/pepper-alert",
+        )
+        hwaseong_core.is_core = True
+        first_case_national.is_core = True
+        final_by_section = {"pest": [hwaseong_core, first_case_national, pepper_tail]}
+
+        self.assertTrue(main.is_pest_national_fire_blight_escalation_context(national_alert.title, national_alert.description))
+        self.assertEqual(main._promote_pest_priority_fire_blight_from_raw(final_by_section, {"pest": [national_alert]}), 1)
+
+        core_titles = {article.title for article in final_by_section["pest"] if article.is_core}
+        self.assertIn(national_alert.title, core_titles)
+        self.assertNotIn(first_case_national.title, {article.title for article in final_by_section["pest"]})
+
+    def test_regional_fire_blight_response_replaces_generic_pest_tail(self) -> None:
+        national_core = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계 상향",
+            description="농촌진흥청은 세종 첫 확진에 따라 위기단계를 경계로 높이고 정밀 예찰에 나섰다.",
+            link="https://example.com/national-fire",
+            press="농축유통신문",
+        )
+        generic_tail = self._make_article(
+            section="pest",
+            title="초기 방제 실패하면 콩 농사 끝",
+            description="콩 생육 초기에 병해충 예찰과 적기 방제가 중요하다고 농촌진흥청이 밝혔다.",
+            link="https://example.com/soy-pest",
+        )
+        pepper_tail = self._make_article(
+            section="pest",
+            title="고추 총채벌레 확산 우려…적기 방제 당부",
+            description="고추 시설하우스에서 총채벌레와 바이러스 확산 우려가 커지고 있다.",
+            link="https://example.com/pepper-tail",
+        )
+        regional = self._make_article(
+            section="pest",
+            title="충북농기원, 과수화상병 차단 총력",
+            description="충북농업기술원은 과수화상병 현장진단실을 긴급 운영하고 신속 진단과 초동 방제 체계를 가동했다.",
+            link="https://example.com/chungbuk-fire",
+            press="농축유통신문",
+        )
+        national_core.is_core = True
+        final_by_section = {"pest": [national_core, generic_tail, pepper_tail]}
+
+        self.assertTrue(main.is_pest_regional_fire_blight_response_context(regional.title, regional.description))
+        self.assertTrue(main.is_pest_fire_blight_diagnostics_response_context(regional.title, regional.description))
+        self.assertEqual(
+            main._promote_pest_regional_fire_blight_response_from_raw(final_by_section, {"pest": [regional]}),
+            1,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertIn(regional.link, links)
+        self.assertNotIn(generic_tail.link, links)
+
+    def test_generic_pest_notice_replacement_preserves_section_count(self) -> None:
+        hwaseong = self._make_article(
+            section="pest",
+            title="화성서 올해 첫 경기도 과수화상병 발생…도농기원 확산 차단 총력",
+            description="경기도 사과 과원에서 과수화상병이 발생해 매몰과 주변 예찰을 강화했다.",
+            link="https://example.com/hwaseong-fire",
+        )
+        national = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계 상향",
+            description="농촌진흥청은 세종 첫 확진에 따라 위기단계를 경계로 높이고 정밀 예찰에 나섰다.",
+            link="https://example.com/national-fire",
+            press="농축유통신문",
+        )
+        generic_notice = self._make_article(
+            section="pest",
+            title="서천군 농업기술센터, 밭작물 병해충 예찰 강화",
+            description="농업기술센터가 밭작물 병해충 예찰을 강화하고 농가 관리를 당부했다.",
+            link="https://example.com/generic-notice",
+            press="전국매일신문",
+        )
+        anthracnose = self._make_article(
+            section="pest",
+            title="딸기 육묘장 '탄저병' 주의…선제적 방제가 핵심",
+            description="딸기 육묘 포장에서 탄저병 감염주 제거와 예방 약제 살포 등 초기 방제 요령을 안내했다.",
+            link="https://example.com/strawberry-anthracnose",
+            press="충청일보",
+        )
+        hwaseong.is_core = True
+        national.is_core = True
+        final_by_section = {"pest": [hwaseong, national, generic_notice]}
+
+        self.assertTrue(main._is_generic_pest_notice_tail(generic_notice))
+        self.assertFalse(main._is_generic_pest_notice_tail(anthracnose))
+        self.assertEqual(main._replace_generic_pest_notice_tail_from_raw(final_by_section, {"pest": [anthracnose]}), 1)
+
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(len(final_by_section["pest"]), 3)
+        self.assertIn(anthracnose.link, links)
+        self.assertNotIn(generic_notice.link, links)
+
+    def test_fire_blight_alert_keeps_incident_pair_instead_of_two_national_firsts(self) -> None:
+        first_case_national = self._make_article(
+            section="pest",
+            title="농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계 상향",
+            description="농촌진흥청은 세종 첫 확진에 따라 위기단계를 경계로 높이고 정밀 예찰에 나섰다.",
+            link="https://example.com/national-fire-first-balance",
+            press="농축유통신문",
+        )
+        national_alert = self._make_article(
+            section="pest",
+            title="과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
+            description="농촌진흥청이 과수화상병 위기 경보를 경계로 상향했고 전국 7개 농가 2.5헥타르에서 발생했다.",
+            link="https://example.com/national-fire-alert-balance",
+            press="KBS",
+        )
+        incident = self._make_article(
+            section="pest",
+            title="화성서 올해 첫 경기도 과수화상병 발생…도농기원 확산 차단 총력",
+            description="경기도 사과 과원에서 과수화상병이 발생해 매몰과 주변 예찰을 강화했다.",
+            link="https://example.com/hwaseong-fire-balance",
+            press="경기일보",
+        )
+        pepper_tail = self._make_article(
+            section="pest",
+            title="고추 총채벌레 확산 우려…적기 방제 당부",
+            description="고추 시설하우스에서 총채벌레와 바이러스 확산 우려가 커지고 있다.",
+            link="https://example.com/pepper-balance",
+        )
+        first_case_national.is_core = True
+        national_alert.is_core = True
+        final_by_section = {"pest": [first_case_national, national_alert, pepper_tail]}
+
+        self.assertEqual(main._ensure_pest_fire_blight_alert_incident_balance(final_by_section, {"pest": [incident]}), 1)
+
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertIn(national_alert.link, links)
+        self.assertIn(incident.link, links)
+        self.assertNotIn(first_case_national.link, links)
 
     def test_duplicate_pest_theme_tail_replacement_prefers_non_fire_horti_candidate(self) -> None:
         fire_core_a = self._make_article(

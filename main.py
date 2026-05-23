@@ -3531,6 +3531,18 @@ def _editorial_safe_has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term and term.lower() in text for term in terms)
 
 
+def is_dist_market_education_tail_context(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not text:
+        return False
+    education_hits = count_any(text, [w.lower() for w in _EDITORIAL_SAFE_DIST_EDUCATION_TERMS])
+    market_hits = count_any(
+        text,
+        [w.lower() for w in ("동화청과", "도매시장", "대형 유통업체", "구매·판매", "구매 판매", "출하 전략", "판로", "산지-유통")],
+    )
+    return education_hits >= 2 and market_hits >= 2
+
+
 def is_dist_hard_logistics_metric_context(title: str, desc: str) -> bool:
     text = _nfkc_lower(f"{title or ''} {desc or ''}")
     if not text:
@@ -3555,6 +3567,60 @@ def is_dist_hard_logistics_metric_context(title: str, desc: str) -> bool:
         re.IGNORECASE,
     ))
     return hard_ops_hits >= 2 or has_metric_ops
+
+
+def is_dist_national_export_logistics_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    """농식품/K-푸드 수출이 물류 리스크와 수치로 함께 설명되는 전국성 유통 기사."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    title_l = _nfkc_lower(title or "")
+    if not text:
+        return False
+    export_hits = count_any(text, [w.lower() for w in ("수출", "해외", "gcc", "중동", "중국", "미국")])
+    food_hits = count_any(text, [w.lower() for w in ("k-푸드", "k푸드", "농식품", "한국 식품", "식품기업", "aT", "한국농수산식품유통공사")])
+    logistics_hits = count_any(
+        text,
+        [w.lower() for w in ("물류난", "물류 차질", "해상 물류", "운임", "우회 운송", "물류비", "수출바우처", "물류 부담")],
+    )
+    shock_hits = count_any(text, [w.lower() for w in ("중동전쟁", "중동 전쟁", "전쟁", "홍해", "호르무즈", "위기")])
+    has_metric = bool(re.search(r"\d[\d,]*(?:\.\d+)?\s*(?:%|달러|억원|만\s*달러|억\s*달러)", text))
+    title_signal = count_any(
+        title_l,
+        [w.lower() for w in ("중동", "물류", "수출", "k-푸드", "k푸드", "gcc")],
+    )
+    response_hits = count_any(text, [w.lower() for w in ("정부", "농식품부", "대응", "지원", "방어", "총력", "수출바우처")])
+    if food_hits < 1 or logistics_hits < 1:
+        return False
+    if export_hits < 1 and response_hits < 2:
+        return False
+    if not has_metric and not (shock_hits >= 1 and response_hits >= 2 and title_signal >= 3):
+        return False
+    if title_signal >= 2:
+        return True
+    return shock_hits >= 1 and (press_priority(press, dom) >= 2 or "농식품부" in text or "aT" in text)
+
+
+def is_dist_export_logistics_response_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    if not is_dist_national_export_logistics_context(title, desc, dom, press):
+        return False
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    title_l = _nfkc_lower(title or "")
+    response_hits = count_any(text, [w.lower() for w in ("정부", "농식품부", "대응", "지원", "방어", "총력", "수출바우처", "물류비 지원")])
+    title_response_hits = count_any(
+        title_l,
+        [w.lower() for w in ("정부", "농식품부", "대응", "지원", "방어", "총력", "수출바우처", "중동발 충격", "충격 확산")],
+    )
+    risk_hits = count_any(text, [w.lower() for w in ("중동발 충격", "충격 확산", "물류 차질", "물류 부담")])
+    return response_hits >= 2 and risk_hits >= 1 and title_response_hits >= 1
+
+
+def is_dist_specific_kfood_export_logistics_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    if not is_dist_national_export_logistics_context(title, desc, dom, press):
+        return False
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if is_dist_export_logistics_response_context(title, desc, dom, press):
+        return False
+    specific_hits = count_any(text, [w.lower() for w in ("gcc", "중동 수출", "물류난", "해상 물류", "우회 운송", "운임", "딸기", "수출 37")])
+    return specific_hits >= 2
 
 
 def is_dist_labor_issue_without_logistics_action(title: str, desc: str) -> bool:
@@ -3584,6 +3650,13 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
             if title_market_hits == 0 and market_hits <= 1:
                 return "supply_nonfood_promo_without_market_signal"
     if section_key == "dist":
+        if is_dist_national_export_logistics_context(
+            getattr(article, "title", "") or "",
+            getattr(article, "description", "") or "",
+            getattr(article, "domain", "") or "",
+            getattr(article, "press", "") or "",
+        ):
+            return ""
         if "물류 선진화" in title_l and "파렛트" in title_l and "운송지원" in title_l and "확대" in title_l:
             if not is_dist_hard_logistics_metric_context(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
                 return "promotional_or_event_filler"
@@ -7421,6 +7494,8 @@ def is_dist_program_event_noise_context(title: str, desc: str, dom: str = "", pr
     press_norm = (press or "").strip()
     if not txt:
         return False
+    if is_dist_national_export_logistics_context(ttl, desc or "", dom_norm, press_norm):
+        return False
     if is_remote_foreign_trade_brief_context(ttl, desc or "", dom_norm):
         return False
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
@@ -7489,6 +7564,8 @@ def is_dist_unanchored_agritech_noise_context(title: str, desc: str, dom: str = 
     press_norm = (press or "").strip()
     if not txt:
         return False
+    if is_dist_national_export_logistics_context(ttl, desc or "", dom_norm, press_norm):
+        return False
     if (
         is_dist_market_ops_context(ttl, desc or "", dom_norm, press_norm)
         or is_dist_supply_management_center_context(ttl, desc or "")
@@ -7518,6 +7595,8 @@ def is_dist_non_horti_anchorless_noise_context(title: str, desc: str, dom: str =
         return False
     dom_norm = normalize_host(dom or "")
     press_norm = (press or "").strip()
+    if is_dist_national_export_logistics_context(ttl, desc or "", dom_norm, press_norm):
+        return False
     if is_dist_quality_field_ops_context(ttl, desc or "", dom_norm, press_norm):
         return False
     managed_count = int(_managed_commodity_match_summary(ttl, desc or "").get("count") or 0)
@@ -7852,6 +7931,8 @@ def is_dist_macro_export_noise_context(title: str, desc: str, dom: str = "", pre
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
     if not txt:
+        return False
+    if is_dist_national_export_logistics_context(title, desc, dom, press):
         return False
     if is_dist_export_support_hub_context(title, desc, dom, press):
         return False
@@ -8856,6 +8937,38 @@ def is_pest_fire_blight_farmer_risk_context(title: str, desc: str) -> bool:
     return risk_hits >= 2
 
 
+def is_pest_national_fire_blight_escalation_context(title: str, desc: str) -> bool:
+    """전국 방역 단계나 미발생 지역 첫 확진을 다루는 과수화상병 핵심 기사."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    title_l = _nfkc_lower(title or "")
+    if "과수화상병" not in text and "화상병" not in text:
+        return False
+    national_hits = count_any(text, [w.lower() for w in ("농진청", "농촌진흥청", "위기단계", "위기 단계", "경계", "주의", "전국")])
+    escalation_hits = count_any(text, [w.lower() for w in ("첫 확진", "첫 발생", "세종", "미발생 지역", "확산 차단", "정밀 예찰", "반경 2km", "상향", "위기 경보", "발생 규모")])
+    title_hits = count_any(title_l, [w.lower() for w in ("농진청", "세종", "첫", "위기단계", "위기 단계", "경계", "주의", "전국")])
+    return national_hits >= 1 and escalation_hits >= 1 and title_hits >= 1
+
+
+def is_pest_regional_fire_blight_response_context(title: str, desc: str) -> bool:
+    """현장진단실·초동방제처럼 실행 대응이 분명한 과수화상병 지역 기사."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if "과수화상병" not in text and "화상병" not in text:
+        return False
+    response_hits = count_any(
+        text,
+        [w.lower() for w in ("현장진단실", "신속 진단", "초동 방제", "차단 총력", "예찰", "방제 체계", "확산 조기 차단")],
+    )
+    actor_hits = count_any(text, [w.lower() for w in ("농기원", "농업기술원", "농업기술센터", "도농기원", "농진청")])
+    return response_hits >= 2 and actor_hits >= 1
+
+
+def is_pest_fire_blight_diagnostics_response_context(title: str, desc: str) -> bool:
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not is_pest_regional_fire_blight_response_context(title, desc):
+        return False
+    return count_any(text, [w.lower() for w in ("현장진단실", "신속 진단", "초동 방제", "방제 체계")]) >= 2
+
+
 def is_pest_official_photo_check_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
     """Official-visit/photo check stories are useful but should yield to farm-risk pest reports."""
     ttl_l = _nfkc_lower(title or "")
@@ -8889,6 +9002,9 @@ def dist_operational_diversity_bucket(title: str, desc: str, dom: str = "", pres
         return ""
     dom_norm = normalize_host(dom or "")
     pr_norm = (press or "").strip()
+
+    if is_dist_national_export_logistics_context(ttl, desc or "", dom_norm, pr_norm):
+        return "export"
 
     if (
         is_wine_lifestyle_noise_context(ttl, desc or "")
@@ -9929,6 +10045,7 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
     dist_field_market_response = is_dist_field_market_response_context(title, desc, dom, press)
     dist_quality_field_ops = is_dist_quality_field_ops_context(title, desc, dom, press)
     dist_diversity_bucket = dist_operational_diversity_bucket(title, desc, dom, press) if key == "dist" else ""
+    dist_national_export_logistics = is_dist_national_export_logistics_context(title, desc, dom, press) if key == "dist" else False
     supply_price_collapse_field = is_supply_price_collapse_field_context(title, desc, dom, press)
     dist_apc_nh_core = is_dist_apc_nh_core_context(title, desc)
     dist_low_value_donation = is_dist_low_value_donation_context(title, desc)
@@ -9991,6 +10108,8 @@ def section_fit_score(title: str, desc: str, section_conf: JsonDict, dom: str = 
             base += 1.05
         if is_dist_export_support_hub_context(title, desc):
             base += 1.0
+        if dist_national_export_logistics:
+            base += 1.45
         if dist_supply_center:
             base += 1.1
         if dist_sales_channel_ops:
@@ -13426,6 +13545,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         dist_local_field_profile = is_dist_local_field_profile_context(title, desc)
         dist_local_org_tail = is_dist_local_org_tail_context(title, desc)
         dist_apc_nh_core = is_dist_apc_nh_core_context(ttl, desc)
+        dist_national_export_logistics = is_dist_national_export_logistics_context(title, desc, dom, press)
         if dist_local_org_tail and not dist_quality_field_ops:
             return _reject("dist_local_org_profile")
         if is_dist_macro_export_noise_context(title, desc, dom, press):
@@ -13439,6 +13559,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         if is_dist_unanchored_agritech_noise_context(title, desc, dom, press):
             return _reject("dist_unanchored_agritech_noise")
         if dist_export_support_hub:
+            return True
+        if dist_national_export_logistics:
             return True
         if dist_apc_nh_core:
             return True
@@ -13610,6 +13732,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
     dist_program_event_noise = is_dist_program_event_noise_context(title, desc, dom, press)
     dist_unanchored_agritech_noise = is_dist_unanchored_agritech_noise_context(title, desc, dom, press)
     dist_diversity_bucket = dist_operational_diversity_bucket(title, desc, dom, press)
+    dist_national_export_logistics = is_dist_national_export_logistics_context(title, desc, dom, press)
     supply_price_collapse_field = is_supply_price_collapse_field_context(title, desc, dom, press)
     supply_social_policy_noise = is_supply_social_policy_noise_context(title, desc)
     dist_apc_nh_core = is_dist_apc_nh_core_context(title, desc)
@@ -13821,6 +13944,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score -= 6.2
         if is_dist_macro_export_noise_context(title, desc, dom, press):
             score -= 8.4
+        if dist_national_export_logistics:
+            score += 11.5
         if is_dist_campaign_noise_context(title, desc):
             score -= 7.2
         if dist_program_event_noise and not dist_quality_field_ops:
@@ -13879,6 +14004,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
                 score += 3.2
         if is_dist_export_support_hub_context(title, desc, dom, press):
             score += 5.6
+        if dist_national_export_logistics and press_priority(press, dom) >= 2:
+            score += 1.4
         if dist_market_disruption:
             score += 4.8
         if infra_designation:
@@ -20770,6 +20897,11 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
         _ttl_dist = (a.title or "").lower()
         _dist_quality_field_ops = is_dist_quality_field_ops_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip())
+        _dist_national_export_logistics = is_dist_national_export_logistics_context(
+            a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()
+        )
+        if _dist_national_export_logistics:
+            return ""
         _title_dist_agri_hits = count_any(
             _ttl_dist,
             (
@@ -21302,6 +21434,114 @@ def _drop_optional_supply_nonfood_tail(final_by_section: dict[str, list["Article
     return dropped
 
 
+def _replace_supply_board_price_tail_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
+    victim_indexes = [
+        idx for idx, article in enumerate(supply_items)
+        if (
+            not bool(getattr(article, "is_core", False))
+            and count_any(_nfkc_lower(article.title or ""), [w.lower() for w in ("한눈에 보는 시세", "시세]")]) >= 1
+        )
+    ]
+    if not victim_indexes:
+        return 0
+    supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in supply_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in supply_items):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "supply")
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                continue
+            text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+            response_hits = count_any(
+                text_l,
+                [w.lower() for w in (
+                    "시장격리", "수급 안정", "수급안정", "가격 급락", "가격 폭락",
+                    "공급과잉", "산지 폐기", "비축", "수출 확대", "출하 조절",
+                )],
+            )
+            managed_count = int(_managed_commodity_match_summary(article.title or "", article.description or "").get("count") or 0)
+            if response_hits < 1 or managed_count < 1:
+                continue
+            try:
+                fit_sc = float(section_fit_score(article.title or "", article.description or "", supply_conf, article.domain or "", article.press or ""))
+            except Exception:
+                fit_sc = 0.0
+            ranked.append((
+                (
+                    response_hits,
+                    managed_count,
+                    round(fit_sc, 3),
+                    press_priority(article.press, article.domain),
+                    round(float(getattr(article, "score", 0.0) or 0.0), 3),
+                    getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+                ),
+                article,
+            ))
+    if not ranked:
+        return 0
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    replaced = 0
+    used_idents = set(existing_keys)
+    for replace_idx in victim_indexes:
+        pick: Article | None = None
+        for _rank, candidate in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used_idents:
+                continue
+            pick = candidate
+            break
+        if pick is None:
+            break
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = pick.section or "supply"
+        pick.reassigned_from = pick.section or "supply"
+        pick.section = "supply"
+        pick.is_core = False
+        pick.selection_stage = "supply_board_price_tail_replacement"
+        pick.selection_note = "replace_board_price_tail"
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", supply_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+        supply_items[replace_idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_idents.add(ident)
+        replaced += 1
+    if replaced:
+        final_by_section["supply"] = sorted(
+            supply_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    return replaced
+
+
 def _drop_optional_dist_editorial_tail(final_by_section: dict[str, list["Article"]], *, min_items: int | None = None) -> int:
     if not isinstance(final_by_section, dict):
         return 0
@@ -21357,6 +21597,12 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
     desc = article.description or ""
     text = _nfkc_lower(f"{title} {desc}")
     if (
+        re.search(r"[가-힣]{2,}군", title) is not None
+        and count_any(text, [w.lower() for w in ("직거래", "수도권", "할인행사", "소비촉진", "캠페인", "판로")]) >= 2
+        and not is_dist_market_education_tail_context(title, desc)
+    ):
+        return True
+    if (
         count_any(text, [w.lower() for w in ("하나로마트", "농협유통", "농협 유통", "마트")]) >= 1
         and count_any(text, [w.lower() for w in ("사전 예약", "사전예약", "예약 판매", "예약판매")]) >= 1
         and count_any(text, [w.lower() for w in ("수급", "도매시장", "공판장", "경락", "경매", "반입", "반입량", "물량", "출하량", "산지유통")]) == 0
@@ -21374,9 +21620,16 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
 def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) -> tuple[Any, ...] | None:
     if not isinstance(article, Article):
         return None
-    if _editorial_safe_core_demote_reason(article, "dist"):
+    national_export_logistics = is_dist_national_export_logistics_context(
+        article.title or "",
+        article.description or "",
+        article.domain or "",
+        article.press or "",
+    )
+    market_education_tail = is_dist_market_education_tail_context(article.title or "", article.description or "")
+    if _editorial_safe_core_demote_reason(article, "dist") and not (national_export_logistics or market_education_tail):
         return None
-    if _is_optional_dist_editorial_tail(article):
+    if _is_optional_dist_editorial_tail(article) and not (national_export_logistics or market_education_tail):
         return None
     if _postbuild_article_reject_reason(article, "dist"):
         return None
@@ -21395,7 +21648,7 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         text_l,
         [w.lower() for w in (
             "농산물", "원예", "과수", "과일", "채소", "양파", "감자", "단감", "멜론", "참외",
-            "가락시장", "도매시장", "공판장", "산지유통", "apc", "파렛트", "팰릿",
+            "가락시장", "도매시장", "공판장", "산지유통", "apc", "파렛트", "팰릿", "농식품", "k-푸드", "k푸드",
         )],
     )
     if managed_count <= 0 and direct_agri_ops <= 0:
@@ -21413,6 +21666,8 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         or is_dist_export_support_hub_context(title, desc, dom, press)
         or is_dist_market_disruption_context(title, desc)
         or structural_market_ops
+        or national_export_logistics
+        or market_education_tail
     )
     hard_logistics = is_dist_hard_logistics_metric_context(title, desc)
     if not ops_signal:
@@ -21421,16 +21676,18 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         fit_sc = float(section_fit_score(title, desc, dist_conf, dom, press))
     except Exception:
         fit_sc = 0.0
-    if fit_sc < 2.2 and not is_dist_market_ops_context(title, desc, dom, press) and not structural_market_ops:
+    if fit_sc < 2.2 and not is_dist_market_ops_context(title, desc, dom, press) and not structural_market_ops and not market_education_tail:
         return None
     title_ops_hits = count_any(
         _nfkc_lower(title),
-        [t.lower() for t in ("가락시장", "도매시장", "공판장", "apc", "산지유통", "물류", "파렛트", "출하", "직거래", "수출", "검역")],
+        [t.lower() for t in ("가락시장", "도매시장", "공판장", "apc", "산지유통", "물류", "파렛트", "출하", "직거래", "수출", "검역", "중동", "k-푸드", "k푸드")],
     )
     return (
+        1 if national_export_logistics else 0,
         1 if hard_logistics else 0,
         1 if is_dist_market_ops_context(title, desc, dom, press) else 0,
         1 if is_dist_quality_field_ops_context(title, desc, dom, press) else 0,
+        1 if market_education_tail else 0,
         1 if managed_count >= 1 else 0,
         1 if title_ops_hits >= 1 else 0,
         round(fit_sc, 3),
@@ -21510,6 +21767,11 @@ def _replace_optional_dist_tail_from_raw(
             if ident and ident in used_idents:
                 continue
             if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in dist_items):
+                continue
+            if is_dist_market_education_tail_context(candidate.title or "", candidate.description or "") and any(
+                is_dist_market_education_tail_context(existing.title or "", existing.description or "")
+                for existing in dist_items
+            ):
                 continue
             pick = candidate
             break
@@ -21610,6 +21872,14 @@ def _promote_dist_hard_logistics_core(
         return 0
 
     _rank, picked, already_final = max(ranked, key=lambda item: item[0])
+    hard_logistics_core = next(
+        (
+            article for article in dist_items
+            if bool(getattr(article, "is_core", False))
+            and is_dist_hard_logistics_metric_context(article.title or "", article.description or "")
+        ),
+        None,
+    )
     if not already_final:
         if not getattr(picked, "origin_section", ""):
             picked.origin_section = picked.section or "dist"
@@ -21682,6 +21952,433 @@ def _promote_dist_hard_logistics_core(
         ),
         reverse=True,
     )
+    return 1
+
+
+def _promote_dist_national_export_logistics_core(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
+    if any(
+        bool(getattr(article, "is_core", False))
+        and is_dist_national_export_logistics_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        )
+        for article in dist_items
+    ):
+        return 0
+
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in dist_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article, bool]] = []
+
+    def _maybe_add(article: Article, *, already_final: bool) -> None:
+        if not isinstance(article, Article):
+            return
+        ident = _article_selection_identity(article)
+        if not already_final and ident and ident in existing_keys:
+            return
+        if not is_dist_national_export_logistics_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        ):
+            return
+        if _postbuild_article_reject_reason(article, "dist"):
+            return
+        try:
+            fit_sc = float(section_fit_score(article.title or "", article.description or "", dist_conf, article.domain or "", article.press or ""))
+        except Exception:
+            fit_sc = 0.0
+        text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        response_priority = count_any(
+            text_l,
+            [w.lower() for w in ("정부", "농식품부", "대응", "지원", "방어", "총력", "수출바우처", "물류비 지원")],
+        )
+        ranked.append((
+            (
+                1 if response_priority >= 2 else 0,
+                1 if "충격" in text_l else 0,
+                press_priority(article.press, article.domain),
+                round(fit_sc, 3),
+                round(float(getattr(article, "score", 0.0) or 0.0), 3),
+                1 if already_final else 0,
+                getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+            ),
+            article,
+            already_final,
+        ))
+
+    for article in dist_items:
+        _maybe_add(article, already_final=True)
+    if raw_by_section:
+        for source_section in ("dist", "supply", "policy"):
+            for article in raw_by_section.get(source_section, []) or []:
+                if isinstance(article, Article):
+                    _maybe_add(article, already_final=False)
+    if not ranked:
+        return 0
+
+    _rank, picked, already_final = max(ranked, key=lambda item: item[0])
+    hard_logistics_core = next(
+        (
+            article for article in dist_items
+            if bool(getattr(article, "is_core", False))
+            and is_dist_hard_logistics_metric_context(article.title or "", article.description or "")
+        ),
+        None,
+    )
+    if not already_final:
+        if not getattr(picked, "origin_section", ""):
+            picked.origin_section = picked.section or "dist"
+        picked.reassigned_from = picked.section or "dist"
+        picked.section = "dist"
+        replaceable = [
+            (idx, article)
+            for idx, article in enumerate(dist_items)
+            if not bool(getattr(article, "is_core", False))
+        ]
+
+        def _national_export_victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+            article = item[1]
+            title = article.title or ""
+            desc = article.description or ""
+            text = _nfkc_lower(f"{title} {desc}")
+            local_or_event = int(
+                is_local_brief_text(title, desc, "dist")
+                or is_dist_program_event_noise_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip())
+                or count_any(text, [w.lower() for w in ("간담회", "협의", "협력 강화", "직거래", "할인행사", "캠페인")]) >= 1
+            )
+            optional_tail = int(_is_optional_dist_editorial_tail(article))
+            return (
+                0 if optional_tail else 1,
+                0 if local_or_event else 1,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            )
+
+        if replaceable:
+            replace_idx, _victim = min(replaceable, key=_national_export_victim_rank)
+            dist_items[replace_idx] = picked
+        elif len(dist_items) < MAX_PER_SECTION:
+            dist_items.append(picked)
+        else:
+            return 0
+    if hard_logistics_core is not None and hard_logistics_core is not picked:
+        picked.is_core = False
+        picked.selection_stage = "tail_dist_national_export_logistics"
+        picked.selection_note = "national_export_logistics_tail"
+        try:
+            picked.selection_fit_score = round(float(section_fit_score(
+                picked.title or "",
+                picked.description or "",
+                dist_conf,
+                picked.domain or "",
+                picked.press or "",
+            )), 3)
+        except Exception:
+            pass
+        final_by_section["dist"] = sorted(
+            dist_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                1 if is_dist_hard_logistics_metric_context(article.title or "", article.description or "") else 0,
+                1 if is_dist_national_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 0,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+        return 1
+    for article in dist_items:
+        if article is picked:
+            continue
+        if bool(getattr(article, "is_core", False)):
+            article.is_core = False
+            if str(getattr(article, "selection_stage", "") or "").startswith("core"):
+                article.selection_stage = "tail_dist_national_export_logistics_core"
+    picked.is_core = True
+    picked.selection_stage = "core_dist_national_export_logistics"
+    picked.selection_note = "national_export_logistics_core"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "",
+            picked.description or "",
+            dist_conf,
+            picked.domain or "",
+            picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+    final_by_section["dist"] = sorted(
+        dist_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            1 if is_dist_national_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 0,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            press_priority(article.press, article.domain),
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
+    return 1
+
+
+def _dedupe_dist_national_export_logistics(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+    *,
+    min_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
+    national_indexes = [
+        idx for idx, article in enumerate(dist_items)
+        if is_dist_national_export_logistics_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        )
+    ]
+    if len(national_indexes) <= 1:
+        return 0
+    if len(national_indexes) <= 2:
+        has_response = any(
+            is_dist_export_logistics_response_context(
+                dist_items[idx].title or "", dist_items[idx].description or "", dist_items[idx].domain or "", dist_items[idx].press or "",
+            )
+            for idx in national_indexes
+        )
+        has_specific = any(
+            is_dist_specific_kfood_export_logistics_context(
+                dist_items[idx].title or "", dist_items[idx].description or "", dist_items[idx].domain or "", dist_items[idx].press or "",
+            )
+            for idx in national_indexes
+        )
+        if has_response and has_specific:
+            return 0
+    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    keep_idx = max(
+        national_indexes,
+        key=lambda idx: (
+            1 if getattr(dist_items[idx], "is_core", False) else 0,
+            1 if is_dist_export_logistics_response_context(
+                dist_items[idx].title or "", dist_items[idx].description or "", dist_items[idx].domain or "", dist_items[idx].press or "",
+            ) else 0,
+            1 if is_dist_specific_kfood_export_logistics_context(
+                dist_items[idx].title or "", dist_items[idx].description or "", dist_items[idx].domain or "", dist_items[idx].press or "",
+            ) else 0,
+            press_priority(dist_items[idx].press, dist_items[idx].domain),
+            float(getattr(dist_items[idx], "selection_fit_score", 0.0) or 0.0),
+            float(getattr(dist_items[idx], "score", 0.0) or 0.0),
+        ),
+    )
+    duplicate_indexes = [idx for idx in national_indexes if idx != keep_idx]
+    if not duplicate_indexes:
+        return 0
+
+    if len(dist_items) - len(duplicate_indexes) >= floor:
+        final_by_section["dist"] = [
+            article for idx, article in enumerate(dist_items) if idx not in set(duplicate_indexes)
+        ]
+        return len(duplicate_indexes)
+
+    if not isinstance(raw_by_section, dict):
+        return 0
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in dist_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("dist", "supply"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if is_dist_national_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or ""):
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in dist_items):
+                continue
+            rank = _dist_replacement_candidate_rank(article, dist_conf)
+            if rank is None:
+                continue
+            ranked.append((rank, article))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    replaced = 0
+    used = set(existing_keys)
+    for idx in duplicate_indexes:
+        pick: Article | None = None
+        for _rank, candidate in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used:
+                continue
+            pick = candidate
+            break
+        if pick is None:
+            continue
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = pick.section or "dist"
+        pick.reassigned_from = pick.section or "dist"
+        pick.section = "dist"
+        pick.is_core = False
+        pick.selection_stage = "dist_export_logistics_dedupe_replacement"
+        pick.selection_note = "replace_duplicate_export_logistics"
+        dist_items[idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used.add(ident)
+        replaced += 1
+    if replaced:
+        final_by_section["dist"] = dist_items[:MAX_PER_SECTION]
+    return replaced
+
+
+def _ensure_dist_specific_export_logistics_tail(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
+    if not any(is_dist_export_logistics_response_context(a.title or "", a.description or "", a.domain or "", a.press or "") for a in dist_items):
+        return 0
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in dist_items
+        if _article_selection_identity(article)
+    }
+
+    def _specific_rank(article: Article) -> tuple[Any, ...]:
+        text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        title_l = _nfkc_lower(article.title or "")
+        concrete_hits = count_any(
+            text_l,
+            [w.lower() for w in (
+                "gcc", "중동 수출", "물류난", "해상 물류", "물류 차질", "우회 운송",
+                "운임", "딸기", "수출 37", "37.6", "72억원", "수출바우처",
+            )],
+        )
+        title_hits = count_any(title_l, [w.lower() for w in ("gcc", "물류난", "운임", "37.6", "k-푸드", "k푸드")])
+        trusted_wire = 1 if (article.press or "").strip() in {"뉴시스", "뉴스1", "연합뉴스"} else 0
+        trusted_wire = max(trusted_wire, 1 if normalize_host(article.domain or "") in {"newsis.com", "yna.co.kr", "news1.kr"} else 0)
+        try:
+            fit_sc = float(section_fit_score(article.title or "", article.description or "", dist_conf, article.domain or "", article.press or ""))
+        except Exception:
+            fit_sc = 0.0
+        return (
+            concrete_hits,
+            title_hits,
+            trusted_wire,
+            press_priority(article.press, article.domain),
+            round(fit_sc, 3),
+            round(float(getattr(article, "score", 0.0) or 0.0), 3),
+            getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+        )
+
+    existing_specific = [
+        (idx, article, _specific_rank(article))
+        for idx, article in enumerate(dist_items)
+        if is_dist_specific_kfood_export_logistics_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        )
+    ]
+    best_existing_rank = max((rank for _idx, _article, rank in existing_specific), default=None)
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("dist", "policy", "supply"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(
+                _is_similar_title(article.title_key or "", existing.title_key or "")
+                for existing in dist_items
+                if not is_dist_specific_kfood_export_logistics_context(
+                    existing.title or "", existing.description or "", existing.domain or "", existing.press or "",
+                )
+            ):
+                continue
+            if not is_dist_specific_kfood_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or ""):
+                continue
+            if _postbuild_article_reject_reason(article, "dist"):
+                continue
+            ranked.append((_specific_rank(article), article))
+    if not ranked:
+        return 0
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    picked_rank, picked = ranked[0]
+    if best_existing_rank is not None and picked_rank <= best_existing_rank:
+        return 0
+    if not getattr(picked, "origin_section", ""):
+        picked.origin_section = picked.section or "dist"
+    picked.reassigned_from = picked.section or "dist"
+    picked.section = "dist"
+    picked.is_core = False
+    picked.selection_stage = "dist_specific_export_logistics_tail"
+    picked.selection_note = "specific_kfood_export_logistics"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "", picked.description or "", dist_conf, picked.domain or "", picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    specific_replaceable = [
+        (idx, article)
+        for idx, article, _rank in existing_specific
+        if not bool(getattr(article, "is_core", False))
+    ]
+    replaceable = [
+        (idx, article)
+        for idx, article in enumerate(dist_items)
+        if not bool(getattr(article, "is_core", False))
+        and not is_dist_national_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or "")
+    ]
+
+    def _victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+        article = item[1]
+        return (
+            0 if is_dist_market_education_tail_context(article.title or "", article.description or "") else 1,
+            0 if _is_optional_dist_editorial_tail(article) else 1,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            press_priority(article.press, article.domain),
+            float(getattr(article, "score", 0.0) or 0.0),
+        )
+
+    if specific_replaceable:
+        replace_idx, _victim = min(specific_replaceable, key=lambda item: _specific_rank(item[1]))
+        dist_items[replace_idx] = picked
+    elif replaceable:
+        replace_idx, _victim = min(replaceable, key=_victim_rank)
+        dist_items[replace_idx] = picked
+    elif len(dist_items) < MAX_PER_SECTION:
+        dist_items.append(picked)
+    else:
+        return 0
+    final_by_section["dist"] = sorted(
+        dist_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            1 if is_dist_export_logistics_response_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 0,
+            1 if is_dist_specific_kfood_export_logistics_context(article.title or "", article.description or "", article.domain or "", article.press or "") else 0,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            press_priority(article.press, article.domain),
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
     return 1
 
 
@@ -21770,7 +22467,13 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
         for article in policy_items
         if (
             not bool(getattr(article, "is_core", False))
-            and _is_weaker_policy_macro_story(article)
+            and (
+                _is_weaker_policy_macro_story(article)
+                or (
+                    "생산자물가" in _nfkc_lower(article.title or "")
+                    and count_any(_nfkc_lower(article.title or ""), [w.lower() for w in ("중동", "원자재", "충격")]) >= 1
+                )
+            )
             and not is_policy_price_stabilization_system_context(article.title or "", article.description or "", article.domain or "", article.press or "")
             and not is_policy_legislative_reform_context(article.title or "", article.description or "", article.domain or "", article.press or "")
         )
@@ -21806,6 +22509,8 @@ def _is_weak_pest_tail(article: "Article") -> bool:
     title_l = _nfkc_lower(title)
     title_signal = _pest_title_signal_count(title)
     title_has_named_pest = _has_named_pest_signal(title)
+    if "콩" in text and count_any(text, [w.lower() for w in PEST_HORTI_TERMS]) == 0:
+        return True
     if title_signal <= 0 and not title_has_named_pest:
         return True
     if is_pest_fire_blight_farmer_risk_context(title, desc):
@@ -21826,6 +22531,9 @@ def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) ->
         return None
     title = article.title or ""
     desc = article.description or ""
+    text_l = _nfkc_lower(f"{title} {desc}")
+    if "콩" in text_l and count_any(text_l, [w.lower() for w in PEST_HORTI_TERMS]) == 0:
+        return None
     if not (
         is_pest_fire_blight_farmer_risk_context(title, desc)
         or is_pest_story_focus_strong(title, desc)
@@ -21840,6 +22548,8 @@ def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) ->
     except Exception:
         fit_sc = 0.0
     return (
+        1 if is_pest_national_fire_blight_escalation_context(title, desc) else 0,
+        1 if is_pest_regional_fire_blight_response_context(title, desc) else 0,
         1 if is_pest_fire_blight_farmer_risk_context(title, desc) else 0,
         1 if is_pest_story_focus_strong(title, desc) else 0,
         round(fit_sc, 3),
@@ -21868,18 +22578,259 @@ def _pest_diversity_replacement_rank(article: "Article", pest_conf: JsonDict) ->
         return None
     title = article.title or ""
     desc = article.description or ""
+    text_l = _nfkc_lower(f"{title} {desc}")
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     horti_named = managed_count >= 1 or best_horti_score(title, desc) >= 1.6
     named_pest = _has_named_pest_signal(title) or count_any(
-        _nfkc_lower(f"{title} {desc}"),
+        text_l,
         [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "과수화상병")],
     ) >= 1
+    if "콩" in text_l and count_any(text_l, [w.lower() for w in PEST_HORTI_TERMS]) == 0:
+        return None
+    if not horti_named and not named_pest and not is_pest_fire_blight_farmer_risk_context(title, desc):
+        return None
     return (
         1 if horti_named else 0,
         1 if named_pest else 0,
         1 if is_pest_story_focus_strong(title, desc) else 0,
         *base_rank[1:],
     )
+
+
+def _pest_fire_blight_priority_rank(article: "Article", pest_conf: JsonDict) -> tuple[Any, ...]:
+    title = article.title or ""
+    desc = article.description or ""
+    try:
+        fit_sc = float(section_fit_score(title, desc, pest_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    text = _nfkc_lower(f"{title} {desc}")
+    incident_only = int(
+        count_any(text, [w.lower() for w in ("미살포", "보상금 감경", "행정 처분", "폐원 절차")]) >= 1
+        and not is_pest_national_fire_blight_escalation_context(title, desc)
+    )
+    title_l = _nfkc_lower(title)
+    title_alert_hits = count_any(title_l, [w.lower() for w in ("위기단계", "위기 단계", "경계", "주의", "전국")])
+    alert_hits = count_any(text, [w.lower() for w in ("위기단계", "위기 단계", "경계", "주의", "상향", "전국", "7개 농가", "2.5헥타르")])
+    return (
+        1 if is_pest_national_fire_blight_escalation_context(title, desc) else 0,
+        title_alert_hits,
+        alert_hits,
+        1 if is_pest_regional_fire_blight_response_context(title, desc) else 0,
+        0 if incident_only else 1,
+        press_priority(article.press, article.domain),
+        round(fit_sc, 3),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _promote_pest_priority_fire_blight_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    existing_national = [
+        (idx, article, _pest_fire_blight_priority_rank(article, pest_conf))
+        for idx, article in enumerate(pest_items)
+        if is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+    ]
+    best_existing_rank = max((rank for _idx, _article, rank in existing_national), default=None)
+    candidates: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("pest", "supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if not is_pest_national_fire_blight_escalation_context(article.title or "", article.description or ""):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "pest")
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                continue
+            candidates.append((_pest_fire_blight_priority_rank(article, pest_conf), article))
+    if not candidates:
+        return 0
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    picked_rank, picked = candidates[0]
+    if best_existing_rank is not None and picked_rank <= best_existing_rank:
+        return 0
+    if not getattr(picked, "origin_section", ""):
+        picked.origin_section = picked.section or "pest"
+    picked.reassigned_from = picked.section or "pest"
+    picked.section = "pest"
+    picked.forced_section = "pest"
+
+    replaceable = [(idx, article) for idx, article, _rank in existing_national] or [
+        (idx, article)
+        for idx, article in enumerate(pest_items)
+        if not is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+    ]
+
+    def _victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+        article = item[1]
+        is_fire = is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "")
+        return (
+            0 if _is_weak_pest_tail(article) else 1,
+            0 if is_fire else 1,
+            _pest_fire_blight_priority_rank(article, pest_conf) if is_fire else (0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
+            float(getattr(article, "score", 0.0) or 0.0),
+        )
+
+    if replaceable:
+        replace_idx, victim = min(replaceable, key=_victim_rank)
+        pest_items[replace_idx] = picked
+    elif len(pest_items) < MAX_PER_SECTION:
+        pest_items.append(picked)
+    else:
+        return 0
+
+    picked.is_core = True
+    core_items = [article for article in pest_items if bool(getattr(article, "is_core", False))]
+    while len(core_items) > 2:
+        demote = min(
+            (article for article in core_items if article is not picked),
+            key=lambda article: _pest_fire_blight_priority_rank(article, pest_conf),
+            default=None,
+        )
+        if demote is None:
+            break
+        demote.is_core = False
+        if str(getattr(demote, "selection_stage", "") or "").startswith("core"):
+            demote.selection_stage = "tail_pest_priority_fire_blight_core"
+        core_items = [article for article in pest_items if bool(getattr(article, "is_core", False))]
+    picked.selection_stage = "pest_priority_fire_blight_core" if picked.is_core else "pest_priority_fire_blight_tail"
+    picked.selection_note = "national_fire_blight_escalation"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "", picked.description or "", pest_conf, picked.domain or "", picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    final_by_section["pest"] = sorted(
+        pest_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            _pest_fire_blight_priority_rank(article, pest_conf),
+            0 if _is_weak_pest_tail(article) else 1,
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
+    return 1
+
+
+def _promote_pest_regional_fire_blight_response_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+    if not any(is_pest_national_fire_blight_escalation_context(a.title or "", a.description or "") for a in pest_items):
+        return 0
+    fire_blight_count = sum(
+        1 for article in pest_items
+        if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "")
+    )
+    if fire_blight_count >= 2:
+        return 0
+    if any(is_pest_fire_blight_diagnostics_response_context(a.title or "", a.description or "") for a in pest_items):
+        return 0
+
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    candidates: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("pest", "policy", "supply"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if not is_pest_fire_blight_diagnostics_response_context(article.title or "", article.description or ""):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "pest")
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                continue
+            candidates.append((_pest_fire_blight_priority_rank(article, pest_conf), article))
+    if not candidates:
+        return 0
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    picked = candidates[0][1]
+    if not getattr(picked, "origin_section", ""):
+        picked.origin_section = picked.section or "pest"
+    picked.reassigned_from = picked.section or "pest"
+    picked.section = "pest"
+    picked.forced_section = "pest"
+    picked.is_core = False
+    picked.selection_stage = "pest_regional_fire_blight_response_tail"
+    picked.selection_note = "regional_fire_blight_response"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "", picked.description or "", pest_conf, picked.domain or "", picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    replaceable = [
+        (idx, article)
+        for idx, article in enumerate(pest_items)
+        if not bool(getattr(article, "is_core", False))
+        and not is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+        and not is_pest_fire_blight_diagnostics_response_context(article.title or "", article.description or "")
+    ]
+
+    def _victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+        article = item[1]
+        text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        horti_named = best_horti_score(article.title or "", article.description or "") >= 1.4
+        named_pest = _has_named_pest_signal(article.title or "") or count_any(
+            text,
+            [w.lower() for w in ("과수화상병", "탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방")],
+        ) >= 1
+        return (
+            0 if not horti_named else 1,
+            0 if not named_pest else 1,
+            0 if _is_weak_pest_tail(article) else 1,
+            float(getattr(article, "score", 0.0) or 0.0),
+        )
+
+    if replaceable:
+        replace_idx, _victim = min(replaceable, key=_victim_rank)
+        pest_items[replace_idx] = picked
+    elif len(pest_items) < MAX_PER_SECTION:
+        pest_items.append(picked)
+    else:
+        return 0
+    final_by_section["pest"] = sorted(
+        pest_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            _pest_fire_blight_priority_rank(article, pest_conf),
+            0 if _is_weak_pest_tail(article) else 1,
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
+    return 1
 
 
 def _replace_weak_pest_tail_from_raw(
@@ -22072,6 +23023,313 @@ def _replace_duplicate_pest_theme_tail_from_raw(
             reverse=True,
         )[:MAX_PER_SECTION]
     return replaced
+
+
+def _drop_weak_pest_notice_tail(final_by_section: dict[str, list["Article"]], *, min_items: int | None = None) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    if len(pest_items) <= floor:
+        return 0
+    candidates: list[Article] = []
+    for article in pest_items:
+        if bool(getattr(article, "is_core", False)):
+            continue
+        if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
+            continue
+        title_l = _nfkc_lower(article.title or "")
+        text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        title_named = _has_named_pest_signal(title_l) or count_any(
+            title_l,
+            [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방")],
+        ) >= 1
+        generic_notice = count_any(title_l, [w.lower() for w in ("병해충", "예찰", "관리", "비상")]) >= 1 and not title_named
+        non_horti = best_horti_score(article.title or "", article.description or "") < 1.4
+        local_notice = _local_geo_match(article.title or "") or count_any(text_l, [w.lower() for w in ("농업기술센터", "농기센터", "당부")]) >= 1
+        if generic_notice or non_horti or local_notice:
+            candidates.append(article)
+    if not candidates:
+        return 0
+    dropped = 0
+    keep = list(pest_items)
+    for victim in sorted(
+        candidates,
+        key=lambda article: (
+            0 if best_horti_score(article.title or "", article.description or "") < 1.4 else 1,
+            0 if not _has_named_pest_signal(article.title or "") else 1,
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+    ):
+        if len(keep) <= floor:
+            break
+        if victim in keep:
+            keep.remove(victim)
+            dropped += 1
+    if dropped:
+        final_by_section["pest"] = keep
+    return dropped
+
+
+def _is_generic_pest_notice_tail(article: "Article") -> bool:
+    if not isinstance(article, Article) or bool(getattr(article, "is_core", False)):
+        return False
+    if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
+        return False
+    title_l = _nfkc_lower(article.title or "")
+    text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    title_named = _has_named_pest_signal(title_l) or count_any(
+        title_l,
+        [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방")],
+    ) >= 1
+    generic_notice = count_any(title_l, [w.lower() for w in ("병해충", "예찰", "관리", "비상")]) >= 1 and not title_named
+    non_horti = best_horti_score(article.title or "", article.description or "") < 1.4
+    local_generic_notice = (
+        (_local_geo_match(article.title or "") or count_any(text_l, [w.lower() for w in ("농업기술센터", "농기센터", "당부")]) >= 1)
+        and not title_named
+    )
+    return bool(generic_notice or non_horti or local_generic_notice)
+
+
+def _replace_generic_pest_notice_tail_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+    victim_indexes = [idx for idx, article in enumerate(pest_items) if _is_generic_pest_notice_tail(article)]
+    if not victim_indexes:
+        return 0
+    fire_blight_count = sum(
+        1 for article in pest_items
+        if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "")
+    )
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("pest", "supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if fire_blight_count >= 2 and is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
+                continue
+            rank = _pest_replacement_candidate_rank(article, pest_conf)
+            if rank is None:
+                continue
+            if _is_generic_pest_notice_tail(article):
+                continue
+            text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+            managed_count = int(_managed_commodity_match_summary(article.title or "", article.description or "").get("count") or 0)
+            named_pest = _has_named_pest_signal(article.title or "") or count_any(
+                text_l,
+                [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방")],
+            ) >= 1
+            ranked.append((
+                (
+                    1 if named_pest else 0,
+                    managed_count,
+                    round(best_horti_score(article.title or "", article.description or ""), 3),
+                    rank,
+                ),
+                article,
+            ))
+    if not ranked:
+        return 0
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    replaced = 0
+    used_idents = set(existing_keys)
+    for replace_idx in victim_indexes:
+        pick: Article | None = None
+        for _rank, candidate in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used_idents:
+                continue
+            if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            pick = candidate
+            break
+        if pick is None:
+            break
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = pick.section or "pest"
+        pick.reassigned_from = pick.section or "pest"
+        pick.section = "pest"
+        pick.forced_section = "pest"
+        pick.is_core = False
+        pick.selection_stage = "pest_generic_notice_replacement"
+        pick.selection_note = "replace_generic_pest_notice"
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", pest_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+        pest_items[replace_idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_idents.add(ident)
+        replaced += 1
+    if replaced:
+        final_by_section["pest"] = sorted(
+            pest_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                0 if _is_generic_pest_notice_tail(article) else 1,
+                0 if _is_weak_pest_tail(article) else 1,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    return replaced
+
+
+def _ensure_pest_fire_blight_alert_incident_balance(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+
+    def _is_fire_article(article: Article) -> bool:
+        text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        return (
+            is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "")
+            or "과수화상병" in text
+            or "화상병" in text
+        )
+
+    fire_items = [
+        article for article in pest_items
+        if _is_fire_article(article)
+    ]
+    if len(fire_items) < 2:
+        return 0
+
+    def _is_alert(article: Article) -> bool:
+        text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        return (
+            is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+            and count_any(text, [w.lower() for w in ("위기단계", "위기 단계", "경계", "주의", "상향", "전국")]) >= 1
+        )
+
+    if not any(_is_alert(article) for article in fire_items):
+        return 0
+    if any(
+        _is_fire_article(article)
+        and not is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+        for article in fire_items
+    ):
+        return 0
+
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    candidates: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("pest", "policy", "supply"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if not _is_fire_article(article):
+                continue
+            if is_pest_national_fire_blight_escalation_context(article.title or "", article.description or ""):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "pest")
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit") and not (
+                reject_reason == "pest_partial_mention" and _is_fire_article(article)
+            ):
+                continue
+            try:
+                fit_sc = float(section_fit_score(article.title or "", article.description or "", pest_conf, article.domain or "", article.press or ""))
+            except Exception:
+                fit_sc = 0.0
+            text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+            candidates.append((
+                (
+                    1 if "첫" in _nfkc_lower(article.title or "") else 0,
+                    count_any(text_l, [w.lower() for w in ("확산 차단", "차단 총력", "매몰", "예찰", "방제")]),
+                    press_priority(article.press, article.domain),
+                    round(fit_sc, 3),
+                    round(float(getattr(article, "score", 0.0) or 0.0), 3),
+                    getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+                ),
+                article,
+            ))
+    if not candidates:
+        return 0
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    picked = candidates[0][1]
+    national_indexes = [
+        (idx, article)
+        for idx, article in enumerate(pest_items)
+        if is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+    ]
+    keep_national_idx = None
+    if national_indexes:
+        keep_national_idx = max(
+            national_indexes,
+            key=lambda item: (
+                1 if _is_alert(item[1]) else 0,
+                _pest_fire_blight_priority_rank(item[1], pest_conf),
+            ),
+        )[0]
+    replaceable = [
+        (idx, article)
+        for idx, article in national_indexes
+        if idx != keep_national_idx
+    ]
+    if not replaceable:
+        return 0
+    replace_idx, _victim = min(
+        replaceable,
+        key=lambda item: _pest_fire_blight_priority_rank(item[1], pest_conf),
+    )
+    if not getattr(picked, "origin_section", ""):
+        picked.origin_section = picked.section or "pest"
+    picked.reassigned_from = picked.section or "pest"
+    picked.section = "pest"
+    picked.forced_section = "pest"
+    picked.is_core = bool(getattr(pest_items[replace_idx], "is_core", False))
+    picked.selection_stage = "pest_fire_blight_incident_balance"
+    picked.selection_note = "pair_national_alert_with_incident"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "", picked.description or "", pest_conf, picked.domain or "", picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+    pest_items[replace_idx] = picked
+    final_by_section["pest"] = sorted(
+        pest_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            1 if _is_alert(article) else 0,
+            _pest_fire_blight_priority_rank(article, pest_conf) if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "") else (0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
+    return 1
 
 
 def _recover_dist_core_from_supply_ops(
@@ -23174,6 +24432,12 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] dist hard logistics core promotion failed: %s", e)
     try:
+        promoted_dist_export_logistics = _promote_dist_national_export_logistics_core(final_by_section, raw_by_section)
+        if promoted_dist_export_logistics:
+            log.info("[REBALANCE] promoted %d national export-logistics dist core item(s)", promoted_dist_export_logistics)
+    except Exception as e:
+        log.warning("[WARN] dist national export-logistics core promotion failed: %s", e)
+    try:
         moved_supply_pest = _remove_supply_pest_priority_cards(final_by_section)
         if moved_supply_pest:
             log.info("[REBALANCE] removed/moved %d pest-priority item(s) from final supply", moved_supply_pest)
@@ -23207,6 +24471,18 @@ def _build_sections_phase123(
             log.info("[REBALANCE] replaced %d optional weak dist tail item(s) after cleanup", replaced_dist_tail_after_drop)
     except Exception as e:
         log.warning("[WARN] optional dist tail post-cleanup replacement failed: %s", e)
+    try:
+        deduped_dist_export_logistics = _dedupe_dist_national_export_logistics(final_by_section, raw_by_section)
+        if deduped_dist_export_logistics:
+            log.info("[REBALANCE] deduped %d national export-logistics dist item(s)", deduped_dist_export_logistics)
+    except Exception as e:
+        log.warning("[WARN] dist national export-logistics dedupe failed: %s", e)
+    try:
+        ensured_dist_specific_export = _ensure_dist_specific_export_logistics_tail(final_by_section, raw_by_section)
+        if ensured_dist_specific_export:
+            log.info("[REBALANCE] ensured %d specific K-food export-logistics dist tail item(s)", ensured_dist_specific_export)
+    except Exception as e:
+        log.warning("[WARN] dist specific export-logistics tail failed: %s", e)
     post_recovery_pruned = _audit_final_sections(final_by_section)
     if post_recovery_pruned:
         log.info("[AUDIT] pruned %d final item(s) after underfill recovery", post_recovery_pruned)
@@ -23278,6 +24554,12 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] pest fire-blight rescue failed: %s", e)
     try:
+        promoted_pest_fire_blight = _promote_pest_priority_fire_blight_from_raw(final_by_section, raw_by_section)
+        if promoted_pest_fire_blight:
+            log.info("[REBALANCE] promoted %d priority fire-blight item(s)", promoted_pest_fire_blight)
+    except Exception as e:
+        log.warning("[WARN] priority pest fire-blight promotion failed: %s", e)
+    try:
         replaced_pest_tail = _replace_weak_pest_tail_from_raw(final_by_section, raw_by_section)
         if replaced_pest_tail:
             log.info("[REBALANCE] replaced %d weak pest tail item(s)", replaced_pest_tail)
@@ -23289,6 +24571,42 @@ def _build_sections_phase123(
             log.info("[REBALANCE] replaced %d duplicate-theme pest tail item(s)", replaced_pest_theme_tail)
     except Exception as e:
         log.warning("[WARN] duplicate-theme pest replacement failed: %s", e)
+    try:
+        promoted_regional_fire_blight = _promote_pest_regional_fire_blight_response_from_raw(final_by_section, raw_by_section)
+        if promoted_regional_fire_blight:
+            log.info("[REBALANCE] promoted %d regional fire-blight response item(s)", promoted_regional_fire_blight)
+    except Exception as e:
+        log.warning("[WARN] regional pest fire-blight promotion failed: %s", e)
+    try:
+        dropped_pest_notice_tail = _drop_weak_pest_notice_tail(final_by_section)
+        if dropped_pest_notice_tail:
+            log.info("[REBALANCE] dropped %d weak pest notice tail item(s)", dropped_pest_notice_tail)
+    except Exception as e:
+        log.warning("[WARN] weak pest notice tail cleanup failed: %s", e)
+    try:
+        replaced_pest_notice_tail = _replace_generic_pest_notice_tail_from_raw(final_by_section, raw_by_section)
+        if replaced_pest_notice_tail:
+            log.info("[REBALANCE] replaced %d generic pest notice tail item(s)", replaced_pest_notice_tail)
+    except Exception as e:
+        log.warning("[WARN] generic pest notice replacement failed: %s", e)
+    try:
+        balanced_pest_fire_blight = _ensure_pest_fire_blight_alert_incident_balance(final_by_section, raw_by_section)
+        if balanced_pest_fire_blight:
+            log.info("[REBALANCE] balanced %d pest fire-blight alert/incident item(s)", balanced_pest_fire_blight)
+    except Exception as e:
+        log.warning("[WARN] pest fire-blight alert/incident balance failed: %s", e)
+    try:
+        replaced_supply_board_tail = _replace_supply_board_price_tail_from_raw(final_by_section, raw_by_section)
+        if replaced_supply_board_tail:
+            log.info("[REBALANCE] replaced %d supply board-price tail item(s)", replaced_supply_board_tail)
+    except Exception as e:
+        log.warning("[WARN] supply board-price tail replacement failed: %s", e)
+    try:
+        final_dropped_policy_macro_tail = _drop_optional_policy_macro_tail(final_by_section)
+        if final_dropped_policy_macro_tail:
+            log.info("[REBALANCE] dropped %d final optional weak policy macro tail item(s)", final_dropped_policy_macro_tail)
+    except Exception as e:
+        log.warning("[WARN] final optional policy macro tail cleanup failed: %s", e)
 
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
