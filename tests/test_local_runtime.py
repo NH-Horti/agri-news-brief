@@ -1113,6 +1113,13 @@ class LocalRuntimeTests(TestCase):
             link="https://example.com/hwaseong-fire-balance",
             press="경기일보",
         )
+        incident_only = self._make_article(
+            section="pest",
+            title="원주시 “과수화상병 농가, 예방 약제 미살포”",
+            description="원주 과수 농가에서 과수화상병이 확인돼 예방 약제 미살포 행정 처분을 검토한다.",
+            link="https://example.com/wonju-fire-balance",
+            press="KBS",
+        )
         pepper_tail = self._make_article(
             section="pest",
             title="고추 총채벌레 확산 우려…적기 방제 당부",
@@ -1123,11 +1130,15 @@ class LocalRuntimeTests(TestCase):
         national_alert.is_core = True
         final_by_section = {"pest": [first_case_national, national_alert, pepper_tail]}
 
-        self.assertEqual(main._ensure_pest_fire_blight_alert_incident_balance(final_by_section, {"pest": [incident]}), 1)
+        self.assertEqual(
+            main._ensure_pest_fire_blight_alert_incident_balance(final_by_section, {"pest": [incident_only, incident]}),
+            1,
+        )
 
         links = {article.link for article in final_by_section["pest"]}
         self.assertIn(national_alert.link, links)
         self.assertIn(incident.link, links)
+        self.assertNotIn(incident_only.link, links)
         self.assertNotIn(first_case_national.link, links)
 
     def test_duplicate_pest_theme_tail_replacement_prefers_non_fire_horti_candidate(self) -> None:
