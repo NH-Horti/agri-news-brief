@@ -94,6 +94,9 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
         self.assertIn("operational_eval", payload)
+        self.assertIn("section_count_targets", payload)
+        self.assertGreater(payload["section_count_targets"]["score"], 0.0)
+        self.assertLessEqual(payload["section_count_targets"]["score"], 100.0)
 
     def test_evaluate_editorial_quality_normalizes_llm_response(self):
         session = _FakeSession()
@@ -115,6 +118,128 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
+        self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
+
+    def test_section_count_gate_caps_editorial_target_when_underfilled(self):
+        class HighScoreSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                return _FakeResponse(
+                    {
+                        "output_text": json_module_dumps(
+                            {
+                                "score": 99,
+                                "scores": {
+                                    "article_selection": 99,
+                                    "section_fit": 99,
+                                    "core_pick_quality": 99,
+                                    "summary_usefulness": 99,
+                                    "missed_opportunity": 99,
+                                    "noise_control": 99,
+                                },
+                                "summary": "Looks strong.",
+                                "issues": [],
+                                "section_notes": {"supply": "", "policy": "", "dist": "", "pest": ""},
+                                "improvement_suggestions": [],
+                            }
+                        )
+                    }
+                )
+
+        underfilled = dict(self.operational_result)
+        counts = json.loads(json.dumps(self.operational_result["counts"]))
+        counts["briefing_by_section"]["dist"] = 2
+        counts["expected_briefing_by_section"]["dist"] = 3
+        counts["raw_by_section"]["dist"] = 10
+        underfilled["counts"] = counts
+
+        result = editorial_eval.evaluate_editorial_quality(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            underfilled,
+            api_key="test-key",
+            model="test-model",
+            session_factory=HighScoreSession,
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertLess(result["score"], 95)
+        self.assertEqual(result["target_status"], "needs_minor_iteration")
+        self.assertEqual(result["section_count_status"], "underfilled")
+        self.assertIn("section_count_adjustment", result)
+
+    def test_operational_gate_calibrates_llm_shadow_score_when_publish_gates_pass(self):
+        class LowButDebatableSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                return _FakeResponse(
+                    {
+                        "output_text": json_module_dumps(
+                            {
+                                "score": 84,
+                                "scores": {
+                                    "article_selection": 84,
+                                    "section_fit": 86,
+                                    "core_pick_quality": 82,
+                                    "summary_usefulness": 78,
+                                    "missed_opportunity": 80,
+                                    "noise_control": 88,
+                                },
+                                "summary": "Debatable misses, but no deterministic failure.",
+                                "issues": [
+                                    {
+                                        "type": "weak_core",
+                                        "severity": "high",
+                                        "section": "dist",
+                                        "title": "Debatable core",
+                                        "reason": "Subjective preference.",
+                                        "suggested_action": "Review manually.",
+                                    }
+                                ],
+                                "section_notes": {"dist": "Debatable."},
+                                "improvement_suggestions": ["Review edge cases."],
+                            }
+                        )
+                    }
+                )
+
+        calibrated_operational = json.loads(json.dumps(self.operational_result))
+        calibrated_operational["overall_score"] = 97.9
+        calibrated_operational["scores"] = {
+            **calibrated_operational.get("scores", {}),
+            "section_fit": 100.0,
+            "core": 100.0,
+            "summary": 100.0,
+        }
+        calibrated_operational["metrics"] = {
+            **calibrated_operational.get("metrics", {}),
+            "false_positive_rate": 0.0,
+            "weak_core_rate": 0.0,
+            "editorial_penalty": 0.0,
+            "semantic_penalty": 0.0,
+        }
+        counts = calibrated_operational.get("counts", {})
+        counts["briefing_by_section"] = {"supply": 3, "policy": 3, "dist": 3, "pest": 3}
+        counts["expected_briefing_by_section"] = {"supply": 3, "policy": 3, "dist": 3, "pest": 3}
+        counts["raw_by_section"] = {"supply": 10, "policy": 10, "dist": 10, "pest": 10}
+        calibrated_operational["counts"] = counts
+
+        result = editorial_eval.evaluate_editorial_quality(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            calibrated_operational,
+            api_key="test-key",
+            model="test-model",
+            session_factory=LowButDebatableSession,
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["llm_score"], 84)
+        self.assertEqual(result["score"], 95)
+        self.assertEqual(result["target_status"], "target_met")
+        self.assertEqual(result["score_calibration"]["reason"], "deterministic_publish_gates_passed")
 
     def test_editorial_improvement_plan_maps_issues_to_shadow_actions(self):
         editorial_result = {
@@ -126,7 +251,9 @@ class EditorialEvalTests(unittest.TestCase):
         plan = editorial_eval.build_editorial_improvement_plan(editorial_result, self.operational_result)
 
         self.assertTrue(plan["proposal_only"])
+        self.assertEqual(plan["mode"], "shadow_replay_loop")
         self.assertEqual(plan["target_status"], "needs_minor_iteration")
+        self.assertIn("promotion_gates", plan)
         action_kinds = {action["kind"] for action in plan["recommended_actions"]}
         self.assertIn("candidate_recall", action_kinds)
         self.assertIn("noise_filter", action_kinds)

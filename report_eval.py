@@ -1778,6 +1778,8 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "score": editorial.get("score"),
             "target_score": editorial.get("target_score"),
             "target_status": editorial.get("target_status"),
+            "section_count_score": editorial.get("section_count_score"),
+            "section_count_status": editorial.get("section_count_status"),
             "scores": editorial.get("scores", {}),
             "issues": editorial.get("issues", [])[:8] if isinstance(editorial.get("issues"), list) else [],
         }
@@ -1915,10 +1917,21 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
             )
             if not issue_lines:
                 issue_lines = "- No major editorial issues reported."
+            calibration = editorial.get("score_calibration", {})
+            calibration_line = ""
+            if isinstance(calibration, dict) and calibration:
+                calibration_line = (
+                    f"- Score calibration: {float(calibration.get('before', editorial.get('llm_score', 0.0)) or 0.0):.1f}"
+                    f" -> {float(calibration.get('after', editorial.get('score', 0.0)) or 0.0):.1f}"
+                    f" ({calibration.get('reason', 'calibrated')})\n"
+                )
             editorial_block = (
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: **{float(editorial.get('score', 0.0) or 0.0):.2f}** "
                 f"(target {float(editorial.get('target_score', 95.0) or 95.0):.0f}, {editorial.get('target_status', 'unknown')})\n"
+                f"- Section count gate: {float(editorial.get('section_count_score', 100.0) or 100.0):.1f} "
+                f"({editorial.get('section_count_status', 'unknown')})\n"
+                f"{calibration_line}"
                 f"- Components: article_selection={float(editorial_scores.get('article_selection', 0.0) or 0.0):.1f}, "
                 f"section_fit={float(editorial_scores.get('section_fit', 0.0) or 0.0):.1f}, "
                 f"core={float(editorial_scores.get('core_pick_quality', 0.0) or 0.0):.1f}, "
