@@ -1,9 +1,9 @@
 {
   "report_date": "2026-05-22",
-  "generated_at_kst": "2026-05-23T11:03:50+09:00",
+  "generated_at_kst": "2026-05-23T11:34:52+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 99.38,
+    "core_quality": 99.13,
     "commodity_board_quality": 97.22
   },
   "metrics": {
@@ -64,8 +64,8 @@
     "scores": {
       "article_selection": 87.0,
       "section_fit": 90.0,
-      "core_pick_quality": 86.0,
-      "summary_usefulness": 93.0,
+      "core_pick_quality": 88.0,
+      "summary_usefulness": 92.0,
       "missed_opportunity": 84.0,
       "noise_control": 89.0
     },
@@ -74,57 +74,57 @@
         "type": "duplication",
         "severity": "medium",
         "section": "supply",
+        "title": "양파 3건 집중 편성",
+        "reason": "가격폭락·비축지연·정부대응이 모두 양파로 묶여 섹션 다양성이 약하다.",
+        "suggested_action": "양파 2건으로 압축하고 다른 품목 시세 급락 1건으로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "supply",
+        "title": "[한눈에 보는 시세] 양배추 약세 기사 미채택",
+        "reason": "도매시세 기반의 직접 가격 기사로 공급 섹션 균형 보완 가치가 있었다.",
+        "suggested_action": "양파 정부대응 꼬리기사 대신 시세 기사 검토."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "supply",
         "title": "햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
-        "reason": "앞선 두 양파 기사와 쟁점이 크게 겹친다.",
-        "suggested_action": "양배추 시세 약세 등 다른 품목 수급 기사로 분산."
-      },
-      {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "dist",
-        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
-        "reason": "운영성은 맞지만 전국 유통 핵심뉴스로는 임팩트가 약하다.",
-        "suggested_action": "중동 물류 차질·수출 대응을 코어로 올리고 본 기사는 보조로 배치."
-      },
-      {
-        "type": "duplication",
-        "severity": "medium",
-        "section": "dist",
-        "title": "K-푸드는 \"전쟁 영향? 글쎄요\"…중동 물류난에도 GCC 수출 37.6%↑",
-        "reason": "다음 dist 기사와 사실상 같은 중동 물류 축이다.",
-        "suggested_action": "둘 중 하나만 남기고 다른 물류/도매시장 기사로 교체."
-      },
-      {
-        "type": "duplication",
-        "severity": "medium",
-        "section": "dist",
-        "title": "중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
-        "reason": "앞 기사와 주제 중복에 농업 외 산업 내용이 섞인다.",
-        "suggested_action": "농식품 물류·수출 영향에 더 집중된 단일 기사로 정리."
-      },
-      {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "pest",
-        "title": "원주시 “ 과수화상병 농가, 예방 약제 미살포”",
-        "reason": "행정처분성 지역 단신으로 전국 확산 이슈보다 무게가 떨어진다.",
-        "suggested_action": "경기 첫 발생·충북 차단 대응 기사로 코어 교체 검토."
+        "reason": "앞선 두 양파 기사와 내용 중복이 크고 새 정보 밀도가 낮다.",
+        "suggested_action": "비중 낮추거나 타 품목 수급 기사로 대체."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "pest",
-        "title": "화성서 올해 첫 경기도 과수화상병 발생…도농기원 “확산 차단 총력”",
-        "reason": "권역 확산 신호가 더 강한데 선별되지 않았다.",
-        "suggested_action": "원주 단신 대신 우선 채택."
+        "section": "dist",
+        "title": "유통 섹션 핵심감 다소 약함",
+        "reason": "파렛트 지원은 적합하지만 임팩트가 약하고 더 직접적인 도매시장 운영·시세 기사 풀이 있었다.",
+        "suggested_action": "가락시장 반입·경락·물류 교란 기사 우선 검토."
       },
       {
-        "type": "missed_opportunity",
+        "type": "duplication",
         "severity": "low",
+        "section": "dist",
+        "title": "중동 수출·물류 기사 2건 병행",
+        "reason": "두 기사 모두 같은 정부 메시지와 수출 증가 프레임이 겹친다.",
+        "suggested_action": "한 건만 남기고 다른 유통 운영 기사로 다변화."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
         "section": "pest",
-        "title": "충북농기원, 과수화상병 차단 총력",
-        "reason": "현장진단실 가동은 실무 대응성이 높다.",
-        "suggested_action": "고추 총채벌레 기사와 교체해 대응 축 강화."
+        "title": "화성 첫 경기도 과수화상병 발생 기사 미채택",
+        "reason": "지역 첫 발생은 확산 국면을 보여주는 더 강한 신호였다.",
+        "suggested_action": "원주 약제 미살포 기사와 비교해 우선순위 재검토."
+      },
+      {
+        "type": "core_choice",
+        "severity": "low",
+        "section": "policy",
+        "title": "농협 직선제 기사 3번 카드 편성",
+        "reason": "정책성은 있으나 농산물 가격·수급 독자 체감도는 앞선 2건보다 떨어진다.",
+        "suggested_action": "정책 꼬리로는 유지 가능하나 물가·통상 규제 기사와 경쟁 평가 강화."
       }
     ]
   },
@@ -148,7 +148,7 @@
         "supply": {
           "actual": 3,
           "expected": 3,
-          "raw_candidates": 161,
+          "raw_candidates": 158,
           "count_floor": 3,
           "core_count": 2,
           "fill_ratio": 1.0
@@ -156,7 +156,7 @@
         "policy": {
           "actual": 3,
           "expected": 3,
-          "raw_candidates": 168,
+          "raw_candidates": 169,
           "count_floor": 3,
           "core_count": 2,
           "fill_ratio": 1.0
@@ -172,7 +172,7 @@
         "pest": {
           "actual": 3,
           "expected": 3,
-          "raw_candidates": 44,
+          "raw_candidates": 43,
           "count_floor": 3,
           "core_count": 2,
           "fill_ratio": 1.0
@@ -182,17 +182,10 @@
       "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "article_selection"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
