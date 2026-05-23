@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-05-23T10:48:47+09:00",
-  "build_tag": "78c0542",
+  "generated_at_kst": "2026-05-23T11:20:11+09:00",
+  "build_tag": "152011d",
   "filter_rejects": [
     {
       "section": "policy",
@@ -11078,38 +11078,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.38,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "농수축산신문",
-          "domain": "aflnews.co.kr",
-          "title": "서울농협, 양파 소비촉진 '두팔 걷어'",
-          "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=321144",
-          "reason": "below_threshold",
-          "fit_score": 1.15,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 16.3,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -11137,6 +11105,38 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.18,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "농수축산신문",
+          "domain": "aflnews.co.kr",
+          "title": "서울농협, 양파 소비촉진 '두팔 걷어'",
+          "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=321144",
+          "reason": "below_threshold",
+          "fit_score": 1.15,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -11238,7 +11238,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.32,
+          "score": 12.12,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -11526,7 +11526,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.4,
+          "score": 7.2,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -11846,38 +11846,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.33,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "내일신문",
-          "domain": "naeil.com",
-          "title": "무안군, 수도권 직거래로 양파 소비 촉진",
-          "url": "https://www.naeil.com/news/read/589631",
-          "reason": "below_threshold",
-          "fit_score": -1.25,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 5.29,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -11905,6 +11873,38 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.13,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "내일신문",
+          "domain": "naeil.com",
+          "title": "무안군, 수도권 직거래로 양파 소비 촉진",
+          "url": "https://www.naeil.com/news/read/589631",
+          "reason": "below_threshold",
+          "fit_score": -1.25,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -13491,7 +13491,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 29.13,
+          "score": 28.93,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13747,7 +13747,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.68,
+          "score": 20.48,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -16781,7 +16781,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 36.23,
+          "score": 36.03,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
