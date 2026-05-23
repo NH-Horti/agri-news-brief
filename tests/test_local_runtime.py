@@ -1091,6 +1091,467 @@ class LocalRuntimeTests(TestCase):
         self.assertIn(anthracnose.link, links)
         self.assertNotIn(generic_notice.link, links)
 
+    def test_preferred_count_recovery_fills_section_to_five_when_safe_raw_exists(self) -> None:
+        final_articles = [
+            self._make_article(
+                section="supply",
+                title="사과 산지 출하 물량 감소에 도매가격 상승",
+                description="사과 출하 물량 감소와 도매가격 상승 흐름을 다뤘다.",
+                link="https://example.com/supply-apple",
+                topic="사과",
+            ),
+            self._make_article(
+                section="supply",
+                title="양파 저장 물량 줄며 산지 가격 강세",
+                description="양파 저장 물량과 산지 가격 강세 흐름을 정리했다.",
+                link="https://example.com/supply-onion",
+                topic="양파",
+            ),
+            self._make_article(
+                section="supply",
+                title="배추 출하 조절 논의에 수급 안정 기대",
+                description="배추 출하 조절과 수급 안정 대책을 다뤘다.",
+                link="https://example.com/supply-cabbage",
+                topic="배추",
+            ),
+        ]
+        raw_articles = final_articles + [
+            self._make_article(
+                section="supply",
+                title="마늘 작황 부진에 생산량 감소 우려",
+                description="마늘 작황 부진과 생산량 감소 가능성을 전했다.",
+                link="https://example.com/supply-garlic",
+                topic="마늘",
+            ),
+            self._make_article(
+                section="supply",
+                title="감귤 출하 확대에도 품질별 가격 차 뚜렷",
+                description="감귤 출하 확대와 품질별 가격 차이를 설명했다.",
+                link="https://example.com/supply-citrus",
+                topic="감귤",
+            ),
+        ]
+        final_by_section = {"supply": list(final_articles)}
+
+        with (
+            patch.object(main, "_postbuild_article_reject_reason", return_value=""),
+            patch.object(main, "_preferred_section_rank", side_effect=lambda section, article, conf: (article.score,) if section == "supply" else None),
+        ):
+            inserted = main._recover_preferred_section_counts_from_raw(final_by_section, {"supply": raw_articles})
+
+        self.assertEqual(inserted, 2)
+        self.assertEqual(len(final_by_section["supply"]), 5)
+        self.assertTrue(
+            all(
+                article.selection_stage == "supply_preferred_count_recovery"
+                for article in final_by_section["supply"]
+                if article.link in {"https://example.com/supply-garlic", "https://example.com/supply-citrus"}
+            )
+        )
+
+    def test_preferred_tail_block_rejects_nonmarket_and_nonhorti_tail_noise(self) -> None:
+        cosmetic = self._make_article(
+            section="supply",
+            title="국산 감귤, 기능성 화장품으로 대변신",
+            description="감귤 추출물을 활용한 피부장벽 개선 화장품 인증 소식이다.",
+            link="https://example.com/citrus-cosmetic",
+            topic="감귤",
+        )
+        livestock = self._make_article(
+            section="policy",
+            title='"소양호 오염 축산 탓?" 축산농가 반발',
+            description="축산농가가 환경부 발언에 반발했다.",
+            link="https://example.com/livestock-policy",
+            topic="축산",
+        )
+        smartfarm = self._make_article(
+            section="dist",
+            title="스마트팜·신품종 보급…품목맞춤형 접근 필요",
+            description="기후변화 대응을 위해 스마트팜과 신품종 보급을 확대해야 한다는 분석이다.",
+            link="https://example.com/smartfarm-variety",
+            topic="스마트팜",
+        )
+        health = self._make_article(
+            section="supply",
+            title="라면, 밥과 함께 양파 꼭 먹었더니…혈당·염증에 큰 변화",
+            description="양파의 건강 효능을 소개하는 소비자 생활 기사다.",
+            link="https://example.com/onion-health",
+            topic="양파",
+        )
+        livestock_lead = self._make_article(
+            section="policy",
+            title='"근거 없는 발언으로 축산농가 낙인"',
+            description="축산농가 단체가 환경부 발언에 반발했다.",
+            link="https://example.com/livestock-lead",
+            topic="축산",
+        )
+        brand = self._make_article(
+            section="supply",
+            title="첨단 기술과 행정의 만남…청송사과 브랜드 혁신 이끈다",
+            description="청송사과 브랜드 홍보와 행정 혁신을 소개했다.",
+            link="https://example.com/apple-brand",
+            topic="사과",
+        )
+        retail_finance = self._make_article(
+            section="policy",
+            title="홈플러스 청산 수순…메리츠 외면에 회생 먹구름",
+            description="대형마트 회생 절차와 채권단 논의를 다뤘다.",
+            link="https://example.com/homeplus",
+            topic="홈플러스",
+        )
+        fertilizer = self._make_article(
+            section="supply",
+            title="작물의 밥, 비료도 알맞게 사용해야 한다",
+            description="비료 사용 요령을 설명하는 일반 영농 기사다.",
+            link="https://example.com/fertilizer",
+            topic="비료",
+        )
+        local_launch = self._make_article(
+            section="supply",
+            title="경산 와촌 자두 출하 본격화…명품 과일 전국 공략",
+            description="경산 와촌 특산품 자두 출하 소식이다.",
+            link="https://example.com/local-launch-tail",
+            topic="자두",
+        )
+        insect_feed = self._make_article(
+            section="supply",
+            title="비상품화 참외 등으로 곤충사료 개발",
+            description="비상품화 참외를 활용한 사료 개발 기술을 소개했다.",
+            link="https://example.com/insect-feed-tail",
+            topic="참외",
+        )
+        restaurant_price = self._make_article(
+            section="supply",
+            title="롯데리아도 가격 오른다…고환율·채소값 부담에 외식업계 한숨",
+            description="외식 프랜차이즈 가격 인상 소식이다.",
+            link="https://example.com/restaurant-price",
+            topic="외식",
+        )
+        patrol = self._make_article(
+            section="policy",
+            title="[패트롤] 경산시-경주시-신용보증기금",
+            description="지역 기관 소식을 묶어 소개했다.",
+            link="https://example.com/patrol",
+            topic="지역",
+        )
+        expo_promo = self._make_article(
+            section="policy",
+            title="농업회사법인코파, SIAL 상하이서 K-파프리카 알려",
+            description="중국 식품박람회에서 파프리카 브랜드 홍보를 진행했다.",
+            link="https://example.com/expo-promo",
+            topic="파프리카",
+        )
+        cosmetic_policy = self._make_article(
+            section="policy",
+            title="감귤로 피부장벽 기능성 화장품 개발",
+            description="농진청이 감귤 추출물 화장품의 식약처 인증 확보를 알렸다.",
+            link="https://example.com/citrus-cosmetic-policy",
+            topic="감귤",
+        )
+
+        self.assertIn(
+            main._preferred_tail_block_reason(cosmetic, "supply", current_count=4, raw_count=20),
+            {"supply_nonmarket_tail", "supply_nonfood_promo_without_market_signal"},
+        )
+        self.assertIn(
+            main._preferred_tail_block_reason(livestock, "policy", current_count=4, raw_count=20),
+            {"policy_livestock_non_horti_tail", "policy_field_price_collapse_without_policy_lead"},
+        )
+        self.assertTrue(main._is_optional_dist_editorial_tail(smartfarm))
+        self.assertEqual(
+            main._preferred_tail_block_reason(health, "supply", current_count=4, raw_count=20),
+            "supply_consumer_health_tail",
+        )
+        self.assertIn(
+            main._preferred_tail_block_reason(livestock_lead, "policy", current_count=4, raw_count=20),
+            {"policy_livestock_non_horti_tail", "policy_field_price_collapse_without_policy_lead"},
+        )
+        self.assertIn(
+            main._preferred_tail_block_reason(brand, "supply", current_count=4, raw_count=20),
+            {"supply_brand_promo_tail", "promotional_or_event_filler"},
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(retail_finance, "policy", current_count=4, raw_count=20),
+            "policy_retail_finance_tail",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(fertilizer, "supply", current_count=4, raw_count=20),
+            "supply_input_advice_tail",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(local_launch, "supply", current_count=3, raw_count=20),
+            "",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(local_launch, "supply", current_count=4, raw_count=20),
+            "supply_local_launch_preferred_tail",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(insect_feed, "supply", current_count=4, raw_count=20),
+            "supply_weak_preferred_tail",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(restaurant_price, "supply", current_count=4, raw_count=20),
+            "supply_restaurant_price_tail",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(patrol, "policy", current_count=4, raw_count=20),
+            "policy_digest_tail",
+        )
+        self.assertIn(
+            main._preferred_tail_block_reason(expo_promo, "policy", current_count=3, raw_count=20),
+            {"policy_anchorless_preferred_tail", "policy_non_policy_product_tail", "promotional_or_event_filler"},
+        )
+        self.assertIn(
+            main._preferred_tail_block_reason(cosmetic_policy, "policy", current_count=3, raw_count=20),
+            {"policy_non_policy_product_tail", "promotional_or_event_filler"},
+        )
+
+    def test_policy_soft_fallback_allows_agflation_issue_as_fourth_card(self) -> None:
+        agflation = self._make_article(
+            section="policy",
+            title="슈퍼 엘리뇨·이란전쟁 장기화...'애그플레이션' 시대 오나",
+            description="농산물 물가와 원자재 가격 상승이 수급 대책 압력으로 이어질 수 있다는 분석이다.",
+            link="https://example.com/agflation-tail",
+            topic="농산물 물가",
+        )
+
+        self.assertEqual(
+            main._preferred_tail_block_reason(agflation, "policy", current_count=3, raw_count=20),
+            "",
+        )
+        self.assertTrue(main._is_soft_fallback_policy_issue_tail(agflation))
+        self.assertEqual(
+            main._preferred_tail_block_reason(agflation, "policy", current_count=4, raw_count=20),
+            "policy_anchorless_preferred_tail",
+        )
+
+    def test_preferred_count_recovery_avoids_duplicate_nh_direct_election_policy(self) -> None:
+        existing = self._make_article(
+            section="policy",
+            title='“농협, 직선제 받겠다”…강호동 회장 개혁안 발표',
+            description="농협중앙회장 직선제 수용과 농협법 개정 논의를 다뤘다.",
+            link="https://example.com/nh-direct-1",
+            topic="농협",
+        )
+        duplicate = self._make_article(
+            section="policy",
+            title='강호동 농협회장 "직선제 수용"',
+            description="농협중앙회가 회장 직선제를 수용하겠다고 밝혔다.",
+            link="https://example.com/nh-direct-2",
+            topic="농협",
+        )
+
+        self.assertTrue(
+            main._candidate_conflicts_with_final(duplicate, {"policy": [existing]}, "policy")
+        )
+
+    def test_preferred_count_recovery_uses_story_signature_for_same_section_duplicates(self) -> None:
+        existing = self._make_article(
+            section="supply",
+            title="경산 와촌 시설재배 자두 본격 출하",
+            description="경산 와촌 자두 출하가 시작됐다.",
+            link="https://example.com/jadu-signature-a",
+        )
+        duplicate = self._make_article(
+            section="supply",
+            title="경산 와촌 자두 출하 본격화…명품 과일 전국 공략",
+            description="경산 와촌 시설재배 자두 출하가 본격화했다.",
+            link="https://example.com/jadu-signature-b",
+        )
+
+        self.assertTrue(
+            main._candidate_conflicts_with_final(duplicate, {"supply": [existing]}, "supply")
+        )
+
+    def test_preferred_count_recovery_caps_pest_fire_blight_theme(self) -> None:
+        existing = [
+            self._make_article(
+                section="pest",
+                title=title,
+                description="과수화상병 확산과 방제 대응을 다뤘다.",
+                link=f"https://example.com/fire-{idx}",
+            )
+            for idx, title in enumerate(
+                (
+                    "과수화상병 확산 우려…위기 단계 경계",
+                    "화성서 올해 첫 경기도 과수화상병 발생",
+                    "충북농기원, 과수화상병 차단 총력",
+                ),
+                start=1,
+            )
+        ]
+        candidate = self._make_article(
+            section="pest",
+            title="농진청, 세종서 첫 과수화상병 확진",
+            description="과수화상병 위기단계 상향과 예찰을 다뤘다.",
+            link="https://example.com/fire-4",
+        )
+
+        self.assertTrue(
+            main._candidate_conflicts_with_final(candidate, {"pest": existing}, "pest")
+        )
+
+    def test_dist_soft_fallback_allows_direct_distribution_tail_only_for_short_section(self) -> None:
+        dist_tail = self._make_article(
+            section="dist",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 뚫었다",
+            description="양파 직거래와 수도권 판로 확대를 다뤘다.",
+            link="https://example.com/dist-soft-tail",
+        )
+
+        self.assertTrue(main._is_soft_fallback_dist_ops_tail(dist_tail))
+        self.assertEqual(
+            main._preferred_tail_block_reason(dist_tail, "dist", current_count=3, raw_count=20),
+            "",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(dist_tail, "dist", current_count=4, raw_count=20),
+            "dist_optional_weak_tail",
+        )
+
+    def test_preferred_count_recovery_crossfills_dist_from_supply_for_direct_channel_tail(self) -> None:
+        core = self._make_article(
+            section="dist",
+            title="가락시장 물류 선진화 속도…파렛트 운송지원 확대",
+            description="가락시장 파렛트 운송지원과 물류 개선을 다뤘다.",
+            link="https://example.com/dist-core-logistics",
+        )
+        export_a = self._make_article(
+            section="dist",
+            title="K-푸드는 중동 물류난에도 GCC 수출 증가",
+            description="중동 물류난 속 K-푸드 수출 흐름을 다뤘다.",
+            link="https://example.com/dist-export-a",
+        )
+        export_b = self._make_article(
+            section="dist",
+            title="중동발 충격 확산…정부, K-푸드 물류 대응 총력",
+            description="정부의 K-푸드 물류 대응과 수출 지원을 다뤘다.",
+            link="https://example.com/dist-export-b",
+        )
+        direct_channel = self._make_article(
+            section="supply",
+            title="무안군, 양파 100톤 수도권 직거래로 판로 뚫었다",
+            description="무안군이 양파 100톤을 수도권 직거래로 공급하며 판로 확대에 나섰다.",
+            link="https://example.com/supply-direct-channel",
+        )
+        core.is_core = True
+        final_by_section = {"dist": [core, export_a, export_b]}
+        raw_by_section = {"dist": [], "supply": [direct_channel]}
+
+        recovered = main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+
+        self.assertEqual(recovered, 1)
+        self.assertEqual(len(final_by_section["dist"]), 4)
+        self.assertIn(direct_channel, final_by_section["dist"])
+
+    def test_preferred_count_recovery_does_not_crossfill_dist_political_visit_tail(self) -> None:
+        core = self._make_article(
+            section="dist",
+            title="가락시장 물류 선진화 속도…파렛트 운송지원 확대",
+            description="가락시장 파렛트 운송지원과 물류 개선을 다뤘다.",
+            link="https://example.com/dist-core-logistics",
+        )
+        export_a = self._make_article(
+            section="dist",
+            title="K-푸드는 중동 물류난에도 GCC 수출 증가",
+            description="중동 물류난 속 K-푸드 수출 흐름을 다뤘다.",
+            link="https://example.com/dist-export-a",
+        )
+        export_b = self._make_article(
+            section="dist",
+            title="중동발 충격 확산…정부, K-푸드 물류 대응 총력",
+            description="정부의 K-푸드 물류 대응과 수출 지원을 다뤘다.",
+            link="https://example.com/dist-export-b",
+        )
+        political_visit = self._make_article(
+            section="supply",
+            title="가락시장부터 청계광장까지 '회오리 유세'...오세훈 후보 총력전",
+            description="오세훈 후보가 가락시장과 청계광장을 돌며 선거 유세에 나섰다.",
+            link="https://example.com/dist-political-visit",
+        )
+        core.is_core = True
+        final_by_section = {"dist": [core, export_a, export_b]}
+        raw_by_section = {"dist": [], "supply": [political_visit]}
+
+        recovered = main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+
+        self.assertEqual(recovered, 0)
+        self.assertEqual(len(final_by_section["dist"]), 3)
+        self.assertNotIn(political_visit, final_by_section["dist"])
+
+    def test_final_preferred_tail_cleanup_removes_weak_noncore_without_cutting_below_minimum(self) -> None:
+        core_a = self._make_article(
+            section="supply",
+            title="양파 가격 폭락에 산지 폐기 검토",
+            description="양파 가격 폭락과 산지 폐기 대응을 다뤘다.",
+            link="https://example.com/onion-core-a",
+        )
+        core_b = self._make_article(
+            section="supply",
+            title="배추 출하 감소로 도매가격 상승",
+            description="배추 출하 감소와 도매가격 상승 흐름이다.",
+            link="https://example.com/cabbage-core-b",
+        )
+        good_tail = self._make_article(
+            section="supply",
+            title="고흥군, 양파 400톤 시장격리…수급 안정 대책",
+            description="양파 시장격리와 수급 안정 대책을 다뤘다.",
+            link="https://example.com/onion-good-tail",
+        )
+        weak_tail = self._make_article(
+            section="supply",
+            title="작물의 밥, 비료도 알맞게 사용해야 한다",
+            description="비료 사용 요령을 설명하는 일반 영농 기사다.",
+            link="https://example.com/fertilizer-tail",
+        )
+        core_a.is_core = True
+        core_b.is_core = True
+        final_by_section = {"supply": [core_a, core_b, good_tail, weak_tail]}
+
+        dropped = main._drop_preferred_tail_blocked_items(final_by_section, min_items=3)
+
+        self.assertEqual(dropped, 1)
+        self.assertEqual(len(final_by_section["supply"]), 3)
+        self.assertNotIn(weak_tail, final_by_section["supply"])
+
+    def test_final_story_duplicate_cleanup_removes_same_region_commodity_tail(self) -> None:
+        core = self._make_article(
+            section="supply",
+            title="양파 가격 폭락에 산지 폐기 검토",
+            description="양파 가격 폭락과 산지 폐기 대응을 다뤘다.",
+            link="https://example.com/onion-core-dup",
+        )
+        core.is_core = True
+        kept = self._make_article(
+            section="supply",
+            title="경산 와촌 시설재배 자두 본격 출하",
+            description="경산 와촌 자두 출하가 시작됐다.",
+            link="https://example.com/jadu-a",
+            press="연합뉴스",
+        )
+        duplicate = self._make_article(
+            section="supply",
+            title="경산 와촌 자두 출하 본격화…명품 과일 전국 공략",
+            description="경산 와촌 시설재배 자두 출하가 본격화했다.",
+            link="https://example.com/jadu-b",
+            press="지역신문",
+        )
+        other = self._make_article(
+            section="supply",
+            title="고흥군, 양파 400톤 시장격리…수급 안정 대책",
+            description="양파 시장격리와 수급 안정 대책이다.",
+            link="https://example.com/onion-other",
+        )
+        final_by_section = {"supply": [core, kept, duplicate, other]}
+
+        dropped = main._drop_final_story_duplicates(final_by_section, min_items=3)
+
+        self.assertEqual(dropped, 1)
+        self.assertEqual(len(final_by_section["supply"]), 3)
+        self.assertIn(kept, final_by_section["supply"])
+        self.assertNotIn(duplicate, final_by_section["supply"])
+
     def test_fire_blight_alert_keeps_incident_pair_instead_of_two_national_firsts(self) -> None:
         first_case_national = self._make_article(
             section="pest",

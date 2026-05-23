@@ -485,6 +485,9 @@ RECENT_HISTORY_NORM: set[str] = set()
 
 MAX_PER_SECTION = int(os.getenv("MAX_PER_SECTION", os.getenv("MAX_ARTICLES_PER_SECTION", "5")))
 MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP", "20"))))
+PREFERRED_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("PREFERRED_ARTICLES_PER_SECTION", "5") or "5")))
+SOFT_MIN_PER_SECTION = max(1, min(PREFERRED_PER_SECTION, int(os.getenv("SOFT_MIN_ARTICLES_PER_SECTION", "4") or "4")))
+MIN_FALLBACK_PER_SECTION = max(1, min(SOFT_MIN_PER_SECTION, int(os.getenv("MIN_FALLBACK_ARTICLES_PER_SECTION", "3") or "3")))
 
 # 최소 기사 수(섹션별)
 MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", os.getenv("MIN_ARTICLES_PER_SECTION", "0")) or 0)
@@ -17334,7 +17337,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # 4.6) underfill 강신호 백필:
     # - 섹션이 2~3건 수준에서 끝날 때, threshold/tail-cut 바로 아래의 강한 기사 1건을 추가로 살린다.
     # - dist도 시장 충격/현장 기사 쪽으로 1건 보강하고, policy는 공공/기관발 강기사 중심으로만 보강한다.
-    strong_underfill_target_by_section = {"supply": 3, "policy": 3, "dist": 4, "pest": 3}
+    strong_underfill_target_by_section = {
+        "supply": SOFT_MIN_PER_SECTION,
+        "policy": SOFT_MIN_PER_SECTION,
+        "dist": SOFT_MIN_PER_SECTION,
+        "pest": SOFT_MIN_PER_SECTION,
+    }
     strong_underfill_target = min(max_n, strong_underfill_target_by_section.get(section_key, 0))
     if strong_underfill_target and len(final) < strong_underfill_target:
         need = strong_underfill_target - len(final)
@@ -21413,7 +21421,7 @@ def _drop_optional_supply_nonfood_tail(final_by_section: dict[str, list["Article
     if not isinstance(final_by_section, dict):
         return 0
     supply_items = [a for a in (final_by_section.get("supply") or []) if isinstance(a, Article)]
-    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    floor = max(1, int(min_items or min(SOFT_MIN_PER_SECTION, MAX_PER_SECTION)))
     if len(supply_items) <= floor:
         return 0
     keep: list[Article] = []
@@ -21457,6 +21465,7 @@ def _replace_supply_board_price_tail_from_raw(
         if _article_selection_identity(article)
     }
     ranked: list[tuple[tuple[Any, ...], Article]] = []
+    raw_count = sum(len(raw_by_section.get(source_section, []) or []) for source_section in ("supply", "policy"))
     for source_section in ("supply", "policy"):
         for article in raw_by_section.get(source_section, []) or []:
             if not isinstance(article, Article):
@@ -21468,6 +21477,8 @@ def _replace_supply_board_price_tail_from_raw(
                 continue
             reject_reason = _postbuild_article_reject_reason(article, "supply")
             if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                continue
+            if _preferred_tail_block_reason(article, "supply", current_count=len(supply_items), raw_count=raw_count):
                 continue
             text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
             response_hits = count_any(
@@ -21546,7 +21557,7 @@ def _drop_optional_dist_editorial_tail(final_by_section: dict[str, list["Article
     if not isinstance(final_by_section, dict):
         return 0
     dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
-    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    floor = max(1, int(min_items or min(SOFT_MIN_PER_SECTION, MAX_PER_SECTION)))
     if len(dist_items) <= floor:
         return 0
     optional: list[tuple[tuple[Any, ...], int, Article]] = []
@@ -21610,11 +21621,52 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
         return True
     dom = normalize_host(article.domain or "")
     press = (article.press or "").strip()
+    if (
+        count_any(
+            text,
+            [w.lower() for w in ("스마트팜", "신품종", "품목맞춤형", "품목 맞춤형", "기후변화", "재배기술")],
+        ) >= 2
+        and not (
+            is_dist_market_ops_context(title, desc, dom, press)
+            or is_dist_supply_management_center_context(title, desc)
+            or is_dist_sales_channel_ops_context(title, desc)
+            or is_dist_export_field_context(title, desc, dom, press)
+            or is_dist_export_support_hub_context(title, desc, dom, press)
+            or is_dist_market_disruption_context(title, desc)
+            or is_dist_market_education_tail_context(title, desc)
+        )
+    ):
+        return True
     return bool(
         is_dist_local_crop_strategy_noise_context(title, desc)
         or is_dist_program_event_noise_context(title, desc, dom, press)
         or is_dist_unanchored_agritech_noise_context(title, desc, dom, press)
     )
+
+
+def _is_soft_fallback_dist_ops_tail(article: "Article") -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    if any(term.lower() in _nfkc_lower(title) for term in OPINION_BAN_TERMS):
+        return False
+    if is_dist_political_visit_context(title, desc):
+        return False
+    if is_low_value_local_political_context(title, desc):
+        return False
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    ops_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "도매시장", "공판장", "가락시장", "산지유통", "출하 거점", "출하거점",
+            "직거래", "판로", "수도권", "유통협력", "유통 협력", "수출", "물류",
+        )],
+    )
+    if managed_count <= 0 or ops_hits < 2:
+        return False
+    return not is_dist_primary_supply_price_story(title, desc)
 
 
 def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) -> tuple[Any, ...] | None:
@@ -21627,9 +21679,10 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         article.press or "",
     )
     market_education_tail = is_dist_market_education_tail_context(article.title or "", article.description or "")
+    soft_fallback_ops_tail = _is_soft_fallback_dist_ops_tail(article)
     if _editorial_safe_core_demote_reason(article, "dist") and not (national_export_logistics or market_education_tail):
         return None
-    if _is_optional_dist_editorial_tail(article) and not (national_export_logistics or market_education_tail):
+    if _is_optional_dist_editorial_tail(article) and not (national_export_logistics or market_education_tail or soft_fallback_ops_tail):
         return None
     if _postbuild_article_reject_reason(article, "dist"):
         return None
@@ -22163,7 +22216,7 @@ def _dedupe_dist_national_export_logistics(
         )
         if has_response and has_specific:
             return 0
-    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    floor = max(1, int(min_items or min(SOFT_MIN_PER_SECTION, MAX_PER_SECTION)))
     keep_idx = max(
         national_indexes,
         key=lambda idx: (
@@ -22459,7 +22512,7 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
     if not isinstance(final_by_section, dict):
         return 0
     policy_items = [a for a in (final_by_section.get("policy") or []) if isinstance(a, Article)]
-    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    floor = max(1, int(min_items or min(SOFT_MIN_PER_SECTION, MAX_PER_SECTION)))
     if len(policy_items) <= floor:
         return 0
     candidates = [
@@ -22469,6 +22522,12 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
             not bool(getattr(article, "is_core", False))
             and (
                 _is_weaker_policy_macro_story(article)
+                or _preferred_tail_block_reason(
+                    article,
+                    "policy",
+                    current_count=len(policy_items),
+                    raw_count=PREFERRED_PER_SECTION,
+                )
                 or (
                     "생산자물가" in _nfkc_lower(article.title or "")
                     and count_any(_nfkc_lower(article.title or ""), [w.lower() for w in ("중동", "원자재", "충격")]) >= 1
@@ -22493,11 +22552,18 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
             -float(getattr(article, "score", 0.0) or 0.0),
         )
 
-    victim = min(candidates, key=_drop_rank)
-    if len(policy_items) - 1 < floor:
-        return 0
-    final_by_section["policy"] = [article for article in policy_items if article is not victim]
-    return 1
+    keep = list(policy_items)
+    dropped = 0
+    for victim in sorted(candidates, key=_drop_rank):
+        if len(keep) <= floor:
+            break
+        if victim not in keep:
+            continue
+        keep.remove(victim)
+        dropped += 1
+    if dropped:
+        final_by_section["policy"] = keep
+    return dropped
 
 
 def _is_weak_pest_tail(article: "Article") -> bool:
@@ -23029,7 +23095,7 @@ def _drop_weak_pest_notice_tail(final_by_section: dict[str, list["Article"]], *,
     if not isinstance(final_by_section, dict):
         return 0
     pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
-    floor = max(1, int(min_items or min(3, MAX_PER_SECTION)))
+    floor = max(1, int(min_items or min(SOFT_MIN_PER_SECTION, MAX_PER_SECTION)))
     if len(pest_items) <= floor:
         return 0
     candidates: list[Article] = []
@@ -24609,6 +24675,61 @@ def _build_sections_phase123(
             log.info("[REBALANCE] dropped %d final optional weak policy macro tail item(s)", final_dropped_policy_macro_tail)
     except Exception as e:
         log.warning("[WARN] final optional policy macro tail cleanup failed: %s", e)
+    try:
+        final_dropped_supply_noise = _drop_optional_supply_nonfood_tail(
+            final_by_section,
+            min_items=MIN_FALLBACK_PER_SECTION,
+        )
+        if final_dropped_supply_noise:
+            log.info("[REBALANCE] dropped %d final optional weak supply tail item(s)", final_dropped_supply_noise)
+    except Exception as e:
+        log.warning("[WARN] final optional supply tail cleanup failed: %s", e)
+    try:
+        final_dropped_policy_noise = _drop_optional_policy_macro_tail(
+            final_by_section,
+            min_items=MIN_FALLBACK_PER_SECTION,
+        )
+        if final_dropped_policy_noise:
+            log.info("[REBALANCE] dropped %d final weak policy tail item(s)", final_dropped_policy_noise)
+    except Exception as e:
+        log.warning("[WARN] final weak policy tail cleanup failed: %s", e)
+    try:
+        final_dropped_dist_noise = _drop_optional_dist_editorial_tail(
+            final_by_section,
+            min_items=MIN_FALLBACK_PER_SECTION,
+        )
+        if final_dropped_dist_noise:
+            log.info("[REBALANCE] dropped %d final weak dist tail item(s)", final_dropped_dist_noise)
+    except Exception as e:
+        log.warning("[WARN] final weak dist tail cleanup failed: %s", e)
+    try:
+        recovered_preferred_counts = _recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+        if recovered_preferred_counts:
+            log.info("[REBALANCE] recovered %d preferred-count tail item(s) from raw pool", recovered_preferred_counts)
+    except Exception as e:
+        log.warning("[WARN] preferred section-count recovery failed: %s", e)
+    try:
+        final_noise_dropped = _cleanup_final_tail_noise_after_preferred_recovery(
+            final_by_section,
+            raw_by_section,
+            min_items=SOFT_MIN_PER_SECTION,
+        )
+        if final_noise_dropped:
+            log.info("[REBALANCE] dropped %d weak final tail item(s) after preferred-count recovery", final_noise_dropped)
+        refined_recovered, refined_dropped = _refine_preferred_section_counts_from_raw(
+            final_by_section,
+            raw_by_section,
+            max_passes=3,
+        )
+        if refined_recovered:
+            log.info("[REBALANCE] refined %d preferred-count tail item(s) after final cleanup", refined_recovered)
+        if refined_dropped:
+            log.info("[REBALANCE] refined away %d weak final tail item(s) after final cleanup", refined_dropped)
+    except Exception as e:
+        log.warning("[WARN] final weak tail cleanup after preferred-count recovery failed: %s", e)
+    final_count_pruned = _audit_final_sections(final_by_section)
+    if final_count_pruned:
+        log.info("[AUDIT] pruned %d final item(s) after preferred-count recovery", final_count_pruned)
 
     _sync_debug_with_final_sections(final_by_section)
     _set_last_commodity_board_source(board_source_by_section)
@@ -24627,6 +24748,25 @@ def _build_sections_phase123(
                     )), 3)
                 except Exception:
                     pass
+
+    try:
+        last_story_dupes = _drop_final_story_duplicates(
+            final_by_section,
+            min_items=SOFT_MIN_PER_SECTION,
+        )
+        last_tail_noise = _drop_preferred_tail_blocked_items(
+            final_by_section,
+            min_items=SOFT_MIN_PER_SECTION,
+        )
+        if last_story_dupes or last_tail_noise:
+            log.info(
+                "[REBALANCE] final guard removed %d story duplicate(s), %d weak tail item(s)",
+                last_story_dupes,
+                last_tail_noise,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final duplicate/tail guard failed: %s", e)
 
     return final_by_section
 
@@ -27099,6 +27239,168 @@ def _supply_underfill_recovery_rank(article: Article, supply_conf: JsonDict) -> 
     )
 
 
+def _preferred_tail_block_reason(
+    article: Article,
+    section_key: str,
+    *,
+    current_count: int,
+    raw_count: int,
+) -> str:
+    if not isinstance(article, Article):
+        return "invalid_article"
+    protected_thin_section = raw_count < PREFERRED_PER_SECTION and current_count < MIN_FALLBACK_PER_SECTION
+    demote_reason = _editorial_safe_core_demote_reason(article, section_key)
+    if demote_reason and not protected_thin_section:
+        return demote_reason
+
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    lead_l = _nfkc_lower(f"{title} {desc[:360]}")
+    if section_key == "supply":
+        nonmarket_hits = count_any(
+            text,
+            [w.lower() for w in ("화장품", "뷰티", "레시피", "요리", "맛집", "관광", "체험", "시식")],
+        )
+        market_hits = count_any(
+            text,
+            [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리")],
+        )
+        if nonmarket_hits and market_hits <= 0 and not protected_thin_section:
+            return "supply_nonmarket_tail"
+        consumer_health_hits = count_any(
+            title_l,
+            [w.lower() for w in ("라면", "먹었더니", "혈당", "염증", "건강", "효능", "다이어트", "암 예방")],
+        )
+        title_market_hits = count_any(
+            title_l,
+            [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리")],
+        )
+        if consumer_health_hits >= 1 and title_market_hits <= 0 and not protected_thin_section:
+            return "supply_consumer_health_tail"
+        if "비료" in title_l and title_market_hits <= 0 and not protected_thin_section:
+            return "supply_input_advice_tail"
+        if (
+            current_count >= MIN_FALLBACK_PER_SECTION
+            and count_any(title_l, [w.lower() for w in ("롯데리아", "외식업계", "햄버거", "프랜차이즈")]) >= 1
+            and not protected_thin_section
+        ):
+            return "supply_restaurant_price_tail"
+        if current_count >= MIN_FALLBACK_PER_SECTION and title_market_hits <= 0 and not protected_thin_section:
+            return "supply_weak_preferred_tail"
+        if (
+            current_count >= SOFT_MIN_PER_SECTION
+            and title_market_hits <= 0
+            and count_any(title_l, [w.lower() for w in ("곤충사료", "사료 개발", "vc 투자기업", "미스터아빠", "유통망 구축")]) >= 1
+            and not protected_thin_section
+        ):
+            return "supply_nonmarket_development_tail"
+        brand_promo_hits = count_any(
+            title_l,
+            [w.lower() for w in ("브랜드", "혁신", "행정", "홍보", "마케팅", "소비자 선택")],
+        )
+        if brand_promo_hits >= 1 and title_market_hits <= 0 and not protected_thin_section:
+            return "supply_brand_promo_tail"
+        if current_count >= MIN_FALLBACK_PER_SECTION and not protected_thin_section:
+            managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+            lead_market_hits = count_any(
+                lead_l,
+                [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리", "폐기", "비축")],
+            )
+            if managed_count <= 0 or lead_market_hits <= 0:
+                return "supply_weak_preferred_tail"
+            if (
+                current_count >= SOFT_MIN_PER_SECTION
+                and "출하" in lead_l
+                and count_any(lead_l, [w.lower() for w in ("가격", "수급", "시장격리", "폐기", "비축", "공급과잉", "도매")]) <= 0
+                and count_any(lead_l, [w.lower() for w in ("경산", "와촌", "특산품", "명품 과일")]) >= 1
+            ):
+                return "supply_local_launch_preferred_tail"
+    elif section_key == "policy":
+        if (
+            is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip())
+            and not protected_thin_section
+        ):
+            return "policy_livestock_non_horti_tail"
+        non_policy_product_hits = count_any(
+            text,
+            [w.lower() for w in (
+                "화장품", "피부장벽", "박람회", "sial", "시알", "브랜드 홍보",
+                "집중 조명", "바이어", "소비자", "시음", "시식",
+            )],
+        )
+        title_non_policy_product_hits = count_any(
+            title_l,
+            [w.lower() for w in ("화장품", "피부장벽", "박람회", "sial", "시알", "브랜드 홍보", "바이어")],
+        )
+        title_policy_material_hits = count_any(
+            title_l,
+            [w.lower() for w in (
+                "가격안정", "경영비", "지원", "입법", "법안", "법률", "제도",
+                "개정", "농협법", "농지법", "직선제", "대책", "공정위", "담합",
+            )],
+        )
+        if title_non_policy_product_hits >= 1 and title_policy_material_hits <= 0 and not protected_thin_section:
+            return "policy_non_policy_product_tail"
+        policy_material_hits = count_any(
+            text,
+            [w.lower() for w in (
+                "가격안정", "경영비", "지원", "법", "제도",
+                "개정", "농협법", "농지법", "직선제", "대책", "공정위", "담합",
+            )],
+        )
+        if non_policy_product_hits >= 1 and policy_material_hits <= 0 and not protected_thin_section:
+            return "policy_non_policy_product_tail"
+        livestock_hits = count_any(text, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
+        horti_policy_hits = count_any(
+            text,
+            [w.lower() for w in ("농산물", "원예", "과수", "채소", "과일", "수급", "가격안정", "농협법", "농지법", "농업민생")],
+        )
+        if livestock_hits >= 1 and horti_policy_hits <= 0 and not protected_thin_section:
+            return "policy_livestock_non_horti_tail"
+        lead_livestock_hits = count_any(lead_l, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
+        title_horti_policy_hits = count_any(
+            title_l,
+            [w.lower() for w in ("농산물", "원예", "과수", "채소", "과일", "수급", "가격안정", "농협법", "농지법", "농업민생", "농협")],
+        )
+        if lead_livestock_hits >= 1 and title_horti_policy_hits <= 0 and not protected_thin_section:
+            return "policy_livestock_non_horti_tail"
+        retail_finance_hits = count_any(
+            title_l,
+            [w.lower() for w in ("홈플러스", "메리츠", "청산", "회생", "유동성", "채권단", "마트")],
+        )
+        if retail_finance_hits >= 1 and title_horti_policy_hits <= 0 and not protected_thin_section:
+            return "policy_retail_finance_tail"
+        if current_count >= MIN_FALLBACK_PER_SECTION and not protected_thin_section:
+            if title_l.startswith("[패트롤]") or title_l.startswith("패트롤"):
+                return "policy_digest_tail"
+            title_policy_anchor_hits = count_any(
+                title_l,
+                [w.lower() for w in ("정부", "농식품부", "농협", "국회", "입법", "법안", "법률", "제도", "지원", "대책", "개정", "직선제", "가격안정")],
+            )
+            if title_policy_anchor_hits <= 0:
+                soft_fallback_issue_hits = count_any(
+                    text,
+                    [w.lower() for w in (
+                        "농산물", "원예", "과수", "채소", "과일", "수급", "가격",
+                        "물가", "생산자물가", "애그플레이션", "원자재", "중동전쟁",
+                        "이란전쟁", "공정위", "담합", "전분당", "농자재", "지원",
+                    )],
+                )
+                if current_count >= SOFT_MIN_PER_SECTION or soft_fallback_issue_hits < 2:
+                    return "policy_anchorless_preferred_tail"
+    elif section_key == "dist":
+        if _is_optional_dist_editorial_tail(article) and not protected_thin_section:
+            if current_count < SOFT_MIN_PER_SECTION and _is_soft_fallback_dist_ops_tail(article):
+                return ""
+            return "dist_optional_weak_tail"
+    elif section_key == "pest":
+        if (_is_weak_pest_tail(article) or _is_generic_pest_notice_tail(article)) and not protected_thin_section:
+            return "pest_weak_notice_tail"
+    return ""
+
+
 def _recover_supply_underfill_from_raw(
     final_by_section: dict[str, list[Article]],
     raw_by_section: dict[str, list[Article]],
@@ -27109,10 +27411,11 @@ def _recover_supply_underfill_from_raw(
         return 0
     supply_conf = next((s for s in SECTIONS if s.get("key") == "supply"), {})
     max_n = max(1, int(max_items or MAX_PER_SECTION))
-    target = min(max_n, 3)
+    target = min(max_n, PREFERRED_PER_SECTION)
     supply_items = [article for article in (final_by_section.get("supply") or []) if isinstance(article, Article)]
     if len(supply_items) >= target:
         return 0
+    raw_count = len(raw_by_section.get("supply", []) or [])
 
     all_final_keys = {
         _article_selection_identity(article)
@@ -27131,6 +27434,8 @@ def _recover_supply_underfill_from_raw(
         if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in supply_items):
             continue
         if any(_is_similar_story(article, existing, "supply") for existing in supply_items):
+            continue
+        if _preferred_tail_block_reason(article, "supply", current_count=len(supply_items), raw_count=raw_count):
             continue
         rank = _supply_underfill_recovery_rank(article, supply_conf)
         if rank is None:
@@ -27308,10 +27613,11 @@ def _recover_policy_underfill_from_raw(
         return 0
     policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
     max_n = max(1, int(max_items or MAX_PER_SECTION))
-    target = min(max_n, 3)
+    target = min(max_n, PREFERRED_PER_SECTION)
     policy_items = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
     if len(policy_items) >= target and any(bool(getattr(article, "is_core", False)) for article in policy_items):
         return 0
+    raw_count = len(raw_by_section.get("policy", []) or [])
 
     all_final_keys = {
         _article_selection_identity(article)
@@ -27330,6 +27636,8 @@ def _recover_policy_underfill_from_raw(
         if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in policy_items):
             continue
         if any(_is_similar_story(article, existing, "policy") for existing in policy_items):
+            continue
+        if _preferred_tail_block_reason(article, "policy", current_count=len(policy_items), raw_count=raw_count):
             continue
         rank = _policy_underfill_recovery_rank(article, policy_conf)
         if rank is None:
@@ -27432,6 +27740,495 @@ def _recover_policy_underfill_from_raw(
         reverse=True,
     )[:max_n]
     return inserted
+
+
+def _preferred_section_rank(
+    section_key: str,
+    article: Article,
+    section_conf: JsonDict,
+) -> tuple[Any, ...] | None:
+    if section_key == "supply":
+        return _supply_underfill_recovery_rank(article, section_conf)
+    if section_key == "policy":
+        return _policy_underfill_recovery_rank(article, section_conf)
+    if section_key == "dist":
+        return _dist_replacement_candidate_rank(article, section_conf)
+    if section_key == "pest":
+        return _pest_replacement_candidate_rank(article, section_conf)
+    return None
+
+
+def _soft_fallback_dist_recovery_rank(
+    article: Article,
+    dist_conf: JsonDict,
+) -> tuple[Any, ...] | None:
+    if not _is_soft_fallback_dist_ops_tail(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    dom = normalize_host(article.domain or "")
+    press = (article.press or "").strip()
+    if any(term.lower() in _nfkc_lower(title) for term in OPINION_BAN_TERMS):
+        return None
+    if is_dist_primary_supply_price_story(title, desc):
+        return None
+    try:
+        fit_sc = float(section_fit_score(title, desc, dist_conf, dom, press))
+    except Exception:
+        fit_sc = 0.0
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    title_ops_hits = count_any(
+        _nfkc_lower(title),
+        [t.lower() for t in ("가락시장", "도매시장", "공판장", "APC", "산지유통", "물류", "파렛트", "출하", "직거래", "수출")],
+    )
+    return (
+        0,
+        0,
+        0,
+        0,
+        0,
+        1 if managed_count >= 1 else 0,
+        1 if title_ops_hits >= 1 else 0,
+        round(fit_sc, 3),
+        press_priority(press, dom),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _is_soft_fallback_policy_issue_tail(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if _preferred_tail_block_reason(
+        article,
+        "policy",
+        current_count=MIN_FALLBACK_PER_SECTION,
+        raw_count=PREFERRED_PER_SECTION,
+    ):
+        return False
+    macro_issue = (
+        "애그플레이션" in text
+        or (
+            count_any(text, [w.lower() for w in ("농산물", "농식품", "농자재", "원자재", "중동전쟁", "이란전쟁")]) >= 1
+            and count_any(text, [w.lower() for w in ("물가", "생산자물가", "가격", "수급", "충격")]) >= 1
+        )
+        or (
+            "공정위" in text
+            and count_any(text, [w.lower() for w in ("담합", "전분당", "과징금", "포상금")]) >= 1
+        )
+    )
+    field_support = count_any(title_l, [w.lower() for w in ("필수 농자재", "농자재 직접지원", "경영비 지원")]) >= 1
+    return bool(macro_issue or field_support)
+
+
+def _section_preferred_count_target(raw_by_section: dict[str, list[Article]], section_key: str, *, max_items: int | None = None) -> int:
+    max_n = max(1, int(max_items or MAX_PER_SECTION))
+    raw_count = len(raw_by_section.get(section_key, []) or []) if isinstance(raw_by_section, dict) else 0
+    if raw_count <= 0:
+        return 0
+    return min(max_n, PREFERRED_PER_SECTION, raw_count)
+
+
+def _candidate_conflicts_with_final(
+    candidate: Article,
+    final_by_section: dict[str, list[Article]],
+    section_key: str,
+    *,
+    allow_dist_soft_crossfill: bool = False,
+) -> bool:
+    candidate_ident = _article_selection_identity(candidate)
+    candidate_text = _nfkc_lower(f"{candidate.title or ''} {candidate.description or ''}")
+    candidate_story_sig = _final_story_signature(section_key, candidate)
+    if section_key == "pest" and "과수화상병" in candidate_text:
+        existing_fire_blight = sum(
+            1
+            for article in (final_by_section or {}).get("pest", []) or []
+            if isinstance(article, Article)
+            and "과수화상병" in _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+        )
+        if existing_fire_blight >= 3:
+            return True
+    for other_section, items in (final_by_section or {}).items():
+        for existing in items or []:
+            if not isinstance(existing, Article):
+                continue
+            existing_text = _nfkc_lower(f"{existing.title or ''} {existing.description or ''}")
+            if section_key == "policy":
+                if (
+                    "농협" in candidate_text
+                    and "농협" in existing_text
+                    and "직선제" in candidate_text
+                    and "직선제" in existing_text
+                ):
+                    return True
+            existing_ident = _article_selection_identity(existing)
+            if candidate_ident and existing_ident and candidate_ident == existing_ident:
+                return True
+            if str(other_section or "") == section_key and candidate_story_sig:
+                try:
+                    if candidate_story_sig == _final_story_signature(section_key, existing):
+                        return True
+                except Exception:
+                    pass
+            try:
+                if _is_similar_title(candidate.title_key or "", existing.title_key or ""):
+                    return True
+            except Exception:
+                pass
+            try:
+                story_section = section_key if str(other_section or "") == section_key else str(other_section or section_key)
+                if _is_similar_story(candidate, existing, story_section):
+                    if allow_dist_soft_crossfill and section_key == "dist" and str(other_section or "") != section_key:
+                        continue
+                    return True
+            except Exception:
+                pass
+    return False
+
+
+def _drop_preferred_tail_blocked_items(
+    final_by_section: dict[str, list[Article]],
+    *,
+    min_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    floor = max(1, int(min_items or MIN_FALLBACK_PER_SECTION))
+    dropped = 0
+    for section_key in (str(section.get("key") or "").strip() for section in SECTIONS):
+        if not section_key:
+            continue
+        items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        if len(items) <= floor:
+            final_by_section[section_key] = items
+            continue
+        removable: list[tuple[tuple[Any, ...], Article]] = []
+        for article in items:
+            if bool(getattr(article, "is_core", False)):
+                continue
+            reason = _preferred_tail_block_reason(
+                article,
+                section_key,
+                current_count=len(items),
+                raw_count=PREFERRED_PER_SECTION,
+            )
+            if not reason:
+                continue
+            removable.append((
+                (
+                    0 if reason.endswith("preferred_tail") else 1,
+                    float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                    press_priority(article.press, article.domain),
+                    float(getattr(article, "score", 0.0) or 0.0),
+                ),
+                article,
+            ))
+        if not removable:
+            continue
+        keep = list(items)
+        for _rank, article in sorted(removable, key=lambda item: item[0]):
+            if len(keep) <= floor:
+                break
+            if article in keep:
+                keep.remove(article)
+                dropped += 1
+        final_by_section[section_key] = keep
+    return dropped
+
+
+def _final_story_signature(section_key: str, article: Article) -> tuple[str, ...]:
+    text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    if not text.strip():
+        return ()
+    region_terms = (
+        "경산", "와촌", "고흥", "무안", "화성", "충북", "안동", "강릉", "가락시장",
+        "중동", "gcc", "중국", "상하이", "서울", "영등포", "청송",
+    )
+    fallback_commodities = ("자두", "양파", "배추", "양배추", "사과", "감귤", "토마토", "고추", "마늘", "감자")
+    commodity_terms = tuple(t for t in fallback_commodities if t in text)
+    if not commodity_terms:
+        commodity_terms = tuple(t for t in HORTI_ITEM_TERMS_L if t in text)
+    if not commodity_terms and str(getattr(article, "topic", "") or "").strip():
+        commodity_terms = (_nfkc_lower(str(getattr(article, "topic", "") or "").strip()),)
+    regions = tuple(term for term in region_terms if term in text)
+    issue_buckets: list[str] = []
+    if "출하" in text:
+        issue_buckets.append("출하")
+    if any(term in text for term in ("가격", "수급", "시장격리", "폐기", "공급과잉")):
+        issue_buckets.append("수급가격")
+    if any(term in text for term in ("물류", "수출", "파렛트", "팰릿")):
+        issue_buckets.append("물류수출")
+    if "직선제" in text:
+        issue_buckets.append("직선제")
+    if "과수화상병" in text:
+        issue_buckets.append("과수화상병")
+    if "총채벌레" in text:
+        issue_buckets.append("총채벌레")
+    issues = tuple(issue_buckets)
+    if section_key == "dist" and is_dist_national_export_logistics_context(
+        article.title or "", article.description or "", article.domain or "", article.press or "",
+    ):
+        return ("dist_kfood_middleeast_logistics",)
+    if not commodity_terms or not issues:
+        return ()
+    if regions:
+        return (section_key, "|".join(sorted(set(commodity_terms[:3]))), "|".join(sorted(set(regions[:3]))), "|".join(sorted(set(issues[:3]))))
+    return (section_key, "|".join(sorted(set(commodity_terms[:3]))), "|".join(sorted(set(issues[:3]))))
+
+
+def _drop_final_story_duplicates(
+    final_by_section: dict[str, list[Article]],
+    *,
+    min_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict):
+        return 0
+    floor = max(1, int(min_items or MIN_FALLBACK_PER_SECTION))
+    dropped = 0
+    for section_key in (str(section.get("key") or "").strip() for section in SECTIONS):
+        if not section_key:
+            continue
+        items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        if len(items) <= floor:
+            final_by_section[section_key] = items
+            continue
+        grouped: dict[tuple[str, ...], list[Article]] = {}
+        for article in items:
+            sig = _final_story_signature(section_key, article)
+            if not sig:
+                continue
+            grouped.setdefault(sig, []).append(article)
+        keep = list(items)
+        for sig, group in grouped.items():
+            if len(group) <= 1:
+                continue
+            protected = max(
+                group,
+                key=lambda article: (
+                    1 if getattr(article, "is_core", False) else 0,
+                    press_priority(article.press, article.domain),
+                    float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                    float(getattr(article, "score", 0.0) or 0.0),
+                ),
+            )
+            for article in sorted(
+                (candidate for candidate in group if candidate is not protected),
+                key=lambda candidate: (
+                    1 if getattr(candidate, "is_core", False) else 0,
+                    press_priority(candidate.press, candidate.domain),
+                    float(getattr(candidate, "selection_fit_score", 0.0) or 0.0),
+                    float(getattr(candidate, "score", 0.0) or 0.0),
+                ),
+            ):
+                if len(keep) <= floor:
+                    break
+                if article in keep:
+                    keep.remove(article)
+                    dropped += 1
+        final_by_section[section_key] = keep
+    return dropped
+
+
+def _cleanup_final_tail_noise_after_preferred_recovery(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+    *,
+    min_items: int | None = None,
+) -> int:
+    floor = max(1, int(min_items or SOFT_MIN_PER_SECTION))
+    dropped = 0
+    dropped += _drop_optional_supply_nonfood_tail(final_by_section, min_items=floor)
+    dropped += _drop_optional_policy_macro_tail(final_by_section, min_items=floor)
+    dropped += _drop_optional_dist_editorial_tail(final_by_section, min_items=floor)
+    dropped += _dedupe_dist_national_export_logistics(final_by_section, raw_by_section, min_items=floor)
+    dropped += _drop_final_story_duplicates(final_by_section, min_items=floor)
+    dropped += _drop_preferred_tail_blocked_items(final_by_section, min_items=floor)
+    return dropped
+
+
+def _refine_preferred_section_counts_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]],
+    *,
+    max_passes: int = 3,
+) -> tuple[int, int]:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return (0, 0)
+    recovered_total = 0
+    dropped_total = 0
+    passes = max(1, int(max_passes or 1))
+    for _ in range(passes):
+        recovered = _recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+        dropped = _cleanup_final_tail_noise_after_preferred_recovery(
+            final_by_section,
+            raw_by_section,
+            min_items=SOFT_MIN_PER_SECTION,
+        )
+        recovered_total += recovered
+        dropped_total += dropped
+        if recovered <= 0 and dropped <= 0:
+            break
+    return recovered_total, dropped_total
+
+
+def _recover_preferred_section_counts_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]],
+    *,
+    max_items: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    section_conf = {
+        str(section.get("key") or "").strip(): section
+        for section in SECTIONS
+        if str(section.get("key") or "").strip()
+    }
+    inserted_total = 0
+    for section_key in (str(section.get("key") or "").strip() for section in SECTIONS):
+        if not section_key:
+            continue
+        target = _section_preferred_count_target(raw_by_section, section_key, max_items=max_items)
+        current = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        if section_key == "dist" and len(current) < SOFT_MIN_PER_SECTION and raw_by_section.get("supply"):
+            target = max(
+                target,
+                min(max_items or MAX_PER_SECTION, SOFT_MIN_PER_SECTION, len(current) + len(raw_by_section.get("supply", []) or [])),
+            )
+        if target <= 0:
+            continue
+        if len(current) >= target:
+            final_by_section[section_key] = current[: max_items or MAX_PER_SECTION]
+            continue
+        raw_count = len(raw_by_section.get(section_key, []) or [])
+        conf = section_conf.get(section_key, {})
+        ranked: list[tuple[tuple[Any, ...], Article]] = []
+        source_sections: tuple[str, ...] = (section_key,)
+        if section_key == "dist" and len(current) < SOFT_MIN_PER_SECTION:
+            source_sections = ("dist", "supply")
+        for source_section in source_sections:
+            for article in raw_by_section.get(source_section, []) or []:
+                if not isinstance(article, Article):
+                    continue
+                soft_dist_crossfill = (
+                    section_key == "dist"
+                    and len(current) < SOFT_MIN_PER_SECTION
+                    and _is_soft_fallback_dist_ops_tail(article)
+                )
+                if section_key == "dist" and source_section != section_key and not soft_dist_crossfill:
+                    continue
+                if _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count):
+                    continue
+                rank = _preferred_section_rank(section_key, article, conf)
+                if rank is None and soft_dist_crossfill:
+                    rank = _soft_fallback_dist_recovery_rank(article, conf)
+                if rank is None:
+                    continue
+                reject_reason = _postbuild_article_reject_reason(article, section_key)
+                if reject_reason and not (
+                    (
+                        section_key == "policy"
+                        and len(current) < SOFT_MIN_PER_SECTION
+                        and _is_soft_fallback_policy_issue_tail(article)
+                    )
+                    or (
+                        soft_dist_crossfill
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit", "dist_program_event_noise"}
+                    )
+                ):
+                    continue
+                if _candidate_conflicts_with_final(
+                    article,
+                    final_by_section,
+                    section_key,
+                    allow_dist_soft_crossfill=soft_dist_crossfill,
+                ):
+                    continue
+                ranked.append((rank, article))
+        if not ranked:
+            continue
+        ranked.sort(key=lambda item: item[0], reverse=True)
+        used_keys = {
+            _article_selection_identity(article)
+            for article in current
+            if _article_selection_identity(article)
+        }
+        used_story_signatures = {
+            sig
+            for sig in (_final_story_signature(section_key, article) for article in current)
+            if sig
+        }
+        inserted_here = 0
+        for rank, article in ranked:
+            if len(current) >= target:
+                break
+            ident = _article_selection_identity(article)
+            if ident and ident in used_keys:
+                continue
+            story_sig = _final_story_signature(section_key, article)
+            if story_sig and story_sig in used_story_signatures:
+                continue
+            if _candidate_conflicts_with_final(
+                article,
+                final_by_section,
+                section_key,
+                allow_dist_soft_crossfill=(
+                    section_key == "dist"
+                    and len(current) < SOFT_MIN_PER_SECTION
+                    and _is_soft_fallback_dist_ops_tail(article)
+                ),
+            ):
+                continue
+            if _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count):
+                continue
+            prev_section = str(getattr(article, "section", "") or "")
+            if not getattr(article, "origin_section", ""):
+                article.origin_section = prev_section or section_key
+            if prev_section and prev_section != section_key:
+                article.reassigned_from = prev_section
+            article.section = section_key
+            if section_key == "pest":
+                article.forced_section = "pest"
+            article.is_core = False
+            article.selection_stage = f"{section_key}_preferred_count_recovery"
+            article.selection_note = "preferred_count_tail"
+            try:
+                article.selection_fit_score = round(float(section_fit_score(
+                    article.title or "",
+                    article.description or "",
+                    conf,
+                    article.domain or "",
+                    article.press or "",
+                )), 3)
+            except Exception:
+                pass
+            current.append(article)
+            if ident:
+                used_keys.add(ident)
+            if story_sig:
+                used_story_signatures.add(story_sig)
+            final_by_section[section_key] = current
+            inserted_here += 1
+            inserted_total += 1
+
+        if inserted_here:
+            final_by_section[section_key] = sorted(
+                current,
+                key=lambda article: (
+                    1 if getattr(article, "is_core", False) else 0,
+                    _preferred_section_rank(section_key, article, conf) or (),
+                    round(float(getattr(article, "selection_fit_score", 0.0) or 0.0), 3),
+                    press_priority(article.press, article.domain),
+                    round(float(getattr(article, "score", 0.0) or 0.0), 3),
+                    getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+                ),
+                reverse=True,
+            )[: max_items or MAX_PER_SECTION]
+    return inserted_total
 
 
 def _recover_priority_policy_from_raw(
@@ -28248,6 +29045,11 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
 def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, by_section: dict[str, list[Article]],
                       archive_dates_desc: list[str], site_path: str,
                       board_source_by_section: dict[str, list[Article]] | None = None) -> str:
+    try:
+        _drop_final_story_duplicates(by_section, min_items=SOFT_MIN_PER_SECTION)
+        _drop_preferred_tail_blocked_items(by_section, min_items=SOFT_MIN_PER_SECTION)
+    except Exception as e:
+        log.warning("[WARN] render-time final tail cleanup failed: %s", e)
     # 상단 칩 카운트 + 섹션별 중요도 정렬
     chips = []
     total = 0
