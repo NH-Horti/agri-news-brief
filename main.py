@@ -23254,6 +23254,9 @@ def _ensure_pest_fire_blight_alert_incident_balance(
                 continue
             if is_pest_national_fire_blight_escalation_context(article.title or "", article.description or ""):
                 continue
+            text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+            if count_any(text_l, [w.lower() for w in ("미살포", "행정 처분", "행정처분", "보상금 감경", "폐원 절차")]) >= 1:
+                continue
             reject_reason = _postbuild_article_reject_reason(article, "pest")
             if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit") and not (
                 reject_reason == "pest_partial_mention" and _is_fire_article(article)
@@ -23263,7 +23266,6 @@ def _ensure_pest_fire_blight_alert_incident_balance(
                 fit_sc = float(section_fit_score(article.title or "", article.description or "", pest_conf, article.domain or "", article.press or ""))
             except Exception:
                 fit_sc = 0.0
-            text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
             candidates.append((
                 (
                     1 if "첫" in _nfkc_lower(article.title or "") else 0,
