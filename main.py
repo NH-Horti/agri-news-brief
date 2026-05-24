@@ -2594,7 +2594,11 @@ def build_managed_commodity_board_source_by_section(
                 continue
             if not managed_commodity_board_keys_for_article(article):
                 continue
-            if _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False):
+            reject_reason = _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False)
+            if reject_reason and not (
+                section_key == "dist"
+                and reject_reason == "dist_primary_supply_price_story"
+            ):
                 continue
             eligible_articles.append(article)
             source_key = article_source_bucket_key(article)
@@ -26154,6 +26158,7 @@ def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any
     feature_kind = str(article_metrics.get("feature_kind") or "")
     direct_supply = bool(article_metrics.get("direct_supply"))
     market_response = bool(article_metrics.get("market_response"))
+    market_action_signal = bool(article_metrics.get("market_action_signal"))
     issue_anchor_hits = int(article_metrics.get("issue_anchor_hits") or 0)
     market_anchor_hits = int(article_metrics.get("market_anchor_hits") or 0)
     issue_title_hits = int(article_metrics.get("issue_title_hits") or 0)
@@ -26164,6 +26169,7 @@ def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any
     return bool(
         issue_bucket
         or market_response
+        or market_action_signal
         or (
             direct_supply
             and (
@@ -26235,6 +26241,15 @@ def _commodity_board_item_article_metrics(
     story_priority = float(story_metrics.get("priority_score") or 0.0)
     stage_core_story = "core" in selection_stage_l
     weak_stage_story = any(token in selection_stage_l for token in ("tail", "backfill", "bridge", "swap", "recycle"))
+    market_action_signal = bool(
+        (title_primary_hits >= 1 or direct_item_focus or single_focus)
+        and (
+            count_any(title_l, ["가격", "값", "시세", "경락", "경락가", "도매가격", "약세", "강세", "급락", "하락", "상승", "폭락"]) >= 1
+        )
+        and (
+            count_any(title_l, ["출하", "출하 조절", "출하조절", "수급", "물량", "반입", "산지", "공동판매", "공동 판매", "시장격리", "시장 격리", "재고"]) >= 1
+        )
+    )
     key_story_bonus = 0.0
     if stage_core_story and (issue_bucket or direct_supply or market_response or title_primary_hits >= 1 or primary_focus):
         key_story_bonus += 12.0
@@ -26311,6 +26326,7 @@ def _commodity_board_item_article_metrics(
         "market_anchor_hits": int(story_metrics.get("market_anchor_hits") or 0),
         "issue_anchor_hits": int(story_metrics.get("issue_anchor_hits") or 0),
         "issue_title_hits": issue_title_hits,
+        "market_action_signal": market_action_signal,
         "training_title_hits": int(story_metrics.get("training_title_hits") or 0),
         "profile_title_hits": int(story_metrics.get("profile_title_hits") or 0),
         "consumer_noise_hits": int(story_metrics.get("consumer_noise_hits") or 0),
