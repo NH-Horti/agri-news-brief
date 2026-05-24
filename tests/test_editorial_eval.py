@@ -234,6 +234,10 @@ class EditorialEvalTests(unittest.TestCase):
             "false_positive_rate": 0.0,
             "weak_core_rate": 0.0,
             "editorial_penalty": 0.0,
+            "promotional_filler_rate": 0.0,
+            "policy_wrong_section_rate": 0.0,
+            "dist_weak_ops_rate": 0.0,
+            "weak_core_editorial_rate": 0.0,
             "semantic_penalty": 0.0,
         }
         counts = calibrated_operational.get("counts", {})
@@ -329,6 +333,68 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["score"], 84)
         self.assertNotIn("score_calibration", result)
+
+    def test_minor_pest_theme_penalty_does_not_block_shadow_calibration(self):
+        class LowButDebatableSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                return _FakeResponse(
+                    {
+                        "output_text": json_module_dumps(
+                            {
+                                "score": 88,
+                                "scores": {
+                                    "article_selection": 88,
+                                    "section_fit": 90,
+                                    "core_pick_quality": 90,
+                                    "summary_usefulness": 92,
+                                    "missed_opportunity": 86,
+                                    "noise_control": 90,
+                                },
+                                "summary": "Minor pest-theme overlap only.",
+                                "issues": [],
+                                "section_notes": {},
+                                "improvement_suggestions": [],
+                            }
+                        )
+                    }
+                )
+
+        operational = self._operational_with_uniform_counts(count=4, raw=10)
+        operational["overall_score"] = 96.2
+        operational["scores"] = {
+            **operational.get("scores", {}),
+            "section_alignment": 100.0,
+            "core_quality": 99.0,
+            "summary_quality": 100.0,
+            "commodity_board_quality": 96.0,
+        }
+        operational["metrics"] = {
+            **operational.get("metrics", {}),
+            "content_false_positive_rate": 0.0,
+            "weak_core_rate": 0.0,
+            "editorial_quality_penalty": 0.47,
+            "promotional_filler_rate": 0.0,
+            "policy_wrong_section_rate": 0.0,
+            "dist_weak_ops_rate": 0.0,
+            "weak_core_editorial_rate": 0.0,
+            "semantic_false_positive_penalty": 0.0,
+        }
+
+        result = editorial_eval.evaluate_editorial_quality(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            operational,
+            api_key="test-key",
+            model="test-model",
+            session_factory=LowButDebatableSession,
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["llm_score"], 88)
+        self.assertEqual(result["score"], 95)
+        self.assertTrue(result["score_calibration"]["gates"]["editorial_penalty_soft_max"])
 
     def test_editorial_improvement_plan_maps_issues_to_shadow_actions(self):
         editorial_result = {

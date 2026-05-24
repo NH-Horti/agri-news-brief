@@ -1,8 +1,8 @@
 {
   "report_date": "2026-05-22",
-  "generated_at_kst": "2026-05-24T08:42:05+09:00",
+  "generated_at_kst": "2026-05-24T10:01:32+09:00",
   "status": "pass",
-  "overall_score": 96.15,
+  "overall_score": 95.91,
   "scores": {
     "completeness": 89.2,
     "diversity": 100.0,
@@ -10,13 +10,13 @@
     "freshness": 100.0,
     "retrieval_support": 86.87,
     "section_alignment": 100.0,
-    "core_quality": 99.56,
-    "commodity_board_quality": 97.22
+    "core_quality": 99.27,
+    "commodity_board_quality": 95.24
   },
   "counts": {
     "briefing_total": 17,
-    "commodity_total": 44,
-    "commodity_primary_total": 13,
+    "commodity_total": 43,
+    "commodity_primary_total": 14,
     "briefing_by_section": {
       "supply": 4,
       "policy": 4,
@@ -30,16 +30,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 29,
+      "supply": 28,
       "policy": 2,
       "dist": 6,
       "pest": 7
     },
     "raw_by_section": {
-      "supply": 159,
-      "policy": 166,
-      "dist": 53,
-      "pest": 44
+      "supply": 158,
+      "policy": 167,
+      "dist": 52,
+      "pest": 43
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -74,7 +74,7 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 4.4424,
+    "section_alignment_fit_avg": 4.4359,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -86,21 +86,21 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
+    "promotional_filler_rate": 0.0588,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0588,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4706,
+    "editorial_quality_penalty": 0.5882,
     "core_fit_avg": 4.9671,
-    "core_rank_percentile_avg": 0.8938,
+    "core_rank_percentile_avg": 0.8898,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8462,
+    "commodity_primary_issue_signal_rate": 0.8571,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 2.7438,
-    "commodity_primary_rank_avg": 3.0
+    "commodity_primary_fit_avg": 2.6071,
+    "commodity_primary_rank_avg": 2.8571
   },
   "section_scores": {
     "briefing_fill": {
@@ -135,9 +135,9 @@
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.9789,
-      "dist": 0.9501,
-      "pest": 0.9659
+      "policy": 0.9795,
+      "dist": 0.9341,
+      "pest": 0.9635
     }
   },
   "freshness_samples": [
@@ -186,6 +186,15 @@
   "story_duplicate_samples": [],
   "editorial_quality_samples": [
     {
+      "title": "생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진",
+      "href": "https://www.newsgn.com/news/articleView.html?idxno=553484",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
       "title": "화성서 올해 첫 경기도 과수화상병 발생…도농기원 “확산 차단 총력”",
       "href": "https://www.kyeonggi.com/article/20260521580432",
       "section": "pest",
@@ -196,7 +205,7 @@
     }
   ],
   "improvement_hints": [
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -235,7 +244,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 96.15,
+  "operational_score": 95.91,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -244,100 +253,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-24T08:42:24+09:00",
+    "generated_at_kst": "2026-05-24T10:01:56+09:00",
     "score": 88.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
       "article_selection": 87.0,
-      "section_fit": 85.0,
+      "section_fit": 89.0,
       "core_pick_quality": 90.0,
-      "summary_usefulness": 93.0,
-      "missed_opportunity": 82.0,
-      "noise_control": 84.0
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 84.0,
+      "noise_control": 86.0
     },
-    "summary": "핵심 이슈 축은 대체로 맞췄다. 공급은 양파 가격 폭락·비축 지연을 잘 잡았고, 정책은 가격안정제·국회 입법을 중심으로 무게감이 있다. 병해충도 과수화상병 경계 격상과 지역 발생을 적절히 반영했다. 다만 3개 섹션이 5건 목표를 채우지 못한 데다, 공급·정책 꼬리 기사에 지역 홍보성/접수형 filler가 섞였고, 유통은 물류·수출 차질보다 약한 카드 비중이 높아 편집 완성도가 떨어진다. raw pool상 더 나은 유통/정책 후보가 보이므로 95급은 어렵다.",
+    "summary": "핵심 이슈인 양파 수급난, 가격안정제 시행, 과수화상병 경계 상향은 잘 잡았다. 다만 공급·정책·유통이 모두 4건에 그쳐 원시 후보 풀이 충분한 날치고는 섹션 완성도가 떨어지고, 일부 꼬리 카드가 약했다. 특히 공급의 자두 출하, 정책의 지역의원 농자재 지원안은 전국 단위 브리프 기준으로 우선순위가 낮다. 유통은 물류·수출 대응을 담았지만 시세 카드와 중동 수출 카드가 섞이며 운영·물류 축의 선명도가 조금 흐려졌다. 전반적으로 사용 가능하지만, 95점 목표에는 못 미친다.",
     "issues": [
       {
         "type": "underfill",
         "severity": "medium",
         "section": "supply",
         "title": "섹션 4건만 편성",
-        "reason": "raw 후보가 충분한데 5건 목표 미달",
-        "suggested_action": "양파 수출·양배추 시세 등으로 5건 채우기"
+        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
+        "suggested_action": "양파 수출·수급대책 기사로 5번째 카드를 보강."
       },
       {
-        "type": "wrong_fit",
+        "type": "weak_tail",
         "severity": "high",
         "section": "supply",
-        "title": "경산시 와촌면 지역 대표 특산품 자두 본격 출하",
-        "reason": "단순 지역 출하 소개로 수급 이슈성이 약함",
-        "suggested_action": "시세·공급과잉·출하 차질 기사로 교체"
+        "title": "경산 와촌 시설재배 자두 (정상) 본격 출하",
+        "reason": "단순 출하 소식으로 수급 이슈성·전국성이 약하다.",
+        "suggested_action": "양파 수출 추진 등 수급 대응 기사로 교체."
       },
       {
         "type": "underfill",
         "severity": "medium",
         "section": "policy",
         "title": "섹션 4건만 편성",
-        "reason": "raw 후보가 충분한데 5건 목표 미달",
-        "suggested_action": "생산비·물가·담합 제재 등 전국 정책 기사 보강"
+        "reason": "원시 후보가 충분한데 5건 목표를 못 채웠다.",
+        "suggested_action": "물가·곡물·담합 등 더 강한 정책 기사 추가."
       },
       {
-        "type": "promotional_filler",
+        "type": "weak_tail",
         "severity": "high",
         "section": "policy",
-        "title": "정선군, 친환경농업 직불제 접수",
-        "reason": "지자체 접수 안내성 기사로 전국 정책 가치 낮음",
-        "suggested_action": "담합·생산자물가·농자재 지원 등 영향 큰 기사로 교체"
+        "title": "생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진",
+        "reason": "지역 의원 발의성 기사로 전국 정책 임팩트가 약하다.",
+        "suggested_action": "애그플레이션·밀가루 담합 제재 등 전국 현안으로 교체."
       },
       {
         "type": "underfill",
         "severity": "medium",
         "section": "dist",
         "title": "섹션 4건만 편성",
-        "reason": "raw 후보가 충분한데 5건 목표 미달",
-        "suggested_action": "양파 수출·도매시장 운영 기사 추가"
+        "reason": "유통 후보가 적지 않은데 5건 구성이 가능했다.",
+        "suggested_action": "양파 수출·출하거점·시장운영 기사 중 1건 추가."
       },
       {
-        "type": "weak_core",
+        "type": "core_weakness",
         "severity": "medium",
         "section": "dist",
         "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
-        "reason": "유통 핵심이지만 업계 영향 규모 설명이 약함",
-        "suggested_action": "중동 물류차질·수출 대응 기사와 병렬 강화"
+        "reason": "좋은 물류 기사지만 유통 섹션 대표 1순위 코어로는 다소 협소하다.",
+        "suggested_action": "중동 물류 차질 속 수출 대응 기사와 병렬 코어 운용."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "슈퍼 엘리뇨·이란전쟁 장기화...'애그플레이션' 시대 오나",
+        "reason": "전국 농정·물가 파급력이 큰 후보를 놓쳤다.",
+        "suggested_action": "약한 지역성 정책 꼬리 대신 채택 검토."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "유통 섹션 후보 활용 미흡",
-        "reason": "raw에 양파 수출 추진, 도매시장/산지유통 관련 대안 존재",
-        "suggested_action": "지역 판촉성 카드보다 운영·수출 차질 기사 우선"
-      },
-      {
-        "type": "theme_concentration",
-        "severity": "low",
-        "section": "pest",
-        "title": "과수화상병 편중",
-        "reason": "핵심은 맞지만 5건 중 3건이 유사 화상병 지역발생",
-        "suggested_action": "한 건은 고추·밭작물 병해충으로 교체 검토"
+        "title": "양파 풍작 단위면적당 생산량 평년대비 8.8% 증가",
+        "reason": "양파 수출 카드가 공급·유통을 잇는 운영 기사인데 누락됐다.",
+        "suggested_action": "약한 시세·홍보성 꼬리보다 우선 반영."
       }
     ],
     "section_notes": {
-      "supply": "양파 폭락과 비축 지연을 잡은 1~2번은 좋다. 그러나 3번은 군 단위 대책, 4번은 단순 출하 소개라 꼬리 카드 품질이 낮다. raw에 양배추 시세, 양파 수출 추진 등 더 직접적인 수급 기사로 5건 구성 가능했다.",
-      "policy": "가격안정제 시행 기사와 농업민생 입법 정리는 섹션 중심축으로 적절하다. 다만 농협 직선제는 의미는 있으나 농정 독자 체감도는 한 단계 낮고, 정선군 직불제 접수는 지나치게 로컬 행정 공지형이다. 공정위 밀가루 담합 제재, 생산자물가 급등, 농자재 직접지원 조례안 등이 더 나은 보강 후보였다.",
-      "dist": "가락시장 파렛트 지원과 중동 물류난 속 GCC 수출 증가는 방향은 맞다. 하지만 유통 섹션은 물류·수출 차질·시장운영의 구체성이 더 필요하다. 양배추 시세는 보조 카드로 가능하나, 전국 단위 운영 기사나 양파 수출 추진 기사로 한층 강한 판을 만들 수 있었다.",
-      "pest": "과수화상병 경계 격상과 원주 미살포 농가, 경기 첫 발생은 시의성 높다. 다만 화상병 지역발생 기사 비중이 높아 다소 반복적이다. 딸기 탄저병 또는 고추 진딧물·총채벌레처럼 작목 다변화 카드를 한 장 더 섞었으면 더 좋았다."
+      "supply": "양파 가격 폭락과 저장창고 병목을 중심으로 섹션의 방향은 적절했다. 다만 5건을 못 채웠고, 자두 출하 카드는 공급 리스크 브리프의 결을 약하게 만들었다.",
+      "policy": "가격안정제 시행은 매우 강한 코어였다. 국회 농정 입법 정리도 유의미했지만, 지역 의원 발의안은 약했고 전국 물가·곡물·담합 이슈를 더 활용할 수 있었다.",
+      "dist": "가락시장 파렛트 지원과 중동 물류 우회 수출 대응은 섹션 취지에 맞는다. 그러나 시세 카드 비중과 4건 편성으로 물류·시장운영 섹션의 힘이 덜했다.",
+      "pest": "과수화상병 경계 상향과 지역 발생 기사로 우선순위를 잘 잡았다. 딸기 탄저병·고추 해충으로 품목 다양성도 확보해 가장 안정적인 섹션이었다."
     },
     "improvement_suggestions": [
-      "5건 목표를 더 강하게 적용하되, 빈칸은 로컬 공지보다 전국 이슈성 기사로 메울 것",
-      "공급 꼬리 카드는 단순 첫 출하보다 시세·재고·출하 차질 중심으로 선별할 것",
-      "정책 섹션에서 지자체 접수형 기사 비중을 줄이고 제도 변화·규제·예산 영향 기사 우선",
-      "유통은 프로모션보다 물류, 도매시장 운영, 수출 차질·우회 대응을 최우선으로 둘 것",
-      "병해충은 화상병 핵심 기사 2~3건 후 다른 작목 위험으로 분산해 반복을 줄일 것",
-      "raw pool의 더 강한 대안이 보이면 count recovery 카드라도 과감히 교체할 것"
+      "원시 후보가 충분한 섹션은 5건 편성을 기본으로 하고 4건은 예외로만 사용.",
+      "공급 섹션 꼬리 카드는 단순 출하보다 수출·격리·비축·폐기 지연 같은 운영 기사 우선.",
+      "정책 섹션은 지역 의원 발의보다 전국 제도 변화, 물가, 통상, 담합 제재를 우선 배치.",
+      "유통 섹션은 시세 기사보다 물류, 출하체계, 수출 차질, 도매시장 운영 개선 기사를 우선.",
+      "같은 날 양파 이슈가 강하면 공급과 유통을 잇는 수출·판로 기사도 적극 활용.",
+      "95점 이상을 노릴 때는 broad soft fallback 상태에서는 약한 꼬리 대신 5번째 강한 카드 확보가 필요."
     ],
-    "raw_response_excerpt": "{\"score\":88,\"scores\":{\"article_selection\":87,\"section_fit\":85,\"core_pick_quality\":90,\"summary_usefulness\":93,\"missed_opportunity\":82,\"noise_control\":84},\"summary\":\"핵심 이슈 축은 대체로 맞췄다. 공급은 양파 가격 폭락·비축 지연을 잘 잡았고, 정책은 가격안정제·국회 입법을 중심으로 무게감이 있다. 병해충도 과수화상병 경계 격상과 지역 발생을 적절히 반영했다. 다만 3개 섹션이 5건 목표를 채우지 못한 데다, 공급·정책 꼬리 기사에 지역 홍보성/접수형 filler가 섞였고, 유통은 물류·수출 차질보다 약한 카드 비중이 높아 편집 완성도가 떨어진다. raw pool상 더 나은 유통/정책 후보가 보이므로 95급은 어렵다.\",\"issues\":[{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"섹션 4건만 편성\",\"reason\":\"raw 후보가 충분한데 5건 목표 미달\",\"suggested_action\":\"양파 수출·양배추 시세 등으로 5건 채우기\"},{\"type\":\"wrong_fit\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"경산시 와촌면 지역 대표 특산품 자두 본격 출하\",\"reason\":\"단순 지역 출하 소개로 수급 이슈성이 약함\",\"suggested_action\":\"시세·공급과잉·출하 차질 기사로 교체\"},{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"섹션 4건만 편성\",\"reason\":\"raw 후보가 충분한데 5건 목표 미달\",\"suggested_action\":\"생산비·물가·담합 제재 등 전국 정책 기사 보강\"},{\"type\":\"promotional_filler\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"정선군, 친환경농업 직불제 접수\",\"reason\":\"지자체 접수 안내성 기사로 전국 정책 가치 낮음\",\"suggested_action\":\"담합·생산자물가·농자재 지원 등 영향 큰 기사로 교체\"},{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"섹션 4건만 편성\",\"reason\":\"raw...",
+    "raw_response_excerpt": "{\"score\":88,\"scores\":{\"article_selection\":87,\"section_fit\":89,\"core_pick_quality\":90,\"summary_usefulness\":92,\"missed_opportunity\":84,\"noise_control\":86},\"summary\":\"핵심 이슈인 양파 수급난, 가격안정제 시행, 과수화상병 경계 상향은 잘 잡았다. 다만 공급·정책·유통이 모두 4건에 그쳐 원시 후보 풀이 충분한 날치고는 섹션 완성도가 떨어지고, 일부 꼬리 카드가 약했다. 특히 공급의 자두 출하, 정책의 지역의원 농자재 지원안은 전국 단위 브리프 기준으로 우선순위가 낮다. 유통은 물류·수출 대응을 담았지만 시세 카드와 중동 수출 카드가 섞이며 운영·물류 축의 선명도가 조금 흐려졌다. 전반적으로 사용 가능하지만, 95점 목표에는 못 미친다.\",\"issues\":[{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"섹션 4건만 편성\",\"reason\":\"원시 후보가 충분한데 5건을 채우지 못했다.\",\"suggested_action\":\"양파 수출·수급대책 기사로 5번째 카드를 보강.\"},{\"type\":\"weak_tail\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"경산 와촌 시설재배 자두 (정상) 본격 출하\",\"reason\":\"단순 출하 소식으로 수급 이슈성·전국성이 약하다.\",\"suggested_action\":\"양파 수출 추진 등 수급 대응 기사로 교체.\"},{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"섹션 4건만 편성\",\"reason\":\"원시 후보가 충분한데 5건 목표를 못 채웠다.\",\"suggested_action\":\"물가·곡물·담합 등 더 강한 정책 기사 추가.\"},{\"type\":\"weak_tail\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진\",\"reason\":\"지역 의원 발의성 기사로 전국 정책 임팩트가 약하다.\",\"suggested_action\":\"애그플레이션·밀가루 담합 제재 등 전국 현안으로 교체.\"},{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"...",
     "section_count_score": 97.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -347,7 +356,7 @@
         "supply": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 159,
+          "raw_candidates": 158,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -359,7 +368,7 @@
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 166,
+          "raw_candidates": 167,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -371,7 +380,7 @@
         "dist": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 53,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -383,7 +392,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 44,
+          "raw_candidates": 43,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -434,7 +443,7 @@
         "supply": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 159,
+          "raw_candidates": 158,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -446,7 +455,7 @@
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 166,
+          "raw_candidates": 167,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -458,7 +467,7 @@
         "dist": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 53,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -470,7 +479,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 44,
+          "raw_candidates": 43,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -499,28 +508,14 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
-      "missed_opportunity",
-      "noise_control"
+      "missed_opportunity"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
-        "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
