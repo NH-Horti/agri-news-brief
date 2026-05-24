@@ -6952,10 +6952,24 @@ def _policy_horti_anchor_stats(title: str, desc: str, dom: str = "", press: str 
         txt_wo_neutral = txt_wo_neutral.replace((phrase or "").lower(), "")
     livestock_hits = count_any(txt_wo_neutral, [t.lower() for t in LIVESTOCK_STRICT_TERMS])
     title_livestock_hits = count_any((ttl or "").lower(), [t.lower() for t in LIVESTOCK_STRICT_TERMS])
+    avian_ai_context = any(
+        marker in txt_wo_neutral
+        for marker in (
+            "고병원성 ai",
+            "ai 발생",
+            "ai 확산",
+            "ai 방역",
+            "ai 예방",
+            "ai 의심",
+            "ai 차단",
+            "ai 검사",
+            "조류인플루엔자",
+        )
+    )
     livestock_core = ("\ucd95\uc0b0\ubb3c" in txt_wo_neutral) or any(
         w in txt_wo_neutral
-        for w in ("\ud55c\uc6b0", "\ub3fc\uc9c0", "\ub3fc\uc9c0\uace0\uae30", "\uc18c\uace0\uae30", "\uacc4\ub780", "\ub2ed\uace0\uae30", "asf", "ai ", "ai\u00b7", "ai,", "\uad6c\uc81c\uc5ed", "\uc870\ub958\uc778\ud50c\ub8e8\uc5d4\uc790")
-    )
+        for w in ("\ud55c\uc6b0", "\ub3fc\uc9c0", "\ub3fc\uc9c0\uace0\uae30", "\uc18c\uace0\uae30", "\uacc4\ub780", "\ub2ed\uace0\uae30", "asf", "\uad6c\uc81c\uc5ed", "\uc870\ub958\uc778\ud50c\ub8e8\uc5d4\uc790")
+    ) or avian_ai_context
     horti_sc = best_horti_score(ttl, desc or "")
     anchor_ok = (
         managed_count >= 1
@@ -20782,6 +20796,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "commodity_corporate_stock_context"
     if section_key == "dist" and is_dist_political_visit_context(a.title or "", a.description or ""):
         return "dist_political_visit"
+    if section_key == "dist" and is_dist_primary_supply_price_story(a.title or "", a.description or ""):
+        return "dist_primary_supply_price_story"
     if section_key in ("supply", "policy", "dist") and is_wine_lifestyle_noise_context(a.title or "", a.description or ""):
         return "wine_lifestyle_noise"
     if section_key in ("supply", "policy", "dist") and is_low_value_local_political_context(a.title or "", a.description or ""):
@@ -21609,6 +21625,8 @@ def _is_optional_dist_editorial_tail(article: "Article") -> bool:
     title = article.title or ""
     desc = article.description or ""
     text = _nfkc_lower(f"{title} {desc}")
+    if is_dist_primary_supply_price_story(title, desc):
+        return True
     if (
         re.search(r"[가-힣]{2,}군", title) is not None
         and count_any(text, [w.lower() for w in ("직거래", "수도권", "할인행사", "소비촉진", "캠페인", "판로")]) >= 2
@@ -22548,6 +22566,7 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
         for article in policy_items
         if (
             not bool(getattr(article, "is_core", False))
+            and not _is_policy_keepable_macro_issue(article.title or "", article.description or "")
             and (
                 _is_weaker_policy_macro_story(article)
                 or _preferred_tail_block_reason(
@@ -22592,6 +22611,22 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
     if dropped:
         final_by_section["policy"] = keep
     return dropped
+
+
+def _is_policy_keepable_macro_issue(title: str, desc: str) -> bool:
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if count_any(title_l, [w.lower() for w in ("애그플레이션", "엘리뇨", "이란전쟁", "중동전쟁", "전쟁 장기화")]) <= 0:
+        return False
+    issue_context_hits = count_any(
+        text,
+        [w.lower() for w in ("농산물", "수급", "물가", "곡물", "밀", "대두", "원자재")],
+    )
+    response_hits = count_any(
+        text,
+        [w.lower() for w in ("농식품부", "정부", "점검", "대책", "확보", "수급")],
+    )
+    return issue_context_hits >= 2 and response_hits >= 1
 
 
 def _is_weak_pest_tail(article: "Article") -> bool:
@@ -26677,6 +26712,8 @@ def _commodity_board_article_is_active_candidate(
     )
     if not (_direct_focus_ok or _indirect_operational_focus_ok):
         return False
+    if representative_rank <= 1 and not _has_operational_issue:
+        return False
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
     if _selection_guardrail_bool("commodity_require_issue_signal", False):
@@ -27237,6 +27274,21 @@ def _supply_underfill_recovery_rank(article: Article, supply_conf: JsonDict) -> 
     price_outlook = is_supply_price_outlook_context(article.title or "", article.description or "")
     broad_macro = is_broad_macro_price_context(article.title or "", article.description or "")
     horti_score = best_horti_score(article.title or "", article.description or "")
+    price_crisis_response = (
+        count_any(
+            text,
+            [term.lower() for term in ("가격 급락", "가격급락", "폭락", "공급과잉", "시장격리", "산지폐기", "수급 안정")],
+        ) >= 1
+        and count_any(
+            text,
+            [term.lower() for term in ("정부", "농식품부", "수출", "대책", "시장격리", "폐기", "격리", "지원", "돌파구")],
+        ) >= 1
+    )
+    local_launch_only = (
+        "출하" in text
+        and count_any(text, [term.lower() for term in ("가격", "수급", "시장격리", "폐기", "비축", "공급과잉", "도매")]) <= 0
+        and count_any(text, [term.lower() for term in ("경산", "와촌", "특산품", "명품 과일")]) >= 1
+    )
 
     if broad_macro and not direct_supply and not feature_kind:
         return None
@@ -27255,14 +27307,16 @@ def _supply_underfill_recovery_rank(article: Article, supply_conf: JsonDict) -> 
 
     pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
     return (
-        1 if direct_supply else 0,
+        1 if price_crisis_response else 0,
         1 if issue_bucket == "commodity_issue" else 0,
         1 if issue_bucket == "export_recovery" else 0,
         1 if price_outlook else 0,
+        1 if direct_supply else 0,
         1 if feature_kind == "field" else 0,
         1 if feature_kind == "issue" else 0,
         1 if feature_kind == "quality" else 0,
         1 if signal_hits >= 2 else 0,
+        0 if local_launch_only else 1,
         1 if tier >= 2 else 0,
         round(fit_sc, 3),
         round(horti_score, 3),
@@ -27384,14 +27438,20 @@ def _preferred_tail_block_reason(
         )
         if non_policy_product_hits >= 1 and policy_material_hits <= 0 and not protected_thin_section:
             return "policy_non_policy_product_tail"
-        livestock_hits = count_any(text, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
+        livestock_text = text
+        lead_livestock_text = lead_l
+        for phrase in LIVESTOCK_NEUTRAL_PHRASES:
+            phrase_l = (phrase or "").lower()
+            livestock_text = livestock_text.replace(phrase_l, " ")
+            lead_livestock_text = lead_livestock_text.replace(phrase_l, " ")
+        livestock_hits = count_any(livestock_text, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
         horti_policy_hits = count_any(
             text,
             [w.lower() for w in ("농산물", "원예", "과수", "채소", "과일", "수급", "가격안정", "농협법", "농지법", "농업민생")],
         )
         if livestock_hits >= 1 and horti_policy_hits <= 0 and not protected_thin_section:
             return "policy_livestock_non_horti_tail"
-        lead_livestock_hits = count_any(lead_l, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
+        lead_livestock_hits = count_any(lead_livestock_text, [w.lower() for w in ("축산", "축산농가", "가축", "한우", "양돈", "낙농")])
         title_horti_policy_hits = count_any(
             title_l,
             [w.lower() for w in ("농산물", "원예", "과수", "채소", "과일", "수급", "가격안정", "농협법", "농지법", "농업민생", "농협")],
@@ -27423,6 +27483,8 @@ def _preferred_tail_block_reason(
                 if current_count >= SOFT_MIN_PER_SECTION or soft_fallback_issue_hits < 2:
                     return "policy_anchorless_preferred_tail"
     elif section_key == "dist":
+        if is_dist_primary_supply_price_story(title, desc) and not protected_thin_section:
+            return "dist_primary_supply_price_story"
         if _is_optional_dist_editorial_tail(article) and not protected_thin_section:
             if current_count < SOFT_MIN_PER_SECTION and _is_soft_fallback_dist_ops_tail(article):
                 return ""
@@ -28393,6 +28455,8 @@ def _is_weaker_policy_macro_story(article: "Article") -> bool:
     text = _nfkc_lower(f"{title} {desc}")
     title_l = _nfkc_lower(title)
     if count_any(title_l, [w.lower() for w in ("애그플레이션", "엘리뇨", "이란전쟁", "중동전쟁", "전쟁 장기화")]) >= 1:
+        if _is_policy_keepable_macro_issue(title, desc):
+            return False
         return True
     return bool(
         is_policy_general_macro_tail_context(title, desc, dom, press)
