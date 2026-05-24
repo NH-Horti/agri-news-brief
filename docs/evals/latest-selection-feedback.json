@@ -1,10 +1,10 @@
 {
   "report_date": "2026-05-22",
-  "generated_at_kst": "2026-05-24T10:01:32+09:00",
+  "generated_at_kst": "2026-05-24T11:57:23+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 99.27,
-    "commodity_board_quality": 95.24
+    "core_quality": 99.1,
+    "commodity_board_quality": 99.75
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,14 +12,14 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0588,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0588,
+    "pest_theme_duplicate_rate": 0.0556,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.5882,
+    "editorial_quality_penalty": 0.4444,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8571,
+    "commodity_primary_issue_signal_rate": 0.8182,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
@@ -56,15 +56,6 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진",
-      "href": "https://www.newsgn.com/news/articleView.html?idxno=553484",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
       "title": "화성서 올해 첫 경기도 과수화상병 발생…도농기원 “확산 차단 총력”",
       "href": "https://www.kyeonggi.com/article/20260521580432",
       "section": "pest",
@@ -75,128 +66,93 @@
     }
   ],
   "editorial": {
-    "score": 88.0,
+    "score": 95.0,
     "target_score": 95.0,
-    "target_status": "needs_iteration",
-    "section_count_score": 97.0,
+    "target_status": "target_met",
+    "section_count_score": 98.0,
     "section_count_status": "target_met",
     "scores": {
       "article_selection": 87.0,
-      "section_fit": 89.0,
-      "core_pick_quality": 90.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 84.0,
-      "noise_control": 86.0
+      "section_fit": 91.0,
+      "core_pick_quality": 89.0,
+      "summary_usefulness": 94.0,
+      "missed_opportunity": 81.0,
+      "noise_control": 84.0
     },
     "issues": [
       {
         "type": "underfill",
-        "severity": "medium",
-        "section": "supply",
-        "title": "섹션 4건만 편성",
-        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
-        "suggested_action": "양파 수출·수급대책 기사로 5번째 카드를 보강."
-      },
-      {
-        "type": "weak_tail",
         "severity": "high",
-        "section": "supply",
-        "title": "경산 와촌 시설재배 자두 (정상) 본격 출하",
-        "reason": "단순 출하 소식으로 수급 이슈성·전국성이 약하다.",
-        "suggested_action": "양파 수출 추진 등 수급 대응 기사로 교체."
+        "section": "policy",
+        "title": "정책 섹션 4건만 편성",
+        "reason": "raw pool이 충분해 5건 기대치 충족 가능했다.",
+        "suggested_action": "전국 영향 정책·가격감시 기사 1건 추가."
       },
       {
         "type": "underfill",
+        "severity": "high",
+        "section": "dist",
+        "title": "유통 섹션 4건만 편성",
+        "reason": "raw pool 51건으로 5건 구성이 가능했다.",
+        "suggested_action": "도매시장·수출물류 기사 1건 보강."
+      },
+      {
+        "type": "duplication",
         "severity": "medium",
-        "section": "policy",
-        "title": "섹션 4건만 편성",
-        "reason": "원시 후보가 충분한데 5건 목표를 못 채웠다.",
-        "suggested_action": "물가·곡물·담합 등 더 강한 정책 기사 추가."
+        "section": "supply",
+        "title": "양파 기사 과밀 편성",
+        "reason": "5건 중 다수가 같은 양파 가격급락 축을 반복한다.",
+        "suggested_action": "1건은 다른 품목 시세·반입 이슈로 교체."
       },
       {
         "type": "weak_tail",
-        "severity": "high",
-        "section": "policy",
-        "title": "생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진",
-        "reason": "지역 의원 발의성 기사로 전국 정책 임팩트가 약하다.",
-        "suggested_action": "애그플레이션·밀가루 담합 제재 등 전국 현안으로 교체."
+        "severity": "medium",
+        "section": "supply",
+        "title": "햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
+        "reason": "기존 양파 기사들과 차별성이 약한 재탕형 꼬리다.",
+        "suggested_action": "양배추 시세 등 다른 강한 수급 기사로 대체."
       },
       {
-        "type": "underfill",
+        "type": "weak_tail",
         "severity": "medium",
         "section": "dist",
-        "title": "섹션 4건만 편성",
-        "reason": "유통 후보가 적지 않은데 5건 구성이 가능했다.",
-        "suggested_action": "양파 수출·출하거점·시장운영 기사 중 1건 추가."
-      },
-      {
-        "type": "core_weakness",
-        "severity": "medium",
-        "section": "dist",
-        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
-        "reason": "좋은 물류 기사지만 유통 섹션 대표 1순위 코어로는 다소 협소하다.",
-        "suggested_action": "중동 물류 차질 속 수출 대응 기사와 병렬 코어 운용."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "policy",
-        "title": "슈퍼 엘리뇨·이란전쟁 장기화...'애그플레이션' 시대 오나",
-        "reason": "전국 농정·물가 파급력이 큰 후보를 놓쳤다.",
-        "suggested_action": "약한 지역성 정책 꼬리 대신 채택 검토."
+        "title": "무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다",
+        "reason": "지역 판촉성 직거래 기사로 유통 핵심성은 제한적이다.",
+        "suggested_action": "가락시장·수출 차질·유통 인프라 기사 우선."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "양파 풍작 단위면적당 생산량 평년대비 8.8% 증가",
-        "reason": "양파 수출 카드가 공급·유통을 잇는 운영 기사인데 누락됐다.",
-        "suggested_action": "약한 시세·홍보성 꼬리보다 우선 반영."
+        "title": "[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…‘약세늪’서 허...",
+        "reason": "구체적 시장운영·가격 신호가 강한 후보가 미선정됐다.",
+        "suggested_action": "유통 또는 공급의 핵심 카드로 검토."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "충북농기원, 과수화상병 차단 총력",
+        "reason": "실질 방제 대응 기사인데 약한 지역 주의 기사보다 가치가 높다.",
+        "suggested_action": "딸기 탄저병 또는 지역 발생 반복 기사와 교체 검토."
+      },
+      {
+        "type": "duplication",
+        "severity": "low",
+        "section": "pest",
+        "title": "과수화상병 관련 지역발생 기사 다수",
+        "reason": "전국 경계 상향과 원주·화성 기사 조합이 다소 반복적이다.",
+        "suggested_action": "1건은 다른 작목 해충 리스크로 다변화."
       }
     ]
   },
-  "editorial_suggested_guardrails": {
-    "driver_tags": [
-      "editorial_missed_opportunity"
-    ],
-    "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
-    },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
-    "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
-    },
-    "core_relaxed_min_fit": {
-      "default": 1.0,
-      "supply": 1.18,
-      "policy": 1.15,
-      "dist": 1.35,
-      "pest": 1.0
-    },
-    "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
-    "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false
-  },
-  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 88.0,
-    "target_status": "needs_iteration",
-    "iteration_budget": 3,
+    "current_editorial_score": 95.0,
+    "target_status": "target_met",
+    "iteration_budget": 0,
     "promotion_gates": {
       "editorial_score_min": 95.0,
       "operational_score_min": 95.0,
@@ -205,25 +161,25 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 97.0,
+      "score": 98.0,
       "status": "target_met",
       "sections": {
         "supply": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 158,
+          "raw_candidates": 155,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 96.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 167,
+          "raw_candidates": 170,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -235,7 +191,7 @@
         "dist": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 52,
+          "raw_candidates": 51,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -258,12 +214,10 @@
         }
       },
       "underfilled_sections": [
-        "supply",
         "policy",
         "dist"
       ],
       "soft_fallback_sections": [
-        "supply",
         "policy",
         "dist"
       ],
@@ -276,7 +230,8 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "missed_opportunity"
+      "missed_opportunity",
+      "article_selection"
     ],
     "recommended_actions": [
       {
@@ -284,6 +239,12 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       }
     ],
     "current_selection_guardrails": {
