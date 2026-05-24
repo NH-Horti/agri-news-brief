@@ -1326,6 +1326,84 @@ class LocalRuntimeTests(TestCase):
             "policy_anchorless_preferred_tail",
         )
 
+    def test_policy_soft_fallback_allows_field_support_issue_tail(self) -> None:
+        field_support = self._make_article(
+            section="policy",
+            title="장진영 경남도의원, 필수 농자재 직접지원 추진",
+            description="생산비 부담 완화를 위해 필수 농자재 직접지원 조례와 경영비 지원 방안을 추진한다.",
+            link="https://example.com/field-support-policy",
+            topic="농자재",
+        )
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농업 정책 핵심 기사 {idx}",
+                description="농업 정책과 제도 개선을 다뤘다.",
+                link=f"https://example.com/policy-existing-{idx}",
+            )
+            for idx in range(3)
+        ]
+        final_by_section = {"policy": existing}
+        raw_by_section = {
+            "policy": [
+                field_support,
+                *[
+                    self._make_article(
+                        section="policy",
+                        title=f"지역 정책 단신 후보 {idx}",
+                        description="지역 정책 단신이다.",
+                        link=f"https://example.com/policy-raw-filler-{idx}",
+                    )
+                    for idx in range(3)
+                ],
+            ]
+        }
+
+        self.assertTrue(main._is_soft_fallback_policy_issue_tail(field_support))
+        recovered = main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+
+        self.assertEqual(recovered, 1)
+        self.assertIn(field_support, final_by_section["policy"])
+
+    def test_dist_hard_logistics_promotion_does_not_move_primary_supply_price_story(self) -> None:
+        price_story = self._make_article(
+            section="supply",
+            title="[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…약세늪",
+            description="가락시장 도매시장 양배추 반입량 1000톤, 경매가 하락과 물류 처리물량 증가를 다뤘다.",
+            link="https://example.com/cabbage-price-logistics",
+            topic="양배추",
+        )
+        dist_tail = self._make_article(
+            section="dist",
+            title="K-푸드는 중동 물류난에도 GCC 수출 증가",
+            description="중동 물류난 속 K-푸드 수출 흐름을 다뤘다.",
+            link="https://example.com/dist-export-existing",
+        )
+        final_by_section = {"dist": [dist_tail], "supply": [price_story]}
+        raw_by_section = {"dist": [], "supply": [price_story]}
+
+        self.assertTrue(main.is_dist_hard_logistics_metric_context(price_story.title, price_story.description))
+        self.assertTrue(main.is_dist_primary_supply_price_story(price_story.title, price_story.description))
+        promoted = main._promote_dist_hard_logistics_core(final_by_section, raw_by_section)
+
+        self.assertEqual(promoted, 0)
+        self.assertEqual(price_story.section, "supply")
+        self.assertNotIn(price_story, final_by_section["dist"])
+
+    def test_supply_demotes_distribution_market_education_story(self) -> None:
+        education = self._make_article(
+            section="supply",
+            title='[동화청과 유통교육] "맛·품질은 기본…소비자 선택 기준까지 설계 필요"',
+            description="도매시장 유통교육에서 출하 전략, 품질 설계와 소비자 선택 기준을 설명했다.",
+            link="https://example.com/dist-education-in-supply",
+        )
+
+        self.assertTrue(main.is_dist_market_education_tail_context(education.title, education.description))
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(education, "supply"),
+            "supply_dist_market_education_tail",
+        )
+
     def test_preferred_count_recovery_avoids_duplicate_nh_direct_election_policy(self) -> None:
         existing = self._make_article(
             section="policy",

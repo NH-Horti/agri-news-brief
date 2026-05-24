@@ -3645,6 +3645,8 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
     text = _editorial_safe_text(article)
     title_l = _nfkc_lower(getattr(article, "title", "") or "")
     if section_key == "supply":
+        if is_dist_market_education_tail_context(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
+            return "supply_dist_market_education_tail"
         nonfood_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS))
         nonfood_compact_hit = _contains_compact_marker(text, _EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS)
         if nonfood_hits or nonfood_compact_hit:
@@ -21787,6 +21789,12 @@ def _replace_optional_dist_tail_from_raw(
         for article in dist_items
         if _article_selection_identity(article)
     }
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
     ranked: list[tuple[tuple[Any, ...], Article]] = []
     for source_section in ("dist", "supply"):
         for article in raw_by_section.get(source_section, []) or []:
@@ -21794,6 +21802,8 @@ def _replace_optional_dist_tail_from_raw(
                 continue
             ident = _article_selection_identity(article)
             if ident and ident in existing_keys:
+                continue
+            if ident and ident in all_final_keys:
                 continue
             if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in dist_items):
                 continue
@@ -21882,6 +21892,12 @@ def _promote_dist_hard_logistics_core(
         for article in dist_items
         if _article_selection_identity(article)
     }
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
     ranked: list[tuple[tuple[Any, ...], Article, bool]] = []
 
     def _maybe_add(article: Article, *, already_final: bool) -> None:
@@ -21889,6 +21905,10 @@ def _promote_dist_hard_logistics_core(
             return
         ident = _article_selection_identity(article)
         if not already_final and ident and ident in existing_keys:
+            return
+        if not already_final and ident and ident in all_final_keys:
+            return
+        if is_dist_primary_supply_price_story(article.title or "", article.description or ""):
             return
         if not is_dist_hard_logistics_metric_context(article.title or "", article.description or ""):
             return
@@ -22030,6 +22050,12 @@ def _promote_dist_national_export_logistics_core(
         for article in dist_items
         if _article_selection_identity(article)
     }
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
     ranked: list[tuple[tuple[Any, ...], Article, bool]] = []
 
     def _maybe_add(article: Article, *, already_final: bool) -> None:
@@ -22037,6 +22063,8 @@ def _promote_dist_national_export_logistics_core(
             return
         ident = _article_selection_identity(article)
         if not already_final and ident and ident in existing_keys:
+            return
+        if not already_final and ident and ident in all_final_keys:
             return
         if not is_dist_national_export_logistics_context(
             article.title or "", article.description or "", article.domain or "", article.press or "",
@@ -26964,6 +26992,10 @@ def _normalize_supply_section_from_board(
             if _title_has_livestock_item(article.title or "") and not _title_has_horti_item(article.title or ""):
                 log.info("[REBALANCE] blocked livestock article from board promote: %s", (article.title or "")[:60])
                 continue
+            demote_reason = _editorial_safe_core_demote_reason(article, "supply")
+            if demote_reason:
+                log.info("[REBALANCE] blocked unsafe supply board promote: reason=%s title=%s", demote_reason, (article.title or "")[:60])
+                continue
             # 2026-04-10 (Change 8): 품질 하한 게이트 — board promote는 최소 fit/score 요구
             # 기존엔 governance/livestock 필터만 있어 fit=0/score<8 저품질 기사가 promote됨
             try:
@@ -27547,6 +27579,10 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     export_support = is_policy_export_support_brief_context(title, desc, dom, press)
     price_stabilization_system = is_policy_price_stabilization_system_context(title, desc, dom, press)
     local_price_support = is_policy_local_price_support_context(title, desc)
+    field_support_issue = count_any(
+        text,
+        [w.lower() for w in ("필수 농자재", "농자재 직접지원", "경영비 지원", "생산비 부담")],
+    ) >= 2
     local_program = is_local_agri_policy_program_context(text)
     price_collapse_issue = is_policy_price_collapse_issue_context(title, desc)
     legislative_reform = is_policy_legislative_reform_context(title, desc, dom, press)
@@ -27565,18 +27601,19 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         or price_stabilization_system
         or legislative_reform
         or local_price_support
+        or field_support_issue
         or local_program
         or price_collapse_issue
     ):
         return None
-    if not (grain_macro_policy or central_agri_macro or export_support or price_stabilization_system or legislative_reform or anchor_ok):
+    if not (grain_macro_policy or central_agri_macro or export_support or price_stabilization_system or legislative_reform or field_support_issue or anchor_ok):
         return None
 
     try:
         fit_sc = float(section_fit_score(title, desc, policy_conf, article.domain or "", article.press or ""))
     except Exception:
         fit_sc = 0.0
-    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish or price_stabilization_system or legislative_reform):
+    if fit_sc < 0.75 and not (grain_macro_policy or central_agri_macro or officialish or price_stabilization_system or legislative_reform or field_support_issue):
         return None
 
     tier = press_priority(article.press, article.domain)
@@ -27586,6 +27623,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         1 if central_agri_macro else 0,
         1 if price_stabilization_system else 0,
         1 if legislative_reform else 0,
+        1 if field_support_issue else 0,
         1 if officialish else 0,
         1 if major_issue else 0,
         1 if market_brief else 0,
@@ -27803,13 +27841,15 @@ def _is_soft_fallback_policy_issue_tail(article: Article) -> bool:
     desc = article.description or ""
     text = _nfkc_lower(f"{title} {desc}")
     title_l = _nfkc_lower(title)
-    if _preferred_tail_block_reason(
-        article,
-        "policy",
-        current_count=MIN_FALLBACK_PER_SECTION,
-        raw_count=PREFERRED_PER_SECTION,
-    ):
-        return False
+    field_support = count_any(title_l, [w.lower() for w in ("필수 농자재", "농자재 직접지원", "경영비 지원")]) >= 1
+    if not field_support:
+        if _preferred_tail_block_reason(
+            article,
+            "policy",
+            current_count=MIN_FALLBACK_PER_SECTION,
+            raw_count=PREFERRED_PER_SECTION,
+        ):
+            return False
     macro_issue = (
         "애그플레이션" in text
         or (
@@ -27821,7 +27861,6 @@ def _is_soft_fallback_policy_issue_tail(article: Article) -> bool:
             and count_any(text, [w.lower() for w in ("담합", "전분당", "과징금", "포상금")]) >= 1
         )
     )
-    field_support = count_any(title_l, [w.lower() for w in ("필수 농자재", "농자재 직접지원", "경영비 지원")]) >= 1
     return bool(macro_issue or field_support)
 
 
@@ -28121,7 +28160,13 @@ def _recover_preferred_section_counts_from_raw(
                 )
                 if section_key == "dist" and source_section != section_key and not soft_dist_crossfill:
                     continue
-                if _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count):
+                soft_policy_tail = (
+                    section_key == "policy"
+                    and len(current) < SOFT_MIN_PER_SECTION
+                    and _is_soft_fallback_policy_issue_tail(article)
+                )
+                tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
+                if tail_reason and not soft_policy_tail:
                     continue
                 rank = _preferred_section_rank(section_key, article, conf)
                 if rank is None and soft_dist_crossfill:
@@ -28183,7 +28228,12 @@ def _recover_preferred_section_counts_from_raw(
                 ),
             ):
                 continue
-            if _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count):
+            tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
+            if tail_reason and not (
+                section_key == "policy"
+                and len(current) < SOFT_MIN_PER_SECTION
+                and _is_soft_fallback_policy_issue_tail(article)
+            ):
                 continue
             prev_section = str(getattr(article, "section", "") or "")
             if not getattr(article, "origin_section", ""):
