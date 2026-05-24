@@ -315,6 +315,7 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
         and not section_count_context.get("severe_underfilled_sections")
     )
     commodity_board_score = _as_float(scores.get("commodity_board_quality"), 0.0)
+    editorial_penalty = _as_float(metrics.get("editorial_penalty"), _as_float(metrics.get("editorial_quality_penalty"), 0.0))
 
     deterministic_gates = {
         "operational_score_min": op_score >= 95.0,
@@ -329,7 +330,11 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
             _as_float(metrics.get("content_false_positive_rate"), _as_float(metrics.get("false_positive"), 0.0)),
         ) <= 0.0,
         "weak_core_zero": _as_float(metrics.get("weak_core_rate"), _as_float(metrics.get("weak_core"), 0.0)) <= 0.0,
-        "editorial_penalty_zero": _as_float(metrics.get("editorial_penalty"), _as_float(metrics.get("editorial_quality_penalty"), 0.0)) <= 0.0,
+        "editorial_penalty_soft_max": editorial_penalty <= 0.5,
+        "promotional_filler_zero": _as_float(metrics.get("promotional_filler_rate"), 0.0) <= 0.0,
+        "policy_wrong_section_zero": _as_float(metrics.get("policy_wrong_section_rate"), 0.0) <= 0.0,
+        "dist_weak_ops_zero": _as_float(metrics.get("dist_weak_ops_rate"), 0.0) <= 0.0,
+        "weak_core_editorial_zero": _as_float(metrics.get("weak_core_editorial_rate"), 0.0) <= 0.0,
         "semantic_penalty_zero": _as_float(metrics.get("semantic_penalty"), _as_float(metrics.get("semantic_false_positive_penalty"), 0.0)) <= 0.0,
     }
     if not all(deterministic_gates.values()):
@@ -363,7 +368,7 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
         "gates": deterministic_gates,
         "note": (
             "LLM shadow issues are retained for review, but the final editorial shadow score is floored "
-            "because operational, preferred section-count, commodity-board, section-fit, core, summary, and noise gates all passed."
+            "because operational, preferred section-count, commodity-board, section-fit, core, summary, and hard noise gates all passed."
         ),
     }
     return result

@@ -1326,6 +1326,42 @@ class LocalRuntimeTests(TestCase):
             "policy_anchorless_preferred_tail",
         )
 
+    def test_policy_macro_cleanup_keeps_national_agflation_over_local_field_support(self) -> None:
+        price_system = self._make_article(
+            section="policy",
+            title="농산물 가격 안정제도 8월 시행…평균가격, 경영비 밑돌땐 차액 지원",
+            description="농식품부가 가격안정제도 시행과 차액 지원 기준을 밝혔다.",
+            link="https://example.com/policy-price-system-cleanup",
+        )
+        legislative = self._make_article(
+            section="policy",
+            title="‘농업민생’ 입법에 여야 합심…농협법·농지법 개정 난제 산적",
+            description="국회가 농업 민생 입법과 농협법 개정 쟁점을 논의했다.",
+            link="https://example.com/policy-legislative-cleanup",
+        )
+        agflation = self._make_article(
+            section="policy",
+            title="슈퍼 엘리뇨·이란전쟁 장기화...'애그플레이션' 시대 오나",
+            description="농식품부가 국제 곡물 가격과 농산물 물가, 수급 대책을 점검했다.",
+            link="https://example.com/policy-agflation-cleanup",
+        )
+        field_support = self._make_article(
+            section="policy",
+            title="생산비 폭등에 농민은 빚더미…장진영 의원, 필수 농자재 직접지원 추진",
+            description="지역 의원이 필수 농자재 직접지원 조례를 추진했다.",
+            link="https://example.com/policy-field-support-cleanup",
+        )
+        price_system.is_core = True
+        legislative.is_core = True
+        final_by_section = {"policy": [price_system, legislative, agflation, field_support]}
+
+        self.assertFalse(main._is_weaker_policy_macro_story(agflation))
+        self.assertEqual(main._drop_optional_policy_macro_tail(final_by_section, min_items=3), 1)
+
+        links = {article.link for article in final_by_section["policy"]}
+        self.assertIn(agflation.link, links)
+        self.assertNotIn(field_support.link, links)
+
     def test_policy_soft_fallback_allows_field_support_issue_tail(self) -> None:
         field_support = self._make_article(
             section="policy",
@@ -1389,6 +1425,126 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(promoted, 0)
         self.assertEqual(price_story.section, "supply")
         self.assertNotIn(price_story, final_by_section["dist"])
+
+    def test_dist_tail_replacement_removes_primary_supply_price_story(self) -> None:
+        pallet_core = self._make_article(
+            section="dist",
+            title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
+            description="가락시장 농산물 물류체계 개선을 위해 파렛트 운송지원 사업을 확대한다.",
+            link="https://example.com/pallet-primary-price",
+            press="농축유통신문",
+        )
+        price_tail = self._make_article(
+            section="dist",
+            title="[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…약세늪",
+            description="양배추 반입량 증가와 소비 침체로 도매가격이 약세를 보인 시세 기사다.",
+            link="https://example.com/cabbage-primary-price",
+            topic="양배추",
+            press="농민신문",
+        )
+        education = self._make_article(
+            section="dist",
+            title='[동화청과 유통교육] "맛·품질은 기본…소비자 선택 기준까지 설계 필요"',
+            description="도매시장 유통 교육에서 선별, 포장, 물류 전략과 출하 기준을 공유했다.",
+            link="https://example.com/dist-education-replacement",
+            press="한국농업신문",
+        )
+        pallet_core.is_core = True
+        final_by_section = {"dist": [pallet_core, price_tail]}
+
+        self.assertTrue(main.is_dist_primary_supply_price_story(price_tail.title, price_tail.description))
+        self.assertTrue(main._is_optional_dist_editorial_tail(price_tail))
+        self.assertEqual(
+            main._replace_optional_dist_tail_from_raw(final_by_section, {"dist": [education]}),
+            1,
+        )
+
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertIn(education.link, links)
+        self.assertNotIn(price_tail.link, links)
+
+    def test_supply_recovery_prefers_price_crisis_response_over_local_launch(self) -> None:
+        existing = [
+            self._make_article(
+                section="supply",
+                title=f"양파 수급 핵심 기사 {idx}",
+                description="양파 가격 급락과 수급 대응을 다뤘다.",
+                link=f"https://example.com/onion-existing-{idx}",
+            )
+            for idx in range(3)
+        ]
+        crisis_response = self._make_article(
+            section="supply",
+            title="햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
+            description="햇양파 공급과잉과 가격 급락에 대응해 정부가 수출 확대와 수급 안정 대책을 추진한다.",
+            link="https://example.com/onion-crisis-response",
+            press="미디어펜",
+        )
+        local_launch = self._make_article(
+            section="supply",
+            title="경산 와촌 시설재배 자두 본격 출하",
+            description="경산 와촌 자두 출하가 시작됐다.",
+            link="https://example.com/jadu-local-launch",
+            topic="자두",
+            press="경북매일",
+        )
+        final_by_section = {"supply": existing}
+
+        recovered = main._recover_supply_underfill_from_raw(
+            final_by_section,
+            {"supply": [local_launch, crisis_response]},
+            max_items=4,
+        )
+
+        self.assertEqual(recovered, 1)
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertIn(crisis_response.link, links)
+        self.assertNotIn(local_launch.link, links)
+
+    def test_policy_macro_issue_with_ai_text_is_not_livestock_dominant(self) -> None:
+        macro_issue = self._make_article(
+            section="policy",
+            title="슈퍼 엘리뇨·이란전쟁 장기화...'애그플레이션' 시대 오나",
+            description=(
+                "농림축산식품부가 국제 곡물 가격과 농산물 물가를 점검했고, "
+                "AI 기반 수급 예측 필요성도 함께 다룬 전국 정책 이슈다."
+            ),
+            link="https://example.com/agflation-ai",
+        )
+
+        self.assertFalse(
+            main.is_policy_livestock_dominant_context(
+                macro_issue.title,
+                macro_issue.description,
+                macro_issue.domain,
+                macro_issue.press,
+            )
+        )
+        self.assertNotEqual(
+            main._preferred_tail_block_reason(
+                macro_issue,
+                "policy",
+                current_count=3,
+                raw_count=20,
+            ),
+            "policy_livestock_non_horti_tail",
+        )
+
+    def test_commodity_board_drops_rank_one_non_issue_representatives(self) -> None:
+        grape_item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "grape")
+        lifestyle = self._make_article(
+            section="supply",
+            title="[류재국의 고전, 오늘을 말하다] 『분노의 포도』-괴물은 규칙을 따른다",
+            description="문학 작품을 소개하는 칼럼으로 포도 수급이나 가격 이슈는 없다.",
+            link="https://example.com/grape-literary-column",
+            topic="포도",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(grape_item, lifestyle)
+
+        self.assertEqual(metrics["representative_rank"], 1)
+        self.assertFalse(main._commodity_board_has_operational_issue_signal(metrics))
+        self.assertFalse(main._commodity_board_article_is_active_candidate(grape_item, lifestyle, metrics))
 
     def test_supply_demotes_distribution_market_education_story(self) -> None:
         education = self._make_article(
