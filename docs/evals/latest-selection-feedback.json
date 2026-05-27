@@ -1,55 +1,52 @@
 {
-  "report_date": "2026-05-27",
-  "generated_at_kst": "2026-05-27T06:23:20+09:00",
+  "report_date": "2026-05-28",
+  "generated_at_kst": "2026-05-28T06:22:34+09:00",
   "scores": {
-    "section_alignment": 90.74,
-    "core_quality": 81.19,
-    "commodity_board_quality": 95.37
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 96.2
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
-    "content_false_positive_rate": 0.0556,
-    "weak_core_rate": 0.2857,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0556,
-    "promotional_core_rate": 0.1429,
-    "weak_core_editorial_rate": 0.1429,
-    "pest_theme_duplicate_rate": 0.0556,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0625,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 3.127,
+    "editorial_quality_penalty": 0.5,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 1.0,
-    "commodity_primary_weak_rate": 0.0
+    "commodity_primary_issue_signal_rate": 0.9474,
+    "commodity_primary_weak_rate": 0.0526
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "semantic_false_positive",
-      "core_quality"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.9,
-      "policy": 0.88,
-      "dist": 1.05,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.4,
-    "tail_score_floor_delta": 0.5,
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
     "core_fit_min": {
-      "default": 1.28,
-      "supply": 1.48,
-      "policy": 1.48,
-      "dist": 1.68,
-      "pest": 1.28
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
-      "default": 1.12,
-      "supply": 1.3,
-      "policy": 1.27,
-      "dist": 1.47,
-      "pest": 1.12
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 1,
@@ -59,17 +56,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "우리 몸엔 역시 '신토불이 국산 양파 '",
-      "href": "https://www.gnnews.co.kr/news/articleView.html?idxno=637658",
-      "section": "supply",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "화순군, 과수화상병 차단 총력…사과·배 농가 예찰 강화",
-      "href": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5024211",
+      "title": "과수화상병 비상…상주시 5~6월 집중 예찰·적기 방제",
+      "href": "https://www.kukinews.com/article/view/kuk202605270057",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -78,133 +66,93 @@
     }
   ],
   "editorial": {
-    "score": 83.0,
+    "score": 95.0,
     "target_score": 95.0,
-    "target_status": "needs_iteration",
-    "section_count_score": 98.0,
+    "target_status": "target_met",
+    "section_count_score": 96.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 79.0,
-      "section_fit": 75.0,
-      "core_pick_quality": 74.0,
-      "summary_usefulness": 89.0,
-      "missed_opportunity": 77.0,
-      "noise_control": 72.0
+      "article_selection": 80.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 70.0,
+      "summary_usefulness": 86.0,
+      "missed_opportunity": 88.0,
+      "noise_control": 79.0
     },
     "issues": [
-      {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "pest",
-        "title": "[전국 톡톡] \"씹고 삼키기 좋게\"‥'3D 프린팅'으로 환자식",
-        "reason": "병해충과 무관한 완전한 오배치다.",
-        "suggested_action": "즉시 제외하고 과수화상병 확산 기사로 교체."
-      },
       {
         "type": "weak_core",
         "severity": "high",
         "section": "supply",
-        "title": "우리 몸엔 역시 '신토불이 국산 양파 '",
-        "reason": "수급 기사라기보다 소비 촉구성 홍보에 가깝다.",
-        "suggested_action": "가격·출하·수확포기 등 실물 수급 기사로 대체."
-      },
-      {
-        "type": "promotional",
-        "severity": "high",
-        "section": "supply",
-        "title": "NH농우바이오, 굿초이스 애호박·진하무 6월 추천품종 소개",
-        "reason": "기업 품종 소개성 홍보 기사다.",
-        "suggested_action": "핵심이 아닌 제외 또는 말미 처리."
-      },
-      {
-        "type": "promotional",
-        "severity": "medium",
-        "section": "supply",
-        "title": "사과 장기저장 솔루션 제안, 숨쉬는 저장비닐 '그린라이트'",
-        "reason": "제품 제안 중심의 기업 홍보다.",
-        "suggested_action": "운영상 백필이 필요할 때만 후순위 사용."
+        "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
+        "reason": "소비홍보성 기사로 수급 핵심 이슈보다 약하다.",
+        "suggested_action": "정부 수매·수출지원 등 양파 수급 기사로 교체."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
         "section": "supply",
-        "title": "아직 5월인데 ‘금수박’…이른 더위에 가격 들썩",
-        "reason": "같은 풀에 더 강한 가격 신호 기사가 있었는데 빠졌다.",
-        "suggested_action": "공급 핵심 카드로 우선 채택."
+        "title": "과잉 양파 '수매'·부족 계란 '수입'…정부 \"6~7월 물가 안정 총력\"",
+        "reason": "당일 수급 종합 대응 기사인데 공급 섹션 핵심에서 빠졌다.",
+        "suggested_action": "공급 톱 또는 2번 카드로 반영."
       },
       {
-        "type": "missed_opportunity",
+        "type": "weak_core",
+        "severity": "high",
+        "section": "dist",
+        "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
+        "reason": "판촉전 성과 기사로 유통 운영성보다 홍보성이 강하다.",
+        "suggested_action": "온라인 도매시장·예약형 정가수의매매 등 구조 기사 우선."
+      },
+      {
+        "type": "duplicate_theme",
         "severity": "medium",
         "section": "dist",
-        "title": "거점 APC 견학…농산물 유통 활성화 모색",
-        "reason": "유통 운영성·시설 고도화 측면에서 더 적합한 카드였다.",
-        "suggested_action": "칼럼성 기사 대신 교체 검토."
+        "title": "완주 삼례농협, 명품 흑피수박 ‘블랙위너’ 본격 출하 / 삼례농협, NH농우바이오와 ‘블랙위너’ 출하 기념 행사 성황리 개최,",
+        "reason": "사실상 동일 출하행사 중복 편성이다.",
+        "suggested_action": "둘 중 하나만 남기고 다른 유통 이슈로 대체."
       },
       {
-        "type": "underfill",
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "pest",
+        "title": "충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ...",
+        "reason": "신규 발생과 경계 격상은 당일 최강 뉴스인데 비코어로도 미선정.",
+        "suggested_action": "병해충 톱 코어로 승격."
+      },
+      {
+        "type": "theme_narrowness",
         "severity": "medium",
-        "section": "supply",
-        "title": "공급 섹션 4건 편성",
-        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
-        "suggested_action": "강한 가격·출하 기사 1건 추가."
+        "section": "pest",
+        "title": "과수화상병 기사 편중",
+        "reason": "4건 중 3건이 예방·예찰성 로컬 기사로 강도 차이가 약하다.",
+        "suggested_action": "확산 집계·위기 격상 기사와 조합해 강약 배치."
       },
       {
-        "type": "underfill",
+        "type": "content_quality",
         "severity": "medium",
         "section": "policy",
-        "title": "정책 섹션 4건 편성",
-        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
-        "suggested_action": "계란 수급대책·면세유 보조 등 실정책 기사 추가."
+        "title": "양파값 급락·계란값 고공행진…정부, 수급 안정·할인지원 총력",
+        "reason": "본문이 깨져 세부 확인이 안 되는 저품질 소스다.",
+        "suggested_action": "동일 내용의 정상 본문 기사로 교체."
+      },
+      {
+        "type": "underfill",
+        "severity": "medium",
+        "section": "all",
+        "title": "전 섹션 4건 편성",
+        "reason": "raw pool이 충분한데도 5건 목표를 전부 못 채웠다.",
+        "suggested_action": "각 섹션 1건씩 강한 후보를 추가해 fallback 축소."
       }
     ]
   },
-  "editorial_suggested_guardrails": {
-    "driver_tags": [
-      "semantic_false_positive",
-      "core_quality",
-      "editorial_section_fit",
-      "editorial_noise_filter",
-      "editorial_core_pick",
-      "editorial_missed_opportunity"
-    ],
-    "section_card_min_fit": {
-      "default": 0.9,
-      "supply": 1.03,
-      "policy": 1.01,
-      "dist": 1.18,
-      "pest": 0.89
-    },
-    "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.4,
-    "tail_score_floor_delta": 0.9,
-    "core_fit_min": {
-      "default": 1.38,
-      "supply": 1.58,
-      "policy": 1.58,
-      "dist": 1.75,
-      "pest": 1.38
-    },
-    "core_relaxed_min_fit": {
-      "default": 1.12,
-      "supply": 1.3,
-      "policy": 1.27,
-      "dist": 1.47,
-      "pest": 1.12
-    },
-    "disable_relaxed_core_fill": true,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
-    "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false
-  },
-  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 83.0,
-    "target_status": "needs_iteration",
-    "iteration_budget": 3,
+    "current_editorial_score": 95.0,
+    "target_status": "target_met",
+    "iteration_budget": 0,
     "promotion_gates": {
       "editorial_score_min": 95.0,
       "operational_score_min": 95.0,
@@ -213,13 +161,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 98.0,
+      "score": 96.0,
       "status": "target_met",
       "sections": {
         "supply": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 127,
+          "raw_candidates": 155,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -231,7 +179,7 @@
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 89,
+          "raw_candidates": 95,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -241,37 +189,41 @@
           "score": 96.0
         },
         "dist": {
-          "actual": 5,
+          "actual": 4,
           "expected": 5,
-          "raw_candidates": 42,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        },
-        "pest": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 65,
+          "raw_candidates": 44,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
+          "fill_ratio": 0.8,
+          "score": 96.0
+        },
+        "pest": {
+          "actual": 4,
+          "expected": 5,
+          "raw_candidates": 51,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 0.8,
+          "score": 96.0
         }
       },
       "underfilled_sections": [
         "supply",
-        "policy"
+        "policy",
+        "dist",
+        "pest"
       ],
       "soft_fallback_sections": [
         "supply",
-        "policy"
+        "policy",
+        "dist",
+        "pest"
       ],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
@@ -283,9 +235,7 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "missed_opportunity",
-      "noise_control",
-      "section_fit"
+      "missed_opportunity"
     ],
     "recommended_actions": [
       {
@@ -299,48 +249,33 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
-        "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [
-        "semantic_false_positive",
-        "core_quality"
-      ],
+      "driver_tags": [],
       "section_card_min_fit": {
         "default": 0.8,
-        "supply": 0.9,
-        "policy": 0.88,
-        "dist": 1.05,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
         "pest": 0.78
       },
-      "section_low_fit_rescue_min": 0.35,
-      "high_score_low_fit_rescue_margin": 4.4,
-      "tail_score_floor_delta": 0.5,
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
       "core_fit_min": {
-        "default": 1.28,
-        "supply": 1.48,
-        "policy": 1.48,
-        "dist": 1.68,
-        "pest": 1.28
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
       },
       "core_relaxed_min_fit": {
-        "default": 1.12,
-        "supply": 1.3,
-        "policy": 1.27,
-        "dist": 1.47,
-        "pest": 1.12
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
       },
       "disable_relaxed_core_fill": false,
       "commodity_active_min_rank": 1,
