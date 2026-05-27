@@ -1,29 +1,29 @@
-## Daily Eval (2026-05-27)
-- Overall: **84.91** (warn)
-- Operational: **84.91**
-- Scores: completeness=92.8, diversity=100.0, summary=100.0, freshness=100.0, retrieval=85.0, section_fit=90.7, core=81.2, commodity=95.4
-- Briefing cards: 18 / Commodity cards: 33
-- Sections: supply:4/5 raw=127, policy:4/5 raw=89, dist:5/5 raw=42, pest:5/5 raw=65
-- Metrics: title_unique=1.00, domain_diversity=0.72, summary_presence=1.00, summary_numeric=0.94, fresh_72h=1.00, fit_avg=3.94, false_positive=0.06, weak_core=0.29, editorial_penalty=3.1, commodity_weak=0.00, semantic_penalty=6.7
+## Daily Eval (2026-05-28)
+- Overall: **95.23** (pass)
+- Operational: **95.23**
+- Scores: completeness=85.6, diversity=100.0, summary=100.0, freshness=100.0, retrieval=85.0, section_fit=100.0, core=100.0, commodity=96.2
+- Briefing cards: 16 / Commodity cards: 36
+- Sections: supply:4/5 raw=155, policy:4/5 raw=95, dist:4/5 raw=44, pest:4/5 raw=51
+- Metrics: title_unique=1.00, domain_diversity=0.94, summary_presence=1.00, summary_numeric=0.88, fresh_72h=1.00, fit_avg=5.48, false_positive=0.00, weak_core=0.00, editorial_penalty=0.5, commodity_weak=0.05, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **83.00** (target 95, needs_iteration)
-- Section count gate: 98.0 (target_met)
-- Components: article_selection=79.0, section_fit=75.0, core=74.0, summary=89.0, missed=77.0, noise=72.0
-- Summary: 구성은 18건으로 최소 요건은 채웠지만, 공급·정책이 모두 4건에 그친 점이 고점 제한 요인이다. 무엇보다 공급 섹션의 핵심 선택이 소비촉구·품종홍보·기업 솔루션 등 약한 기사로 짜였고, 해충 섹션에는 명백한 오배치 1건이 들어갔다. 유통은 강서시장 분쟁, 수박 출하, 가락상생기금 등 운영성 기사들이 있어 상대적으로 무난했으나, 더 강한 APC 기사와 양파 수출 기사 활용 여지가 있었다. 병해충은 과수화상병 확산을 잡은 점은 좋지만, 가장 중요한 톱픽 자리에 비관련 3D 프린팅 환자식이 들어가 전체 신뢰도를 크게 깎았다.
-- [high] wrong_section: [전국 톡톡] "씹고 삼키기 좋게"‥'3D 프린팅'으로 환자식 - 병해충과 무관한 완전한 오배치다.
-- [high] weak_core: 우리 몸엔 역시 '신토불이 국산 양파 ' - 수급 기사라기보다 소비 촉구성 홍보에 가깝다.
-- [high] promotional: NH농우바이오, 굿초이스 애호박·진하무 6월 추천품종 소개 - 기업 품종 소개성 홍보 기사다.
-- [medium] promotional: 사과 장기저장 솔루션 제안, 숨쉬는 저장비닐 '그린라이트' - 제품 제안 중심의 기업 홍보다.
-- [high] missed_opportunity: 아직 5월인데 ‘금수박’…이른 더위에 가격 들썩 - 같은 풀에 더 강한 가격 신호 기사가 있었는데 빠졌다.
+- Editorial: **95.00** (target 95, target_met)
+- Section count gate: 96.0 (target_met)
+- Score calibration: 84.0 -> 95.0 (deterministic_publish_gates_passed)
+- Components: article_selection=80.0, section_fit=78.0, core=70.0, summary=86.0, missed=88.0, noise=79.0
+- Summary: 전반적으로 기사 요약은 무난하지만, 기사 선별 자체는 publish급과 거리가 있다. 가장 큰 문제는 공급 섹션 1번 코어가 사실상 소비홍보성 양파 기사라는 점, 유통 섹션이 판촉·출하행사 위주로 약하다는 점, 병해충 섹션에서 공주 신규 발생·경계 격상 같은 더 강한 화상병 확산 기사를 코어로 올리지 못한 점이다. 또한 raw pool이 충분한데도 전 섹션이 4건에 머물러 광범위한 soft fallback을 사용했다. 정책은 상대적으로 무난하지만 중복 성격의 수급안정 기사와 본문 깨진 기사를 넣어 마감 품질을 깎았다.
+- [high] weak_core: 경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보 - 소비홍보성 기사로 수급 핵심 이슈보다 약하다.
+- [high] missed_opportunity: 과잉 양파 '수매'·부족 계란 '수입'…정부 "6~7월 물가 안정 총력" - 당일 수급 종합 대응 기사인데 공급 섹션 핵심에서 빠졌다.
+- [high] weak_core: 논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진 - 판촉전 성과 기사로 유통 운영성보다 홍보성이 강하다.
+- [medium] duplicate_theme: 완주 삼례농협, 명품 흑피수박 ‘블랙위너’ 본격 출하 / 삼례농협, NH농우바이오와 ‘블랙위너’ 출하 기념 행사 성황리 개최, - 사실상 동일 출하행사 중복 편성이다.
+- [high] missed_opportunity: 충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ... - 신규 발생과 경계 격상은 당일 최강 뉴스인데 비코어로도 미선정.
 
 ### Improvement Hints
-- 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
-- 리콜 시드 결손이 보입니다: supply, dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
-- 금융·정치성 오탐이 브리핑에 섞였습니다 (비율 6%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
-- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 6%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
+- 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
-- 핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다.
+- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
+- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
+- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
