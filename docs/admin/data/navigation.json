@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T02:38:32+09:00",
+  "generated_at": "2026-05-28T02:34:09+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -108,6 +108,12 @@
       "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-05-27",
+      "count": 1,
+      "section": "fruit_flower",
+      "surface": "commodity_group_chip"
     }
   ],
   "view_switch": [
@@ -120,6 +126,12 @@
     {
       "date": "2026-03-31",
       "count": 9,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-05-27",
+      "count": 7,
       "from_view": "briefing",
       "to_view": "commodity"
     },
@@ -182,6 +194,12 @@
       "count": 3,
       "from_view": "briefing",
       "to_view": "commodity"
+    },
+    {
+      "date": "2026-05-27",
+      "count": 3,
+      "from_view": "commodity",
+      "to_view": "briefing"
     },
     {
       "date": "2026-03-31",
@@ -772,7 +790,7 @@
       "date": "2026-05-26",
       "count": 1,
       "nav_type": "latest_brief",
-      "from_date": "",
+      "from_date": "(not set)",
       "to_date": "2026-05-26"
     }
   ]
