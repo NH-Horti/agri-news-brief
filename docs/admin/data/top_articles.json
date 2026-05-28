@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T02:34:09+09:00",
+  "generated_at": "2026-05-29T02:45:05+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -570,6 +570,19 @@
       "target_domain": "www.nongmin.com",
       "clicks": 3,
       "users": 3,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "3f831c8dd720",
+      "title": "때이른 여름 채소값 경고등…대파 도매가, 한 달새 213% '껑충'",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 3,
+      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -1417,6 +1430,45 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-05-27.html#sec-dist",
       "source_url": "https://www.newspim.com/news/view/20260526000385"
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "3f831c8dd720",
+      "title": "때이른 여름 채소값 경고등…대파 도매가, 한 달새 213% '껑충'",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "c3d13a547afc",
+      "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
+      "report_date": "2026-05-28",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "d68f2beb1bad",
+      "title": "[사실은 이렇습니다] 큰 일교차로 일부 노지채소 도매 가격 일시 상승하...",
+      "report_date": "2026-05-28",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.korea.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -4969,6 +5021,19 @@
     },
     {
       "date": "2026-05-27",
+      "article_id": "7fe83c82c659",
+      "title": "제주 당근 연합회·구좌농협, 가락시장 한국청과 방문",
+      "report_date": "2026-05-27",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.farminsight.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-27.html#sec-supply",
+      "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16465"
+    },
+    {
+      "date": "2026-05-27",
       "article_id": "a6814755ac23",
       "title": "'명물'광양매실 출하 시작…풍년 농사 기대",
       "report_date": "2026-05-26",
@@ -5018,6 +5083,136 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-05-27.html#sec-policy",
       "source_url": "http://www.breaknews.com/1209660"
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "070c218a35d2",
+      "title": "우리 꽃 ‘백강’ 대형 국화 시장 판도 바꿔",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.farmnmarket.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "0cd54cef9ca0",
+      "title": "수요일마다 과수화상병 예찰하세요",
+      "report_date": "2026-05-28",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-28.html#sec-pest",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70520"
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "0ec33d022b3c",
+      "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.gndomin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-28.html#sec-supply",
+      "source_url": "http://www.gndomin.com/news/articleView.html?idxno=476953"
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "6c437822eedc",
+      "title": "아직 5월인데 ‘금수박’…이른 더위에 가격 들썩",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "7145cc89da1a",
+      "title": "강원농협·농협공판장, 온라인 도매시장 활성화 앞장",
+      "report_date": "2026-05-28",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.kwnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "95cb1b55265f",
+      "title": "KREI, 농산물가격안정제 도 입 앞두고 정책토론회 개최",
+      "report_date": "2026-05-28",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.nongup.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-05-28.html#sec-policy",
+      "source_url": "http://www.nongup.net/news/articleView.html?idxno=33165"
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "cab5abaf8d96",
+      "title": "\"내가 키웠지만 절대 안 먹어\" 중국 약물 범벅 양매·복숭아 충격 실태",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.insight.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "d2f2d1bd39c5",
+      "title": "창원특례시, 단감 미국선녀벌레 방제 약제 지원",
+      "report_date": "2026-05-28",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newsgn.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "ede4787c2295",
+      "title": "[단독] 정부, 농산물 과잉생산 막는다… 차액 보전 요건·생산량 조절 대...",
+      "report_date": "2026-05-28",
+      "section": "policy",
+      "surface": "commodity_primary",
+      "target_domain": "biz.chosun.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-05-28",
+      "article_id": "fd747e06807f",
+      "title": "이른 더위에 시설 자두 ·복숭아 조기 출하…\"과숙 관리 주의\"",
+      "report_date": "2026-05-28",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
