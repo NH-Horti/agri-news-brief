@@ -2,27 +2,29 @@
   "reports": [
     {
       "report_date": "2026-05-28",
-      "generated_at_kst": "2026-05-28T06:22:34+09:00",
-      "overall_score": 95.23,
-      "operational_score": 95.23,
-      "editorial_score": 95.0,
-      "editorial_status": "target_met",
+      "generated_at_kst": "2026-05-28T11:47:32+09:00",
+      "overall_score": 86.81,
+      "operational_score": 86.81,
+      "editorial_score": 82.0,
+      "editorial_status": "needs_iteration",
       "status": "pass",
-      "section_alignment": 100.0,
+      "section_alignment": 90.74,
       "core_quality": 100.0,
-      "commodity_board_quality": 96.2,
-      "briefing_total": 16,
-      "commodity_total": 36,
+      "commodity_board_quality": 97.38,
+      "briefing_total": 18,
+      "commodity_total": 37,
       "summary_presence_rate": 1.0,
       "within_72h_rate": 1.0,
       "briefing_title_unique_rate": 1.0,
-      "content_false_positive_rate": 0.0,
-      "editorial_quality_penalty": 0.5,
+      "content_false_positive_rate": 0.0556,
+      "editorial_quality_penalty": 0.4444,
       "policy_wrong_section_rate": 0.0,
       "promotional_filler_rate": 0.0,
       "promotional_core_rate": 0.0,
-      "pest_theme_duplicate_rate": 0.0625,
-      "guardrail_driver_tags": []
+      "pest_theme_duplicate_rate": 0.0556,
+      "guardrail_driver_tags": [
+        "semantic_false_positive"
+      ]
     },
     {
       "report_date": "2026-05-27",
@@ -665,5 +667,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-05-28T06:22:34+09:00"
+  "updated_at_kst": "2026-05-28T11:47:32+09:00"
 }
