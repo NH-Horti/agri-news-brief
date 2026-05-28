@@ -1770,6 +1770,106 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(len(final_by_section["policy"]), 5)
         self.assertIn(structural.link, {article.link for article in final_by_section["policy"]})
 
+    def test_preferred_count_recovery_crossfills_policy_supply_response_gap(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격안정제 정책 점검 {idx}",
+                description="정부가 농산물 가격안정제와 수급 안정 대책을 점검했다.",
+                link=f"https://example.com/policy-existing-{idx}",
+                press="농업신문",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        supply_response = self._make_article(
+            section="supply",
+            title='과잉 양파 "수매"·부족 계란 "수입"…정부 "6~7월 물가 안정 총력"',
+            description=(
+                "농식품부가 양파 정부 수매와 수출 지원, 대파·수박 수급 점검, "
+                "농축산물 공급 확대와 할인지원으로 물가 안정에 총력 대응한다고 밝혔다."
+            ),
+            link="https://example.com/policy-supply-response",
+            press="뉴스핌",
+            topic="양파",
+        )
+        supply_response.score = 61.0
+        final_by_section = {"policy": list(existing), "supply": []}
+        raw_by_section = {"policy": list(existing), "supply": [supply_response]}
+
+        self.assertTrue(main._is_policy_supply_response_gap_story(supply_response))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["policy"]), 5)
+        picked = next(article for article in final_by_section["policy"] if article.link == supply_response.link)
+        self.assertEqual(picked.section, "policy")
+        self.assertEqual(picked.reassigned_from, "supply")
+
+    def test_preferred_count_recovery_allows_dist_online_wholesale_fifth_slot(self) -> None:
+        existing = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=desc,
+                link=f"https://example.com/dist-existing-{idx}",
+                press="농민신문",
+                topic=topic,
+            )
+            for idx, (title, desc, topic) in enumerate(
+                (
+                    ("논산 수박 판촉전 전량 매진", "수도권 하나로마트에서 수박 판촉전과 직거래 판매가 진행됐다.", "수박"),
+                    ("완주 흑피수박 본격 출하", "산지 농협이 흑피수박 출하식을 열고 시장 공급을 시작했다.", "수박"),
+                    ("친환경농산물 급식 물류센터 시범 운영", "친환경농산물 물류센터가 학교급식 납품 정보를 제공한다.", "친환경농산물"),
+                    ("성주참외 일본 판촉행사 호평", "성주참외 수출 확대를 위한 일본 소비자 판촉행사가 열렸다.", "참외"),
+                ),
+                start=1,
+            )
+        ]
+        online_market = self._make_article(
+            section="dist",
+            title="강원농협·농협공판장, 온라인 도매시장 활성화 앞장",
+            description=(
+                "강원농협과 농협공판장이 온라인 도매시장 출하 업무협약을 맺고 "
+                "강원지역 우수 농산물의 온라인 도매시장 취급 확대와 유통 구조 개선에 나섰다."
+            ),
+            link="https://example.com/dist-online-wholesale",
+            press="강원일보",
+            topic="농산물",
+        )
+        online_market.score = 70.0
+        final_by_section = {"dist": list(existing)}
+        raw_by_section = {"dist": [*existing, online_market]}
+
+        self.assertTrue(main._is_dist_preferred_gap_story(online_market))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["dist"]), 5)
+        self.assertIn(online_market.link, {article.link for article in final_by_section["dist"]})
+
+    def test_postbuild_rejects_foreign_unmanaged_commodity_context(self) -> None:
+        ai_market = self._make_article(
+            section="dist",
+            title="해외 열대과일 가격은 왜 천천히 떨어지나",
+            description="중국 현지 두리안과 망고 가격, 해외 바나나 유통 사례를 중심으로 소비자물가 흐름을 분석했다.",
+            link="https://example.com/dist-foreign-unmanaged",
+            press="뉴스핌",
+            topic="농산물",
+        )
+
+        self.assertTrue(main.is_foreign_unmanaged_commodity_context(ai_market.title, ai_market.description))
+        self.assertEqual(main._postbuild_article_reject_reason(ai_market, "dist"), "foreign_unmanaged_commodity")
+
+    def test_postbuild_rejects_ai_economic_explainer_tail(self) -> None:
+        explainer = self._make_article(
+            section="dist",
+            title="[AI로 읽는 경제] ② 농산물값은 올라갈 땐 바로 뛰는데, 왜 내릴 땐 한참 뒤에야 떨어지나",
+            description="AI 핵심 요약과 산지와 식탁 사이 기획시리즈로 유통단계 시차를 설명했다.",
+            link="https://example.com/dist-ai-explainer",
+            press="뉴스핌",
+            topic="농산물",
+        )
+
+        self.assertTrue(main.is_ai_economic_explainer_tail(explainer.title, explainer.description))
+        self.assertEqual(main._postbuild_article_reject_reason(explainer, "dist"), "dist_ai_explainer_tail")
+
     def test_dist_soft_fallback_allows_direct_distribution_tail_only_for_short_section(self) -> None:
         dist_tail = self._make_article(
             section="dist",
