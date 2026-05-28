@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-28",
-  "generated_at_kst": "2026-05-28T17:20:47+09:00",
+  "generated_at_kst": "2026-05-28T17:50:52+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 100.0,
@@ -12,12 +12,12 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
+    "promotional_filler_rate": 0.1,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
     "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.5,
+    "editorial_quality_penalty": 3.1714,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9444,
     "commodity_primary_weak_rate": 0.0556
@@ -56,6 +56,15 @@
   },
   "editorial_quality_samples": [
     {
+      "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
+      "href": "http://www.gndomin.com/news/articleView.html?idxno=476953",
+      "section": "supply",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
       "title": "\"예약형 정가·수의매매, 납품·정산 기준 매뉴얼 필요\"",
       "href": "https://www.agrinet.co.kr/news/articleView.html?idxno=404463",
       "section": "dist",
@@ -75,17 +84,17 @@
     }
   ],
   "editorial": {
-    "score": 80.0,
+    "score": 82.0,
     "target_score": 95.0,
-    "target_status": "needs_major_iteration",
+    "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 77.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 72.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 76.0,
+      "article_selection": 78.0,
+      "section_fit": 80.0,
+      "core_pick_quality": 76.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 81.0,
       "noise_control": 74.0
     },
     "issues": [
@@ -94,83 +103,84 @@
         "severity": "high",
         "section": "supply",
         "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
-        "reason": "소비촉진 홍보성 지역 기사인데 공급 섹션 코어로는 약함.",
-        "suggested_action": "정부 수매·수출지원 등 실제 수급 대응 기사로 교체."
+        "reason": "소비 홍보성 지역 기사로 공급 핵심 이슈성이 약함.",
+        "suggested_action": "정부 수매·수출지원 등 수급 대응 기사를 코어로 교체."
       },
       {
-        "type": "filler",
+        "type": "missed_opportunity",
         "severity": "high",
         "section": "supply",
-        "title": "괴산군 원원종 감자 생산 목표 초과 달성",
-        "reason": "지역 성과 보도 성격이 강해 당일 전국 수급 판단에 기여가 낮음.",
-        "suggested_action": "조기 출하·가격·작황 영향 기사로 대체."
+        "title": "과잉 양파 '수매'·부족 계란 '수입'…정부 \"6~7월 물가 안정 총력\"",
+        "reason": "원시 후보에 더 강한 전국 단위 수급 기사 있었는데 미반영.",
+        "suggested_action": "홍보·보드성 기사 대신 전국 수급 대응 기사 우선 선별."
       },
       {
-        "type": "duplication",
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "supply",
+        "title": "괴산군 원원종 감자 생산 목표 초과 달성",
+        "reason": "지역 성과 홍보에 가깝고 당일 공급 현안성과 약함.",
+        "suggested_action": "조기출하·가격·작황 등 시장성 강한 기사로 대체."
+      },
+      {
+        "type": "duplicate_angle",
         "severity": "medium",
         "section": "policy",
         "title": "농축산물 물가, 맞춤형으로 대응 / 양파값 급락·계란값 고공행진…정부, 수급 안정·할인지원 총력",
-        "reason": "동일 정부 수급회의 재가공 기사로 중복성이 큼.",
-        "suggested_action": "한 건만 남기고 다른 정책 이슈로 교체."
+        "reason": "같은 정부 수급회의를 거의 반복해 정책면 효율 저하.",
+        "suggested_action": "하나는 제외하고 가격안정제 세부안 등 다른 정책 이슈 보강."
       },
       {
-        "type": "missed_core",
+        "type": "duplicate_story",
         "severity": "high",
-        "section": "pest",
-        "title": "충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ...",
-        "reason": "당일 가장 강한 화상병 뉴스인데 비코어 처리됨.",
-        "suggested_action": "이 기사를 1순위 코어로 승격."
-      },
-      {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "pest",
-        "title": "아산시, 과수화상병 차단 총력… 생육기 방제약제 전 농가 무상 지원",
-        "reason": "지원 안내는 유용하지만 발생·확산 기사보다 뉴스 강도가 약함.",
-        "suggested_action": "지원성 기사는 꼬리로 내리고 확산 기사 전면 배치."
-      },
-      {
-        "type": "duplication",
-        "severity": "medium",
         "section": "dist",
         "title": "강원농협·농협공판장, 온라인 도매시장 활성화 앞장 / 강원 농산물 온라인 도매시장 경쟁력 키운다",
-        "reason": "사실상 같은 MOU 기사 중복 편성.",
-        "suggested_action": "한 건 삭제하고 다른 도매시장 운영 기사로 교체."
+        "reason": "동일 MOU의 사실상 중복 기사다.",
+        "suggested_action": "중복 제거하고 예약형 정가·수의매매 등 제도 기사로 교체."
       },
       {
-        "type": "section_noise",
+        "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "완주 삼례 농협 , 명품 흑피수박 ‘블랙위너’ 본격 출하",
-        "reason": "출하식·브랜드 홍보 성격이 강해 유통 운영 이슈보다 약함.",
-        "suggested_action": "정가수의매매·유통혁신 TF 등 운영 기사 우선."
+        "reason": "출하식·브랜드 홍보 성격이 강해 유통 운영 기사로는 약함.",
+        "suggested_action": "물류·도매시장 운영·수출 차질 기사 우선 배치."
+      },
+      {
+        "type": "wrong_priority",
+        "severity": "high",
+        "section": "pest",
+        "title": "아산시, 과수화상병 차단 총력… 생육기 방제약제 전 농가 무상 지원",
+        "reason": "지원 기사보다 공주 신규 발생·경계 격상이 더 핵심 현안.",
+        "suggested_action": "발생 확산 기사와 위기단계 상향을 코어 1순위로 승격."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "supply",
-        "title": "과잉 양파 '수매'·부족 계란 '수입'…정부 \"6~7월 물가 안정 총력\"",
-        "reason": "당일 공급 판단에 더 직접적인 전국 단위 기사인데 공급 섹션에서 빠짐.",
-        "suggested_action": "양파 홍보성 기사 대신 채택."
+        "section": "pest",
+        "title": "\"미발생 지역까지 번졌다\"···충북 중심 과수화상병 비상",
+        "reason": "권역 확산 규모를 보여주는 더 강한 종합 기사가 누락됨.",
+        "suggested_action": "단순 지원 기사 하나를 확산 현황 종합 기사로 교체."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
+      "editorial_noise_filter",
       "editorial_duplicate_topic",
       "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.4,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.3,
       "supply": 1.5,
@@ -196,8 +206,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 80.0,
-    "target_status": "needs_major_iteration",
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 95.0,
@@ -225,7 +235,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 92,
+          "raw_candidates": 90,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -249,7 +259,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 49,
+          "raw_candidates": 51,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -272,7 +282,8 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection"
+      "article_selection",
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -292,6 +303,12 @@
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
