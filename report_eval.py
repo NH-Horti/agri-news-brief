@@ -1959,6 +1959,15 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
     )
     hint_lines = "\n".join(f"- {item}" for item in result.get("improvement_hints", []))
     feedback_lines = "\n".join(f"- {item}" for item in result.get("summary_prompt_feedback", []))
+    quality_gate = result.get("quality_gate", {})
+    quality_gate_line = ""
+    if isinstance(quality_gate, dict) and quality_gate:
+        quality_gate_line = (
+            f"- Quality gate: **{float(quality_gate.get('headline_score', result.get('overall_score', 0.0)) or 0.0):.2f}** "
+            f"({quality_gate.get('status', 'unknown')}, {quality_gate.get('reason', 'unknown')}; "
+            f"editorial={float(quality_gate.get('editorial_score', 0.0) or 0.0):.1f}, "
+            f"operational={float(quality_gate.get('operational_score', 0.0) or 0.0):.1f})\n"
+        )
     editorial = result.get("editorial", {})
     editorial_block = ""
     if isinstance(editorial, dict) and editorial:
@@ -2006,6 +2015,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"## Daily Eval ({result.get('report_date', '')})\n"
         f"- Overall: **{result.get('overall_score', 0):.2f}** ({result.get('status', 'unknown')})\n"
         f"- Operational: **{float(result.get('operational_score', result.get('overall_score', 0.0)) or 0.0):.2f}**\n"
+        f"{quality_gate_line}"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
         f"retrieval={scores.get('retrieval_support', 0):.1f}, section_fit={scores.get('section_alignment', 0):.1f}, "
@@ -2034,6 +2044,9 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
 def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
     counts = result.get("counts", {})
     metrics = result.get("metrics", {})
+    quality_gate = result.get("quality_gate", {})
+    if not isinstance(quality_gate, dict):
+        quality_gate = {}
     return {
         "report_date": result.get("report_date"),
         "generated_at_kst": result.get("generated_at_kst"),
@@ -2041,6 +2054,8 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "operational_score": result.get("operational_score", result.get("overall_score")),
         "editorial_score": result.get("editorial_score"),
         "editorial_status": (result.get("editorial") or {}).get("target_status") if isinstance(result.get("editorial"), dict) else None,
+        "quality_gate_status": quality_gate.get("status"),
+        "quality_gate_reason": quality_gate.get("reason"),
         "status": result.get("status"),
         "section_alignment": result.get("scores", {}).get("section_alignment", 0),
         "core_quality": result.get("scores", {}).get("core_quality", 0),

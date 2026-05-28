@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 
 import report_eval
+from scripts.evaluate_daily_report import apply_editorial_quality_gate
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +47,37 @@ class ReportEvalTests(unittest.TestCase):
         self.assertGreater(len(commodity), 20)
         self.assertTrue(any(article.is_core for article in briefing))
         self.assertTrue(all(article.summary.strip() for article in briefing))
+
+    def test_editorial_quality_gate_caps_headline_score_below_target(self) -> None:
+        result = {
+            "overall_score": 98.13,
+            "operational_score": 98.13,
+            "status": "pass",
+            "score_notes": {},
+        }
+        editorial = {
+            "status": "success",
+            "score": 80.0,
+            "target_score": 95.0,
+            "target_status": "needs_major_iteration",
+        }
+
+        apply_editorial_quality_gate(result, editorial)
+
+        self.assertEqual(result["overall_score"], 80.0)
+        self.assertEqual(result["operational_score"], 98.13)
+        self.assertEqual(result["status"], "warn")
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target")
+        rendered = report_eval.render_evaluation_markdown(
+            {
+                **result,
+                "report_date": "2026-05-28",
+                "counts": {"briefing_by_section": {}, "raw_by_section": {}, "expected_briefing_by_section": {}},
+                "metrics": {},
+                "scores": {},
+            }
+        )
+        self.assertIn("Quality gate", rendered)
 
     def test_parse_report_html_extracts_commodity_primary_metadata(self) -> None:
         html = """
