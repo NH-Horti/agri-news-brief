@@ -1,27 +1,30 @@
-## Daily Eval (2026-05-28)
-- Overall: **83.00** (warn)
-- Operational: **97.78**
-- Quality gate: **83.00** (needs_iteration, editorial_below_target; editorial=83.0, operational=97.8)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=85.6, section_fit=100.0, core=100.0, commodity=96.6
-- Briefing cards: 20 / Commodity cards: 38
-- Sections: supply:5/5 raw=142, policy:5/5 raw=89, dist:5/5 raw=31, pest:5/5 raw=52
-- Metrics: title_unique=1.00, domain_diversity=0.95, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=5.15, false_positive=0.00, weak_core=0.00, editorial_penalty=0.9, commodity_weak=0.06, semantic_penalty=0.0
+## Daily Eval (2026-05-29)
+- Overall: **84.00** (warn)
+- Operational: **88.98**
+- Quality gate: **84.00** (needs_iteration, editorial_below_target; editorial=84.0, operational=89.0)
+- Scores: completeness=96.4, diversity=98.4, summary=100.0, freshness=100.0, retrieval=86.9, section_fit=91.2, core=100.0, commodity=98.5
+- Briefing cards: 19 / Commodity cards: 25
+- Sections: supply:5/5 raw=119, policy:5/5 raw=121, dist:4/5 raw=67, pest:5/5 raw=35
+- Metrics: title_unique=1.00, domain_diversity=0.68, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=4.21, false_positive=0.05, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, semantic_penalty=6.3
 
 
 ### Editorial Shadow Eval
-- Editorial: **83.00** (target 95, needs_iteration)
-- Section count gate: 100.0 (target_met)
-- Components: article_selection=80.0, section_fit=82.0, core=78.0, summary=90.0, missed=79.0, noise=77.0
-- Summary: 섹션 수는 모두 채웠지만, 편집 품질은 목표 95에 못 미칩니다. 공급 섹션의 1번 코어가 소비홍보성 양파 기사여서 톱픽으로 약하고, 정책은 정부 수급점검 기사와 가격안정제 기사 축이 맞지만 지역 생활물가 기사와 유사 정부발 기사 중복이 섞였습니다. 유통은 온라인도매시장 기사 선택은 좋았으나 동일 사안 중복과 판촉·출하식 비중이 높아 운영·물류성 밀도가 떨어집니다. 병해충은 과수화상병 집중 편성 자체는 맞지만, 전국 확산·위기단계 격상 같은 더 강한 스트레이트를 충분히 전면화하지 못했습니다.
-- [high] weak_core: 경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보 - 소비홍보성 지역 기사로 공급 톱픽 가치가 낮다.
-- [high] missed_opportunity: 과잉 양파 '수매'·부족 계란 '수입'…정부 "6~7월 물가 안정 총력" - 같은 날 전국 수급대응 기사인데 공급 섹션에서 빠졌다.
-- [medium] wrong_fit: 계란 등 인천도 생활물가 등락...고추장·배추·오이 내린 곳도 - 지역 물가 스케치로 중앙 정책 섹션 적합도가 낮다.
-- [high] duplication: 강원농협·농협공판장, 온라인 도매시장 활성화 앞장 / 강원 농산물 온라인 도매시장 경쟁력 키운다 - 동일 협약 사안을 중복 수록했다.
-- [medium] promotional_filler: 완주 삼례 농협 , 명품 흑피수박 ‘블랙위너’ 본격 출하 - 출하식·품종 홍보 성격이 강하다.
+- Editorial: **84.00** (target 95, needs_iteration)
+- Section count gate: 98.0 (soft_fallback)
+- Components: article_selection=82.0, section_fit=81.0, core=86.0, summary=91.0, missed=78.0, noise=79.0
+- Summary: 전반적으로 당일 핵심 이슈인 양파 공급과잉·수급안정, 과수화상병 확산, 온라인도매시장 활성화는 포착했지만, 기사 선별은 발행용 수준보다 한 단계 아래다. 공급과 정책 섹션은 양파 이슈 중복과 약한 꼬리 기사 비중이 크고, 유통은 4건으로 소프트 폴백에 그친 데다 지역 출하 홍보성 중복 카드 2건이 크게 감점 요인이다. 원시 후보군에 더 나은 대체재가 있었는데도 일부 약한 선택이 남아 있어 95점대는 어렵다.
+- [medium] underfill: 유통 섹션 4건만 편성 - raw 후보가 충분한데 목표 5건 미달.
+- [high] duplicate: '청원생명수박' 출하 기사 2건 중복 - 같은 행사·같은 내용의 지역 출하 기사 중복 편성.
+- [high] filler: 청원생명수박 출하 관련 2건 - 유통 핵심보다 지역 출하 홍보 성격이 강함.
+- [high] missed_opportunity: 남원시조합공동사업법인 기사 미선정 - 생산유통통합조직 운영 기사로 유통 섹션 적합도가 높음.
+- [medium] missed_opportunity: 양파 수출확대 추진 기사 미선정 - 당일 정책 실행안인데 성과 브리핑성 기사보다 실무성이 높음.
 
 ### Improvement Hints
 - 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=10%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
+- 금융·정치성 오탐이 브리핑에 섞였습니다 (비율 5%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
