@@ -941,7 +941,8 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main.is_pest_fire_blight_field_report_context(title, desc))
         self.assertIn("사과 과수원 붉은 죽음", main.PEST_ALWAYS_ON_RECALL_QUERIES[:4])
         self.assertIn('"붉은 죽음" 과수화상병 농가', main.PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
-        self.assertGreaterEqual(main.PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 3)
+        self.assertIn('site:khan.co.kr "붉은 죽음" 과수화상병', main.PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
+        self.assertGreaterEqual(main.PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6)
 
         article = self._make_article(
             section="pest",

@@ -533,6 +533,8 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
 PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES = [
     '"붉은 죽음" 과수화상병 농가',
     '"치료제 없어" 과수화상병 농가',
+    'site:khan.co.kr "붉은 죽음" 과수화상병',
+    'site:khan.co.kr 과수화상병 충북 농가 시름',
 ]
 # pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
 # always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
@@ -556,7 +558,7 @@ GOOGLE_NEWS_RECALL_ITEM_CAP = max(3, min(GOOGLE_NEWS_RECALL_ITEM_CAP, 20))
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = int(os.getenv("GOOGLE_NEWS_RECALL_MIN_AGE_DAYS", "5") or 5)
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = max(1, min(GOOGLE_NEWS_RECALL_MIN_AGE_DAYS, 90))
 PEST_GOOGLE_NEWS_RECALL_ENABLED = os.getenv("PEST_GOOGLE_NEWS_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
-PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "5") or 5)
+PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "6") or 6)
 PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = max(0, min(PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6))
 
 
@@ -19902,8 +19904,12 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             and PEST_GOOGLE_NEWS_RECALL_QUERY_CAP > 0
         ):
             always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            high_signal_qs = [q for q in PEST_ALWAYS_ON_RECALL_QUERIES[:3] if q in set(always_qs)]
+            remaining_always_qs = [q for q in always_qs if q not in set(high_signal_qs)]
             google_recall_qs = _dedupe_queries(
-                list(always_qs) + list(PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
+                list(PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
+                + list(high_signal_qs)
+                + list(remaining_always_qs)
             )
             if google_recall_qs:
                 recall_meta["pest_google_news_queries"] = list(google_recall_qs[:PEST_GOOGLE_NEWS_RECALL_QUERY_CAP])
