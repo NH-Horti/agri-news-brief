@@ -2,12 +2,12 @@
   "reports": [
     {
       "report_date": "2026-05-28",
-      "generated_at_kst": "2026-05-28T19:45:19+09:00",
-      "overall_score": 82.0,
+      "generated_at_kst": "2026-05-28T20:08:32+09:00",
+      "overall_score": 72.0,
       "operational_score": 95.83,
-      "editorial_score": 82.0,
-      "editorial_status": "needs_iteration",
-      "quality_gate_status": "needs_iteration",
+      "editorial_score": 72.0,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
       "quality_gate_reason": "editorial_below_target",
       "status": "warn",
       "section_alignment": 100.0,
@@ -667,5 +667,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-05-28T19:45:19+09:00"
+  "updated_at_kst": "2026-05-28T20:08:32+09:00"
 }

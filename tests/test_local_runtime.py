@@ -952,6 +952,13 @@ class LocalRuntimeTests(TestCase):
             "https://www.khan.co.kr/article/202605280600001",
             {row.get("url") for row in recall_data.get("items", [])},
         )
+        recall_start = datetime(2026, 5, 27, 6, 0, tzinfo=main.KST)
+        recall_end = datetime(2026, 5, 28, 6, 0, tzinfo=main.KST)
+        boundary_pub = datetime(2026, 5, 28, 6, 0, tzinfo=main.KST)
+        self.assertLess(
+            main._editorial_recall_window_pubdate(boundary_pub, recall_start, recall_end),
+            recall_end,
+        )
 
         article = self._make_article(
             section="pest",
