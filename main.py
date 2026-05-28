@@ -570,6 +570,7 @@ PEST_KHAN_SEARCH_RECALL_QUERY_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_QUERY
 PEST_KHAN_SEARCH_RECALL_QUERY_CAP = max(0, min(PEST_KHAN_SEARCH_RECALL_QUERY_CAP, 5))
 PEST_KHAN_SEARCH_RECALL_ITEM_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_ITEM_CAP", "5") or 5)
 PEST_KHAN_SEARCH_RECALL_ITEM_CAP = max(1, min(PEST_KHAN_SEARCH_RECALL_ITEM_CAP, 10))
+EDITORIAL_RECALL_URLS_PATH = os.getenv("EDITORIAL_RECALL_URLS_PATH", "config/editorial_recall_urls.json").strip()
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -18561,6 +18562,79 @@ def fetch_khan_search_items(
         return []
 
 
+@lru_cache(maxsize=4)
+def _load_editorial_recall_entries(path_s: str) -> tuple[tuple[tuple[str, Any], ...], ...]:
+    path_s = (path_s or "").strip()
+    if not path_s:
+        return tuple()
+    try:
+        path = Path(path_s)
+        if not path.exists():
+            return tuple()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows: list[JsonDict] = []
+        if isinstance(data, dict) and isinstance(data.get("items"), list):
+            rows = [x for x in data.get("items") or [] if isinstance(x, dict)]
+        elif isinstance(data, dict):
+            for date_key, values in data.items():
+                if isinstance(values, list):
+                    for value in values:
+                        if isinstance(value, dict):
+                            row = dict(value)
+                            row.setdefault("date", str(date_key))
+                            rows.append(row)
+        elif isinstance(data, list):
+            rows = [x for x in data if isinstance(x, dict)]
+        return tuple(tuple(sorted(row.items())) for row in rows)
+    except Exception:
+        return tuple()
+
+
+def fetch_editorial_recall_items(section_key: str, start_kst: datetime, end_kst: datetime) -> list[JsonDict]:
+    rows: list[JsonDict] = []
+    for packed in _load_editorial_recall_entries(EDITORIAL_RECALL_URLS_PATH):
+        entry = dict(packed)
+        if str(entry.get("section") or "").strip() != section_key:
+            continue
+        url = strip_tracking_params(str(entry.get("url") or "").strip())
+        if not url:
+            continue
+        pub = _best_effort_article_pubdate_kst(url)
+        if not pub:
+            hinted = _date_hint_from_url(url)
+            if isinstance(hinted, date):
+                pub = datetime(hinted.year, hinted.month, hinted.day, 6, 0, 0, tzinfo=KST)
+        if (not pub) or pub < start_kst or pub >= end_kst:
+            continue
+        title = clean_text(str(entry.get("title") or ""))
+        desc = clean_text(str(entry.get("description") or ""))
+        if not title or not desc:
+            try:
+                r = http_session().get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                if r.ok:
+                    txt = r.text or ""
+                    title = title or _html_meta_content(txt, "og:title")
+                    desc = desc or _html_meta_content(txt, "og:description") or _html_meta_content(txt, "description")
+            except Exception:
+                pass
+        if not desc:
+            desc = _crawl_article_body(url) or title
+        if not title:
+            title = f"editorial recall {pub.date().isoformat()}"
+        rows.append(
+            {
+                "title": title,
+                "description": desc,
+                "link": url,
+                "originallink": url,
+                "pubDate": pub.astimezone(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT"),
+                "source": str(entry.get("source") or ""),
+                "source_query": str(entry.get("source_query") or "").strip() or title,
+            }
+        )
+    return rows
+
+
 def _extract_google_news_base64(source_url: str) -> str:
     try:
         parsed = urlparse(source_url)
@@ -20039,6 +20113,24 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 _ingest_google_news_items(q, rows_s, source_channel="source_search")
                 khan_added += max(0, len(items) - before_n)
             recall_meta["pest_khan_search_added"] = int(khan_added)
+    except Exception:
+        pass
+
+    try:
+        recall_rows = fetch_editorial_recall_items(section_key, effective_start_kst, end_kst)
+        if recall_rows:
+            recall_meta["editorial_recall_urls"] = [
+                str(row.get("originallink") or row.get("link") or "")
+                for row in recall_rows
+            ]
+        editorial_added = 0
+        for row in recall_rows:
+            q = str(row.get("source_query") or "").strip() or "editorial recall"
+            before_n = len(items)
+            _ingest_google_news_items(q, [row], source_channel="editorial_recall")
+            editorial_added += max(0, len(items) - before_n)
+        if recall_rows:
+            recall_meta["editorial_recall_added"] = int(editorial_added)
     except Exception:
         pass
 
