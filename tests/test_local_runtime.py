@@ -932,6 +932,25 @@ class LocalRuntimeTests(TestCase):
         self.assertIn(replacement.link, {article.link for article in final_by_section["pest"]})
         self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["pest"]})
 
+    def test_khan_style_fire_blight_field_report_is_recalled_as_pest_risk(self) -> None:
+        title = "‘치료제 없어 걸리면 답도 없다’···사과 과수원 덮친 ‘붉은 죽음’에 충북 농가 시름"
+        desc = "청주 사과 과수원에서 과수화상병 확진 뒤 매몰 처분이 진행됐고 충북 전역으로 확산하고 있다."
+
+        self.assertTrue(main.is_pest_fire_blight_farmer_risk_context(title, ""))
+        self.assertTrue(main.is_pest_fire_blight_farmer_risk_context(title, desc))
+        self.assertIn("사과 과수원 붉은 죽음", main.PEST_ALWAYS_ON_RECALL_QUERIES[:4])
+
+        article = self._make_article(
+            section="pest",
+            title=title,
+            description=desc,
+            link="https://www.khan.co.kr/article/202605280600001",
+            press="경향신문",
+        )
+        pest_conf = next((s for s in main.SECTIONS if s.get("key") == "pest"), {})
+        self.assertFalse(main._is_weak_pest_tail(article))
+        self.assertIsNotNone(main._pest_replacement_candidate_rank(article, pest_conf))
+
     def test_priority_fire_blight_promotes_national_escalation_to_core(self) -> None:
         local_core = self._make_article(
             section="pest",

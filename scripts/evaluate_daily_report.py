@@ -144,6 +144,56 @@ def _resolve_report_date(snapshot_payload: dict[str, Any], requested: str) -> st
     return str(snapshot_payload.get("report_date", "") or "").strip()
 
 
+def _score_status(score: float) -> str:
+    if score >= 85.0:
+        return "pass"
+    if score >= 70.0:
+        return "warn"
+    return "fail"
+
+
+def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[str, Any]) -> dict[str, Any]:
+    """Cap the published headline score when the editorial shadow judge is below target."""
+    if not isinstance(result, dict) or not isinstance(editorial_result, dict):
+        return result
+    if editorial_result.get("status") != "success":
+        return result
+    try:
+        editorial_score = float(editorial_result.get("score"))
+    except (TypeError, ValueError):
+        return result
+    try:
+        operational_score = float(result.get("operational_score", result.get("overall_score", 0.0)) or 0.0)
+    except (TypeError, ValueError):
+        operational_score = 0.0
+
+    target_score = float(editorial_result.get("target_score", 95.0) or 95.0)
+    target_status = str(editorial_result.get("target_status") or "")
+    gate_status = "target_met" if editorial_score >= target_score and target_status == "target_met" else (target_status or "needs_iteration")
+    gated_score = min(operational_score, editorial_score) if editorial_score < target_score else operational_score
+    result["quality_gate"] = {
+        "status": gate_status,
+        "target_score": round(target_score, 2),
+        "operational_score": round(operational_score, 2),
+        "editorial_score": round(editorial_score, 2),
+        "headline_score": round(gated_score, 2),
+        "reason": "editorial_below_target" if editorial_score < target_score else "all_targets_met",
+    }
+    if editorial_score < target_score:
+        result["overall_score"] = round(gated_score, 2)
+        result["status"] = _score_status(gated_score)
+        notes = result.get("score_notes")
+        if not isinstance(notes, dict):
+            notes = {}
+        notes["overall_score"] = (
+            "Editorial-gated headline score. The deterministic operational score is preserved "
+            "as operational_score, but the headline score is capped when the editorial shadow "
+            "judge is below the target."
+        )
+        result["score_notes"] = notes
+    return result
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate a generated daily report and optionally publish eval artifacts.")
     parser.add_argument("--report-date", default="")
@@ -203,6 +253,7 @@ def main() -> int:
         if editorial_result.get("status") == "success":
             result["editorial_score"] = editorial_result.get("score")
             result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
+            apply_editorial_quality_gate(result, editorial_result)
 
     markdown = render_evaluation_markdown(result)
     feedback_text = render_summary_feedback_text(result)
