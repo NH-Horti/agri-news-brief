@@ -267,8 +267,8 @@ class EditorialEvalTests(unittest.TestCase):
         operational = self._operational_with_uniform_counts(count=4, raw=10)
         context = editorial_eval._section_count_context(operational)
 
-        self.assertGreaterEqual(context["score"], 95.0)
-        self.assertEqual(context["status"], "target_met")
+        self.assertLess(context["score"], 95.0)
+        self.assertEqual(context["status"], "soft_fallback")
         self.assertEqual(set(context["soft_fallback_sections"]), set(report_eval.SECTION_KEYS))
 
         operational = self._operational_with_uniform_counts(count=3, raw=10)
@@ -360,7 +360,7 @@ class EditorialEvalTests(unittest.TestCase):
                     }
                 )
 
-        operational = self._operational_with_uniform_counts(count=4, raw=10)
+        operational = self._operational_with_uniform_counts(count=5, raw=10)
         operational["overall_score"] = 96.2
         operational["scores"] = {
             **operational.get("scores", {}),

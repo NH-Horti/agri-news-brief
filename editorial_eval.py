@@ -170,7 +170,7 @@ def _section_count_row_score(got: int, preferred: int, soft: int, minimum: int) 
     if got >= preferred:
         return 100.0
     if soft > 0 and got >= soft:
-        return 96.0
+        return 92.0
     if minimum > 0 and got >= minimum:
         return 90.0
     if minimum > 0:
@@ -235,9 +235,12 @@ def _section_count_context(operational_result: dict[str, Any]) -> dict[str, Any]
             "score": row_score,
         }
     score = round(sum(section_scores) / len(section_scores), 2) if section_scores else 100.0
-    status = "target_met" if score >= SECTION_COUNT_TARGET_SCORE and not severe_underfilled_sections else "underfilled"
-    if status != "target_met" and score >= 90.0 and not severe_underfilled_sections:
-        status = "minimum_fallback"
+    if not underfilled and not severe_underfilled_sections:
+        status = "target_met"
+    elif score >= 90.0 and not severe_underfilled_sections:
+        status = "soft_fallback" if soft_fallback_sections else "minimum_fallback"
+    else:
+        status = "underfilled"
     return {
         "score": score,
         "status": status,
@@ -252,7 +255,7 @@ def _section_count_context(operational_result: dict[str, Any]) -> dict[str, Any]
         "target_score": SECTION_COUNT_TARGET_SCORE,
         "scoring_rule": (
             "Each section should try to carry 5 briefing cards when raw candidates exist. "
-            "4 cards is a soft fallback, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+            "4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
         ),
     }
 

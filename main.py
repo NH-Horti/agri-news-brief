@@ -1540,7 +1540,14 @@ MANAGED_COMMODITY_GROUP_SPECS: list[dict[str, Any]] = [
         "color": "#0f766e",
         "items": [
             {"key": "radish", "label": "무", "short_label": "무", "program_core": True, "aliases": ["월동무", "봄무", "고랭지무"], "context_terms": ["무 가격", "무 수급", "무 도매가격", "무 작황", "무 출하", "무 재배"]},
-            {"key": "napa_cabbage", "label": "배추", "short_label": "배추", "program_core": True, "aliases": ["배추", "봄배추", "김장배추"]},
+            {
+                "key": "napa_cabbage",
+                "label": "배추",
+                "short_label": "배추",
+                "program_core": True,
+                "aliases": ["배추", "봄배추", "김장배추", "금추", "고랭지배추"],
+                "context_terms": ["배추 가격", "배추 수급", "배추 도매가격", "배추 작황", "배추 출하", "고랭지 배추", "포장김치", "김치업계"],
+            },
             {"key": "potato", "label": "감자", "short_label": "감자", "program_core": True, "aliases": ["감자", "봄감자", "수미감자"]},
             {"key": "carrot", "label": "당근", "short_label": "당근", "program_core": True, "aliases": ["당근", "제주당근", "햇당근"]},
             {"key": "cabbage", "label": "양배추", "short_label": "양배추", "program_core": False, "aliases": ["양배추"]},
@@ -4078,6 +4085,13 @@ _MANAGED_COMMODITY_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
         re.compile(r"(?:^|[\s\W])무(?:값|가격|시세|수급|출하|작황|재배|농가|도매가격)"),
         re.compile(r"월동무"),
         re.compile(r"고랭지무"),
+    ],
+    "napa_cabbage": [
+        re.compile(r"금\s*\([^)]*[金金][^)]*\)\s*추"),
+        re.compile(r"금추"),
+        re.compile(r"고랭지\s*배추"),
+        re.compile(r"포장김치"),
+        re.compile(r"김치업계"),
     ],
     "pear": list(_SINGLE_TERM_CONTEXT_PATTERNS["배"]),
     "persimmon": [
@@ -24779,7 +24793,7 @@ def _build_sections_phase123(
         final_noise_dropped = _cleanup_final_tail_noise_after_preferred_recovery(
             final_by_section,
             raw_by_section,
-            min_items=SOFT_MIN_PER_SECTION,
+            min_items=PREFERRED_PER_SECTION,
         )
         if final_noise_dropped:
             log.info("[REBALANCE] dropped %d weak final tail item(s) after preferred-count recovery", final_noise_dropped)
@@ -24787,6 +24801,7 @@ def _build_sections_phase123(
             final_by_section,
             raw_by_section,
             max_passes=3,
+            cleanup_min_items=PREFERRED_PER_SECTION,
         )
         if refined_recovered:
             log.info("[REBALANCE] refined %d preferred-count tail item(s) after final cleanup", refined_recovered)
@@ -24819,11 +24834,11 @@ def _build_sections_phase123(
     try:
         last_story_dupes = _drop_final_story_duplicates(
             final_by_section,
-            min_items=SOFT_MIN_PER_SECTION,
+            min_items=PREFERRED_PER_SECTION,
         )
         last_tail_noise = _drop_preferred_tail_blocked_items(
             final_by_section,
-            min_items=SOFT_MIN_PER_SECTION,
+            min_items=PREFERRED_PER_SECTION,
         )
         if last_story_dupes or last_tail_noise:
             log.info(
@@ -24831,6 +24846,9 @@ def _build_sections_phase123(
                 last_story_dupes,
                 last_tail_noise,
             )
+            final_gap_refill = _recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+            if final_gap_refill:
+                log.info("[REBALANCE] final guard refilled %d preferred-count gap item(s)", final_gap_refill)
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final duplicate/tail guard failed: %s", e)
@@ -27341,6 +27359,101 @@ def _supply_underfill_recovery_rank(article: Article, supply_conf: JsonDict) -> 
     )
 
 
+def _is_foodservice_supply_chain_slot_story(article: Article) -> bool:
+    """High-value food and foodservice supply-chain stories can fill the 5th slot."""
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    if not text.strip():
+        return False
+    if any(term in _nfkc_lower(title) for term in OPINION_BAN_TERMS):
+        return False
+    if is_processed_food_lifestyle_context(title, desc) or is_commodity_corporate_stock_context(title, desc):
+        return False
+
+    managed_summary = _managed_commodity_match_summary(title, desc)
+    managed_count = int(managed_summary.get("count") or 0)
+    if managed_count <= 0 and best_horti_score(title, desc) < 1.8:
+        return False
+
+    climate_hits = count_any(
+        text,
+        [w.lower() for w in ("폭염", "폭우", "장마", "이상기후", "고온", "극한호우", "기후 변화", "기후변화")],
+    )
+    supply_chain_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "식품업계", "식품 업계", "식자재", "급식", "포장김치", "김치업계",
+                "비축", "수매 비축", "사전 물량", "물량 확보", "계약재배", "고정가 계약",
+                "공급망", "조달", "수급 안정", "공급 안정", "스마트팜", "도매시장",
+            )
+        ],
+    )
+    market_hits = count_any(
+        text,
+        [w.lower() for w in ("가격", "값", "수급", "공급", "물량", "비축", "재고", "도매", "출하", "작황", "생산 차질")],
+    )
+    title_signal = bool(re.search(r"금\s*\([^)]*[金金][^)]*\)\s*추|금추", _nfkc_lower(title)))
+    government_supply = bool(
+        count_any(text, [w.lower() for w in ("정부", "농림축산식품부", "농식품부")]) >= 1
+        and count_any(text, [w.lower() for w in ("수급 안정", "수매 비축", "비축", "공급", "도매시장")]) >= 1
+    )
+
+    return bool(
+        (title_signal and supply_chain_hits >= 1 and market_hits >= 2)
+        or (managed_count >= 2 and supply_chain_hits >= 3 and market_hits >= 3)
+        or (managed_count >= 1 and climate_hits >= 1 and supply_chain_hits >= 2 and government_supply)
+    )
+
+
+def _foodservice_supply_chain_slot_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_foodservice_supply_chain_slot_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    managed_summary = _managed_commodity_match_summary(title, desc)
+    managed_count = int(managed_summary.get("count") or 0)
+    program_core_count = int(managed_summary.get("program_core_count") or 0)
+    supply_chain_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "식품업계", "식품 업계", "식자재", "급식", "포장김치", "김치업계",
+                "비축", "수매 비축", "물량 확보", "계약재배", "고정가 계약",
+                "공급망", "조달", "수급 안정", "스마트팜", "도매시장",
+            )
+        ],
+    )
+    market_hits = count_any(
+        text,
+        [w.lower() for w in ("가격", "값", "수급", "공급", "물량", "비축", "재고", "도매", "출하", "작황", "생산 차질")],
+    )
+    title_signal = 1 if re.search(r"금\s*\([^)]*[金金][^)]*\)\s*추|금추", _nfkc_lower(title)) else 0
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        title_signal,
+        1 if program_core_count >= 1 else 0,
+        min(5, managed_count),
+        min(8, supply_chain_hits),
+        min(8, market_hits),
+        1 if has_direct_supply_chain_signal(text) else 0,
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
+
+
 def _preferred_tail_block_reason(
     article: Article,
     section_key: str,
@@ -27361,6 +27474,8 @@ def _preferred_tail_block_reason(
     title_l = _nfkc_lower(title)
     lead_l = _nfkc_lower(f"{title} {desc[:360]}")
     if section_key == "supply":
+        if _is_foodservice_supply_chain_slot_story(article):
+            return ""
         nonmarket_hits = count_any(
             text,
             [w.lower() for w in ("화장품", "뷰티", "레시피", "요리", "맛집", "관광", "체험", "시식")],
@@ -27499,6 +27614,8 @@ def _preferred_tail_block_reason(
                 if current_count >= SOFT_MIN_PER_SECTION or soft_fallback_issue_hits < 2:
                     return "policy_anchorless_preferred_tail"
     elif section_key == "dist":
+        if _is_foodservice_supply_chain_slot_story(article):
+            return ""
         if is_dist_primary_supply_price_story(title, desc) and not protected_thin_section:
             return "dist_primary_supply_price_story"
         if _is_optional_dist_editorial_tail(article) and not protected_thin_section:
@@ -27868,10 +27985,88 @@ def _preferred_section_rank(
     if section_key == "policy":
         return _policy_underfill_recovery_rank(article, section_conf)
     if section_key == "dist":
-        return _dist_replacement_candidate_rank(article, section_conf)
+        return _dist_replacement_candidate_rank(article, section_conf) or _foodservice_supply_chain_slot_rank(article, section_conf)
     if section_key == "pest":
         return _pest_replacement_candidate_rank(article, section_conf)
     return None
+
+
+def _is_policy_preferred_gap_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if not text.strip():
+        return False
+    structural_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "농산물가격안정제",
+                "가격안정제",
+                "과잉생산",
+                "차액 보전",
+                "생산량 조절",
+                "생산 조절",
+                "수급 안정",
+                "가격 안정",
+            )
+        ],
+    )
+    policy_actor_hits = count_any(
+        text,
+        [w.lower() for w in ("정부", "농식품부", "농림축산식품부", "국회", "krei", "한국농촌경제연구원")],
+    )
+    if structural_hits < 2:
+        return False
+    if policy_actor_hits <= 0 and "단독" not in title_l:
+        return False
+    if is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip()):
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+    if reject_reason and reject_reason not in {"grain_only_not_horti"}:
+        return False
+    return True
+
+
+def _policy_preferred_gap_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_policy_preferred_gap_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    structural_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "농산물가격안정제",
+                "가격안정제",
+                "과잉생산",
+                "차액 보전",
+                "생산량 조절",
+                "수급 안정",
+                "가격 안정",
+            )
+        ],
+    )
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        min(6, structural_hits),
+        1 if "단독" in _nfkc_lower(title) else 0,
+        1 if _is_policy_official(article) else 0,
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
 
 
 def _soft_fallback_dist_recovery_rank(
@@ -27956,6 +28151,9 @@ def _candidate_conflicts_with_final(
     section_key: str,
     *,
     allow_dist_soft_crossfill: bool = False,
+    allow_supply_chain_crossfill: bool = False,
+    allow_policy_preferred_gap: bool = False,
+    allow_pest_national_fire_blight_gap: bool = False,
 ) -> bool:
     candidate_ident = _article_selection_identity(candidate)
     candidate_text = _nfkc_lower(f"{candidate.title or ''} {candidate.description or ''}")
@@ -27967,7 +28165,10 @@ def _candidate_conflicts_with_final(
             if isinstance(article, Article)
             and "과수화상병" in _nfkc_lower(f"{article.title or ''} {article.description or ''}")
         )
-        if existing_fire_blight >= 3:
+        if existing_fire_blight >= 3 and not (
+            allow_pest_national_fire_blight_gap
+            and is_pest_national_fire_blight_escalation_context(candidate.title or "", candidate.description or "")
+        ):
             return True
     for other_section, items in (final_by_section or {}).items():
         for existing in items or []:
@@ -27988,18 +28189,32 @@ def _candidate_conflicts_with_final(
             if str(other_section or "") == section_key and candidate_story_sig:
                 try:
                     if candidate_story_sig == _final_story_signature(section_key, existing):
+                        if allow_policy_preferred_gap and section_key == "policy":
+                            continue
+                        if allow_pest_national_fire_blight_gap and section_key == "pest":
+                            continue
                         return True
                 except Exception:
                     pass
             try:
                 if _is_similar_title(candidate.title_key or "", existing.title_key or ""):
+                    if allow_policy_preferred_gap and section_key == "policy" and str(other_section or "") == section_key:
+                        continue
+                    if allow_pest_national_fire_blight_gap and section_key == "pest" and str(other_section or "") == section_key:
+                        continue
                     return True
             except Exception:
                 pass
             try:
                 story_section = section_key if str(other_section or "") == section_key else str(other_section or section_key)
                 if _is_similar_story(candidate, existing, story_section):
+                    if allow_policy_preferred_gap and section_key == "policy" and str(other_section or "") == section_key:
+                        continue
+                    if allow_pest_national_fire_blight_gap and section_key == "pest" and str(other_section or "") == section_key:
+                        continue
                     if allow_dist_soft_crossfill and section_key == "dist" and str(other_section or "") != section_key:
+                        continue
+                    if allow_supply_chain_crossfill and section_key in {"supply", "dist"} and str(other_section or "") != section_key:
                         continue
                     return True
             except Exception:
@@ -28172,6 +28387,7 @@ def _refine_preferred_section_counts_from_raw(
     raw_by_section: dict[str, list[Article]],
     *,
     max_passes: int = 3,
+    cleanup_min_items: int | None = None,
 ) -> tuple[int, int]:
     if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
         return (0, 0)
@@ -28183,7 +28399,7 @@ def _refine_preferred_section_counts_from_raw(
         dropped = _cleanup_final_tail_noise_after_preferred_recovery(
             final_by_section,
             raw_by_section,
-            min_items=SOFT_MIN_PER_SECTION,
+            min_items=cleanup_min_items or SOFT_MIN_PER_SECTION,
         )
         recovered_total += recovered
         dropped_total += dropped
@@ -28211,6 +28427,19 @@ def _recover_preferred_section_counts_from_raw(
             continue
         target = _section_preferred_count_target(raw_by_section, section_key, max_items=max_items)
         current = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        if section_key in {"supply", "dist"} and target < min(max_items or MAX_PER_SECTION, PREFERRED_PER_SECTION):
+            crossfill_sources = ("policy",) if section_key == "supply" else ("supply", "policy")
+            crossfill_count = sum(
+                1
+                for source_section in crossfill_sources
+                for article in raw_by_section.get(source_section, []) or []
+                if isinstance(article, Article) and _is_foodservice_supply_chain_slot_story(article)
+            )
+            if crossfill_count > 0:
+                target = max(
+                    target,
+                    min(max_items or MAX_PER_SECTION, PREFERRED_PER_SECTION, len(current) + crossfill_count),
+                )
         if section_key == "dist" and len(current) < SOFT_MIN_PER_SECTION and raw_by_section.get("supply"):
             target = max(
                 target,
@@ -28225,8 +28454,12 @@ def _recover_preferred_section_counts_from_raw(
         conf = section_conf.get(section_key, {})
         ranked: list[tuple[tuple[Any, ...], Article]] = []
         source_sections: tuple[str, ...] = (section_key,)
+        if section_key == "supply" and len(current) < target and raw_by_section.get("policy"):
+            source_sections = ("supply", "policy")
         if section_key == "dist" and len(current) < SOFT_MIN_PER_SECTION:
             source_sections = ("dist", "supply")
+        elif section_key == "dist" and len(current) < target:
+            source_sections = ("dist", "supply", "policy")
         for source_section in source_sections:
             for article in raw_by_section.get(source_section, []) or []:
                 if not isinstance(article, Article):
@@ -28236,19 +28469,44 @@ def _recover_preferred_section_counts_from_raw(
                     and len(current) < SOFT_MIN_PER_SECTION
                     and _is_soft_fallback_dist_ops_tail(article)
                 )
-                if section_key == "dist" and source_section != section_key and not soft_dist_crossfill:
+                supply_chain_crossfill = (
+                    section_key in {"supply", "dist"}
+                    and source_section != section_key
+                    and len(current) < target
+                    and _is_foodservice_supply_chain_slot_story(article)
+                )
+                if section_key == "supply" and source_section != section_key and not supply_chain_crossfill:
                     continue
+                if section_key == "dist" and source_section != section_key and not soft_dist_crossfill:
+                    if not supply_chain_crossfill:
+                        continue
                 soft_policy_tail = (
                     section_key == "policy"
                     and len(current) < SOFT_MIN_PER_SECTION
                     and _is_soft_fallback_policy_issue_tail(article)
                 )
+                policy_preferred_gap = (
+                    section_key == "policy"
+                    and len(current) < target
+                    and _is_policy_preferred_gap_story(article)
+                )
+                pest_national_gap = (
+                    section_key == "pest"
+                    and len(current) < target
+                    and is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+                )
                 tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
-                if tail_reason and not soft_policy_tail:
+                if tail_reason and not (soft_policy_tail or policy_preferred_gap or supply_chain_crossfill or pest_national_gap):
                     continue
                 rank = _preferred_section_rank(section_key, article, conf)
+                if rank is None and policy_preferred_gap:
+                    rank = _policy_preferred_gap_rank(article, conf)
+                if rank is None and pest_national_gap:
+                    rank = _pest_fire_blight_priority_rank(article, conf)
                 if rank is None and soft_dist_crossfill:
                     rank = _soft_fallback_dist_recovery_rank(article, conf)
+                if rank is None and supply_chain_crossfill:
+                    rank = _foodservice_supply_chain_slot_rank(article, conf)
                 if rank is None:
                     continue
                 reject_reason = _postbuild_article_reject_reason(article, section_key)
@@ -28259,8 +28517,27 @@ def _recover_preferred_section_counts_from_raw(
                         and _is_soft_fallback_policy_issue_tail(article)
                     )
                     or (
+                        policy_preferred_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
+                    )
+                    or (
+                        pest_national_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit", "pest_partial_mention"}
+                    )
+                    or (
                         soft_dist_crossfill
                         and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit", "dist_program_event_noise"}
+                    )
+                    or (
+                        supply_chain_crossfill
+                        and reject_reason in {
+                            "selection_feedback_low_fit",
+                            "selection_feedback_core_fit",
+                            "dist_program_event_noise",
+                            "dist_title_anchorless",
+                            "dist_production_policy_without_ops",
+                            "dist_primary_supply_price_story",
+                        }
                     )
                 ):
                     continue
@@ -28269,6 +28546,9 @@ def _recover_preferred_section_counts_from_raw(
                     final_by_section,
                     section_key,
                     allow_dist_soft_crossfill=soft_dist_crossfill,
+                    allow_supply_chain_crossfill=supply_chain_crossfill,
+                    allow_policy_preferred_gap=policy_preferred_gap,
+                    allow_pest_national_fire_blight_gap=pest_national_gap,
                 ):
                     continue
                 ranked.append((rank, article))
@@ -28293,7 +28573,17 @@ def _recover_preferred_section_counts_from_raw(
             if ident and ident in used_keys:
                 continue
             story_sig = _final_story_signature(section_key, article)
-            if story_sig and story_sig in used_story_signatures:
+            policy_preferred_gap = (
+                section_key == "policy"
+                and len(current) < target
+                and _is_policy_preferred_gap_story(article)
+            )
+            pest_national_gap = (
+                section_key == "pest"
+                and len(current) < target
+                and is_pest_national_fire_blight_escalation_context(article.title or "", article.description or "")
+            )
+            if story_sig and story_sig in used_story_signatures and not (policy_preferred_gap or pest_national_gap):
                 continue
             if _candidate_conflicts_with_final(
                 article,
@@ -28304,6 +28594,13 @@ def _recover_preferred_section_counts_from_raw(
                     and len(current) < SOFT_MIN_PER_SECTION
                     and _is_soft_fallback_dist_ops_tail(article)
                 ),
+                allow_supply_chain_crossfill=(
+                    section_key in {"supply", "dist"}
+                    and str(getattr(article, "origin_section", "") or getattr(article, "section", "") or "") != section_key
+                    and _is_foodservice_supply_chain_slot_story(article)
+                ),
+                allow_policy_preferred_gap=policy_preferred_gap,
+                allow_pest_national_fire_blight_gap=pest_national_gap,
             ):
                 continue
             tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
@@ -28311,6 +28608,9 @@ def _recover_preferred_section_counts_from_raw(
                 section_key == "policy"
                 and len(current) < SOFT_MIN_PER_SECTION
                 and _is_soft_fallback_policy_issue_tail(article)
+            ) and not policy_preferred_gap and not pest_national_gap and not (
+                section_key in {"supply", "dist"}
+                and _is_foodservice_supply_chain_slot_story(article)
             ):
                 continue
             prev_section = str(getattr(article, "section", "") or "")
@@ -29176,8 +29476,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                       archive_dates_desc: list[str], site_path: str,
                       board_source_by_section: dict[str, list[Article]] | None = None) -> str:
     try:
-        _drop_final_story_duplicates(by_section, min_items=SOFT_MIN_PER_SECTION)
-        _drop_preferred_tail_blocked_items(by_section, min_items=SOFT_MIN_PER_SECTION)
+        _drop_final_story_duplicates(by_section, min_items=PREFERRED_PER_SECTION)
+        _drop_preferred_tail_blocked_items(by_section, min_items=PREFERRED_PER_SECTION)
     except Exception as e:
         log.warning("[WARN] render-time final tail cleanup failed: %s", e)
     # 상단 칩 카운트 + 섹션별 중요도 정렬

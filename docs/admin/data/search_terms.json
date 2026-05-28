@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T00:32:56+09:00",
+  "generated_at": "2026-05-28T02:34:09+09:00",
   "rows": [
     {
       "date": "2026-04-30",
@@ -34,6 +34,13 @@
       "query": "팜",
       "section_filter": "(not set)",
       "result_count": 10,
+      "count": 1
+    },
+    {
+      "date": "2026-05-26",
+      "query": "사과",
+      "section_filter": "(not set)",
+      "result_count": 46,
       "count": 1
     }
   ]
