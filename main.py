@@ -551,6 +551,9 @@ GOOGLE_NEWS_RECALL_ITEM_CAP = int(os.getenv("GOOGLE_NEWS_RECALL_ITEM_CAP", "8") 
 GOOGLE_NEWS_RECALL_ITEM_CAP = max(3, min(GOOGLE_NEWS_RECALL_ITEM_CAP, 20))
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = int(os.getenv("GOOGLE_NEWS_RECALL_MIN_AGE_DAYS", "5") or 5)
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = max(1, min(GOOGLE_NEWS_RECALL_MIN_AGE_DAYS, 90))
+PEST_GOOGLE_NEWS_RECALL_ENABLED = os.getenv("PEST_GOOGLE_NEWS_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "2") or 2)
+PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = max(0, min(PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -19863,6 +19866,31 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                     log.warning("[WARN] pest web recall query failed: %s", e)
                     continue
                 _ingest_web_items(q, data_w)
+    except Exception:
+        pass
+
+    # pest 섹션 리콜 보강(3): Google News RSS는 현재일 기사라도 현장형 표현을 더 잘 잡는 경우가 있어
+    # always-on 쿼리에 한해 pool 충분 여부와 무관하게 소량 병합한다.
+    try:
+        if (
+            section_key == "pest"
+            and PEST_GOOGLE_NEWS_RECALL_ENABLED
+            and queries
+            and PEST_GOOGLE_NEWS_RECALL_QUERY_CAP > 0
+        ):
+            always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
+            for q in always_qs[:PEST_GOOGLE_NEWS_RECALL_QUERY_CAP]:
+                try:
+                    rows_g = fetch_google_news_search_items(
+                        q,
+                        effective_start_kst,
+                        end_kst,
+                        item_cap=GOOGLE_NEWS_RECALL_ITEM_CAP,
+                    )
+                except Exception as e:
+                    log.warning("[WARN] pest google-news recall query failed: %s", e)
+                    continue
+                _ingest_google_news_items(q, rows_g)
     except Exception:
         pass
 
