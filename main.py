@@ -25307,6 +25307,14 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] final duplicate/tail guard failed: %s", e)
 
+    try:
+        final_field_fire_blight = _promote_pest_fire_blight_field_report_from_raw(final_by_section, raw_by_section)
+        if final_field_fire_blight:
+            log.info("[REBALANCE] restored %d fire-blight field report item(s) after final guards", final_field_fire_blight)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final field-report pest fire-blight guard failed: %s", e)
+
     return final_by_section
 
 
