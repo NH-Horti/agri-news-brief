@@ -1022,6 +1022,15 @@ class LocalRuntimeTests(TestCase):
         self.assertIn(field_report.link, {article.link for article in final_by_section["pest"]})
         self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["pest"]})
 
+        final_by_section["pest"] = [
+            article for article in final_by_section["pest"] if article.link != field_report.link
+        ] + [weak_tail]
+        self.assertEqual(
+            main._promote_pest_fire_blight_field_report_from_raw(final_by_section, {"pest": [field_report]}),
+            1,
+        )
+        self.assertIn(field_report.link, {article.link for article in final_by_section["pest"]})
+
     def test_priority_fire_blight_promotes_national_escalation_to_core(self) -> None:
         local_core = self._make_article(
             section="pest",

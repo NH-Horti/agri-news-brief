@@ -1,10 +1,10 @@
 {
   "report_date": "2026-05-28",
-  "generated_at_kst": "2026-05-28T20:08:32+09:00",
+  "generated_at_kst": "2026-05-28T20:39:31+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 96.61
+    "commodity_board_quality": 97.38
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,12 +12,12 @@
     "content_false_positive_rate": 0.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1,
+    "promotional_filler_rate": 0.05,
     "promotional_core_rate": 0.125,
     "weak_core_editorial_rate": 0.125,
     "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.85,
+    "editorial_quality_penalty": 2.75,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9444,
     "commodity_primary_weak_rate": 0.0556
@@ -65,15 +65,6 @@
       ]
     },
     {
-      "title": "\"예약형 정가·수의매매, 납품·정산 기준 매뉴얼 필요\"",
-      "href": "https://www.agrinet.co.kr/news/articleView.html?idxno=404463",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
       "title": "충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ...",
       "href": "https://www.news1.kr/economy/agri-food/6179406",
       "section": "pest",
@@ -84,102 +75,101 @@
     }
   ],
   "editorial": {
-    "score": 72.0,
+    "score": 82.0,
     "target_score": 95.0,
-    "target_status": "needs_major_iteration",
+    "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 68.0,
-      "section_fit": 70.0,
-      "core_pick_quality": 66.0,
-      "summary_usefulness": 84.0,
-      "missed_opportunity": 62.0,
-      "noise_control": 60.0
+      "article_selection": 80.0,
+      "section_fit": 79.0,
+      "core_pick_quality": 76.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 78.0,
+      "noise_control": 74.0
     },
     "issues": [
       {
-        "type": "wrong_priority",
+        "type": "missed_opportunity",
         "severity": "high",
         "section": "supply",
         "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
-        "reason": "소비 촉진 홍보성 지역 기사인데 코어로 과대선정.",
-        "suggested_action": "정부 수매·수출지원 등 전국 수급 기사로 교체."
+        "reason": "홍보성 소비촉진 기사인데 전국 수급점검회의 기사가 더 강했다.",
+        "suggested_action": "정부 수매·수입·가격전망 종합 기사로 교체"
       },
       {
-        "type": "filler",
+        "type": "weak_core",
         "severity": "high",
         "section": "supply",
-        "title": "괴산군 원원종 감자 생산 목표 초과 달성",
-        "reason": "지역 기관 실적성 기사로 당일 핵심 수급 흐름과 거리 큼.",
-        "suggested_action": "조기 출하·가격·작황 영향 기사로 대체."
+        "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
+        "reason": "코어로 두기엔 정책·수급 정보량이 약하다.",
+        "suggested_action": "비핵심 꼬리로 내리거나 제외"
       },
       {
-        "type": "duplication",
+        "type": "noise",
         "severity": "medium",
-        "section": "policy",
-        "title": "농산물 물가, 맞춤형으로 대응 / 농산물 가격은 내리고 축산물은 오르고…",
-        "reason": "같은 정부 점검회의 재탕으로 정보 증분이 작음.",
-        "suggested_action": "하나는 가격안정제 단독이나 유통구조 해설로 교체."
+        "section": "supply",
+        "title": "괴산군 원원종 감자 생산 목표 초과 달성",
+        "reason": "지역 성과성 보드 기사로 당일 전국 수급 이슈 대비 우선순위 낮다.",
+        "suggested_action": "전국 가격·출하 동향 기사로 교체"
       },
       {
-        "type": "wrong_section",
-        "severity": "high",
+        "type": "wrong_fit",
+        "severity": "medium",
         "section": "policy",
         "title": "계란 등 인천도 생활물가 등락...고추장·배추·오이 내린 곳도",
-        "reason": "지역 장바구니 단신은 중앙 정책 섹션과 맞지 않음.",
-        "suggested_action": "전국 단위 정책 집행·제도 기사로 교체."
+        "reason": "지역 물가 스케치에 가까워 중앙 정책 섹션 적합도가 낮다.",
+        "suggested_action": "가격안정제 세부 설계·정부 대책 기사로 교체"
       },
       {
-        "type": "duplication",
+        "type": "duplicate_theme",
         "severity": "medium",
-        "section": "dist",
-        "title": "강원농협·농협공판장, 온라인 도매시장 활성화 앞장 / 강원 농산물 온라인 도매시장 경쟁력 키운다",
-        "reason": "동일 MOU를 사실상 중복 채택.",
-        "suggested_action": "예약형 정가·수의매매 등 다른 유통 운영 기사로 교체."
-      },
-      {
-        "type": "filler",
-        "severity": "medium",
-        "section": "dist",
-        "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
-        "reason": "판촉행사 성과 기사로 운영·물류 의미가 약함.",
-        "suggested_action": "수출·도매거래·물류 개선 기사 우선 배치."
+        "section": "policy",
+        "title": "양파값 급락·계란값 고공행진…정부, 수급 안정·할인지원 총력",
+        "reason": "동일 회의 재가공 기사로 새 정보가 적고 품질도 낮다.",
+        "suggested_action": "단일 회의 기사 중 더 강한 1건만 유지"
       },
       {
         "type": "weak_core",
         "severity": "medium",
-        "section": "pest",
-        "title": "수요일마다 과수화상병 예찰하세요",
-        "reason": "계도성 기사보다 신규 발생·경계 격상 기사가 더 핵심.",
-        "suggested_action": "공주 신규 발생 또는 전국 확산 총괄을 코어로 승격."
+        "section": "dist",
+        "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
+        "reason": "판촉전 성과는 유통 섹션 코어로는 다소 가볍다.",
+        "suggested_action": "온라인 도매시장·정가수의매매 등 구조 기사 우선"
+      },
+      {
+        "type": "duplicate",
+        "severity": "high",
+        "section": "dist",
+        "title": "강원 농산물 온라인 도매시장 경쟁력 키운다",
+        "reason": "같은 MOU를 다른 매체로 중복 채택했다.",
+        "suggested_action": "중복 제거 후 다른 유통 운영 기사 보강"
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
-        "section": "dist",
-        "title": "농특위, 농산물 유통 혁신 논의 본격화",
-        "reason": "유통 구조개선 논의가 보였는데 판촉성 기사에 밀림.",
-        "suggested_action": "정책-유통 접점의 구조개선 기사 1건 반영."
+        "section": "pest",
+        "title": "충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ...",
+        "reason": "당일 가장 강한 발생·격상 뉴스인데 비핵심 처리됐다.",
+        "suggested_action": "병해충 섹션 최상단 코어로 승격"
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "editorial_section_fit",
       "editorial_duplicate_topic",
       "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
     },
     "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
@@ -206,8 +196,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 72.0,
-    "target_status": "needs_major_iteration",
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 95.0,
@@ -223,7 +213,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 142,
+          "raw_candidates": 143,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -235,7 +225,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 91,
+          "raw_candidates": 89,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -247,7 +237,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 30,
+          "raw_candidates": 31,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -259,7 +249,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 51,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -282,8 +272,7 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection",
-      "section_fit"
+      "article_selection"
     ],
     "recommended_actions": [
       {
@@ -303,12 +292,6 @@
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
