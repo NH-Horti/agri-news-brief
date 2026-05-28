@@ -938,7 +938,10 @@ class LocalRuntimeTests(TestCase):
 
         self.assertTrue(main.is_pest_fire_blight_farmer_risk_context(title, ""))
         self.assertTrue(main.is_pest_fire_blight_farmer_risk_context(title, desc))
+        self.assertTrue(main.is_pest_fire_blight_field_report_context(title, desc))
         self.assertIn("사과 과수원 붉은 죽음", main.PEST_ALWAYS_ON_RECALL_QUERIES[:4])
+        self.assertIn('"붉은 죽음" 과수화상병 농가', main.PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
+        self.assertGreaterEqual(main.PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 3)
 
         article = self._make_article(
             section="pest",
@@ -950,6 +953,57 @@ class LocalRuntimeTests(TestCase):
         pest_conf = next((s for s in main.SECTIONS if s.get("key") == "pest"), {})
         self.assertFalse(main._is_weak_pest_tail(article))
         self.assertIsNotNone(main._pest_replacement_candidate_rank(article, pest_conf))
+        self.assertGreaterEqual(
+            main.compute_rank_score(article.title, article.description, article.domain, article.pub_dt_kst, pest_conf, article.press),
+            35.0,
+        )
+
+    def test_pest_field_report_replaces_weak_tail_even_when_fire_theme_exists(self) -> None:
+        fire_core = self._make_article(
+            section="pest",
+            title="아산시, 과수화상병 차단 총력… 생육기 방제약제 전 농가 무상 지원",
+            description="배·사과 농가에 과수화상병 방제 약제를 지원하고 예찰을 강화한다.",
+            link="https://example.com/fire-core",
+        )
+        fire_core.is_core = True
+        fire_tail = self._make_article(
+            section="pest",
+            title="수요일마다 과수화상병 예찰하세요",
+            description="농진청이 과수화상병 예찰의 날을 지정하고 농가 신고를 당부했다.",
+            link="https://example.com/fire-tail",
+        )
+        non_fire = self._make_article(
+            section="pest",
+            title="창원특례시, 단감 미국선녀벌레 방제 약제 지원",
+            description="단감 과원 미국선녀벌레 방제 약제를 지원한다.",
+            link="https://example.com/persimmon-pest",
+            topic="단감",
+        )
+        weak_tail = self._make_article(
+            section="pest",
+            title="제놀루션, 차세대 친환경 RNA 작물보호제 특허 출원",
+            description="작물보호제 특허 출원 소식이다.",
+            link="https://example.com/weak-pest-tail",
+            topic="풋고추",
+        )
+        weak_tail.score = 12.0
+        field_report = self._make_article(
+            section="pest",
+            title="‘치료제 없어 걸리면 답도 없다’···사과 과수원 덮친 ‘붉은 죽음’에 충북 농가 시름",
+            description="청주 사과 과수원에서 과수화상병 확진 뒤 매몰 처분이 진행됐고 충북 전역으로 확산하고 있다.",
+            link="https://www.khan.co.kr/article/202605280600001",
+            press="경향신문",
+        )
+        field_report.score = 38.0
+        final_by_section = {"pest": [fire_core, fire_tail, non_fire, weak_tail]}
+
+        self.assertTrue(main._is_weak_pest_tail(weak_tail))
+        self.assertEqual(
+            main._promote_pest_fire_blight_field_report_from_raw(final_by_section, {"pest": [field_report]}),
+            1,
+        )
+        self.assertIn(field_report.link, {article.link for article in final_by_section["pest"]})
+        self.assertNotIn(weak_tail.link, {article.link for article in final_by_section["pest"]})
 
     def test_priority_fire_blight_promotes_national_escalation_to_core(self) -> None:
         local_core = self._make_article(
