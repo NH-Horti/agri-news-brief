@@ -530,6 +530,10 @@ PEST_ALWAYS_ON_RECALL_QUERIES = [
     "월동 병해충 방제", "병해충 현장지도", "병해충 예찰",
     "과수화상병", "과수화상병 약제", "과수화상병 방제 계획", "토마토뿔나방",
 ]
+PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES = [
+    '"붉은 죽음" 과수화상병 농가',
+    '"치료제 없어" 과수화상병 농가',
+]
 # pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
 # always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
 PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
@@ -552,7 +556,7 @@ GOOGLE_NEWS_RECALL_ITEM_CAP = max(3, min(GOOGLE_NEWS_RECALL_ITEM_CAP, 20))
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = int(os.getenv("GOOGLE_NEWS_RECALL_MIN_AGE_DAYS", "5") or 5)
 GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = max(1, min(GOOGLE_NEWS_RECALL_MIN_AGE_DAYS, 90))
 PEST_GOOGLE_NEWS_RECALL_ENABLED = os.getenv("PEST_GOOGLE_NEWS_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
-PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "2") or 2)
+PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "5") or 5)
 PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = max(0, min(PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6))
 
 
@@ -8984,6 +8988,23 @@ def is_pest_fire_blight_farmer_risk_context(title: str, desc: str) -> bool:
     return risk_hits >= 2
 
 
+def is_pest_fire_blight_field_report_context(title: str, desc: str) -> bool:
+    """현장 르포형 과수화상병 피해 기사는 반복 방제 공지보다 우선 보호한다."""
+    if not is_pest_fire_blight_farmer_risk_context(title, desc):
+        return False
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if "붉은 죽음" in txt:
+        return True
+    field_hits = count_any(
+        txt,
+        [
+            "현장", "농가 시름", "시름", "치료제 없어", "걸리면 답도 없다",
+            "덮친", "매몰", "폐원", "확산하는", "피해 농가",
+        ],
+    )
+    return field_hits >= 2
+
+
 def is_pest_national_fire_blight_escalation_context(title: str, desc: str) -> bool:
     """전국 방역 단계나 미발생 지역 첫 확진을 다루는 과수화상병 핵심 기사."""
     text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
@@ -14147,6 +14168,8 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
             score += 6.0
         if pest_fire_blight_risk:
             score += 7.0
+        if is_pest_fire_blight_field_report_context(title, desc):
+            score += 18.0
         if "탄저병" in text:
             score += 3.0
         if any(w in text for w in ("냉해", "동해", "저온피해", "서리")):
@@ -19879,7 +19902,13 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             and PEST_GOOGLE_NEWS_RECALL_QUERY_CAP > 0
         ):
             always_qs = [q for q in queries if q in set(PEST_ALWAYS_ON_RECALL_QUERIES)]
-            for q in always_qs[:PEST_GOOGLE_NEWS_RECALL_QUERY_CAP]:
+            google_recall_qs = _dedupe_queries(
+                list(always_qs) + list(PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
+            )
+            if google_recall_qs:
+                recall_meta["pest_google_news_queries"] = list(google_recall_qs[:PEST_GOOGLE_NEWS_RECALL_QUERY_CAP])
+            pest_google_added = 0
+            for q in google_recall_qs[:PEST_GOOGLE_NEWS_RECALL_QUERY_CAP]:
                 try:
                     rows_g = fetch_google_news_search_items(
                         q,
@@ -19890,7 +19919,10 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 except Exception as e:
                     log.warning("[WARN] pest google-news recall query failed: %s", e)
                     continue
+                before_n = len(items)
                 _ingest_google_news_items(q, rows_g)
+                pest_google_added += max(0, len(items) - before_n)
+            recall_meta["pest_google_news_added"] = int(pest_google_added)
     except Exception:
         pass
 
@@ -22804,6 +22836,7 @@ def _pest_fire_blight_priority_rank(article: "Article", pest_conf: JsonDict) -> 
     alert_hits = count_any(text, [w.lower() for w in ("위기단계", "위기 단계", "경계", "주의", "상향", "전국", "7개 농가", "2.5헥타르")])
     return (
         1 if is_pest_national_fire_blight_escalation_context(title, desc) else 0,
+        1 if is_pest_fire_blight_field_report_context(title, desc) else 0,
         title_alert_hits,
         alert_hits,
         1 if is_pest_regional_fire_blight_response_context(title, desc) else 0,
@@ -22875,7 +22908,7 @@ def _promote_pest_priority_fire_blight_from_raw(
         return (
             0 if _is_weak_pest_tail(article) else 1,
             0 if is_fire else 1,
-            _pest_fire_blight_priority_rank(article, pest_conf) if is_fire else (0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
+            _pest_fire_blight_priority_rank(article, pest_conf) if is_fire else (0, 0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
             float(getattr(article, "score", 0.0) or 0.0),
         )
 
@@ -23017,6 +23050,99 @@ def _promote_pest_regional_fire_blight_response_from_raw(
             1 if getattr(article, "is_core", False) else 0,
             _pest_fire_blight_priority_rank(article, pest_conf),
             0 if _is_weak_pest_tail(article) else 1,
+        ),
+        reverse=True,
+    )[:MAX_PER_SECTION]
+    return 1
+
+
+def _promote_pest_fire_blight_field_report_from_raw(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
+    if any(is_pest_fire_blight_field_report_context(a.title or "", a.description or "") for a in pest_items):
+        return 0
+
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    candidates: list[tuple[tuple[Any, ...], Article]] = []
+    for source_section in ("pest", "supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if not is_pest_fire_blight_field_report_context(article.title or "", article.description or ""):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "pest")
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                continue
+            candidates.append((_pest_fire_blight_priority_rank(article, pest_conf), article))
+    if not candidates:
+        return 0
+
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    picked = candidates[0][1]
+    if not getattr(picked, "origin_section", ""):
+        picked.origin_section = picked.section or "pest"
+    picked.reassigned_from = picked.section or "pest"
+    picked.section = "pest"
+    picked.forced_section = "pest"
+    picked.is_core = False
+    picked.selection_stage = "pest_fire_blight_field_report_tail"
+    picked.selection_note = "fire_blight_field_report"
+    try:
+        picked.selection_fit_score = round(float(section_fit_score(
+            picked.title or "", picked.description or "", pest_conf, picked.domain or "", picked.press or "",
+        )), 3)
+    except Exception:
+        pass
+
+    replaceable = [
+        (idx, article)
+        for idx, article in enumerate(pest_items)
+        if not bool(getattr(article, "is_core", False))
+        and not is_pest_fire_blight_field_report_context(article.title or "", article.description or "")
+    ]
+
+    def _victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
+        article = item[1]
+        is_fire = is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "")
+        return (
+            0 if _is_weak_pest_tail(article) else 1,
+            0 if not is_fire else 1,
+            0 if _pest_editorial_theme_key(article) != "fire_blight" else 1,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            float(getattr(article, "score", 0.0) or 0.0),
+        )
+
+    if replaceable:
+        replace_idx, _victim = min(replaceable, key=_victim_rank)
+        pest_items[replace_idx] = picked
+    elif len(pest_items) < MAX_PER_SECTION:
+        pest_items.append(picked)
+    else:
+        return 0
+
+    final_by_section["pest"] = sorted(
+        pest_items,
+        key=lambda article: (
+            1 if getattr(article, "is_core", False) else 0,
+            1 if is_pest_fire_blight_field_report_context(article.title or "", article.description or "") else 0,
+            _pest_fire_blight_priority_rank(article, pest_conf),
+            0 if _is_weak_pest_tail(article) else 1,
+            float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+            float(getattr(article, "score", 0.0) or 0.0),
         ),
         reverse=True,
     )[:MAX_PER_SECTION]
@@ -23516,7 +23642,7 @@ def _ensure_pest_fire_blight_alert_incident_balance(
         key=lambda article: (
             1 if getattr(article, "is_core", False) else 0,
             1 if _is_alert(article) else 0,
-            _pest_fire_blight_priority_rank(article, pest_conf) if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "") else (0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
+            _pest_fire_blight_priority_rank(article, pest_conf) if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or "") else (0, 0, 0, 0, 0, 0, 0, 0, 0, datetime.min.replace(tzinfo=KST)),
             float(getattr(article, "selection_fit_score", 0.0) or 0.0),
         ),
         reverse=True,
@@ -24763,6 +24889,12 @@ def _build_sections_phase123(
             log.info("[REBALANCE] replaced %d duplicate-theme pest tail item(s)", replaced_pest_theme_tail)
     except Exception as e:
         log.warning("[WARN] duplicate-theme pest replacement failed: %s", e)
+    try:
+        promoted_field_fire_blight = _promote_pest_fire_blight_field_report_from_raw(final_by_section, raw_by_section)
+        if promoted_field_fire_blight:
+            log.info("[REBALANCE] promoted %d fire-blight field report item(s)", promoted_field_fire_blight)
+    except Exception as e:
+        log.warning("[WARN] field-report pest fire-blight promotion failed: %s", e)
     try:
         promoted_regional_fire_blight = _promote_pest_regional_fire_blight_response_from_raw(final_by_section, raw_by_section)
         if promoted_regional_fire_blight:
