@@ -945,6 +945,13 @@ class LocalRuntimeTests(TestCase):
         self.assertGreaterEqual(main.PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6)
         self.assertIn("붉은 죽음", main.PEST_KHAN_SEARCH_RECALL_QUERIES)
         self.assertIn("khan.co.kr/search", main.build_khan_search_url("과수화상병"))
+        recall_path = Path(main.EDITORIAL_RECALL_URLS_PATH)
+        self.assertTrue(recall_path.exists())
+        recall_data = json.loads(recall_path.read_text(encoding="utf-8"))
+        self.assertIn(
+            "https://www.khan.co.kr/article/202605280600001",
+            {row.get("url") for row in recall_data.get("items", [])},
+        )
 
         article = self._make_article(
             section="pest",
