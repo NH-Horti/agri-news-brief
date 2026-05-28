@@ -524,6 +524,7 @@ COND_PAGING_FALLBACK_QUERY_CAP_PER_SECTION = max(0, min(COND_PAGING_FALLBACK_QUE
 
 # pest 섹션은 실행형 병해충 기사를 놓치지 않기 위해 보강 쿼리를 항상 병합한다(하드코딩 URL 아님)
 PEST_ALWAYS_ON_RECALL_QUERIES = [
+    "과수화상병 충북 농가 시름", "사과 과수원 붉은 죽음", "과수화상병 매몰 농가",
     "과수화상병 방제", "과수화상병 약제 공급", "과수화상병 정밀예찰", "과수화상병 전수조사",
     "토마토뿔나방 방제", "토마토뿔나방 약제 지원", "토마토뿔나방 전수조사",
     "월동 병해충 방제", "병해충 현장지도", "병해충 예찰",
@@ -536,7 +537,7 @@ PEST_ALWAYS_ON_PAGE2_QUERY_CAP = int(os.getenv("PEST_ALWAYS_ON_PAGE2_QUERY_CAP",
 PEST_ALWAYS_ON_PAGE2_QUERY_CAP = max(0, min(PEST_ALWAYS_ON_PAGE2_QUERY_CAP, 10))
 # news API 미색인/지연에 대비해 pest는 web 검색(webkr)도 소량 보강한다.
 PEST_WEB_RECALL_ENABLED = os.getenv("PEST_WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
-PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "3") or 3)
+PEST_WEB_RECALL_QUERY_CAP = int(os.getenv("PEST_WEB_RECALL_QUERY_CAP", "4") or 4)
 PEST_WEB_RECALL_QUERY_CAP = max(0, min(PEST_WEB_RECALL_QUERY_CAP, 8))
 WEB_RECALL_ENABLED = os.getenv("WEB_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 WEB_RECALL_QUERY_CAP_PER_SECTION = int(os.getenv("WEB_RECALL_QUERY_CAP_PER_SECTION", "2") or 2)
@@ -2455,8 +2456,9 @@ SECTIONS: list[SectionConfig] = [
         "queries": [
             "과수화상병 방제", "탄저병 방제", "월동 해충 방제",
             "냉해 동해 과수 피해", "병해충 예찰 방제", "생육 관리 저온피해",
+            "과수화상병 매몰 농가", "사과 과수원 붉은 죽음",
         ],
-        "must_terms": ["방제", "병해충", "약제", "살포", "예찰", "과수화상병", "탄저병", "냉해", "동해", "저온피해", "서리", "생육", "월동"],
+        "must_terms": ["방제", "병해충", "약제", "살포", "예찰", "과수화상병", "화상병", "붉은 죽음", "매몰", "탄저병", "냉해", "동해", "저온피해", "서리", "생육", "월동"],
     },
 ]
 
@@ -8953,12 +8955,17 @@ def is_dist_low_value_donation_context(title: str, desc: str) -> bool:
 def is_pest_fire_blight_farmer_risk_context(title: str, desc: str) -> bool:
     """Fire-blight reporting/compensation avoidance stories are high-risk pest stories."""
     txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if "붉은 죽음" in txt and count_any(
+        txt,
+        [w.lower() for w in ("사과", "배", "과수", "과수원", "농가", "매몰", "고사", "확산")],
+    ) >= 1:
+        return True
     if "화상병" in txt:
         risk_hits = count_any(
             txt,
             [w.lower() for w in (
                 "과수화상병", "사과", "과수", "농가", "발생", "확산", "방제", "소독",
-                "초토화", "비상", "긴장", "현장", "진단", "격리", "매몰", "폐원",
+                "초토화", "비상", "긴장", "현장", "진단", "격리", "매몰", "폐원", "붉은 죽음",
             )],
         )
         return risk_hits >= 1
@@ -10474,7 +10481,7 @@ POLICY_TITLE_CORE_TERMS = (
     '대책','지원','할당관세','검역','단속','고시','개정','브리핑','보도자료','물가','가격','성수품','차례상','소비자물가','물가지수','통계','kosis',
     '협의체','위원회','출범','특별관리','최소가격','보전제','제도개선','제도 개선','구조개선','구조 개선',
 )
-PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','탄저병','냉해','동해','약제','농약','무름병','시들음병','미생물')
+PEST_TITLE_CORE_TERMS = ('병해충','방제','예찰','과수화상병','화상병','붉은 죽음','탄저병','냉해','동해','약제','농약','무름병','시들음병','미생물')
 _SECTION_TITLE_CORE_TERMS_MAP = {
     "supply": SUPPLY_TITLE_CORE_TERMS,
     "dist": DIST_TITLE_CORE_TERMS,
@@ -12892,7 +12899,7 @@ _LOCAL_GEO_PATTERN = _LOCAL_GEO_PATTERN_RAW
 # --- pest(병해충/방제) 정교화: 농업 맥락 없는 "방역/생활해충" 오탐 감소 ---
 PEST_STRICT_TERMS = [
     # 병해
-    "과수화상병", "탄저병", "역병", "잿빛곰팡이", "흰가루병", "노균병", "세균", "바이러스", "병반",
+    "과수화상병", "화상병", "붉은 죽음", "탄저병", "역병", "잿빛곰팡이", "흰가루병", "노균병", "세균", "바이러스", "병반",
     # 해충
     "해충", "진딧물", "응애", "노린재", "나방", "총채벌레", "선충", "깍지벌레",
     # 방제/예찰/약제
