@@ -1149,6 +1149,64 @@ class LocalRuntimeTests(TestCase):
             )
         )
 
+    def test_preferred_count_recovery_crossfills_foodservice_supply_chain_story(self) -> None:
+        final_articles = [
+            self._make_article(
+                section="supply",
+                title=f"{item} 산지 출하 물량 감소에 도매가격 상승",
+                description=f"{item} 출하 물량 감소와 도매가격 상승 흐름을 다뤘다.",
+                link=f"https://example.com/supply-{idx}",
+                topic=item,
+            )
+            for idx, item in enumerate(("사과", "양파", "대파", "수박"), start=1)
+        ]
+        policy_article = self._make_article(
+            section="policy",
+            title='[빨라진 폭염 시계] "금(金)추 되기 전에..." 식품·식자재 업계, 벌써 비축',
+            description=(
+                "폭염과 폭우가 예고되자 식품업계와 식자재 업계가 배추, 무, 양파 비축을 늘리고 "
+                "계약재배와 스마트팜 조달로 공급망과 수급 안정에 나섰다. 정부도 수매 비축 물량을 "
+                "앞당겨 도매시장과 김치업체에 공급할 계획이다."
+            ),
+            link="https://www.ajunews.com/view/20260527153455412",
+            press="아주경제",
+            topic="정책",
+        )
+        policy_article.score = 43.43
+        final_by_section = {"supply": list(final_articles), "policy": []}
+        raw_by_section = {"supply": list(final_articles), "policy": [policy_article]}
+
+        inserted = main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section)
+
+        self.assertEqual(inserted, 1)
+        self.assertEqual(len(final_by_section["supply"]), 5)
+        picked = next(article for article in final_by_section["supply"] if article.link == policy_article.link)
+        self.assertEqual(picked.section, "supply")
+        self.assertEqual(picked.reassigned_from, "policy")
+        self.assertEqual(picked.selection_stage, "supply_preferred_count_recovery")
+
+    def test_napa_cabbage_board_recognizes_geumchu_supply_chain_story(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title='[빨라진 폭염 시계] "금(金)추 되기 전에..." 식품·식자재 업계, 벌써 비축',
+            description=(
+                "폭염과 폭우 예고로 식품업계가 배추와 무 비축을 늘리고 포장김치 업체와 "
+                "식자재 업체가 계약재배, 스마트팜 조달, 공급망 관리와 도매시장 공급을 확대한다."
+            ),
+            link="https://www.ajunews.com/view/20260527153455412",
+            press="아주경제",
+            topic="정책",
+        )
+        article.score = 43.43
+        article.selection_fit_score = 2.05
+        item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "napa_cabbage")
+
+        metrics = main._commodity_board_item_article_representative_metrics(item, article, include_semantic=False)
+
+        self.assertTrue(metrics["board_eligible"])
+        self.assertGreaterEqual(metrics["representative_rank"], 1)
+        self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
+
     def test_preferred_tail_block_rejects_nonmarket_and_nonhorti_tail_noise(self) -> None:
         cosmetic = self._make_article(
             section="supply",
@@ -1625,6 +1683,92 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(
             main._candidate_conflicts_with_final(candidate, {"pest": existing}, "pest")
         )
+
+    def test_preferred_count_recovery_allows_national_fire_blight_fifth_slot(self) -> None:
+        existing = [
+            self._make_article(
+                section="pest",
+                title="아산시, 과수화상병 차단 총력…생육기 방제약제 전 농가 지원",
+                description="과수화상병 확산 차단과 생육기 방제 지원을 다뤘다.",
+                link="https://example.com/pest-asan",
+            ),
+            self._make_article(
+                section="pest",
+                title="수요일마다 과수화상병 예찰하세요",
+                description="과수화상병 예찰과 신고 요령을 안내했다.",
+                link="https://example.com/pest-wed",
+            ),
+            self._make_article(
+                section="pest",
+                title="상주시, 과수화상병 5~6월 집중 예찰·적기 방제",
+                description="과수화상병 예찰과 방제 대응을 강화한다.",
+                link="https://example.com/pest-sangju",
+            ),
+            self._make_article(
+                section="pest",
+                title="창원특례시, 단감 미국선녀벌레 방제 약제 지원",
+                description="단감 재배 농가에 미국선녀벌레 방제 약제를 지원한다.",
+                link="https://example.com/pest-persimmon",
+            ),
+        ]
+        national = self._make_article(
+            section="pest",
+            title="충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' 격상",
+            description="농촌진흥청이 전국 7개 농가에서 과수화상병을 확인하고 위기단계를 경계로 상향했다.",
+            link="https://example.com/pest-national-alert",
+            press="뉴스1",
+        )
+        final_by_section = {"pest": list(existing)}
+        raw_by_section = {"pest": [*existing, national]}
+
+        self.assertTrue(main.is_pest_national_fire_blight_escalation_context(national.title, national.description))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertIn(national.link, {article.link for article in final_by_section["pest"]})
+
+    def test_preferred_count_recovery_allows_structural_policy_fifth_slot(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title="계란값 부담에 할인 더 키운다…한 판 1500원 지원",
+                description="정부가 계란 수급 안정을 위해 할인 지원과 공급 대책을 확대한다.",
+                link="https://example.com/policy-egg",
+            ),
+            self._make_article(
+                section="policy",
+                title="KREI, 농산물가격안정제 도입 앞두고 정책토론회 개최",
+                description="한국농촌경제연구원이 농산물가격안정제 도입 방향과 제도 설계를 논의했다.",
+                link="https://example.com/policy-krei",
+                press="한국농업신문",
+            ),
+            self._make_article(
+                section="policy",
+                title="[사실은 이렇습니다] 큰 일교차로 일부 노지채소 도매가격 일시 상승",
+                description="농식품부가 노지채소 도매가격 상승과 수급 안정 대책을 설명했다.",
+                link="https://example.com/policy-fact",
+                press="정책브리핑",
+            ),
+            self._make_article(
+                section="policy",
+                title="양파값 급락·계란값 고공행진…정부, 수급 안정·할인지원 총력",
+                description="정부가 농산물 수급 안정과 할인 지원 대책을 추진한다.",
+                link="https://example.com/policy-onion",
+            ),
+        ]
+        structural = self._make_article(
+            section="policy",
+            title="[단독] 정부, 농산물 과잉생산 막는다…차액 보전 요건·생산량 조절 대책",
+            description="정부가 농산물가격안정제 도입을 앞두고 과잉생산을 막기 위해 차액 보전 요건과 생산량 조절 장치를 마련한다.",
+            link="https://example.com/policy-structural",
+            press="조선비즈",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, structural]}
+
+        self.assertTrue(main._is_policy_preferred_gap_story(structural))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["policy"]), 5)
+        self.assertIn(structural.link, {article.link for article in final_by_section["policy"]})
 
     def test_dist_soft_fallback_allows_direct_distribution_tail_only_for_short_section(self) -> None:
         dist_tail = self._make_article(

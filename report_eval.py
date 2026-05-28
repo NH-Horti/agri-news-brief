@@ -935,6 +935,26 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             continue
         section_fill_scores[section] = min(1.0, _rate(actual, expected))
         core_fill_scores[section] = 1.0 if actual <= 0 or core_counts[section] >= 1 else 0.0
+    preferred_slot_gaps = {
+        section: max(0, expected_counts[section] - briefing_counts[section])
+        for section in SECTION_KEYS
+        if raw_counts[section] >= expected_counts[section] and expected_counts[section] > 0
+    }
+    preferred_slot_gap_total = sum(preferred_slot_gaps.values())
+    preferred_slot_gap_rate = _rate(
+        preferred_slot_gap_total,
+        sum(expected_counts[section] for section in SECTION_KEYS if expected_counts[section] > 0),
+        default=0.0,
+    )
+    broad_soft_fallback_sections = [
+        section
+        for section in SECTION_KEYS
+        if preferred_slot_gaps.get(section, 0) > 0 and briefing_counts[section] >= soft_fallback_counts[section]
+    ]
+    preferred_slot_penalty = min(
+        5.0,
+        (preferred_slot_gap_total * 0.75) + (len(broad_soft_fallback_sections) * 0.35),
+    )
 
     completeness_score = 100.0 * (
         (sum(section_fill_scores.values()) / len(SECTION_KEYS)) * 0.72
@@ -1375,7 +1395,14 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     )
     overall_score = max(
         0.0,
-        min(100.0, overall_score - semantic_false_positive_penalty - story_duplicate_penalty - editorial_quality_penalty),
+        min(
+            100.0,
+            overall_score
+            - semantic_false_positive_penalty
+            - story_duplicate_penalty
+            - editorial_quality_penalty
+            - preferred_slot_penalty,
+        ),
     )
 
     if overall_score >= 85.0:
@@ -1414,6 +1441,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     if seed_section_scores and any(score < 0.5 for score in seed_section_scores.values()):
         weak_seed_sections = [section for section, score in seed_section_scores.items() if score < 0.5]
         improvement_hints.append("리콜 시드 결손이 보입니다: " + ", ".join(weak_seed_sections) + ". query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.")
+    if preferred_slot_gap_total > 0 and raw_counts:
+        improvement_hints.append(
+            "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: "
+            + ", ".join(f"{section}(-{gap})" for section, gap in preferred_slot_gaps.items() if gap > 0)
+            + ". 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요."
+        )
 
     if content_false_positive_rate > 0.0:
         improvement_hints.append(
@@ -1474,6 +1507,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "expected_briefing_by_section": expected_counts,
             "soft_fallback_briefing_by_section": soft_fallback_counts,
             "minimum_fallback_briefing_by_section": minimum_fallback_counts,
+            "preferred_slot_gap_by_section": preferred_slot_gaps,
         },
         "metrics": {
             "briefing_title_unique_rate": round(title_unique_rate, 4),
@@ -1514,6 +1548,9 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "pest_theme_duplicate_rate": round(pest_theme_duplicate_rate, 4),
             "dist_weak_ops_rate": round(dist_weak_ops_rate, 4),
             "editorial_quality_penalty": round(editorial_quality_penalty, 4),
+            "preferred_slot_gap_rate": round(preferred_slot_gap_rate, 4),
+            "preferred_slot_gap_total": int(preferred_slot_gap_total),
+            "preferred_slot_penalty": round(preferred_slot_penalty, 4),
             "core_fit_avg": round(core_fit_avg, 4),
             "core_rank_percentile_avg": round(core_rank_percentile_avg, 4),
             "core_stage_core_rate": round(core_stage_core_rate, 4),
