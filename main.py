@@ -570,7 +570,11 @@ PEST_KHAN_SEARCH_RECALL_QUERY_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_QUERY
 PEST_KHAN_SEARCH_RECALL_QUERY_CAP = max(0, min(PEST_KHAN_SEARCH_RECALL_QUERY_CAP, 5))
 PEST_KHAN_SEARCH_RECALL_ITEM_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_ITEM_CAP", "5") or 5)
 PEST_KHAN_SEARCH_RECALL_ITEM_CAP = max(1, min(PEST_KHAN_SEARCH_RECALL_ITEM_CAP, 10))
-EDITORIAL_RECALL_URLS_PATH = os.getenv("EDITORIAL_RECALL_URLS_PATH", "config/editorial_recall_urls.json").strip()
+DEFAULT_EDITORIAL_RECALL_URLS_PATH = "config/editorial_recall_urls.json"
+EDITORIAL_RECALL_URLS_PATH = (
+    os.getenv("EDITORIAL_RECALL_URLS_PATH", DEFAULT_EDITORIAL_RECALL_URLS_PATH).strip()
+    or DEFAULT_EDITORIAL_RECALL_URLS_PATH
+)
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -18564,12 +18568,13 @@ def fetch_khan_search_items(
 
 @lru_cache(maxsize=4)
 def _load_editorial_recall_entries(path_s: str) -> tuple[tuple[tuple[str, Any], ...], ...]:
-    path_s = (path_s or "").strip()
-    if not path_s:
-        return tuple()
+    path_s = (path_s or "").strip() or DEFAULT_EDITORIAL_RECALL_URLS_PATH
     try:
-        path = Path(path_s)
-        if not path.exists():
+        paths = [Path(path_s)]
+        if not paths[0].is_absolute():
+            paths.append(Path(__file__).resolve().parent / path_s)
+        path = next((p for p in paths if p.exists()), None)
+        if path is None:
             return tuple()
         data = json.loads(path.read_text(encoding="utf-8"))
         rows: list[JsonDict] = []
@@ -18590,21 +18595,67 @@ def _load_editorial_recall_entries(path_s: str) -> tuple[tuple[tuple[str, Any], 
         return tuple()
 
 
-def fetch_editorial_recall_items(section_key: str, start_kst: datetime, end_kst: datetime) -> list[JsonDict]:
+def _editorial_recall_window_pubdate(pub: datetime | None, start_kst: datetime, end_kst: datetime) -> datetime | None:
+    if not isinstance(pub, datetime):
+        return pub
+    try:
+        pub_kst = pub.astimezone(KST) if pub.tzinfo is not None else pub.replace(tzinfo=KST)
+        end_kst_norm = end_kst.astimezone(KST) if end_kst.tzinfo is not None else end_kst.replace(tzinfo=KST)
+        # Editorially pinned URLs often encode 06:00 publication time, which is also
+        # the exclusive rebuild-window boundary. Treat the exact boundary as in-window.
+        if pub_kst == end_kst_norm:
+            return end_kst_norm - timedelta(seconds=1)
+    except Exception:
+        return pub
+    return pub_kst
+
+
+def _looks_corrupt_query(text: str) -> bool:
+    s = str(text or "").strip()
+    if not s:
+        return True
+    if s.count("?") >= max(2, len(s) // 3):
+        return True
+    return False
+
+
+def _editorial_recall_query(row: JsonDict) -> str:
+    q = clean_text(str(row.get("source_query") or ""))
+    if _looks_corrupt_query(q):
+        q = clean_text(str(row.get("title") or ""))
+    return q or "editorial recall"
+
+
+def fetch_editorial_recall_items(
+    section_key: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    debug_meta: JsonDict | None = None,
+) -> list[JsonDict]:
     rows: list[JsonDict] = []
-    for packed in _load_editorial_recall_entries(EDITORIAL_RECALL_URLS_PATH):
+    entries = list(_load_editorial_recall_entries(EDITORIAL_RECALL_URLS_PATH))
+    skipped: dict[str, int] = {}
+    if isinstance(debug_meta, dict):
+        debug_meta["editorial_recall_path"] = EDITORIAL_RECALL_URLS_PATH
+        debug_meta["editorial_recall_entry_count"] = int(len(entries))
+    section_entries = 0
+    for packed in entries:
         entry = dict(packed)
         if str(entry.get("section") or "").strip() != section_key:
             continue
+        section_entries += 1
         url = strip_tracking_params(str(entry.get("url") or "").strip())
         if not url:
+            skipped["missing_url"] = skipped.get("missing_url", 0) + 1
             continue
         pub = _best_effort_article_pubdate_kst(url)
         if not pub:
             hinted = _date_hint_from_url(url)
             if isinstance(hinted, date):
                 pub = datetime(hinted.year, hinted.month, hinted.day, 6, 0, 0, tzinfo=KST)
+        pub = _editorial_recall_window_pubdate(pub, start_kst, end_kst)
         if (not pub) or pub < start_kst or pub >= end_kst:
+            skipped["outside_window"] = skipped.get("outside_window", 0) + 1
             continue
         title = clean_text(str(entry.get("title") or ""))
         desc = clean_text(str(entry.get("description") or ""))
@@ -18632,6 +18683,11 @@ def fetch_editorial_recall_items(section_key: str, start_kst: datetime, end_kst:
                 "source_query": str(entry.get("source_query") or "").strip() or title,
             }
         )
+    if isinstance(debug_meta, dict):
+        debug_meta["editorial_recall_section_entry_count"] = int(section_entries)
+        debug_meta["editorial_recall_rows"] = int(len(rows))
+        if skipped:
+            debug_meta["editorial_recall_skipped"] = dict(sorted(skipped.items()))
     return rows
 
 
@@ -20117,7 +20173,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
         pass
 
     try:
-        recall_rows = fetch_editorial_recall_items(section_key, effective_start_kst, end_kst)
+        recall_rows = fetch_editorial_recall_items(section_key, effective_start_kst, end_kst, debug_meta=recall_meta)
         if recall_rows:
             recall_meta["editorial_recall_urls"] = [
                 str(row.get("originallink") or row.get("link") or "")
@@ -20125,14 +20181,13 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             ]
         editorial_added = 0
         for row in recall_rows:
-            q = str(row.get("source_query") or "").strip() or "editorial recall"
+            q = _editorial_recall_query(row)
             before_n = len(items)
             _ingest_google_news_items(q, [row], source_channel="editorial_recall")
             editorial_added += max(0, len(items) - before_n)
-        if recall_rows:
-            recall_meta["editorial_recall_added"] = int(editorial_added)
-    except Exception:
-        pass
+        recall_meta["editorial_recall_added"] = int(editorial_added)
+    except Exception as exc:
+        recall_meta["editorial_recall_error"] = str(exc)[:200]
 
     # Optional RSS candidates (신뢰 소스 보강)
     # RSS 기사도 메인 _local_dedupe를 거쳐 API/RSS 경로 간 중복을 방지
