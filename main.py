@@ -536,6 +536,11 @@ PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES = [
     'site:khan.co.kr "붉은 죽음" 과수화상병',
     'site:khan.co.kr 과수화상병 충북 농가 시름',
 ]
+PEST_KHAN_SEARCH_RECALL_QUERIES = [
+    "과수화상병",
+    "붉은 죽음",
+    "과수화상병 충북 농가 시름",
+]
 # pest는 page1 결과가 충분해 보여도 실행형 기사가 page2에 숨어있는 경우가 잦아
 # always-on recall 쿼리에 한해 최소 page2를 선제적으로 1회 보강한다.
 PEST_ALWAYS_ON_PAGE2_ENABLED = os.getenv("PEST_ALWAYS_ON_PAGE2_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
@@ -560,6 +565,11 @@ GOOGLE_NEWS_RECALL_MIN_AGE_DAYS = max(1, min(GOOGLE_NEWS_RECALL_MIN_AGE_DAYS, 90
 PEST_GOOGLE_NEWS_RECALL_ENABLED = os.getenv("PEST_GOOGLE_NEWS_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
 PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = int(os.getenv("PEST_GOOGLE_NEWS_RECALL_QUERY_CAP", "6") or 6)
 PEST_GOOGLE_NEWS_RECALL_QUERY_CAP = max(0, min(PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6))
+PEST_KHAN_SEARCH_RECALL_ENABLED = os.getenv("PEST_KHAN_SEARCH_RECALL_ENABLED", "1").strip().lower() in ("1", "true", "yes", "y")
+PEST_KHAN_SEARCH_RECALL_QUERY_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_QUERY_CAP", "3") or 3)
+PEST_KHAN_SEARCH_RECALL_QUERY_CAP = max(0, min(PEST_KHAN_SEARCH_RECALL_QUERY_CAP, 5))
+PEST_KHAN_SEARCH_RECALL_ITEM_CAP = int(os.getenv("PEST_KHAN_SEARCH_RECALL_ITEM_CAP", "5") or 5)
+PEST_KHAN_SEARCH_RECALL_ITEM_CAP = max(1, min(PEST_KHAN_SEARCH_RECALL_ITEM_CAP, 10))
 
 
 # 전체 런에서 추가 호출 예산(기본: qcap*2)
@@ -18476,6 +18486,81 @@ def build_google_news_rss_search_url(query: str, start_kst: datetime, end_kst: d
     )
 
 
+def build_khan_search_url(query: str) -> str:
+    return "https://www.khan.co.kr/search/?stb=khan&q=" + quote((query or "").strip())
+
+
+def _html_meta_content(txt: str, key: str) -> str:
+    key_escaped = re.escape(key or "")
+    for ptn in (
+        rf'<meta[^>]+(?:property|name)=["\']{key_escaped}["\'][^>]+content=["\']([^"\']+)["\']',
+        rf'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']{key_escaped}["\']',
+    ):
+        m = re.search(ptn, txt or "", flags=re.I)
+        if m:
+            return clean_text(html.unescape(m.group(1) or ""))
+    return ""
+
+
+def fetch_khan_search_items(
+    query: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    item_cap: int | None = None,
+) -> list[JsonDict]:
+    cap = max(1, int(item_cap or PEST_KHAN_SEARCH_RECALL_ITEM_CAP or 0))
+    url = build_khan_search_url(query)
+    try:
+        r = http_session().get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        if not r.ok:
+            return []
+        links: list[str] = []
+        seen: set[str] = set()
+        for m in re.finditer(r'https?://(?:www\.)?khan\.co\.kr/article/\d+', r.text or ""):
+            link = strip_tracking_params(m.group(0))
+            canon = canonicalize_url(link)
+            if not link or canon in seen:
+                continue
+            seen.add(canon)
+            links.append(link)
+            if len(links) >= cap:
+                break
+        items: list[JsonDict] = []
+        for link in links:
+            pub = _best_effort_article_pubdate_kst(link)
+            if not pub:
+                hinted = _date_hint_from_url(link)
+                if isinstance(hinted, date):
+                    pub = datetime(hinted.year, hinted.month, hinted.day, 6, 0, 0, tzinfo=KST)
+            if (not pub) or pub < start_kst or pub >= end_kst:
+                continue
+            title = ""
+            desc = ""
+            try:
+                art_r = http_session().get(link, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                if art_r.ok:
+                    txt = art_r.text or ""
+                    title = _html_meta_content(txt, "og:title")
+                    desc = _html_meta_content(txt, "og:description") or _html_meta_content(txt, "description")
+            except Exception:
+                pass
+            if not title:
+                title = f"경향신문 기사 {pub.date().isoformat()}"
+            items.append(
+                {
+                    "title": title,
+                    "description": desc or title,
+                    "link": link,
+                    "originallink": link,
+                    "pubDate": pub.astimezone(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT"),
+                    "source": "경향신문",
+                }
+            )
+        return items
+    except Exception:
+        return []
+
+
 def _extract_google_news_base64(source_url: str) -> str:
     try:
         parsed = urlparse(source_url)
@@ -19754,7 +19839,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             items.append(art)
             hits_by_query[q] = hits_by_query.get(q, 0) + 1
 
-    def _ingest_google_news_items(q: str, rows: Sequence[JsonDict]) -> None:
+    def _ingest_google_news_items(q: str, rows: Sequence[JsonDict], source_channel: str = "google_news") -> None:
         nonlocal items, _local_dedupe
         for it in list(rows or []):
             title = clean_text(it.get("title", ""))
@@ -19786,7 +19871,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
             source_press = clean_text(it.get("source", ""))
             press_seed = source_press or press_name_from_url(origin or link)
             press = normalize_press_label(press_seed, (origin or link))
-            dbg_set_current_query(q, "google_news")
+            dbg_set_current_query(q, source_channel)
             try:
                 if not is_relevant(title, desc, dom, (origin or link), section_conf, press):
                     continue
@@ -19820,7 +19905,7 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 topic=topic,
                 origin_section=section_key,
                 source_query=q,
-                source_channel="google_news",
+                source_channel=source_channel,
             )
             art.score = compute_rank_score(title, desc, dom, pub, section_conf, press)
             items.append(art)
@@ -19929,6 +20014,31 @@ def collect_candidates_for_section(section_conf: SectionConfig, start_kst: datet
                 _ingest_google_news_items(q, rows_g)
                 pest_google_added += max(0, len(items) - before_n)
             recall_meta["pest_google_news_added"] = int(pest_google_added)
+    except Exception:
+        pass
+
+    # pest 섹션 리콜 보강(4): 검색엔진 RSS가 언론사별로 흔들릴 때 원문 사이트 검색으로 보강한다.
+    try:
+        if (
+            section_key == "pest"
+            and PEST_KHAN_SEARCH_RECALL_ENABLED
+            and PEST_KHAN_SEARCH_RECALL_QUERY_CAP > 0
+        ):
+            source_qs = _dedupe_queries(list(PEST_KHAN_SEARCH_RECALL_QUERIES))
+            if source_qs:
+                recall_meta["pest_khan_search_queries"] = list(source_qs[:PEST_KHAN_SEARCH_RECALL_QUERY_CAP])
+            khan_added = 0
+            for q in source_qs[:PEST_KHAN_SEARCH_RECALL_QUERY_CAP]:
+                rows_s = fetch_khan_search_items(
+                    q,
+                    effective_start_kst,
+                    end_kst,
+                    item_cap=PEST_KHAN_SEARCH_RECALL_ITEM_CAP,
+                )
+                before_n = len(items)
+                _ingest_google_news_items(q, rows_s, source_channel="source_search")
+                khan_added += max(0, len(items) - before_n)
+            recall_meta["pest_khan_search_added"] = int(khan_added)
     except Exception:
         pass
 

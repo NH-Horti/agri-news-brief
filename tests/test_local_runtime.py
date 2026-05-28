@@ -943,6 +943,8 @@ class LocalRuntimeTests(TestCase):
         self.assertIn('"붉은 죽음" 과수화상병 농가', main.PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
         self.assertIn('site:khan.co.kr "붉은 죽음" 과수화상병', main.PEST_GOOGLE_NEWS_PRECISION_RECALL_QUERIES)
         self.assertGreaterEqual(main.PEST_GOOGLE_NEWS_RECALL_QUERY_CAP, 6)
+        self.assertIn("붉은 죽음", main.PEST_KHAN_SEARCH_RECALL_QUERIES)
+        self.assertIn("khan.co.kr/search", main.build_khan_search_url("과수화상병"))
 
         article = self._make_article(
             section="pest",
