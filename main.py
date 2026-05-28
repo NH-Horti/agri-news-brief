@@ -9022,6 +9022,18 @@ def is_pest_fire_blight_field_report_context(title: str, desc: str) -> bool:
     return field_hits >= 2
 
 
+def is_pest_fire_blight_high_impact_field_report_context(title: str, desc: str, source_channel: str = "") -> bool:
+    if not is_pest_fire_blight_field_report_context(title, desc):
+        return False
+    if str(source_channel or "").strip() == "editorial_recall":
+        return True
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    return count_any(
+        txt,
+        [w.lower() for w in ("붉은 죽음", "치료제 없어", "걸리면 답도 없다", "농가 시름", "사과 과수원 덮친")],
+    ) >= 1
+
+
 def is_pest_national_fire_blight_escalation_context(title: str, desc: str) -> bool:
     """전국 방역 단계나 미발생 지역 첫 확진을 다루는 과수화상병 핵심 기사."""
     text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
@@ -23326,7 +23338,12 @@ def _promote_pest_fire_blight_field_report_from_raw(
     if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
         return 0
     pest_items = [a for a in (final_by_section.get("pest") or []) if isinstance(a, Article)]
-    if any(is_pest_fire_blight_field_report_context(a.title or "", a.description or "") for a in pest_items):
+    if any(
+        is_pest_fire_blight_high_impact_field_report_context(
+            a.title or "", a.description or "", getattr(a, "source_channel", "") or "",
+        )
+        for a in pest_items
+    ):
         return 0
 
     pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
@@ -23345,7 +23362,9 @@ def _promote_pest_fire_blight_field_report_from_raw(
                 continue
             if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
                 continue
-            if not is_pest_fire_blight_field_report_context(article.title or "", article.description or ""):
+            if not is_pest_fire_blight_high_impact_field_report_context(
+                article.title or "", article.description or "", getattr(article, "source_channel", "") or "",
+            ):
                 continue
             reject_reason = _postbuild_article_reject_reason(article, "pest")
             if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
@@ -23375,7 +23394,9 @@ def _promote_pest_fire_blight_field_report_from_raw(
         (idx, article)
         for idx, article in enumerate(pest_items)
         if not bool(getattr(article, "is_core", False))
-        and not is_pest_fire_blight_field_report_context(article.title or "", article.description or "")
+        and not is_pest_fire_blight_high_impact_field_report_context(
+            article.title or "", article.description or "", getattr(article, "source_channel", "") or "",
+        )
     ]
 
     def _victim_rank(item: tuple[int, Article]) -> tuple[Any, ...]:
@@ -23401,7 +23422,9 @@ def _promote_pest_fire_blight_field_report_from_raw(
         pest_items,
         key=lambda article: (
             1 if getattr(article, "is_core", False) else 0,
-            1 if is_pest_fire_blight_field_report_context(article.title or "", article.description or "") else 0,
+            1 if is_pest_fire_blight_high_impact_field_report_context(
+                article.title or "", article.description or "", getattr(article, "source_channel", "") or "",
+            ) else 0,
             _pest_fire_blight_priority_rank(article, pest_conf),
             0 if _is_weak_pest_tail(article) else 1,
             float(getattr(article, "selection_fit_score", 0.0) or 0.0),
