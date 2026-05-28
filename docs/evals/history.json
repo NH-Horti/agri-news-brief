@@ -2,10 +2,10 @@
   "reports": [
     {
       "report_date": "2026-05-28",
-      "generated_at_kst": "2026-05-28T18:16:15+09:00",
-      "overall_score": 82.0,
-      "operational_score": 95.46,
-      "editorial_score": 82.0,
+      "generated_at_kst": "2026-05-28T18:54:48+09:00",
+      "overall_score": 84.0,
+      "operational_score": 95.83,
+      "editorial_score": 84.0,
       "editorial_status": "needs_iteration",
       "quality_gate_status": "needs_iteration",
       "quality_gate_reason": "editorial_below_target",
@@ -19,10 +19,10 @@
       "within_72h_rate": 1.0,
       "briefing_title_unique_rate": 1.0,
       "content_false_positive_rate": 0.0,
-      "editorial_quality_penalty": 3.1714,
+      "editorial_quality_penalty": 2.85,
       "policy_wrong_section_rate": 0.0,
       "promotional_filler_rate": 0.1,
-      "promotional_core_rate": 0.1429,
+      "promotional_core_rate": 0.125,
       "pest_theme_duplicate_rate": 0.05,
       "guardrail_driver_tags": []
     },
@@ -667,5 +667,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-05-28T18:16:15+09:00"
+  "updated_at_kst": "2026-05-28T18:54:48+09:00"
 }
