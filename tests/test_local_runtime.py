@@ -1011,9 +1011,15 @@ class LocalRuntimeTests(TestCase):
             link="https://www.khan.co.kr/article/202605280600001",
             press="경향신문",
         )
+        field_report.source_channel = "editorial_recall"
         field_report.score = 38.0
         final_by_section = {"pest": [fire_core, fire_tail, non_fire, weak_tail]}
 
+        self.assertTrue(
+            main.is_pest_fire_blight_high_impact_field_report_context(
+                field_report.title, field_report.description, field_report.source_channel,
+            )
+        )
         self.assertTrue(main._is_weak_pest_tail(weak_tail))
         self.assertEqual(
             main._promote_pest_fire_blight_field_report_from_raw(final_by_section, {"pest": [field_report]}),
