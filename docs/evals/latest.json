@@ -1,6 +1,6 @@
 {
   "report_date": "2026-05-28",
-  "generated_at_kst": "2026-05-28T20:39:31+09:00",
+  "generated_at_kst": "2026-05-28T21:07:10+09:00",
   "status": "warn",
   "overall_score": 82.0,
   "scores": {
@@ -11,7 +11,7 @@
     "retrieval_support": 85.62,
     "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 97.38
+    "commodity_board_quality": 96.61
   },
   "counts": {
     "briefing_total": 20,
@@ -36,10 +36,10 @@
       "pest": 3
     },
     "raw_by_section": {
-      "supply": 143,
-      "policy": 89,
+      "supply": 142,
+      "policy": 90,
       "dist": 31,
-      "pest": 52
+      "pest": 53
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -80,7 +80,7 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5208,
-    "section_alignment_fit_avg": 5.1245,
+    "section_alignment_fit_avg": 5.093,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -93,23 +93,23 @@
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.05,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.75,
+    "editorial_quality_penalty": 0.5,
     "preferred_slot_gap_rate": 0.0,
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 6.205,
-    "core_rank_percentile_avg": 0.9529,
+    "core_fit_avg": 6.195,
+    "core_rank_percentile_avg": 0.9493,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 0.9444,
     "commodity_primary_weak_rate": 0.0556,
     "commodity_primary_fit_avg": 4.0783,
-    "commodity_primary_rank_avg": 3.0556
+    "commodity_primary_rank_avg": 3.0
   },
   "section_scores": {
     "briefing_fill": {
@@ -146,7 +146,7 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.9959
+      "pest": 0.9906
     }
   },
   "freshness_samples": [
@@ -176,9 +176,9 @@
       "age_hours": 17.2
     },
     {
-      "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
+      "title": "농산물 가격은 내리고 축산물은 오르고…공급 확대ㆍ할인지원, 수급 안...",
       "section": "policy",
-      "age_hours": 16.5
+      "age_hours": 16.2
     },
     {
       "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
@@ -186,19 +186,19 @@
       "age_hours": 15.7
     },
     {
-      "title": "완주 삼례 농협 , 명품 흑피수박 ‘블랙위너’ 본격 출하",
-      "section": "dist",
-      "age_hours": 14.4
+      "title": "[단독] 정부, 농산물 과잉생산 막는다… 차액 보전 요건·생산량 조절 대...",
+      "section": "policy",
+      "age_hours": 15.3
     }
   ],
   "content_false_positive_samples": [],
   "story_duplicate_samples": [],
   "editorial_quality_samples": [
     {
-      "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
-      "href": "http://www.gndomin.com/news/articleView.html?idxno=476953",
-      "section": "supply",
-      "is_core": true,
+      "title": "\"예약형 정가·수의매매, 납품·정산 기준 매뉴얼 필요\"",
+      "href": "https://www.agrinet.co.kr/news/articleView.html?idxno=404463",
+      "section": "dist",
+      "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
@@ -254,7 +254,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 95.97,
+  "operational_score": 98.18,
   "score_notes": {
     "overall_score": "Editorial-gated headline score. The deterministic operational score is preserved as operational_score, but the headline score is capped when the editorial shadow judge is below the target.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -263,100 +263,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-05-28T20:40:01+09:00",
+    "generated_at_kst": "2026-05-28T21:07:32+09:00",
     "score": 82.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 76.0,
-      "summary_usefulness": 89.0,
-      "missed_opportunity": 78.0,
-      "noise_control": 74.0
+      "article_selection": 79.0,
+      "section_fit": 80.0,
+      "core_pick_quality": 77.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 76.0,
+      "noise_control": 79.0
     },
-    "summary": "구색은 5×4로 맞췄지만, 실제 편집 선택은 목표점수 95에 못 미친다. 공급은 가장 약하다. 정부 수급점검회의 기반의 더 큰 전국 이슈가 raw pool에 충분했는데, 홍보성 양파 소비 기사와 씨감자 지역 성과물이 들어와 핵심감이 떨어졌다. 정책은 계란 할인 확대와 가격안정제 토론회는 괜찮지만, 인천 생활물가와 중복성 강한 정부 해명/재탕 기사가 꼬리에서 품질을 깎았다. 유통은 온라인 도매시장 MOU는 적합하나 수도권 판촉전·출하식류 비중이 높아 운영·물류감이 약하다. 병해충은 과수화상병 중심 편성 방향은 맞지만, 가장 강한 ‘공주 첫 발생+경계 격상’ 단신을 비핵심으로 두고 지역 약제지원·기업 특허 기사를 섞은 점이 아쉽다. 요약문 자체는 대체로 유용하지만, 기사 선별의 강약 조절과 섹션 정밀도가 부족하다.",
+    "summary": "카드 수는 전 섹션 5개를 채웠지만, 기사 고르기 자체는 95점대와 거리가 있다. 공급은 홍보성 양파 기사에 코어를 준 점이 가장 큰 감점 요인이고, 정책은 지역 생활물가 기사가 섹션 취지에 약하다. 유통은 온라인 도매시장 MOU는 좋지만 나머지 다수가 출하식·판촉전 중심의 로컬 홍보성 기사여서 운영·물류 관점이 약해졌다. 병해충은 화상병 중심 축은 맞췄지만 더 강한 확산/현장 피해 기사들이 후보군에 있었는데 코어·상단 반영이 약했다. 요약은 대체로 쓸 만하나, 원문 선택이 약해 전체 편집 완성도는 ‘사용 가능하나 수정 필요’ 수준이다.",
     "issues": [
-      {
-        "type": "missed_opportunity",
-        "severity": "high",
-        "section": "supply",
-        "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
-        "reason": "홍보성 소비촉진 기사인데 전국 수급점검회의 기사가 더 강했다.",
-        "suggested_action": "정부 수매·수입·가격전망 종합 기사로 교체"
-      },
       {
         "type": "weak_core",
         "severity": "high",
         "section": "supply",
         "title": "경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보",
-        "reason": "코어로 두기엔 정책·수급 정보량이 약하다.",
-        "suggested_action": "비핵심 꼬리로 내리거나 제외"
+        "reason": "소비 독려성 기관 홍보에 가깝고 수급 핵심 기사로 약하다.",
+        "suggested_action": "정부 수매·수출지원 등 양파 수급 대응 기사로 코어 교체."
       },
       {
-        "type": "noise",
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "supply",
+        "title": "과잉 양파 '수매'·부족 계란 '수입'…정부 \"6~7월 물가 안정 총력\"",
+        "reason": "가장 직접적인 수급 대응 기사인데 공급 섹션에서 빠졌다.",
+        "suggested_action": "홍보성 양파 기사나 씨감자 기사 대신 편입."
+      },
+      {
+        "type": "wrong_fit",
         "severity": "medium",
         "section": "supply",
         "title": "괴산군 원원종 감자 생산 목표 초과 달성",
-        "reason": "지역 성과성 보드 기사로 당일 전국 수급 이슈 대비 우선순위 낮다.",
-        "suggested_action": "전국 가격·출하 동향 기사로 교체"
+        "reason": "지역 성과성 보드 기사로 당일 수급 이슈성과 약하다.",
+        "suggested_action": "수급 변동성·출하 동향 기사로 대체."
       },
       {
         "type": "wrong_fit",
         "severity": "medium",
         "section": "policy",
         "title": "계란 등 인천도 생활물가 등락...고추장·배추·오이 내린 곳도",
-        "reason": "지역 물가 스케치에 가까워 중앙 정책 섹션 적합도가 낮다.",
-        "suggested_action": "가격안정제 세부 설계·정부 대책 기사로 교체"
+        "reason": "지역 물가 스케치 수준으로 중앙 정책 섹션 적합도가 낮다.",
+        "suggested_action": "가격안정제 단독이나 정부 설명자료 성격 기사로 교체."
       },
       {
-        "type": "duplicate_theme",
+        "type": "duplicate_angle",
         "severity": "medium",
-        "section": "policy",
-        "title": "양파값 급락·계란값 고공행진…정부, 수급 안정·할인지원 총력",
-        "reason": "동일 회의 재가공 기사로 새 정보가 적고 품질도 낮다.",
-        "suggested_action": "단일 회의 기사 중 더 강한 1건만 유지"
+        "section": "dist",
+        "title": "강원농협·농협공판장, 온라인 도매시장 활성화 앞장 / 강원 농산물 온라인 도매시장 경쟁력 키운다",
+        "reason": "동일 사안 중복 편입으로 슬롯을 낭비했다.",
+        "suggested_action": "둘 중 하나만 두고 다른 유통 운영 기사로 교체."
       },
       {
-        "type": "weak_core",
+        "type": "promotional_filler",
+        "severity": "high",
+        "section": "dist",
+        "title": "완주 삼례 농협 , 명품 흑피수박 ‘블랙위너’ 본격 출하",
+        "reason": "출하식·품종 홍보 성격이 강해 유통 운영 핵심도가 낮다.",
+        "suggested_action": "예약형 정가수의매매, 유통혁신 TF, 수출물류 기사 우선."
+      },
+      {
+        "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "논산 성동농협, 수도권서 수박·방울 토마토 판촉전 ‘대박’…전량 매진",
-        "reason": "판촉전 성과는 유통 섹션 코어로는 다소 가볍다.",
-        "suggested_action": "온라인 도매시장·정가수의매매 등 구조 기사 우선"
-      },
-      {
-        "type": "duplicate",
-        "severity": "high",
-        "section": "dist",
-        "title": "강원 농산물 온라인 도매시장 경쟁력 키운다",
-        "reason": "같은 MOU를 다른 매체로 중복 채택했다.",
-        "suggested_action": "중복 제거 후 다른 유통 운영 기사 보강"
+        "reason": "로컬 판촉행사 실적 기사로 전국 유통 이슈성 부족하다.",
+        "suggested_action": "판촉성 기사 비중을 줄이고 시장 제도·물류 기사 보강."
       },
       {
         "type": "missed_opportunity",
-        "severity": "high",
+        "severity": "medium",
         "section": "pest",
-        "title": "충남 공주서 과수화상병 신규 확인…농진청, 위기 단계 '주의'→'경계' ...",
-        "reason": "당일 가장 강한 발생·격상 뉴스인데 비핵심 처리됐다.",
-        "suggested_action": "병해충 섹션 최상단 코어로 승격"
+        "title": "[현장]‘치료제 없어 걸리면 답도 없다’…사과 과수원 덮친 ‘붉은 죽음’",
+        "reason": "현장 피해와 확산 심각성을 잘 보여주는 강한 기사인데 미반영됐다.",
+        "suggested_action": "지원성 지역 기사 한 건을 빼고 상단 배치 검토."
       }
     ],
     "section_notes": {
-      "supply": "수급 섹션은 raw pool이 매우 강했는데도 전국성·정책결합 기사를 충분히 반영하지 못했다. 양파 홍보, 씨감자 성과물은 꼬리로도 가능하지만 핵심 슬롯을 차지하면 감점이다. 수박·대파 가격 기사들은 시의성은 있으나 정부 점검회의 종합 기사와의 조합이 더 나았다.",
-      "policy": "핵심 2건은 무난하다. 다만 꼬리 3건 중 인천 지역 물가와 저품질 재가공 기사 비중이 높아 중앙 정책면의 밀도가 약해졌다. 가격안정제 세부 설계 단독 등 더 나은 후보가 보였다.",
-      "dist": "유통면은 운영·물류·시장구조 기사 우선 원칙에서 절반만 성공했다. 온라인 도매시장 MOU는 적합하지만 같은 사안을 중복 채택했고, 판촉전·출하식 비중이 높아 실무적 유통감이 약해졌다. 예약형 정가수의매매, 유통혁신 TF 같은 구조 기사 활용 여지가 있었다.",
-      "pest": "과수화상병 집중 편성 자체는 적절하다. 그러나 가장 강한 신규 발생/위기 격상 기사보다 일반 예찰 캠페인 기사가 앞선 점은 아쉽다. 미국선녀벌레 지원, 기업 특허는 raw pool이 약할 때 꼬리로 가능하지만 이날은 화상병 확산 기사풀이 충분했다."
+      "supply": "카드 수는 충분했지만 핵심 선택이 흔들렸다. 양파·대파·수박 이슈 축은 맞췄으나 가장 중요한 정부 수급 대응 기사보다 기관 홍보성 양파 기사를 코어로 올린 판단이 아쉽다. 씨감자 성과 기사는 꼬리로도 약하다.",
+      "policy": "정부 수급점검회의와 가격안정제 토론회는 적절하다. 다만 같은 회의 파생 기사 반복성이 있고, 인천 생활물가 지역 기사는 정책 섹션 깊이를 떨어뜨린다. 단독 가격안정제 세부 검토 기사를 더 강하게 쓸 수 있었다.",
+      "dist": "온라인 도매시장 MOU는 좋은 코어다. 그러나 나머지가 출하식·판촉전·중복 기사로 채워져 유통/물류/시장운영 섹션답지 않다. 후보군에 예약형 정가·수의매매, 유통혁신 TF, 수출 실무 등 더 맞는 운영 기사들이 있었다.",
+      "pest": "과수화상병 중심 편성 자체는 맞다. 다만 전국 확산, 신규 발생, 위기단계 상향, 현장 매몰 피해 등 더 강한 기사들이 보여서 상단 구성 개선 여지가 크다. 지역 약제 지원·기술홍보성 기사 비중은 줄이는 편이 낫다."
     },
     "improvement_suggestions": [
-      "공급은 홍보성 소비촉진보다 정부 수급대책·가격전망 종합 기사를 우선 배치하라.",
-      "정책 꼬리 슬롯에는 지역 물가 스케치보다 제도 설계·시행 쟁점 기사를 넣어라.",
-      "유통에서는 동일 MOU 중복을 금지하고 정가수의매매·물류개선·수출차질 기사 비중을 높여라.",
-      "병해충은 당일 발생 확산·위기단계 격상 기사를 최우선 코어로 세워라.",
-      "지역 행사·출하식·판촉전은 raw pool이 약할 때만 후순위 꼬리로 제한하라.",
-      "동일 정부회의를 재가공한 기사들은 한 건만 남기고 나머지는 다른 각도의 기사로 교체하라."
+      "공급 코어는 기관 홍보보다 정부 수급조치·산지 가격 변동 기사 우선 원칙을 세울 것.",
+      "정책 섹션은 지역 물가 스케치보다 중앙정부 제도 변화와 단독성 기사 비중을 높일 것.",
+      "유통 섹션에서 출하식·판촉전은 1건 이하로 제한하고 시장제도·물류·온라인도매 기사로 채울 것.",
+      "동일 사안의 지역지 중복 편입을 막기 위해 제목·핵심주체 기준 중복 제거를 강화할 것.",
+      "병해충은 화상병 확산 속보, 위기단계 상향, 현장 피해 기사부터 상단에 배치할 것.",
+      "강한 후보가 충분한 날에는 보드성 성과 기사나 지원 공지성 기사를 과감히 제외할 것."
     ],
-    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":80,\"section_fit\":79,\"core_pick_quality\":76,\"summary_usefulness\":89,\"missed_opportunity\":78,\"noise_control\":74},\"summary\":\"구색은 5×4로 맞췄지만, 실제 편집 선택은 목표점수 95에 못 미친다. 공급은 가장 약하다. 정부 수급점검회의 기반의 더 큰 전국 이슈가 raw pool에 충분했는데, 홍보성 양파 소비 기사와 씨감자 지역 성과물이 들어와 핵심감이 떨어졌다. 정책은 계란 할인 확대와 가격안정제 토론회는 괜찮지만, 인천 생활물가와 중복성 강한 정부 해명/재탕 기사가 꼬리에서 품질을 깎았다. 유통은 온라인 도매시장 MOU는 적합하나 수도권 판촉전·출하식류 비중이 높아 운영·물류감이 약하다. 병해충은 과수화상병 중심 편성 방향은 맞지만, 가장 강한 ‘공주 첫 발생+경계 격상’ 단신을 비핵심으로 두고 지역 약제지원·기업 특허 기사를 섞은 점이 아쉽다. 요약문 자체는 대체로 유용하지만, 기사 선별의 강약 조절과 섹션 정밀도가 부족하다.\",\"issues\":[{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보\",\"reason\":\"홍보성 소비촉진 기사인데 전국 수급점검회의 기사가 더 강했다.\",\"suggested_action\":\"정부 수매·수입·가격전망 종합 기사로 교체\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보\",\"reason\":\"코어로 두기엔 정책·수급 정보량이 약하다.\",\"suggested_action\":\"비핵심 꼬리로 내리거나 제외\"},{\"type\":\"noise\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"괴산군 원원종 감자 생산 목표 초과 달성\",\"reason\":\"지역 성과성 보드 기사로 당일 전국 수급 이슈 대비 우선순위 낮다.\",\"suggested_action\":\"전국 가격·출하 동향 기사로 교체\"},{\"type\":\"wrong_fit\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"계...",
+    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":79,\"section_fit\":80,\"core_pick_quality\":77,\"summary_usefulness\":88,\"missed_opportunity\":76,\"noise_control\":79},\"summary\":\"카드 수는 전 섹션 5개를 채웠지만, 기사 고르기 자체는 95점대와 거리가 있다. 공급은 홍보성 양파 기사에 코어를 준 점이 가장 큰 감점 요인이고, 정책은 지역 생활물가 기사가 섹션 취지에 약하다. 유통은 온라인 도매시장 MOU는 좋지만 나머지 다수가 출하식·판촉전 중심의 로컬 홍보성 기사여서 운영·물류 관점이 약해졌다. 병해충은 화상병 중심 축은 맞췄지만 더 강한 확산/현장 피해 기사들이 후보군에 있었는데 코어·상단 반영이 약했다. 요약은 대체로 쓸 만하나, 원문 선택이 약해 전체 편집 완성도는 ‘사용 가능하나 수정 필요’ 수준이다.\",\"issues\":[{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"경남농기원, 우리 몸엔 역시 '신토불이 국산 양파 ' 홍보\",\"reason\":\"소비 독려성 기관 홍보에 가깝고 수급 핵심 기사로 약하다.\",\"suggested_action\":\"정부 수매·수출지원 등 양파 수급 대응 기사로 코어 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"과잉 양파 '수매'·부족 계란 '수입'…정부 \\\"6~7월 물가 안정 총력\\\"\",\"reason\":\"가장 직접적인 수급 대응 기사인데 공급 섹션에서 빠졌다.\",\"suggested_action\":\"홍보성 양파 기사나 씨감자 기사 대신 편입.\"},{\"type\":\"wrong_fit\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"괴산군 원원종 감자 생산 목표 초과 달성\",\"reason\":\"지역 성과성 보드 기사로 당일 수급 이슈성과 약하다.\",\"suggested_action\":\"수급 변동성·출하 동향 기사로 대체.\"},{\"type\":\"wrong_fit\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"계란 등 인천도 생활물가 등락...고추장·배추·오이 내린 곳도\",\"reason\":\"지역 물가 스케치 수준으로 중앙 정책 섹...",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -366,7 +366,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 143,
+          "raw_candidates": 142,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -378,7 +378,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 89,
+          "raw_candidates": 90,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -402,7 +402,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 52,
+          "raw_candidates": 53,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -445,7 +445,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 143,
+          "raw_candidates": 142,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -457,7 +457,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 89,
+          "raw_candidates": 90,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -481,7 +481,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 52,
+          "raw_candidates": 53,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -504,7 +504,7 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -520,10 +520,10 @@
         "reason": "The raw pool contained stronger alternatives than selected cards."
       },
       {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
         "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
@@ -563,7 +563,7 @@
   "quality_gate": {
     "status": "needs_iteration",
     "target_score": 95.0,
-    "operational_score": 95.97,
+    "operational_score": 98.18,
     "editorial_score": 82.0,
     "headline_score": 82.0,
     "reason": "editorial_below_target"
