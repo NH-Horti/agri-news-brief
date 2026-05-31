@@ -1,0 +1,566 @@
+{
+  "report_date": "2026-06-01",
+  "generated_at_kst": "2026-06-01T06:25:04+09:00",
+  "status": "warn",
+  "overall_score": 82.0,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 90.0,
+    "summary_quality": 100.0,
+    "freshness": 94.29,
+    "retrieval_support": 88.75,
+    "section_alignment": 92.5,
+    "core_quality": 100.0,
+    "commodity_board_quality": 90.51
+  },
+  "counts": {
+    "briefing_total": 20,
+    "commodity_total": 60,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 1,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 31,
+      "policy": 5,
+      "dist": 11,
+      "pest": 13
+    },
+    "raw_by_section": {
+      "supply": 220,
+      "policy": 117,
+      "dist": 110,
+      "pest": 84
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 0,
+      "policy": 0,
+      "dist": 0,
+      "pest": 0
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.6,
+    "surface_reuse_penalty": 0.0125,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 0.65,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "weekend_span",
+    "seed_coverage_score": 0.625,
+    "section_alignment_fit_avg": 3.898,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.1,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.05,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.4,
+    "preferred_slot_gap_rate": 0.0,
+    "preferred_slot_gap_total": 0,
+    "preferred_slot_penalty": 0.0,
+    "core_fit_avg": 4.92,
+    "core_rank_percentile_avg": 0.9305,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 0.8824,
+    "commodity_primary_issue_signal_rate": 0.9412,
+    "commodity_primary_weak_rate": 0.0588,
+    "commodity_primary_fit_avg": 3.3929,
+    "commodity_primary_rank_avg": 2.8235
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.8333,
+      "policy": 0.5833,
+      "dist": 0.5,
+      "pest": 0.5833
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 0.9838,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "' 농산물가격안정제 ', 시행 3개월 앞두고도 여전히 안갯속",
+      "section": "policy",
+      "age_hours": 70.0
+    },
+    {
+      "title": "진천 초평농협 애플수박, 첫 온라인 판매 도전한다",
+      "section": "dist",
+      "age_hours": 68.7
+    },
+    {
+      "title": "공주시농업기술센터, 관내 첫 과수화상병 발생 확산 차단 총력 대응 나...",
+      "section": "pest",
+      "age_hours": 64.7
+    },
+    {
+      "title": "시간 아끼고 정산 걱정 덜고…도매시장도 ‘온라인’",
+      "section": "dist",
+      "age_hours": 64.3
+    },
+    {
+      "title": "천안 수신 멜론 본격 출하 …\"초여름 입맛 사로잡는다\"",
+      "section": "supply",
+      "age_hours": 63.8
+    },
+    {
+      "title": "[비즈톡톡] 복날은 아직인데 들썩이는 삼계탕값… ‘2만원 시대’ 앞당...",
+      "section": "policy",
+      "age_hours": 60.4
+    },
+    {
+      "title": "\"5주 간의 대장정\"…청년농업인 온라인도매시장 교육 성료",
+      "section": "dist",
+      "age_hours": 58.6
+    },
+    {
+      "title": "[현장] ‘치료제 없어 걸리면 답도 없다’···사과 과수원 덮친 ‘붉은 죽음’에 충북 농가 시름",
+      "section": "pest",
+      "age_hours": 19.6
+    }
+  ],
+  "content_false_positive_samples": [],
+  "story_duplicate_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "공주시농업기술센터, 관내 첫 과수화상병 발생 확산 차단 총력 대응 나...",
+      "href": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=891056",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요.",
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 94.73,
+  "score_notes": {
+    "overall_score": "Editorial-gated headline score. The deterministic operational score is preserved as operational_score, but the headline score is capped when the editorial shadow judge is below the target.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  },
+  "editorial": {
+    "status": "success",
+    "rubric_version": 2,
+    "model": "gpt-5.4",
+    "generated_at_kst": "2026-06-01T06:25:27+09:00",
+    "score": 82.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 80.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 76.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 84.0,
+      "noise_control": 82.0
+    },
+    "summary": "카드 수는 전 섹션 목표치 5장을 채웠지만, 실제 편집 품질은 그보다 낮다. 정책은 가격안정제와 중동발 농자재 수급 이슈를 잡아 비교적 강했으나, 같은 주제 중복과 약한 보충 카드가 보인다. 공급은 핵심 기사 선정이 크게 빗나갔고 지역 출하·판촉성 기사 비중이 높다. 유통은 온라인도매시장·출하 채널 변화보다 정부 애로접수 기사와 교육 성료 기사가 앞서 약하다. 병해충은 화상병 중심 축은 맞지만 전국 확산 총괄 기사나 더 강한 발생 집계 기사 대신 지역 단신이 섞여 아쉽다. 형식은 충족했지만 기사 고르기 자체는 90점대에 못 미친다.",
+    "issues": [
+      {
+        "type": "wrong_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "좋은 농사란 ‘무엇을 넣을 것인가’보다",
+        "reason": "수급·공급 이슈가 아닌 일반 재배 칼럼 성격이다.",
+        "suggested_action": "공급 핵심은 가격·수급·저장·자재 공급 기사로 교체."
+      },
+      {
+        "type": "section_misfit",
+        "severity": "medium",
+        "section": "supply",
+        "title": "천안 수신 멜론 본격 출하 …\"초여름 입맛 사로잡는다\"",
+        "reason": "단순 출하 홍보성 지역 기사로 공급 섹션 가치가 낮다.",
+        "suggested_action": "전국 수급·가격 영향 기사 우선 배치."
+      },
+      {
+        "type": "filler",
+        "severity": "medium",
+        "section": "supply",
+        "title": "함양군·함양농협, 양파 수급 안정 총력 대응",
+        "reason": "지역 판촉·수출 계획성 보도라 전국 공급 판단 자료가 약하다.",
+        "suggested_action": "양파값 폭락 원인·시장 영향 분석 기사로 대체."
+      },
+      {
+        "type": "duplication",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농산물가격안정제 관련 3건 동시 선택",
+        "reason": "핵심 의제는 맞지만 설명·비평이 과밀해 다른 정책 이슈를 밀어냈다.",
+        "suggested_action": "핵심 1~2건만 남기고 대체 정책 이슈 보강."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "policy",
+        "title": "[비즈톡톡] 복날은 아직인데 들썩이는 삼계탕값…",
+        "reason": "외식가 기사로 농정·제도 맥락이 약하다.",
+        "suggested_action": "할당관세·비축·검역 등 직접 정책 기사로 교체."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "dist",
+        "title": "중동전쟁 장기화…영농현장 애로 해소 지원센터 94건 중 42건 해결",
+        "reason": "유통·물류 핵심이라기보다 정부 민원 처리 현황에 가깝다.",
+        "suggested_action": "온라인도매시장, 도매시장 반입·가격, 수출검역·물류 차질 기사 우선."
+      },
+      {
+        "type": "filler",
+        "severity": "medium",
+        "section": "dist",
+        "title": "\"5주 간의 대장정\"…청년농업인 온라인도매시장 교육 성료",
+        "reason": "교육 행사 기사로 실제 유통 운영 변화 정보가 적다.",
+        "suggested_action": "거래액·출하 확대·시장 구조 변화 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "전국 확산 총괄 대신 지역 단신 위주 구성",
+        "reason": "원시 후보에 충북 24곳 확진·청정지역 붕괴 기사 등이 더 강했다.",
+        "suggested_action": "전국 확산 집계 기사 1건을 핵심 축으로 채택."
+      }
+    ],
+    "section_notes": {
+      "supply": "가장 약한 섹션. 핵심 카드가 공급 이슈가 아니고, 양파·멜론 지역성 기사 비중이 높다. 원시 후보에 양파값 폭락, 배추 저장기술, 애호박 자재난 등 더 실질적인 공급 기사들이 보여 교체 여지가 컸다.",
+      "policy": "핵심 의제 선택은 무난하다. 가격안정제 불확실성과 중동발 농자재 수급은 적절하다. 다만 가격안정제 3건은 중복이고 삼계탕값은 정책 직접성이 약해 1건 정도는 다른 제도·검역·수급 기사로 바꾸는 편이 낫다.",
+      "dist": "섹션 정의 대비 아쉽다. 애플수박 온라인 판매, 온라인도매시장 기사 자체는 맞지만 정부 애로센터 기사와 교육 성료 기사는 운영 현장성보다 부수 이슈다. 온라인도매시장 출하 확대 MOU, 매실 출하 동향, 쪽파 판로난 같은 후보 활용이 더 적합했다.",
+      "pest": "화상병 중심 편성은 맞고 계절성도 좋다. 다만 전국 확산 수치와 신규 청정지역 붕괴를 보여주는 강한 종합 기사가 빠졌고, 지역 경계 격상 기사 비중이 높다. 탄저병 테마 분산은 가능하지만 화상병 강세 국면에서는 후순위다."
+    },
+    "improvement_suggestions": [
+      "공급 섹션 핵심은 재배 일반론이 아니라 가격·수급·저장·투입재 공급 기사로 고정하라.",
+      "정책 섹션은 동일 의제 3건 이상 중복을 피하고 제도·검역·관세·예산 이슈를 분산 배치하라.",
+      "유통 섹션에서 교육·홍보성 행사는 마지막 1장 이하로 제한하라.",
+      "유통 코어는 거래 채널 변화, 도매시장 반입, 수출검역, 물류 차질 기사에서 뽑아라.",
+      "병해충 섹션은 화상병 확산기엔 전국 집계·확산 경로 기사 1건을 반드시 포함하라.",
+      "지역 판촉·첫 출하 기사들은 raw pool이 약할 때만 꼬리 카드로 쓰고 핵심 자리를 주지 마라."
+    ],
+    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":80,\"section_fit\":78,\"core_pick_quality\":76,\"summary_usefulness\":88,\"missed_opportunity\":84,\"noise_control\":82},\"summary\":\"카드 수는 전 섹션 목표치 5장을 채웠지만, 실제 편집 품질은 그보다 낮다. 정책은 가격안정제와 중동발 농자재 수급 이슈를 잡아 비교적 강했으나, 같은 주제 중복과 약한 보충 카드가 보인다. 공급은 핵심 기사 선정이 크게 빗나갔고 지역 출하·판촉성 기사 비중이 높다. 유통은 온라인도매시장·출하 채널 변화보다 정부 애로접수 기사와 교육 성료 기사가 앞서 약하다. 병해충은 화상병 중심 축은 맞지만 전국 확산 총괄 기사나 더 강한 발생 집계 기사 대신 지역 단신이 섞여 아쉽다. 형식은 충족했지만 기사 고르기 자체는 90점대에 못 미친다.\",\"issues\":[{\"type\":\"wrong_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"좋은 농사란 ‘무엇을 넣을 것인가’보다\",\"reason\":\"수급·공급 이슈가 아닌 일반 재배 칼럼 성격이다.\",\"suggested_action\":\"공급 핵심은 가격·수급·저장·자재 공급 기사로 교체.\"},{\"type\":\"section_misfit\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"천안 수신 멜론 본격 출하 …\\\"초여름 입맛 사로잡는다\\\"\",\"reason\":\"단순 출하 홍보성 지역 기사로 공급 섹션 가치가 낮다.\",\"suggested_action\":\"전국 수급·가격 영향 기사 우선 배치.\"},{\"type\":\"filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"함양군·함양농협, 양파 수급 안정 총력 대응\",\"reason\":\"지역 판촉·수출 계획성 보도라 전국 공급 판단 자료가 약하다.\",\"suggested_action\":\"양파값 폭락 원인·시장 영향 분석 기사로 대체.\"},{\"type\":\"duplication\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"농산물가격안정제 관련 3건 동시 선택\",\"reason\":\"핵심 의제는 맞지만 설명·비평이 과밀해 다른 정책 이슈를 밀어냈다.\",\"suggested_action\":\"핵심...",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 220,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "policy": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 117,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "dist": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 110,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "pest": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 84,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        }
+      },
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
+      "minimum_fallback_sections": [],
+      "severe_underfilled_sections": [],
+      "preferred_count": 5,
+      "soft_fallback_count": 4,
+      "minimum_fallback_count": 3,
+      "target_score": 95.0,
+      "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+    }
+  },
+  "editorial_score": 82.0,
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "promotion_gates": {
+      "editorial_score_min": 95.0,
+      "operational_score_min": 95.0,
+      "section_count_score_min": 95.0,
+      "commodity_board_score_min": 95.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 220,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "policy": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 117,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "dist": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 110,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "pest": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 84,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        }
+      },
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
+      "minimum_fallback_sections": [],
+      "severe_underfilled_sections": [],
+      "preferred_count": 5,
+      "soft_fallback_count": 4,
+      "minimum_fallback_count": 3,
+      "target_score": 95.0,
+      "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "core_quality",
+      "missed_opportunity",
+      "article_selection"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [
+        "commodity_board"
+      ],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 2,
+      "commodity_program_core_min_rank": 3,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": true
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
+  },
+  "quality_gate": {
+    "status": "needs_iteration",
+    "target_score": 95.0,
+    "operational_score": 94.73,
+    "editorial_score": 82.0,
+    "headline_score": 82.0,
+    "reason": "editorial_below_target"
+  }
+}
