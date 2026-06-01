@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T00:41:33+09:00",
+  "generated_at": "2026-06-02T04:25:42+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -143,6 +143,19 @@
       "users": 4,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "3ca91493aa17",
+      "title": "' 농산물가격안정제 ', 시행 3개월 앞두고도 여전히 안갯속",
+      "report_date": "2026-06-01",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 5,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70549"
     },
     {
       "date": "2026-04-20",
@@ -1521,6 +1534,32 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-05-29.html#sec-pest",
       "source_url": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260528&SEQUENCE=0107"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "62e5baeab91b",
+      "title": "‘ 농산물가격안정제 ’ 두달여 앞…대상품목·기준 가격 아직 미정",
+      "report_date": "2026-06-01",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "62e5baeab91b",
+      "title": "‘ 농산물가격안정제 ’ 두달여 앞…대상품목·기준 가격 아직 미정",
+      "report_date": "2026-06-01",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -5421,6 +5460,136 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-05-29.html#sec-supply",
       "source_url": "https://www.naeil.com/news/read/590034"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "10946c0968cd",
+      "title": "농사의 꽃 수확을 좌우하는 ‘탄저병’",
+      "report_date": "2026-06-01",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.newsam.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-pest",
+      "source_url": "https://www.newsam.co.kr/news/article.html?no=43083"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "10946c0968cd",
+      "title": "농사의 꽃 수확을 좌우하는 ‘탄저병’",
+      "report_date": "2026-06-01",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newsam.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-pest",
+      "source_url": "https://www.newsam.co.kr/news/article.html?no=43083"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "18eb35a33417",
+      "title": "홍성군, 과수화상병 위기단계 격상",
+      "report_date": "2026-06-01",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.ggilbo.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-pest",
+      "source_url": "https://www.ggilbo.com/news/articleView.html?idxno=1161044"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "270ea3cda519",
+      "title": "[신간] 중간상인만 없애면 값이 내려간다\"… 그 오랜 환상을 깨다",
+      "report_date": "2026-06-01",
+      "section": "dist",
+      "surface": "commodity_support",
+      "target_domain": "www.farminsight.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "3ca91493aa17",
+      "title": "' 농산물가격안정제 ', 시행 3개월 앞두고도 여전히 안갯속",
+      "report_date": "2026-06-01",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70549"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "523e202c0612",
+      "title": "농산물가격안정제 , 농민의 정당한 노동 가치 보장해야",
+      "report_date": "2026-06-01",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70574"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "5d713ef48129",
+      "title": "수입 농산물 관리감독 강화…민관협의체 이달말 출범",
+      "report_date": "2026-06-01",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "962512ea585b",
+      "title": "중동전쟁 장기화…“영농현장 애로 해소 지원센터 94건 중 42건 해결 완...",
+      "report_date": "2026-06-01",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "c6c04aaec00c",
+      "title": "좋은 농사란 ‘무엇을 넣을 것인가’보다",
+      "report_date": "2026-06-01",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsam.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-supply",
+      "source_url": "https://www.newsam.co.kr/news/article.html?no=43085"
+    },
+    {
+      "date": "2026-06-01",
+      "article_id": "d5e91176e963",
+      "title": "공주시농업기술센터, 관내 첫 과수화상병 발생 확산 차단 총력 대응 나...",
+      "report_date": "2026-06-01",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.chungnamilbo.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-01.html#sec-pest",
+      "source_url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=891056"
     }
   ]
 }
