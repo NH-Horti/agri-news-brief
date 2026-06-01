@@ -1,31 +1,29 @@
 {
-  "report_date": "2026-06-01",
-  "generated_at_kst": "2026-06-01T06:25:04+09:00",
+  "report_date": "2026-06-02",
+  "generated_at_kst": "2026-06-02T06:23:41+09:00",
   "scores": {
-    "section_alignment": 92.5,
-    "core_quality": 100.0,
-    "commodity_board_quality": 90.51
+    "section_alignment": 97.19,
+    "core_quality": 92.51,
+    "commodity_board_quality": 97.22
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.1,
+    "section_alignment_cross_gap_rate": 0.05,
     "content_false_positive_rate": 0.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.1429,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.05,
+    "pest_theme_duplicate_rate": 0.1,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4,
-    "commodity_primary_item_focus_rate": 0.8824,
-    "commodity_primary_issue_signal_rate": 0.9412,
-    "commodity_primary_weak_rate": 0.0588
+    "editorial_quality_penalty": 0.8,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9231,
+    "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "commodity_board"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -51,15 +49,24 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": true
+    "commodity_require_direct_item_focus": false
   },
   "editorial_quality_samples": [
     {
-      "title": "공주시농업기술센터, 관내 첫 과수화상병 발생 확산 차단 총력 대응 나...",
-      "href": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=891056",
+      "title": "불 탄 듯 말라가는 사과나무… 속타는 농가",
+      "href": "https://www.segye.com/newsView/20260531507449",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    },
+    {
+      "title": "경기 고양 사과 과수원, ‘과수화상병’ 신규 발생…전국 39개 농가 17.4ha 피해",
+      "href": "https://www.ecotiger.co.kr/news/articleView.html?idxno=51865",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -74,85 +81,83 @@
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 78.0,
-      "core_pick_quality": 76.0,
-      "summary_usefulness": 88.0,
+      "article_selection": 79.0,
+      "section_fit": 76.0,
+      "core_pick_quality": 78.0,
+      "summary_usefulness": 83.0,
       "missed_opportunity": 84.0,
-      "noise_control": 82.0
+      "noise_control": 75.0
     },
     "issues": [
       {
-        "type": "wrong_core",
+        "type": "wrong_priority",
         "severity": "high",
         "section": "supply",
-        "title": "좋은 농사란 ‘무엇을 넣을 것인가’보다",
-        "reason": "수급·공급 이슈가 아닌 일반 재배 칼럼 성격이다.",
-        "suggested_action": "공급 핵심은 가격·수급·저장·자재 공급 기사로 교체."
-      },
-      {
-        "type": "section_misfit",
-        "severity": "medium",
-        "section": "supply",
-        "title": "천안 수신 멜론 본격 출하 …\"초여름 입맛 사로잡는다\"",
-        "reason": "단순 출하 홍보성 지역 기사로 공급 섹션 가치가 낮다.",
-        "suggested_action": "전국 수급·가격 영향 기사 우선 배치."
+        "title": "6월 이달의 추천품종",
+        "reason": "품종 홍보성 성격이 강해 수급 핵심 기사로 부적절.",
+        "suggested_action": "공급 핵심 대신 후순위로 내리거나 제외."
       },
       {
         "type": "filler",
-        "severity": "medium",
+        "severity": "high",
         "section": "supply",
-        "title": "함양군·함양농협, 양파 수급 안정 총력 대응",
-        "reason": "지역 판촉·수출 계획성 보도라 전국 공급 판단 자료가 약하다.",
-        "suggested_action": "양파값 폭락 원인·시장 영향 분석 기사로 대체."
+        "title": "전북도 연구사업과 종자주권 자긍심이 토종 생강 살렸다",
+        "reason": "당일 수급 이슈보다 장기 사례 소개에 가깝다.",
+        "suggested_action": "직접적 가격·출하·작황 기사로 교체."
+      },
+      {
+        "type": "duplication",
+        "severity": "high",
+        "section": "policy",
+        "title": "여름 물가 지킨다 / 김종구 차관… / 폭염·열대야 예고…",
+        "reason": "동일 현장점검 기사 3건 반복으로 지면 효율 저하.",
+        "suggested_action": "대표 1건만 남기고 다른 정책 이슈로 대체."
+      },
+      {
+        "type": "missed_better_candidate",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농식품부, 피해 농가 323곳 이달 지원금 지급…재해 후속 조치",
+        "reason": "실질 지원정책 기사인데 중복 점검 기사에 밀렸다.",
+        "suggested_action": "현장점검 중복 1건 대신 채택."
       },
       {
         "type": "duplication",
         "severity": "medium",
-        "section": "policy",
-        "title": "농산물가격안정제 관련 3건 동시 선택",
-        "reason": "핵심 의제는 맞지만 설명·비평이 과밀해 다른 정책 이슈를 밀어냈다.",
-        "suggested_action": "핵심 1~2건만 남기고 대체 정책 이슈 보강."
-      },
-      {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "policy",
-        "title": "[비즈톡톡] 복날은 아직인데 들썩이는 삼계탕값…",
-        "reason": "외식가 기사로 농정·제도 맥락이 약하다.",
-        "suggested_action": "할당관세·비축·검역 등 직접 정책 기사로 교체."
-      },
-      {
-        "type": "weak_core",
-        "severity": "high",
         "section": "dist",
-        "title": "중동전쟁 장기화…영농현장 애로 해소 지원센터 94건 중 42건 해결",
-        "reason": "유통·물류 핵심이라기보다 정부 민원 처리 현황에 가깝다.",
-        "suggested_action": "온라인도매시장, 도매시장 반입·가격, 수출검역·물류 차질 기사 우선."
+        "title": "대구 도매시장 유통 투명해진다… / 농협은행, 대구도매 시장에 출하대금정산시스템 도입",
+        "reason": "같은 정산시스템 이슈를 2건 실었다.",
+        "suggested_action": "한 건만 유지하고 다른 물류·수출 기사 보강."
       },
       {
         "type": "filler",
         "severity": "medium",
         "section": "dist",
-        "title": "\"5주 간의 대장정\"…청년농업인 온라인도매시장 교육 성료",
-        "reason": "교육 행사 기사로 실제 유통 운영 변화 정보가 적다.",
-        "suggested_action": "거래액·출하 확대·시장 구조 변화 기사로 교체."
+        "title": "곡성체리 본격 출하 …프리미엄 과일시장 공략",
+        "reason": "지역 출하 홍보성으로 유통 운영성·시장성 약함.",
+        "suggested_action": "수출·도매시장 운영·물류 차질 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
+        "type": "missed_better_candidate",
+        "severity": "medium",
+        "section": "dist",
+        "title": "“딸기로 80만 달러”… 봄바람 부는 K푸드 수출",
+        "reason": "수출 채널 기사인데 지역 출하 홍보보다 지면 가치가 높다.",
+        "suggested_action": "체리 기사 대신 검토."
+      },
+      {
+        "type": "missed_better_candidate",
         "severity": "medium",
         "section": "pest",
-        "title": "전국 확산 총괄 대신 지역 단신 위주 구성",
-        "reason": "원시 후보에 충북 24곳 확진·청정지역 붕괴 기사 등이 더 강했다.",
-        "suggested_action": "전국 확산 집계 기사 1건을 핵심 축으로 채택."
+        "title": "충북 과수화상병 누적 피해 7개 시군 27개 농가 12.65㏊",
+        "reason": "확산 규모를 수치로 보여주는 강한 현황 기사인데 미선정.",
+        "suggested_action": "유사 화상병 반복 기사 1건과 교체."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "commodity_board",
       "editorial_duplicate_topic",
-      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
@@ -166,11 +171,11 @@
     "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.3,
-      "supply": 1.5,
-      "policy": 1.5,
-      "dist": 1.7,
-      "pest": 1.3
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -179,11 +184,11 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": true,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": true
+    "commodity_require_direct_item_focus": false
   },
   "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
@@ -207,19 +212,19 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 220,
+          "raw_candidates": 119,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         },
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 117,
+          "raw_candidates": 76,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -231,7 +236,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 110,
+          "raw_candidates": 55,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -243,7 +248,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 84,
+          "raw_candidates": 67,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -264,17 +269,10 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "article_selection"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -289,9 +287,7 @@
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [
-        "commodity_board"
-      ],
+      "driver_tags": [],
       "section_card_min_fit": {
         "default": 0.8,
         "supply": 0.82,
@@ -317,10 +313,10 @@
         "pest": 1.0
       },
       "disable_relaxed_core_fill": false,
-      "commodity_active_min_rank": 2,
-      "commodity_program_core_min_rank": 3,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
       "commodity_require_issue_signal": false,
-      "commodity_require_direct_item_focus": true
+      "commodity_require_direct_item_focus": false
     },
     "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
   }
