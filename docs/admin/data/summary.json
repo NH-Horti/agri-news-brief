@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-06-03T03:11:35+09:00",
+  "generated_at": "2026-06-04T03:33:24+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 53,
-        "users": 15,
-        "pageviews": 139,
-        "article_clicks": 73,
-        "article_ctr": 0.52518,
-        "avg_engagement_sec": 284.87
+        "visits": 37,
+        "users": 12,
+        "pageviews": 104,
+        "article_clicks": 54,
+        "article_ctr": 0.519231,
+        "avg_engagement_sec": 257.94
       },
       "prev": {
-        "visits": 57,
-        "users": 17,
-        "pageviews": 162,
-        "article_clicks": 99,
-        "article_ctr": 0.611111,
-        "avg_engagement_sec": 223.2
+        "visits": 60,
+        "users": 16,
+        "pageviews": 169,
+        "article_clicks": 98,
+        "article_ctr": 0.579882,
+        "avg_engagement_sec": 227.91
       },
       "range": {
-        "from": "2026-05-28",
-        "to": "2026-06-03"
+        "from": "2026-05-29",
+        "to": "2026-06-04"
       }
     },
     "30": {
@@ -30,19 +30,19 @@
         "pageviews": 643,
         "article_clicks": 346,
         "article_ctr": 0.538103,
-        "avg_engagement_sec": 256.52
+        "avg_engagement_sec": 248.82
       },
       "prev": {
-        "visits": 194,
+        "visits": 192,
         "users": 20,
-        "pageviews": 465,
+        "pageviews": 464,
         "article_clicks": 227,
-        "article_ctr": 0.488172,
-        "avg_engagement_sec": 218.06
+        "article_ctr": 0.489224,
+        "avg_engagement_sec": 220.26
       },
       "range": {
-        "from": "2026-05-05",
-        "to": "2026-06-03"
+        "from": "2026-05-06",
+        "to": "2026-06-04"
       }
     },
     "90": {
@@ -52,7 +52,7 @@
         "pageviews": 1505,
         "article_clicks": 657,
         "article_ctr": 0.436545,
-        "avg_engagement_sec": 273.3
+        "avg_engagement_sec": 269.6
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-06",
-        "to": "2026-06-03"
+        "from": "2026-03-07",
+        "to": "2026-06-04"
       }
     }
   }
