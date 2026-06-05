@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T02:24:26+09:00",
+  "generated_at": "2026-06-06T01:42:54+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1612,6 +1612,32 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-04.html#sec-supply",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404645"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "af0b4ff3ce21",
+      "title": "올여름 폭염·호우 우려…정부, 배추· 무 2.1만t 공급 등 수급 안정",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.ajunews.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-supply",
+      "source_url": "https://www.ajunews.com/view/20260604133509118"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "c332a37dd049",
+      "title": "'공급과잉 양파 ' 수출로 수급 안정…대만에 초도물량 100t 수출",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -5902,6 +5928,84 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-04.html#sec-policy",
       "source_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5026423"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "0115fe6dda9d",
+      "title": "온라인 도매시장 출하 업무협약 체결",
+      "report_date": "2026-06-05",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-dist",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64832"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "1cd9c8f8d97e",
+      "title": "예천 개포면, 첫 풋고추 출하로 소비자 입맛 사로잡아",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.kbmaeil.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-supply",
+      "source_url": "https://www.kbmaeil.com/article/20260604500269"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "c332a37dd049",
+      "title": "'공급과잉 양파 ' 수출로 수급 안정…대만에 초도물량 100t 수출",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "d232b3f7da28",
+      "title": "배추 저장, 새 해법 찾는다",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.fsnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-supply",
+      "source_url": "http://www.fsnews.co.kr/news/articleView.html?idxno=61140"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "f8498f8ca399",
+      "title": "양파 가격 폭락에 정부 수매비축 2만톤",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.naeil.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-supply",
+      "source_url": "https://www.naeil.com/news/read/590713"
+    },
+    {
+      "date": "2026-06-05",
+      "article_id": "f8498f8ca399",
+      "title": "양파 가격 폭락에 정부 수매비축 2만톤",
+      "report_date": "2026-06-05",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.naeil.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-05.html#sec-supply",
+      "source_url": "https://www.naeil.com/news/read/590713"
     }
   ]
 }

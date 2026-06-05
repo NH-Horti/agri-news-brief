@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T02:24:26+09:00",
+  "generated_at": "2026-06-06T01:42:54+09:00",
   "daily": [
     {
       "date": "2026-03-30",
@@ -491,10 +491,19 @@
       "date": "2026-06-04",
       "visits": 14,
       "users": 7,
-      "pageviews": 31,
-      "avg_engagement_sec": 111.06,
+      "pageviews": 29,
+      "avg_engagement_sec": 68.62,
       "page_view_home": 0,
-      "page_view_archive": 31
+      "page_view_archive": 29
+    },
+    {
+      "date": "2026-06-05",
+      "visits": 16,
+      "users": 7,
+      "pageviews": 37,
+      "avg_engagement_sec": 103.05,
+      "page_view_home": 1,
+      "page_view_archive": 33
     }
   ]
 }
