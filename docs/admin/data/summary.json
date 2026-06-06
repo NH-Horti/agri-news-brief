@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-06T01:42:54+09:00",
+  "generated_at": "2026-06-07T00:41:41+09:00",
   "windows": {
     "7": {
       "totals": {
@@ -8,41 +8,41 @@
         "pageviews": 131,
         "article_clicks": 57,
         "article_ctr": 0.435115,
-        "avg_engagement_sec": 193.18
+        "avg_engagement_sec": 187.25
       },
       "prev": {
-        "visits": 59,
+        "visits": 58,
         "users": 16,
-        "pageviews": 165,
+        "pageviews": 163,
         "article_clicks": 94,
-        "article_ctr": 0.569697,
-        "avg_engagement_sec": 186.18
+        "article_ctr": 0.576687,
+        "avg_engagement_sec": 189.03
       },
       "range": {
-        "from": "2026-05-31",
-        "to": "2026-06-06"
+        "from": "2026-06-01",
+        "to": "2026-06-07"
       }
     },
     "30": {
       "totals": {
-        "visits": 267,
+        "visits": 258,
         "users": 27,
-        "pageviews": 674,
-        "article_clicks": 356,
-        "article_ctr": 0.52819,
-        "avg_engagement_sec": 247.86
+        "pageviews": 663,
+        "article_clicks": 351,
+        "article_ctr": 0.529412,
+        "avg_engagement_sec": 251.51
       },
       "prev": {
-        "visits": 201,
+        "visits": 197,
         "users": 22,
-        "pageviews": 475,
-        "article_clicks": 233,
-        "article_ctr": 0.490526,
-        "avg_engagement_sec": 203.76
+        "pageviews": 456,
+        "article_clicks": 222,
+        "article_ctr": 0.486842,
+        "avg_engagement_sec": 189.76
       },
       "range": {
-        "from": "2026-05-08",
-        "to": "2026-06-06"
+        "from": "2026-05-09",
+        "to": "2026-06-07"
       }
     },
     "90": {
@@ -52,7 +52,7 @@
         "pageviews": 1571,
         "article_clicks": 680,
         "article_ctr": 0.432845,
-        "avg_engagement_sec": 260.41
+        "avg_engagement_sec": 259.86
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-09",
-        "to": "2026-06-06"
+        "from": "2026-03-10",
+        "to": "2026-06-07"
       }
     }
   }
