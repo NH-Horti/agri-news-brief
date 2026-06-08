@@ -1,23 +1,23 @@
 ## Daily Eval (2026-06-08)
 - Overall: **82.00** (warn)
-- Operational: **96.26**
-- Quality gate: **82.00** (needs_iteration, editorial_below_target; editorial=82.0, operational=96.3)
-- Scores: completeness=96.4, diversity=100.0, summary=100.0, freshness=98.3, retrieval=90.6, section_fit=100.0, core=95.4, commodity=98.4
-- Briefing cards: 19 / Commodity cards: 54
-- Sections: supply:5/5 raw=230, policy:5/5 raw=154, dist:4/5 raw=93, pest:5/5 raw=77
+- Operational: **95.81**
+- Quality gate: **82.00** (needs_iteration, editorial_below_target; editorial=82.0, operational=95.8)
+- Scores: completeness=96.4, diversity=100.0, summary=100.0, freshness=98.3, retrieval=85.0, section_fit=100.0, core=95.4, commodity=98.4
+- Briefing cards: 19 / Commodity cards: 55
+- Sections: supply:5/5 raw=230, policy:5/5 raw=155, dist:4/5 raw=92, pest:5/5 raw=75
 - Metrics: title_unique=1.00, domain_diversity=0.84, summary_presence=1.00, summary_numeric=0.89, fresh_72h=1.00, fit_avg=4.32, false_positive=0.00, weak_core=0.14, editorial_penalty=0.5, commodity_weak=0.00, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
 - Editorial: **82.00** (target 95, needs_iteration)
 - Section count gate: 98.0 (soft_fallback)
-- Components: article_selection=78.0, section_fit=76.0, core=74.0, summary=88.0, missed=80.0, noise=79.0
-- Summary: 전반적으로 시의성 있는 농정·수급 이슈를 많이 담았지만, 양파 이슈 중복이 과하고 공무원 포상 기사를 공급·정책·유통에 걸쳐 재사용한 점이 치명적입니다. 특히 공급 섹션의 코어가 잘못 잡혔고, 유통 섹션은 가락시장 휴업 같은 강한 운영 이슈가 있는데도 약한 수박 가격 기사와 비유통성 기사로 구성력이 흔들렸습니다. 병해충은 과수화상병 확산을 잘 포착했지만 중복도가 높습니다. 섹션 수는 대체로 채웠으나 dist가 4건에 그쳐, 광범위한 fallback가 있는 만큼 90점대 중후반 평가는 어렵습니다.
-- [high] wrong_section: 농식품부 , 특별성과 공무원 11명 포상…배추 수급관리·쌀대여 선정 - 공급 동향이 아니라 내부 포상 기사다.
-- [high] duplicate_theme: 함양군, 함양농협과 햇 양파 첫 대만 수출로 수급 안정 총력 - 같은 양파 수출·수급 기사가 섹션 내 3건 겹친다.
-- [high] cross_section_duplication: “성과 낸 공무원 보상”…농식품부, 특별성과 11명에 4500만원 포상 - 정책성 포상 기사를 유통 섹션에 넣어 성격이 어긋난다.
-- [high] weak_core: 언론 장식한 '금 수박 '…생산·유통 현장엔 '한숨만' - 유통 핵심이라기보다 가격 해설 기사로 운영·물류 강도가 약하다.
-- [medium] missed_opportunity: 가락 쉬자 전국 도매시장 들썩…휴업 도미노 오나 - 가장 강한 전국 유통 운영 이슈인데 코어가 아니었다.
+- Components: article_selection=79.0, section_fit=81.0, core=80.0, summary=86.0, missed=77.0, noise=83.0
+- Summary: 양파 수급과 과수화상병 등 핵심 이슈는 잡았지만, 공급·정책·유통 섹션에서 같은 양파 축을 과도하게 반복했고, 공급/정책에 들어간 ‘특별성과 포상’은 비핵심성·섹션 부적합성이 큽니다. 유통은 가락시장 휴업 이슈를 살린 점은 좋지만 5장 목표를 채우지 못했고, 온라인도매시장·수출/물류 이슈 등 더 나은 후보를 놓쳤습니다. 전반적으로 읽히는 브리프는 됐으나, 기사 선택 자체는 엄격 기준에서 상위권 점수까지는 어렵습니다.
+- [high] wrong_section: 농식품부 , 특별성과 공무원 11명 포상…배추 수급관리·쌀대여 선정 - 공무원 포상 소식은 공급 이슈 카드로 보기 어렵다.
+- [high] noise: 농식품부, 특별성과 공무원 11명에 4,500만 원 포상금 지급 - 정책 영향보다 내부 포상 이벤트 성격이 강하다.
+- [high] duplication: 함양 양파 수출/수매비축 관련 3건 동시 편성 - 같은 양파 수급 대응을 유사 각도로 반복해 지면 효율이 낮다.
+- [medium] cross_section_overlap: 정부·농협, 양파 값 지지 ‘총력’…수출확대 박차 - 내용이 공급 섹션 양파 기사들과 실질적으로 겹친다.
+- [medium] underfill: 유통 섹션 4장 편성 - 원시 후보가 충분한데 5장 목표를 채우지 못했다.
 
 ### Improvement Hints
 - raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
