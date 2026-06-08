@@ -89,7 +89,9 @@ class TestRegressions(unittest.TestCase):
 
     def test_kakao_status_tracking_exists(self):
         self.assertIn('KAKAO_STATUS_FILE = os.getenv("KAKAO_STATUS_FILE", "").strip()', self.text)
+        self.assertIn('KAKAO_REFRESH_TOKEN_OUT_FILE = os.getenv("KAKAO_REFRESH_TOKEN_OUT_FILE", "").strip()', self.text)
         self.assertIn("def _write_kakao_send_status", self.text)
+        self.assertIn("def _handle_kakao_refresh_token_renewal", self.text)
         self.assertIn('_write_kakao_send_status("not_attempted")', self.text)
 
     def test_default_report_hour_moves_to_6am(self):
@@ -224,6 +226,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.rebuild_text)
         self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.dev_verify_text)
         self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.dev_verify_text)
+        self.assertIn("KAKAO_REFRESH_TOKEN_OUT_FILE: ${{ runner.temp }}/kakao-refresh-token.txt", self.daily_text)
+        self.assertIn("id: kakao_refresh_token", self.daily_text)
+        self.assertIn('echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"', self.daily_text)
 
     def test_secrets_check_workflow_exists(self):
         self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)

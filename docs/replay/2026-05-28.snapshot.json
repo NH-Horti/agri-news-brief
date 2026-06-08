@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-05-28",
-  "created_at_kst": "2026-05-28T21:06:26+09:00",
-  "build_tag": "3fdf527",
+  "created_at_kst": "2026-05-28T21:46:50+09:00",
+  "build_tag": "a444b17",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -188,31 +188,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-05-27T21:23:00+09:00",
-        "section": "supply",
-        "title": "또 갈아엎은 양파 밭...\"'산지 폐기' 악순환 막아야\"",
-        "description": "【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다.  애써 키운 양파지만, 팔아봤자 수확 인 KBC 광주방송 공식채널 // news-float-menu open $(document).on('click','#news-bar, #search-bar',function(){ $('body').addClass('modal-open'); $('body').append(' '); $('.news-float-menu .modal-menu').append($('.footer-news .menu_wrap .inner').html()); $('.news-float-menu .modal-sns').css('width', $('.news-float-menu .modal-menu .menu').css('width')); $('.news-float-menu .modal-sns ul').append($('.footer-news .share ul').html()); $('.news-float-menu').addClass('show'); if($(this).attr('id') == 'search-bar'){ $('.news-float-menu .searchText').focus(); } }); // news-float-menu close $(document).on('click','.news-float-menu .modal-close, .modal-backdrop',function(){ $('body').removeClass('modal-open'); $('.modal-backdrop').remove(); $('.news-float-menu .modal-menu').empty(); $('.news-float-menu .modal-sns ul').empty(); $('.news-float-menu').removeClass('show'); }); var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,22929094020/ikbc_GNBbottom_i_970_250', [970, 250], 'ikbc_GNBbottom_i_970_250').addService(googletag.pubads().set(\"page_url\", \"ikbc.co.kr\")); googletag.enableServices(); googletag.display('ikbc_GNBbottom_i_970_250'); }); 홈 뉴스 사회 저녁뉴스(사회) 또 갈아엎은 양파밭...\"'산지 폐기' 악순환 막아야\" 【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다. 애써 키운 양파지만, 팔아봤자 수확 인 작성 : 2026-05-27 21:21:35 function copyUrl(){ let url = prompt('URL공유', $('#copyurl').val()); if(url){ if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url) .then(() => alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.')) .catch(() => fallbackCopy()); } else { fallbackCopy(); } } } function fallbackCopy() { $(\"#copyurl\").select(); try { document.execCommand('copy'); alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.'); } catch (e) { alert('주소 복사에 실패했습니다.'); } finally { } } // 인쇄 버튼 클릭 $('#printBtn').on('click',function(){ printHtml(); }); func",
-        "link": "https://n.news.naver.com/mnews/article/660/0000110137?sid=102",
-        "originallink": "https://www.ikbc.co.kr/article/view/kbc202605270055",
-        "domain": "ikbc.co.kr",
-        "press": "기독교방송",
-        "norm_key": "url:1fc8e661c8c24f39c9ff59127a45a0c7",
-        "title_key": "또갈아엎은양파밭산지폐기악순환막아야",
-        "canon_url": "https://ikbc.co.kr/article/view/kbc202605270055",
-        "topic": "양파",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "양파 수급",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 8.797,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-05-27T08:34:00+09:00",
         "section": "supply",
         "title": "함양군, 양파 수출 확대 추진…가격 안정 선제 대응",
@@ -238,6 +213,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-05-27T21:23:00+09:00",
+        "section": "supply",
+        "title": "또 갈아엎은 양파 밭...\"'산지 폐기' 악순환 막아야\"",
+        "description": "【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다.  애써 키운 양파지만, 팔아봤자 수확 인 KBC 광주방송 공식채널 // news-float-menu open $(document).on('click','#news-bar, #search-bar',function(){ $('body').addClass('modal-open'); $('body').append(' '); $('.news-float-menu .modal-menu').append($('.footer-news .menu_wrap .inner').html()); $('.news-float-menu .modal-sns').css('width', $('.news-float-menu .modal-menu .menu').css('width')); $('.news-float-menu .modal-sns ul').append($('.footer-news .share ul').html()); $('.news-float-menu').addClass('show'); if($(this).attr('id') == 'search-bar'){ $('.news-float-menu .searchText').focus(); } }); // news-float-menu close $(document).on('click','.news-float-menu .modal-close, .modal-backdrop',function(){ $('body').removeClass('modal-open'); $('.modal-backdrop').remove(); $('.news-float-menu .modal-menu').empty(); $('.news-float-menu .modal-sns ul').empty(); $('.news-float-menu').removeClass('show'); }); var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,22929094020/ikbc_GNBbottom_i_970_250', [970, 250], 'ikbc_GNBbottom_i_970_250').addService(googletag.pubads().set(\"page_url\", \"ikbc.co.kr\")); googletag.enableServices(); googletag.display('ikbc_GNBbottom_i_970_250'); }); 홈 뉴스 사회 저녁뉴스(사회) 또 갈아엎은 양파밭...\"'산지 폐기' 악순환 막아야\" 【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다. 애써 키운 양파지만, 팔아봤자 수확 인 작성 : 2026-05-27 21:21:35 function copyUrl(){ let url = prompt('URL공유', $('#copyurl').val()); if(url){ if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url) .then(() => alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.')) .catch(() => fallbackCopy()); } else { fallbackCopy(); } } } function fallbackCopy() { $(\"#copyurl\").select(); try { document.execCommand('copy'); alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.'); } catch (e) { alert('주소 복사에 실패했습니다.'); } finally { } } // 인쇄 버튼 클릭 $('#printBtn').on('click',function(){ printHtml(); }); func",
+        "link": "https://n.news.naver.com/mnews/article/660/0000110137?sid=102",
+        "originallink": "https://www.ikbc.co.kr/article/view/kbc202605270055",
+        "domain": "ikbc.co.kr",
+        "press": "기독교방송",
+        "norm_key": "url:1fc8e661c8c24f39c9ff59127a45a0c7",
+        "title_key": "또갈아엎은양파밭산지폐기악순환막아야",
+        "canon_url": "https://ikbc.co.kr/article/view/kbc202605270055",
+        "topic": "양파",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "양파 수급",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 8.597,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-05-27T21:16:00+09:00",
         "section": "supply",
         "title": "단체급식, 양파 농가 버팀목 되나",
@@ -258,7 +258,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 20.22,
+        "score": 20.02,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -683,7 +683,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "supply",
-        "score": 29.9,
+        "score": 29.7,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -866,7 +866,7 @@
         "pub_dt_kst": "2026-05-27T10:43:00+09:00",
         "section": "supply",
         "title": "롯데백화점 대구점, 제주 미식 여행 팝업 개최",
-        "description": "뉴스 경제·금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 연예 스포츠 호남취재본부 대구&경북 부산·울산·경남본부 PR Newswire 구독 HeralDeep 연재 스페셜 HeMil(밀리터리) 서울젠트리피케이션 라스트포레스트 라스트씨 인간대포통장 여론을조사하다 고객센터 공지사항 독자문의 기사제보 헤럴드 미디어그룹 코리아헤럴드 헤럴드뮤즈 리얼푸드 더인베스터 헤럴드에코 헤럴드디자인 마이페이지 구독함 보관함 계정정보관리 회원전용 경제·금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 부·울·경 롯데백화점 대구점, 제주 미식 여행 팝업 개최 /* TTS */ var playing = false; var tts_load = false; const tts = document.getElementById(\"tts_audio\"); function tts_click(){if(playing){ tts_pause(); }else{ tts_play();}} function tts_play(){ playing = true; if(!tts_load){tts.load(); tts_load = true;} tts.play(); $(\"#tts_icon\").addClass(\"on\"); } function tts_pause(){playing = false;tts.pause();$(\"#tts_icon\").removeClass(\"on\");} 복사완료! function printNews() { window.open(\"/article/print/10756827\", \"\", \"width=720, height=620, scrollbars=yes,resizable=no\"); } 김병진 기자 [헤럴드경제(대구)=김병진 기자]롯데백화점 대구점은 오는 29일부터 6월 11일까지 지하 2층 특설행사장에서 ‘제주 미식 여행 팝업 스토어’를 개최한다고 27일 밝혔다. 이번 행사는 백화점 식품관이 온라인으로 대체할 수 없는 경험을 제공하는 공간임을 보여주는데 초점을 맞췄다. 따라서 은갈치·참조기·통옥돔 등 제주 대표 수산물을 유통 단계를 최소화한 산지 직송 가격으로 제공한다. 제주 대표 향토 먹거리인 ‘오메기떡’, 감귤 원액으로 깊은 풍미를 살린 전통 한과 ‘과즐’, 제주산 돼지 등심으로 만든 ‘돈육포’를 비롯해 건조 감귤에 초콜릿을 입힌 ‘제주 감귤 초코’, SNS에서 입소문을 탄 ‘문따라면’ 등 제주 간편 먹거리도 선보인다. 유현권 롯데백화점 대구점장은 “근거리 미식 여행 트렌드에 맞춰 제주만의 신선한 맛과 로컬 미식 문화를 합리적인 가격으로 경험할 수 있도록 이번 행사를 준비했다”고 말했다. 경일대 대학일자리플러스센터, 철도분야 취업캠프 운영 롯데백화점 대구점, 리뉴얼 오픈 1주년 고객 감사 축제 진행 김회천 한수원 사장, 한울원자력본부 복합문화센터 공사 현장 점검 이 기사가 어떠셨나요? 좋아요 0 슬퍼요 0 화나요 0 추천해요 0 var contAdCode = ' '; var $target = $(\"#articleText > p\").eq(6); if ($target.length > 0) { $target.after(contAdCode); } var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,3503216/heraldbiz_articlebottom_b_500_250', [500, 250], 'heraldbiz_articlebottom_b_500_250').addService(googletag.pubads().set(\"page_url\", \"biz.heraldcorp.com\")); googletag.enableServices(); googletag.display('heraldbiz_articlebottom_b_500_250'); }); 이 시각 주요기사 사회 서소문 사고, 구명줄 착용 안했다…공사는 이틀 만",
+        "description": "뉴스 경제·금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 연예 스포츠 호남취재본부 대구&경북 부산·울산·경남본부 PR Newswire 구독 HeralDeep 연재 스페셜 HeMil(밀리터리) 서울젠트리피케이션 라스트포레스트 라스트씨 인간대포통장 여론을조사하다 고객센터 공지사항 독자문의 기사제보 헤럴드 미디어그룹 코리아헤럴드 헤럴드뮤즈 리얼푸드 더인베스터 헤럴드에코 헤럴드디자인 마이페이지 구독함 보관함 계정정보관리 회원전용 경제·금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 부·울·경 롯데백화점 대구점, 제주 미식 여행 팝업 개최 /* TTS */ var playing = false; var tts_load = false; const tts = document.getElementById(\"tts_audio\"); function tts_click(){if(playing){ tts_pause(); }else{ tts_play();}} function tts_play(){ playing = true; if(!tts_load){tts.load(); tts_load = true;} tts.play(); $(\"#tts_icon\").addClass(\"on\"); } function tts_pause(){playing = false;tts.pause();$(\"#tts_icon\").removeClass(\"on\");} 복사완료! function printNews() { window.open(\"/article/print/10756827\", \"\", \"width=720, height=620, scrollbars=yes,resizable=no\"); } 김병진 기자 [헤럴드경제(대구)=김병진 기자]롯데백화점 대구점은 오는 29일부터 6월 11일까지 지하 2층 특설행사장에서 ‘제주 미식 여행 팝업 스토어’를 개최한다고 27일 밝혔다. 이번 행사는 백화점 식품관이 온라인으로 대체할 수 없는 경험을 제공하는 공간임을 보여주는데 초점을 맞췄다. 따라서 은갈치·참조기·통옥돔 등 제주 대표 수산물을 유통 단계를 최소화한 산지 직송 가격으로 제공한다. 제주 대표 향토 먹거리인 ‘오메기떡’, 감귤 원액으로 깊은 풍미를 살린 전통 한과 ‘과즐’, 제주산 돼지 등심으로 만든 ‘돈육포’를 비롯해 건조 감귤에 초콜릿을 입힌 ‘제주 감귤 초코’, SNS에서 입소문을 탄 ‘문따라면’ 등 제주 간편 먹거리도 선보인다. 유현권 롯데백화점 대구점장은 “근거리 미식 여행 트렌드에 맞춰 제주만의 신선한 맛과 로컬 미식 문화를 합리적인 가격으로 경험할 수 있도록 이번 행사를 준비했다”고 말했다. 경일대 대학일자리플러스센터, 철도분야 취업캠프 운영 롯데백화점 대구점, 리뉴얼 오픈 1주년 고객 감사 축제 진행 김회천 한수원 사장, 한울원자력본부 복합문화센터 공사 현장 점검 이 기사가 어떠셨나요? 좋아요 0 슬퍼요 0 화나요 0 추천해요 0 var contAdCode = ' '; var $target = $(\"#articleText > p\").eq(6); if ($target.length > 0) { $target.after(contAdCode); } var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,3503216/heraldbiz_articlebottom_b_500_250', [500, 250], 'heraldbiz_articlebottom_b_500_250').addService(googletag.pubads().set(\"page_url\", \"biz.heraldcorp.com\")); googletag.enableServices(); googletag.display('heraldbiz_articlebottom_b_500_250'); }); 이 시각 주요기사 IT·과학 몸에서 떼어낸 조직이 3년간 살았다… 맛 좋",
         "link": "https://n.news.naver.com/mnews/article/016/0002648596?sid=101",
         "originallink": "https://biz.heraldcorp.com/article/10756827",
         "domain": "biz.heraldcorp.com",
@@ -1333,7 +1333,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -4.812,
+        "score": -5.012,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -1359,6 +1359,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 9.325,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-05-27T12:12:00+09:00",
+        "section": "supply",
+        "title": "미국 중국 무역위 관세감면 계획 가동에도 중국산 제품에 높은 관세율 ...",
+        "description": "상품의 가격 을 인상하거나 수입량에 엄격한 상한선을 설정할 수 있도록 허용한다. 미국 무역법 제 232조는... 법 조항에 따라 미국 경제에 악영향을 미치는 중국 제품에 높은 관세를 부과할 수 있다는 것이다. 유자 인 기자",
+        "link": "https://www.businesspost.co.kr/BP?command=article_view&num=438659",
+        "originallink": "https://www.businesspost.co.kr/BP?command=article_view&num=438659",
+        "domain": "businesspost.co.kr",
+        "press": "businesspost",
+        "norm_key": "url:0029ea48ac1b7f308c751e7c54f96700",
+        "title_key": "미국중국무역위관세감면계획가동에도중국산제품에높은관세율",
+        "canon_url": "https://businesspost.co.kr/BP?command=article_view&num=438659",
+        "topic": "정책",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "유자 가격",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 8.71,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -1516,7 +1541,7 @@
         "pub_dt_kst": "2026-05-27T09:00:00+09:00",
         "section": "supply",
         "title": "[이슈PICK+] ' 토마토 코어' 입은 식품업계, 헬시 트렌드 수요 '꽉'",
-        "description": "투데이코리아=김채윤 기자 | 최근 건강을 중시하는 소비 흐름이 이어지면서 초여름 제철 채소인 토마토가 식품업계의 새로운 미식 트렌드로 부상하고 있다. 이에 국내 Update. 2026-05-28 20:01 (목) 한국어 English 中文 日本語 로그인 회원가입 전체기사 지면보기 모바일웹",
+        "description": "투데이코리아=김채윤 기자 | 최근 건강을 중시하는 소비 흐름이 이어지면서 초여름 제철 채소인 토마토가 식품업계의 새로운 미식 트렌드로 부상하고 있다. 이에 국내 Update. 2026-05-28 21:01 (목) 한국어 English 中文 日本語 로그인 회원가입 전체기사 지면보기 모바일웹",
         "link": "https://www.todaykorea.co.kr/news/articleView.html?idxno=401796",
         "originallink": "https://www.todaykorea.co.kr/news/articleView.html?idxno=401796",
         "domain": "todaykorea.co.kr",
@@ -1566,7 +1591,7 @@
         "pub_dt_kst": "2026-05-27T07:02:00+09:00",
         "section": "supply",
         "title": "'밭'의 한계 넘은 의성 마늘 … 식품 산업으로 진화",
-        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 19:52 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
+        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 21:39 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
         "link": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "originallink": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "domain": "newscj.com",
@@ -1966,7 +1991,7 @@
         "pub_dt_kst": "2026-05-27T07:02:00+09:00",
         "section": "supply",
         "title": "[Who Is ?] 김동선 한화비전 미래비전총괄 부사장",
-        "description": "[Who Is ?] 김동선 한화비전 미래비전총괄 부사장 <저작권자(c) 비즈니스포스트 무단전재 및 재배포금지> 열린보도원칙 당 매체는 독자와 취재원 등 뉴스이용자의 권리 보장을 위해 반론이나 정정보도, 추후보도를 요청할 수 있는 창구를 열어두고 있음을 알려드립니다. 고충처리인 박상유 1800-6522 bspost@businesspost.co.kr",
+        "description": "다만 파이브가이즈 매각은 20206년 5월 현재 아직 최종 본계약 체결 전인 만큼 거래 가격 은 조정될 가능성이... 김동선 한화갤러리아 전략본부장 전무(오른쪽)가 2023년 8월2일 강원도 평창군 감자 산지를 찾아 미국 햄버거...",
         "link": "https://www.businesspost.co.kr/BP?command=article_view&num=436997",
         "originallink": "https://www.businesspost.co.kr/BP?command=article_view&num=436997",
         "domain": "businesspost.co.kr",
@@ -1983,7 +2008,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -0.5,
+        "score": 6.06,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -2159,31 +2184,6 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 0.55,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-05-27T08:44:00+09:00",
-        "section": "supply",
-        "title": "세이브존, 여름맞이 '할인 끝판왕'→누그레이 '세모 탭 치크' 올영 오특",
-        "description": "본격적인 여름시전을 맞아 유통가에서는 큰 폭의 할인율을 자랑하는 행사들이 연이어 펼쳐져 소비자들의 관심지수를 한껏 높이고 있다. 세이브존은 인기 패션 브랜드 상품을 최대 90% 할인하는 ‘할인의 끝판왕’ 행사를 진행한다.서울 노원점에서는 의류와 신발 등 다양한 상품 할인 행사를 선보인다. 폴햄은 ‘여름 반바지 특가전’을 통해 밴딩 반바지와 여성 밴딩 슬랙스를 각각 1만 9,900원, 2만 4,900원에 판매하며 탠디는 ‘굿바이 균일가 고별전’을 열고 여성화와 남성화를 각각 8만 9,000원, 9만 9,000원에 선보인다. 콜핑은 티 이 기사를 공유합니다 페이스북(으)로 기사보내기 트위터(으)로 기사보내기 URL복사(으)로 기사보내기 닫기 본격적인 여름시전을 맞아 유통가에서는 큰 폭의 할인율을 자랑하는 행사들이 연이어 펼쳐져 소비자들의 관심지수를 한껏 높이고 있다. 사진=세이브존 세이브존은 인기 패션 브랜드 상품을 최대 90% 할인하는 ‘할인의 끝판왕’ 행사를 진행한다. 서울 노원점에서는 의류와 신발 등 다양한 상품 할인 행사를 선보인다. 폴햄은 ‘여름 반바지 특가전’을 통해 밴딩 반바지와 여성 밴딩 슬랙스를 각각 1만 9,900원, 2만 4,900원에 판매하며 탠디는 ‘굿바이 균일가 고별전’을 열고 여성화와 남성화를 각각 8만 9,000원, 9만 9,000원에 선보인다. 콜핑은 티셔츠 1만 9,000원, 7부 바지 2만 9,000원, 샌들 4만 9,000원 등 아웃도어 상품을 특가에 판매한다. 경기 성남점에서는 PAT, 네파, 휠라 등 인기 브랜드 할인 행사를 진행한다. PAT는 티셔츠 2만 9,000원, 바지 3만 9,000원, 점퍼 4만 9,000원에 판매하며 네파는 티셔츠 3만 9,500원, 반바지 4만 9,000원, 하이킹화 7만 6,300원 등에 선보인다. 휠라는 티셔츠 1만 9,000원, 반바지 2만 9,000원, 카라 티셔츠 3만 9,000원 등 여름 인기 상품을 합리적인 가격에 판매한다. 경기 부천상동점에서는 ‘여름 이월 창고 개방전’을 진행한다. 올포유는 여름 이월 상품을 최대 90% 할인하며 티셔츠 2만 9,000원, 바지 3만 9,000원, 점퍼 6만 9,000원 등에 판매한다. 파크랜드 오스틴리드는 니트와 바지를 각각 2만 9,000원, 자켓을 7만 9,000원에 선보인다. 부산 해운대점에서는 팜스프링스, 세리아, 웨스트우드, 행텐 등 인기 패션 브랜드를 중심으로 최대 90% 할인 혜택을 제공한다. 사진=씰리침대 씰리침대가 현대백화점 천호점 지하 1층 대행사장에서 다음달 4일까지 ‘슈퍼 프라이스’ 행사를 진행한다. 대표 제품으로는 ‘엑스퀴짓 헤븐리 시더’를 비롯해 ‘블랙멀버리’, ‘클레이오 III 펌’ 등이 준비됐다. 각 제품은 씰리침대만의 기술력과 편안한 착와감을 바탕으로 고객의 수면 취향과 라이프스타일에 따라 선택할 수 있도록 구성됐다. 특히 이번 행사에서는 연결형 스프링 모션 매트리스 ‘모션플렉스’도 함께 선보인다. 모션플렉스는 스프링 매트리스의 안정적인 지지력에 모션 기능을 더한 제품으로, 기상·독서·휴식 등 다양한 생활 장면에 맞춰 침실 활용도를 높여준다. 이외 행사 기간 내 씰리침대 제품을 구매한 고객에게는 구매 금액대별 사은품을 증정하며, 추첨을 통해 씰리침대 제품 200만 원 할인 쿠폰, 호텔식 침구 세트, 텐셀 베개 등을 제공하는 럭키 드로우 이벤트도 진행한다. 또한 견적서 작성 고객에게는 ‘씰리 양우산’을 수량 한정으로 증정하며 프레임 세트 구매 고객에게는 씰리 테디베어 ‘몽몽이’를 수량 한정으로 제공한다. 사진=누그레이 메이크업 브랜드 누그레이가 스테디셀러 ‘세모 탭 치크’를 올리브영 오늘의특가(이하 오특)를 통해 27일 26% 할인된 가격에 선보인다. '세모 탭 치크'는 삼각형 쉐입의 크림 치크 제품으로 가볍게 탭하는 순간 끈적임 없이 불륨감 넘치는 푸딩 속광 연출이 가능하고, 피부에 닿는 순간 부드럽게 멜팅되는 이지 블렌딩 제형으로 베이스 까짐 현상 없이 맑은 컬러감을 연출한다. ▲핑키 탭 ▲모비 탭 ▲오피치 탭 ▲베쥬 탭 ▲토마토 탭 등 기존 5가지 쉐이드에 ▲밀키타로",
-        "link": "https://www.slist.kr/news/articleView.html?idxno=741518",
-        "originallink": "https://www.slist.kr/news/articleView.html?idxno=741518",
-        "domain": "slist.kr",
-        "press": "에스리스트",
-        "norm_key": "url:e45e6a861b0728d042be33ae0980897f",
-        "title_key": "세이브존여름맞이할인끝판왕누그레이세모탭치크올영오특",
-        "canon_url": "https://slist.kr/news/articleView.html?idxno=741518",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "토마토 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": -0.92,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -2588,31 +2588,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-05-27T21:02:00+09:00",
-        "section": "supply",
-        "title": "[Ψ-딧세이] 레오 14세의 '괴력난신'···AI 회칙에 '선악과' 담았다",
-        "description": "기억을 말하는 프사이(Ψ)-딧세이는 우리가 매일 스치는 감정과 생각 그리고 사물을 한발짝 떨어져 바라보는 여정을 뜻한다. 빵 한 조각, 커피 한 잔 혹은 데이터 서버의 불빛 같은 일상의 풍경조차 파장처럼 흔들리며 우리 삶에 스며든다. 말 이전의 떨림과 여기-지금의 이야기를 거대한 리듬 속에 맞춰 읽어내는 작업, 그것이 바로 Ψ-딧세이다. [편집자 주]레오 14세 교황의 인공지능(AI) 회칙이 기자명 이상헌 기자 입력 2026.05.27 21:00 수정 2026.05.28 07:56 댓글 1",
-        "link": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=254419",
-        "originallink": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=254419",
-        "domain": "womaneconomy.co.kr",
-        "press": "womaneconomy",
-        "norm_key": "url:defd69432c79af77ba3e5e99f07eec82",
-        "title_key": "레오14세의괴력난신ai회칙에선악과담았다",
-        "canon_url": "https://womaneconomy.co.kr/news/articleView.html?idxno=254419",
-        "topic": "사과",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 저장",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": -3.5,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-05-27T09:14:00+09:00",
         "section": "supply",
         "title": "식품업계, 판매채널 다변화 속도…대형마트 넘어 '올·다·무'로",
@@ -2659,6 +2634,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": -10.0,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-05-27T21:02:00+09:00",
+        "section": "supply",
+        "title": "[Ψ-딧세이] 레오 14세의 '괴력난신'···AI 회칙에 '선악과' 담았다",
+        "description": "기억을 말하는 프사이(Ψ)-딧세이는 우리가 매일 스치는 감정과 생각 그리고 사물을 한발짝 떨어져 바라보는 여정을 뜻한다. 빵 한 조각, 커피 한 잔 혹은 데이터 서버의 불빛 같은 일상의 풍경조차 파장처럼 흔들리며 우리 삶에 스며든다. 말 이전의 떨림과 여기-지금의 이야기를 거대한 리듬 속에 맞춰 읽어내는 작업, 그것이 바로 Ψ-딧세이다. [편집자 주]레오 14세 교황의 인공지능(AI) 회칙이 기자명 이상헌 기자 입력 2026.05.27 21:00 수정 2026.05.28 07:56 댓글 1",
+        "link": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=254419",
+        "originallink": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=254419",
+        "domain": "womaneconomy.co.kr",
+        "press": "womaneconomy",
+        "norm_key": "url:defd69432c79af77ba3e5e99f07eec82",
+        "title_key": "레오14세의괴력난신ai회칙에선악과담았다",
+        "canon_url": "https://womaneconomy.co.kr/news/articleView.html?idxno=254419",
+        "topic": "사과",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 저장",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": -3.7,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -3585,7 +3585,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 29.35,
+        "score": 29.15,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -3710,7 +3710,7 @@
         "selection_stage": "core",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 69.42,
+        "score": 69.22,
         "selection_fit_score": 7.47,
         "is_core": true
       },
@@ -3860,7 +3860,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -1.01,
+        "score": -1.21,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -4235,7 +4235,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -7.9,
+        "score": -8.1,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -4618,7 +4618,7 @@
         "pub_dt_kst": "2026-05-27T09:53:00+09:00",
         "section": "policy",
         "title": "GS샵 자체 뷰티 브랜드 ‘뷰’ 새단장…가성비 화장품 강화",
-        "description": "[사진=GS샵][디지털데일리 왕진화기자] GS샵이 자체 뷰티 브랜드 ‘VU(뷰)’를 새롭게 단장하고 가성비를 앞세운 데일리 뷰티 시장 공략에 나선다. 단독 브랜드 경쟁력을 강화해... '; html += ' '+data.title+' '; html += ' GS샵 자체 뷰티 브랜드 ‘뷰’ 새단장…가성비 화장품 강화 [디지털데일리 왕진화기자] GS샵이 자체 뷰티 브랜드 ‘VU(뷰)’를 새롭게 단장하고 가성비를 앞세운 데일리 뷰티 시장 공략에 나선다. 단독 브랜드 경쟁력을 강화해 차별화 상품 확대에도 속도를 낸다는 전략이다. 27일 GS샵은 지난 2021년 선보인 자체 뷰티 브랜드 ‘뷰’가 누적 주문액 70억원, 누적 구매 고객 16만명을 기록하는 등 꾸준한 호응을 얻고 있다며 이같이 밝혔다. 이번 리뉴얼은 약 4년 만에 진행되는 것으로, GS샵은 상품 개발 과정에서 고객 의견을 적극 반영하기 위해 약 5개월간 ‘뷰 고객 서포터즈’를 운영했다. 약 500명의 고객을 대상으로 피부 고민과 제품 선호도 조사, 신제품 테스트 등을 진행하며 실제 소비자 피드백을 상품 기획에 반영했다는 설명이다. GS샵은 최근 고물가 기조 속에서 성분과 기능은 유지하면서도 가격 부담을 낮춘 실속형 화장품 수요가 확대되고 있다는 점에 주목했다. 이에 따라 이번 리뉴얼 상품군 역시 합리적인 가격대의 기초 화장품 중심으로 구성했다. 새롭게 선보이는 제품은 ▲뷰 진주알 글로우 톤업 선크림 ▲뷰 유자 멜라토닝 세럼 ▲뷰 히알스파 모이스처 크림 등 3종이다. ‘뷰 진주알 글로우 톤업 선크림’은 자외선 차단과 피부 톤 보정 기능을 동시에 담은 제품으로, 칙칙함과 붉은기, 노란기를 한 번에 보정하는 트리플 톤업 효과를 구현했다. 뉴질랜드 청정 해역의 진주 추출물을 함유해 자연스러운 광채 피부 연출도 가능하도록 설계됐다. ‘뷰 유자 멜라토닝 세럼’은 비타민C 함량이 높은 고흥 유자와 영국 DSM사의 순도 100% 비타민C 성분을 담아 색소 침착과 기미 케어에 도움을 줄 수 있도록 했다. ‘뷰 히알스파 모이스처 크림’은 뉴질랜드 온천수와 고·중·저분자 히알루론산을 함유해 피부 진정과 보습 기능을 강화했다. 신제품은 오는 28일 GS샵 모바일 앱을 통해 공개되며, 론칭 당일 다양한 할인 프로모션도 함께 진행된다. GS샵 ‘더 컬렉션’, 고객 초청 스타일링 클래스 연다 GS샵, 중소기업 TV홈쇼핑 진출 지원…‘온앤업’ 참여기업 모집 [현장] “2030 스타일? 우리도 좋아해”…5060 고객들이 찾는 건 ‘한 끗’ “영상 속 맥락 읽는 AI”…GS샵, 추천 시스템 고도화했더니 주문고객 57% ↑ 최기영 전 장관과 닮은꼴?…이종호 과기정통부 후보자, “어제 통화” 이종호 과기정통부 후보자, “과학-ICT 연결돼 있어…함께 혁신” 이종호 과기정통부 장관 후보자 “미래 사회변화 선도·대응” 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 국민연금, 국내주식 20.8%로 상향…수십조 매도 부담 여전 로톡, 크리에이터 법률 지원 나선다…'싸이코파라다이스' 맞손 \"수학여행·현장체험학습시 인솔 교사 책임 부담 크게 완화\"…교육부, 학교안전법 손질 계획 산업재해 취약 중소사업장, 디지털·AI 안전기술로 지킨다 숏폼 애니메이션, 보고 만들고 돈 버는 생태계 경쟁으로 국민연금 ‘170조 매도 폭탄’ 피하나…오늘 기금위에 증시 촉각 비트코인, 7만3000달러선 붕괴…美·이란 긴장 속 13억달러 '고래 매도' 폭탄 토스증권 북마크에 대통령 합성사진…“크롬 브라우저 캐싱 오류” “공공기관 보안인력 유출…보상 적고 책임 많은 기형구조가 문제” 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 국민연금, 국내주식 20.8%로 상향…수십조 매도 부담 여전 로톡, 크리에이터 법률 지원 나선다…'싸이코파라다이스' 맞손 \"수학여행·현장체험학습시 인솔 교사 책임 부담 크게 완화\"…교육부, 학교안전법 손질 계획 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 국민연금, 국내주식 20.8%로 상향…수십조 매도 부담 여전 로톡, 크리에이터",
+        "description": "[사진=GS샵][디지털데일리 왕진화기자] GS샵이 자체 뷰티 브랜드 ‘VU(뷰)’를 새롭게 단장하고 가성비를 앞세운 데일리 뷰티 시장 공략에 나선다. 단독 브랜드 경쟁력을 강화해... '; html += ' '+data.title+' '; html += ' GS샵 자체 뷰티 브랜드 ‘뷰’ 새단장…가성비 화장품 강화 [디지털데일리 왕진화기자] GS샵이 자체 뷰티 브랜드 ‘VU(뷰)’를 새롭게 단장하고 가성비를 앞세운 데일리 뷰티 시장 공략에 나선다. 단독 브랜드 경쟁력을 강화해 차별화 상품 확대에도 속도를 낸다는 전략이다. 27일 GS샵은 지난 2021년 선보인 자체 뷰티 브랜드 ‘뷰’가 누적 주문액 70억원, 누적 구매 고객 16만명을 기록하는 등 꾸준한 호응을 얻고 있다며 이같이 밝혔다. 이번 리뉴얼은 약 4년 만에 진행되는 것으로, GS샵은 상품 개발 과정에서 고객 의견을 적극 반영하기 위해 약 5개월간 ‘뷰 고객 서포터즈’를 운영했다. 약 500명의 고객을 대상으로 피부 고민과 제품 선호도 조사, 신제품 테스트 등을 진행하며 실제 소비자 피드백을 상품 기획에 반영했다는 설명이다. GS샵은 최근 고물가 기조 속에서 성분과 기능은 유지하면서도 가격 부담을 낮춘 실속형 화장품 수요가 확대되고 있다는 점에 주목했다. 이에 따라 이번 리뉴얼 상품군 역시 합리적인 가격대의 기초 화장품 중심으로 구성했다. 새롭게 선보이는 제품은 ▲뷰 진주알 글로우 톤업 선크림 ▲뷰 유자 멜라토닝 세럼 ▲뷰 히알스파 모이스처 크림 등 3종이다. ‘뷰 진주알 글로우 톤업 선크림’은 자외선 차단과 피부 톤 보정 기능을 동시에 담은 제품으로, 칙칙함과 붉은기, 노란기를 한 번에 보정하는 트리플 톤업 효과를 구현했다. 뉴질랜드 청정 해역의 진주 추출물을 함유해 자연스러운 광채 피부 연출도 가능하도록 설계됐다. ‘뷰 유자 멜라토닝 세럼’은 비타민C 함량이 높은 고흥 유자와 영국 DSM사의 순도 100% 비타민C 성분을 담아 색소 침착과 기미 케어에 도움을 줄 수 있도록 했다. ‘뷰 히알스파 모이스처 크림’은 뉴질랜드 온천수와 고·중·저분자 히알루론산을 함유해 피부 진정과 보습 기능을 강화했다. 신제품은 오는 28일 GS샵 모바일 앱을 통해 공개되며, 론칭 당일 다양한 할인 프로모션도 함께 진행된다. GS샵 ‘더 컬렉션’, 고객 초청 스타일링 클래스 연다 GS샵, 중소기업 TV홈쇼핑 진출 지원…‘온앤업’ 참여기업 모집 [현장] “2030 스타일? 우리도 좋아해”…5060 고객들이 찾는 건 ‘한 끗’ “영상 속 맥락 읽는 AI”…GS샵, 추천 시스템 고도화했더니 주문고객 57% ↑ 최기영 전 장관과 닮은꼴?…이종호 과기정통부 후보자, “어제 통화” 이종호 과기정통부 후보자, “과학-ICT 연결돼 있어…함께 혁신” 이종호 과기정통부 장관 후보자 “미래 사회변화 선도·대응” 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 증시 매물 폭탄 우려 사라졌나…국민연금, 국내 주식 20.8%로 상향 결정 로톡, 크리에이터 법률 지원 나선다…'싸이코파라다이스' 맞손 \"수학여행·현장체험학습시 인솔 교사 책임 부담 크게 완화\"…교육부, 학교안전법 손질 계획 산업재해 취약 중소사업장, 디지털·AI 안전기술로 지킨다 숏폼 애니메이션, 보고 만들고 돈 버는 생태계 경쟁으로 국민연금 ‘170조 매도 폭탄’ 피하나…오늘 기금위에 증시 촉각 비트코인, 7만3000달러선 붕괴…美·이란 긴장 속 13억달러 '고래 매도' 폭탄 토스증권 북마크에 대통령 합성사진…“크롬 브라우저 캐싱 오류” “공공기관 보안인력 유출…보상 적고 책임 많은 기형구조가 문제” 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 증시 매물 폭탄 우려 사라졌나…국민연금, 국내 주식 20.8%로 상향 결정 로톡, 크리에이터 법률 지원 나선다…'싸이코파라다이스' 맞손 \"수학여행·현장체험학습시 인솔 교사 책임 부담 크게 완화\"…교육부, 학교안전법 손질 계획 100원 투자해도 35원 회수하는 PP…\"프로그램 사용료 정상화 시급\" 증시 매물 폭탄 우려 사라졌나…국민연금, 국내 주",
         "link": "https://n.news.naver.com/mnews/article/138/0002229001?sid=101",
         "originallink": "https://www.ddaily.co.kr/page/view/2026052709500935653",
         "domain": "ddaily.co.kr",
@@ -4693,7 +4693,7 @@
         "pub_dt_kst": "2026-05-27T13:55:00+09:00",
         "section": "policy",
         "title": "농협, 주한 대사관에 ‘농심천심’ 알렸다",
-        "description": "농협의 주한 대사관 초청 견학 프로그램은 한국 농협의 가치와 성과를 알리면서 주한 외교사절이나 그 가족들에게 인기를 끌어왔다.  2023년 이후 중단 됐는데 3년 만에 재개되자 모집 인원이 조기 마감될 만큼 각국 대사관의 관심이 높았다. 20개국에서 40명 가까이 참여 청와대, 노동장관 ‘초과이익 분배’ 언급에 “다양한 공론화 기회” 서소문 고가차로 철거 중 참사 이틀 만 ‘작업 재개’…노동부 조건부 승인 ‘나무호 피격’ 선전수단 삼던 이란 매체들…“한국, 근거없이 비난” 입모아 서울시·철도공단, 철근 누락 이어 ‘동부간선 발파공사’ 놓고 갈등 이석희 SK온 대표이사 사임… 이용욱 사장 원톱 체제로 청와대, 노동장관 ‘초과이익 분배’ 언급에 “다양한 공론화 기회” 서소문 고가차로 철거 중 참사 이틀 만 ‘작업 재개’…노동부 조건부 승인 ‘나무호 피격’ 선전수단 삼던 이란 매체들…“한국, 근거없이 비난” 입모아 서울시·철도공단, 철근 누락 이어 ‘동부간선 발파공사’ 놓고 갈등 이석희 SK온 대표이사 사임… 이용욱 사장 원톱 체제로 농협의 주한 대사관 초청 견학 프로그램은 한국 농협의 가치와 성과를 알리면서 주한 외교사절이나 그 가족들에게 인기를 끌어왔다. 2023년 이후 중단 됐는데 3년 만에 재개되자 모집 인원이 조기 마감될 만큼 각국 대사관의 관심이 높았다. 20개국에서 40명 가까이 참여하는 성황을 이뤘다. 프로그램은 농업인의 삶의 질 향상과 농업·농촌의 지속가능한 발전을 위해 다양한 역할을 수행 중인 한국농협의 기능과 역할, 성과를 국제사회에 전파한 자리다. 농협중앙회는 27일 주한 대사관 관계자들을 초청해 한국농협 견학 프로그램을 진행했다. 행사에는 이탈리아와 코스타리카, 케냐, 페루, 태국 등 5개 국가의 주한 대사를 비롯 총 20개국 주한 대사관 직원과 가족 36명이 참석했다. 농협은 농업·농촌의 공익적 가치와 중요성을 강조한 ‘농심천심(農心天心) 운동’을 소개했다. 특히 국제협동조합연맹(ICA)과 국제협동조합농업기구(ICAO) 등 국제사회와 공유하는 활동을 지속적으로 확대하고 있다고 설명했다. 또 한국농협은 다른 나라와 달리 영농자재 공급, 농산물 유통·판매, 금융지원, 농촌복지 증진 등 농업인 실익 증진을 위한 종합 지원체계를 운영하고 있다고 밝혔다. 최근 고유가 상황 속에서도 면세유 유가보조금 지원과 무기질비료 가격 인상분 분담 등 농가 경영비 부담 완화를 위한 실질적 지원에 앞장서고 있다는 사실도 알렸다. 참가자들은 서울 중구 농협중앙회 본관에서 강호동 회장과의 환담을 진행한 뒤 철원 김화농협을 방문해 미곡종합처리장(RPC)과 농산물산지유통센터(APC), 하나로마트 등 농협 경제사업장을 견학했다. 이는 한국 농협의 체계적인 경제사업 구조를 직접 확인하는 기회를 제공하는 결과를 낳았다. 이어 한국전쟁 이후 60여 년간 민간인 출입이 통제되어 원시 자연을 보존하고 있는 DMZ 생태평화공원을 방문해 접경지역의 생태·평화적 가치와 지역 농업 환경을 체험했다. 강호동 회장은 “이번 프로그램은 주요 협력국 대사관과의 교류를 확대하고, 한국 농협이 농업인과 지역사회를 위해 수행하고 있는 다양한 역할과 가치를 국제사회에 알리는 뜻깊은 자리”라고 자평했다. 그러면서 “앞으로도 한국 농업·농촌의 우수성과 협동조합의 가치를 세계에 널리 전파하도록 다양한 국제 교류 활동을 지속 확대해 나가겠다”고 약속했다. [기획] ‘매 발톱’ 드러낸 신현송 한은 총재… 금리인상 공식화 젠슨 황 “놀라운 신제품 있다…하반기 공개하면 최고의 시기 될 것” 신현송 총재 “삼성전자 성과급, 물가 상승 압력 생길 것” 스타벅스, 선불카드 판매 일시 중단…“현금화 악용 차단” 공무원 노조도 ‘7월 대규모 투쟁’ 예고…“업무 과중·저임금 한계” 노동장관, ‘사회적 분배’ 비판에…“노동자 간 격차 보고만 있어선 안돼” 반박 푸틴이 철저히 숨겼는데…영국 “우크라전쟁 러시아군 50만명 전사” 코스피, 삼전·SK하닉 약세에 8100선 숨고르기…LG엔솔 11%↑ 오세훈 \"정원오, 무능부패 드러나고 있다\"…한강벨트서 '부동산' 공세 #오세훈 #국민의힘 #",
+        "description": "농협의 주한 대사관 초청 견학 프로그램은 한국 농협의 가치와 성과를 알리면서 주한 외교사절이나 그 가족들에게 인기를 끌어왔다.  2023년 이후 중단 됐는데 3년 만에 재개되자 모집 인원이 조기 마감될 만큼 각국 대사관의 관심이 높았다. 20개국에서 40명 가까이 참여 서소문 고가차로 철거 중 참사 이틀 만 ‘작업 재개’…노동부 조건부 승인 ‘나무호 피격’ 선전수단 삼던 이란 매체들…“한국, 근거없이 비난” 입모아 서울시·철도공단, 철근 누락 이어 ‘동부간선 발파공사’ 놓고 갈등 이석희 SK온 대표이사 사임… 이용욱 사장 원톱 체제로 李대통령, 강창일 평통 수석부의장·신현송 한은총재 등 장관급 7명 임명장 수여 서소문 고가차로 철거 중 참사 이틀 만 ‘작업 재개’…노동부 조건부 승인 ‘나무호 피격’ 선전수단 삼던 이란 매체들…“한국, 근거없이 비난” 입모아 서울시·철도공단, 철근 누락 이어 ‘동부간선 발파공사’ 놓고 갈등 이석희 SK온 대표이사 사임… 이용욱 사장 원톱 체제로 李대통령, 강창일 평통 수석부의장·신현송 한은총재 등 장관급 7명 임명장 수여 농협의 주한 대사관 초청 견학 프로그램은 한국 농협의 가치와 성과를 알리면서 주한 외교사절이나 그 가족들에게 인기를 끌어왔다. 2023년 이후 중단 됐는데 3년 만에 재개되자 모집 인원이 조기 마감될 만큼 각국 대사관의 관심이 높았다. 20개국에서 40명 가까이 참여하는 성황을 이뤘다. 프로그램은 농업인의 삶의 질 향상과 농업·농촌의 지속가능한 발전을 위해 다양한 역할을 수행 중인 한국농협의 기능과 역할, 성과를 국제사회에 전파한 자리다. 농협중앙회는 27일 주한 대사관 관계자들을 초청해 한국농협 견학 프로그램을 진행했다. 행사에는 이탈리아와 코스타리카, 케냐, 페루, 태국 등 5개 국가의 주한 대사를 비롯 총 20개국 주한 대사관 직원과 가족 36명이 참석했다. 농협은 농업·농촌의 공익적 가치와 중요성을 강조한 ‘농심천심(農心天心) 운동’을 소개했다. 특히 국제협동조합연맹(ICA)과 국제협동조합농업기구(ICAO) 등 국제사회와 공유하는 활동을 지속적으로 확대하고 있다고 설명했다. 또 한국농협은 다른 나라와 달리 영농자재 공급, 농산물 유통·판매, 금융지원, 농촌복지 증진 등 농업인 실익 증진을 위한 종합 지원체계를 운영하고 있다고 밝혔다. 최근 고유가 상황 속에서도 면세유 유가보조금 지원과 무기질비료 가격 인상분 분담 등 농가 경영비 부담 완화를 위한 실질적 지원에 앞장서고 있다는 사실도 알렸다. 참가자들은 서울 중구 농협중앙회 본관에서 강호동 회장과의 환담을 진행한 뒤 철원 김화농협을 방문해 미곡종합처리장(RPC)과 농산물산지유통센터(APC), 하나로마트 등 농협 경제사업장을 견학했다. 이는 한국 농협의 체계적인 경제사업 구조를 직접 확인하는 기회를 제공하는 결과를 낳았다. 이어 한국전쟁 이후 60여 년간 민간인 출입이 통제되어 원시 자연을 보존하고 있는 DMZ 생태평화공원을 방문해 접경지역의 생태·평화적 가치와 지역 농업 환경을 체험했다. 강호동 회장은 “이번 프로그램은 주요 협력국 대사관과의 교류를 확대하고, 한국 농협이 농업인과 지역사회를 위해 수행하고 있는 다양한 역할과 가치를 국제사회에 알리는 뜻깊은 자리”라고 자평했다. 그러면서 “앞으로도 한국 농업·농촌의 우수성과 협동조합의 가치를 세계에 널리 전파하도록 다양한 국제 교류 활동을 지속 확대해 나가겠다”고 약속했다. [기획] ‘매 발톱’ 드러낸 신현송 한은 총재… 금리인상 공식화 젠슨 황 “놀라운 신제품 있다…하반기 공개하면 최고의 시기 될 것” 신현송 총재 “삼성전자 성과급, 물가 상승 압력 생길 것” 스타벅스, 선불카드 판매 일시 중단…“현금화 악용 차단” 공무원 노조도 ‘7월 대규모 투쟁’ 예고…“업무 과중·저임금 한계” 노동장관, ‘사회적 분배’ 비판에…“노동자 간 격차 보고만 있어선 안돼” 반박 푸틴이 철저히 숨겼는데…영국 “우크라전쟁 러시아군 50만명 전사” 코스피, 삼전·SK하닉 약세에 8100선 숨고르기…LG엔솔 11%↑ 오세훈 \"정원오, 무능부패 드러나고 있다\"…한강벨트서 '부동산' 공",
         "link": "https://n.news.naver.com/mnews/article/029/0003028717?sid=101",
         "originallink": "https://www.dt.co.kr/article/12064512",
         "domain": "dt.co.kr",
@@ -4786,31 +4786,6 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 7.86,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-05-27T12:12:00+09:00",
-        "section": "policy",
-        "title": "미국 중국 무역위 관세감면 계획 가동에도 중국산 제품에 높은 관세율 ...",
-        "description": "미국 중국 무역위 관세감면 계획 가동에도 중국산 제품에 높은 관세율 부여 전망 <저작권자(c) 비즈니스포스트 무단전재 및 재배포금지> 열린보도원칙 당 매체는 독자와 취재원 등 뉴스이용자의 권리 보장을 위해 반론이나 정정보도, 추후보도를 요청할 수 있는 창구를 열어두고 있음을 알려드립니다. 고충처리인 박상유 1800-6522 bspost@businesspost.co.kr",
-        "link": "https://www.businesspost.co.kr/BP?command=article_view&num=438659",
-        "originallink": "https://www.businesspost.co.kr/BP?command=article_view&num=438659",
-        "domain": "businesspost.co.kr",
-        "press": "businesspost",
-        "norm_key": "url:0029ea48ac1b7f308c751e7c54f96700",
-        "title_key": "미국중국무역위관세감면계획가동에도중국산제품에높은관세율",
-        "canon_url": "https://businesspost.co.kr/BP?command=article_view&num=438659",
-        "topic": "정책",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "유자 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 0.05,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -5193,7 +5168,7 @@
         "pub_dt_kst": "2026-05-27T09:28:00+09:00",
         "section": "policy",
         "title": "GS샵, 뷰티 PB '뷰' 4년 만에 리뉴얼… 실속형 기초 화장품 3종 출시",
-        "description": "GS샵 자체 뷰티 브랜드 '뷰' 리뉴얼 이미지GS리테일(대표 허서홍)의 'GS샵'이 자체 뷰티 브랜드 '뷰(VU)'를 리뉴얼 론칭하며 단독 상품 경쟁력 강화에 나선다. 토픽 카테고리 커뮤니티 언어 설정 / Language Please select a language 한국어 English 日本語 中國語(汉语) 확인 - - 로그아웃 회원정보 수정 내 활동 스크랩 구독 현황 구독 공유 문의 내역 회원탈퇴 GS샵, 뷰티 PB '뷰' 4년 만에 리뉴얼… 실속형 기초 화장품 3종 출시 이지은 기자 (zizi@fashionbiz.co.kr) 26.05.27 ∙ 조회수 341 Copy Link GS리테일(대표 허서홍)의 'GS샵'이 자체 뷰티 브랜드 '뷰(VU)'를 리뉴얼 론칭하며 단독 상품 경쟁력 강화에 나선다. 2021년 선보인 뷰는 누적 주문액 70억원, 누적 주문 고객 수 16만명을 기록한 뷰티 브랜드다. GS샵은 약 4년 만의 리뉴얼을 위해 5개월간 '뷰 고객 서포터즈'를 운영하며 500명을 대상으로 피부 고민·제품 선호도 조사·신제품 테스트 등을 진행했다. 고물가 기조 속 성분과 기능은 유지하되 가격 부담을 낮춘 실속형 화장품 수요가 확대되는 점에 주목, 합리적인 가격의 기초 화장품으로 라인업을 구성했다. 이번 신제품은 ▲뷰 진주알 글로우 톤업 선크림 ▲뷰 유자 멜라토닝 세럼 ▲뷰 히알스파 모이스처 크림 3종으로 구성됐다. 톤업 선크림은 자외선 차단과 톤 보정을 동시에 구현했으며, 유자 세럼은 고흥유자와 순도 100% 비타민C를 담아 색소 침착·기미 완화를 돕는다. 모이스처 크림은 뉴질랜드 온천수와 고·중·저분자 히알루론산을 함유해 피부 진정과 보습에 탁월하다. 신제품 발매를 기념해 28일 하루 동안 다양한 할인 혜택도 마련했다. 전 제품을 개당 1만원 이하에 최대 72% 할인된 가격으로 선보이며, 행사 페이지 내 구매 시 GS ALL 포인트 10% 적립 혜택을 제공한다. 3만원 이상 구매 고객에게는 파우치를 증정하고, 삼성카드 결제 시 7% 추가 할인 혜택도 받을 수 있다. 신명섭 GS샵 뷰티개발팀 MD는 \"고객들이 일상에서 가장 자주 사용하는 화장품을 합리적인 가격에 선보이기 위해 이번 뷰 리뉴얼을 진행했다\"라며 \"자체 브랜드를 뷰티 카테고리까지 확장해 단독 제품 경쟁력을 강화하겠다\"고 말했다.",
+        "description": "GS샵 자체 뷰티 브랜드 '뷰' 리뉴얼 이미지GS리테일(대표 허서홍)의 'GS샵'이 자체 뷰티 브랜드 '뷰(VU)'를 리뉴얼 론칭하며 단독 상품 경쟁력 강화에 나선다. 토픽 카테고리 커뮤니티 언어 설정 / Language Please select a language 한국어 English 日本語 中國語(汉语) 확인 - - 로그아웃 회원정보 수정 내 활동 스크랩 구독 현황 구독 공유 문의 내역 회원탈퇴 GS샵, 뷰티 PB '뷰' 4년 만에 리뉴얼… 실속형 기초 화장품 3종 출시 이지은 기자 (zizi@fashionbiz.co.kr) 26.05.27 ∙ 조회수 342 Copy Link GS리테일(대표 허서홍)의 'GS샵'이 자체 뷰티 브랜드 '뷰(VU)'를 리뉴얼 론칭하며 단독 상품 경쟁력 강화에 나선다. 2021년 선보인 뷰는 누적 주문액 70억원, 누적 주문 고객 수 16만명을 기록한 뷰티 브랜드다. GS샵은 약 4년 만의 리뉴얼을 위해 5개월간 '뷰 고객 서포터즈'를 운영하며 500명을 대상으로 피부 고민·제품 선호도 조사·신제품 테스트 등을 진행했다. 고물가 기조 속 성분과 기능은 유지하되 가격 부담을 낮춘 실속형 화장품 수요가 확대되는 점에 주목, 합리적인 가격의 기초 화장품으로 라인업을 구성했다. 이번 신제품은 ▲뷰 진주알 글로우 톤업 선크림 ▲뷰 유자 멜라토닝 세럼 ▲뷰 히알스파 모이스처 크림 3종으로 구성됐다. 톤업 선크림은 자외선 차단과 톤 보정을 동시에 구현했으며, 유자 세럼은 고흥유자와 순도 100% 비타민C를 담아 색소 침착·기미 완화를 돕는다. 모이스처 크림은 뉴질랜드 온천수와 고·중·저분자 히알루론산을 함유해 피부 진정과 보습에 탁월하다. 신제품 발매를 기념해 28일 하루 동안 다양한 할인 혜택도 마련했다. 전 제품을 개당 1만원 이하에 최대 72% 할인된 가격으로 선보이며, 행사 페이지 내 구매 시 GS ALL 포인트 10% 적립 혜택을 제공한다. 3만원 이상 구매 고객에게는 파우치를 증정하고, 삼성카드 결제 시 7% 추가 할인 혜택도 받을 수 있다. 신명섭 GS샵 뷰티개발팀 MD는 \"고객들이 일상에서 가장 자주 사용하는 화장품을 합리적인 가격에 선보이기 위해 이번 뷰 리뉴얼을 진행했다\"라며 \"자체 브랜드를 뷰티 카테고리까지 확장해 단독 제품 경쟁력을 강화하겠다\"고 말했다.",
         "link": "https://www.fashionbiz.co.kr/article/226563",
         "originallink": "https://www.fashionbiz.co.kr/article/226563",
         "domain": "fashionbiz.co.kr",
@@ -5618,7 +5593,7 @@
         "pub_dt_kst": "2026-05-27T09:08:00+09:00",
         "section": "policy",
         "title": "전남도, 친환경농산물 ‘생산·유통관리 시스템’ 구축… 판로 걱정 덜...",
-        "description": "시작페이지로 l 즐겨찾기 l RSS l 편집 2026.05.28 [21:00] ▲ 전라남도가 친환경농산물의 안정적 판로 확보를 위한 ‘생산·유통관리 시스템’을 구축하는 가운데, 도내 한 물류센터에서 친환경농산물 소포장 작업이 진행되고 있다. (무안=브레이크뉴스) 이학수 기자=전라남도가 도내 친환경농산물 생산 농가의 판로 확보와 소득 안정을 위해 획기적인 디지털 플랫폼을 도입한다. 전남도는 친환경농산물의 안정적인 판로를 확보하고 농가의 출하 걱정을 덜어주기 위한 ‘친환경농산물 생산·유통관리 시스템’을 구축한다고 밝혔다. 이번 시스템은 학교급식 등 단체급식 관계자와 전문 유통업체에 전남에서 생산되는 시기별·품목별 출하량 정보를 수시로 제공함으로써, 생산자와 수요자 간의 원활한 매칭을 돕기 위해 마련됐다. 시스템은 호남권친환경농산물종합물류센터 누리집(홈페이지) 내에 구축된다. 지난 3월부터 이달까지 진행된 시스템 개발 과정을 마무리하고, 오는 6월부터 시범 운영에 들어갈 예정이다. 전남도는 시범 운영 기간 동안 발견된 문제점을 보완한 뒤, 올해 7월부터 본격적인 서비스를 개시할 방침이다. 새롭게 도입되는 시스템에서는 학교 등 단체급식에서 수요가 많은 토마토를 비롯해 주요 친환경농산물 62개 품목을 한눈에 확인할 수 있다. 이용자들은 시기별·품목별·농가별 출하 예상량은 물론, 계약재배 여부까지 간편하게 조회할 수 있게 된다. 특히 이번 시스템은 농업인뿐만 아니라 유통업체, 단체급식 관계자, 공공기관 등 유관 기관 관계자들이 회원 가입 후 자유롭게 이용할 수 있도록 개방형으로 설계된다. 여기에 국립농산물품질관리원의 ‘친환경농산물 인증정보’ 및 실시간 ‘가격정보’를 시스템과 직접 연동해, 농업인과 유통업체가 급변하는 최신 시장 흐름을 한눈에 파악하고 선제적으로 대응할 수 있도록 지원할 계획이다. 전남도 관계자는 “이번 생산·유통관리 시스템 구축을 통해 전남의 우수한 친환경농산물이 제값을 받고 안정적으로 소비처를 확보할 수 있을 것으로 기대한다”며 “농가와 유통업체, 급식 관계자 모두가 상생할 수 있는 친환경 농업 생태계를 조성하는 데 최선을 다하겠다”고 말했다. 아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문] 입니다. '구글번역'은 이해도를 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the lish translation. South Jeolla Province Establishes ‘Production and Distribution Management System’ for Eco-friendly Agricultural Products… Easing Sales Channel Concerns Pilot operation in June, full-scale launch in July… Real-time provision of shipment volume, certification, and price information for 62 items - Securing stable sales channels by frequently providing customized information to school and institutional food service officials and specialized distributors (Muan = Break News) Reporter Lee Hak-su = South Jeolla Province is introducing a groundbreaking digital platform to secure sales channels and stabilize income for farmers produ",
+        "description": "시작페이지로 l 즐겨찾기 l RSS l 편집 2026.05.28 [21:40] ▲ 전라남도가 친환경농산물의 안정적 판로 확보를 위한 ‘생산·유통관리 시스템’을 구축하는 가운데, 도내 한 물류센터에서 친환경농산물 소포장 작업이 진행되고 있다. (무안=브레이크뉴스) 이학수 기자=전라남도가 도내 친환경농산물 생산 농가의 판로 확보와 소득 안정을 위해 획기적인 디지털 플랫폼을 도입한다. 전남도는 친환경농산물의 안정적인 판로를 확보하고 농가의 출하 걱정을 덜어주기 위한 ‘친환경농산물 생산·유통관리 시스템’을 구축한다고 밝혔다. 이번 시스템은 학교급식 등 단체급식 관계자와 전문 유통업체에 전남에서 생산되는 시기별·품목별 출하량 정보를 수시로 제공함으로써, 생산자와 수요자 간의 원활한 매칭을 돕기 위해 마련됐다. 시스템은 호남권친환경농산물종합물류센터 누리집(홈페이지) 내에 구축된다. 지난 3월부터 이달까지 진행된 시스템 개발 과정을 마무리하고, 오는 6월부터 시범 운영에 들어갈 예정이다. 전남도는 시범 운영 기간 동안 발견된 문제점을 보완한 뒤, 올해 7월부터 본격적인 서비스를 개시할 방침이다. 새롭게 도입되는 시스템에서는 학교 등 단체급식에서 수요가 많은 토마토를 비롯해 주요 친환경농산물 62개 품목을 한눈에 확인할 수 있다. 이용자들은 시기별·품목별·농가별 출하 예상량은 물론, 계약재배 여부까지 간편하게 조회할 수 있게 된다. 특히 이번 시스템은 농업인뿐만 아니라 유통업체, 단체급식 관계자, 공공기관 등 유관 기관 관계자들이 회원 가입 후 자유롭게 이용할 수 있도록 개방형으로 설계된다. 여기에 국립농산물품질관리원의 ‘친환경농산물 인증정보’ 및 실시간 ‘가격정보’를 시스템과 직접 연동해, 농업인과 유통업체가 급변하는 최신 시장 흐름을 한눈에 파악하고 선제적으로 대응할 수 있도록 지원할 계획이다. 전남도 관계자는 “이번 생산·유통관리 시스템 구축을 통해 전남의 우수한 친환경농산물이 제값을 받고 안정적으로 소비처를 확보할 수 있을 것으로 기대한다”며 “농가와 유통업체, 급식 관계자 모두가 상생할 수 있는 친환경 농업 생태계를 조성하는 데 최선을 다하겠다”고 말했다. 아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문] 입니다. '구글번역'은 이해도를 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the lish translation. South Jeolla Province Establishes ‘Production and Distribution Management System’ for Eco-friendly Agricultural Products… Easing Sales Channel Concerns Pilot operation in June, full-scale launch in July… Real-time provision of shipment volume, certification, and price information for 62 items - Securing stable sales channels by frequently providing customized information to school and institutional food service officials and specialized distributors (Muan = Break News) Reporter Lee Hak-su = South Jeolla Province is introducing a groundbreaking digital platform to secure sales channels and stabilize income for farmers produ",
         "link": "http://www.breaknews.com/1209991",
         "originallink": "http://www.breaknews.com/1209991",
         "domain": "breaknews.com",
@@ -5743,7 +5718,7 @@
         "pub_dt_kst": "2026-05-27T22:50:00+09:00",
         "section": "policy",
         "title": "충남농기원, 친환경·비용절감 ‘순환식 수경 재배 ’ 확산 박차",
-        "description": "충남농업기술원, 2026년 수경재배 현장활용 기술 교육 진행 장면=충청남도 제공  © 정지완 기자 기후변화와 공급망 불안으로 인한 농자재 가격 상승이 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.05.28 [21:00] ▲ 충남농업기술원, 2026년 수경재배 현장활용 기술 교육 진행 장면=충청남도 제공 © 정지완 기자 기후변화와 공급망 불안으로 인한 농자재 가격 상승이 농가 경영에 심각한 압박을 가하는 가운데, 충청남도 농업기술원이 농업 경쟁력 강화와 비용 절감을 동시 달성하기 위한 선진 기술 보급에 나섰다. 도 농업기술원은 27일 부여군농업기술센터 혁신농업관에서 수경재배 시범사업 대상자 및 희망 농가 50명이 참석한 가운데 ‘수경재배 현장활용 기술교육’을 실시했다. 이번 교육은 농업 현장에 즉시 적용할 수 있는 재배 기술을 이전함으로써 가계 부담을 완화하고 기후위기 대응력을 높이기 위해 마련됐다. 교육 프로그램은 수경재배 시설 운영 및 양액 관리 등 이론 교육을 시작으로, 순환식 수경재배 기술 안내, 현장 견학, 우수사례 발표 순으로 정교하게 진행됐다. 특히 농민들의 주목을 받은 순환식 수경재배는 한 번 사용한 물과 양액을 정밀 소독해 재사용하는 자원 순환형 친환경 기술이다. 최근 국제 정세 불안에 따른 원자재가 상승으로 고통받는 농가들에게 실질적인 예산 절감 대안으로 부각되며 현장의 수요가 급증하는 추세다. 도 농업기술원은 지난 2024년부터 딸기, 토마토, 엽채류 등을 대상으로 관련 시범사업을 추진해 왔으며, 현재까지 16개 농가, 약 10ha 규모에 기술 이전을 완료했다. 박영수 도 농업기술원 지도사는 이번 교육을 계기로 순환식 기술 확산을 촉진해 농가 생산성 제고와 경영 안정에 기여하겠다고 덧붙였다. *아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문]입니다. '구글번역'은 이해도를 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. <*The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the English translation.> Chungnam Agricultural Research Institute Accelerates Expansion of Eco-friendly and Cost-saving ‘Recirculating Hydroponics’ Easing Management Cost Burdens through Resource Reuse Systems... Seeking a Paradigm Shift in High-Input Agriculture Amidst rising agricultural material prices caused by climate change and supply chain instability placing severe pressure on farm management, the Chungcheongnam-do Agricultural Research Institute has set out to disseminate advanced technologies aimed at simultaneously strengthening agricultural competitiveness and reducing costs. On the 27th, the institute conducted a ‘Hydroponics Field Application Technology Training’ at the Innovation Agriculture Hall of the Buyeo-gun Agricultural Technology Center, attended by 50 participants including pilot project participants and",
+        "description": "충남농업기술원, 2026년 수경재배 현장활용 기술 교육 진행 장면=충청남도 제공  © 정지완 기자 기후변화와 공급망 불안으로 인한 농자재 가격 상승이 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.05.28 [21:40] ▲ 충남농업기술원, 2026년 수경재배 현장활용 기술 교육 진행 장면=충청남도 제공 © 정지완 기자 기후변화와 공급망 불안으로 인한 농자재 가격 상승이 농가 경영에 심각한 압박을 가하는 가운데, 충청남도 농업기술원이 농업 경쟁력 강화와 비용 절감을 동시 달성하기 위한 선진 기술 보급에 나섰다. 도 농업기술원은 27일 부여군농업기술센터 혁신농업관에서 수경재배 시범사업 대상자 및 희망 농가 50명이 참석한 가운데 ‘수경재배 현장활용 기술교육’을 실시했다. 이번 교육은 농업 현장에 즉시 적용할 수 있는 재배 기술을 이전함으로써 가계 부담을 완화하고 기후위기 대응력을 높이기 위해 마련됐다. 교육 프로그램은 수경재배 시설 운영 및 양액 관리 등 이론 교육을 시작으로, 순환식 수경재배 기술 안내, 현장 견학, 우수사례 발표 순으로 정교하게 진행됐다. 특히 농민들의 주목을 받은 순환식 수경재배는 한 번 사용한 물과 양액을 정밀 소독해 재사용하는 자원 순환형 친환경 기술이다. 최근 국제 정세 불안에 따른 원자재가 상승으로 고통받는 농가들에게 실질적인 예산 절감 대안으로 부각되며 현장의 수요가 급증하는 추세다. 도 농업기술원은 지난 2024년부터 딸기, 토마토, 엽채류 등을 대상으로 관련 시범사업을 추진해 왔으며, 현재까지 16개 농가, 약 10ha 규모에 기술 이전을 완료했다. 박영수 도 농업기술원 지도사는 이번 교육을 계기로 순환식 기술 확산을 촉진해 농가 생산성 제고와 경영 안정에 기여하겠다고 덧붙였다. *아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문]입니다. '구글번역'은 이해도를 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. <*The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the English translation.> Chungnam Agricultural Research Institute Accelerates Expansion of Eco-friendly and Cost-saving ‘Recirculating Hydroponics’ Easing Management Cost Burdens through Resource Reuse Systems... Seeking a Paradigm Shift in High-Input Agriculture Amidst rising agricultural material prices caused by climate change and supply chain instability placing severe pressure on farm management, the Chungcheongnam-do Agricultural Research Institute has set out to disseminate advanced technologies aimed at simultaneously strengthening agricultural competitiveness and reducing costs. On the 27th, the institute conducted a ‘Hydroponics Field Application Technology Training’ at the Innovation Agriculture Hall of the Buyeo-gun Agricultural Technology Center, attended by 50 participants including pilot project participants and",
         "link": "http://www.breaknews.com/1210300",
         "originallink": "http://www.breaknews.com/1210300",
         "domain": "breaknews.com",
@@ -6217,31 +6192,6 @@
         "is_core": true
       },
       {
-        "pub_dt_kst": "2026-05-28T00:10:00+09:00",
-        "section": "dist",
-        "title": "철원 김화농협 20개국 주한대사 초청… 농산물 유통 경쟁력 홍보",
-        "description": "&amp;nbsp; \n                \n                    \n                        ◇27일 철원 김화농협에서 열린 주한대사관 초청 한국농... 【철원】철원 김화농협(조합장:장춘집)이 20개국 주한대사 및 농무관 등을 초청해 한국 농협의 선진 농산물 유통 시스템과 지역 농업 경쟁력을 소개했다. 김화농협은 본점과 경제사업장에서 주한대사 및 농무관 등 35명이 참석한 가운데 한국 농협 현장견학 행사를 개최했다고 27일 밝혔다. 이번 방문은 농협중앙회 미래혁신실의 초청으로 마련됐다. 이날 방문단은 김화농협 신용사업부와 하나로마트, 주유소를 비롯해 산지유통센터(APC), 미곡처리장(RPC), 자재센터 등 주요 경제사업장을 둘러보며 김화농협의 금융 시스템과 농산물 유통 체계를 살펴봤다. 특히 APC 선별장의 AI 기반 자동선별 로봇 시스템과 미곡처리장의 자동 가공시설에 높은 관심을 보였으며 고품질 농산물 생산과 GAP 인증을 통한 안전한 농산물 유통 과정에도 주목했다. 또 파프리카와 토마토 등 김화농협의 해외 협력 및 수출 현황을 소개받으며 한국 농협의 국제 경쟁력에 대해서도 의견을 나눴다. 방문단은 농업·농촌 기반 조성과 지속 가능한 경영을 통해 지역 농업 활성화에 힘쓰고 있는 김화농협 운영 방식에 관심을 나타낸 것으로 전해졌다. 장춘집 조합장은 “철원 농업의 우수성과 김화농협의 선진화된 유통 시스템을 해외 관계자들에게 직접 소개할 수 있어 뜻깊게 생각한다”며 “앞으로도 지속 가능한 농업과 농촌 활성화를 위해 조합원들과 함께 경쟁력 있는 농협을 만들어 가겠다”고 말했다. 강원 8개 시·군서 오차범위 내 접전⋯ ‘우세’ 민주 8곳 - 국힘 2곳 [강릉시장 여론조사]민주 김중남, 국힘 김홍규에 10.2%P 앞서⋯진보층 결집 눈길 [강원도지사 여론조사] 민주 우상호 44.7% vs 국힘 김진태 37.4% [강원도지사·교육감 여론조사(고성)] 우상호·김진태 3.9%p차 경합 [영월군수 여론조사] 박선규-김길수 오차범위 내 선두 경쟁⋯ 보수표 쟁탈전도 치열 미군, 이란 내 군사기지 추가 타격…호르무즈 해협 인근서 폭발음 [강원도지사·교육감 여론조사(강릉)]우상호 43.8% vs 김진태 36.5%⋯오차범위 내 경합 양구 ‘초접전’ … 강릉·인제·고성·양양 ‘민주 우세’ [강원도지사·교육감 여론조사(양구)]김진태 10.7%P 격차로 우상호 제쳐⋯한 달 새 상황 역전 갓 딴 옥수수가 빵·커피로⋯농부의 이색카페 ‘파머스가든’ 직접 키운 농산물로 음료와 빵을 만드는 카페가 있다. 아침에 수확한 옥수수가 ‘초당 옥수수 커피’, ‘옥수수빵’으로 변신해 식탁에 오르는 곳, 춘천시 신북읍 신샘밭로에 위치한 ‘파머스가든’이 그 주인공이다. ■이름도 모양도 재밌는 구황작물빵=카페 문을 열고 들어가면 정면으로 보이는 베이커리 매대가 눈길을 사로잡는다. 딸기빵, 옥수수빵, 토마토빵, 메론빵 등 알록달록한 빵들이 진열돼 있다. 손님들에게 가장 인기가 많은 이른바 ‘구황작물빵’이다. 농부가 운영하는 카페의 특색을 살린 메뉴로, 재료의 70% 이상은 직접 재배한 농산물을 사용한다. 그 외의 재료는 춘천시로컬푸드직매장에서 구매해 지역 먹거리를 믿고 먹을 수 있다는 장점도 있다. 빵 모양이 작물을 그대로 닮아 눈으로 보는 재미가 큰데 그렇다면 맛은 어떨까. ‘딸기빵’을 한입 베어물자 딸기퓨레가 과즙처럼 입 안을 달콤하게 채웠다. 버터크림의 맛도 조화롭게 어우러졌다. 찾아오는 손님들마다 구황작물빵 선물세트를 사가는 이유를 알게 됐다. 민병현 파머스가든 대표(43)와 직원들은 제철과일을 활용한 메뉴를 끊임없이 개발 중이다. 민 대표는 “기존의 빵집 베이커리와는 차별화된 특색있는 먹거리를 선보이기 위해 구황작물 모양의 빵을 만들기 시작했다”며 “올여름 신메뉴로 복숭아로 만든 타르트와 에이드를 개발 중”이라고 말했다. ■동화 속 정원에서 누리는 특별한 휴식=2018년 문을 연 ‘파머스가든’은 춘천에 오면 꼭 방문하는 명소로 자리잡았다. 주말이면 서울, 경기, 충북 등 전국 각지에서 하루 평균 1,500명이 다녀간다. 20",
-        "link": "https://n.news.naver.com/mnews/article/087/0001195908?sid=102",
-        "originallink": "https://www.kwnews.co.kr/page/view/2026052750071800000",
-        "domain": "kwnews.co.kr",
-        "press": "강원일보",
-        "norm_key": "url:d832065db7e2c0b1e3a7f7e2c1e06deb",
-        "title_key": "철원김화농협20개국주한대사초청농산물유통경쟁력홍보",
-        "canon_url": "https://kwnews.co.kr/page/view/2026052750071800000",
-        "topic": "APC/산지유통",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "dist",
-        "source_query": "농산물 산지 유통",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 45.7,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-05-27T19:28:00+09:00",
         "section": "dist",
         "title": "aT \"물가 안정과 유통 구조 개선에 총력\"",
@@ -6392,31 +6342,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-05-27T21:23:00+09:00",
-        "section": "dist",
-        "title": "또 갈아엎은 양파 밭...\"'산지 폐기' 악순환 막아야\"",
-        "description": "【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다.  애써 키운 양파지만, 팔아봤자 수확 인 KBC 광주방송 공식채널 // news-float-menu open $(document).on('click','#news-bar, #search-bar',function(){ $('body').addClass('modal-open'); $('body').append(' '); $('.news-float-menu .modal-menu').append($('.footer-news .menu_wrap .inner').html()); $('.news-float-menu .modal-sns').css('width', $('.news-float-menu .modal-menu .menu').css('width')); $('.news-float-menu .modal-sns ul').append($('.footer-news .share ul').html()); $('.news-float-menu').addClass('show'); if($(this).attr('id') == 'search-bar'){ $('.news-float-menu .searchText').focus(); } }); // news-float-menu close $(document).on('click','.news-float-menu .modal-close, .modal-backdrop',function(){ $('body').removeClass('modal-open'); $('.modal-backdrop').remove(); $('.news-float-menu .modal-menu').empty(); $('.news-float-menu .modal-sns ul').empty(); $('.news-float-menu').removeClass('show'); }); var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,22929094020/ikbc_GNBbottom_i_970_250', [970, 250], 'ikbc_GNBbottom_i_970_250').addService(googletag.pubads().set(\"page_url\", \"ikbc.co.kr\")); googletag.enableServices(); googletag.display('ikbc_GNBbottom_i_970_250'); }); 홈 뉴스 사회 저녁뉴스(사회) 또 갈아엎은 양파밭...\"'산지 폐기' 악순환 막아야\" 【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다. 애써 키운 양파지만, 팔아봤자 수확 인 작성 : 2026-05-27 21:21:35 function copyUrl(){ let url = prompt('URL공유', $('#copyurl').val()); if(url){ if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url) .then(() => alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.')) .catch(() => fallbackCopy()); } else { fallbackCopy(); } } } function fallbackCopy() { $(\"#copyurl\").select(); try { document.execCommand('copy'); alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.'); } catch (e) { alert('주소 복사에 실패했습니다.'); } finally { } } // 인쇄 버튼 클릭 $('#printBtn').on('click',function(){ printHtml(); }); func",
-        "link": "https://n.news.naver.com/mnews/article/660/0000110137?sid=102",
-        "originallink": "https://www.ikbc.co.kr/article/view/kbc202605270055",
-        "domain": "ikbc.co.kr",
-        "press": "기독교방송",
-        "norm_key": "url:1fc8e661c8c24f39c9ff59127a45a0c7",
-        "title_key": "또갈아엎은양파밭산지폐기악순환막아야",
-        "canon_url": "https://ikbc.co.kr/article/view/kbc202605270055",
-        "topic": "양파",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "dist",
-        "source_query": "양파 경매",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "dist",
-        "score": 8.797,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-05-27T13:02:00+09:00",
         "section": "dist",
         "title": "지역 농가 위해 만든 ‘청주로컬팜 한소쿠리’ …도농 상생 거점 됐다",
@@ -6438,6 +6363,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": -10.0,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-05-27T21:23:00+09:00",
+        "section": "dist",
+        "title": "또 갈아엎은 양파 밭...\"'산지 폐기' 악순환 막아야\"",
+        "description": "【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다.  애써 키운 양파지만, 팔아봤자 수확 인 KBC 광주방송 공식채널 // news-float-menu open $(document).on('click','#news-bar, #search-bar',function(){ $('body').addClass('modal-open'); $('body').append(' '); $('.news-float-menu .modal-menu').append($('.footer-news .menu_wrap .inner').html()); $('.news-float-menu .modal-sns').css('width', $('.news-float-menu .modal-menu .menu').css('width')); $('.news-float-menu .modal-sns ul').append($('.footer-news .share ul').html()); $('.news-float-menu').addClass('show'); if($(this).attr('id') == 'search-bar'){ $('.news-float-menu .searchText').focus(); } }); // news-float-menu close $(document).on('click','.news-float-menu .modal-close, .modal-backdrop',function(){ $('body').removeClass('modal-open'); $('.modal-backdrop').remove(); $('.news-float-menu .modal-menu').empty(); $('.news-float-menu .modal-sns ul').empty(); $('.news-float-menu').removeClass('show'); }); var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,22929094020/ikbc_GNBbottom_i_970_250', [970, 250], 'ikbc_GNBbottom_i_970_250').addService(googletag.pubads().set(\"page_url\", \"ikbc.co.kr\")); googletag.enableServices(); googletag.display('ikbc_GNBbottom_i_970_250'); }); 홈 뉴스 사회 저녁뉴스(사회) 또 갈아엎은 양파밭...\"'산지 폐기' 악순환 막아야\" 【앵커멘트 】 수확을 앞둔 밭을 트랙터로 갈아엎는 안타까운 일이 올해도 우리 지역에서 반복되고 있습니다. 애써 키운 양파지만, 팔아봤자 수확 인 작성 : 2026-05-27 21:21:35 function copyUrl(){ let url = prompt('URL공유', $('#copyurl').val()); if(url){ if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url) .then(() => alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.')) .catch(() => fallbackCopy()); } else { fallbackCopy(); } } } function fallbackCopy() { $(\"#copyurl\").select(); try { document.execCommand('copy'); alert('주소가 복사되었습니다.\\n원하는곳에 붙여넣기(Ctrl+V)해주세요.'); } catch (e) { alert('주소 복사에 실패했습니다.'); } finally { } } // 인쇄 버튼 클릭 $('#printBtn').on('click',function(){ printHtml(); }); func",
+        "link": "https://n.news.naver.com/mnews/article/660/0000110137?sid=102",
+        "originallink": "https://www.ikbc.co.kr/article/view/kbc202605270055",
+        "domain": "ikbc.co.kr",
+        "press": "기독교방송",
+        "norm_key": "url:1fc8e661c8c24f39c9ff59127a45a0c7",
+        "title_key": "또갈아엎은양파밭산지폐기악순환막아야",
+        "canon_url": "https://ikbc.co.kr/article/view/kbc202605270055",
+        "topic": "양파",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "양파 경매",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "dist",
+        "score": 8.597,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6520,7 +6470,7 @@
         "pub_dt_kst": "2026-05-27T07:02:00+09:00",
         "section": "dist",
         "title": "'밭'의 한계 넘은 의성마늘… 식품 산업으로 진화",
-        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 19:52 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
+        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 21:39 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
         "link": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "originallink": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "domain": "newscj.com",
@@ -6545,7 +6495,7 @@
         "pub_dt_kst": "2026-05-27T07:02:00+09:00",
         "section": "dist",
         "title": "[Who Is ?] 김동선 한화비전 미래비전총괄 부사장",
-        "description": "[Who Is ?] 김동선 한화비전 미래비전총괄 부사장 <저작권자(c) 비즈니스포스트 무단전재 및 재배포금지> 열린보도원칙 당 매체는 독자와 취재원 등 뉴스이용자의 권리 보장을 위해 반론이나 정정보도, 추후보도를 요청할 수 있는 창구를 열어두고 있음을 알려드립니다. 고충처리인 박상유 1800-6522 bspost@businesspost.co.kr",
+        "description": "2014년부터 국내 민간기업 최초로 승용마 경매 사업에도 나섰는데 이는 김동선이 직접 제안하고 기획한... 이후 한화그룹이 변호사들에게 사과 하고 피해자들이 김동선에 대한 처벌을 원하지 않아 2017년 12월18일...",
         "link": "https://www.businesspost.co.kr/BP?command=article_view&num=436997",
         "originallink": "https://www.businesspost.co.kr/BP?command=article_view&num=436997",
         "domain": "businesspost.co.kr",
@@ -6562,7 +6512,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -0.5,
+        "score": 2.37,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6588,6 +6538,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 2.32,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-05-28T00:10:00+09:00",
+        "section": "dist",
+        "title": "철원 김화 농협 20개국 주한대사 초청…농산물 유통 경쟁력 홍보",
+        "description": "&amp;nbsp; \n                \n                    \n                        ◇27일 철원 김화농협에서 열린 주한대사관 초청 한국농... 【철원】철원 김화농협(조합장:장춘집)이 20개국 주한대사 및 농무관 등을 초청해 한국 농협의 선진 농산물 유통 시스템과 지역 농업 경쟁력을 소개했다. 김화농협은 본점과 경제사업장에서 주한대사 및 농무관 등 35명이 참석한 가운데 한국 농협 현장견학 행사를 개최했다고 27일 밝혔다. 이번 방문은 농협중앙회 미래혁신실의 초청으로 마련됐다. 이날 방문단은 김화농협 신용사업부와 하나로마트, 주유소를 비롯해 산지유통센터(APC), 미곡처리장(RPC), 자재센터 등 주요 경제사업장을 둘러보며 김화농협의 금융 시스템과 농산물 유통 체계를 살펴봤다. 특히 APC 선별장의 AI 기반 자동선별 로봇 시스템과 미곡처리장의 자동 가공시설에 높은 관심을 보였으며 고품질 농산물 생산과 GAP 인증을 통한 안전한 농산물 유통 과정에도 주목했다. 또 파프리카와 토마토 등 김화농협의 해외 협력 및 수출 현황을 소개받으며 한국 농협의 국제 경쟁력에 대해서도 의견을 나눴다. 방문단은 농업·농촌 기반 조성과 지속 가능한 경영을 통해 지역 농업 활성화에 힘쓰고 있는 김화농협 운영 방식에 관심을 나타낸 것으로 전해졌다. 장춘집 조합장은 “철원 농업의 우수성과 김화농협의 선진화된 유통 시스템을 해외 관계자들에게 직접 소개할 수 있어 뜻깊게 생각한다”며 “앞으로도 지속 가능한 농업과 농촌 활성화를 위해 조합원들과 함께 경쟁력 있는 농협을 만들어 가겠다”고 말했다. 강원 8개 시·군서 오차범위 내 접전⋯ ‘우세’ 민주 8곳 - 국힘 2곳 [강릉시장 여론조사]민주 김중남, 국힘 김홍규에 10.2%P 앞서⋯진보층 결집 눈길 [강원도지사 여론조사] 민주 우상호 44.7% vs 국힘 김진태 37.4% [강원도지사·교육감 여론조사(고성)] 우상호·김진태 3.9%p차 경합 [영월군수 여론조사] 박선규-김길수 오차범위 내 선두 경쟁⋯ 보수표 쟁탈전도 치열 미군, 이란 내 군사기지 추가 타격…호르무즈 해협 인근서 폭발음 [강원도지사·교육감 여론조사(강릉)]우상호 43.8% vs 김진태 36.5%⋯오차범위 내 경합 양구 ‘초접전’ … 강릉·인제·고성·양양 ‘민주 우세’ [강원도지사·교육감 여론조사(양구)]김진태 10.7%P 격차로 우상호 제쳐⋯한 달 새 상황 역전 갓 딴 옥수수가 빵·커피로⋯농부의 이색카페 ‘파머스가든’ 직접 키운 농산물로 음료와 빵을 만드는 카페가 있다. 아침에 수확한 옥수수가 ‘초당 옥수수 커피’, ‘옥수수빵’으로 변신해 식탁에 오르는 곳, 춘천시 신북읍 신샘밭로에 위치한 ‘파머스가든’이 그 주인공이다. ■이름도 모양도 재밌는 구황작물빵=카페 문을 열고 들어가면 정면으로 보이는 베이커리 매대가 눈길을 사로잡는다. 딸기빵, 옥수수빵, 토마토빵, 메론빵 등 알록달록한 빵들이 진열돼 있다. 손님들에게 가장 인기가 많은 이른바 ‘구황작물빵’이다. 농부가 운영하는 카페의 특색을 살린 메뉴로, 재료의 70% 이상은 직접 재배한 농산물을 사용한다. 그 외의 재료는 춘천시로컬푸드직매장에서 구매해 지역 먹거리를 믿고 먹을 수 있다는 장점도 있다. 빵 모양이 작물을 그대로 닮아 눈으로 보는 재미가 큰데 그렇다면 맛은 어떨까. ‘딸기빵’을 한입 베어물자 딸기퓨레가 과즙처럼 입 안을 달콤하게 채웠다. 버터크림의 맛도 조화롭게 어우러졌다. 찾아오는 손님들마다 구황작물빵 선물세트를 사가는 이유를 알게 됐다. 민병현 파머스가든 대표(43)와 직원들은 제철과일을 활용한 메뉴를 끊임없이 개발 중이다. 민 대표는 “기존의 빵집 베이커리와는 차별화된 특색있는 먹거리를 선보이기 위해 구황작물 모양의 빵을 만들기 시작했다”며 “올여름 신메뉴로 복숭아로 만든 타르트와 에이드를 개발 중”이라고 말했다. ■동화 속 정원에서 누리는 특별한 휴식=2018년 문을 연 ‘파머스가든’은 춘천에 오면 꼭 방문하는 명소로 자리잡았다. 주말이면 서울, 경기, 충북 등 전국 각지에서 하루 평균 1,500명이 다녀간다. 20",
+        "link": "https://n.news.naver.com/mnews/article/087/0001195908?sid=102",
+        "originallink": "https://www.kwnews.co.kr/page/view/2026052750071800000",
+        "domain": "kwnews.co.kr",
+        "press": "강원일보",
+        "norm_key": "url:d832065db7e2c0b1e3a7f7e2c1e06deb",
+        "title_key": "철원김화농협20개국주한대사초청농산물유통경쟁력홍보",
+        "canon_url": "https://kwnews.co.kr/page/view/2026052750071800000",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "농협 경제사업 활성화",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 45.7,
         "selection_fit_score": 0.0,
         "is_core": false
       }
@@ -6640,31 +6615,6 @@
         "selection_note": "",
         "reassigned_from": "policy",
         "score": 33.45,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-05-27T15:44:51+09:00",
-        "section": "pest",
-        "title": "청정구역 보은 무너졌다… 과수화상병 ‘첫 발생’에 방역당국 비상",
-        "description": "발생 부위(신초) 산외면 백석리.(사진=충북농업기술원 제공)발생 부위(신초) 수한면 장선리.(사진=충북농업기술원 제공)그동안 과수화상병의 습격으로부터 안전지대를 유지해 오던 충북 보은군에서 끝내 첫 확진 사례가 나오면서 지역 과수 농가와 방역당국에 초비상이 걸렸다. 농촌진흥청(청장 이승돈)은 과수화상병 미발생 지역이었던 충북 보은군 산외면과 수한면에 소재한 청정구역 보은 무너졌다… 과수화상병 ‘첫 발생’에 방역당국 비상 엄재천 2026. 5. 27. 15:44 음성으로 듣기 음성재생 설정 이동 통신망에서 음성 재생 시 데이터 요금이 발생할 수 있습니다. 글자 수 10,000자 초과 시 일부만 음성으로 제공합니다. 남성 여성 느림 보통 빠름 음성 재생하기 닫기 음성 재생 중지 번역 설정 번역 beta Translated by kaka i 한국어 - English 영어 日本語 일본어 简体中文 중국어 Nederlands 네델란드어 Deutsch 독일어 Русский 러시아어 Malaysia 말레이시아어 বাঙ্গোল ভাষা 벵골어 tiếng Việt 베트남어 Español 스페인어 اللغة العربية 아랍어 Italiano 이탈리아어 bahasa Indonesia 인도네시아어 ภาษาไทย 태국어 Türkçe 튀르키에어 Português 포르투갈어 Français 프랑스어 हिन्दी 힌디어 닫기 번역중 Now in translation 글씨크기 조절하기 글자크기 설정 파란원을 좌우로 움직이시면 글자크기가 변경 됩니다. 가 매우 작은 폰트 작은 폰트 보통 폰트 큰 폰트 매우 큰 폰트 가 이 글자크기로 변경됩니다. (예시) 가장 빠른 뉴스가 있고 다양한 정보, 쌍방향 소통이 숨쉬는 다음뉴스를 만나보세요. 다음뉴스는 국내외 주요이슈와 실시간 속보, 문화생활 및 다양한 분야의 뉴스를 입체적으로 전달하고 있습니다. 닫기 인쇄하기 보은 산외면·수한면 사과원 2곳 확진… 긴급 예찰·농가 신고로 발견 후 매몰 완료 발병 반경 2km 이내 89개 농가 정밀 예찰… 보은 전역 635개 농가로 조사 확대 발생 부위(신초) 산외면 백석리.(사진=충북농업기술원 제공) 발생 부위(신초) 수한면 장선리.(사진=충북농업기술원 제공) 그동안 과수화상병의 습격으로부터 안전지대를 유지해 오던 충북 보은군에서 끝내 첫 확진 사례가 나오면서 지역 과수 농가와 방역당국에 초비상이 걸렸다. 농촌진흥청(청장 이승돈)은 과수화상병 미발생 지역이었던 충북 보은군 산외면과 수한면에 소재한 사과 과수원 2곳(0.7ha)에서 5월 24일 기준 과수화상병 발생이 최종 확인됐다고 밝혔다. 이번 신규 발생은 충북농업기술원과 보은군농업기술센터의 선제적인 긴급 예찰과 발병 의심 농가의 신속한 자진 신고가 맞물려 포착됐다. 발견 당시 해당 사과나무들은 나뭇잎과 새로 돋아난 가지(신초)가 불에 탄 것처럼 검게 말라 죽는 전형적인 과수화상병 증상을 나타냈다. 방역당국은 보은 지역의 첫 발생인 만큼, 바이러스의 주변 확산을 원천 차단하기 위해 유례없이 신속한 공적 방제 조치를 단행했다. 화상병 확진 즉시 해당 과수원에 대한 외부인 출입을 전면 통제했다. 주말과 연휴 기간을 이용해 감염된 과수나무를 땅에 묻는 매몰 조치 및 공적 방제를 완료했다. 현재 농림축산검역본부 전문 역학조사관들이 투입되어 정확한 유입 원인과 이동 경로를 추적 중이다. 농촌진흥청과 충북농업기술원, 보은군농업기술센터는 지난 25일 긴급 현장점검을 실시하고, 확진 과수원 반경 2km 이내에 위치한 89개 농가(78.8ha)를 대상으로 1차 정밀 예찰을 신속히 완료했다. 보은군은 여기서 그치지 않고 행정력을 총동원해 관내 전체 과수원(635개 농가, 506ha)을 대상으로 중앙-도-시군 합동 정밀 예찰을 전개할 계획이다. 조사 중 추가 의심 과수가 발견되면 당일 가차 없이 신속 방제에 돌입한다. 농촌진흥청은 청정지역이었던 보은의 방역망이 뚫린 점을 엄중하게 인식하고, 지난 26일 오전 10시 김상경 차장 주재로 관계기관 긴급 영상 점검 회의를 전격 소집했다. 이 자리에는 농림축산식품부, 농림축산검역본부, 국립종자",
-        "link": "https://v.daum.net/v/20260527154451428",
-        "originallink": "https://v.daum.net/v/20260527154451428",
-        "domain": "v.daum.net",
-        "press": "DAUM",
-        "norm_key": "url:b1fd7160e0f7c1e210bb6067364ea31a",
-        "title_key": "청정구역보은무너졌다과수화상병첫발생에방역당국비상",
-        "canon_url": "https://v.daum.net/v/20260527154451428",
-        "topic": "병해충",
-        "summary": "",
-        "forced_section": "pest",
-        "origin_section": "pest",
-        "source_query": "과수화상병 충북 농가 시름",
-        "source_channel": "google_news",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "policy",
-        "score": 58.74,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6986,8 +6936,8 @@
         "origin_section": "supply",
         "source_query": "풋고추 농가",
         "source_channel": "naver_api",
-        "selection_stage": "pest_theme_diversity_replacement",
-        "selection_note": "replace_duplicate_fire_blight_tail",
+        "selection_stage": "pest_generic_notice_replacement",
+        "selection_note": "replace_generic_pest_notice",
         "reassigned_from": "pest",
         "score": 15.62,
         "selection_fit_score": 3.29,
@@ -7261,9 +7211,9 @@
         "origin_section": "pest",
         "source_query": "과수화상병 붉은 죽음 농가 시름",
         "source_channel": "editorial_recall",
-        "selection_stage": "underfill",
-        "selection_note": "",
-        "reassigned_from": "",
+        "selection_stage": "pest_fire_blight_field_report_tail",
+        "selection_note": "fire_blight_field_report",
+        "reassigned_from": "pest",
         "score": 60.4,
         "selection_fit_score": 4.69,
         "is_core": false
@@ -7897,7 +7847,7 @@
         "pub_dt_kst": "2026-05-27T07:02:00+09:00",
         "section": "pest",
         "title": "'밭'의 한계 넘은 의성마늘… 식품 산업으로 진화",
-        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 19:52 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
+        "description": "[천지일보 의성=송해인 기자] “예전에는 마늘만 잘 키우면 됐지만 이제는 그걸로는 안 됩니다. 가공도 해야 하고 브랜드도 만들어야 농민이 삽니다.”경북 의성군에서 30년 넘게 마늘농사를 짓고 있는 김혁진(62)씨의 말이다. 전국 대표 한지형 마늘 산지인 의성이 단순 생산 중심 구조를 2026-05-28 21:39 (목) 전체메뉴 기사검색 기사검색 또는 와 검색 닫기 기사검색 검색 닫기 --> 상세검색 창간 17 주년",
         "link": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "originallink": "https://www.newscj.com/news/articleView.html?idxno=3404063",
         "domain": "newscj.com",
@@ -8333,7 +8283,7 @@
           ],
           [
             "토마토 가격",
-            13
+            12
           ],
           [
             "양파 농가",
@@ -8652,7 +8602,7 @@
             "피망"
           ]
         },
-        "items_total": 235,
+        "items_total": 234,
         "seed_coverage": [
           {
             "seed": "양배추",
@@ -8877,15 +8827,15 @@
             4
           ],
           [
+            "농협 경제사업 활성화",
+            3
+          ],
+          [
             "도매시장 반입량",
             2
           ],
           [
             "농산물 유통 거점",
-            2
-          ],
-          [
-            "농협 경제사업 활성화",
             2
           ],
           [
@@ -8898,10 +8848,6 @@
           ],
           [
             "도매시장 운영 개선",
-            1
-          ],
-          [
-            "농산물 산지 유통",
             1
           ],
           [
@@ -8918,6 +8864,10 @@
           ],
           [
             "양파 경매",
+            1
+          ],
+          [
+            "양파 반입량",
             1
           ]
         ],
@@ -9012,7 +8962,7 @@
           {
             "seed": "현장",
             "rep": "현장",
-            "hits": 3,
+            "hits": 4,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "농협, 20개국 주한 외교관 초청…면세유·비료 '종합 지원' 노하우 전수"
@@ -9178,10 +9128,6 @@
         ],
         "google_hits_top": [
           [
-            "과수화상병 충북 농가 시름",
-            1
-          ],
-          [
             "과수화상병 붉은 죽음 농가 시름",
             1
           ]
@@ -9217,7 +9163,7 @@
             "과수화상병 충북 농가 시름",
             "사과 과수원 붉은 죽음"
           ],
-          "pest_google_news_added": 1,
+          "pest_google_news_added": 0,
           "pest_khan_search_queries": [
             "과수화상병",
             "붉은 죽음",
@@ -9233,12 +9179,12 @@
           ],
           "editorial_recall_added": 1
         },
-        "items_total": 38,
+        "items_total": 37,
         "seed_coverage": [
           {
             "seed": "병해충",
             "rep": "병해충",
-            "hits": 38,
+            "hits": 37,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "[현장]‘치료제 없어 걸리면 답도 없다’···사과 과수원 덮친 ‘붉은 죽음’에 충북 농가 시름"
@@ -9254,7 +9200,7 @@
           {
             "seed": "무",
             "rep": "무",
-            "hits": 18,
+            "hits": 17,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "[현장]‘치료제 없어 걸리면 답도 없다’···사과 과수원 덮친 ‘붉은 죽음’에 충북 농가 시름"
@@ -9534,21 +9480,21 @@
       },
       {
         "section": "policy",
-        "reason": "must_terms_fail_policy",
-        "press": "한국영농신문",
-        "domain": "youngnong.co.kr",
-        "title": "\"올해 양파 농사 풍작\"... 농식품부 , 식자재마트서 1+1 특판행사 돌입",
-        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59812",
-        "source_query": "농식품부 수급 점검",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "livestock_title_dominant",
         "press": "한국영농신문",
         "domain": "youngnong.co.kr",
         "title": "\"계란값 7월까지 강세\"... 농식품부 , 수급 안정·할인 지원 총력",
         "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59808",
+        "source_query": "농식품부 수급 점검",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "must_terms_fail_policy",
+        "press": "한국영농신문",
+        "domain": "youngnong.co.kr",
+        "title": "\"올해 양파 농사 풍작\"... 농식품부 , 식자재마트서 1+1 특판행사 돌입",
+        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59812",
         "source_query": "농식품부 수급 점검",
         "source_channel": "naver_api"
       },
@@ -10429,26 +10375,6 @@
         "domain": "pointdaily.co.kr",
         "title": "[출근길 포인트] 스벅 '탱크데이' 충격…ETF 500조 돌파·마트 새벽배송...",
         "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=306263",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "local_political_campaign_noise",
-        "press": "경기뉴스",
-        "domain": "kgnews.co.kr",
-        "title": "[6·3 이사람]정명근 후보캠프 “공장부지 의혹은 사실 왜곡…투기·특...",
-        "url": "https://www.kgnews.co.kr/news/article.html?no=897621",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "hardblock_entertainment",
-        "press": "중앙일보",
-        "domain": "joongang.co.kr",
-        "title": "[김승현의 시시각각] 스벅, 혐오의 사이렌 울리다",
-        "url": "https://www.joongang.co.kr/article/25431836",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -11614,21 +11540,21 @@
       },
       {
         "section": "supply",
-        "reason": "supply_policy_market_brief",
-        "press": "뉴시스",
-        "domain": "newsis.com",
-        "title": "양파·배추값 급락, 축산물 강세…\" 수급 관리·할인지원 강화\"",
-        "url": "https://www.newsis.com/view/NISX20260527_0003645720",
-        "source_query": "무 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "서울경제",
         "domain": "sedaily.com",
         "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
         "url": "https://www.sedaily.com/article/20048745",
+        "source_query": "무 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_policy_market_brief",
+        "press": "뉴시스",
+        "domain": "newsis.com",
+        "title": "양파·배추값 급락, 축산물 강세…\" 수급 관리·할인지원 강화\"",
+        "url": "https://www.newsis.com/view/NISX20260527_0003645720",
         "source_query": "무 수급",
         "source_channel": "naver_api"
       },
@@ -11704,21 +11630,21 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "서울경제",
-        "domain": "sedaily.com",
-        "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
-        "url": "https://www.sedaily.com/article/20048745",
-        "source_query": "배추 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "carrot_non_edible_context",
         "press": "뉴시스",
         "domain": "newsis.com",
         "title": "양파· 배추 값 급락, 축산물 강세…\"수급관리·할인지원 강화\"",
         "url": "https://www.newsis.com/view/NISX20260527_0003645720",
+        "source_query": "배추 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "서울경제",
+        "domain": "sedaily.com",
+        "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
+        "url": "https://www.sedaily.com/article/20048745",
         "source_query": "배추 가격",
         "source_channel": "naver_api"
       },
@@ -12134,21 +12060,21 @@
       },
       {
         "section": "supply",
-        "reason": "carrot_non_edible_context",
-        "press": "뉴시스",
-        "domain": "newsis.com",
-        "title": "양파· 배추 값 급락, 축산물 강세…\" 수급 관리·할인지원 강화\"",
-        "url": "https://www.newsis.com/view/NISX20260527_0003645720",
-        "source_query": "배추 수급 안정",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "서울경제",
         "domain": "sedaily.com",
         "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
         "url": "https://www.sedaily.com/article/20048745",
+        "source_query": "배추 수급 안정",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "carrot_non_edible_context",
+        "press": "뉴시스",
+        "domain": "newsis.com",
+        "title": "양파· 배추 값 급락, 축산물 강세…\" 수급 관리·할인지원 강화\"",
+        "url": "https://www.newsis.com/view/NISX20260527_0003645720",
         "source_query": "배추 수급 안정",
         "source_channel": "naver_api"
       },
@@ -12164,21 +12090,21 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "서울경제",
-        "domain": "sedaily.com",
-        "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
-        "url": "https://www.sedaily.com/article/20048745",
-        "source_query": "배추 가격 안정",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_policy_market_brief",
         "press": "뉴시스",
         "domain": "newsis.com",
         "title": "양파· 배추 값 급락, 축산물 강세…\"수급관리·할인지원 강화\"",
         "url": "https://www.newsis.com/view/NISX20260527_0003645720",
+        "source_query": "배추 가격 안정",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "서울경제",
+        "domain": "sedaily.com",
+        "title": "계란값 부담에 할인 더 키운다…한 판 1500원 지원",
+        "url": "https://www.sedaily.com/article/20048745",
         "source_query": "배추 가격 안정",
         "source_channel": "naver_api"
       },
@@ -12504,21 +12430,21 @@
       },
       {
         "section": "supply",
-        "reason": "potato_non_fresh_context",
-        "press": "starnewsk",
-        "domain": "starnewsk.com",
-        "title": "전지현, '군체'로 스크린 복귀 \"연상호 작품 참여 자체가 내 목표\" [K인터...",
-        "url": "http://www.starnewsk.com/news/articleView.html?idxno=55913",
-        "source_query": "감자 산업",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "hardblock_entertainment",
         "press": "starnewsk",
         "domain": "starnewsk.com",
         "title": "'군체' 전지현 \"韓의 샤를리즈 테론? 액션 연기 자신 있다\" [K인터뷰②]",
         "url": "http://www.starnewsk.com/news/articleView.html?idxno=55914",
+        "source_query": "감자 산업",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "potato_non_fresh_context",
+        "press": "starnewsk",
+        "domain": "starnewsk.com",
+        "title": "전지현, '군체'로 스크린 복귀 \"연상호 작품 참여 자체가 내 목표\" [K인터...",
+        "url": "http://www.starnewsk.com/news/articleView.html?idxno=55913",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
@@ -12855,26 +12781,6 @@
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
-        "press": "머니투데이",
-        "domain": "mt.co.kr",
-        "title": "중고차 '3자 사기' 당해 사기범에 돈 보냈다면…대법원 \"반환해야\"",
-        "url": "https://www.mt.co.kr/society/2026/05/27/2026052710403970204",
-        "source_query": "당근 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "carrot_non_edible_context",
-        "press": "연합뉴스",
-        "domain": "yna.co.kr",
-        "title": "중고사기에 차·돈 다잃은 차주…\"차라도 돌려달라\" 소송 결과는",
-        "url": "https://www.yna.co.kr/view/AKR20260526156900004?input=1195m",
-        "source_query": "당근 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "carrot_non_edible_context",
         "press": "뉴시스",
         "domain": "newsis.com",
         "title": "대법 \"중고차 사기로 매매대금 잃었어도 돈 반환해야 차 돌려받아\"",
@@ -12889,6 +12795,26 @@
         "domain": "news1.kr",
         "title": "\"4700만원 준다\" 속은 중고차 판매자…대법 \"차 받으려면 돈 반환\"",
         "url": "https://www.news1.kr/society/court-prosecution/6178676",
+        "source_query": "당근 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "carrot_non_edible_context",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "중고차 '3자 사기' 당해 사기범에 돈 보냈다면…대법원 \"반환해야\"",
+        "url": "https://www.mt.co.kr/society/2026/05/27/2026052710403970204",
+        "source_query": "당근 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "carrot_non_edible_context",
+        "press": "연합뉴스",
+        "domain": "yna.co.kr",
+        "title": "중고사기에 차·돈 다잃은 차주…\"차라도 돌려달라\" 소송 결과는",
+        "url": "https://www.yna.co.kr/view/AKR20260526156900004?input=1195m",
         "source_query": "당근 가격",
         "source_channel": "naver_api"
       },
@@ -14259,16 +14185,6 @@
         "domain": "eroun.net",
         "title": "의성군 ㈜한톨, 행안부 '2026년 모두애 마을기업' 선정…최대 1억 원 지...",
         "url": "https://www.eroun.net/news/articleView.html?idxno=81693",
-        "source_query": "마늘 농가",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "low_value_labor_help",
-        "press": "뉴스제주",
-        "domain": "newsjeju.net",
-        "title": "제주고산농협, 마늘 수확철 취약 농가 일손 보탰다",
-        "url": "https://www.newsjeju.net/news/articleView.html?idxno=421358",
         "source_query": "마늘 농가",
         "source_channel": "naver_api"
       },
@@ -16494,21 +16410,21 @@
       },
       {
         "section": "supply",
-        "reason": "must_terms_fail",
-        "press": "ttlnews",
-        "domain": "ttlnews.com",
-        "title": "\"거친 손으로 지킨 담양 농업, 이제는 행동할 사람\"… 농심(農心), 기호...",
-        "url": "http://www.ttlnews.com/news/articleView.html?idxno=3111352",
-        "source_query": "농자재 가격 농가",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "local_political_campaign_noise",
         "press": "브레이크뉴스",
         "domain": "breaknews.com",
         "title": "[6·3 지선] 한농연 담양군연합회, 조국혁신당 정철원 담양군수 후보 공...",
         "url": "http://www.breaknews.com/1209978",
+        "source_query": "농자재 가격 농가",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "must_terms_fail",
+        "press": "ttlnews",
+        "domain": "ttlnews.com",
+        "title": "\"거친 손으로 지킨 담양 농업, 이제는 행동할 사람\"… 농심(農心), 기호...",
+        "url": "http://www.ttlnews.com/news/articleView.html?idxno=3111352",
         "source_query": "농자재 가격 농가",
         "source_channel": "naver_api"
       },
@@ -16604,21 +16520,21 @@
       },
       {
         "section": "supply",
-        "reason": "opinion_or_editorial",
-        "press": "새전북신문",
-        "domain": "sjbnews.com",
-        "title": "[사설] 사료값 급등에 숨막힌 축산 농가 를 살려라",
-        "url": "https://sjbnews.com/news/news.php?number=879390",
-        "source_query": "농가 생산비 부담",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "must_terms_fail",
         "press": "새전북신문",
         "domain": "sjbnews.com",
         "title": "논 농업 '네 마리 토끼 잡는다', 스마트 이앙기 개발",
         "url": "https://sjbnews.com/news/news.php?number=879387",
+        "source_query": "농가 생산비 부담",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "opinion_or_editorial",
+        "press": "새전북신문",
+        "domain": "sjbnews.com",
+        "title": "[사설] 사료값 급등에 숨막힌 축산 농가 를 살려라",
+        "url": "https://sjbnews.com/news/news.php?number=879390",
         "source_query": "농가 생산비 부담",
         "source_channel": "naver_api"
       },
@@ -17089,16 +17005,6 @@
         "domain": "kbmaeil.com",
         "title": "유흥근 국민의힘 포항시의원 후보 “‘30년 행정 경험’ 녹여 돈 되는 농...",
         "url": "https://www.kbmaeil.com/article/20260527500612",
-        "source_query": "사과 재배",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "low_value_labor_help",
-        "press": "하이도민",
-        "domain": "hidomin.com",
-        "title": "영덕군 안전재난과, 농촌 일손돕기 봉사활동 전개",
-        "url": "https://www.hidomin.com/news/articleView.html?idxno=706972",
         "source_query": "사과 재배",
         "source_channel": "naver_api"
       },
@@ -18194,21 +18100,21 @@
       },
       {
         "section": "dist",
-        "reason": "fishery_title_only",
-        "press": "한국영농신문",
-        "domain": "youngnong.co.kr",
-        "title": "\"오프라인 도매 유통 한계\"…농어업위, 온라인 도매시장 혁신 논의 본격...",
-        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59846",
-        "source_query": "농산물 산지 유통",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_context_gate",
         "press": "한국영농신문",
         "domain": "youngnong.co.kr",
         "title": "\"사후 시장격리만으론 한계\"…KREI 농산물 가격안정제 정책토론회 개최",
         "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59845",
+        "source_query": "농산물 산지 유통",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "fishery_title_only",
+        "press": "한국영농신문",
+        "domain": "youngnong.co.kr",
+        "title": "\"오프라인 도매 유통 한계\"…농어업위, 온라인 도매시장 혁신 논의 본격...",
+        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=59846",
         "source_query": "농산물 산지 유통",
         "source_channel": "naver_api"
       },
@@ -19355,20 +19261,20 @@
       {
         "section": "pest",
         "reason": "pest_rice_only",
-        "press": "농수축산신문",
-        "domain": "aflnews.co.kr",
-        "title": "논산시, 벼 적기이앙 현장지도 강화…\"고품질 쌀 생산 첫걸음\"",
-        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=321376",
+        "press": "더팩트",
+        "domain": "news.tf.co.kr",
+        "title": "비료 29% 줄이고 수확량 10% 늘린다…농진청 '스마트 이앙기' 개발",
+        "url": "https://news.tf.co.kr/read/economy/2326748.htm",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
       {
         "section": "pest",
         "reason": "pest_rice_only",
-        "press": "더팩트",
-        "domain": "news.tf.co.kr",
-        "title": "비료 29% 줄이고 수확량 10% 늘린다…농진청 '스마트 이앙기' 개발",
-        "url": "https://news.tf.co.kr/read/economy/2326748.htm",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "논산시, 벼 적기이앙 현장지도 강화…\"고품질 쌀 생산 첫걸음\"",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=321376",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
@@ -19434,6 +19340,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_rice_only",
+        "press": "노컷뉴스",
+        "domain": "nocutnews.co.kr",
+        "title": "비용 절감에 노동력 완화…디지털 기반 '스마트 이앙기' 개발",
+        "url": "https://www.nocutnews.co.kr/news/6523352",
+        "source_query": "병해충 현장지도",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
         "reason": "pest_partial_mention",
         "press": "데일리안",
         "domain": "dailian.co.kr",
@@ -19445,20 +19361,10 @@
       {
         "section": "pest",
         "reason": "pest_rice_only",
-        "press": "노컷뉴스",
-        "domain": "nocutnews.co.kr",
-        "title": "비용 절감에 노동력 완화…디지털 기반 '스마트 이앙기' 개발",
-        "url": "https://www.nocutnews.co.kr/news/6523352",
-        "source_query": "병해충 현장지도",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
-        "reason": "pest_rice_only",
-        "press": "아시아경제",
-        "domain": "view.asiae.co.kr",
-        "title": "'비료·노동력·오염' 줄이고·'수확량' 늘린다…농진청, 스마트 이앙기...",
-        "url": "https://view.asiae.co.kr/article/2026052714351819462",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "비료 29% 덜 뿌렸는데 수확량 10% 늘었다…스마트 이앙기가 바꾸는 논농...",
+        "url": "https://www.etoday.co.kr/news/view/2588231",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
@@ -19475,10 +19381,10 @@
       {
         "section": "pest",
         "reason": "pest_rice_only",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "비료 29% 덜 뿌렸는데 수확량 10% 늘었다…스마트 이앙기가 바꾸는 논농...",
-        "url": "https://www.etoday.co.kr/news/view/2588231",
+        "press": "아시아경제",
+        "domain": "view.asiae.co.kr",
+        "title": "'비료·노동력·오염' 줄이고·'수확량' 늘린다…농진청, 스마트 이앙기...",
+        "url": "https://view.asiae.co.kr/article/2026052714351819462",
         "source_query": "병해충 현장지도",
         "source_channel": "naver_api"
       },
@@ -20569,6 +20475,16 @@
         "domain": "v.daum.net",
         "title": "“드론 SOS”[포토뉴스]",
         "url": "https://v.daum.net/v/20260527211316997?f=p",
+        "source_query": "사과 과수원 붉은 죽음",
+        "source_channel": "google_news"
+      },
+      {
+        "section": "pest",
+        "reason": "must_terms_fail",
+        "press": "DAUM",
+        "domain": "v.daum.net",
+        "title": "‘5·18 탱크데이’ 스타벅스, 한 주 만에 결제액 84억여원 날아갔다",
+        "url": "https://v.daum.net/v/bADY8kJ6hZ?f=p",
         "source_query": "사과 과수원 붉은 죽음",
         "source_channel": "google_news"
       }

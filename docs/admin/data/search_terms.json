@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T02:34:09+09:00",
+  "generated_at": "2026-06-08T00:44:13+09:00",
   "rows": [
     {
       "date": "2026-04-30",
@@ -41,6 +41,13 @@
       "query": "사과",
       "section_filter": "(not set)",
       "result_count": 46,
+      "count": 1
+    },
+    {
+      "date": "2026-06-05",
+      "query": "배추",
+      "section_filter": "(not set)",
+      "result_count": 80,
       "count": 1
     }
   ]

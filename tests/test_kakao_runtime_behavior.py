@@ -44,9 +44,11 @@ class _DummyLogger:
     def __init__(self):
         self.warning_count = 0
         self.error_count = 0
+        self.warnings = []
 
     def warning(self, *args, **kwargs):
         self.warning_count += 1
+        self.warnings.append(args)
 
     def error(self, *args, **kwargs):
         self.error_count += 1
@@ -94,6 +96,46 @@ class TestKakaoRuntimeBehavior(unittest.TestCase):
             main.KAKAO_REFRESH_TOKEN = old_refresh
             main.KAKAO_CLIENT_SECRET = old_secret
             main.http_session = old_http_session
+
+    def test_kakao_refresh_access_token_writes_renewed_refresh_token(self):
+        old_key = main.KAKAO_REST_API_KEY
+        old_refresh = main.KAKAO_REFRESH_TOKEN
+        old_secret = main.KAKAO_CLIENT_SECRET
+        old_out_file = main.KAKAO_REFRESH_TOKEN_OUT_FILE
+        old_http_session = main.http_session
+        old_log = main.log
+        logger = _DummyLogger()
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                out_path = Path(tmpdir) / "new-refresh-token.txt"
+                main.KAKAO_REST_API_KEY = "client"
+                main.KAKAO_REFRESH_TOKEN = "old-refresh"
+                main.KAKAO_CLIENT_SECRET = ""
+                main.KAKAO_REFRESH_TOKEN_OUT_FILE = str(out_path)
+                main.log = logger
+                session = _DummySession(
+                    [
+                        _DummyResponse(
+                            200,
+                            {
+                                "access_token": "access",
+                                "refresh_token": "new-refresh",
+                            },
+                        )
+                    ]
+                )
+                main.http_session = lambda: session
+
+                self.assertEqual(main.kakao_refresh_access_token(), "access")
+                self.assertEqual(out_path.read_text(encoding="utf-8").strip(), "new-refresh")
+                self.assertEqual(logger.warning_count, 1)
+        finally:
+            main.KAKAO_REST_API_KEY = old_key
+            main.KAKAO_REFRESH_TOKEN = old_refresh
+            main.KAKAO_CLIENT_SECRET = old_secret
+            main.KAKAO_REFRESH_TOKEN_OUT_FILE = old_out_file
+            main.http_session = old_http_session
+            main.log = old_log
 
     def test_log_kakao_fail_open_uses_warning_for_non_retryable_error(self):
         old_log = main.log
