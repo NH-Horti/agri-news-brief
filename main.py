@@ -981,6 +981,7 @@ KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY", "").strip()
 KAKAO_REFRESH_TOKEN = os.getenv("KAKAO_REFRESH_TOKEN", "").strip()
 KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "").strip()
 KAKAO_STATUS_FILE = os.getenv("KAKAO_STATUS_FILE", "").strip()
+KAKAO_REFRESH_TOKEN_OUT_FILE = os.getenv("KAKAO_REFRESH_TOKEN_OUT_FILE", "").strip()
 KAKAO_INCLUDE_LINK_IN_TEXT = os.getenv("KAKAO_INCLUDE_LINK_IN_TEXT", "false").strip().lower() in ("1", "true", "yes")
 KAKAO_FAIL_OPEN = os.getenv("KAKAO_FAIL_OPEN", "true").strip().lower() in ("1", "true", "yes", "y")
 MAINTENANCE_SEND_KAKAO = os.getenv("MAINTENANCE_SEND_KAKAO", "false").strip().lower() in ("1","true","yes","y")
@@ -33051,6 +33052,33 @@ def _kakao_send_status_for_exception(exc: Exception) -> str:
     return "failed"
 
 
+def _handle_kakao_refresh_token_renewal(payload: Any) -> None:
+    if not isinstance(payload, dict):
+        return
+    new_refresh_token = str(payload.get("refresh_token") or "").strip()
+    if not new_refresh_token or new_refresh_token == KAKAO_REFRESH_TOKEN:
+        return
+
+    path = (KAKAO_REFRESH_TOKEN_OUT_FILE or "").strip()
+    if path:
+        try:
+            parent = os.path.dirname(path)
+            if parent:
+                os.makedirs(parent, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(new_refresh_token + "\n")
+            try:
+                os.chmod(path, 0o600)
+            except Exception:
+                pass
+            log.warning("[KAKAO] Kakao returned a renewed refresh token; saved it to KAKAO_REFRESH_TOKEN_OUT_FILE. Update the KAKAO_REFRESH_TOKEN secret before the old token expires.")
+            return
+        except Exception as exc:
+            log.warning("[KAKAO] Kakao returned a renewed refresh token, but writing KAKAO_REFRESH_TOKEN_OUT_FILE failed: %s", exc)
+
+    log.warning("[KAKAO] Kakao returned a renewed refresh token. Update the KAKAO_REFRESH_TOKEN secret before the old token expires.")
+
+
 def kakao_refresh_access_token() -> str:
     if not KAKAO_REST_API_KEY or not KAKAO_REFRESH_TOKEN:
         raise RuntimeError("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN not set")
@@ -33070,6 +33098,7 @@ def kakao_refresh_access_token() -> str:
         _log_http_error("[KAKAO TOKEN ERROR]", r)
         r.raise_for_status()
     j = r.json()
+    _handle_kakao_refresh_token_renewal(j)
     return str(j["access_token"])
 
 def kakao_send_to_me(text: str, web_url: str) -> None:

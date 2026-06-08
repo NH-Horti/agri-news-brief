@@ -72,6 +72,7 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
+          KAKAO_REFRESH_TOKEN_OUT_FILE: ${{ runner.temp }}/kakao-refresh-token.txt
           KAKAO_FAIL_OPEN: 'true'
           GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
@@ -176,6 +177,20 @@ jobs:
 
           echo "actual=$actual" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve Kakao refresh token renewal
+        if: always()
+        id: kakao_refresh_token
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          renewed='false'
+          if [ -s "$RUNNER_TEMP/kakao-refresh-token.txt" ]; then
+            renewed='true'
+          fi
+
+          echo "renewed=$renewed" >> "$GITHUB_OUTPUT"
+
       - name: Publish summary
         if: always()
         shell: bash
@@ -187,6 +202,7 @@ jobs:
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- OpenAI model: gpt-5.4"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
+            echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
@@ -201,7 +217,12 @@ jobs:
         shell: bash
         run: |
           actual='${{ steps.kakao_status.outputs.actual }}'
+          renewed='${{ steps.kakao_refresh_token.outputs.renewed }}'
           if [ "$actual" != 'success' ]; then
             echo "::error::Kakao delivery did not complete successfully: $actual"
+            exit 1
+          fi
+          if [ "$renewed" = 'true' ]; then
+            echo "::error::Kakao returned a renewed refresh token. Reissue and update KAKAO_REFRESH_TOKEN with scripts/rotate-kakao-refresh-token.ps1 before the old secret expires."
             exit 1
           fi
