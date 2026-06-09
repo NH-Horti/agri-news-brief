@@ -1,25 +1,25 @@
 {
-  "report_date": "2026-06-09",
-  "generated_at_kst": "2026-06-09T06:23:25+09:00",
+  "report_date": "2026-06-10",
+  "generated_at_kst": "2026-06-10T06:25:19+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 100.0,
-    "commodity_board_quality": 100.0
+    "core_quality": 92.43,
+    "commodity_board_quality": 98.48
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.125,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0526,
+    "promotional_filler_rate": 0.0556,
+    "promotional_core_rate": 0.125,
+    "weak_core_editorial_rate": 0.125,
+    "pest_theme_duplicate_rate": 0.0556,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4211,
+    "editorial_quality_penalty": 2.8056,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8182,
     "commodity_primary_weak_rate": 0.0
   },
   "selection_guardrails": {
@@ -56,8 +56,17 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "충남 홍성 금마면서도 과수화상병 발생…위기단계 '심각'",
-      "href": "https://www.jbnews.com/news/articleView.html?idxno=1505574",
+      "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
+      "href": "https://www.nongmin.com/article/20260605500255",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
+      "href": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260609&SEQUENCE=0113",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -66,93 +75,130 @@
     }
   ],
   "editorial": {
-    "score": 95.0,
+    "score": 88.0,
     "target_score": 95.0,
-    "target_status": "target_met",
-    "section_count_score": 98.0,
+    "target_status": "needs_iteration",
+    "section_count_score": 96.0,
     "section_count_status": "soft_fallback",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 78.0,
-      "core_pick_quality": 76.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 79.0,
-      "noise_control": 77.0
+      "article_selection": 86.0,
+      "section_fit": 89.0,
+      "core_pick_quality": 87.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 84.0,
+      "noise_control": 88.0
     },
     "issues": [
       {
-        "type": "weak_core",
-        "severity": "high",
-        "section": "policy",
-        "title": "농식품부 , 특별성과에 파격 포상",
-        "reason": "부처 내부 포상 소식으로 정책 효용이 낮다.",
-        "suggested_action": "정책 코어를 비료지원·물가대응·수급대책으로 교체"
-      },
-      {
-        "type": "duplicate",
-        "severity": "high",
-        "section": "policy",
-        "title": "[관망경]칭찬은 공무원도 춤추게 한다",
-        "reason": "같은 포상 이슈의 해설성 중복이다.",
-        "suggested_action": "동일 주제 중복 제거하고 실질 정책 기사로 대체"
-      },
-      {
-        "type": "duplicate",
+        "type": "underfill",
         "severity": "medium",
         "section": "policy",
-        "title": "특별 성과 낸 공무원에 파격 보상…농식품부, 11명에 포상금 등 수여",
-        "reason": "포상 기사 3건 반복으로 지면 낭비다.",
-        "suggested_action": "포상 관련 1건 이하로 축소"
-      },
-      {
-        "type": "wrong_priority",
-        "severity": "medium",
-        "section": "dist",
-        "title": "30% 할인에 무료배송까지…곡성 멜론 특별전",
-        "reason": "지역 판촉행사로 유통 운영기사보다 우선순위가 낮다.",
-        "suggested_action": "도매시장·APC·현대화·온라인유통 운영 기사 우선"
-      },
-      {
-        "type": "wrong_priority",
-        "severity": "medium",
-        "section": "dist",
-        "title": "함양군·함양농협, 양파 수급 안정 위한 소비 촉진 총력",
-        "reason": "로컬 특판 성격이 강해 전국 유통면 핵심성과 약하다.",
-        "suggested_action": "수출·물류·도매시장 구조 기사로 대체"
+        "title": "정책 섹션 4건만 구성",
+        "reason": "원시 후보가 충분한데 5건 목표 미달.",
+        "suggested_action": "정책성 강한 비료보조·수급점검 기사 중 1건 추가."
       },
       {
         "type": "underfill",
         "severity": "medium",
+        "section": "dist",
+        "title": "유통 섹션 4건만 구성",
+        "reason": "후보 풀이 충분한데 soft fallback 사용.",
+        "suggested_action": "APC 온라인 판로·군급식 공급 등 운영 기사로 5건 채우기."
+      },
+      {
+        "type": "wrong_emphasis",
+        "severity": "high",
+        "section": "dist",
+        "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
+        "reason": "출하 개시·브랜드 성장 소개 중심으로 유통 운영성은 약함.",
+        "suggested_action": "공판장 운영, APC, 온라인 판로, 납품정산 이슈를 우선 배치."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
         "section": "supply",
-        "title": "공급 섹션 4건 편성",
-        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
-        "suggested_action": "마늘 가격 급락·양파 수급대책 등 추가 선별"
+        "title": "'산내 델라웨어' 첫 대만행…대전 포도 해외 식탁 오른다",
+        "reason": "320kg 지역 수출 홍보성 소식으로 공급 핵심성과 약함.",
+        "suggested_action": "공급 영향 큰 품목 수급·가격 기사로 교체."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "supply",
+        "title": "마늘 수확 기계화·'무멀칭 재배' 기술 고도화 나선다",
+        "reason": "기술 시범사업은 당일 수급 브리프의 우선순위가 낮음.",
+        "suggested_action": "가격·출하·작황 변화 기사 우선 선별."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "supply",
-        "title": "소비 부진에 '스펀지 마늘 '까지‥'한숨' 속 수확",
-        "reason": "현장성 강한 가격·작황 악재 기사인데 빠졌다.",
-        "suggested_action": "라디오형 참외 대체 기사 대신 편입 검토"
+        "section": "dist",
+        "title": "전남농협, NH싱씽몰 입점 설명회…온라인 판로 강화",
+        "reason": "유통 섹션에 더 맞는 온라인 판로 기사인데 미선정.",
+        "suggested_action": "지역 행사성 출하 기사 대신 채택 검토."
       },
       {
-        "type": "weak_selection",
+        "type": "duplication",
         "severity": "medium",
         "section": "pest",
-        "title": "[주간농사메모]노지고추 강풍·폭우 대비",
-        "reason": "병해충 특정보다 일반 영농메모에 가깝다.",
-        "suggested_action": "화상병 대응·집중예찰 기사로 교체"
+        "title": "충북 과수화상병 2건 동시 채택",
+        "reason": "충북 누적피해 기사와 첫 배 농장 감염 기사가 소재가 겹침.",
+        "suggested_action": "하나는 안동 예찰 또는 다른 작물 해충 리스크로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "무기질비료 가격보조 115억 투입 미선정",
+        "reason": "현장 비용 부담 완화의 직접 정책 기사인데 빠짐.",
+        "suggested_action": "일반적 할인지원 재탕 기사보다 우선 채택."
       }
     ]
   },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_noise_filter",
+      "editorial_duplicate_topic",
+      "editorial_missed_opportunity"
+    ],
+    "section_card_min_fit": {
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 95.0,
-    "target_status": "target_met",
-    "iteration_budget": 0,
+    "current_editorial_score": 88.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 95.0,
       "operational_score_min": 95.0,
@@ -161,13 +207,25 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 98.0,
+      "score": 96.0,
       "status": "soft_fallback",
       "sections": {
         "supply": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
           "raw_candidates": 168,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "policy": {
+          "actual": 4,
+          "expected": 5,
+          "raw_candidates": 104,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -176,34 +234,22 @@
           "fill_ratio": 0.8,
           "score": 92.0
         },
-        "policy": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 115,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        },
         "dist": {
-          "actual": 5,
+          "actual": 4,
           "expected": 5,
-          "raw_candidates": 37,
+          "raw_candidates": 81,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 1.0,
-          "score": 100.0
+          "core_count": 2,
+          "fill_ratio": 0.8,
+          "score": 92.0
         },
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 35,
+          "raw_candidates": 33,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -214,10 +260,12 @@
         }
       },
       "underfilled_sections": [
-        "supply"
+        "policy",
+        "dist"
       ],
       "soft_fallback_sections": [
-        "supply"
+        "policy",
+        "dist"
       ],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
@@ -228,18 +276,11 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "article_selection",
       "noise_control"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
