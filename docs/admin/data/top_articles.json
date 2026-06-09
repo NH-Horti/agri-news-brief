@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T02:29:42+09:00",
+  "generated_at": "2026-06-10T01:49:29+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -611,6 +611,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "47874baa1bb4",
+      "title": "기온 상승에 채소·축산물 '들썩'…여름철 수급안정 '가동'",
+      "report_date": "2026-06-09",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.newstomato.com",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-supply",
+      "source_url": "http://www.newstomato.com/ReadNews.aspx?no=1303365&inflow=N"
     },
     {
       "date": "2026-04-01",
@@ -1664,6 +1677,45 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "0a2c1d4e7981",
+      "title": "충남 홍성서도 화상병 첫 확진…전국 78 농가 36㏊ 육박",
+      "report_date": "2026-06-09",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "8eb5720f0583",
+      "title": "농식품부 \"대파·수박 가격 하락…계란은 7월 이후 수급 안정\"",
+      "report_date": "2026-06-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "b6a1f8c728ae",
+      "title": "농식품부 , 특별성과에 파격 포상",
+      "report_date": "2026-06-09",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.bokuennews.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-policy",
+      "source_url": "http://www.bokuennews.com/news/article.html?no=279361"
     },
     {
       "date": "2026-03-30",
@@ -6214,6 +6266,97 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-08.html#sec-dist",
       "source_url": "https://news.mtn.co.kr/news-detail/2026060514520270703"
+    },
+    {
+      "date": "2026-06-08",
+      "article_id": "f8080b5c630d",
+      "title": "정부, '공급과잉' 양파 수매비축 82% 확대[食세계]",
+      "report_date": "2026-06-08",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.edaily.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "47874baa1bb4",
+      "title": "기온 상승에 채소·축산물 '들썩'…여름철 수급안정 '가동'",
+      "report_date": "2026-06-09",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newstomato.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-supply",
+      "source_url": "http://www.newstomato.com/ReadNews.aspx?no=1303365&inflow=N"
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "489c28da6f16",
+      "title": "함양군·함양농협, 양파 수급 안정 위한 소비 촉진 총력",
+      "report_date": "2026-06-09",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.gndomin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-dist",
+      "source_url": "http://www.gndomin.com/news/articleView.html?idxno=477964"
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "8eb5720f0583",
+      "title": "농식품부 \"대파·수박 가격 하락…계란은 7월 이후 수급 안정\"",
+      "report_date": "2026-06-09",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "b6a1f8c728ae",
+      "title": "농식품부 , 특별성과에 파격 포상",
+      "report_date": "2026-06-09",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.bokuennews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-policy",
+      "source_url": "http://www.bokuennews.com/news/article.html?no=279361"
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "c16558c84fc6",
+      "title": "'상추값'은 내렸는데 점심값은 폭등...'비용인상 늪'에 빠진 유통·외식...",
+      "report_date": "2026-06-09",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.asiaa.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-09",
+      "article_id": "e42180fcac10",
+      "title": "배민 B마트, 산지 직송·즉시배송 결합에 농축산물 매출 53% 급증",
+      "report_date": "2026-06-09",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.klnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-09.html#sec-dist",
+      "source_url": "https://www.klnews.co.kr/news/articleView.html?idxno=321398"
     }
   ]
 }
