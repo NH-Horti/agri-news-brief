@@ -1,26 +1,26 @@
 {
-  "report_date": "2026-06-10",
-  "generated_at_kst": "2026-06-10T06:25:19+09:00",
-  "status": "pass",
-  "overall_score": 88.0,
+  "report_date": "2026-06-11",
+  "generated_at_kst": "2026-06-11T06:23:28+09:00",
+  "status": "warn",
+  "overall_score": 81.0,
   "scores": {
-    "completeness": 92.8,
-    "diversity": 100.0,
+    "completeness": 100.0,
+    "diversity": 90.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 87.5,
+    "retrieval_support": 86.87,
     "section_alignment": 100.0,
-    "core_quality": 92.43,
-    "commodity_board_quality": 98.48
+    "core_quality": 96.92,
+    "commodity_board_quality": 91.25
   },
   "counts": {
-    "briefing_total": 18,
-    "commodity_total": 39,
-    "commodity_primary_total": 11,
+    "briefing_total": 20,
+    "commodity_total": 30,
+    "commodity_primary_total": 14,
     "briefing_by_section": {
       "supply": 5,
-      "policy": 4,
-      "dist": 4,
+      "policy": 5,
+      "dist": 5,
       "pest": 5
     },
     "core_by_section": {
@@ -30,16 +30,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 22,
-      "policy": 3,
-      "dist": 12,
-      "pest": 2
+      "supply": 17,
+      "policy": 4,
+      "dist": 8,
+      "pest": 1
     },
     "raw_by_section": {
-      "supply": 168,
-      "policy": 104,
-      "dist": 81,
-      "pest": 33
+      "supply": 141,
+      "policy": 105,
+      "dist": 40,
+      "pest": 41
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -61,26 +61,26 @@
     },
     "preferred_slot_gap_by_section": {
       "supply": 0,
-      "policy": 1,
-      "dist": 1,
+      "policy": 0,
+      "dist": 0,
       "pest": 0
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7222,
-    "surface_reuse_penalty": 0.0175,
+    "briefing_domain_diversity_rate": 0.6,
+    "surface_reuse_penalty": 0.02,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.8333,
+    "summary_numeric_rate": 0.9,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.5833,
-    "section_alignment_fit_avg": 4.46,
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 4.201,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -92,30 +92,30 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0556,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
-    "pest_theme_duplicate_rate": 0.0556,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.8056,
-    "preferred_slot_gap_rate": 0.1,
-    "preferred_slot_gap_total": 2,
-    "preferred_slot_penalty": 2.2,
-    "core_fit_avg": 5.6825,
-    "core_rank_percentile_avg": 0.8465,
+    "editorial_quality_penalty": 0.4,
+    "preferred_slot_gap_rate": 0.0,
+    "preferred_slot_gap_total": 0,
+    "preferred_slot_penalty": 0.0,
+    "core_fit_avg": 5.1125,
+    "core_rank_percentile_avg": 0.8569,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.125,
-    "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.8182,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 0.9286,
+    "commodity_primary_issue_signal_rate": 0.9286,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.6391,
-    "commodity_primary_rank_avg": 3.0909
+    "commodity_primary_fit_avg": 2.6579,
+    "commodity_primary_rank_avg": 2.7143
   },
   "section_scores": {
     "briefing_fill": {
       "supply": 1.0,
-      "policy": 0.8,
-      "dist": 0.8,
+      "policy": 1.0,
+      "dist": 1.0,
       "pest": 1.0
     },
     "core_fill": {
@@ -132,9 +132,9 @@
     },
     "seed_coverage": {
       "supply": 0.6667,
-      "policy": 0.6667,
-      "dist": 0.5833,
-      "pest": 0.4167
+      "policy": 0.5833,
+      "dist": 0.5,
+      "pest": 0.5
     },
     "section_alignment": {
       "supply": 1.0,
@@ -143,69 +143,60 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 1.0,
-      "policy": 0.6104,
+      "supply": 0.9676,
+      "policy": 0.915,
       "dist": 1.0,
-      "pest": 0.9091
+      "pest": 0.9408
     }
   },
   "freshness_samples": [
     {
-      "title": "마늘 수확 기계화·'무멀칭 재배 ' 기술 고도화 나선다",
+      "title": "‘풍년의 역설’… 양파 공급 과잉에 결국 산지 폐기",
       "section": "supply",
-      "age_hours": 23.5
+      "age_hours": 22.4
     },
     {
-      "title": "중국 햇 양파 에 밀리는 국산 저장 양파 ...“우수품종 보급·저장기술 고도...",
-      "section": "policy",
-      "age_hours": 23.0
-    },
-    {
-      "title": "정부, 6월 농축산물 할인지원 강화",
-      "section": "policy",
+      "title": "\"경험 대신 데이터로\"…경기도 시설 가지 의 '스마트한 변신'",
+      "section": "supply",
       "age_hours": 20.1
     },
     {
-      "title": "[전재은 장보기] 양파·대파 가격 안정세…정부, 폭염 앞두고 배추·무 ...",
-      "section": "supply",
+      "title": "돌발해충 ‘갈색날개매미충’ 감소",
+      "section": "pest",
       "age_hours": 19.9
     },
     {
-      "title": "충북 과수화상병 4곳 확진…누적 피해 37 농가·15.88㏊",
-      "section": "pest",
-      "age_hours": 19.5
+      "title": "6월 과일류 농업관측",
+      "section": "supply",
+      "age_hours": 19.4
     },
     {
-      "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
-      "section": "dist",
-      "age_hours": 18.7
-    },
-    {
-      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
-      "section": "pest",
-      "age_hours": 18.0
-    },
-    {
-      "title": "홈플러스 미수금 사태 확산⋯경북 농산물 납품 협력업체들 \"전수조사·...",
+      "title": "주요 채소류 수급 조절 및 농가 경영 안정화 총력",
       "section": "policy",
-      "age_hours": 15.7
+      "age_hours": 19.4
+    },
+    {
+      "title": "품목농협 , 고품질 농산물 유통 새로운 표준 세운다",
+      "section": "dist",
+      "age_hours": 19.4
+    },
+    {
+      "title": "농협, 양파 해외 수출로 돌파구 마련",
+      "section": "dist",
+      "age_hours": 19.4
+    },
+    {
+      "title": "조래섭(전주원예농협 조합원) - 고온 다습 장마철 대비, 병해충 예방에...",
+      "section": "dist",
+      "age_hours": 19.4
     }
   ],
   "content_false_positive_samples": [],
   "story_duplicate_samples": [],
   "editorial_quality_samples": [
     {
-      "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
-      "href": "https://www.nongmin.com/article/20260605500255",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
-      "href": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260609&SEQUENCE=0113",
+      "title": "농진청 \" 과수화상병 확산 막아라\"…전국 농촌진흥기관 긴급 점검",
+      "href": "https://www.newsis.com/view/NISX20260610_0003663874",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -214,9 +205,7 @@
     }
   ],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
-    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1), dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -255,7 +244,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 91.95,
+  "operational_score": 96.1,
   "score_notes": {
     "overall_score": "Editorial-gated headline score. The deterministic operational score is preserved as operational_score, but the headline score is capped when the editorial shadow judge is below the target.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
@@ -264,110 +253,110 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-06-10T06:25:37+09:00",
-    "score": 88.0,
+    "generated_at_kst": "2026-06-11T06:23:52+09:00",
+    "score": 81.0,
     "target_score": 95.0,
-    "target_status": "needs_iteration",
+    "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 86.0,
-      "section_fit": 89.0,
-      "core_pick_quality": 87.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 84.0,
-      "noise_control": 88.0
+      "article_selection": 78.0,
+      "section_fit": 76.0,
+      "core_pick_quality": 79.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 74.0,
+      "noise_control": 72.0
     },
-    "summary": "전반적으로 핵심 이슈는 잡았지만, 고득점감은 아니다. 공급·병해충은 비교적 탄탄하나, 정책·유통에서 5장 목표를 채우지 못했고 남은 자리도 더 나은 후보 대신 행사성·로컬성 기사로 메운 흔적이 있다. 특히 유통 섹션은 운영·물류·시장 기능 기사보다 지역 출하/개장 기사 비중이 높아 섹션 정체성이 약해졌다. 병해충은 화상병 축을 잘 잡았지만 충북 화상병 중복도가 높다. 요약은 대체로 유용하다.",
+    "summary": "섹션 수는 모두 채웠지만 편집 품질은 목표치에 못 미친다. 공급은 여름배추·양파는 적절했으나 가지 스마트재배를 1순위 코어로 세운 판단이 약하고, 더 강한 스마트APC/유통데이터 기사나 양파 가격회복 대책을 놓쳤다. 정책은 전국 수급점검 같은 상위 후보를 빼고 지역 협의회·복지 꾸러미·비농업 칼럼까지 넣어 가장 흔들렸다. 유통은 핵심 2건은 좋지만 후반 3건 중 복숭아 재배 현장 기사와 수상 기사성 아이템은 섹션 오배치에 가깝다. 병해충은 화상병 축을 잡았지만 실제 확산 수치가 큰 충북·홍성 발생 기사보다 모의훈련·중복 성격 점검 회의를 우선한 점이 아쉽다. 요약문 자체는 대체로 무난하나, 기사 선택의 정확성에서 감점이 크다.",
     "issues": [
       {
-        "type": "underfill",
-        "severity": "medium",
+        "type": "wrong_section",
+        "severity": "high",
         "section": "policy",
-        "title": "정책 섹션 4건만 구성",
-        "reason": "원시 후보가 충분한데 5건 목표 미달.",
-        "suggested_action": "정책성 강한 비료보조·수급점검 기사 중 1건 추가."
+        "title": "[장용동의 우리들의 주거복지] 주택시장을 보는 대통령과 시장 간의 괴...",
+        "reason": "농업 정책과 무관한 주택 칼럼이다.",
+        "suggested_action": "즉시 제외하고 농식품부 수급점검 기사로 교체."
       },
       {
-        "type": "underfill",
+        "type": "filler",
+        "severity": "high",
+        "section": "policy",
+        "title": "춘천시, 기초생활 수급 노인에 농산물꾸러미 지원",
+        "reason": "지역 복지성 지원으로 정책 핵심성이 약하다.",
+        "suggested_action": "전국 수급·가격대응 기사로 대체."
+      },
+      {
+        "type": "weak_core",
         "severity": "medium",
-        "section": "dist",
-        "title": "유통 섹션 4건만 구성",
-        "reason": "후보 풀이 충분한데 soft fallback 사용.",
-        "suggested_action": "APC 온라인 판로·군급식 공급 등 운영 기사로 5건 채우기."
+        "section": "supply",
+        "title": "\"경험 대신 데이터로\"…경기도 시설 가지 의 '스마트한 변신'",
+        "reason": "현장기술 소개는 의미 있으나 당일 전국 수급 이슈 대비 코어 우선순위가 낮다.",
+        "suggested_action": "2~3순위 이하로 내리거나 더 큰 수급 기사로 교체."
       },
       {
-        "type": "wrong_emphasis",
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "supply",
+        "title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다",
+        "reason": "당일성·산업 파급력이 큰 강한 후보를 공급/유통 어디서든 더 비중 있게 쓸 수 있었다.",
+        "suggested_action": "핵심 카드로 반영하고 약한 현장 소개 기사 축소."
+      },
+      {
+        "type": "wrong_section",
         "severity": "high",
         "section": "dist",
-        "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
-        "reason": "출하 개시·브랜드 성장 소개 중심으로 유통 운영성은 약함.",
-        "suggested_action": "공판장 운영, APC, 온라인 판로, 납품정산 이슈를 우선 배치."
+        "title": "조래섭(전주원예농협 조합원) - 고온 다습 장마철 대비, 병해충 예방에...",
+        "reason": "재배·병해충 현장기사로 유통 기사라고 보기 어렵다.",
+        "suggested_action": "공판장·물류비용·APC·수출기술 기사로 교체."
       },
       {
-        "type": "promotional_filler",
+        "type": "filler",
         "severity": "medium",
-        "section": "supply",
-        "title": "'산내 델라웨어' 첫 대만행…대전 포도 해외 식탁 오른다",
-        "reason": "320kg 지역 수출 홍보성 소식으로 공급 핵심성과 약함.",
-        "suggested_action": "공급 영향 큰 품목 수급·가격 기사로 교체."
-      },
-      {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "supply",
-        "title": "마늘 수확 기계화·'무멀칭 재배' 기술 고도화 나선다",
-        "reason": "기술 시범사업은 당일 수급 브리프의 우선순위가 낮음.",
-        "suggested_action": "가격·출하·작황 변화 기사 우선 선별."
+        "section": "dist",
+        "title": "봉화군, 경북 농식품 수출정책 평가 우수상 수상…해외시장 개척 성과 ...",
+        "reason": "수상 보도는 운영·물류 정보가 약한 홍보성 기사다.",
+        "suggested_action": "CA 수출·품질관리 프로그램 등 실무형 기사로 대체."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "dist",
-        "title": "전남농협, NH싱씽몰 입점 설명회…온라인 판로 강화",
-        "reason": "유통 섹션에 더 맞는 온라인 판로 기사인데 미선정.",
-        "suggested_action": "지역 행사성 출하 기사 대신 채택 검토."
+        "section": "pest",
+        "title": "청송군, 과수화상병 발생 대비 모의훈련 실시",
+        "reason": "모의훈련보다 충북 40곳 확산·홍성 신규 발생이 더 뉴스 가치가 크다.",
+        "suggested_action": "실제 발생·확산 기사 우선, 훈련은 후순위 배치."
       },
       {
         "type": "duplication",
         "severity": "medium",
         "section": "pest",
-        "title": "충북 과수화상병 2건 동시 채택",
-        "reason": "충북 누적피해 기사와 첫 배 농장 감염 기사가 소재가 겹침.",
-        "suggested_action": "하나는 안동 예찰 또는 다른 작물 해충 리스크로 대체."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "policy",
-        "title": "무기질비료 가격보조 115억 투입 미선정",
-        "reason": "현장 비용 부담 완화의 직접 정책 기사인데 빠짐.",
-        "suggested_action": "일반적 할인지원 재탕 기사보다 우선 채택."
+        "title": "농진청, 전국 농업기술원장과 현안 점검 회의 / 농진청 \"과수화상병 확산 막아라\"…전국 농촌진흥기관 긴급 점검",
+        "reason": "사실상 같은 회의 기반 기사로 중복감이 있다.",
+        "suggested_action": "둘 중 하나만 쓰고 다른 병해충 리스크로 다양화."
       }
     ],
     "section_notes": {
-      "supply": "감자 약세 출발, 양파 과잉은 좋았지만 포도 수출·마늘 기술은 비핵심 꼬리로 약하다. 후보 풀이 넓은 만큼 더 강한 품목 수급 기사로 정제 가능했다.",
-      "policy": "안정생산·공급지원사업 재설계는 좋은 코어다. 다만 4건 구성에 그쳤고 할인지원 반복보다 비료보조나 양파 구조대책처럼 정책 직접성이 강한 기사를 더 썼어야 한다.",
-      "dist": "섹션 품질이 가장 아쉽다. 공판장 개장은 무난하지만 수박 출하와 양파 특판은 판촉성에 가깝다. APC 입점, 군급식 공급, 홈플러스 정산 같은 운영 이슈 비중을 더 높여야 한다.",
-      "pest": "과수화상병 확산과 심각 단계는 핵심 축으로 적절하다. 다만 충북 화상병 중복이 있고, 다양성 확보용 꼬리도 미생물 제품화보다 현장 방제·예찰 기사 쪽이 더 적합하다."
+      "supply": "여름배추 안정생산과 양파 과잉은 적절했다. 다만 가지 스마트재배를 톱 코어로 둔 판단은 약했고, 공급 섹션에서도 스마트APC·양파 가격회복 대책 같은 더 큰 산업 이슈를 반영할 여지가 컸다.",
+      "policy": "가장 약한 섹션. 양파 가격 역전 토론회는 쓸 만하지만, 전국 여름철 수급·할인지원 기사보다 지역 협의회·복지꾸러미·비관련 주택 칼럼을 넣은 것은 명백한 편집 미스다.",
+      "dist": "전남서남부채소농협 온라인 유통, 함양 양파 수출은 적절한 핵심 픽이다. 그러나 후반부는 출하 홍보·재배 현장·수상 기사로 흐려졌고, 도매시장 비용 구조나 CA 수출 프로그램 같은 더 정합적인 후보를 놓쳤다.",
+      "pest": "화상병 중심 축 설정은 맞다. 하지만 실제 확산 기사보다 모의훈련과 회의 기사 비중이 높고, 회의 기사 중복도 있다. 충북 집중 확산·홍성 신규 발생 같은 실전 리스크를 더 앞세웠어야 한다."
     },
     "improvement_suggestions": [
-      "정책·유통은 raw pool이 충분하면 5건을 기본값으로 채워 soft fallback 의존을 줄이기.",
-      "유통은 출하·축제형 지역 기사보다 APC, 공판장 운영, 온라인몰, 정산지연, 군급식 공급 같은 운영 기사 우선.",
-      "공급 섹션의 로컬 수출 홍보성 소식은 핵심 수급·가격 기사 뒤의 최후 보충재로만 사용.",
-      "병해충은 화상병 한 지역 중복을 줄이고 확산 지역·작목을 넓혀 구성하기.",
-      "정책 섹션에는 현장 비용·제도 변화가 큰 비료보조, 수급제도 재설계 같은 직접 정책 기사를 우선 배치.",
-      "같은 양파 이슈라도 공급·정책·유통의 역할을 분리해 중복 체감이 나지 않게 편집하기."
+      "정책 섹션은 농업 무관 기사와 지역 복지성 소식을 원칙적으로 배제하라.",
+      "공급 톱카드는 전국 수급 충격·가격·생산전망 기사 우선으로 세워라.",
+      "유통 섹션에서는 재배기사·수상기사 대신 공판장, 물류비, APC, 수출운영 기사를 우선 선발하라.",
+      "병해충 섹션은 화상병 실제 발생·확산 수치 기사부터 채우고 훈련·회의는 후순위로 둬라.",
+      "같은 회의나 보도자료를 재가공한 중복 기사는 한 건만 남겨 다양성을 확보하라.",
+      "원예산업신문 단일 출처 의존이 강하므로 타 매체의 강한 전국 이슈 기사도 적극 섞어라."
     ],
-    "raw_response_excerpt": "{\"score\":88,\"scores\":{\"article_selection\":86,\"section_fit\":89,\"core_pick_quality\":87,\"summary_usefulness\":92,\"missed_opportunity\":84,\"noise_control\":88},\"summary\":\"전반적으로 핵심 이슈는 잡았지만, 고득점감은 아니다. 공급·병해충은 비교적 탄탄하나, 정책·유통에서 5장 목표를 채우지 못했고 남은 자리도 더 나은 후보 대신 행사성·로컬성 기사로 메운 흔적이 있다. 특히 유통 섹션은 운영·물류·시장 기능 기사보다 지역 출하/개장 기사 비중이 높아 섹션 정체성이 약해졌다. 병해충은 화상병 축을 잘 잡았지만 충북 화상병 중복도가 높다. 요약은 대체로 유용하다.\",\"issues\":[{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"정책 섹션 4건만 구성\",\"reason\":\"원시 후보가 충분한데 5건 목표 미달.\",\"suggested_action\":\"정책성 강한 비료보조·수급점검 기사 중 1건 추가.\"},{\"type\":\"underfill\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"유통 섹션 4건만 구성\",\"reason\":\"후보 풀이 충분한데 soft fallback 사용.\",\"suggested_action\":\"APC 온라인 판로·군급식 공급 등 운영 기사로 5건 채우기.\"},{\"type\":\"wrong_emphasis\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세\",\"reason\":\"출하 개시·브랜드 성장 소개 중심으로 유통 운영성은 약함.\",\"suggested_action\":\"공판장 운영, APC, 온라인 판로, 납품정산 이슈를 우선 배치.\"},{\"type\":\"promotional_filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"'산내 델라웨어' 첫 대만행…대전 포도 해외 식탁 오른다\",\"reason\":\"320kg 지역 수출 홍보성 소식으로 공급 핵심성과 약함.\",\"suggested_action\":\"공급 영향 큰 품목 수급·가격 기사로 교체.\"},{\"type\":\"weak_tail\",\"severity\":\"medium\",\"section\":\"suppl...",
-    "section_count_score": 96.0,
-    "section_count_status": "soft_fallback",
+    "raw_response_excerpt": "{\"score\":81,\"scores\":{\"article_selection\":78,\"section_fit\":76,\"core_pick_quality\":79,\"summary_usefulness\":88,\"missed_opportunity\":74,\"noise_control\":72},\"summary\":\"섹션 수는 모두 채웠지만 편집 품질은 목표치에 못 미친다. 공급은 여름배추·양파는 적절했으나 가지 스마트재배를 1순위 코어로 세운 판단이 약하고, 더 강한 스마트APC/유통데이터 기사나 양파 가격회복 대책을 놓쳤다. 정책은 전국 수급점검 같은 상위 후보를 빼고 지역 협의회·복지 꾸러미·비농업 칼럼까지 넣어 가장 흔들렸다. 유통은 핵심 2건은 좋지만 후반 3건 중 복숭아 재배 현장 기사와 수상 기사성 아이템은 섹션 오배치에 가깝다. 병해충은 화상병 축을 잡았지만 실제 확산 수치가 큰 충북·홍성 발생 기사보다 모의훈련·중복 성격 점검 회의를 우선한 점이 아쉽다. 요약문 자체는 대체로 무난하나, 기사 선택의 정확성에서 감점이 크다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"[장용동의 우리들의 주거복지] 주택시장을 보는 대통령과 시장 간의 괴...\",\"reason\":\"농업 정책과 무관한 주택 칼럼이다.\",\"suggested_action\":\"즉시 제외하고 농식품부 수급점검 기사로 교체.\"},{\"type\":\"filler\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"춘천시, 기초생활 수급 노인에 농산물꾸러미 지원\",\"reason\":\"지역 복지성 지원으로 정책 핵심성이 약하다.\",\"suggested_action\":\"전국 수급·가격대응 기사로 대체.\"},{\"type\":\"weak_core\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"\\\"경험 대신 데이터로\\\"…경기도 시설 가지 의 '스마트한 변신'\",\"reason\":\"현장기술 소개는 의미 있으나 당일 전국 수급 이슈 대비 코어 우선순위가 낮다.\",\"suggested_action\":\"2~3순위 이하로 내리거나 더 큰 수급 기사로 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"스마트 APC 성패여부, AI 기반 '...",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
     "section_count_context": {
-      "score": 96.0,
-      "status": "soft_fallback",
+      "score": 100.0,
+      "status": "target_met",
       "sections": {
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 168,
+          "raw_candidates": 141,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -377,33 +366,33 @@
           "score": 100.0
         },
         "policy": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 104,
+          "raw_candidates": 105,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "dist": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 81,
+          "raw_candidates": 40,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 33,
+          "raw_candidates": 41,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -413,14 +402,8 @@
           "score": 100.0
         }
       },
-      "underfilled_sections": [
-        "policy",
-        "dist"
-      ],
-      "soft_fallback_sections": [
-        "policy",
-        "dist"
-      ],
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
       "preferred_count": 5,
@@ -430,13 +413,13 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     }
   },
-  "editorial_score": 88.0,
+  "editorial_score": 81.0,
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 88.0,
-    "target_status": "needs_iteration",
+    "current_editorial_score": 81.0,
+    "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 95.0,
@@ -446,13 +429,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 96.0,
-      "status": "soft_fallback",
+      "score": 100.0,
+      "status": "target_met",
       "sections": {
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 168,
+          "raw_candidates": 141,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -462,33 +445,33 @@
           "score": 100.0
         },
         "policy": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 104,
+          "raw_candidates": 105,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "dist": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 81,
+          "raw_candidates": 40,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 33,
+          "raw_candidates": 41,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -498,14 +481,8 @@
           "score": 100.0
         }
       },
-      "underfilled_sections": [
-        "policy",
-        "dist"
-      ],
-      "soft_fallback_sections": [
-        "policy",
-        "dist"
-      ],
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
       "preferred_count": 5,
@@ -515,11 +492,18 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "article_selection",
-      "noise_control"
+      "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -533,10 +517,10 @@
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
         "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
+        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
@@ -574,11 +558,11 @@
     "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
   },
   "quality_gate": {
-    "status": "needs_iteration",
+    "status": "needs_major_iteration",
     "target_score": 95.0,
-    "operational_score": 91.95,
-    "editorial_score": 88.0,
-    "headline_score": 88.0,
+    "operational_score": 96.1,
+    "editorial_score": 81.0,
+    "headline_score": 81.0,
     "reason": "editorial_below_target"
   }
 }
