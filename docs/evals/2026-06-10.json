@@ -1,22 +1,22 @@
 {
   "report_date": "2026-06-10",
-  "generated_at_kst": "2026-06-11T12:22:51+09:00",
-  "status": "pass",
-  "overall_score": 88.74,
+  "generated_at_kst": "2026-06-11T14:24:35+09:00",
+  "status": "warn",
+  "overall_score": 82.68,
   "scores": {
     "completeness": 92.8,
     "diversity": 96.67,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 87.5,
-    "section_alignment": 100.0,
+    "section_alignment": 87.41,
     "core_quality": 92.97,
-    "commodity_board_quality": 45.64
+    "commodity_board_quality": 88.0
   },
   "counts": {
     "briefing_total": 18,
-    "commodity_total": 44,
-    "commodity_primary_total": 12,
+    "commodity_total": 29,
+    "commodity_primary_total": 7,
     "briefing_by_section": {
       "supply": 5,
       "policy": 4,
@@ -30,10 +30,10 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 26,
-      "policy": 3,
-      "dist": 13,
-      "pest": 2
+      "supply": 20,
+      "policy": 1,
+      "dist": 8,
+      "pest": 0
     },
     "raw_by_section": {
       "supply": 168,
@@ -69,10 +69,10 @@
   "metrics": {
     "briefing_title_unique_rate": 1.0,
     "briefing_domain_diversity_rate": 0.6667,
-    "surface_reuse_penalty": 0.0161,
+    "surface_reuse_penalty": 0.0213,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.7222,
+    "summary_numeric_rate": 0.7778,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -80,16 +80,16 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5833,
-    "section_alignment_fit_avg": 4.4822,
+    "section_alignment_fit_avg": 4.5217,
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0556,
     "section_alignment_weak_stage_rate": 0.0,
-    "content_false_positive_rate": 0.0,
-    "off_scope_foreign_rate": 0.0,
+    "content_false_positive_rate": 0.0556,
+    "off_scope_foreign_rate": 0.0556,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
-    "content_irrelevant_rate": 0.0,
-    "semantic_false_positive_penalty": 0.0,
+    "content_irrelevant_rate": 0.0556,
+    "semantic_false_positive_penalty": 6.6667,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0556,
@@ -106,16 +106,20 @@
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.125,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9167,
+    "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.7283,
-    "commodity_primary_rank_avg": 3.25,
-    "commodity_primary_title_item_focus_rate": 0.6667,
-    "commodity_primary_title_issue_signal_rate": 0.5833,
-    "commodity_primary_strict_link_rate": 0.5,
-    "commodity_primary_low_rank_rate": 0.0833,
-    "commodity_primary_dominant_section_rate": 0.5833,
-    "commodity_primary_section_balance_score": 0.631
+    "commodity_primary_fit_avg": 3.8786,
+    "commodity_primary_rank_avg": 3.4286,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_board_coverage_rate": 0.2121,
+    "commodity_primary_title_item_missing_rate": 0.0,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.8571,
+    "commodity_primary_section_balance_score": 0.0
   },
   "section_scores": {
     "briefing_fill": {
@@ -187,78 +191,26 @@
       "age_hours": 18.7
     },
     {
-      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
-      "section": "pest",
+      "title": "[AI로 읽는 경제] ⑪ 규격이 가격을 가른다…같은 밭에서 나온 농산물은...",
+      "section": "supply",
       "age_hours": 18.0
     },
     {
-      "title": "홈플러스 미수금 사태 확산⋯경북 농산물 납품 협력업체들 \"전수조사·...",
-      "section": "policy",
-      "age_hours": 15.7
-    }
-  ],
-  "content_false_positive_samples": [],
-  "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [
-    {
-      "title": "제주DA, 농업현장 체감형 디지털 서비스로 고도화",
-      "item_label": "무",
-      "section": "supply",
-      "representative_rank": 4,
-      "reasons": [
-        "title_item_missing",
-        "title_issue_missing"
-      ]
-    },
-    {
-      "title": "주간농사정보",
-      "item_label": "배추",
+      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
       "section": "pest",
-      "representative_rank": 4,
-      "reasons": [
-        "title_item_missing",
-        "title_issue_missing"
-      ]
-    },
-    {
-      "title": "여름 물가, 선제 대응 나선다",
-      "item_label": "애호박(쥬키니)",
-      "section": "policy",
-      "representative_rank": 3,
-      "reasons": [
-        "title_item_missing",
-        "title_issue_missing"
-      ]
-    },
-    {
-      "title": "딸기 농사 성패 가르는 6월 우량 자묘 생산 집중 관리",
-      "item_label": "딸기",
-      "section": "policy",
-      "representative_rank": 1,
-      "reasons": [
-        "title_issue_missing",
-        "low_representative_rank"
-      ]
-    },
-    {
-      "title": "'산내 델라웨어' 첫 대만행…대전 포도 해외 식탁 오른다",
-      "item_label": "포도(샤인머스캣)",
-      "section": "supply",
-      "representative_rank": 3,
-      "reasons": [
-        "title_issue_missing"
-      ]
-    },
-    {
-      "title": "제주 항만까지 검역 탐지견 운영 확대...\"현장 대응 역량 강화\"",
-      "item_label": "감귤(만감류)",
-      "section": "dist",
-      "representative_rank": 3,
-      "reasons": [
-        "title_item_missing"
-      ]
+      "age_hours": 18.0
     }
   ],
+  "content_false_positive_samples": [
+    {
+      "title": "[AI로 읽는 경제] ⑪ 규격이 가격을 가른다…같은 밭에서 나온 농산물은...",
+      "href": "https://www.newspim.com/news/view/20260609000172",
+      "section": "supply",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "story_duplicate_samples": [],
+  "commodity_primary_linkage_samples": [],
   "editorial_quality_samples": [
     {
       "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
@@ -281,25 +233,29 @@
   ],
   "improvement_hints": [
     "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
+    "품목 보드 coverage가 낮습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.",
     "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
     "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1), dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "금융·정치성 오탐이 브리핑에 섞였습니다 (비율 6%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.",
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.",
+    "농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 6%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
+      "semantic_false_positive",
       "commodity_board",
-      "commodity_board_severe"
+      "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
+      "supply": 0.9,
+      "policy": 0.88,
+      "dist": 1.05,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.5,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -317,15 +273,17 @@
     "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 2,
     "commodity_program_core_min_rank": 3,
-    "commodity_require_issue_signal": true,
-    "commodity_require_direct_item_focus": true
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
   },
   "summary_prompt_feedback": [
     "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 88.74,
+  "operational_score": 82.68,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
