@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T10:50:13+09:00",
-  "build_tag": "81bbf39",
+  "generated_at_kst": "2026-06-11T10:59:17+09:00",
+  "build_tag": "9051d97",
   "filter_rejects": [
     {
       "section": "policy",
@@ -24531,7 +24531,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.25,
+          "score": 26.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
