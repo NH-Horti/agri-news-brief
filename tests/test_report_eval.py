@@ -458,6 +458,51 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
         self.assertEqual(result["commodity_primary_linkage_samples"], [])
 
+    def test_commodity_board_alias_accepts_green_onion_companion_label(self) -> None:
+        html = """
+        <a
+          data-surface="commodity_primary"
+          data-section="supply"
+          data-article-title="고온에도 강한 쪽파 신품종 개발…출하 안정 기대"
+          data-article-id="green-onion-variety"
+          data-target-domain="example.com"
+          data-item-key="green_onion"
+          data-item-label="대파"
+          data-representative-rank="3"
+          data-representative-score="125.0"
+          data-board-score="95.0"
+          data-selection-fit="1.6"
+          data-selection-stage="core"
+          href="https://example.com/green-onion-variety"
+        >대표</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-11T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "고온에도 강한 쪽파 신품종 개발…출하 안정 기대",
+                        "link": "https://example.com/green-onion-variety",
+                        "description": "쪽파 신품종 개발로 고온기 출하 안정이 기대된다는 기사다.",
+                        "selection_fit_score": 1.6,
+                        "selection_stage": "core",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-06-11T05:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 1.0)
+        self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
+        self.assertEqual(result["commodity_primary_linkage_samples"], [])
+
     def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:
         html = """
         <div
