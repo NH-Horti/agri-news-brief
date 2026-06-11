@@ -1,36 +1,40 @@
 {
-  "report_date": "2026-06-10",
-  "generated_at_kst": "2026-06-11T12:22:51+09:00",
+  "report_date": "2026-06-08",
+  "generated_at_kst": "2026-06-11T14:23:58+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 92.97,
-    "commodity_board_quality": 45.64
+    "section_alignment": 96.94,
+    "core_quality": 92.8,
+    "commodity_board_quality": 86.66
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0526,
     "content_false_positive_rate": 0.0,
-    "weak_core_rate": 0.125,
+    "weak_core_rate": 0.1429,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0556,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
-    "pest_theme_duplicate_rate": 0.0556,
+    "promotional_filler_rate": 0.0526,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0526,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.8056,
-    "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 0.9167,
+    "editorial_quality_penalty": 0.5263,
+    "commodity_primary_item_focus_rate": 0.875,
+    "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_title_item_focus_rate": 0.6667,
-    "commodity_primary_title_issue_signal_rate": 0.5833,
-    "commodity_primary_strict_link_rate": 0.5,
-    "commodity_primary_low_rank_rate": 0.0833,
-    "commodity_primary_dominant_section_rate": 0.5833
+    "commodity_primary_title_item_focus_rate": 0.875,
+    "commodity_primary_title_issue_signal_rate": 0.875,
+    "commodity_primary_strict_link_rate": 0.75,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_board_coverage_rate": 0.2424,
+    "commodity_primary_title_item_missing_rate": 0.125,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.125,
+    "commodity_primary_dominant_section_rate": 0.625
   },
   "selection_guardrails": {
     "driver_tags": [
       "commodity_board",
-      "commodity_board_severe"
+      "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -59,22 +63,24 @@
     "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 2,
     "commodity_program_core_min_rank": 3,
-    "commodity_require_issue_signal": true,
-    "commodity_require_direct_item_focus": true
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
   },
   "editorial_quality_samples": [
     {
-      "title": "음성 농협들, 다올찬 수박 줄줄이 출하…가파른 성장세",
-      "href": "https://www.nongmin.com/article/20260605500255",
-      "section": "dist",
-      "is_core": true,
+      "title": "OECD, 한국 근원물가 전망치 높였다···‘인플레 고착화’ 우려 커져",
+      "href": "https://www.khan.co.kr/article/202606071613001",
+      "section": "policy",
+      "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
-      "href": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260609&SEQUENCE=0113",
+      "title": "농식품부, 과수화상병 관리 ‘경계’ 격상⋯\"대응체계 강화\"",
+      "href": "https://www.viva100.com/article/20260605500573",
       "section": "pest",
       "is_core": false,
       "reasons": [
