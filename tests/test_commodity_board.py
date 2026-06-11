@@ -472,6 +472,17 @@ class TestCommodityBoard(unittest.TestCase):
         ):
             self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("tomato"), article, metrics))
 
+    def test_strict_primary_requires_title_issue_signal_by_default(self):
+        article = self._make_article(
+            "supply",
+            "햇양파의 힘, 건강 식탁 만든다",
+            "햇양파 소비 확대와 건강 식단을 소개하는 기사다.",
+            "https://example.com/onion-health-table",
+        )
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("onion"), article)
+
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("onion"), article, metrics))
+
     def test_feedback_guardrail_does_not_promote_low_rank_fallback_primary(self):
         article = self._make_article(
             "supply",
@@ -941,7 +952,7 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
 
-    def test_program_core_item_accepts_indirect_facility_issue_story(self):
+    def test_program_core_item_keeps_indirect_facility_issue_out_of_primary(self):
         article = self._make_article(
             "supply",
             "송미령 장관, 농협주유소·시설채소 점검…난방유 부담 대응 주문",
@@ -951,10 +962,10 @@ class TestCommodityBoard(unittest.TestCase):
         item = self._item("green_pepper")
         metrics = main._commodity_board_item_article_representative_metrics(item, article)
 
-        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
-            self.assertGreaterEqual(int(metrics["representative_rank"]), 4)
-            self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
-            self.assertTrue(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+        self.assertGreaterEqual(int(metrics["representative_rank"]), 4)
+        self.assertEqual(int(metrics["title_primary_hits"]), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(item, article, metrics))
+        self.assertFalse(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
 
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(

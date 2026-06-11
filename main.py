@@ -26698,6 +26698,11 @@ def _commodity_board_has_operational_issue_signal(article_metrics: dict[str, Any
             )
         )
         or (
+            issue_title_hits >= 1
+            and has_named_or_context_focus
+            and issue_anchor_hits >= 1
+        )
+        or (
             strong_focus
             and has_named_or_context_focus
             and feature_kind in ("field", "issue")
@@ -27184,9 +27189,13 @@ def _commodity_board_item_article_representative_metrics(
 
 
 def _commodity_board_active_min_rank(item: dict[str, Any]) -> int:
-    base_rank = 1
+    base_rank = 2
     guardrail_key = "commodity_program_core_min_rank" if bool(item.get("program_core")) else "commodity_active_min_rank"
     return max(base_rank, int(_selection_guardrail_number(guardrail_key, base_rank)))
+
+
+def _commodity_board_title_issue_hits(title: str) -> int:
+    return count_any(_nfkc_lower(title), [w.lower() for w in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS])
 
 
 def _commodity_board_article_is_active_candidate(
@@ -27226,15 +27235,18 @@ def _commodity_board_article_is_active_candidate(
     if _wine_hits >= 2 and _supply_hits == 0:
         return False
     representative_rank = int(article_metrics.get("representative_rank", -1))
-    # 품목명이 제목+본문에 전혀 없는 기사는 대표 후보에서 제외
-    # (예: "인천시 주권수호 TF"가 화훼 대표, "유정복 물가점검"이 사과 대표 방지)
+    # 품목보드 대표기사는 제목만 보고도 "어느 품목의 어떤 이슈인지" 설명되어야 한다.
+    # 본문-only 품목 매칭이나 범용 농산물 기사 연결은 inactive/관련 후보로만 남긴다.
     _title_hits = int(article_metrics.get("title_primary_hits") or 0)
-    _match_count = int(article_metrics.get("match_count") or 0)
-    if _title_hits == 0 and _match_count == 0:
+    if _title_hits == 0:
+        return False
+    _title_issue_hits = _commodity_board_title_issue_hits(_cb_title)
+    if _title_issue_hits == 0:
         return False
     _has_operational_issue = _commodity_board_has_operational_issue_signal(article_metrics)
+    if not _has_operational_issue:
+        return False
     _fit_score = float(article_metrics.get("selection_fit_score") or 0.0)
-    _body_only_direct_focus = bool(article_metrics.get("direct_item_focus")) and _title_hits == 0
     _title_l_for_foreign_noise = _nfkc_lower(_cb_title)
     _foreign_unmanaged_title = (
         count_any(_title_l_for_foreign_noise, [w.lower() for w in ("두리안", "망고", "바나나", "아보카도", "파인애플")]) >= 1
@@ -27244,64 +27256,16 @@ def _commodity_board_article_is_active_candidate(
         return False
     if is_foreign_unmanaged_commodity_context(_cb_title, _cb_desc) and _title_hits == 0:
         return False
-    _direct_focus_ok = bool(
-        _title_hits >= 1
-        or (
-            bool(article_metrics.get("single_focus"))
-            and (_title_hits >= 1 or _has_operational_issue or _fit_score >= 0.8)
-        )
-        or (
-            bool(article_metrics.get("direct_item_focus"))
-            and (
-                not _body_only_direct_focus
-                or (_has_operational_issue and _fit_score >= 0.65)
-            )
-        )
-    )
-    _indirect_operational_focus_ok = bool(
-        bool(article_metrics.get("primary_focus"))
-        and representative_rank >= 3
-        and _has_operational_issue
-        and _fit_score >= 0.65
-    )
-    if not (_direct_focus_ok or _indirect_operational_focus_ok):
-        return False
-    if representative_rank <= 1 and not _has_operational_issue:
-        return False
     if representative_rank < _commodity_board_active_min_rank(item):
         return False
     if _selection_guardrail_bool("commodity_require_issue_signal", False):
-        if not _has_operational_issue:
-            return False
-        _title_issue_hits = count_any(_nfkc_lower(_cb_title), [w.lower() for w in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS])
         if _title_issue_hits == 0 and representative_rank < 4:
             return False
     if _selection_guardrail_bool("commodity_require_direct_item_focus", False):
         if int(article_metrics.get("title_primary_hits") or 0) == 0:
             return False
     if bool(item.get("program_core")):
-        has_direct_item_focus = bool(article_metrics.get("direct_item_focus")) or int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
-        has_indirect_issue_focus = bool(
-            representative_rank >= 4
-            and bool(article_metrics.get("strong_focus"))
-            and _has_operational_issue
-            and _fit_score >= 0.65
-        )
-        if not has_direct_item_focus and not has_indirect_issue_focus:
-            return False
-        # 제목에 품목명이 있으면 issue/supply 시그널 요건 완화
-        _title_has_item = int(article_metrics.get("title_primary_hits") or 0) >= 1
-        if not _title_has_item and not (
-            str(article_metrics.get("issue_bucket") or "")
-            or bool(article_metrics.get("direct_supply"))
-            or bool(article_metrics.get("market_response"))
-            or int(article_metrics.get("issue_anchor_hits") or 0) >= 1
-            or int(article_metrics.get("market_anchor_hits") or 0) >= 1
-            or (
-                str(article_metrics.get("feature_kind") or "") in ("field", "issue")
-                and bool(article_metrics.get("primary_focus"))
-            )
-        ):
+        if _fit_score < 0.65 and not bool(article_metrics.get("direct_supply")) and not bool(article_metrics.get("market_response")):
             return False
     return True
 
@@ -29952,28 +29916,6 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             if _commodity_board_article_is_active_candidate(item_payload, article, metrics)
         ]
         qualified_articles = [article for article, _ in qualified_metric_pairs]
-        # fallback: 정규 active 후보가 없을 때도 대표 연결 품질 하한은 유지한다.
-        # program_core 품목은 품질 기준이 엄격하므로 fallback 대상에서 제외
-        if not qualified_articles and articles and not bool(item_payload.get("program_core")):
-            _fallback_min_rank = _commodity_board_active_min_rank(item_payload)
-            _fallback_require_issue = _selection_guardrail_bool("commodity_require_issue_signal", False)
-            _fallback_candidates = [
-                (article, metrics)
-                for article, metrics in _all_repr_metrics
-                if (
-                    bool(metrics.get("board_eligible"))
-                    and int(metrics.get("representative_rank", -1)) >= _fallback_min_rank
-                    and int(metrics.get("title_primary_hits") or 0) >= 1
-                    and (
-                        not _fallback_require_issue
-                        or _commodity_board_has_operational_issue_signal(metrics)
-                    )
-                )
-            ]
-            if _fallback_candidates:
-                _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
-                qualified_metric_pairs = [_fallback_candidates[0]]
-                qualified_articles = [_fallback_candidates[0][0]]
         top_article_metrics = dict(qualified_metric_pairs[0][1]) if qualified_metric_pairs else {}
         item_payload["articles"] = articles
         item_payload["article_count"] = len(articles)
