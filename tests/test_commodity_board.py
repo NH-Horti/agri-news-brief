@@ -157,7 +157,8 @@ class TestCommodityBoard(unittest.TestCase):
         )
         by_section = {key: [] for key in self.conf}
         by_section["supply"] = [apple_article]
-        ctx = main.build_managed_commodity_board_context(by_section)
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            ctx = main.build_managed_commodity_board_context(by_section)
         apple = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "apple")
         self.assertTrue(apple["active"])
         self.assertEqual(apple["article_count"], 1)
@@ -427,6 +428,19 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertTrue(bool(metrics["weak_admin_title_story"]))
         self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("napa_cabbage"), article, metrics))
 
+    def test_committee_expo_admin_story_is_not_commodity_primary_representative(self):
+        article = self._make_article(
+            "supply",
+            "충남도의회 '논산세계 딸기 산업엑스포 특위' 활동 마무리",
+            "논산세계 딸기 산업엑스포 특별위원회 활동 결과를 정리한 의회 소식이다.",
+            "https://example.com/strawberry-expo-committee",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("strawberry"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_admin_title_story"]))
+
     def test_foreign_unmanaged_body_match_is_not_active_primary_representative(self):
         article = self._make_article(
             "supply",
@@ -457,6 +471,36 @@ class TestCommodityBoard(unittest.TestCase):
             },
         ):
             self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("tomato"), article, metrics))
+
+    def test_feedback_guardrail_does_not_promote_low_rank_fallback_primary(self):
+        article = self._make_article(
+            "supply",
+            "강원농협, 농산물 출하·유통 현장 점검",
+            "멜론 출하 현장을 점검하고 산지 유통 상황을 살폈다는 기사다.",
+            "https://example.com/melon-generic-field-check",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        with mock.patch.object(
+            main,
+            "SELECTION_FEEDBACK_GUARDRAILS",
+            {
+                "commodity_active_min_rank": 2,
+                "commodity_require_direct_item_focus": True,
+                "commodity_require_issue_signal": True,
+            },
+        ):
+            ctx = main.build_managed_commodity_board_context(by_section)
+
+        melon = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "muskmelon"
+        )
+        self.assertFalse(bool(melon["active"]))
+        self.assertEqual(int(melon["qualified_article_count"]), 0)
 
     def test_promo_campaign_story_is_not_representative(self):
         article = self._make_article(
@@ -810,7 +854,8 @@ class TestCommodityBoard(unittest.TestCase):
         by_section = {key: [] for key in self.conf}
         by_section["dist"] = [article]
 
-        ctx = main.build_managed_commodity_board_context(by_section)
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            ctx = main.build_managed_commodity_board_context(by_section)
         napa_cabbage = next(
             item
             for group in ctx["groups"]
@@ -921,7 +966,8 @@ class TestCommodityBoard(unittest.TestCase):
         by_section = {key: [] for key in self.conf}
         by_section["supply"] = [article]
 
-        ctx = main.build_managed_commodity_board_context(by_section)
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            ctx = main.build_managed_commodity_board_context(by_section)
         napa_cabbage = next(
             item
             for group in ctx["groups"]

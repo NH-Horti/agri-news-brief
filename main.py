@@ -4225,6 +4225,7 @@ _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS = (
 _MANAGED_COMMODITY_BOARD_ADMIN_TITLE_TERMS = (
     "포상", "수상", "시상", "특별성과", "공무원", "추천 품종", "추천품종",
     "등록된 제초제", "제초제", "식품원료", "원료 등재", "등재", "계약 체결",
+    "도의회", "특위", "활동 마무리", "산업엑스포",
 )
 _MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS = (
     "인터뷰", "대담", "대표", "회장", "사장", "농부의 길", "스토리", "사람들",
@@ -29951,13 +29952,23 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             if _commodity_board_article_is_active_candidate(item_payload, article, metrics)
         ]
         qualified_articles = [article for article, _ in qualified_metric_pairs]
-        # fallback: 정규 active 후보가 없지만 board_eligible + rank>=0 기사가 있으면 최고 board_score 1건 연결
+        # fallback: 정규 active 후보가 없을 때도 대표 연결 품질 하한은 유지한다.
         # program_core 품목은 품질 기준이 엄격하므로 fallback 대상에서 제외
         if not qualified_articles and articles and not bool(item_payload.get("program_core")):
+            _fallback_min_rank = _commodity_board_active_min_rank(item_payload)
+            _fallback_require_issue = _selection_guardrail_bool("commodity_require_issue_signal", False)
             _fallback_candidates = [
                 (article, metrics)
                 for article, metrics in _all_repr_metrics
-                if bool(metrics.get("board_eligible")) and int(metrics.get("representative_rank", -1)) >= 1
+                if (
+                    bool(metrics.get("board_eligible"))
+                    and int(metrics.get("representative_rank", -1)) >= _fallback_min_rank
+                    and int(metrics.get("title_primary_hits") or 0) >= 1
+                    and (
+                        not _fallback_require_issue
+                        or _commodity_board_has_operational_issue_signal(metrics)
+                    )
+                )
             ]
             if _fallback_candidates:
                 _fallback_candidates.sort(key=lambda x: float(x[1].get("board_score") or 0.0), reverse=True)
