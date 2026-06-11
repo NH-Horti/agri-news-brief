@@ -1109,6 +1109,46 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertTrue(tomato_item["active"])
         self.assertEqual(tomato_item["top_article"].title, same_source_tomato.title)
 
+    def test_board_context_keeps_cross_section_support_story_visible(self):
+        onion_label = self._item("onion")["short_label"]
+        primary_supply = self._make_article(
+            "supply",
+            f"{onion_label} \uac00\uaca9 \uae09\ub77d \uc0b0\uc9c0 \ucd9c\ud558 \uc870\uc808 \uc218\uae09 \ub300\ucc45",
+            f"{onion_label} \uc0dd\uc0b0\ub7c9 \uc99d\uac00\uc640 \ucd9c\ud558 \uc870\uc808 \ud544\uc694\uc131\uc774 \ucee4\uc9c0\uace0 \uc788\ub2e4.",
+            "https://example.com/onion-supply-primary",
+        )
+        supply_secondary = self._make_article(
+            "supply",
+            f"{onion_label} \uacf5\uae09 \uacfc\uc789\uc5d0 \uc0b0\uc9c0 \ud3d0\uae30 \ud655\ub300",
+            f"{onion_label} \uc800\uc7a5 \ubb3c\ub7c9\uacfc \ucd9c\ud558\ub7c9\uc774 \ub298\uba74\uc11c \uac00\uaca9 \uc57d\uc138\uac00 \uc774\uc5b4\uc9c0\uace0 \uc788\ub2e4.",
+            "https://example.com/onion-supply-secondary",
+        )
+        supply_third = self._make_article(
+            "supply",
+            f"{onion_label} \uc800\uc7a5 \uc7ac\uace0 \uc99d\uac00\ub85c \ub3c4\ub9e4\uac00\uaca9 \uc57d\uc138",
+            f"{onion_label} \uc7ac\uace0 \uc99d\uac00\uac00 \uc218\uae09 \ubd80\ub2f4\uc744 \ub192\uc774\uba74\uc11c \ubb3c\ub7c9 \uc870\uc808\uc774 \ud544\uc694\ud558\ub2e4.",
+            "https://example.com/onion-supply-third",
+        )
+        dist_support = self._make_article(
+            "dist",
+            f"{onion_label} \uc218\uae09 \uc548\uc815 \uc704\ud55c \uc18c\ube44 \ucd09\uc9c4 \uc9c1\uac70\ub798 \uc7a5\ud130 \uc6b4\uc601",
+            f"{onion_label} \uac00\uaca9 \uae09\ub77d\uc5d0 \ub300\uc751\ud574 \uc720\ud1b5 \ud310\ub85c\uc640 \uc18c\ube44 \ucd09\uc9c4 \ub300\uc751\uc774 \uc774\uc5b4\uc9c0\uace0 \uc788\ub2e4.",
+            "https://example.com/onion-dist-support",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [primary_supply, supply_secondary, supply_third]
+        by_section["dist"] = [dist_support]
+
+        with mock.patch.object(main, "HF_COMMODITY_BOARD_RERANK_ENABLED", False):
+            ctx = main.build_managed_commodity_board_context(by_section)
+
+        onion_item = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "onion")
+        self.assertEqual(onion_item["top_article"].title, primary_supply.title)
+        self.assertIn(
+            dist_support.title,
+            [article.title for article in onion_item["secondary_articles"]],
+        )
+
     def test_supply_final_normalization_promotes_program_core_board_story(self):
         weak_supply = self._make_article(
             "supply",
