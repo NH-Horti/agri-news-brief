@@ -1,8 +1,8 @@
 {
   "report_date": "2026-06-08",
-  "generated_at_kst": "2026-06-11T14:23:58+09:00",
+  "generated_at_kst": "2026-06-11T17:47:11+09:00",
   "status": "pass",
-  "overall_score": 94.04,
+  "overall_score": 94.4,
   "scores": {
     "completeness": 96.4,
     "diversity": 100.0,
@@ -11,7 +11,7 @@
     "retrieval_support": 85.0,
     "section_alignment": 96.94,
     "core_quality": 92.8,
-    "commodity_board_quality": 86.66
+    "commodity_board_quality": 93.79
   },
   "counts": {
     "briefing_total": 19,
@@ -105,19 +105,19 @@
     "core_rank_percentile_avg": 0.8642,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.875,
+    "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_fit_avg": 3.3487,
     "commodity_primary_rank_avg": 3.25,
-    "commodity_primary_title_item_focus_rate": 0.875,
-    "commodity_primary_title_issue_signal_rate": 0.875,
-    "commodity_primary_strict_link_rate": 0.75,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
     "commodity_board_coverage_rate": 0.2424,
-    "commodity_primary_title_item_missing_rate": 0.125,
+    "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
-    "commodity_primary_false_link_rate": 0.125,
+    "commodity_primary_false_link_rate": 0.0,
     "commodity_primary_dominant_section_rate": 0.625,
     "commodity_primary_section_balance_score": 0.4821
   },
@@ -198,26 +198,7 @@
   ],
   "content_false_positive_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [
-    {
-      "title": "여름철 고온에도 강하다···제주, 신품종 ‘ 쪽파 ’ 개발",
-      "item_label": "대파",
-      "section": "policy",
-      "representative_rank": 3,
-      "reasons": [
-        "title_item_missing"
-      ]
-    },
-    {
-      "title": "\"상추 싸질 줄 알았는데\"…밥상 채소값 다시 '꿈틀' [권 기자의 장바구...",
-      "item_label": "상추",
-      "section": "supply",
-      "representative_rank": 4,
-      "reasons": [
-        "title_issue_missing"
-      ]
-    }
-  ],
+  "commodity_primary_linkage_samples": [],
   "editorial_quality_samples": [
     {
       "title": "OECD, 한국 근원물가 전망치 높였다···‘인플레 고착화’ 우려 커져",
@@ -239,14 +220,12 @@
     }
   ],
   "improvement_hints": [
-    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
     "품목 보드 coverage가 낮습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.",
     "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
     "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
-      "commodity_board",
       "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
@@ -274,10 +253,10 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": true,
+    "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
@@ -286,7 +265,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 94.04,
+  "operational_score": 94.4,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
