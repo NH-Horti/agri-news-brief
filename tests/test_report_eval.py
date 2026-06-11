@@ -327,6 +327,90 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn("semantic_false_positive", result["selection_guardrails"]["driver_tags"])
         self.assertTrue(any("금융·정치성 오탐" in hint for hint in result["improvement_hints"]))
 
+    def test_evaluate_report_flags_policy_housing_market_false_positive(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="policy"
+          data-article-title="서울 아파트값 상승에 주택시장 규제 완화 논의"
+          data-href="https://example.com/housing-market"
+          data-article-id="housing-market"
+          data-target-domain="example.com"
+        >
+          <div class="sum">주택시장 규제 완화와 아파트 매매 흐름을 다룬 기사다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-11T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [],
+                "policy": [
+                    {
+                        "section": "policy",
+                        "title": "서울 아파트값 상승에 주택시장 규제 완화 논의",
+                        "link": "https://example.com/housing-market",
+                        "description": "아파트 매매가와 재건축 규제 완화가 핵심인 부동산 기사다.",
+                        "selection_fit_score": 1.4,
+                        "selection_stage": "tail",
+                        "score": 55.0,
+                        "pub_dt_kst": "2026-06-11T05:00:00+09:00",
+                    }
+                ],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["content_false_positive_rate"], 1.0)
+        self.assertEqual(result["content_false_positive_samples"][0]["reason"], "housing_market_noise")
+
+    def test_commodity_board_quality_penalizes_weak_title_linkage(self) -> None:
+        html = """
+        <a
+          data-surface="commodity_primary"
+          data-section="supply"
+          data-article-title="NH농우바이오·팜한농 6월 추천 품종은"
+          data-article-id="zucchini-weak"
+          data-target-domain="example.com"
+          data-item-key="zucchini"
+          data-item-label="애호박(쥬키니)"
+          data-representative-rank="3"
+          data-representative-score="125.0"
+          data-board-score="95.0"
+          data-selection-fit="1.6"
+          data-selection-stage="core"
+          href="https://example.com/zucchini-variety"
+        >대표</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-11T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "NH농우바이오·팜한농 6월 추천 품종은",
+                        "link": "https://example.com/zucchini-variety",
+                        "description": "추천 품종 소개 말미에 애호박과 쥬키니 품종을 언급하지만 가격·수급 이슈는 약하다.",
+                        "selection_fit_score": 1.6,
+                        "selection_stage": "core",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-06-11T05:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
+
+        self.assertLess(result["scores"]["commodity_board_quality"], 65.0)
+        self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 0.0)
+        self.assertEqual(result["commodity_primary_linkage_samples"][0]["item_label"], "애호박(쥬키니)")
+
     def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:
         html = """
         <div

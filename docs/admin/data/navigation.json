@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T00:44:13+09:00",
+  "generated_at": "2026-06-11T02:36:14+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -36,6 +36,12 @@
       "count": 2,
       "section": "supply",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 2,
+      "section": "fruit_veg",
+      "surface": "commodity_group_chip"
     },
     {
       "date": "2026-03-31",
@@ -138,6 +144,18 @@
       "count": 1,
       "section": "pest",
       "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-06-09",
+      "count": 1,
+      "section": "dist",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 1,
+      "section": "supply",
+      "surface": "briefing_chip"
     }
   ],
   "view_switch": [
@@ -179,6 +197,12 @@
     },
     {
       "date": "2026-04-24",
+      "count": 4,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-06-10",
       "count": 4,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -227,6 +251,12 @@
     },
     {
       "date": "2026-05-28",
+      "count": 3,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-06-09",
       "count": 3,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -464,6 +494,24 @@
       "count": 1,
       "from_view": "commodity",
       "to_view": "briefing"
+    },
+    {
+      "date": "2026-06-08",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-06-09",
+      "count": 1,
+      "from_view": "commodity",
+      "to_view": "briefing"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 1,
+      "from_view": "commodity",
+      "to_view": "briefing"
     }
   ],
   "archive_nav": [
@@ -585,6 +633,13 @@
       "nav_type": "next_date",
       "from_date": "2026-06-04",
       "to_date": "2026-06-05"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 2,
+      "nav_type": "archive_index",
+      "from_date": "2026-06-10",
+      "to_date": ""
     },
     {
       "date": "2026-03-31",
@@ -907,6 +962,41 @@
       "nav_type": "archive_index",
       "from_date": "2026-06-05",
       "to_date": "(not set)"
+    },
+    {
+      "date": "2026-06-08",
+      "count": 1,
+      "nav_type": "next_date",
+      "from_date": "2026-06-05",
+      "to_date": "2026-06-08"
+    },
+    {
+      "date": "2026-06-08",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-06-08",
+      "to_date": "2026-06-05"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 1,
+      "nav_type": "archive_card",
+      "from_date": "2026-06-10",
+      "to_date": "2026-06-10"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 1,
+      "nav_type": "archive_index",
+      "from_date": "2026-06-09",
+      "to_date": ""
+    },
+    {
+      "date": "2026-06-10",
+      "count": 1,
+      "nav_type": "latest_brief",
+      "from_date": "",
+      "to_date": "2026-06-10"
     }
   ]
 }
