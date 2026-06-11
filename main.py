@@ -4238,6 +4238,7 @@ _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "병해충", "방제", "해충", "피해", "호조", "하락", "상승",
     "폭염", "고온", "장마", "가뭄", "냉해", "기계화", "노동력", "절감",
     "무단 투기", "투기", "산지 폐기", "폐기", "소비촉진",
+    "채소값", "채솟값", "농산물값", "밥상물가", "장바구니",
 )
 _COMMODITY_BOARD_MARKET_KEEP_TERMS = tuple(
     w.lower()
@@ -21172,8 +21173,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "commodity_corporate_stock_context"
     if section_key in ("supply", "policy", "dist") and is_foreign_unmanaged_commodity_context(a.title or "", a.description or ""):
         return "foreign_unmanaged_commodity"
-    if section_key == "dist" and is_ai_economic_explainer_tail(a.title or "", a.description or ""):
-        return "dist_ai_explainer_tail"
+    if section_key in ("supply", "policy", "dist") and is_ai_economic_explainer_tail(a.title or "", a.description or ""):
+        return "dist_ai_explainer_tail" if section_key == "dist" else "ai_economic_explainer_tail"
     if section_key == "dist" and is_dist_political_visit_context(a.title or "", a.description or ""):
         return "dist_political_visit"
     if section_key == "dist" and is_dist_primary_supply_price_story(a.title or "", a.description or ""):

@@ -472,6 +472,16 @@ class TestCommodityBoard(unittest.TestCase):
         ):
             self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("tomato"), article, metrics))
 
+    def test_supply_ai_economic_explainer_is_postbuild_rejected(self):
+        article = self._make_article(
+            "supply",
+            "[AI로 읽는 경제] ⑪ 규격이 가격을 가른다…같은 밭에서 나온 농산물은 왜 다를까",
+            "농산물 규격과 가격 차이를 설명하는 기획 시리즈 기사다.",
+            "https://example.com/ai-economy-produce-grade",
+        )
+
+        self.assertEqual(main._postbuild_article_reject_reason(article, "supply"), "ai_economic_explainer_tail")
+
     def test_strict_primary_requires_title_issue_signal_by_default(self):
         article = self._make_article(
             "supply",
