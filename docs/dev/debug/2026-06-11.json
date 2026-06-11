@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T09:57:02+09:00",
-  "build_tag": "311de7d",
+  "generated_at_kst": "2026-06-11T10:20:49+09:00",
+  "build_tag": "d9b22a6",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18700,7 +18700,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.83,
+          "score": 32.63,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18892,7 +18892,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 28.8,
+          "score": 28.6,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19212,7 +19212,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.47,
+          "score": 20.27,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19660,7 +19660,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.67,
+          "score": 12.47,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19852,7 +19852,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.25,
+          "score": 8.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23428,7 +23428,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.87,
+          "score": 9.67,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23652,7 +23652,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -1.25,
+          "score": -1.45,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23812,7 +23812,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -5.95,
+          "score": -6.15,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -25007,38 +25007,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 12.23,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "원예산업신문",
-          "domain": "wonyesanup.co.kr",
-          "title": "돌발해충 ‘갈색날개매미충’ 감소",
-          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64926",
-          "reason": "",
-          "fit_score": 3.27,
-          "selection_stage": "pest_theme_diversity_replacement",
-          "selection_note": "replace_duplicate_fire_blight_tail",
-          "origin_section": "policy",
-          "reassigned_from": "pest",
-          "source_query": "",
-          "source_channel": "rss",
-          "signals": {
-            "horti_sc": 2.52,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 12.13,
@@ -25068,6 +25036,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 12.03,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "돌발해충 ‘갈색날개매미충’ 감소",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64926",
+          "reason": "",
+          "fit_score": 3.27,
+          "selection_stage": "pest_theme_diversity_replacement",
+          "selection_note": "replace_duplicate_fire_blight_tail",
+          "origin_section": "policy",
+          "reassigned_from": "pest",
+          "source_query": "",
+          "source_channel": "rss",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
