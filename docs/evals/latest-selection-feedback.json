@@ -1,10 +1,10 @@
 {
   "report_date": "2026-06-11",
-  "generated_at_kst": "2026-06-11T10:13:47+09:00",
+  "generated_at_kst": "2026-06-11T10:43:49+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 97.31,
-    "commodity_board_quality": 27.65
+    "core_quality": 96.95,
+    "commodity_board_quality": 67.54
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -15,12 +15,17 @@
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0526,
+    "pest_theme_duplicate_rate": 0.0556,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4211,
-    "commodity_primary_item_focus_rate": 0.8571,
-    "commodity_primary_issue_signal_rate": 0.9286,
-    "commodity_primary_weak_rate": 0.0
+    "editorial_quality_penalty": 0.4444,
+    "commodity_primary_item_focus_rate": 0.8889,
+    "commodity_primary_issue_signal_rate": 0.8889,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_title_item_focus_rate": 0.7778,
+    "commodity_primary_title_issue_signal_rate": 0.8889,
+    "commodity_primary_strict_link_rate": 0.6667,
+    "commodity_primary_low_rank_rate": 0.2222,
+    "commodity_primary_dominant_section_rate": 0.6667
   },
   "selection_guardrails": {
     "driver_tags": [
