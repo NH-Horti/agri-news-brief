@@ -1,5 +1,5 @@
 {
-  "generated_at_kst": "2026-06-11T10:11:17+09:00",
+  "generated_at_kst": "2026-06-11T10:43:09+09:00",
   "build_tag": "local-prod-20260611",
   "filter_rejects": [
     {
@@ -214,6 +214,16 @@
     },
     {
       "section": "policy",
+      "reason": "livestock_title_dominant",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "서울시, 지자체 최초 유전자 검사로 염소고기 원산지 단속",
+      "url": "https://www.newsis.com/view/NISX20260609_0003662779",
+      "source_query": "원산지 단속 농산물",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
       "reason": "policy_retail_sales_trend",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
@@ -229,16 +239,6 @@
       "domain": "news1.kr",
       "title": "서울시, 전국 첫 염소고기 유전자 검사… 원산지 특별 단속",
       "url": "https://www.news1.kr/local/seoul/6192272",
-      "source_query": "원산지 단속 농산물",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "livestock_title_dominant",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "서울시, 지자체 최초 유전자 검사로 염소고기 원산지 단속",
-      "url": "https://www.newsis.com/view/NISX20260609_0003662779",
       "source_query": "원산지 단속 농산물",
       "source_channel": "naver_api"
     },
@@ -277,8 +277,8 @@
       "reason": "apple_non_edible_context",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(자조금 단체장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "사과 배 가격 하락",
       "source_channel": "naver_api"
     },
@@ -287,8 +287,8 @@
       "reason": "apple_non_edible_context",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "title": "창간 축하 메시지(자조금 단체장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
       "source_query": "사과 배 가격 하락",
       "source_channel": "naver_api"
     },
@@ -414,21 +414,21 @@
     },
     {
       "section": "policy",
-      "reason": "policy_dist_export_field",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(자조금 단체장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
-      "source_query": "농산물 가격 전반 하락",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "policy_retail_sales_trend",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "\"6개월째 양파 가격 여전, 생산기반 보호 시급\"",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64924",
+      "source_query": "농산물 가격 전반 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "policy_dist_export_field",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(자조금 단체장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
       "source_query": "농산물 가격 전반 하락",
       "source_channel": "naver_api"
     },
@@ -440,6 +440,36 @@
       "title": "[김용하 칼럼] K자 성장을 넘어야, 지속성장 가능하다",
       "url": "https://www.ajunews.com/view/20260607191529378",
       "source_query": "농산물 가격 전반 하락",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "source_query": "농산물 유통 구조 개선",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64915",
+      "source_query": "농산물 유통 구조 개선",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64939",
+      "source_query": "농산물 유통 구조 개선",
       "source_channel": "naver_api"
     },
     {
@@ -469,36 +499,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64916",
-      "source_query": "농산물 유통 구조 개선",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "must_terms_fail_policy",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64915",
-      "source_query": "농산물 유통 구조 개선",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "must_terms_fail_policy",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "농산물 유통 구조 개선",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "must_terms_fail_policy",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64939",
       "source_query": "농산물 유통 구조 개선",
       "source_channel": "naver_api"
     },
@@ -627,8 +627,8 @@
       "reason": "must_terms_fail_policy",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64915",
+      "title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64939",
       "source_query": "농산물 유통 구조 개선 연구",
       "source_channel": "naver_api"
     },
@@ -637,8 +637,8 @@
       "reason": "must_terms_fail_policy",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64939",
+      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64915",
       "source_query": "농산물 유통 구조 개선 연구",
       "source_channel": "naver_api"
     },
@@ -787,8 +787,8 @@
       "reason": "policy_retail_sales_trend",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "title": "창간 축하 메시지(기관‧단체장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64935",
       "source_query": "과수 정책",
       "source_channel": "naver_api"
     },
@@ -797,8 +797,8 @@
       "reason": "policy_retail_sales_trend",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(기관‧단체장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64935",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "과수 정책",
       "source_channel": "naver_api"
     },
@@ -907,16 +907,6 @@
       "reason": "must_terms_fail_policy",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "국민과 함께하는 특별성과 포상",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64906",
-      "source_query": "배추 수급 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
-      "reason": "must_terms_fail_policy",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
       "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
       "source_query": "배추 수급 안정",
@@ -929,6 +919,16 @@
       "domain": "wonyesanup.co.kr",
       "title": "봄 배추 저장기술 적용 확대",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64928",
+      "source_query": "배추 수급 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "policy",
+      "reason": "must_terms_fail_policy",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "국민과 함께하는 특별성과 포상",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64906",
       "source_query": "배추 수급 안정",
       "source_channel": "naver_api"
     },
@@ -2504,21 +2504,21 @@
     },
     {
       "section": "supply",
-      "reason": "melon_non_edible_context",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64914",
-      "source_query": "딸기 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "low_value_labor_help",
       "press": "쿠키뉴스",
       "domain": "kukinews.com",
       "title": "충남세종농협, 농주모 충남세종연합회와 딸기 농가 찾아 일손 거들어",
       "url": "https://www.kukinews.com/article/view/kuk202606100040",
+      "source_query": "딸기 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "melon_non_edible_context",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64914",
       "source_query": "딸기 가격",
       "source_channel": "naver_api"
     },
@@ -4025,20 +4025,20 @@
     {
       "section": "supply",
       "reason": "livestock_only_supply",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
-      "url": "https://www.joongang.co.kr/article/25435498",
+      "press": "포쓰저널",
+      "domain": "4th.kr",
+      "title": "[유통소식] 농협경제지주, 군급식 공급 확대 등 상생협력 논의",
+      "url": "http://www.4th.kr/news/articleView.html?idxno=2112973",
       "source_query": "감자 수급",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "livestock_only_supply",
-      "press": "포쓰저널",
-      "domain": "4th.kr",
-      "title": "[유통소식] 농협경제지주, 군급식 공급 확대 등 상생협력 논의",
-      "url": "http://www.4th.kr/news/articleView.html?idxno=2112973",
+      "press": "중앙일보",
+      "domain": "joongang.co.kr",
+      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
+      "url": "https://www.joongang.co.kr/article/25435498",
       "source_query": "감자 수급",
       "source_channel": "naver_api"
     },
@@ -4415,20 +4415,20 @@
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "[신상브리핑] 롯데마트, 우포스, 롯데월드, 맥도날드, 팔도, 롯데웰푸드...",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1375130",
+      "press": "내일신문",
+      "domain": "naeil.com",
+      "title": "전쟁도 못 꺾은 이란의 생존 경제",
+      "url": "https://www.naeil.com/news/read/591376",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "potato_non_fresh_context",
-      "press": "내일신문",
-      "domain": "naeil.com",
-      "title": "전쟁도 못 꺾은 이란의 생존 경제",
-      "url": "https://www.naeil.com/news/read/591376",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "[신상브리핑] 롯데마트, 우포스, 롯데월드, 맥도날드, 팔도, 롯데웰푸드...",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1375130",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -4479,26 +4479,6 @@
       "domain": "biz.sbs.co.kr",
       "title": "젠슨 황이 즐긴 치킨, 메뉴로 나온다…BBQ 'AI 세트' 출시",
       "url": "https://biz.sbs.co.kr/article_hub/20000315659?division=NAVER",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "financialpost",
-      "domain": "financialpost.co.kr",
-      "title": "젠슨 황의 'AI 치킨 세트'를 집에서… BBQ, 2주 한정 특별 세트 출시",
-      "url": "https://www.financialpost.co.kr/news/articleView.html?idxno=262118",
-      "source_query": "감자 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "potato_non_fresh_context",
-      "press": "econovill",
-      "domain": "econovill.com",
-      "title": "BBQ, 젠슨 황이 먹은 그 치킨 판다…한정 세트 출시",
-      "url": "https://www.econovill.com/news/articleView.html?idxno=742003",
       "source_query": "감자 가격",
       "source_channel": "naver_api"
     },
@@ -5734,21 +5714,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
-      "url": "https://www.joongang.co.kr/article/25435498",
-      "source_query": "양파 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "carrot_non_edible_context",
       "press": "포쓰저널",
       "domain": "4th.kr",
       "title": "[유통소식] 농협경제지주, 군급식 공급 확대 등 상생협력 논의",
       "url": "http://www.4th.kr/news/articleView.html?idxno=2112973",
+      "source_query": "양파 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
+      "press": "중앙일보",
+      "domain": "joongang.co.kr",
+      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
+      "url": "https://www.joongang.co.kr/article/25435498",
       "source_query": "양파 수급",
       "source_channel": "naver_api"
     },
@@ -5804,21 +5784,21 @@
     },
     {
       "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "중앙일보",
-      "domain": "joongang.co.kr",
-      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
-      "url": "https://www.joongang.co.kr/article/25435498",
-      "source_query": "양파 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "carrot_non_edible_context",
       "press": "포쓰저널",
       "domain": "4th.kr",
       "title": "[유통소식] 농협경제지주, 군급식 공급 확대 등 상생협력 논의",
       "url": "http://www.4th.kr/news/articleView.html?idxno=2112973",
+      "source_query": "양파 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "livestock_only_supply",
+      "press": "중앙일보",
+      "domain": "joongang.co.kr",
+      "title": "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유 그리고 ...",
+      "url": "https://www.joongang.co.kr/article/25435498",
       "source_query": "양파 가격",
       "source_channel": "naver_api"
     },
@@ -5855,16 +5835,6 @@
     {
       "section": "supply",
       "reason": "carrot_non_edible_context",
-      "press": "에스리스트",
-      "domain": "slist.kr",
-      "title": "GS25, '소프트 삼각김밥' 선봬...삼립, '가뿐하닭 샐러드' 출시",
-      "url": "https://www.slist.kr/news/articleView.html?idxno=744400",
-      "source_query": "양파 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "carrot_non_edible_context",
       "press": "insightkorea",
       "domain": "insightkorea.co.kr",
       "title": "GS25, 밥맛 살린 '소프트 삼각김밥' 출시",
@@ -5875,10 +5845,10 @@
     {
       "section": "supply",
       "reason": "carrot_non_edible_context",
-      "press": "지디넷코리아",
-      "domain": "zdnet.co.kr",
-      "title": "GS25, '떡진 밥' 없앴다…식감 살린 '소프트 삼각김밥' 출시",
-      "url": "https://zdnet.co.kr/view/?no=20260610091938",
+      "press": "에스리스트",
+      "domain": "slist.kr",
+      "title": "GS25, '소프트 삼각김밥' 선봬...삼립, '가뿐하닭 샐러드' 출시",
+      "url": "https://www.slist.kr/news/articleView.html?idxno=744400",
       "source_query": "양파 가격",
       "source_channel": "naver_api"
     },
@@ -5889,6 +5859,16 @@
       "domain": "ziksir.com",
       "title": "GS25, 밥 식감 살린 '소프트 삼각김밥' 출시…간편식 리뉴얼 속도",
       "url": "https://www.ziksir.com/news/articleView.html?idxno=136333",
+      "source_query": "양파 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "carrot_non_edible_context",
+      "press": "지디넷코리아",
+      "domain": "zdnet.co.kr",
+      "title": "GS25, '떡진 밥' 없앴다…식감 살린 '소프트 삼각김밥' 출시",
+      "url": "https://zdnet.co.kr/view/?no=20260610091938",
       "source_query": "양파 가격",
       "source_channel": "naver_api"
     },
@@ -5975,20 +5955,20 @@
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "뉴스프리존",
-      "domain": "newsfreezone.co.kr",
-      "title": "본격적인 영농철∙∙∙합천군 공무원 '일손 돕기' 총출동",
-      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=693890",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "달성군생활개선회, 농번기 일손 돕기 나서…마늘· 양파 수확 지원",
+      "url": "http://www.breaknews.com/1213179",
       "source_query": "양파 재배",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "달성군생활개선회, 농번기 일손 돕기 나서…마늘· 양파 수확 지원",
-      "url": "http://www.breaknews.com/1213179",
+      "press": "뉴스프리존",
+      "domain": "newsfreezone.co.kr",
+      "title": "본격적인 영농철∙∙∙합천군 공무원 '일손 돕기' 총출동",
+      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=693890",
       "source_query": "양파 재배",
       "source_channel": "naver_api"
     },
@@ -6125,20 +6105,20 @@
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "브레이크뉴스",
-      "domain": "breaknews.com",
-      "title": "달성군생활개선회, 농번기 일손 돕기 나서…마늘· 양파 수확 지원",
-      "url": "http://www.breaknews.com/1213179",
+      "press": "뉴스프리존",
+      "domain": "newsfreezone.co.kr",
+      "title": "본격적인 영농철∙∙∙합천군 공무원 '일손 돕기' 총출동",
+      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=693890",
       "source_query": "양파 농가",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "뉴스프리존",
-      "domain": "newsfreezone.co.kr",
-      "title": "본격적인 영농철∙∙∙합천군 공무원 '일손 돕기' 총출동",
-      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=693890",
+      "press": "브레이크뉴스",
+      "domain": "breaknews.com",
+      "title": "달성군생활개선회, 농번기 일손 돕기 나서…마늘· 양파 수확 지원",
+      "url": "http://www.breaknews.com/1213179",
       "source_query": "양파 농가",
       "source_channel": "naver_api"
     },
@@ -6167,8 +6147,8 @@
       "reason": "low_value_labor_help",
       "press": "뉴스경남",
       "domain": "newsgn.com",
-      "title": "합천군 보건정책과·환경위생과·청덕면, 양파 수확 지원",
-      "url": "https://www.newsgn.com/news/articleView.html?idxno=556039",
+      "title": "합천군 미래성장활력과, 영농철 일손 도와",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=556040",
       "source_query": "양파 농가",
       "source_channel": "naver_api"
     },
@@ -6197,8 +6177,8 @@
       "reason": "low_value_labor_help",
       "press": "뉴스경남",
       "domain": "newsgn.com",
-      "title": "합천군 미래성장활력과, 영농철 일손 도와",
-      "url": "https://www.newsgn.com/news/articleView.html?idxno=556040",
+      "title": "합천군 보건정책과·환경위생과·청덕면, 양파 수확 지원",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=556039",
       "source_query": "양파 농가",
       "source_channel": "naver_api"
     },
@@ -6239,16 +6219,6 @@
       "domain": "viva100.com",
       "title": "합천군, 농촌일손돕기 지원",
       "url": "https://www.viva100.com/article/20260610500583",
-      "source_query": "양파 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "low_value_labor_help",
-      "press": "뉴스경남",
-      "domain": "newsgn.com",
-      "title": "합천군 기획예산담당관·합천읍, 양파 수확 도와",
-      "url": "https://www.newsgn.com/news/articleView.html?idxno=556024",
       "source_query": "양파 농가",
       "source_channel": "naver_api"
     },
@@ -6434,21 +6404,21 @@
     },
     {
       "section": "supply",
-      "reason": "agri_training_recruitment",
-      "press": "경남도민신문",
-      "domain": "gndomin.com",
-      "title": "경남문화예술진흥원, 남해 마늘 한우축제서 '찾아가는 문화누리 장터' 개...",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=478201",
-      "source_query": "마늘 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "low_value_labor_help",
       "press": "경남도민신문",
       "domain": "gndomin.com",
       "title": "창녕 부곡면, 일손 부족 농가를 위해 '한마음' 땀방울",
       "url": "http://www.gndomin.com/news/articleView.html?idxno=478274",
+      "source_query": "마늘 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "agri_training_recruitment",
+      "press": "경남도민신문",
+      "domain": "gndomin.com",
+      "title": "경남문화예술진흥원, 남해 마늘 한우축제서 '찾아가는 문화누리 장터' 개...",
+      "url": "http://www.gndomin.com/news/articleView.html?idxno=478201",
       "source_query": "마늘 수급",
       "source_channel": "naver_api"
     },
@@ -9005,16 +8975,6 @@
     {
       "section": "supply",
       "reason": "supply_macro_price_watch",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64917",
-      "source_query": "기후변화 과수",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "supply_macro_price_watch",
       "press": "국민일보",
       "domain": "kmib.co.kr",
       "title": "삼성 떠나 스마트팜 창업 “채소 꽃다발로 대박났죠”",
@@ -9037,8 +8997,8 @@
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "농자재 가격 농가",
       "source_channel": "naver_api"
     },
@@ -9054,21 +9014,21 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
-      "source_query": "농자재 가격 농가",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "finance_asset_policy_noise",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "고환율·고유가 지속… 과감한 '정책 수혈' 시급하다",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64933",
+      "source_query": "농자재 가격 농가",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "농자재 가격 농가",
       "source_channel": "naver_api"
     },
@@ -9177,8 +9137,8 @@
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
       "source_query": "농가 생산비 부담",
       "source_channel": "naver_api"
     },
@@ -9187,8 +9147,8 @@
       "reason": "must_terms_fail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "농가 생산비 부담",
       "source_channel": "naver_api"
     },
@@ -9334,26 +9294,6 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "중동 농자재 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "finance_asset_policy_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "고환율·고유가 지속… 과감한 '정책 수혈' 시급하다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64933",
-      "source_query": "중동 농자재 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -9369,6 +9309,26 @@
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "source_query": "중동 농자재 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_asset_policy_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "고환율·고유가 지속… 과감한 '정책 수혈' 시급하다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64933",
+      "source_query": "중동 농자재 가격",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "중동 농자재 가격",
       "source_channel": "naver_api"
     },
@@ -9464,26 +9424,6 @@
     },
     {
       "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "농업 생산비 급등",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "must_terms_fail",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "특별대담 / 농업 과학기술 혁신으로 기후위기·경영난 정면 돌파",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
-      "source_query": "농업 생산비 급등",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "supply_context_gate",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -9499,6 +9439,26 @@
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "source_query": "농업 생산비 급등",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "특별대담 / 농업 과학기술 혁신으로 기후위기·경영난 정면 돌파",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "source_query": "농업 생산비 급등",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "must_terms_fail",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "농업 생산비 급등",
       "source_channel": "naver_api"
     },
@@ -9857,6 +9817,16 @@
       "reason": "apple_non_edible_context",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "source_query": "사과 기후변화",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "apple_non_edible_context",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(자조금 단체장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
       "source_query": "사과 기후변화",
@@ -9879,16 +9849,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
-      "source_query": "사과 기후변화",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "apple_non_edible_context",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "사과 기후변화",
       "source_channel": "naver_api"
     },
@@ -9924,21 +9884,21 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
-      "source_query": "사과 소비 대책",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "apple_non_edible_context",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(자조금 단체장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
+      "source_query": "사과 소비 대책",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "사과 소비 대책",
       "source_channel": "naver_api"
     },
@@ -10195,20 +10155,20 @@
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "이제 힘들고 어려운 일 저에게 맡기세요!",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64938",
+      "press": "쿠키뉴스",
+      "domain": "kukinews.com",
+      "title": "충남세종농협, 농주모 충남세종연합회와 딸기 농가 찾아 일손 거들어",
+      "url": "https://www.kukinews.com/article/view/kuk202606100040",
       "source_query": "딸기 농가",
       "source_channel": "naver_api"
     },
     {
       "section": "supply",
       "reason": "low_value_labor_help",
-      "press": "쿠키뉴스",
-      "domain": "kukinews.com",
-      "title": "충남세종농협, 농주모 충남세종연합회와 딸기 농가 찾아 일손 거들어",
-      "url": "https://www.kukinews.com/article/view/kuk202606100040",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "이제 힘들고 어려운 일 저에게 맡기세요!",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64938",
       "source_query": "딸기 농가",
       "source_channel": "naver_api"
     },
@@ -10787,8 +10747,8 @@
       "reason": "fishery_only",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
-      "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
-      "url": "https://www.yna.co.kr/view/PYH20260610099300013?input=1196m",
+      "title": "이상기후·중동전쟁에 갈치 가격 29% 상승",
+      "url": "https://www.yna.co.kr/view/PYH20260610099200013?input=1196m",
       "source_query": "도매시장 수급",
       "source_channel": "naver_api"
     },
@@ -10807,28 +10767,8 @@
       "reason": "fishery_only",
       "press": "연합뉴스",
       "domain": "yna.co.kr",
-      "title": "이상기후·중동전쟁에 갈치 가격 29% 상승",
-      "url": "https://www.yna.co.kr/view/PYH20260610099200013?input=1196m",
-      "source_query": "도매시장 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "fishery_only",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
       "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
-      "url": "https://www.yna.co.kr/view/PYH20260610098800013?input=1196m",
-      "source_query": "도매시장 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "fishery_only",
-      "press": "연합뉴스",
-      "domain": "yna.co.kr",
-      "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
-      "url": "https://www.yna.co.kr/view/PYH20260610098900013?input=1196m",
+      "url": "https://www.yna.co.kr/view/PYH20260610099300013?input=1196m",
       "source_query": "도매시장 수급",
       "source_channel": "naver_api"
     },
@@ -10849,6 +10789,26 @@
       "domain": "yna.co.kr",
       "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
       "url": "https://www.yna.co.kr/view/PYH20260610098700013?input=1196m",
+      "source_query": "도매시장 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_only",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
+      "url": "https://www.yna.co.kr/view/PYH20260610098800013?input=1196m",
+      "source_query": "도매시장 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "fishery_only",
+      "press": "연합뉴스",
+      "domain": "yna.co.kr",
+      "title": "이상기후·중동전쟁에 킹크랩 가격 56% 상승",
+      "url": "https://www.yna.co.kr/view/PYH20260610098900013?input=1196m",
       "source_query": "도매시장 수급",
       "source_channel": "naver_api"
     },
@@ -10884,21 +10844,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "농협, 최대 882억원 투입 양파 가격회복 총력",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64929",
-      "source_query": "도매시장 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_wholesale_ambiguous_no_agri",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "국민과 함께하는 특별성과 포상",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64906",
+      "source_query": "도매시장 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "농협, 최대 882억원 투입 양파 가격회복 총력",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64929",
       "source_query": "도매시장 수급",
       "source_channel": "naver_api"
     },
@@ -11014,6 +10974,16 @@
     },
     {
       "section": "dist",
+      "reason": "dist_program_event_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지( 품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "source_query": "품목농협 산지유통",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
       "reason": "dist_soft_without_infra",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -11027,9 +10997,19 @@
       "reason": "dist_program_event_noise",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지( 품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "품목농협 산지유통",
+      "title": "품목 농협 , 고품질 농산물 유통 새로운 표준 세운다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64914",
+      "source_query": "원예농협 산지유통",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_program_event_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(자조금 단체장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
+      "source_query": "원예농협 산지유통",
       "source_channel": "naver_api"
     },
     {
@@ -11049,26 +11029,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(품목 농협 조합장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "원예농협 산지유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(자조금 단체장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64934",
-      "source_query": "원예농협 산지유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "품목 농협 , 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64914",
       "source_query": "원예농협 산지유통",
       "source_channel": "naver_api"
     },
@@ -11284,21 +11244,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_consumer_tail",
-      "press": "thefirstmedia",
-      "domain": "thefirstmedia.net",
-      "title": "최전방 장병 격려 나선 농협경제지주... 군 급식 협력 확대 논의",
-      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=201022",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_non_horti_anchorless",
       "press": "IMINJU",
       "domain": "iminju.net",
       "title": "[경기도 소식]도, 7개 시와 '5G 정부망' 구축...유선망 없는 곳서도 행정...",
       "url": "http://www.iminju.net/news/articleView.html?idxno=165085",
+      "source_query": "농산물 판로 확대",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_consumer_tail",
+      "press": "thefirstmedia",
+      "domain": "thefirstmedia.net",
+      "title": "최전방 장병 격려 나선 농협경제지주... 군 급식 협력 확대 논의",
+      "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=201022",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -11469,56 +11429,6 @@
       "domain": "gjdream.com",
       "title": "곡성, 멜론 할인전ㆍ가루쌀 특허… 농산물 경쟁력 강화",
       "url": "http://www.gjdream.com/news/articleView.html?idxno=670086",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "전남농기원, 나물 가공제품 개발로 부가가치 높여",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1375286",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "agri_training_recruitment",
-      "press": "더팩트",
-      "domain": "news.tf.co.kr",
-      "title": "김포 지역 농협 '찾아가는 상생 장터' 호응…신선한 농축산물 집 앞까지...",
-      "url": "https://news.tf.co.kr/read/national/2331327.htm",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_consumer_tail",
-      "press": "safetynews",
-      "domain": "safetynews.co.kr",
-      "title": "농협경제지주, 화천 칠성부대 위문 방문",
-      "url": "https://www.safetynews.co.kr/news/articleView.html?idxno=248882",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_context_gate",
-      "press": "industrynews",
-      "domain": "industrynews.co.kr",
-      "title": "농진청, '농부시장 마르쉐' 협업 확대 …지역 농산물 판로 지원",
-      "url": "https://www.industrynews.co.kr/news/articleView.html?idxno=82007",
-      "source_query": "농산물 판로 확대",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_county_local_weak_dist_signal",
-      "press": "메트로신문",
-      "domain": "metroseoul.co.kr",
-      "title": "울진군, 농촌관광 콘텐츠 확대 ...라벤더 향기 따라 농촌으로",
-      "url": "http://www.metroseoul.co.kr/article/20260610500263",
       "source_query": "농산물 판로 확대",
       "source_channel": "naver_api"
     },
@@ -11774,16 +11684,6 @@
     },
     {
       "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지( 품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
-      "source_query": "과수 전문 품목농협",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_campaign_noise",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -11809,6 +11709,16 @@
       "domain": "wonyesanup.co.kr",
       "title": "품목농협 , 고품질 농산물 유통 새로운 표준 세운다",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64916",
+      "source_query": "과수 전문 품목농협",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지( 품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "과수 전문 품목농협",
       "source_channel": "naver_api"
     },
@@ -12075,20 +11985,20 @@
     {
       "section": "dist",
       "reason": "dist_non_horti_anchorless",
-      "press": "sisacast",
-      "domain": "sisacast.kr",
-      "title": "CJ대한통운, B2B·B2C 통합 서비스 '더 풀필' 보관 효율에 배송 경쟁력 ...",
-      "url": "http://www.sisacast.kr/news/articleView.html?idxno=96572",
+      "press": "매일산업뉴스",
+      "domain": "m-i.kr",
+      "title": "CJ대한통운, 판매채널별 물류칸막이 낮춘다…'더 풀필' 통합 력 강화",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=1380231",
       "source_query": "통합마케팅 출하",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "dist_non_horti_anchorless",
-      "press": "매일산업뉴스",
-      "domain": "m-i.kr",
-      "title": "CJ대한통운, 판매채널별 물류칸막이 낮춘다…'더 풀필' 통합 력 강화",
-      "url": "https://www.m-i.kr/news/articleView.html?idxno=1380231",
+      "press": "sisacast",
+      "domain": "sisacast.kr",
+      "title": "CJ대한통운, B2B·B2C 통합 서비스 '더 풀필' 보관 효율에 배송 경쟁력 ...",
+      "url": "http://www.sisacast.kr/news/articleView.html?idxno=96572",
       "source_query": "통합마케팅 출하",
       "source_channel": "naver_api"
     },
@@ -12315,20 +12225,20 @@
     {
       "section": "dist",
       "reason": "dist_non_horti_anchorless",
-      "press": "이투데이",
-      "domain": "etoday.co.kr",
-      "title": "CJ대한통운, B2B까지 품은 풀필먼트 확대…'한 번 입고'로 출하 ·배송 통...",
-      "url": "https://www.etoday.co.kr/news/view/2592078",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "CJ대한통운, B2C·B2B 통합 풀필먼트 서비스 출시",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1375101",
       "source_query": "통합마케팅 출하",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "dist_non_horti_anchorless",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "CJ대한통운, B2C·B2B 통합 풀필먼트 서비스 출시",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1375101",
+      "press": "이투데이",
+      "domain": "etoday.co.kr",
+      "title": "CJ대한통운, B2B까지 품은 풀필먼트 확대…'한 번 입고'로 출하 ·배송 통...",
+      "url": "https://www.etoday.co.kr/news/view/2592078",
       "source_query": "통합마케팅 출하",
       "source_channel": "naver_api"
     },
@@ -12824,21 +12734,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_campaign_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
-      "source_query": "농산물 유통 현장",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_soft_without_infra",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64916",
+      "source_query": "농산물 유통 현장",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_campaign_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "농산물 유통 현장",
       "source_channel": "naver_api"
     },
@@ -12899,16 +12809,6 @@
       "domain": "m-i.kr",
       "title": "서울시, 지자체 최초 염소고기 유전자 검사로 원산지 표시 특별단속",
       "url": "https://www.m-i.kr/news/articleView.html?idxno=1380141",
-      "source_query": "농산물 유통 현장",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "농수축산신문",
-      "domain": "aflnews.co.kr",
-      "title": "백성현 논산시장, 화지중앙시장 찾아 민생 점검…\"전통시장 경쟁력 높이...",
-      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=322121",
       "source_query": "농산물 유통 현장",
       "source_channel": "naver_api"
     },
@@ -13034,21 +12934,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_campaign_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
-      "source_query": "시설원예 난방비",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
       "reason": "dist_context_gate",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "source_query": "시설원예 난방비",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_campaign_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
       "source_query": "시설원예 난방비",
       "source_channel": "naver_api"
     },
@@ -13324,11 +13224,21 @@
     },
     {
       "section": "dist",
-      "reason": "dist_campaign_noise",
+      "reason": "dist_program_event_noise",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "title": "창간 축하 메시지(품목농협 조합장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
+      "source_query": "과수 유통",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
+      "reason": "dist_soft_without_infra",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64917",
       "source_query": "과수 유통",
       "source_channel": "naver_api"
     },
@@ -13354,31 +13264,21 @@
     },
     {
       "section": "dist",
+      "reason": "dist_campaign_noise",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "창간 축하 메시지(중앙회이사 ‧ 품목농협협의회장)",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64888",
+      "source_query": "과수 유통",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "dist",
       "reason": "dist_consumer_tail",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
       "title": "창간 축하 메시지(기관‧단체장)",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64935",
-      "source_query": "과수 유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "품목농협, 고품질 농산물 유통 새로운 표준 세운다",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64917",
-      "source_query": "과수 유통",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "창간 축하 메시지(품목농협 조합장)",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64913",
       "source_query": "과수 유통",
       "source_channel": "naver_api"
     },
@@ -13565,20 +13465,20 @@
     {
       "section": "dist",
       "reason": "commodity_corporate_stock_context",
-      "press": "머니투데이",
-      "domain": "mt.co.kr",
-      "title": "\"5G 최초 상용화 이후 투자시계 멈췄다\"…AI G3 위해 이통3사 인프라 투...",
-      "url": "https://www.mt.co.kr/tech/2026/06/11/2026061014424757570",
+      "press": "파이낸셜뉴스",
+      "domain": "fnnews.com",
+      "title": "\"AIDC에 밀려 통신망 투자 뒷전…5G 주파수 추가 공급 앞당겨야\"",
+      "url": "http://www.fnnews.com/news/202606101517180266",
       "source_query": "오이 경매",
       "source_channel": "naver_api"
     },
     {
       "section": "dist",
       "reason": "commodity_corporate_stock_context",
-      "press": "파이낸셜뉴스",
-      "domain": "fnnews.com",
-      "title": "\"AIDC에 밀려 통신망 투자 뒷전…5G 주파수 추가 공급 앞당겨야\"",
-      "url": "http://www.fnnews.com/news/202606101517180266",
+      "press": "머니투데이",
+      "domain": "mt.co.kr",
+      "title": "\"5G 최초 상용화 이후 투자시계 멈췄다\"…AI G3 위해 이통3사 인프라 투...",
+      "url": "https://www.mt.co.kr/tech/2026/06/11/2026061014424757570",
       "source_query": "오이 경매",
       "source_channel": "naver_api"
     },
@@ -14725,20 +14625,20 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "제놀루션, 토마토 반점위조바이러스 작물보호제 PCT 국제출원 완료",
-      "url": "https://view.asiae.co.kr/article/2026061008315899492",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "제놀루션 TSWV 타깃 작물보호제 PCT 국제출원 완료",
+      "url": "https://www.newsis.com/view/NISX20260610_0003663030",
       "source_query": "토마토 병해충",
       "source_channel": "naver_api"
     },
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "제놀루션 TSWV 타깃 작물보호제 PCT 국제출원 완료",
-      "url": "https://www.newsis.com/view/NISX20260610_0003663030",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "제놀루션, 토마토 반점위조바이러스 작물보호제 PCT 국제출원 완료",
+      "url": "https://view.asiae.co.kr/article/2026061008315899492",
       "source_query": "토마토 병해충",
       "source_channel": "naver_api"
     },
@@ -14884,6 +14784,16 @@
     },
     {
       "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "농사포인트 - 양파, 망에 담아 통풍 잘되고 직사광선 피하는 곳 보관",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64889",
+      "source_query": "사과 병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
       "reason": "pest_partial_mention",
       "press": "경북매일",
       "domain": "kbmaeil.com",
@@ -14907,8 +14817,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "title": "6월 과일류 농업관측",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64925",
       "source_query": "사과 병해충",
       "source_channel": "naver_api"
     },
@@ -14917,18 +14827,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "6월 과일류 농업관측",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64925",
-      "source_query": "사과 병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "농사포인트 - 양파, 망에 담아 통풍 잘되고 직사광선 피하는 곳 보관",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64889",
+      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
       "source_query": "사과 병해충",
       "source_channel": "naver_api"
     },
@@ -14967,8 +14867,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "6월 과일류 농업관측",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64925",
+      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
       "source_query": "포도 병해충",
       "source_channel": "naver_api"
     },
@@ -14977,8 +14877,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "title": "6월 과일류 농업관측",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64925",
       "source_query": "포도 병해충",
       "source_channel": "naver_api"
     },
@@ -15007,8 +14907,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
+      "title": "이제 힘들고 어려운 일 저에게 맡기세요!",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64938",
       "source_query": "딸기 병해충",
       "source_channel": "naver_api"
     },
@@ -15017,8 +14917,8 @@
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
-      "title": "이제 힘들고 어려운 일 저에게 맡기세요!",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64938",
+      "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
       "source_query": "딸기 병해충",
       "source_channel": "naver_api"
     },
@@ -15055,20 +14955,20 @@
     {
       "section": "pest",
       "reason": "potato_non_fresh_context",
-      "press": "아시아경제",
-      "domain": "view.asiae.co.kr",
-      "title": "제놀루션, 토마토반점위조바이러스 작물보호제 PCT 국제출원 완료",
-      "url": "https://view.asiae.co.kr/article/2026061008315899492",
+      "press": "뉴시스",
+      "domain": "newsis.com",
+      "title": "제놀루션 TSWV 타깃 작물보호제 PCT 국제출원 완료",
+      "url": "https://www.newsis.com/view/NISX20260610_0003663030",
       "source_query": "파프리카 병해충",
       "source_channel": "naver_api"
     },
     {
       "section": "pest",
       "reason": "potato_non_fresh_context",
-      "press": "뉴시스",
-      "domain": "newsis.com",
-      "title": "제놀루션 TSWV 타깃 작물보호제 PCT 국제출원 완료",
-      "url": "https://www.newsis.com/view/NISX20260610_0003663030",
+      "press": "아시아경제",
+      "domain": "view.asiae.co.kr",
+      "title": "제놀루션, 토마토반점위조바이러스 작물보호제 PCT 국제출원 완료",
+      "url": "https://view.asiae.co.kr/article/2026061008315899492",
       "source_query": "파프리카 병해충",
       "source_channel": "naver_api"
     },
@@ -15124,6 +15024,16 @@
     },
     {
       "section": "pest",
+      "reason": "apple_non_edible_context",
+      "press": "원예산업신문",
+      "domain": "wonyesanup.co.kr",
+      "title": "농사포인트 - 양파, 망에 담아 통풍 잘되고 직사광선 피하는 곳 보관",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64889",
+      "source_query": "복숭아 병해충",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "pest",
       "reason": "pest_partial_mention",
       "press": "원예산업신문",
       "domain": "wonyesanup.co.kr",
@@ -15139,16 +15049,6 @@
       "domain": "wonyesanup.co.kr",
       "title": "특별대담 / 농업과학기술 혁신으로 기후위기·경영난 정면 돌파",
       "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64936",
-      "source_query": "복숭아 병해충",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
-      "reason": "apple_non_edible_context",
-      "press": "원예산업신문",
-      "domain": "wonyesanup.co.kr",
-      "title": "농사포인트 - 양파, 망에 담아 통풍 잘되고 직사광선 피하는 곳 보관",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64889",
       "source_query": "복숭아 병해충",
       "source_channel": "naver_api"
     },
@@ -16203,26 +16103,6 @@
       "source_channel": ""
     },
     {
-      "section": "dist",
-      "reason": "livestock_only",
-      "press": "문화일보",
-      "domain": "munhwa.com",
-      "title": "서울시, 흑염소·오리고기 원산지 특별단속…유전자 분석도 실시",
-      "url": "https://munhwa.com/article/11594458",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "문화일보",
-      "domain": "munhwa.com",
-      "title": "서울시, 흑염소·오리고기 원산지 특별단속…유전자 분석도 실시",
-      "url": "https://munhwa.com/article/11594458",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "supply",
       "reason": "must_terms_fail",
       "press": "이코노뉴스",
@@ -16249,6 +16129,16 @@
       "domain": "newsworker.co.kr",
       "title": "함평군, '집중호우·태풍 대비'... 농가 현장기술 지원 확대",
       "url": "https://newsworker.co.kr/news/articleView.html?idxno=430547",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "네이트",
+      "domain": "news.nate.com",
+      "title": "충북 과수화상병 7개 시·군 확산…40농가 피해",
+      "url": "https://news.nate.com/view/20260610n12674?mid=m01&list=recent&cpcd=",
       "source_query": "",
       "source_channel": ""
     },
@@ -17071,12 +16961,12 @@
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 6,
       "total_candidates": 139,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
           "selected": false,
           "is_core": false,
-          "score": 97.56,
+          "score": 97.36,
           "semantic_similarity": 0.8326,
           "semantic_noise_similarity": 0.8256,
           "semantic_margin": 0.007,
@@ -17140,7 +17030,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 52.54,
+          "score": 52.34,
           "semantic_similarity": 0.8271,
           "semantic_noise_similarity": 0.8046,
           "semantic_margin": 0.0225,
@@ -17332,7 +17222,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 39.06,
+          "score": 38.86,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17460,7 +17350,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 32.83,
+          "score": 32.63,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17650,8 +17540,8 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 28.6,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -17663,10 +17553,10 @@
           "domain": "mbn.co.kr",
           "title": "\"경험 대신 데이터로\"…경기도 시설 가지 의 '스마트한 변신'",
           "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5198892",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 2.08,
-          "selection_stage": "core_final",
-          "selection_note": "eggplant",
+          "selection_stage": "below_threshold",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "가지 재배",
@@ -17779,7 +17669,7 @@
         },
         {
           "selected": true,
-          "is_core": false,
+          "is_core": true,
           "score": 23.8,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -17793,7 +17683,7 @@
           "url": "https://www.newsis.com/view/NISX20260610_0003663799",
           "reason": "",
           "fit_score": 2.28,
-          "selection_stage": "supply_board_bridge",
+          "selection_stage": "core_final",
           "selection_note": "napa_cabbage",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -18228,7 +18118,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.76,
+          "score": 13.36,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18484,7 +18374,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.67,
+          "score": 12.47,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18644,7 +18534,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.25,
+          "score": 8.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19099,7 +18989,7 @@
       "core_min": 47.28,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 7,
-      "total_candidates": 104,
+      "total_candidates": 102,
       "total_selected": 5,
       "top": [
         {
@@ -19585,38 +19475,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 34.83,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "남도일보",
-          "domain": "namdonews.com",
-          "title": "서창농협, 채소모종 무상 지원",
-          "url": "https://www.namdonews.com/news/articleView.html?idxno=913160",
-          "reason": "below_threshold",
-          "fit_score": 4.17,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "가지 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 33.01,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -19644,6 +19502,38 @@
             "offtopic_pen": 1,
             "press_tier": 2,
             "press_weight": 2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 34.63,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "남도일보",
+          "domain": "namdonews.com",
+          "title": "서창농협, 채소모종 무상 지원",
+          "url": "https://www.namdonews.com/news/articleView.html?idxno=913160",
+          "reason": "below_threshold",
+          "fit_score": 4.17,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "가지 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -19873,7 +19763,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.18,
+          "score": 27.98,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19937,7 +19827,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 24.27,
+          "score": 24.07,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20161,7 +20051,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.97,
+          "score": 20.77,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20188,38 +20078,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 22.61,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "더팩트",
-          "domain": "news.tf.co.kr",
-          "title": "지방 소멸의 벽을 넘다…봉화군이 만든 '일손 혁명'의 기적",
-          "url": "https://news.tf.co.kr/read/national/2331178.htm",
-          "reason": "below_threshold",
-          "fit_score": -0.51,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "수박 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 6,
-            "offtopic_pen": 1,
-            "press_tier": 1,
-            "press_weight": -1.5
           }
         },
         {
@@ -20252,6 +20110,38 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.41,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "더팩트",
+          "domain": "news.tf.co.kr",
+          "title": "지방 소멸의 벽을 넘다…봉화군이 만든 '일손 혁명'의 기적",
+          "url": "https://news.tf.co.kr/read/national/2331178.htm",
+          "reason": "below_threshold",
+          "fit_score": -0.51,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "수박 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 6,
+            "offtopic_pen": 1,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -21079,12 +20969,12 @@
           "sample_title": "창간 축하 메시지(자조금 단체장)"
         },
         {
-          "seed": "가지",
-          "rep": "가지",
+          "seed": "감자",
+          "rep": "감자",
           "hits": 7,
-          "selected_hits": 1,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "국민과 함께하는 특별성과 포상"
+          "sample_title": "KREI \" 감자 ·고구마 산업, 기후변화·수입 증가 대응 정책 필요\""
         },
         {
           "seed": "양념채소",
@@ -21158,7 +21048,7 @@
       "core_min": 39.54,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 7,
-      "total_candidates": 41,
+      "total_candidates": 40,
       "total_selected": 4,
       "top": [
         {
@@ -21324,7 +21214,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 46.32,
+          "score": 46.12,
           "semantic_similarity": 0.8122,
           "semantic_noise_similarity": 0.7739,
           "semantic_margin": 0.0383,
@@ -21676,7 +21566,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.35,
+          "score": 23.15,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21868,38 +21758,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.97,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "아시아투데이",
-          "domain": "asiatoday.co.kr",
-          "title": "매실 출하 본격화…홈앤쇼핑, 농가 판로 확대 지원",
-          "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260610010003392",
-          "reason": "below_threshold",
-          "fit_score": 3.05,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 판로 확대",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.63,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 12.92,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -22028,7 +21886,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.87,
+          "score": 9.67,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22092,7 +21950,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.02,
+          "score": 6.62,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22348,7 +22206,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -5.95,
+          "score": -6.15,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22494,7 +22352,7 @@
         {
           "seed": "대책",
           "rep": "대책",
-          "hits": 23,
+          "hits": 22,
           "selected_hits": 4,
           "missing": false,
           "sample_title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다"
@@ -22574,9 +22432,9 @@
       ]
     },
     "pest": {
-      "threshold": 58.24,
-      "tail_cut": 58.54,
-      "core_min": 58.24,
+      "threshold": 58.04,
+      "tail_cut": 58.34,
+      "core_min": 58.04,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 2,
       "total_candidates": 41,
@@ -22585,7 +22443,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 71.37,
+          "score": 71.17,
           "semantic_similarity": 0.8709,
           "semantic_noise_similarity": 0.7919,
           "semantic_margin": 0.079,
@@ -22617,7 +22475,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 65.24,
+          "score": 65.04,
           "semantic_similarity": 0.8682,
           "semantic_noise_similarity": 0.7782,
           "semantic_margin": 0.0901,
@@ -22713,7 +22571,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 50.49,
+          "score": 50.29,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22745,7 +22603,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 50.49,
+          "score": 50.29,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22809,7 +22667,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 46.09,
+          "score": 45.89,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22969,7 +22827,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 36.0,
+          "score": 37.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22979,20 +22837,20 @@
           "press": "네이트",
           "domain": "news.nate.com",
           "title": "충북 과수화상병 7개 시·군 확산…40농가 피해",
-          "url": "https://news.nate.com/view/20260610n12674?mid=n1101",
+          "url": "https://m.news.nate.com/view/20260610n12674?mid=m01&list=recent&cpcd=",
           "reason": "below_threshold",
-          "fit_score": 5.0,
+          "fit_score": 5.1,
           "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "pest",
-          "reassigned_from": "",
+          "reassigned_from": "policy",
           "source_query": "과수화상병 충북 농가 시름",
           "source_channel": "google_news",
           "signals": {
             "horti_sc": 0.0,
             "market_hits": 0,
-            "strength": 4,
-            "korea": 4,
+            "strength": 5,
+            "korea": 6,
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
@@ -23240,9 +23098,9 @@
           "fit_score": 3.31,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "supply",
-          "source_query": "복숭아 재배",
+          "origin_section": "pest",
+          "reassigned_from": "",
+          "source_query": "병해충 예찰 방제",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.32,
@@ -23257,7 +23115,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.35,
+          "score": 23.15,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23272,9 +23130,9 @@
           "fit_score": 3.31,
           "selection_stage": "below_threshold",
           "selection_note": "",
-          "origin_section": "pest",
-          "reassigned_from": "",
-          "source_query": "병해충 예찰 방제",
+          "origin_section": "supply",
+          "reassigned_from": "supply",
+          "source_query": "복숭아 재배",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.32,
@@ -23353,7 +23211,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 18.85,
+          "score": 18.65,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23639,38 +23497,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 12.23,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "원예산업신문",
-          "domain": "wonyesanup.co.kr",
-          "title": "돌발해충 ‘갈색날개매미충’ 감소",
-          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64926",
-          "reason": "",
-          "fit_score": 3.27,
-          "selection_stage": "pest_theme_diversity_replacement",
-          "selection_note": "replace_duplicate_fire_blight_tail",
-          "origin_section": "policy",
-          "reassigned_from": "pest",
-          "source_query": "",
-          "source_channel": "rss",
-          "signals": {
-            "horti_sc": 2.52,
-            "market_hits": 0,
-            "strength": 4,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 12.13,
@@ -23700,6 +23526,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 12.03,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "돌발해충 ‘갈색날개매미충’ 감소",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64926",
+          "reason": "",
+          "fit_score": 3.27,
+          "selection_stage": "pest_theme_diversity_replacement",
+          "selection_note": "replace_duplicate_fire_blight_tail",
+          "origin_section": "policy",
+          "reassigned_from": "pest",
+          "source_query": "",
+          "source_channel": "rss",
+          "signals": {
+            "horti_sc": 2.52,
+            "market_hits": 0,
+            "strength": 4,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -23915,7 +23773,7 @@
         {
           "seed": "무",
           "rep": "무",
-          "hits": 26,
+          "hits": 27,
           "selected_hits": 6,
           "missing": false,
           "sample_title": "청송군, 과수화상병 발생 대비 모의훈련 실시"
@@ -24126,10 +23984,6 @@
           2
         ],
         [
-          "가지 정책",
-          2
-        ],
-        [
           "농식품부 보도자료 농산물",
           1
         ],
@@ -24147,6 +24001,10 @@
         ],
         [
           "농산물 가격 결정 구조 개선",
+          1
+        ],
+        [
+          "농산물 가격안정 지원사업",
           1
         ]
       ],
@@ -24180,7 +24038,7 @@
         "editorial_recall_rows": 0,
         "editorial_recall_added": 0
       },
-      "items_total": 68,
+      "items_total": 67,
       "seed_coverage": [
         {
           "seed": "농식품부",
@@ -24931,7 +24789,7 @@
       "window_hits_top": [
         [
           "농산물 유통 현장",
-          7
+          6
         ],
         [
           "온라인 도매시장 청과",
@@ -24939,10 +24797,6 @@
         ],
         [
           "도매시장 수급",
-          3
-        ],
-        [
-          "농산물 판로 확대",
           3
         ],
         [
@@ -24967,6 +24821,10 @@
         ],
         [
           "품목농협 경제사업",
+          2
+        ],
+        [
+          "농산물 판로 확대",
           2
         ],
         [
@@ -25020,7 +24878,7 @@
         "editorial_recall_rows": 0,
         "editorial_recall_added": 0
       },
-      "items_total": 57,
+      "items_total": 55,
       "seed_coverage": [
         {
           "seed": "가락시장",
@@ -25041,7 +24899,7 @@
         {
           "seed": "판로",
           "rep": "판로",
-          "hits": 6,
+          "hits": 5,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "농협전남본부, 농협몰(NH싱씽몰) 입점 설명회 개최"
@@ -25081,7 +24939,7 @@
         {
           "seed": "현장",
           "rep": "현장",
-          "hits": 13,
+          "hits": 12,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "강원 농협 , 농산물 출하· 유통 현장 점검"
