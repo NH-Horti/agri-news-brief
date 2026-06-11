@@ -29847,6 +29847,56 @@ def _dedupe_articles_for_commodity_board(item: dict[str, Any], articles: list[Ar
     return out
 
 
+def _rebalance_commodity_board_preview_pairs(
+    pairs: list[tuple[Article, dict[str, Any]]],
+    secondary_preview_limit: int,
+) -> list[tuple[Article, dict[str, Any]]]:
+    if secondary_preview_limit <= 0 or len(pairs) <= 2:
+        return pairs
+    primary_article, primary_metrics = pairs[0]
+    primary_section = str(getattr(primary_article, "section", "") or "").strip()
+    if not primary_section:
+        return pairs
+    preview_end = min(len(pairs), 1 + secondary_preview_limit)
+    preview_pairs = pairs[1:preview_end]
+    if any(str(getattr(article, "section", "") or "").strip() != primary_section for article, _ in preview_pairs):
+        return pairs
+
+    primary_score = max(1.0, float(primary_metrics.get("representative_score") or 0.0))
+    candidate: tuple[int, Article, dict[str, Any]] | None = None
+    candidate_sort: tuple[Any, ...] | None = None
+    for idx, (article, metrics) in enumerate(pairs[preview_end:], start=preview_end):
+        section = str(getattr(article, "section", "") or "").strip()
+        if not section or section == primary_section:
+            continue
+        representative_rank = int(metrics.get("representative_rank", -1))
+        representative_score = float(metrics.get("representative_score") or 0.0)
+        board_score = float(metrics.get("board_score") or 0.0)
+        if representative_rank < 3:
+            continue
+        if representative_score < 230.0 or representative_score < primary_score * 0.55:
+            continue
+        sort_key = (
+            representative_rank,
+            representative_score,
+            board_score,
+            float(metrics.get("selection_fit_score") or 0.0),
+            getattr(article, "pub_dt_kst", datetime.min.replace(tzinfo=KST)),
+        )
+        if candidate_sort is None or sort_key > candidate_sort:
+            candidate = (idx, article, metrics)
+            candidate_sort = sort_key
+    if candidate is None:
+        return pairs
+
+    out = list(pairs)
+    candidate_idx, article, metrics = candidate
+    out.pop(candidate_idx)
+    insert_at = max(1, preview_end - 1)
+    out.insert(insert_at, (article, metrics))
+    return out
+
+
 def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) -> dict[str, Any]:
     secondary_preview_limit = 2
     item_state: dict[str, dict[str, Any]] = {
@@ -29959,6 +30009,7 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             for article, metrics in _all_repr_metrics
             if _commodity_board_article_is_active_candidate(item_payload, article, metrics)
         ]
+        qualified_metric_pairs = _rebalance_commodity_board_preview_pairs(qualified_metric_pairs, secondary_preview_limit)
         qualified_articles = [article for article, _ in qualified_metric_pairs]
         top_article_metrics = dict(qualified_metric_pairs[0][1]) if qualified_metric_pairs else {}
         item_payload["articles"] = articles
