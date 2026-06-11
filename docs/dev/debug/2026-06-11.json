@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T10:59:17+09:00",
-  "build_tag": "9051d97",
+  "generated_at_kst": "2026-06-11T11:18:22+09:00",
+  "build_tag": "1f89e45",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18471,7 +18471,7 @@
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 134,
-      "total_selected": 4,
+      "total_selected": 5,
       "top": [
         {
           "selected": true,
@@ -18890,7 +18890,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 28.6,
           "semantic_similarity": 0.0,
@@ -18903,10 +18903,10 @@
           "domain": "mbn.co.kr",
           "title": "\"경험 대신 데이터로\"…경기도 시설 가지 의 '스마트한 변신'",
           "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5198892",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 2.08,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
+          "selection_stage": "supply_board_bridge",
+          "selection_note": "eggplant",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "가지 재배",
@@ -19402,7 +19402,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 14.16,
           "semantic_similarity": 0.0,
@@ -19415,9 +19415,9 @@
           "domain": "asiatoday.co.kr",
           "title": "청도 복숭아 출하 시작…첫 경매서 5kg 한 상자 7만원",
           "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260610010003630",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 1.58,
-          "selection_stage": "supply_underfill_recovery",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -19500,38 +19500,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.96,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "노컷뉴스",
-          "domain": "nocutnews.co.kr",
-          "title": "농협, 양파 가격회복 위해 최대 882억원 투입",
-          "url": "https://www.nocutnews.co.kr/news/6530694",
-          "reason": "below_threshold",
-          "fit_score": 2.6,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 12.81,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -19559,38 +19527,6 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.6,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "대경일보",
-          "domain": "dkilbo.com",
-          "title": "한국전력 대구·경북본부, 농가 전기료 줄이러 포도밭 갔다",
-          "url": "https://www.dkilbo.com/news/articleView.html?idxno=545934",
-          "reason": "below_threshold",
-          "fit_score": -0.92,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "농가 생산비 부담",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 2.4,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
           }
         },
         {
@@ -19655,6 +19591,70 @@
             "offtopic_pen": 2,
             "press_tier": 2,
             "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.76,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "노컷뉴스",
+          "domain": "nocutnews.co.kr",
+          "title": "농협, 양파 가격회복 위해 최대 882억원 투입",
+          "url": "https://www.nocutnews.co.kr/news/6530694",
+          "reason": "below_threshold",
+          "fit_score": 2.6,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 14.4,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "대경일보",
+          "domain": "dkilbo.com",
+          "title": "한국전력 대구·경북본부, 농가 전기료 줄이러 포도밭 갔다",
+          "url": "https://www.dkilbo.com/news/articleView.html?idxno=545934",
+          "reason": "below_threshold",
+          "fit_score": -0.92,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "농가 생산비 부담",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 2.4,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -20392,6 +20392,36 @@
             "press_tier": 1,
             "press_weight": -1.5
           }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 41.44,
+          "semantic_similarity": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "강원농협, 농산물 출하·유통 현장 점검",
+          "url": "https://www.nongmin.com/article/20260609500583",
+          "reason": "",
+          "fit_score": 2.44,
+          "selection_stage": "supply_board_bridge",
+          "selection_note": "tomato",
+          "origin_section": "policy",
+          "reassigned_from": "dist",
+          "source_query": "토마토 수급 안정",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.92,
+            "market_hits": 3,
+            "strength": 7,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
+          }
         }
       ],
       "coverage_ledger": [
@@ -20436,20 +20466,20 @@
           "sample_title": "청도 복숭아 출하 시작…첫 경매서 5kg 한 상자 7만원"
         },
         {
+          "seed": "화훼자조금",
+          "rep": "화훼자조금",
+          "hits": 1,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "우리 화훼 농업 역사와 문화 조명"
+        },
+        {
           "seed": "농가",
           "rep": "농가",
           "hits": 42,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "국산 양파 값, 수입산보다 낮아졌다…aT·국회 대책 마련 논의"
-        },
-        {
-          "seed": "농식품부",
-          "rep": "농식품부",
-          "hits": 8,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "국산 양파 가격 역전 장기화…aT, 대응 방안 토론회 개최"
         },
         {
           "seed": "유자",
@@ -23238,7 +23268,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.96,
+          "score": 12.76,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
