@@ -409,6 +409,8 @@ class ReportEvalTests(unittest.TestCase):
 
         self.assertLess(result["scores"]["commodity_board_quality"], 65.0)
         self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 0.0)
+        self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 1.0)
+        self.assertAlmostEqual(result["metrics"]["commodity_board_coverage_rate"], round(1 / report_eval.MANAGED_COMMODITY_EVAL_ITEM_COUNT, 4))
         self.assertEqual(result["commodity_primary_linkage_samples"][0]["item_label"], "애호박(쥬키니)")
 
     def test_commodity_board_strict_link_accepts_weather_and_field_issue_terms(self) -> None:
@@ -453,6 +455,7 @@ class ReportEvalTests(unittest.TestCase):
         result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
 
         self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 1.0)
+        self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
         self.assertEqual(result["commodity_primary_linkage_samples"], [])
 
     def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:

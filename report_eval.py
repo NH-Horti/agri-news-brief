@@ -19,6 +19,7 @@ COMMODITY_SURFACES = frozenset({"commodity_primary", "commodity_support", "commo
 PREFERRED_BRIEFING_COUNT_PER_SECTION = 5
 SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION = 4
 MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION = 3
+MANAGED_COMMODITY_EVAL_ITEM_COUNT = 33
 TRACKING_QUERY_KEYS = frozenset(
     {
         "utm_source",
@@ -1432,6 +1433,38 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         len(commodity_primary_records),
         default=0.0,
     )
+    commodity_board_coverage_rate = _rate(
+        len(commodity_primary_records),
+        MANAGED_COMMODITY_EVAL_ITEM_COUNT,
+        default=0.0,
+    )
+    commodity_primary_title_item_missing_rate = _rate(
+        sum(1 for record in commodity_primary_records if not bool(record.get("title_item_focus"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_body_only_rate = _rate(
+        sum(
+            1
+            for record in commodity_primary_records
+            if (not bool(record.get("title_item_focus"))) and bool(record.get("item_focus_with_body"))
+        ),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_false_link_rate = _rate(
+        sum(
+            1
+            for record in commodity_primary_records
+            if (
+                (not bool(record.get("title_item_focus")))
+                or bool(record.get("title_weak_story"))
+                or int(record.get("representative_rank") or 0) <= 1
+            )
+        ),
+        len(commodity_primary_records),
+        default=0.0,
+    )
     commodity_primary_section_counter = Counter(
         str(record.get("section") or "") for record in commodity_primary_records if str(record.get("section") or "") in SECTION_KEYS
     )
@@ -1547,9 +1580,14 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         or commodity_primary_item_focus_rate < 0.9
         or commodity_primary_strict_link_rate < 0.65
         or commodity_primary_dominant_section_rate > 0.68
+        or commodity_primary_false_link_rate > 0.0
     ):
         improvement_hints.append(
             "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요."
+        )
+    if commodity_board_coverage_rate < 0.3:
+        improvement_hints.append(
+            "품목 보드 coverage가 낮습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요."
         )
     if title_unique_rate < 0.8 or surface_reuse_penalty > 0.1:
         improvement_hints.append("동일 이슈가 브리핑/품목 보드에 반복 노출됩니다. story signature 중복 억제와 commodity surface 재사용 상한이 필요합니다.")
@@ -1683,6 +1721,10 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "commodity_primary_title_issue_signal_rate": round(commodity_primary_title_issue_signal_rate, 4),
             "commodity_primary_strict_link_rate": round(commodity_primary_strict_link_rate, 4),
             "commodity_primary_low_rank_rate": round(commodity_primary_low_rank_rate, 4),
+            "commodity_board_coverage_rate": round(commodity_board_coverage_rate, 4),
+            "commodity_primary_title_item_missing_rate": round(commodity_primary_title_item_missing_rate, 4),
+            "commodity_primary_body_only_rate": round(commodity_primary_body_only_rate, 4),
+            "commodity_primary_false_link_rate": round(commodity_primary_false_link_rate, 4),
             "commodity_primary_dominant_section_rate": round(commodity_primary_dominant_section_rate, 4),
             "commodity_primary_section_balance_score": round(commodity_primary_section_balance_score, 4),
         },
@@ -1767,6 +1809,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_primary_weak_rate = float(metrics.get("commodity_primary_weak_rate", 0.0) or 0.0)
     commodity_primary_strict_link_rate = float(metrics.get("commodity_primary_strict_link_rate", 1.0) or 1.0)
     commodity_primary_dominant_section_rate = float(metrics.get("commodity_primary_dominant_section_rate", 0.0) or 0.0)
+    commodity_board_coverage_rate = float(metrics.get("commodity_board_coverage_rate", 1.0) or 1.0)
+    commodity_primary_false_link_rate = float(metrics.get("commodity_primary_false_link_rate", 0.0) or 0.0)
 
     section_card_min_fit = {
         "default": 0.8,
@@ -1862,6 +1906,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         or commodity_primary_item_focus_rate < 0.9
         or commodity_primary_strict_link_rate < 0.65
         or commodity_primary_dominant_section_rate > 0.68
+        or commodity_primary_false_link_rate > 0.0
     ):
         reasons.append("commodity_board")
         commodity_active_min_rank = 2
@@ -1883,6 +1928,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         commodity_program_core_min_rank = 3
         commodity_require_direct_item_focus = True
         commodity_require_issue_signal = True
+    if commodity_board_coverage_rate < 0.3:
+        reasons.append("commodity_board_low_coverage")
 
     # ── ceiling caps: 가드레일이 지나치게 엄격해져 기사 선정 자체가 불가능한 피드백 루프를 방지 ──
     _CAPS: dict[str, float] = {
@@ -1919,6 +1966,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         "commodity_program_core_min_rank": int(commodity_program_core_min_rank),
         "commodity_require_issue_signal": bool(commodity_require_issue_signal),
         "commodity_require_direct_item_focus": bool(commodity_require_direct_item_focus),
+        "commodity_strict_primary_only": True,
+        "commodity_disable_primary_fallback": True,
     }
 
 
@@ -1962,6 +2011,10 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "commodity_primary_title_issue_signal_rate": round(float(metrics.get("commodity_primary_title_issue_signal_rate", 0.0) or 0.0), 4),
             "commodity_primary_strict_link_rate": round(float(metrics.get("commodity_primary_strict_link_rate", 0.0) or 0.0), 4),
             "commodity_primary_low_rank_rate": round(float(metrics.get("commodity_primary_low_rank_rate", 0.0) or 0.0), 4),
+            "commodity_board_coverage_rate": round(float(metrics.get("commodity_board_coverage_rate", 0.0) or 0.0), 4),
+            "commodity_primary_title_item_missing_rate": round(float(metrics.get("commodity_primary_title_item_missing_rate", 0.0) or 0.0), 4),
+            "commodity_primary_body_only_rate": round(float(metrics.get("commodity_primary_body_only_rate", 0.0) or 0.0), 4),
+            "commodity_primary_false_link_rate": round(float(metrics.get("commodity_primary_false_link_rate", 0.0) or 0.0), 4),
             "commodity_primary_dominant_section_rate": round(float(metrics.get("commodity_primary_dominant_section_rate", 0.0) or 0.0), 4),
         },
         "selection_guardrails": guardrails,
@@ -2171,7 +2224,9 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
         f"editorial_penalty={metrics.get('editorial_quality_penalty', 0):.1f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
+        f"commodity_coverage={metrics.get('commodity_board_coverage_rate', 0):.2f}, "
         f"commodity_strict_link={metrics.get('commodity_primary_strict_link_rate', 0):.2f}, "
+        f"commodity_false_link={metrics.get('commodity_primary_false_link_rate', 0):.2f}, "
         f"commodity_dominant_section={metrics.get('commodity_primary_dominant_section_rate', 0):.2f}, "
         f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
         f"{editorial_block}\n"
