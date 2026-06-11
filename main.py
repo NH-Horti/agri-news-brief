@@ -1080,6 +1080,7 @@ BAN_KWS = [
     "구인", "채용", "모집공고", "아르바이트", "알바", "인턴",
     # 부동산
     "부동산", "분양", "오피스텔", "청약", "전세", "월세",
+    "주택시장", "아파트", "재건축", "재개발", "임대차", "분양가", "토지거래허가",
     # 금융/도박 스팸
     "대출", "보험", "카지노", "바카라", "토토", "도박",
     # 엔터테인먼트/연예 - 농업 브리핑에 부적절
@@ -4213,13 +4214,17 @@ _MANAGED_COMMODITY_FOCUS_STRONG_MIN = 4.6
 _MANAGED_COMMODITY_BOARD_EVENT_TITLE_TERMS = (
     "교육", "기술교육", "총회", "설명회", "간담회", "워크숍", "세미나",
     "행사", "축제", "판촉", "특판", "할인판매", "할인 행사", "홍보",
-    "기념식", "발대식", "출범식", "박람회", "엑스포",
+    "기념식", "발대식", "출범식", "박람회", "엑스포", "평가회",
 )
 _MANAGED_COMMODITY_BOARD_TRAINING_TITLE_TERMS = (
     "교육", "기술교육", "재배기술", "재배 기술", "컨설팅", "현장 컨설팅",
     "총회", "설명회", "워크숍", "세미나", "아카데미", "개강", "모집",
     "기술지도", "당부", "요령", "방법", "재배 시기", "재배시기",
     "파종", "정식", "심기", "수경 재배", "수경재배", "싹 자르기", "싹자르기",
+)
+_MANAGED_COMMODITY_BOARD_ADMIN_TITLE_TERMS = (
+    "포상", "수상", "시상", "특별성과", "공무원", "추천 품종", "추천품종",
+    "등록된 제초제", "제초제", "식품원료", "원료 등재", "등재", "계약 체결",
 )
 _MANAGED_COMMODITY_BOARD_PROFILE_TITLE_TERMS = (
     "인터뷰", "대담", "대표", "회장", "사장", "농부의 길", "스토리", "사람들",
@@ -4228,6 +4233,8 @@ _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "가격", "값", "시세", "수급", "출하", "반입", "경락", "경매", "저장", "재고",
     "폭락", "급락", "강세", "약세", "불안", "위기", "비상", "부담", "생산비", "난방비",
     "감소", "증가", "과잉", "부족", "산업", "무너질라", "모니터링",
+    "작황", "생산량", "수확", "물량", "도매가격", "수출", "검역", "통관",
+    "병해충", "방제", "해충", "피해", "호조", "하락", "상승",
 )
 _COMMODITY_BOARD_MARKET_KEEP_TERMS = tuple(
     w.lower()
@@ -6289,6 +6296,11 @@ _COMMODITY_SUPPORT_TITLE_TERMS = (
 _COMMODITY_SUPPORT_KEEP_TERMS = (
     "가격", "시세", "수급", "경락", "경매", "반입", "도매시장", "공판장", "가락시장", "저장", "재고",
     "생산량 급감", "물량 감소", "폭락", "급락", "하락", "약세", "강세", "난방비", "생산비", "냉해", "저온", "피해",
+)
+_COMMODITY_SUPPORT_LOW_VALUE_TITLE_TERMS = (
+    "보급종", "종서", "종자", "상토", "장려금", "품종 선택", "품종선택",
+    "추천 품종", "추천품종", "기술 지원", "기술지원", "재배 기술", "재배기술",
+    "관리법", "요령", "당부", "방제약", "약제 공급",
 )
 _COMMODITY_CONSUMER_GUIDE_TERMS = (
     "알뜰장보기", "구매 타이밍", "다이어트", "비타민", "드세요", "한입", "더 달콤", "1인 가구", "효자",
@@ -26895,6 +26907,10 @@ def _commodity_board_item_article_representative_metrics(
         and not operational_issue_signal
         and feature_kind != "quality"
     )
+    weak_admin_title = (
+        any(term.lower() in title_l for term in _MANAGED_COMMODITY_BOARD_ADMIN_TITLE_TERMS)
+        and not market_response
+    )
     weak_consumer_lifestyle = consumer_noise_hits >= 1 and (not operational_issue_signal) and (not direct_supply)
     # 제목에 레시피/뷰티 키워드가 직접 등장 → 절대 대표기사 불가
     _TITLE_RECIPE_RETAIL_BLOCK = ("레시피", "요리법", "조리법", "볶음", "볶음밥", "라면", "만들기", "끓이기", "무침", "반찬", "밑반찬", "올리브영", "화장품", "뷰티", "스킨케어", "코스메틱", "맛집")
@@ -26903,6 +26919,7 @@ def _commodity_board_item_article_representative_metrics(
     weak_blossom_tourism = fruit_blossom_tourism and not operational_issue_signal
     weak_sales_promo = is_commodity_sales_promo_context(title, desc) and not market_response
     weak_political_statement = is_commodity_political_statement_context(title, desc) and not market_response
+    support_low_value_title_hits = count_any(title_l, [w.lower() for w in _COMMODITY_SUPPORT_LOW_VALUE_TITLE_TERMS])
     weak_support_advice = is_commodity_support_advice_context(title, desc) and not market_response
     weak_consumer_guide = is_commodity_consumer_guide_context(title, desc) and not market_response
     weak_regional_branding = is_commodity_regional_branding_context(title, desc) and not market_response
@@ -26955,6 +26972,7 @@ def _commodity_board_item_article_representative_metrics(
                 weak_tourism,
                 weak_blossom_tourism,
                 weak_sales_promo,
+                weak_admin_title,
                 weak_political_statement,
                 weak_consumer_guide,
                 weak_regional_branding,
@@ -26991,13 +27009,14 @@ def _commodity_board_item_article_representative_metrics(
         weak_event = False
         if not weak_title_recipe_retail:
             weak_consumer_lifestyle = False
-        weak_support_advice = False
+        if support_low_value_title_hits == 0:
+            weak_support_advice = False
         weak_regional_branding = False
 
     representative_rank = -1
     if not board_eligible:
         representative_rank = -1
-    elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch or weak_labor_help or weak_local_political or weak_local_promo or weak_wine_lifestyle or weak_flower_consumer_lifestyle or weak_research_award:
+    elif weak_title_recipe_retail or weak_training or weak_profile or weak_org_feature or weak_org_promo or weak_event or weak_admin_title or weak_consumer_lifestyle or weak_tourism or weak_blossom_tourism or weak_sales_promo or weak_political_statement or weak_support_advice or weak_consumer_guide or weak_regional_branding or weak_macro_roundup or weak_unanchored_general or weak_opinion or weak_supply_macro_official or weak_processed_panic or weak_program_brand or weak_price_support_event or weak_generic_market_watch or weak_labor_help or weak_local_political or weak_local_promo or weak_wine_lifestyle or weak_flower_consumer_lifestyle or weak_research_award:
         representative_rank = 0
     elif stage_core_story and selection_fit_score >= 1.45 and (
         issue_bucket in ("commodity_issue", "farm_action", "export_recovery")
@@ -27064,6 +27083,8 @@ def _commodity_board_item_article_representative_metrics(
         representative_score -= 16.0
     if weak_event:
         representative_score -= 10.0
+    if weak_admin_title:
+        representative_score -= 34.0
     if weak_consumer_lifestyle:
         representative_score -= 36.0
     if weak_title_recipe_retail:
@@ -27129,6 +27150,7 @@ def _commodity_board_item_article_representative_metrics(
             "weak_org_feature_story": bool(weak_org_feature),
             "weak_org_promo_story": bool(weak_org_promo),
             "weak_event_story": bool(weak_event),
+            "weak_admin_title_story": bool(weak_admin_title),
             "weak_consumer_lifestyle_story": bool(weak_consumer_lifestyle),
             "weak_tourism_story": bool(weak_tourism),
             "weak_blossom_tourism_story": bool(weak_blossom_tourism),
@@ -27210,6 +27232,15 @@ def _commodity_board_article_is_active_candidate(
     _has_operational_issue = _commodity_board_has_operational_issue_signal(article_metrics)
     _fit_score = float(article_metrics.get("selection_fit_score") or 0.0)
     _body_only_direct_focus = bool(article_metrics.get("direct_item_focus")) and _title_hits == 0
+    _title_l_for_foreign_noise = _nfkc_lower(_cb_title)
+    _foreign_unmanaged_title = (
+        count_any(_title_l_for_foreign_noise, [w.lower() for w in ("두리안", "망고", "바나나", "아보카도", "파인애플")]) >= 1
+        and count_any(_title_l_for_foreign_noise, [w.lower() for w in ("베트남", "중국", "태국", "미국", "일본", "해외", "현지")]) >= 1
+    )
+    if _foreign_unmanaged_title and _title_hits == 0:
+        return False
+    if is_foreign_unmanaged_commodity_context(_cb_title, _cb_desc) and _title_hits == 0:
+        return False
     _direct_focus_ok = bool(
         _title_hits >= 1
         or (

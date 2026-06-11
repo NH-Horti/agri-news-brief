@@ -413,6 +413,32 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_training_story"]))
 
+    def test_award_admin_story_is_not_commodity_primary_representative(self):
+        article = self._make_article(
+            "supply",
+            "농식품부, 특별성과 공무원 11명 포상…배추 수급관리 선정",
+            "배추 수급관리 업무 성과를 낸 공무원을 포상했다는 기관 소식이다.",
+            "https://example.com/cabbage-award",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("napa_cabbage"), article)
+
+        self.assertEqual(int(metrics["representative_rank"]), 0)
+        self.assertTrue(bool(metrics["weak_admin_title_story"]))
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("napa_cabbage"), article, metrics))
+
+    def test_foreign_unmanaged_body_match_is_not_active_primary_representative(self):
+        article = self._make_article(
+            "supply",
+            "'바나나 못 먹어요' 일본 식탁 초토화…수입 과일 피해 확산",
+            "일본 바나나 공급 차질과 가격 상승을 다룬 기사이며 본문 하단에 참다래 수입 피해 가능성을 짧게 언급했다.",
+            "https://example.com/kiwi-banana-noise",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("kiwifruit"), article)
+
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("kiwifruit"), article, metrics))
+
     def test_promo_campaign_story_is_not_representative(self):
         article = self._make_article(
             "supply",
