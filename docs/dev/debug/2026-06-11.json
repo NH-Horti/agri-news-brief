@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T14:35:07+09:00",
-  "build_tag": "4ba83fb",
+  "generated_at_kst": "2026-06-11T14:54:37+09:00",
+  "build_tag": "e1d2144",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18466,7 +18466,7 @@
   "sections": {
     "supply": {
       "threshold": 39.29,
-      "tail_cut": 43.59,
+      "tail_cut": 43.09,
       "core_min": 39.29,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -18636,7 +18636,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 34.35,
+          "score": 34.15,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20495,7 +20495,7 @@
     },
     "policy": {
       "threshold": 47.08,
-      "tail_cut": 49.78,
+      "tail_cut": 49.28,
       "core_min": 47.08,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -22297,7 +22297,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 16.02,
+          "score": 15.82,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22524,7 +22524,7 @@
     },
     "dist": {
       "threshold": 62.07,
-      "tail_cut": 68.17,
+      "tail_cut": 67.67,
       "core_min": 62.07,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -22854,7 +22854,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 34.75,
+          "score": 34.55,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23270,7 +23270,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.97,
+          "score": 13.77,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -23913,7 +23913,7 @@
     },
     "pest": {
       "threshold": 58.04,
-      "tail_cut": 58.54,
+      "tail_cut": 58.04,
       "core_min": 58.04,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
