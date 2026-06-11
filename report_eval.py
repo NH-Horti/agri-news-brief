@@ -821,6 +821,7 @@ def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -
 
 
 _COMMODITY_ALIAS_EXTRA: dict[str, tuple[str, ...]] = {
+    "대파": ("쪽파",),
     "풋고추": ("고추", "청양고추", "꽈리고추"),
     "참다래": ("키위",),
     "단감": ("감",),
