@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T11:18:22+09:00",
-  "build_tag": "1f89e45",
+  "generated_at_kst": "2026-06-11T11:45:58+09:00",
+  "build_tag": "58a1560",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18796,7 +18796,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.78,
+          "score": 31.58,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20076,7 +20076,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.83,
+          "score": 7.63,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20300,7 +20300,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.99,
+          "score": 4.79,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21815,38 +21815,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 20.93,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "한겨레",
-          "domain": "hani.co.kr",
-          "title": "대형마트 초가성비 경쟁…980원 숙주·690원 순두부·1000원 커피 내놔",
-          "url": "https://www.hani.co.kr/arti/economy/consumer/1262782.html",
-          "reason": "below_threshold",
-          "fit_score": 1.66,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "복숭아 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 1,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 5.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.84,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -21874,6 +21842,38 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 20.73,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "한겨레",
+          "domain": "hani.co.kr",
+          "title": "대형마트 초가성비 경쟁…980원 숙주·690원 순두부·1000원 커피 내놔",
+          "url": "https://www.hani.co.kr/arti/economy/consumer/1262782.html",
+          "reason": "below_threshold",
+          "fit_score": 1.66,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "복숭아 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 5.5
           }
         },
         {
