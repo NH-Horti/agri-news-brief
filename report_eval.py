@@ -181,15 +181,34 @@ _FALSE_POSITIVE_POLITICAL_TERMS = (
 _FALSE_POSITIVE_REDEVELOPMENT_TERMS = (
     "용적률",
     "재개발",
+    "재건축",
     "도시혁신구역",
     "화이트조닝",
     "주거지구",
+    "주택시장",
+    "아파트",
+    "분양",
+    "청약",
+    "전세",
+    "월세",
+    "임대차",
     "대단지",
     "역세권",
     "준공업지역",
     "개발 계획",
     "개발계획",
     "개발 공약",
+)
+_FALSE_POSITIVE_HOUSING_TITLE_TERMS = (
+    "주택시장",
+    "아파트",
+    "재건축",
+    "재개발",
+    "분양",
+    "청약",
+    "전세",
+    "월세",
+    "임대차",
 )
 _FALSE_POSITIVE_REAL_MARKET_TITLE_TERMS = (
     "가격",
@@ -519,6 +538,14 @@ def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str)
             return "finance_company_noise"
         if title_agri_keep == 0 and company_suffix_hit and finance_hits >= 2:
             return "finance_company_noise"
+        housing_title_hits = _term_hits(title_l, _FALSE_POSITIVE_HOUSING_TITLE_TERMS)
+        redevelopment_hits_all = _term_hits(combined, _FALSE_POSITIVE_REDEVELOPMENT_TERMS)
+        real_market_title_hits = _term_hits(title_l, _FALSE_POSITIVE_REAL_MARKET_TITLE_TERMS)
+        if article.section != "dist":
+            if title_agri_keep == 0 and housing_title_hits >= 1 and real_market_title_hits == 0:
+                return "housing_market_noise"
+            if title_agri_keep == 0 and redevelopment_hits_all >= 2 and real_market_title_hits == 0:
+                return "housing_market_noise"
 
     if article.section == "dist":
         venue_hits = _term_hits(title_l, _FALSE_POSITIVE_MARKET_VENUE_TERMS)
@@ -1327,11 +1354,19 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 representative_rank = 1
             else:
                 representative_rank = 0
+        title_item_focus = _commodity_item_focus(article)
+        title_issue_signal = _has_representative_issue_signal(article.title, "")
+        title_weak_story = _is_weak_commodity_representative(article.title, "")
         commodity_primary_records.append(
             {
                 "title": article.title,
+                "section": article.section,
                 "item_label": article.item_label,
-                "item_focus": _commodity_item_focus(article),
+                "title_item_focus": title_item_focus,
+                "title_issue_signal": title_issue_signal,
+                "title_weak_story": title_weak_story,
+                "strict_link": bool(title_item_focus and title_issue_signal and not title_weak_story and representative_rank >= 2),
+                "item_focus": title_item_focus,
                 "item_focus_with_body": _commodity_item_focus_from_text(article.item_label, article.title, body),
                 "issue_signal": _has_representative_issue_signal(article.title, body),
                 "weak_story": _is_weak_commodity_representative(article.title, body),
@@ -1360,15 +1395,76 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         [float(record.get("representative_rank") or 0.0) for record in commodity_primary_records],
         default=0.0,
     )
+    commodity_primary_title_item_focus_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("title_item_focus"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_title_issue_signal_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("title_issue_signal"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_strict_link_rate = _rate(
+        sum(1 for record in commodity_primary_records if bool(record.get("strict_link"))),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_low_rank_rate = _rate(
+        sum(1 for record in commodity_primary_records if int(record.get("representative_rank") or 0) <= 1),
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_section_counter = Counter(
+        str(record.get("section") or "") for record in commodity_primary_records if str(record.get("section") or "") in SECTION_KEYS
+    )
+    commodity_primary_dominant_section_rate = _rate(
+        max(commodity_primary_section_counter.values()) if commodity_primary_section_counter else 0,
+        len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_primary_section_balance_score = _score_inverse(
+        commodity_primary_dominant_section_rate,
+        0.48,
+        0.76,
+    )
+    commodity_primary_linkage_samples = [
+        {
+            "title": str(record.get("title") or ""),
+            "item_label": str(record.get("item_label") or ""),
+            "section": str(record.get("section") or ""),
+            "representative_rank": int(record.get("representative_rank") or 0),
+            "reasons": [
+                reason
+                for reason, present in (
+                    ("title_item_missing", not bool(record.get("title_item_focus"))),
+                    ("title_issue_missing", not bool(record.get("title_issue_signal"))),
+                    ("weak_title_story", bool(record.get("title_weak_story"))),
+                    ("low_representative_rank", int(record.get("representative_rank") or 0) <= 1),
+                )
+                if present
+            ],
+        }
+        for record in commodity_primary_records
+        if not bool(record.get("strict_link"))
+    ][:8]
     if commodity_articles and not commodity_primary_articles:
         commodity_board_quality_score = 0.0
     elif commodity_primary_records:
-        commodity_board_quality_score = 100.0 * (
+        legacy_commodity_board_quality_score = 100.0 * (
             commodity_primary_item_focus_rate * 0.28
             + _score_between(commodity_primary_issue_signal_rate, 0.45, 0.8) * 0.25
             + _score_inverse(commodity_primary_weak_rate, 0.05, 0.25) * 0.22
             + _score_between(commodity_primary_rank_avg, 1.4, 3.2) * 0.25
         )
+        linkage_quality_score = 100.0 * (
+            commodity_primary_title_item_focus_rate * 0.25
+            + _score_between(commodity_primary_title_issue_signal_rate, 0.45, 0.85) * 0.24
+            + _score_between(commodity_primary_strict_link_rate, 0.45, 0.8) * 0.28
+            + _score_inverse(commodity_primary_low_rank_rate, 0.05, 0.28) * 0.11
+            + commodity_primary_section_balance_score * 0.12
+        )
+        commodity_board_quality_score = min(legacy_commodity_board_quality_score, linkage_quality_score)
     else:
         commodity_board_quality_score = 100.0
 
@@ -1428,9 +1524,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         improvement_hints.append(
             "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요."
         )
-    if commodity_board_quality_score < 80.0 or commodity_primary_weak_rate > 0.15 or commodity_primary_item_focus_rate < 0.9:
+    if (
+        commodity_board_quality_score < 80.0
+        or commodity_primary_weak_rate > 0.15
+        or commodity_primary_item_focus_rate < 0.9
+        or commodity_primary_strict_link_rate < 0.65
+        or commodity_primary_dominant_section_rate > 0.68
+    ):
         improvement_hints.append(
-            "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요."
+            "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요."
         )
     if title_unique_rate < 0.8 or surface_reuse_penalty > 0.1:
         improvement_hints.append("동일 이슈가 브리핑/품목 보드에 반복 노출됩니다. story signature 중복 억제와 commodity surface 재사용 상한이 필요합니다.")
@@ -1560,6 +1662,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "commodity_primary_weak_rate": round(commodity_primary_weak_rate, 4),
             "commodity_primary_fit_avg": round(commodity_primary_fit_avg, 4),
             "commodity_primary_rank_avg": round(commodity_primary_rank_avg, 4),
+            "commodity_primary_title_item_focus_rate": round(commodity_primary_title_item_focus_rate, 4),
+            "commodity_primary_title_issue_signal_rate": round(commodity_primary_title_issue_signal_rate, 4),
+            "commodity_primary_strict_link_rate": round(commodity_primary_strict_link_rate, 4),
+            "commodity_primary_low_rank_rate": round(commodity_primary_low_rank_rate, 4),
+            "commodity_primary_dominant_section_rate": round(commodity_primary_dominant_section_rate, 4),
+            "commodity_primary_section_balance_score": round(commodity_primary_section_balance_score, 4),
         },
         "section_scores": {
             "briefing_fill": {section: round(section_fill_scores[section], 4) for section in SECTION_KEYS},
@@ -1581,6 +1689,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             if str(record.get("false_positive_reason") or "")
         ][:8],
         "story_duplicate_samples": story_duplicate_samples,
+        "commodity_primary_linkage_samples": commodity_primary_linkage_samples,
         "editorial_quality_samples": [
             {
                 "title": str(record.get("title") or ""),
@@ -1639,6 +1748,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
     commodity_primary_weak_rate = float(metrics.get("commodity_primary_weak_rate", 0.0) or 0.0)
+    commodity_primary_strict_link_rate = float(metrics.get("commodity_primary_strict_link_rate", 1.0) or 1.0)
+    commodity_primary_dominant_section_rate = float(metrics.get("commodity_primary_dominant_section_rate", 0.0) or 0.0)
 
     section_card_min_fit = {
         "default": 0.8,
@@ -1732,18 +1843,24 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         commodity_board_quality_score < 80.0
         or commodity_primary_weak_rate > 0.15
         or commodity_primary_item_focus_rate < 0.9
+        or commodity_primary_strict_link_rate < 0.65
+        or commodity_primary_dominant_section_rate > 0.68
     ):
         reasons.append("commodity_board")
         commodity_active_min_rank = 2
         commodity_program_core_min_rank = 3
         commodity_require_direct_item_focus = (
-            commodity_primary_item_focus_rate < 0.96 or commodity_primary_weak_rate > 0.12
+            commodity_primary_item_focus_rate < 0.96
+            or commodity_primary_strict_link_rate < 0.72
+            or commodity_primary_weak_rate > 0.12
         )
         commodity_require_issue_signal = (
-            commodity_primary_issue_signal_rate < 0.7 or commodity_primary_weak_rate > 0.15
+            commodity_primary_issue_signal_rate < 0.7
+            or commodity_primary_strict_link_rate < 0.65
+            or commodity_primary_weak_rate > 0.15
         )
 
-    if commodity_board_quality_score < 68.0 or commodity_primary_weak_rate > 0.25:
+    if commodity_board_quality_score < 68.0 or commodity_primary_weak_rate > 0.25 or commodity_primary_strict_link_rate < 0.45:
         reasons.append("commodity_board_severe")
         commodity_active_min_rank = 2
         commodity_program_core_min_rank = 3
@@ -2032,6 +2149,8 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
         f"editorial_penalty={metrics.get('editorial_quality_penalty', 0):.1f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
+        f"commodity_strict_link={metrics.get('commodity_primary_strict_link_rate', 0):.2f}, "
+        f"commodity_dominant_section={metrics.get('commodity_primary_dominant_section_rate', 0):.2f}, "
         f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
         f"{editorial_block}\n"
         f"### Improvement Hints\n"
