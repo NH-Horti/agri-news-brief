@@ -4235,6 +4235,8 @@ _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "감소", "증가", "과잉", "부족", "산업", "무너질라", "모니터링",
     "작황", "생산량", "수확", "물량", "도매가격", "수출", "검역", "통관",
     "병해충", "방제", "해충", "피해", "호조", "하락", "상승",
+    "폭염", "고온", "장마", "가뭄", "냉해", "기계화", "노동력", "절감",
+    "무단 투기", "투기", "산지 폐기", "폐기", "소비촉진",
 )
 _COMMODITY_BOARD_MARKET_KEEP_TERMS = tuple(
     w.lower()
@@ -27270,15 +27272,11 @@ def _commodity_board_article_is_active_candidate(
     if _selection_guardrail_bool("commodity_require_issue_signal", False):
         if not _has_operational_issue:
             return False
+        _title_issue_hits = count_any(_nfkc_lower(_cb_title), [w.lower() for w in _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS])
+        if _title_issue_hits == 0 and representative_rank < 4:
+            return False
     if _selection_guardrail_bool("commodity_require_direct_item_focus", False):
-        has_direct_item_focus = bool(
-            bool(article_metrics.get("direct_item_focus"))
-            or
-            int(article_metrics.get("title_primary_hits") or 0) >= 1
-            or bool(article_metrics.get("single_focus"))
-            or bool(article_metrics.get("primary_focus"))
-        )
-        if not has_direct_item_focus:
+        if int(article_metrics.get("title_primary_hits") or 0) == 0:
             return False
     if bool(item.get("program_core")):
         has_direct_item_focus = bool(article_metrics.get("direct_item_focus")) or int(article_metrics.get("title_primary_hits") or 0) >= 1 or bool(article_metrics.get("single_focus"))
