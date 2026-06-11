@@ -1,31 +1,31 @@
 {
-  "report_date": "2026-06-08",
-  "generated_at_kst": "2026-06-11T12:22:13+09:00",
+  "report_date": "2026-06-09",
+  "generated_at_kst": "2026-06-11T12:22:33+09:00",
   "scores": {
-    "section_alignment": 96.94,
-    "core_quality": 95.36,
-    "commodity_board_quality": 27.71
+    "section_alignment": 96.67,
+    "core_quality": 100.0,
+    "commodity_board_quality": 35.09
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0526,
+    "section_alignment_cross_gap_rate": 0.0556,
     "content_false_positive_rate": 0.0,
-    "weak_core_rate": 0.1429,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1053,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0526,
+    "pest_theme_duplicate_rate": 0.0556,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.6316,
-    "commodity_primary_item_focus_rate": 0.9375,
-    "commodity_primary_issue_signal_rate": 0.9375,
+    "editorial_quality_penalty": 0.4444,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_title_item_focus_rate": 0.6875,
-    "commodity_primary_title_issue_signal_rate": 0.4375,
-    "commodity_primary_strict_link_rate": 0.3125,
-    "commodity_primary_low_rank_rate": 0.125,
-    "commodity_primary_dominant_section_rate": 0.6875
+    "commodity_primary_title_item_focus_rate": 0.6429,
+    "commodity_primary_title_issue_signal_rate": 0.5,
+    "commodity_primary_strict_link_rate": 0.3571,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.6429
   },
   "selection_guardrails": {
     "driver_tags": [
@@ -64,26 +64,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "OECD, 한국 근원물가 전망치 높였다···‘인플레 고착화’ 우려 커져",
-      "href": "https://www.khan.co.kr/article/202606071613001",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "농기계 사고 119에 자동신고…농림분야 안전관리 종합대책 추진",
-      "href": "https://www.korea.kr/news/policyNewsView.do?newsId=148965974&call_from=naver_news",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "농식품부, 과수화상병 관리 ‘경계’ 격상⋯\"대응체계 강화\"",
-      "href": "https://www.viva100.com/article/20260605500573",
+      "title": "충남 홍성 금마면서도 과수화상병 발생…위기단계 '심각'",
+      "href": "https://www.jbnews.com/news/articleView.html?idxno=1505574",
       "section": "pest",
       "is_core": false,
       "reasons": [
