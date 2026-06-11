@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T12:06:16+09:00",
-  "build_tag": "5e10650",
+  "generated_at_kst": "2026-06-11T12:29:18+09:00",
+  "build_tag": "723fc8b",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18471,7 +18471,7 @@
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 134,
-      "total_selected": 5,
+      "total_selected": 4,
       "top": [
         {
           "selected": true,
@@ -18890,7 +18890,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 28.6,
           "semantic_similarity": 0.0,
@@ -18903,10 +18903,10 @@
           "domain": "mbn.co.kr",
           "title": "\"경험 대신 데이터로\"…경기도 시설 가지 의 '스마트한 변신'",
           "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5198892",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 2.08,
-          "selection_stage": "supply_board_bridge",
-          "selection_note": "eggplant",
+          "selection_stage": "below_threshold",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "가지 재배",
@@ -19402,7 +19402,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 14.16,
           "semantic_similarity": 0.0,
@@ -19415,9 +19415,9 @@
           "domain": "asiatoday.co.kr",
           "title": "청도 복숭아 출하 시작…첫 경매서 5kg 한 상자 7만원",
           "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260610010003630",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 1.58,
-          "selection_stage": "below_threshold",
+          "selection_stage": "supply_underfill_recovery",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -20108,38 +20108,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 5.75,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "데일리한국",
-          "domain": "weekly.hankooki.com",
-          "title": "충북도, 여름철 농업 재해 종합 대응체계 구축",
-          "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7168570",
-          "reason": "below_threshold",
-          "fit_score": 0.2,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감자 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 7.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -20199,6 +20167,38 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 5.55,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "데일리한국",
+          "domain": "weekly.hankooki.com",
+          "title": "충북도, 여름철 농업 재해 종합 대응체계 구축",
+          "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7168570",
+          "reason": "below_threshold",
+          "fit_score": 0.2,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감자 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -20391,36 +20391,6 @@
             "offtopic_pen": 1,
             "press_tier": 1,
             "press_weight": -1.5
-          }
-        },
-        {
-          "selected": true,
-          "is_core": false,
-          "score": 41.44,
-          "semantic_similarity": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "강원농협, 농산물 출하·유통 현장 점검",
-          "url": "https://www.nongmin.com/article/20260609500583",
-          "reason": "",
-          "fit_score": 2.44,
-          "selection_stage": "supply_board_bridge",
-          "selection_note": "tomato",
-          "origin_section": "policy",
-          "reassigned_from": "dist",
-          "source_query": "토마토 수급 안정",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 3,
-            "strength": 7,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
           }
         }
       ],
@@ -23522,38 +23492,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 6.4,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "브레이크뉴스",
-          "domain": "breaknews.com",
-          "title": "봉화군, 경북 농식품 수출정책 평가 우수상 수상…해외시장 개척 성과 ...",
-          "url": "http://www.breaknews.com/1213138",
-          "reason": "",
-          "fit_score": 2.74,
-          "selection_stage": "dist_preferred_count_recovery",
-          "selection_note": "preferred_count_tail",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 물류비",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.92,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 6.3,
@@ -23583,6 +23521,38 @@
             "offtopic_pen": 0,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 6.2,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "브레이크뉴스",
+          "domain": "breaknews.com",
+          "title": "봉화군, 경북 농식품 수출정책 평가 우수상 수상…해외시장 개척 성과 ...",
+          "url": "http://www.breaknews.com/1213138",
+          "reason": "",
+          "fit_score": 2.74,
+          "selection_stage": "dist_preferred_count_recovery",
+          "selection_note": "preferred_count_tail",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 물류비",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.92,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 5,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -23908,20 +23878,20 @@
           "sample_title": "스마트 APC 성패여부, AI 기반 '산지 유통 데이터 공유'에 달렸다"
         },
         {
-          "seed": "물류비",
-          "rep": "물류비",
-          "hits": 2,
-          "selected_hits": 0,
-          "missing": false,
-          "sample_title": "CA 수출 ·품질 관리 프로그램' 공개"
-        },
-        {
           "seed": "병해충",
           "rep": "병해충",
           "hits": 4,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "조래섭(전주원예농협 조합원) - 고온 다습 장마철 대비, 병해충 예방에..."
+        },
+        {
+          "seed": "물류비",
+          "rep": "물류비",
+          "hits": 2,
+          "selected_hits": 0,
+          "missing": false,
+          "sample_title": "CA 수출 ·품질 관리 프로그램' 공개"
         },
         {
           "seed": "현장",
