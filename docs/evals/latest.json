@@ -1,15 +1,15 @@
 {
   "report_date": "2026-06-10",
-  "generated_at_kst": "2026-06-11T14:24:35+09:00",
-  "status": "warn",
-  "overall_score": 82.68,
+  "generated_at_kst": "2026-06-11T14:48:00+09:00",
+  "status": "pass",
+  "overall_score": 90.86,
   "scores": {
     "completeness": 92.8,
     "diversity": 96.67,
     "summary_quality": 100.0,
     "freshness": 100.0,
     "retrieval_support": 87.5,
-    "section_alignment": 87.41,
+    "section_alignment": 100.0,
     "core_quality": 92.97,
     "commodity_board_quality": 88.0
   },
@@ -72,7 +72,7 @@
     "surface_reuse_penalty": 0.0213,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.7778,
+    "summary_numeric_rate": 0.7222,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -80,16 +80,16 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "seed_coverage_score": 0.5833,
-    "section_alignment_fit_avg": 4.5217,
+    "section_alignment_fit_avg": 4.5156,
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0556,
+    "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
-    "content_false_positive_rate": 0.0556,
-    "off_scope_foreign_rate": 0.0556,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
-    "content_irrelevant_rate": 0.0556,
-    "semantic_false_positive_penalty": 6.6667,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0556,
@@ -191,24 +191,17 @@
       "age_hours": 18.7
     },
     {
-      "title": "[AI로 읽는 경제] ⑪ 규격이 가격을 가른다…같은 밭에서 나온 농산물은...",
-      "section": "supply",
-      "age_hours": 18.0
-    },
-    {
       "title": "충북 과수화상병 확산.. 첫 배 농장 감염 확인",
       "section": "pest",
       "age_hours": 18.0
-    }
-  ],
-  "content_false_positive_samples": [
+    },
     {
-      "title": "[AI로 읽는 경제] ⑪ 규격이 가격을 가른다…같은 밭에서 나온 농산물은...",
-      "href": "https://www.newspim.com/news/view/20260609000172",
+      "title": "국산 양파 612원·수입산 1450원… 6개월째 이어진 가격 역전, 농가 비상",
       "section": "supply",
-      "reason": "foreign_unmanaged_commodity"
+      "age_hours": 16.0
     }
   ],
+  "content_false_positive_samples": [],
   "story_duplicate_samples": [],
   "commodity_primary_linkage_samples": [],
   "editorial_quality_samples": [
@@ -236,26 +229,23 @@
     "품목 보드 coverage가 낮습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.",
     "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
     "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1), dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
-    "금융·정치성 오탐이 브리핑에 섞였습니다 (비율 6%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.",
-    "농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 6%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
-      "semantic_false_positive",
       "commodity_board",
       "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.9,
-      "policy": 0.88,
-      "dist": 1.05,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.4,
-    "tail_score_floor_delta": 0.5,
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -283,7 +273,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 82.68,
+  "operational_score": 90.86,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
