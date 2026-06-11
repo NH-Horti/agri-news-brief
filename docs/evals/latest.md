@@ -1,17 +1,19 @@
-## Daily Eval (2026-06-11)
-- Overall: **96.57** (pass)
-- Operational: **96.57**
-- Scores: completeness=100.0, diversity=90.0, summary=100.0, freshness=100.0, retrieval=86.9, section_fit=100.0, core=98.0, commodity=99.1
-- Briefing cards: 20 / Commodity cards: 14
-- Sections: supply:5/5 raw=141, policy:5/5 raw=105, dist:5/5 raw=40, pest:5/5 raw=41
-- Metrics: title_unique=1.00, domain_diversity=0.60, summary_presence=1.00, summary_numeric=0.90, fresh_72h=1.00, fit_avg=4.13, false_positive=0.00, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, commodity_strict_link=1.00, commodity_dominant_section=0.50, semantic_penalty=0.0
+## Daily Eval (2026-06-08)
+- Overall: **91.17** (pass)
+- Operational: **91.17**
+- Scores: completeness=96.4, diversity=100.0, summary=100.0, freshness=93.8, retrieval=85.0, section_fit=96.9, core=95.4, commodity=27.7
+- Briefing cards: 19 / Commodity cards: 48
+- Sections: supply:5/5 raw=230, policy:5/5 raw=155, dist:4/5 raw=92, pest:5/5 raw=75
+- Metrics: title_unique=1.00, domain_diversity=0.84, summary_presence=1.00, summary_numeric=0.89, fresh_72h=1.00, fit_avg=4.42, false_positive=0.00, weak_core=0.14, editorial_penalty=0.6, commodity_weak=0.00, commodity_strict_link=0.31, commodity_dominant_section=0.69, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
 - Editorial: skipped (missing_openai_api_key)
 
 ### Improvement Hints
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
+- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=11%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
