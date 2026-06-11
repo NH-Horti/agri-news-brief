@@ -1,5 +1,5 @@
 {
-  "generated_at_kst": "2026-06-11T11:59:28+09:00",
+  "generated_at_kst": "2026-06-11T14:03:57+09:00",
   "build_tag": "local-prod-20260609",
   "filter_rejects": [
     {
@@ -924,16 +924,6 @@
     },
     {
       "section": "policy",
-      "reason": "policy_offtopic_gate",
-      "press": "womennews",
-      "domain": "womennews.co.kr",
-      "title": "이 대통령 \"반도체 초과 세수, 미래세대 위해 투자해야\"",
-      "url": "https://www.womennews.co.kr/news/articleView.html?idxno=278451",
-      "source_query": "가지 수급 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "policy",
       "reason": "policy_context_gate",
       "press": "SBS",
       "domain": "news.sbs.co.kr",
@@ -944,11 +934,11 @@
     },
     {
       "section": "policy",
-      "reason": "must_terms_fail_policy",
-      "press": "전자신문",
-      "domain": "etnews.com",
-      "title": "[李 대통령, 취임 1주년 기자회견]“호르무즈 봉쇄 장기화, 위기 상황 안...",
-      "url": "https://www.etnews.com/20260608000168",
+      "reason": "policy_offtopic_gate",
+      "press": "womennews",
+      "domain": "womennews.co.kr",
+      "title": "이 대통령 \"반도체 초과 세수, 미래세대 위해 투자해야\"",
+      "url": "https://www.womennews.co.kr/news/articleView.html?idxno=278451",
       "source_query": "가지 수급 안정",
       "source_channel": "naver_api"
     },
@@ -1609,36 +1599,6 @@
       "domain": "sateconomy.co.kr",
       "title": "이커머스, 6월 둘째 주 ‘여름 장보기’ 전면전",
       "url": "https://sateconomy.co.kr/news/view/1065574340394098",
-      "source_query": "참외 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "melon_non_edible_context",
-      "press": "유스데일리",
-      "domain": "youthdaily.co.kr",
-      "title": "\"장보기·패션 수요 잡는다\"…이커머스업계, 상반기 할인전 돌입",
-      "url": "https://www.youthdaily.co.kr/news/article.html?no=220441",
-      "source_query": "참외 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "theviewers",
-      "domain": "theviewers.co.kr",
-      "title": "유통업계, 초여름 성수기 맞아 할인·이벤트 풍성",
-      "url": "https://theviewers.co.kr/View.aspx?No=4103647",
-      "source_query": "참외 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "livestock_only_supply",
-      "press": "SR타임스",
-      "domain": "srtimes.kr",
-      "title": "SSG닷컴, 14일까지 '여름 장보기 할인전' 연다",
-      "url": "http://www.srtimes.kr/news/articleView.html?idxno=204719",
       "source_query": "참외 가격",
       "source_channel": "naver_api"
     },
@@ -3159,16 +3119,6 @@
       "domain": "polinews.co.kr",
       "title": "K-제약, 역대급 수출 호황 뒤에 가려진 '약가 인하'의 그늘",
       "url": "https://www.polinews.co.kr/news/articleView.html?idxno=733421",
-      "source_query": "당근 가격",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "carrot_non_edible_context",
-      "press": "venturesquare",
-      "domain": "venturesquare.net",
-      "title": "페이히어, 매장에 필요한 모든 것을 하나로",
-      "url": "https://www.venturesquare.net/1089639/",
       "source_query": "당근 가격",
       "source_channel": "naver_api"
     },
@@ -4784,21 +4734,21 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "데일리한국",
-      "domain": "daily.hankooki.com",
-      "title": "[취임 1주년] 李대통령 \"중동 전쟁 쉽게 안 끝나…물가 상승 압력 최소...",
-      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1374497",
-      "source_query": "가지 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "finance_asset_policy_noise",
       "press": "cctoday",
       "domain": "cctoday.co.kr",
       "title": "AI 쇼크 덮친 충청권 증시…알테오젠·에코프로 급락",
       "url": "https://www.cctoday.co.kr/news/articleView.html?idxno=2231291",
+      "source_query": "가지 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "데일리한국",
+      "domain": "daily.hankooki.com",
+      "title": "[취임 1주년] 李대통령 \"중동 전쟁 쉽게 안 끝나…물가 상승 압력 최소...",
+      "url": "https://daily.hankooki.com/news/articleView.html?idxno=1374497",
       "source_query": "가지 수급",
       "source_channel": "naver_api"
     },
@@ -4864,21 +4814,21 @@
     },
     {
       "section": "supply",
-      "reason": "finance_asset_policy_noise",
-      "press": "SR타임스",
-      "domain": "srtimes.kr",
-      "title": "이재명 대통령 \"고환율 일시적…외국인 리밸런싱 단기 주요인\"",
-      "url": "http://www.srtimes.kr/news/articleView.html?idxno=204765",
-      "source_query": "가지 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "newsverse",
       "domain": "newsverse.kr",
       "title": "李 \"부동산 세제 7월에 정리…공급대책 조만간 발표\"",
       "url": "https://www.newsverse.kr/news/articleView.html?idxno=10664",
+      "source_query": "가지 수급",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_asset_policy_noise",
+      "press": "SR타임스",
+      "domain": "srtimes.kr",
+      "title": "이재명 대통령 \"고환율 일시적…외국인 리밸런싱 단기 주요인\"",
+      "url": "http://www.srtimes.kr/news/articleView.html?idxno=204765",
       "source_query": "가지 수급",
       "source_channel": "naver_api"
     },
@@ -4929,16 +4879,6 @@
       "domain": "metroseoul.co.kr",
       "title": "[기자수첩] '고점판독기' A씨의 월요일",
       "url": "http://www.metroseoul.co.kr/article/20260608500215",
-      "source_query": "가지 수급",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
-      "reason": "ban_keywords",
-      "press": "FTODAY",
-      "domain": "ftoday.co.kr",
-      "title": "李 대통령, \"대체 불가한 대한민국 만들 것\"…'부동산 투기 억제…시장...",
-      "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=360116",
       "source_query": "가지 수급",
       "source_channel": "naver_api"
     },
@@ -5494,16 +5434,6 @@
     },
     {
       "section": "supply",
-      "reason": "supply_context_gate",
-      "press": "전자신문",
-      "domain": "etnews.com",
-      "title": "[李 대통령, 취임 1주년 기자회견]“호르무즈 봉쇄 장기화, 위기 상황 안...",
-      "url": "https://www.etnews.com/20260608000168",
-      "source_query": "가지 수급 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "commodity_corporate_stock_context",
       "press": "파이낸셜뉴스",
       "domain": "fnnews.com",
@@ -5614,21 +5544,21 @@
     },
     {
       "section": "supply",
-      "reason": "finance_asset_policy_noise",
-      "press": "VOP",
-      "domain": "vop.co.kr",
-      "title": "이 대통령 “부동산 세제 7월 정리”... 물가·증시 대응 방향도 제시",
-      "url": "https://vop.co.kr/A00001694945.html",
-      "source_query": "가지 가격 안정",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "supply",
       "reason": "ban_keywords",
       "press": "뉴스토마토",
       "domain": "newstomato.com",
       "title": "\"구두개입 없었으면 부동산 더 폭등\"…'보유세 인상' 시사",
       "url": "http://www.newstomato.com/ReadNews.aspx?no=1303318&inflow=N",
+      "source_query": "가지 가격 안정",
+      "source_channel": "naver_api"
+    },
+    {
+      "section": "supply",
+      "reason": "finance_asset_policy_noise",
+      "press": "VOP",
+      "domain": "vop.co.kr",
+      "title": "이 대통령 “부동산 세제 7월 정리”... 물가·증시 대응 방향도 제시",
+      "url": "https://vop.co.kr/A00001694945.html",
       "source_query": "가지 가격 안정",
       "source_channel": "naver_api"
     },
@@ -6735,36 +6665,6 @@
     {
       "section": "dist",
       "reason": "dist_soft_without_infra",
-      "press": "법률이슈",
-      "domain": "lawissue.co.kr",
-      "title": "경기도의회 이오수 의원, 경기도담뜰 로컬푸드 직매장 개장식 참석",
-      "url": "http://www.lawissue.co.kr/view.php?ud=202606081500051484d94aa4ada6_12",
-      "source_query": "농산물 유통 거점",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_program_event_noise",
-      "press": "비즈월드",
-      "domain": "bizwnews.com",
-      "title": "이오수 경기도의원, 로컬푸드 직매장 개장 축하…\"농업인 판로 확대 중...",
-      "url": "http://www.bizwnews.com/news/articleView.html?idxno=138234",
-      "source_query": "농산물 유통 거점",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
-      "press": "전주일보",
-      "domain": "jjn.co.kr",
-      "title": "지역 특화품목 6차산업화 박차",
-      "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1042993",
-      "source_query": "농산물 유통 거점",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "dist",
-      "reason": "dist_soft_without_infra",
       "press": "농수축산신문",
       "domain": "aflnews.co.kr",
       "title": "[Issue+] 52조 농업법인 시대…농축협, 경쟁자 아닌 파트너로 품어야",
@@ -7594,16 +7494,6 @@
     },
     {
       "section": "pest",
-      "reason": "pest_no_agri_context",
-      "press": "KBS",
-      "domain": "news.kbs.co.kr",
-      "title": "영동군, 산림 병해충 방제 대책본부 운영",
-      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8580379",
-      "source_query": "병해충 예찰",
-      "source_channel": "naver_api"
-    },
-    {
-      "section": "pest",
       "reason": "pest_rice_only",
       "press": "농민신문",
       "domain": "nongmin.com",
@@ -8263,26 +8153,6 @@
       "source_channel": ""
     },
     {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "에너지경제신문",
-      "domain": "ekn.kr",
-      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
-      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "에너지경제신문",
-      "domain": "ekn.kr",
-      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
-      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
       "section": "dist",
       "reason": "dist_low_value_donation",
       "press": "한국일보",
@@ -8333,6 +8203,46 @@
       "source_channel": ""
     },
     {
+      "section": "dist",
+      "reason": "ban_keywords",
+      "press": "에너지경제신문",
+      "domain": "ekn.kr",
+      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "ban_keywords",
+      "press": "에너지경제신문",
+      "domain": "ekn.kr",
+      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "에너지경제신문",
+      "domain": "ekn.kr",
+      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "ban_keywords",
+      "press": "에너지경제신문",
+      "domain": "ekn.kr",
+      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "supply",
       "reason": "supply_context_gate",
       "press": "뉴스메이커",
@@ -8379,6 +8289,16 @@
       "domain": "gukjenews.com",
       "title": "서천군, 스마트팜 청년창업 현장실습 본격화",
       "url": "https://gukjenews.com/news/articleView.html?idxno=3602559",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "supply_context_gate",
+      "press": "뉴스1",
+      "domain": "news1.kr",
+      "title": "도시 농축협, 농촌 지역 농축협에 3771억 '무이자 지원'",
+      "url": "https://news1.kr/economy/agri-food/6191072",
       "source_query": "",
       "source_channel": ""
     },
@@ -8593,17 +8513,7 @@
       "source_channel": ""
     },
     {
-      "section": "pest",
-      "reason": "ban_keywords",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "마늘 수확 10a당 0.8시간…농진청, 기계화 보급 속도",
-      "url": "https://dailian.co.kr/news/view/1653512/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
+      "section": "policy",
       "reason": "ban_keywords",
       "press": "데일리안",
       "domain": "dailian.co.kr",
@@ -8735,6 +8645,26 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
+      "press": "농기자재신문",
+      "domain": "newsam.co.kr",
+      "title": "농촌진흥청, 마늘 수확 ‘농업인 체감 기술’ 보급에 속도 내",
+      "url": "https://newsam.co.kr/news/article.html?no=43151",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
+      "press": "농기자재신문",
+      "domain": "newsam.co.kr",
+      "title": "농촌진흥청, 마늘 수확 ‘농업인 체감 기술’ 보급에 속도 내",
+      "url": "https://newsam.co.kr/news/article.html?no=43151",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "pest",
+      "reason": "pest_partial_mention",
       "press": "뉴시스",
       "domain": "newsis.com",
       "title": "농진청 \"폭염에 과수 햇볕 데임 우려↑…과수원 철저 관리 당부\"",
@@ -8799,26 +8729,6 @@
       "domain": "imaeil.com",
       "title": "국립경국대 스마트원예과학전공, 교수·학생 동시 수상 쾌거",
       "url": "https://imaeil.com/page/view/2026060711482826164",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농기자재신문",
-      "domain": "newsam.co.kr",
-      "title": "농촌진흥청, 마늘 수확 ‘농업인 체감 기술’ 보급에 속도 내",
-      "url": "https://newsam.co.kr/news/article.html?no=43151",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "농기자재신문",
-      "domain": "newsam.co.kr",
-      "title": "농촌진흥청, 마늘 수확 ‘농업인 체감 기술’ 보급에 속도 내",
-      "url": "https://newsam.co.kr/news/article.html?no=43151",
       "source_query": "",
       "source_channel": ""
     },
@@ -9005,20 +8915,20 @@
     {
       "section": "pest",
       "reason": "pest_partial_mention",
-      "press": "에너지경제신문",
-      "domain": "ekn.kr",
-      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
-      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
+      "press": "한국일보",
+      "domain": "hankookilbo.com",
+      "title": "16년 만에 북한에 한라봉 보낸 제주도... 통일부 \"정부 차원 아냐\"",
+      "url": "https://hankookilbo.com/news/article/A2026060813460004805?did=NA",
       "source_query": "",
       "source_channel": ""
     },
     {
       "section": "pest",
-      "reason": "pest_partial_mention",
-      "press": "한국일보",
-      "domain": "hankookilbo.com",
-      "title": "16년 만에 북한에 한라봉 보낸 제주도... 통일부 \"정부 차원 아냐\"",
-      "url": "https://hankookilbo.com/news/article/A2026060813460004805?did=NA",
+      "reason": "ban_keywords",
+      "press": "에너지경제신문",
+      "domain": "ekn.kr",
+      "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+      "url": "https://ekn.kr/web/view.php?key=20260608021331306",
       "source_query": "",
       "source_channel": ""
     },
@@ -9039,36 +8949,6 @@
       "domain": "gukjenews.com",
       "title": "서천군, 스마트팜 청년창업 현장실습 본격화",
       "url": "https://gukjenews.com/news/articleView.html?idxno=3602559",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "ban_keywords",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "수출 농산물 농약정보 한눈에…농진청, QR 서비스 통합",
-      "url": "https://dailian.co.kr/news/view/1653410/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "ban_keywords",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "마늘 수확 10a당 0.8시간…농진청, 기계화 보급 속도",
-      "url": "https://dailian.co.kr/news/view/1653512/?sc=Naver",
-      "source_query": "",
-      "source_channel": ""
-    },
-    {
-      "section": "pest",
-      "reason": "ban_keywords",
-      "press": "데일리안",
-      "domain": "dailian.co.kr",
-      "title": "수출 농산물 농약정보 한눈에…농진청, QR 서비스 통합",
-      "url": "https://dailian.co.kr/news/view/1653410/?sc=Naver",
       "source_query": "",
       "source_channel": ""
     },
@@ -9115,18 +8995,18 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 51.38,
-      "tail_cut": 56.68,
-      "core_min": 51.38,
+      "threshold": 52.68,
+      "tail_cut": 57.98,
+      "core_min": 52.68,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 4,
-      "total_candidates": 124,
+      "total_candidates": 123,
       "total_selected": 5,
       "top": [
         {
           "selected": false,
           "is_core": false,
-          "score": 63.38,
+          "score": 64.68,
           "semantic_similarity": 0.8271,
           "semantic_noise_similarity": 0.8117,
           "semantic_margin": 0.0154,
@@ -9138,7 +9018,7 @@
           "title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\"",
           "url": "https://www.ajunews.com/view/20260608173419998",
           "reason": "supply_policy_like",
-          "fit_score": 2.1,
+          "fit_score": 1.0,
           "selection_stage": "supply_policy_like",
           "selection_note": "",
           "origin_section": "supply",
@@ -9975,7 +9855,7 @@
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
-          "source_query": "마늘 재배",
+          "source_query": "마늘 산업",
           "source_channel": "naver_api",
           "signals": {
             "horti_sc": 1.95,
@@ -10534,38 +10414,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.03,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "전국매일신문",
-          "domain": "jeonmae.co.kr",
-          "title": "영천시, 마늘 수확 기계화 기술 현장 연시회 열어",
-          "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1263144",
-          "reason": "below_threshold",
-          "fit_score": 1.35,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "마늘 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 4,
-            "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 9.86,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -10790,6 +10638,38 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 6.13,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "MPMBC",
+          "domain": "mpmbc.co.kr",
+          "title": "'통합특별시 출범' 전남 친환경 농산물 날개 달까?",
+          "url": "https://mpmbc.co.kr/NewsArticle/1521986",
+          "reason": "below_threshold",
+          "fit_score": 0.61,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "멜론 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 1,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 7.9,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -10918,38 +10798,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.28,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "뉴시스",
-          "domain": "newsis.com",
-          "title": "영천시, 농진청과 마늘 수확 기계화 연시회…\"일손부족 해소\"",
-          "url": "https://www.newsis.com/view/NISX20260608_0003661064",
-          "reason": "below_threshold",
-          "fit_score": 0.8,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "마늘 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 4,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 1.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 5.46,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -11042,6 +10890,38 @@
             "press_tier": 1,
             "press_weight": -1.5
           }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 6.33,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "남도일보",
+          "domain": "namdonews.com",
+          "title": "\"지금이 제철\"…곡성군 명물 멜론 , 30% 특별전 운영",
+          "url": "https://www.namdonews.com/news/articleView.html?idxno=912906",
+          "reason": "below_threshold",
+          "fit_score": -1.79,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "멜론 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.63,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 7,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
         }
       ],
       "coverage_ledger": [
@@ -11056,7 +10936,7 @@
         {
           "seed": "가락시장",
           "rep": "가락시장",
-          "hits": 9,
+          "hits": 8,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "[AI로 읽는 경제] ⑩ 유통구조 개혁, 무엇을 바꿔야 장바구니가 진짜 가..."
@@ -11112,7 +10992,7 @@
         {
           "seed": "마늘",
           "rep": "마늘",
-          "hits": 12,
+          "hits": 11,
           "selected_hits": 0,
           "missing": false,
           "sample_title": "경남농기원, 마늘 재배 기계화 위한 현장평가회 개최"
@@ -11128,7 +11008,7 @@
         {
           "seed": "무",
           "rep": "무",
-          "hits": 28,
+          "hits": 29,
           "selected_hits": 2,
           "missing": false,
           "sample_title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\""
@@ -11144,9 +11024,9 @@
       ]
     },
     "policy": {
-      "threshold": 53.38,
-      "tail_cut": 57.08,
-      "core_min": 53.38,
+      "threshold": 54.68,
+      "tail_cut": 58.38,
+      "core_min": 54.68,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 3,
       "total_candidates": 96,
@@ -11155,7 +11035,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 63.38,
+          "score": 64.68,
           "semantic_similarity": 0.8554,
           "semantic_noise_similarity": 0.801,
           "semantic_margin": 0.0544,
@@ -11230,9 +11110,9 @@
           "domain": "bokuennews.com",
           "title": "농식품부 , 특별성과에 파격 포상",
           "url": "http://www.bokuennews.com/news/article.html?no=279361",
-          "reason": "similar_story",
+          "reason": "tail_cut",
           "fit_score": 5.82,
-          "selection_stage": "similar_story",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -11262,9 +11142,9 @@
           "domain": "kookbang.dema.mil.kr",
           "title": "『 정책브리핑 』 폭염·폭우에 밥상물가 또 뛸라… 브라질 계란 첫 수입",
           "url": "https://kookbang.dema.mil.kr/newsWeb/20260609/2/ATCE_CTGR_0030010000/view.do",
-          "reason": "policy_tail_gate",
+          "reason": "tail_cut",
           "fit_score": 6.74,
-          "selection_stage": "policy_tail_gate",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "",
@@ -11310,6 +11190,38 @@
             "offtopic_pen": 2,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 51.46,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "아주경제",
+          "domain": "ajunews.com",
+          "title": "정부, 무기질비료 보조 추경 115억원 집행…포대당 880원 인상 그쳐",
+          "url": "https://www.ajunews.com/view/20260608181544053",
+          "reason": "below_threshold",
+          "fit_score": 5.28,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "",
+          "source_query": "농식품부 수급 점검",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 8,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -11406,38 +11318,6 @@
             "offtopic_pen": 4,
             "press_tier": 1,
             "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 50.16,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "아주경제",
-          "domain": "ajunews.com",
-          "title": "정부, 무기질비료 보조 추경 115억원 집행…포대당 880원 인상 그쳐",
-          "url": "https://www.ajunews.com/view/20260608181544053",
-          "reason": "below_threshold",
-          "fit_score": 5.28,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "",
-          "source_query": "농식품부 수급 점검",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 8,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
           }
         },
         {
@@ -11985,7 +11865,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 28.18,
           "semantic_similarity": 0.0,
@@ -11998,10 +11878,10 @@
           "domain": "hortitimes.com",
           "title": "현장에서 답을 찾다, 경기농업의 미래를 여는 실용주의 리더",
           "url": "http://www.hortitimes.com/news/articleView.html?idxno=34139",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 3.27,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
+          "selection_stage": "policy_preferred_count_recovery",
+          "selection_note": "preferred_count_tail",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "화훼 가격",
@@ -12593,38 +12473,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 19.75,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "에너지경제신문",
-          "domain": "ekn.kr",
-          "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
-          "url": "https://www.ekn.kr/web/view.php?key=20260608021331306",
-          "reason": "",
-          "fit_score": 3.45,
-          "selection_stage": "policy_preferred_count_recovery",
-          "selection_note": "preferred_count_tail",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감자 재배",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 2,
-            "strength": 5,
-            "korea": 5,
-            "offtopic_pen": 3,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 18.99,
@@ -12819,6 +12667,38 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 15.3,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "에너지경제신문",
+          "domain": "ekn.kr",
+          "title": "평창군, 생산에서 복지까지…농업 경쟁력 높인다",
+          "url": "https://www.ekn.kr/web/view.php?key=20260608021331306",
+          "reason": "below_threshold",
+          "fit_score": 2.55,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감자 재배",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 2,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 3,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 15.13,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -12878,6 +12758,38 @@
             "offtopic_pen": 1,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 16.84,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "뉴스1",
+          "domain": "news1.kr",
+          "title": "도시 농축협, 농촌 지역 농축협에 3771억 '무이자 지원'",
+          "url": "https://www.news1.kr/economy/agri-food/6191072",
+          "reason": "below_threshold",
+          "fit_score": 0.96,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농협 경제사업 활성화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.7
           }
         },
         {
@@ -13045,8 +12957,6 @@
           "is_core": false,
           "score": 13.26,
           "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
           "semantic_boost": 0.0,
           "semantic_model": "",
           "tier": 1,
@@ -13091,18 +13001,18 @@
           "sample_title": "농식품부 , 특별성과에 파격 포상"
         },
         {
-          "seed": "가격안정",
-          "rep": "가격안정",
-          "hits": 0,
-          "selected_hits": 0,
-          "missing": true,
-          "sample_title": ""
-        },
-        {
           "seed": "농식품부",
           "rep": "농식품부",
           "hits": 17,
           "selected_hits": 1,
+          "missing": false,
+          "sample_title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\""
+        },
+        {
+          "seed": "양파",
+          "rep": "양파",
+          "hits": 9,
+          "selected_hits": 2,
           "missing": false,
           "sample_title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\""
         },
@@ -13147,12 +13057,12 @@
           "sample_title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\""
         },
         {
-          "seed": "호박",
-          "rep": "호박",
+          "seed": "감자",
+          "rep": "감자",
           "hits": 3,
-          "selected_hits": 1,
+          "selected_hits": 0,
           "missing": false,
-          "sample_title": "농식품부 \"다음달 1일까지 쌀·계란·양배추 등 할인\""
+          "sample_title": "SSG닷컴, 여름 장바구니 물가 잡기 나선다"
         },
         {
           "seed": "오이",
@@ -13536,7 +13446,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.43,
+          "score": 18.18,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13560,7 +13470,7 @@
             "market_hits": 0,
             "strength": 8,
             "korea": 8,
-            "offtopic_pen": 1,
+            "offtopic_pen": 2,
             "press_tier": 2,
             "press_weight": 2.5
           }
@@ -13992,7 +13902,7 @@
         {
           "seed": "apc",
           "rep": "apc",
-          "hits": 9,
+          "hits": 8,
           "selected_hits": 4,
           "missing": false,
           "sample_title": "[AI로 읽는 경제] ⑩ 유통구조 개혁, 무엇을 바꿔야 장바구니가 진짜 가..."
@@ -14053,7 +13963,7 @@
       "core_min": 47.38,
       "hf_semantic_enabled": true,
       "hf_semantic_hits": 4,
-      "total_candidates": 33,
+      "total_candidates": 32,
       "total_selected": 6,
       "top": [
         {
@@ -14699,38 +14609,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.63,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "데일리안",
-          "domain": "dailian.co.kr",
-          "title": "마늘 수확 10a당 0.8시간…농진청, 기계화 보급 속도",
-          "url": "https://www.dailian.co.kr/news/view/1653512/?sc=Naver",
-          "reason": "below_threshold",
-          "fit_score": 3.04,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "마늘 산업",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 1,
-            "strength": 6,
-            "korea": 8,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 19.48,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -15117,7 +14995,7 @@
         {
           "seed": "병해충",
           "rep": "병해충",
-          "hits": 30,
+          "hits": 29,
           "selected_hits": 5,
           "missing": false,
           "sample_title": "충남 홍성서도 화상병 첫 확진…전국 78농가 36㏊ 육박"
@@ -15133,7 +15011,7 @@
         {
           "seed": "농식품부",
           "rep": "농식품부",
-          "hits": 3,
+          "hits": 2,
           "selected_hits": 1,
           "missing": false,
           "sample_title": "충남 홍성서도 화상병 첫 확진…전국 78농가 36㏊ 육박"
@@ -15141,7 +15019,7 @@
         {
           "seed": "과수",
           "rep": "과수",
-          "hits": 25,
+          "hits": 24,
           "selected_hits": 5,
           "missing": false,
           "sample_title": "충남 홍성서도 화상병 첫 확진…전국 78농가 36㏊ 육박"
@@ -15157,18 +15035,10 @@
         {
           "seed": "무",
           "rep": "무",
-          "hits": 26,
+          "hits": 25,
           "selected_hits": 5,
           "missing": false,
           "sample_title": "충남 홍성서도 화상병 첫 확진…전국 78농가 36㏊ 육박"
-        },
-        {
-          "seed": "마늘",
-          "rep": "마늘",
-          "hits": 6,
-          "selected_hits": 1,
-          "missing": false,
-          "sample_title": "[주간농사메모]노지고추 강풍·폭우 대비"
         },
         {
           "seed": "사과",
@@ -15623,15 +15493,15 @@
           8
         ],
         [
+          "마늘 산업",
+          8
+        ],
+        [
           "화훼자조금",
           7
         ],
         [
           "배추 가격",
-          6
-        ],
-        [
-          "마늘 산업",
           6
         ],
         [
@@ -15651,10 +15521,6 @@
           5
         ],
         [
-          "마늘 재배",
-          5
-        ],
-        [
           "가지 재배",
           5
         ],
@@ -15668,6 +15534,10 @@
         ],
         [
           "단감 농가",
+          4
+        ],
+        [
+          "참외 농가",
           4
         ]
       ],
@@ -15942,7 +15812,7 @@
           "피망"
         ]
       },
-      "items_total": 189,
+      "items_total": 187,
       "seed_coverage": [
         {
           "seed": "건고추",
