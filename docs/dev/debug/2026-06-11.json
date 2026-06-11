@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-11T14:10:50+09:00",
-  "build_tag": "5beceb8",
+  "generated_at_kst": "2026-06-11T14:35:07+09:00",
+  "build_tag": "4ba83fb",
   "filter_rejects": [
     {
       "section": "policy",
@@ -18466,7 +18466,7 @@
   "sections": {
     "supply": {
       "threshold": 39.29,
-      "tail_cut": 43.09,
+      "tail_cut": 43.59,
       "core_min": 39.29,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -19500,38 +19500,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 12.81,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "한국농업신문",
-          "domain": "newsfarm.co.kr",
-          "title": "장마철 경사지 밭 토양유실, 맥주용 보리로 줄인다",
-          "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101282",
-          "reason": "below_threshold",
-          "fit_score": 0.75,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "감자 가격",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.6,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 14.58,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -19623,6 +19591,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 12.61,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "한국농업신문",
+          "domain": "newsfarm.co.kr",
+          "title": "장마철 경사지 밭 토양유실, 맥주용 보리로 줄인다",
+          "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101282",
+          "reason": "below_threshold",
+          "fit_score": 0.75,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "감자 가격",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -20268,7 +20268,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.81,
+          "score": 6.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20436,12 +20436,12 @@
           "sample_title": "청도 복숭아 출하 시작…첫 경매서 5kg 한 상자 7만원"
         },
         {
-          "seed": "화훼자조금",
-          "rep": "화훼자조금",
-          "hits": 1,
+          "seed": "농식품부",
+          "rep": "농식품부",
+          "hits": 8,
           "selected_hits": 0,
           "missing": false,
-          "sample_title": "우리 화훼 농업 역사와 문화 조명"
+          "sample_title": "국산 양파 가격 역전 장기화…aT, 대응 방안 토론회 개최"
         },
         {
           "seed": "농가",
@@ -20495,7 +20495,7 @@
     },
     "policy": {
       "threshold": 47.08,
-      "tail_cut": 49.28,
+      "tail_cut": 49.78,
       "core_min": 47.08,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -21625,7 +21625,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.15,
+          "score": 21.95,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22201,7 +22201,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.54,
+          "score": 15.34,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -22524,7 +22524,7 @@
     },
     "dist": {
       "threshold": 62.07,
-      "tail_cut": 67.67,
+      "tail_cut": 68.17,
       "core_min": 62.07,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
@@ -23913,7 +23913,7 @@
     },
     "pest": {
       "threshold": 58.04,
-      "tail_cut": 58.04,
+      "tail_cut": 58.54,
       "core_min": 58.04,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
