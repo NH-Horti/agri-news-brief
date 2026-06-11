@@ -1,25 +1,25 @@
 {
-  "report_date": "2026-06-08",
-  "generated_at_kst": "2026-06-11T14:23:58+09:00",
+  "report_date": "2026-06-09",
+  "generated_at_kst": "2026-06-11T14:24:19+09:00",
   "status": "pass",
-  "overall_score": 94.04,
+  "overall_score": 93.77,
   "scores": {
-    "completeness": 96.4,
+    "completeness": 92.8,
     "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 93.76,
-    "retrieval_support": 85.0,
-    "section_alignment": 96.94,
-    "core_quality": 92.8,
-    "commodity_board_quality": 86.66
+    "freshness": 100.0,
+    "retrieval_support": 85.62,
+    "section_alignment": 96.67,
+    "core_quality": 100.0,
+    "commodity_board_quality": 88.0
   },
   "counts": {
-    "briefing_total": 19,
-    "commodity_total": 27,
-    "commodity_primary_total": 8,
+    "briefing_total": 18,
+    "commodity_total": 13,
+    "commodity_primary_total": 7,
     "briefing_by_section": {
       "supply": 5,
-      "policy": 5,
+      "policy": 4,
       "dist": 4,
       "pest": 5
     },
@@ -30,16 +30,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 11,
+      "supply": 8,
       "policy": 2,
-      "dist": 12,
-      "pest": 2
+      "dist": 2,
+      "pest": 1
     },
     "raw_by_section": {
-      "supply": 230,
-      "policy": 155,
-      "dist": 92,
-      "pest": 75
+      "supply": 168,
+      "policy": 115,
+      "dist": 37,
+      "pest": 35
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -61,28 +61,28 @@
     },
     "preferred_slot_gap_by_section": {
       "supply": 0,
-      "policy": 0,
+      "policy": 1,
       "dist": 1,
       "pest": 0
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.8421,
+    "briefing_domain_diversity_rate": 0.9444,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.8947,
+    "summary_numeric_rate": 0.8889,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.6316,
+    "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
-    "freshness_window_mode": "weekend_span",
-    "seed_coverage_score": 0.5,
-    "section_alignment_fit_avg": 4.3426,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5208,
+    "section_alignment_fit_avg": 4.3111,
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0526,
+    "section_alignment_cross_gap_rate": 0.0556,
     "section_alignment_weak_stage_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "off_scope_foreign_rate": 0.0,
@@ -92,39 +92,39 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0526,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0526,
+    "pest_theme_duplicate_rate": 0.0556,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.5263,
-    "preferred_slot_gap_rate": 0.05,
-    "preferred_slot_gap_total": 1,
-    "preferred_slot_penalty": 1.1,
-    "core_fit_avg": 4.2314,
-    "core_rank_percentile_avg": 0.8642,
+    "editorial_quality_penalty": 0.4444,
+    "preferred_slot_gap_rate": 0.1,
+    "preferred_slot_gap_total": 2,
+    "preferred_slot_penalty": 2.2,
+    "core_fit_avg": 4.9586,
+    "core_rank_percentile_avg": 0.9781,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.1429,
-    "commodity_primary_item_focus_rate": 0.875,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.3487,
-    "commodity_primary_rank_avg": 3.25,
-    "commodity_primary_title_item_focus_rate": 0.875,
-    "commodity_primary_title_issue_signal_rate": 0.875,
-    "commodity_primary_strict_link_rate": 0.75,
+    "commodity_primary_fit_avg": 2.7914,
+    "commodity_primary_rank_avg": 3.1429,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_board_coverage_rate": 0.2424,
-    "commodity_primary_title_item_missing_rate": 0.125,
+    "commodity_board_coverage_rate": 0.2121,
+    "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
-    "commodity_primary_false_link_rate": 0.125,
-    "commodity_primary_dominant_section_rate": 0.625,
-    "commodity_primary_section_balance_score": 0.4821
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.8571,
+    "commodity_primary_section_balance_score": 0.0
   },
   "section_scores": {
     "briefing_fill": {
       "supply": 1.0,
-      "policy": 1.0,
+      "policy": 0.8,
       "dist": 0.8,
       "pest": 1.0
     },
@@ -140,7 +140,12 @@
       "dist": 1.0,
       "pest": 1.0
     },
-    "seed_coverage": {},
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.5,
+      "dist": 0.5,
+      "pest": 0.5
+    },
     "section_alignment": {
       "supply": 1.0,
       "policy": 1.0,
@@ -148,89 +153,61 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 0.9224,
+      "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.55,
+      "dist": 1.0,
       "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "고령지 경쟁력·소비 트렌드 결합… 감자 유통 전략 가동",
+      "title": "[Q&A-일본의 도매시장 접근법] \"민간 거래영역이자 식량 공급망 인프라...",
       "section": "dist",
-      "age_hours": 62.8
+      "age_hours": 20.6
     },
     {
-      "title": "충남도 과수화상병 비상…예산·공주·홍성·당진 확산 차단에 '총력'",
+      "title": "충남 홍성서도 화상병 첫 확진…전국 78농가 36㏊ 육박",
       "section": "pest",
-      "age_hours": 62.0
+      "age_hours": 19.9
     },
     {
-      "title": "농식품부, 과수화상병 관리 ‘경계’ 격상⋯\"대응체계 강화\"",
-      "section": "pest",
-      "age_hours": 62.0
+      "title": "배민 B마트, 산지 직송·즉시배송 결합에 농축산물 매출 53% 급증",
+      "section": "dist",
+      "age_hours": 19.1
     },
     {
-      "title": "‘무멀칭‧깊이거름주기’로 마늘 재배 기계화 성큼",
+      "title": "[관망경]칭찬은 공무원도 춤추게 한다",
       "section": "supply",
-      "age_hours": 60.4
+      "age_hours": 19.0
     },
     {
-      "title": "농식품부, 생산과잉 예고된 중만생종 양파 시장격리",
+      "title": "때이른 더위 '수분 충전'에 수박 ? 비싼 값 부담이라면 수분 함량 94% '이...",
       "section": "supply",
-      "age_hours": 60.2
+      "age_hours": 18.8
     },
     {
-      "title": "시행 두 달여 남은 '가격안정제'…대상품목·기준가격 산정 '깜깜'",
+      "title": "현장에서 답을 찾다, 경기농업의 미래를 여는 실용주의 리더",
       "section": "policy",
-      "age_hours": 58.4
+      "age_hours": 16.3
     },
     {
-      "title": "하우스 감귤 출하량 감소에 초기 가격 호조세",
-      "section": "supply",
-      "age_hours": 57.0
-    },
-    {
-      "title": "수확기 배 농사, 무더위와 나방 해충 방제 에 달렸다",
+      "title": "충남 홍성 금마면서도 과수화상병 발생…위기단계 '심각'",
       "section": "pest",
-      "age_hours": 45.8
+      "age_hours": 16.1
+    },
+    {
+      "title": "토착 천적으로 갈색날개매미충 방제 효과 입증",
+      "section": "pest",
+      "age_hours": 15.8
     }
   ],
   "content_false_positive_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [
-    {
-      "title": "여름철 고온에도 강하다···제주, 신품종 ‘ 쪽파 ’ 개발",
-      "item_label": "대파",
-      "section": "policy",
-      "representative_rank": 3,
-      "reasons": [
-        "title_item_missing"
-      ]
-    },
-    {
-      "title": "\"상추 싸질 줄 알았는데\"…밥상 채소값 다시 '꿈틀' [권 기자의 장바구...",
-      "item_label": "상추",
-      "section": "supply",
-      "representative_rank": 4,
-      "reasons": [
-        "title_issue_missing"
-      ]
-    }
-  ],
+  "commodity_primary_linkage_samples": [],
   "editorial_quality_samples": [
     {
-      "title": "OECD, 한국 근원물가 전망치 높였다···‘인플레 고착화’ 우려 커져",
-      "href": "https://www.khan.co.kr/article/202606071613001",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "농식품부, 과수화상병 관리 ‘경계’ 격상⋯\"대응체계 강화\"",
-      "href": "https://www.viva100.com/article/20260605500573",
+      "title": "충남 홍성 금마면서도 과수화상병 발생…위기단계 '심각'",
+      "href": "https://www.jbnews.com/news/articleView.html?idxno=1505574",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -241,8 +218,8 @@
   "improvement_hints": [
     "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
     "품목 보드 coverage가 낮습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.",
-    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1), dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
@@ -277,7 +254,7 @@
     "commodity_active_min_rank": 2,
     "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": true,
+    "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
@@ -286,7 +263,7 @@
     "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
     "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
   ],
-  "operational_score": 94.04,
+  "operational_score": 93.77,
   "score_notes": {
     "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
     "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
