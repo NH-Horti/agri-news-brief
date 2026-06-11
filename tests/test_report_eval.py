@@ -503,6 +503,67 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
         self.assertEqual(result["commodity_primary_linkage_samples"], [])
 
+    def test_commodity_board_daily_min_prevents_false_low_coverage_feedback(self) -> None:
+        rows = [
+            ("onion", "양파", "supply", "양파 가격 하락에 수급 안정 대책 착수"),
+            ("napa_cabbage", "배추", "supply", "폭염 변수에 배추 수급 관리 비상"),
+            ("garlic", "마늘", "dist", "마늘 가격 약세에 산지 출하 조절 확대"),
+            ("green_onion", "대파", "policy", "대파 가격 하락 대응 수급 안정 점검"),
+            ("potato", "감자", "supply", "감자 가격 약세로 산지 작황 희비"),
+            ("lettuce", "상추", "dist", "상추값 다시 상승…도매시장 반입 감소"),
+        ]
+        html = "\n".join(
+            f"""
+            <a
+              data-surface="commodity_primary"
+              data-section="{section}"
+              data-article-title="{title}"
+              data-article-id="{key}"
+              data-target-domain="example.com"
+              data-item-key="{key}"
+              data-item-label="{label}"
+              data-representative-rank="3"
+              data-representative-score="125.0"
+              data-board-score="95.0"
+              data-selection-fit="1.6"
+              data-selection-stage="core"
+              href="https://example.com/{key}"
+            >대표</a>
+            """
+            for key, label, section, title in rows
+        )
+        raw_by_section = {section: [] for section in report_eval.SECTION_KEYS}
+        for key, _label, section, title in rows:
+            raw_by_section[section].append(
+                {
+                    "section": section,
+                    "title": title,
+                    "link": f"https://example.com/{key}",
+                    "description": f"{title} 관련 현장 기사다.",
+                    "selection_fit_score": 1.6,
+                    "selection_stage": "core",
+                    "score": 80.0,
+                    "pub_dt_kst": "2026-06-11T05:00:00+09:00",
+                }
+            )
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-11T06:00:00+09:00"},
+            "raw_by_section": raw_by_section,
+        }
+
+        result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["commodity_primary_count"], 6)
+        self.assertFalse(result["metrics"]["commodity_board_low_coverage"])
+        self.assertNotIn(
+            "commodity_board_low_coverage",
+            result["selection_guardrails"]["driver_tags"],
+        )
+        self.assertFalse(
+            any("coverage" in hint for hint in result["improvement_hints"]),
+            result["improvement_hints"],
+        )
+
     def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:
         html = """
         <div
