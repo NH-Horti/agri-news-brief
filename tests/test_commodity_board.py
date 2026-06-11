@@ -1052,6 +1052,63 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(apple_item["article_count"], 1)
         self.assertEqual(apple_item["preview_articles"][0].title, article.title)
 
+    def test_board_source_builder_reserves_strict_candidates_before_source_cap(self):
+        apple = self._item("apple")["short_label"]
+        onion = self._item("onion")["short_label"]
+        tomato = self._item("tomato")["short_label"]
+        same_source_apple = self._make_article(
+            "supply",
+            f"{apple} 가격 강세에 산지 출하 조절 확대",
+            f"{apple} 물량 감소와 수급 불안으로 출하 조절이 추진되고 있다.",
+            "https://same.example.com/news/apple",
+        )
+        same_source_onion = self._make_article(
+            "supply",
+            f"{onion} 가격 급락 우려…수급 안정 대책 착수",
+            f"{onion} 공급 과잉과 산지 물량 부담에 대응해 수급 안정 대책이 추진된다.",
+            "https://same.example.com/news/onion",
+        )
+        same_source_tomato = self._make_article(
+            "supply",
+            f"{tomato} 가격 하락에 산지 출하 조절 추진",
+            f"{tomato} 농가가 가격 하락과 물량 부담에 대응해 산지 출하 조절에 나섰다.",
+            "https://same.example.com/news/tomato",
+        )
+        same_source_apple.score = 300.0
+        same_source_onion.score = 290.0
+        same_source_tomato.score = 10.0
+        other_articles = [
+            self._make_article(
+                "supply",
+                f"{label} 가격 변동에 수급 대책 점검",
+                f"{label} 산지 출하와 수급 상황을 점검하는 기사다.",
+                f"https://source{idx}.example.com/news/{key}",
+            )
+            for idx, (key, label) in enumerate(
+                (
+                    ("garlic", self._item("garlic")["short_label"]),
+                    ("potato", self._item("potato")["short_label"]),
+                    ("napa_cabbage", self._item("napa_cabbage")["short_label"]),
+                    ("grape", self._item("grape")["short_label"]),
+                    ("green_onion", self._item("green_onion")["short_label"]),
+                ),
+                start=1,
+            )
+        ]
+        for idx, article in enumerate(other_articles, start=1):
+            article.score = 200.0 - idx
+        raw_by_section = {key: [] for key in self.conf}
+        raw_by_section["supply"] = [same_source_apple, same_source_onion, same_source_tomato, *other_articles]
+
+        board_source = main.build_managed_commodity_board_source_by_section(raw_by_section)
+
+        source_titles = [article.title for article in board_source["supply"]]
+        self.assertIn(same_source_tomato.title, source_titles)
+        ctx = main.build_managed_commodity_board_context(board_source)
+        tomato_item = next(item for group in ctx["groups"] for item in group["items"] if item["key"] == "tomato")
+        self.assertTrue(tomato_item["active"])
+        self.assertEqual(tomato_item["top_article"].title, same_source_tomato.title)
+
     def test_supply_final_normalization_promotes_program_core_board_story(self):
         weak_supply = self._make_article(
             "supply",
