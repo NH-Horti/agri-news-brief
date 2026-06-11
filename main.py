@@ -2622,12 +2622,13 @@ def build_managed_commodity_board_source_by_section(
     out: dict[str, list["Article"]] = {}
     for sec in SECTIONS:
         section_key = str(sec.get("key") or "").strip()
-        eligible_articles: list[Article] = []
+        eligible_records: list[tuple[Article, list[tuple[str, dict[str, Any]]]]] = []
         distinct_sources: set[str] = set()
         for article in sorted(by_section.get(section_key, []) or [], key=_sort_key_major_first, reverse=True):
             if not isinstance(article, Article):
                 continue
-            if not managed_commodity_board_keys_for_article(article):
+            board_keys = managed_commodity_board_keys_for_article(article)
+            if not board_keys:
                 continue
             reject_reason = _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False)
             if reject_reason and not (
@@ -2635,7 +2636,25 @@ def build_managed_commodity_board_source_by_section(
                 and reject_reason == "dist_primary_supply_price_story"
             ):
                 continue
-            eligible_articles.append(article)
+            strict_records: list[tuple[str, dict[str, Any]]] = []
+            title_l = _nfkc_lower(getattr(article, "title", "") or "")
+            if _commodity_board_title_issue_hits(title_l) > 0:
+                for key in board_keys[:2]:
+                    item = MANAGED_COMMODITY_BY_KEY.get(str(key) or "")
+                    if not item:
+                        continue
+                    # Active primary requires a direct title item hit. Check that cheap
+                    # gate before the heavier representative metrics pass.
+                    if _commodity_board_term_hits(title_l, _managed_commodity_base_terms(item, limit=6)) <= 0:
+                        continue
+                    metrics = _commodity_board_item_article_representative_metrics(
+                        item,
+                        article,
+                        include_semantic=False,
+                    )
+                    if _commodity_board_article_is_active_candidate(item, article, metrics):
+                        strict_records.append((str(key), dict(metrics)))
+            eligible_records.append((article, strict_records))
             source_key = article_source_bucket_key(article)
             if source_key:
                 distinct_sources.add(source_key)
@@ -2649,19 +2668,43 @@ def build_managed_commodity_board_source_by_section(
         picked: list[Article] = []
         seen_keys: set[str] = set()
         source_counts: dict[str, int] = {}
-        for article in eligible_articles:
+        best_strict_by_item: dict[str, tuple[tuple[Any, ...], Article]] = {}
+        for article, strict_records in eligible_records:
+            for item_key, metrics in strict_records:
+                sort_key = (
+                    int(metrics.get("representative_rank", -1)),
+                    float(metrics.get("representative_score", 0.0) or 0.0),
+                    float(metrics.get("board_score", 0.0) or 0.0),
+                    float(metrics.get("story_priority", 0.0) or 0.0),
+                    *_sort_key_major_first(article),
+                )
+                current = best_strict_by_item.get(item_key)
+                if current is None or sort_key > current[0]:
+                    best_strict_by_item[item_key] = (sort_key, article)
+
+        def _add_board_source_article(article: Article, *, enforce_source_cap: bool) -> bool:
             dedupe_key = article.canon_url or article.norm_key or article.title_key or article.url
             if not dedupe_key or dedupe_key in seen_keys:
-                continue
+                return False
             source_key = article_source_bucket_key(article)
-            if source_key and per_source_cap < cap and source_counts.get(source_key, 0) >= per_source_cap:
-                continue
+            if enforce_source_cap and source_key and per_source_cap < cap and source_counts.get(source_key, 0) >= per_source_cap:
+                return False
             seen_keys.add(dedupe_key)
             picked.append(article)
             if source_key:
                 source_counts[source_key] = source_counts.get(source_key, 0) + 1
+            return True
+
+        strict_reserved = sorted(best_strict_by_item.values(), key=lambda item: item[0], reverse=True)
+        for _sort_key, article in strict_reserved:
+            _add_board_source_article(article, enforce_source_cap=False)
             if len(picked) >= cap:
                 break
+
+        for article, _strict_records in eligible_records:
+            if len(picked) >= cap:
+                break
+            _add_board_source_article(article, enforce_source_cap=True)
         out[section_key] = picked
     return out
 
