@@ -439,6 +439,25 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("kiwifruit"), article, metrics))
 
+    def test_feedback_guardrail_requires_item_in_title_for_active_primary(self):
+        article = self._make_article(
+            "supply",
+            "강원농협, 농산물 출하·유통 현장 점검",
+            "토마토 출하 현장을 점검하고 산지 유통 상황을 살폈다는 기사다.",
+            "https://example.com/tomato-generic-field-check",
+        )
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("tomato"), article)
+
+        with mock.patch.object(
+            main,
+            "SELECTION_FEEDBACK_GUARDRAILS",
+            {
+                "commodity_require_direct_item_focus": True,
+                "commodity_require_issue_signal": True,
+            },
+        ):
+            self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("tomato"), article, metrics))
+
     def test_promo_campaign_story_is_not_representative(self):
         article = self._make_article(
             "supply",
@@ -887,9 +906,10 @@ class TestCommodityBoard(unittest.TestCase):
         item = self._item("green_pepper")
         metrics = main._commodity_board_item_article_representative_metrics(item, article)
 
-        self.assertGreaterEqual(int(metrics["representative_rank"]), 4)
-        self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
-        self.assertTrue(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            self.assertGreaterEqual(int(metrics["representative_rank"]), 4)
+            self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
+            self.assertTrue(main._commodity_board_article_is_supply_bridge_candidate(item, article, metrics))
 
     def test_board_context_does_not_mix_cabbage_into_napa_cabbage(self):
         article = self._make_article(
@@ -1663,9 +1683,10 @@ class TestCommodityBoard(unittest.TestCase):
         item = self._item("pear")
         metrics = main._commodity_board_item_article_representative_metrics(item, article)
 
-        self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
-        self.assertFalse(bool(metrics["weak_support_advice_story"]))
-        self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
+            self.assertFalse(bool(metrics["weak_support_advice_story"]))
+            self.assertTrue(main._commodity_board_article_is_active_candidate(item, article, metrics))
 
     def test_supply_core_selection_skips_generic_category_watch_story(self):
         generic_watch = self._make_article(

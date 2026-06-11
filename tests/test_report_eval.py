@@ -411,6 +411,50 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 0.0)
         self.assertEqual(result["commodity_primary_linkage_samples"][0]["item_label"], "애호박(쥬키니)")
 
+    def test_commodity_board_strict_link_accepts_weather_and_field_issue_terms(self) -> None:
+        html = """
+        <a
+          data-surface="commodity_primary"
+          data-section="supply"
+          data-article-title="폭염에 밀리는 여름 배추…준고랭지 재배 확대"
+          data-article-id="cabbage-heat"
+          data-target-domain="example.com"
+          data-item-key="napa_cabbage"
+          data-item-label="배추"
+          data-representative-rank="3"
+          data-representative-score="125.0"
+          data-board-score="95.0"
+          data-selection-fit="1.6"
+          data-selection-stage="core"
+          href="https://example.com/cabbage-heat"
+        >대표</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-11T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "폭염에 밀리는 여름 배추…준고랭지 재배 확대",
+                        "link": "https://example.com/cabbage-heat",
+                        "description": "폭염 대응을 위해 배추 재배지를 조정하는 기사다.",
+                        "selection_fit_score": 1.6,
+                        "selection_stage": "core",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-06-11T05:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-11", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["commodity_primary_strict_link_rate"], 1.0)
+        self.assertEqual(result["commodity_primary_linkage_samples"], [])
+
     def test_evaluate_report_does_not_flag_broadcast_report_as_finance_noise(self) -> None:
         html = """
         <div
