@@ -2733,3 +2733,161 @@ class LocalRuntimeTests(TestCase):
         themes = [main._pest_editorial_theme_key(article) for article in final_by_section["pest"]]
         self.assertLessEqual(themes.count("fire_blight"), 2)
         self.assertIn(strawberry.link, {article.link for article in final_by_section["pest"]})
+
+    def test_duplicate_pest_theme_tail_cleanup_drops_extra_fire_blight_direct_tail(self) -> None:
+        fire_core = self._make_article(
+            section="pest",
+            title='"과수화상병 확산 비상"… 이승돈 청장, 공주 사과농가 긴급 점검',
+            description="과수화상병 확산 차단을 위해 농진청이 공주 사과농가를 점검하고 예찰과 방제를 강화했다.",
+            link="https://example.com/fire-core",
+        )
+        fire_field = self._make_article(
+            section="pest",
+            title="‘붉은 죽음’ 전국 퍼진다…초토화된 사과 과수원",
+            description="과수화상병 확산으로 사과 과원이 매몰되고 농가 피해가 커지고 있다.",
+            link="https://example.com/fire-field",
+        )
+        fire_photo = self._make_article(
+            section="pest",
+            title="과수화상병 예찰 현장 점검하는 이승돈 농진청장",
+            description="충남 공주 사과농가에서 과수화상병 정밀 예찰과 현장 대응 상황을 점검했다.",
+            link="https://example.com/fire-photo",
+        )
+        mite = self._make_article(
+            section="pest",
+            title="충남도 농기원, 맥문동 정식 후 예찰·방제 필수",
+            description="맥문동 재배지에서 뿌리응애 발생이 늘어 예찰과 방제 관리가 필수다.",
+            link="https://example.com/mite",
+        )
+        fire_core.is_core = True
+        fire_field.is_core = True
+        final_by_section = {"pest": [fire_core, fire_field, fire_photo, mite]}
+
+        self.assertTrue(main._is_pest_direct_gap_story(fire_photo))
+        self.assertEqual(main._drop_duplicate_pest_theme_tail(final_by_section, max_theme_cards=2, min_items=3), 1)
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertNotIn(fire_photo.link, links)
+        self.assertIn(mite.link, links)
+
+    def test_weak_pest_tail_replacement_prefers_named_non_fire_pest_when_fire_full(self) -> None:
+        fire_core = self._make_article(
+            section="pest",
+            title='"과수화상병 확산 비상"… 이승돈 청장, 공주 사과농가 긴급 점검',
+            description="과수화상병 확산 차단을 위해 농진청이 공주 사과농가를 점검하고 예찰과 방제를 강화했다.",
+            link="https://example.com/fire-core-repl",
+        )
+        fire_field = self._make_article(
+            section="pest",
+            title="‘붉은 죽음’ 전국 퍼진다…초토화된 사과 과수원",
+            description="과수화상병 확산으로 사과 과원이 매몰되고 농가 피해가 커지고 있다.",
+            link="https://example.com/fire-field-repl",
+        )
+        weather_tail = self._make_article(
+            section="pest",
+            title="여름철 태풍·집중호우 '선제적 차단'",
+            description="충북도는 여름철 태풍·집중호우에 대비해 농업재해대책 추진계획을 수립했다.",
+            link="https://example.com/weather-tail",
+        )
+        fire_photo = self._make_article(
+            section="pest",
+            title="과수화상병 예찰 현장 점검하는 이승돈 농진청장",
+            description="충남 공주 사과농가에서 과수화상병 정밀 예찰과 현장 대응 상황을 점검했다.",
+            link="https://example.com/fire-photo-repl",
+        )
+        mite = self._make_article(
+            section="pest",
+            title="노랗게 마르는 맥문동, '뿌리응애'부터 살펴야",
+            description="맥문동 재배지에서 뿌리응애 발생이 늘어 예찰과 등록 약제 방제가 필요하다.",
+            link="https://example.com/root-mite",
+        )
+        fire_core.is_core = True
+        fire_field.is_core = True
+        final_by_section = {"pest": [fire_core, fire_field, weather_tail]}
+
+        self.assertTrue(main._is_weak_pest_tail(weather_tail))
+        self.assertEqual(main._replace_weak_pest_tail_from_raw(final_by_section, {"pest": [fire_photo, mite]}), 1)
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertIn(mite.link, links)
+        self.assertNotIn(fire_photo.link, links)
+
+    def test_pest_weather_disaster_noise_blocks_generic_weather_tail(self) -> None:
+        weather_tail = self._make_article(
+            section="pest",
+            title="함평군, 장마철 농작물 피해 예방 강화",
+            description="장마철 집중호우·태풍에 대비해 농작물과 시설물 피해 예방을 강화하고 시설채소 현장 기술지원단을 가동했다. 후반에는 습해 뒤 탄저병 방제 요령도 안내했다.",
+            link="https://example.com/hampyeong-weather",
+        )
+        direct = self._make_article(
+            section="pest",
+            title="정읍시, 농작물 돌발해충 피해 예방 '공동 방제' 총력",
+            description="농작물 돌발해충 피해 예방을 위해 공동 방제와 예찰을 강화한다.",
+            link="https://example.com/jeongeup-pest",
+        )
+
+        self.assertTrue(main._is_pest_weather_disaster_noise(weather_tail))
+        self.assertTrue(main._is_generic_pest_notice_tail(weather_tail))
+        self.assertTrue(main._is_weak_pest_tail(weather_tail))
+        self.assertFalse(main._is_pest_direct_gap_story(weather_tail))
+        self.assertFalse(main._is_pest_weather_disaster_noise(direct))
+        self.assertTrue(main._is_pest_direct_gap_story(direct))
+
+    def test_final_pest_direct_gap_refill_replaces_weather_and_fills_to_preferred(self) -> None:
+        fire_core = self._make_article(
+            section="pest",
+            title='"과수화상병 확산 비상"… 이승돈 청장, 공주 사과농가 긴급 점검',
+            description="과수화상병 확산 차단을 위해 농진청이 공주 사과농가를 점검하고 예찰과 방제를 강화했다.",
+            link="https://example.com/refill-fire-core",
+        )
+        fire_field = self._make_article(
+            section="pest",
+            title="‘붉은 죽음’ 전국 퍼진다…초토화된 사과 과수원",
+            description="과수화상병 확산으로 사과 과원이 매몰되고 농가 피해가 커지고 있다.",
+            link="https://example.com/refill-fire-field",
+        )
+        weather_tail = self._make_article(
+            section="pest",
+            title="함평군, 장마철 농작물 피해 예방 강화",
+            description="장마철 집중호우·태풍에 대비해 농작물과 시설물 피해 예방을 강화하고 현장 기술지원을 확대했다.",
+            link="https://example.com/refill-weather",
+        )
+        mite = self._make_article(
+            section="pest",
+            title="충남도 농기원, 맥문동 정식 후 예찰·방제 필수",
+            description="맥문동 재배지에서 뿌리응애 발생이 늘어 예찰과 방제 관리가 필수다.",
+            link="https://example.com/refill-mite",
+        )
+        jeongeup = self._make_article(
+            section="pest",
+            title="정읍시, 농작물 돌발해충 피해 예방 '공동 방제' 총력",
+            description="농작물 돌발해충 피해 예방을 위해 공동 방제와 예찰을 강화한다.",
+            link="https://example.com/refill-jeongeup",
+        )
+        stinkbug = self._make_article(
+            section="pest",
+            title="과수 노린재 피해 증가, 친환경 관리 관심 확대",
+            description="사과·배 과수원에서 노린재 피해가 증가해 친환경 관리와 방제가 필요하다.",
+            link="https://example.com/refill-stinkbug",
+        )
+        fire_photo = self._make_article(
+            section="pest",
+            title="과수화상병 예찰 현장 점검하는 이승돈 농진청장",
+            description="충남 공주 사과농가에서 과수화상병 정밀 예찰과 현장 대응 상황을 점검했다.",
+            link="https://example.com/refill-fire-photo",
+        )
+        fire_core.is_core = True
+        fire_field.is_core = True
+        final_by_section = {"pest": [fire_core, fire_field, weather_tail, mite]}
+
+        changed = main._refill_pest_direct_gap_from_raw(
+            final_by_section,
+            {"pest": [fire_photo, jeongeup, stinkbug]},
+            target=5,
+        )
+
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(changed, 2)
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertNotIn(weather_tail.link, links)
+        self.assertNotIn(fire_photo.link, links)
+        self.assertIn(jeongeup.link, links)
+        self.assertIn(stinkbug.link, links)

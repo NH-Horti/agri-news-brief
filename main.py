@@ -23270,11 +23270,62 @@ def _is_policy_keepable_macro_issue(title: str, desc: str) -> bool:
     return issue_context_hits >= 2 and response_hits >= 1
 
 
+def _is_pest_weather_disaster_noise(article: "Article") -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    if not text:
+        return False
+    title_l = _nfkc_lower(title)
+    lead_l = _nfkc_lower(f"{title} {desc[:420]}")
+    title_weather_hits = count_any(
+        title_l,
+        [w.lower() for w in ("장마", "태풍", "집중호우", "호우", "폭우", "농업재해")],
+    )
+    weather_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "장마", "태풍", "집중호우", "호우", "폭우", "풍수해", "농업재해", "재해대책",
+            "기상특보", "침수", "배수로", "시설물 피해",
+        )],
+    )
+    if weather_hits <= 0:
+        return False
+    title_named_pest = _has_named_pest_signal(title_l) or count_any(
+        title_l,
+        [w.lower() for w in (
+            "과수화상병", "화상병", "탄저병", "역병", "흰가루병", "노균병",
+            "뿌리응애", "돌발해충", "토마토뿔나방", "총채벌레", "진딧물", "노린재", "응애",
+        )],
+    ) >= 1
+    lead_named_pest = _has_named_pest_signal(lead_l) or count_any(
+        lead_l,
+        [w.lower() for w in (
+            "과수화상병", "화상병", "탄저병", "역병", "흰가루병", "노균병",
+            "뿌리응애", "돌발해충", "토마토뿔나방", "총채벌레", "진딧물", "노린재", "응애",
+        )],
+    ) >= 1
+    if title_named_pest or (title_weather_hits <= 0 and lead_named_pest):
+        return False
+    disaster_context_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "대비", "피해 예방", "피해 최소화", "재해대책", "추진계획", "시설물", "현장 기술지원",
+            "상황 전파", "협력체계", "선제적 차단", "대응 강화",
+        )],
+    )
+    return title_weather_hits >= 1 or (weather_hits >= 1 and disaster_context_hits >= 2)
+
+
 def _is_weak_pest_tail(article: "Article") -> bool:
     if bool(getattr(article, "is_core", False)):
         return False
     title = article.title or ""
     desc = article.description or ""
+    if _is_pest_weather_disaster_noise(article):
+        return True
     text = _nfkc_lower(f"{title} {desc}")
     title_l = _nfkc_lower(title)
     title_signal = _pest_title_signal_count(title)
@@ -23298,6 +23349,8 @@ def _is_weak_pest_tail(article: "Article") -> bool:
 
 def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) -> tuple[Any, ...] | None:
     if not isinstance(article, Article):
+        return None
+    if _is_pest_weather_disaster_noise(article):
         return None
     title = article.title or ""
     desc = article.description or ""
@@ -23718,6 +23771,10 @@ def _replace_weak_pest_tail_from_raw(
     weak_indexes = [idx for idx, article in enumerate(pest_items) if _is_weak_pest_tail(article)]
     if not weak_indexes:
         return 0
+    fire_blight_count = sum(
+        1 for article in pest_items
+        if _pest_editorial_theme_key(article) == "fire_blight"
+    )
     pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
     existing_keys = {
         _article_selection_identity(article)
@@ -23734,10 +23791,22 @@ def _replace_weak_pest_tail_from_raw(
                 continue
             if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
                 continue
+            candidate_theme = _pest_editorial_theme_key(article)
+            if fire_blight_count >= 2 and candidate_theme == "fire_blight":
+                continue
+            if _is_generic_pest_notice_tail(article):
+                continue
             rank = _pest_replacement_candidate_rank(article, pest_conf)
             if rank is None:
                 continue
-            ranked.append((rank, article))
+            ranked.append((
+                (
+                    1 if _is_pest_direct_gap_story(article) else 0,
+                    1 if candidate_theme and candidate_theme != "fire_blight" else 0,
+                    rank,
+                ),
+                article,
+            ))
     if not ranked:
         return 0
     ranked.sort(key=lambda item: item[0], reverse=True)
@@ -23833,10 +23902,19 @@ def _replace_duplicate_pest_theme_tail_from_raw(
             candidate_theme = _pest_editorial_theme_key(article)
             if candidate_theme in overrepresented_themes:
                 continue
+            if _is_generic_pest_notice_tail(article):
+                continue
             rank = _pest_diversity_replacement_rank(article, pest_conf)
             if rank is None:
                 continue
-            ranked.append((rank, article, candidate_theme))
+            ranked.append((
+                (
+                    1 if _is_pest_direct_gap_story(article) else 0,
+                    rank,
+                ),
+                article,
+                candidate_theme,
+            ))
     if not ranked:
         return 0
 
@@ -23924,7 +24002,7 @@ def _drop_duplicate_pest_theme_tail(
             continue
         if bool(getattr(article, "is_core", False)):
             continue
-        if _is_pest_direct_gap_story(article):
+        if theme != "fire_blight" and _is_pest_direct_gap_story(article):
             continue
         removable.append(
             (
@@ -23968,6 +24046,9 @@ def _drop_weak_pest_notice_tail(final_by_section: dict[str, list["Article"]], *,
             continue
         if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
             continue
+        if _is_pest_weather_disaster_noise(article):
+            candidates.append(article)
+            continue
         title_l = _nfkc_lower(article.title or "")
         text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
         title_named = _has_named_pest_signal(title_l) or count_any(
@@ -24008,6 +24089,8 @@ def _is_generic_pest_notice_tail(article: "Article") -> bool:
         return False
     if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
         return False
+    if _is_pest_weather_disaster_noise(article):
+        return True
     title_l = _nfkc_lower(article.title or "")
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     title_named = _has_named_pest_signal(title_l) or count_any(
@@ -25713,6 +25796,32 @@ def _build_sections_phase123(
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final strict hard-noise guard failed: %s", e)
+
+    try:
+        final_pest_direct_refill = _refill_pest_direct_gap_from_raw(
+            final_by_section,
+            raw_by_section,
+            target=PREFERRED_PER_SECTION,
+        )
+        if final_pest_direct_refill:
+            log.info("[REBALANCE] final pest direct-gap guard repaired %d item(s)", final_pest_direct_refill)
+            final_pest_direct_dupes = _drop_duplicate_pest_theme_tail(
+                final_by_section,
+                min_items=MIN_FALLBACK_PER_SECTION,
+            )
+            final_pest_direct_noise = _drop_weak_pest_notice_tail(
+                final_by_section,
+                min_items=MIN_FALLBACK_PER_SECTION,
+            )
+            if final_pest_direct_dupes or final_pest_direct_noise:
+                log.info(
+                    "[REBALANCE] final pest direct-gap guard cleaned %d theme duplicate(s), %d weak notice item(s)",
+                    final_pest_direct_dupes,
+                    final_pest_direct_noise,
+                )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final pest direct-gap guard failed: %s", e)
 
     return final_by_section
 
@@ -29978,6 +30087,8 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
     text = _nfkc_lower(f"{title} {desc}".strip())
     if not text:
         return False
+    if _is_pest_weather_disaster_noise(article):
+        return False
     if _postbuild_article_reject_reason(article, "pest", apply_selection_fit=False) in _HARD_FINAL_POSTBUILD_REJECT_REASONS:
         return False
     pest_hits = count_any(
@@ -30011,6 +30122,168 @@ def _pest_direct_gap_rank(article: Article, conf: JsonDict) -> tuple[Any, ...]:
         press_priority(article.press, article.domain),
         article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
     )
+
+
+def _refill_pest_direct_gap_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+    *,
+    target: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    max_n = max(1, min(MAX_PER_SECTION, int(target or PREFERRED_PER_SECTION)))
+    pest_items = [article for article in (final_by_section.get("pest") or []) if isinstance(article, Article)]
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    fire_blight_count = sum(1 for article in pest_items if _pest_editorial_theme_key(article) == "fire_blight")
+    ranked: list[tuple[tuple[Any, ...], Article, str]] = []
+    for source_section in ("pest", "supply", "policy"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in existing_keys:
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+                continue
+            if _is_pest_weather_disaster_noise(article) or _is_generic_pest_notice_tail(article):
+                continue
+            if not _is_pest_direct_gap_story(article):
+                continue
+            candidate_theme = _pest_editorial_theme_key(article)
+            if fire_blight_count >= 2 and candidate_theme == "fire_blight":
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, "pest")
+            if reject_reason and reject_reason not in {"selection_feedback_low_fit", "selection_feedback_core_fit", "pest_partial_mention"}:
+                continue
+            if _candidate_conflicts_with_final(
+                article,
+                final_by_section,
+                "pest",
+                allow_pest_national_fire_blight_gap=(candidate_theme == "fire_blight"),
+            ):
+                continue
+            ranked.append(
+                (
+                    (
+                        1 if candidate_theme and candidate_theme != "fire_blight" else 0,
+                        _pest_direct_gap_rank(article, pest_conf),
+                    ),
+                    article,
+                    candidate_theme,
+                )
+            )
+    if not ranked:
+        final_by_section["pest"] = pest_items[:MAX_PER_SECTION]
+        return 0
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    used_keys = set(existing_keys)
+
+    def _pick_next(current_items: list[Article]) -> Article | None:
+        for _rank, candidate, _theme in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used_keys:
+                continue
+            if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in current_items):
+                continue
+            if any(_is_similar_story(candidate, existing, "pest") for existing in current_items):
+                continue
+            return candidate
+        return None
+
+    victim_indexes = [
+        idx
+        for idx, article in enumerate(pest_items)
+        if not bool(getattr(article, "is_core", False))
+        and not _is_pest_direct_gap_story(article)
+        and (
+            _is_pest_weather_disaster_noise(article)
+            or _is_generic_pest_notice_tail(article)
+            or _is_weak_pest_tail(article)
+        )
+    ]
+    changed = 0
+    for replace_idx in sorted(
+        victim_indexes,
+        key=lambda idx: (
+            0 if _is_pest_weather_disaster_noise(pest_items[idx]) else 1,
+            float(getattr(pest_items[idx], "selection_fit_score", 0.0) or 0.0),
+            float(getattr(pest_items[idx], "score", 0.0) or 0.0),
+        ),
+    ):
+        pick = _pick_next(pest_items)
+        if pick is None:
+            break
+        prev_section = str(getattr(pick, "section", "") or "")
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = prev_section or "pest"
+        if prev_section and prev_section != "pest":
+            pick.reassigned_from = prev_section
+        pick.section = "pest"
+        pick.forced_section = "pest"
+        pick.is_core = False
+        pick.selection_stage = "pest_direct_gap_refill"
+        pick.selection_note = "replace_weather_or_weak_tail"
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", pest_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+        pest_items[replace_idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_keys.add(ident)
+        changed += 1
+
+    while len(pest_items) < max_n:
+        pick = _pick_next(pest_items)
+        if pick is None:
+            break
+        prev_section = str(getattr(pick, "section", "") or "")
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = prev_section or "pest"
+        if prev_section and prev_section != "pest":
+            pick.reassigned_from = prev_section
+        pick.section = "pest"
+        pick.forced_section = "pest"
+        pick.is_core = False
+        pick.selection_stage = "pest_direct_gap_refill"
+        pick.selection_note = "fill_direct_pest_gap"
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", pest_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+        pest_items.append(pick)
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_keys.add(ident)
+        changed += 1
+
+    if changed:
+        final_by_section["pest"] = sorted(
+            pest_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                1 if _pest_editorial_theme_key(article) != "fire_blight" and _is_pest_direct_gap_story(article) else 0,
+                0 if _is_weak_pest_tail(article) or _is_generic_pest_notice_tail(article) else 1,
+                _pest_direct_gap_rank(article, pest_conf) if _is_pest_direct_gap_story(article) else (),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    else:
+        final_by_section["pest"] = pest_items[:MAX_PER_SECTION]
+    return changed
 
 
 def _recover_preferred_section_counts_from_raw(
