@@ -2907,8 +2907,8 @@ class LocalRuntimeTests(TestCase):
         )
         better = self._make_article(
             section="supply",
-            title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
-            description="매실 가격 하락과 소비 부진에 대응해 가공용 수매와 제값받기 지원을 추진한다.",
+            title="광양매실 생산량 급증...가격은 전년보다 하락 조짐",
+            description="매실 생산량 급증과 소비 부진으로 산지 가격 하락 우려가 커지고 있다.",
             link="https://example.com/supply-maesil-buy",
         )
         better.selection_fit_score = 1.8
@@ -2918,6 +2918,53 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._replace_supply_editorial_weak_tail_from_raw(final_by_section, {"supply": [better]}), 1)
         links = {article.link for article in final_by_section["supply"]}
         self.assertNotIn(weak.link, links)
+        self.assertIn(better.link, links)
+
+    def test_supply_editorial_guard_skips_policy_duplicate_and_market_event(self) -> None:
+        weak = self._make_article(
+            section="supply",
+            title="광양시, 매실 상생마케팅 후원금 지원…소비촉진·제값받기",
+            description="지역 후원금과 판촉 지원을 소개하는 행사성 기사다.",
+            link="https://example.com/supply-weak-maesil",
+        )
+        policy_core = self._make_article(
+            section="policy",
+            title="농민의길 “농특세, 농산물 가격 안정에 우선 써야”",
+            description="농특세를 농산물 가격 안정에 써야 한다는 정책 주장이다.",
+            link="https://example.com/policy-ag-tax",
+        )
+        policy_duplicate = self._make_article(
+            section="supply",
+            title="농민의길 “농특세, 농산물 가격 안정에 우선 써야”",
+            description="농특세를 농산물 가격 안정에 써야 한다는 정책 주장이다.",
+            link="https://example.com/policy-ag-tax",
+        )
+        direct_market = self._make_article(
+            section="supply",
+            title="햇마늘·햇 양파 직거래장터 오세요",
+            description="농협 주차장에서 마늘과 양파 직거래장터를 연다는 안내 기사다.",
+            link="https://example.com/supply-direct-market",
+        )
+        better = self._make_article(
+            section="supply",
+            title="광양매실 생산량 급증...가격은 전년보다 하락 조짐",
+            description="매실 생산량 급증과 소비 부진으로 산지 가격 하락 우려가 커지고 있다.",
+            link="https://example.com/supply-maesil-price",
+        )
+        better.selection_fit_score = 1.8
+        final_by_section = {"supply": [weak], "policy": [policy_core]}
+
+        self.assertEqual(
+            main._replace_supply_editorial_weak_tail_from_raw(
+                final_by_section,
+                {"supply": [policy_duplicate, direct_market, better]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertNotIn(weak.link, links)
+        self.assertNotIn(policy_duplicate.link, links)
+        self.assertNotIn(direct_market.link, links)
         self.assertIn(better.link, links)
 
     def test_policy_editorial_guard_replaces_local_application_tail(self) -> None:
@@ -2945,6 +2992,12 @@ class LocalRuntimeTests(TestCase):
             description="농번기 인력난 해소를 위한 지역 근로자 입국 안내 기사다.",
             link="https://example.com/policy-seasonal-worker",
         )
+        bad_labor_help = self._make_article(
+            section="policy",
+            title="농협 의정부시지부, 고산면 마늘농가 일손돕기",
+            description="농협 임직원이 마늘농가에서 농촌 일손돕기 활동을 실시했다.",
+            link="https://example.com/policy-labor-help",
+        )
         better = self._make_article(
             section="policy",
             title="[국가책임농정 1년] 예산·법제화 지속 과제",
@@ -2957,7 +3010,7 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(
             main._replace_policy_editorial_weak_tail_from_raw(
                 final_by_section,
-                {"policy": [bad_origin_dispute, bad_local_labor, better]},
+                {"policy": [bad_origin_dispute, bad_local_labor, bad_labor_help, better]},
             ),
             1,
         )
@@ -2965,7 +3018,43 @@ class LocalRuntimeTests(TestCase):
         self.assertNotIn(weak.link, links)
         self.assertNotIn(bad_origin_dispute.link, links)
         self.assertNotIn(bad_local_labor.link, links)
+        self.assertNotIn(bad_labor_help.link, links)
         self.assertIn(better.link, links)
+
+    def test_policy_structure_guard_steals_high_signal_story_from_supply(self) -> None:
+        supply_policy_story = self._make_article(
+            section="supply",
+            title="양파산업 위기 해법 찾는다",
+            description="양파 가격 하락과 수급 불안이 이어지며 산업 위기 해법을 논의했다.",
+            link="https://example.com/policy-onion-industry",
+        )
+        weak_policy = self._make_article(
+            section="policy",
+            title="횡성군, 2027년 유기질 비료 지원사업 접수 시작",
+            description="지역 농가를 대상으로 유기질 비료 지원사업 신청 접수를 안내했다.",
+            link="https://example.com/policy-local-application",
+        )
+        supply_refill = self._make_article(
+            section="supply",
+            title="광양매실 생산량 급증...가격은 전년보다 하락 조짐",
+            description="매실 생산량 급증과 소비 부진으로 산지 가격 하락 우려가 커지고 있다.",
+            link="https://example.com/supply-maesil-price",
+        )
+        supply_refill.selection_fit_score = 1.8
+        final_by_section = {"supply": [supply_policy_story], "policy": [weak_policy]}
+
+        self.assertEqual(
+            main._replace_policy_weak_tail_with_structure_issue_from_raw(
+                final_by_section,
+                {"policy": [supply_policy_story], "supply": [supply_refill]},
+            ),
+            1,
+        )
+        policy_links = {article.link for article in final_by_section["policy"]}
+        supply_links = {article.link for article in final_by_section["supply"]}
+        self.assertIn(supply_policy_story.link, policy_links)
+        self.assertNotIn(supply_policy_story.link, supply_links)
+        self.assertIn(supply_refill.link, supply_links)
 
     def test_dist_editorial_guard_replaces_promotional_watermelon_tail(self) -> None:
         core = self._make_article(
