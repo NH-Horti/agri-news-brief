@@ -1971,6 +1971,176 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(picked.section, "policy")
         self.assertEqual(picked.reassigned_from, "supply")
 
+    def test_preferred_count_recovery_keeps_supply_procurement_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="supply",
+                title=f"{item} 산지 출하 물량 감소에 도매가격 상승",
+                description=f"{item} 출하 물량 감소와 도매가격 상승 흐름을 다뤘다.",
+                link=f"https://example.com/supply-proc-existing-{idx}",
+                topic=item,
+            )
+            for idx, item in enumerate(("사과", "양파", "배추", "수박"), start=1)
+        ]
+        procurement = self._make_article(
+            section="supply",
+            title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+            description="농협이 규격외 매실을 가공용으로 수매해 농가 판로와 가격 지지를 돕는다.",
+            link="https://example.com/supply-maesil-procurement",
+            press="농민신문",
+            topic="매실",
+        )
+        final_by_section = {"supply": list(existing)}
+        raw_by_section = {"supply": [*existing, procurement]}
+
+        self.assertTrue(main._is_supply_field_support_gap_story(procurement))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["supply"]), 5)
+        self.assertIn(procurement.link, {article.link for article in final_by_section["supply"]})
+
+    def test_preferred_count_recovery_keeps_policy_fertilizer_support_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 수급 안정 정책 점검 {idx}",
+                description="정부가 농산물 수급 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-fert-existing-{idx}",
+                press="농업신문",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        fertilizer = self._make_article(
+            section="policy",
+            title="정부, 무기질비료 보조금 115억 긴급 투입",
+            description="농식품부가 농가 부담 완화를 위해 무기질비료 구입 보조금을 긴급 지원한다.",
+            link="https://example.com/policy-fertilizer-support",
+            press="농식품부",
+            topic="비료",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, fertilizer]}
+
+        self.assertTrue(main._is_policy_fertilizer_support_gap_story(fertilizer))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["policy"]), 5)
+        self.assertIn(fertilizer.link, {article.link for article in final_by_section["policy"]})
+
+    def test_preferred_count_recovery_allows_central_and_local_fertilizer_support(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-fert-pair-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(3)
+        ]
+        central = self._make_article(
+            section="policy",
+            title="정부, 무기질비료 보조금 115억 긴급 투입",
+            description="농식품부가 농가 부담 완화를 위해 무기질비료 구입 보조금을 긴급 지원한다.",
+            link="https://example.com/policy-fertilizer-central",
+            press="농식품부",
+            topic="비료",
+        )
+        local = self._make_article(
+            section="policy",
+            title="횡성군, 2027년 유기질 비료 지원사업 접수 시작",
+            description="횡성군이 농가 경영비 부담 완화를 위해 유기질 비료 지원사업 신청을 받는다.",
+            link="https://example.com/policy-fertilizer-local",
+            press="강원도민일보",
+            topic="비료",
+        )
+        dist_context = self._make_article(
+            section="dist",
+            title="고당도 ‘다올찬수박’ 본격 출하",
+            description="음성 지역 수박 공선회가 본격 출하에 들어가 전국 시장 공급을 시작했다.",
+            link="https://example.com/dist-watermelon-context",
+            topic="수박",
+        )
+        final_by_section = {"policy": list(existing), "dist": [dist_context]}
+        raw_by_section = {"policy": [*existing, central, local], "dist": [dist_context]}
+
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 2)
+        links = {article.link for article in final_by_section["policy"]}
+        self.assertIn(central.link, links)
+        self.assertIn(local.link, links)
+
+    def test_preferred_count_recovery_keeps_policy_climate_adaptation_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 수급 안정 정책 점검 {idx}",
+                description="정부가 농산물 수급 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-climate-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        climate = self._make_article(
+            section="policy",
+            title="시설하우스 ‘천장 환기창’ 달아 폭염 극복",
+            description="농업기술원이 시범사업으로 시설하우스 농가에 천장 환기창 기술과 시설 개선을 지원해 작물 고온 피해를 줄인다.",
+            link="https://example.com/policy-greenhouse-heat",
+            press="농민신문",
+            topic="시설하우스",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, climate]}
+
+        self.assertTrue(main._is_policy_climate_adaptation_gap_story(climate))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(climate.link, {article.link for article in final_by_section["policy"]})
+
+    def test_policy_climate_adaptation_gap_allows_coop_local_program(self) -> None:
+        climate = self._make_article(
+            section="policy",
+            title="시설하우스 ‘천장 환기창’ 달아 폭염 극복",
+            description="대호지농협이 시설하우스 농가에 천장 환기창 27동 설치 지원을 지자체 협력사업으로 추진해 작물 고온 피해를 줄인다.",
+            link="https://example.com/policy-greenhouse-coop",
+            press="농민신문",
+            topic="시설하우스",
+        )
+        shipment = self._make_article(
+            section="policy",
+            title="시설하우스 자두 출격",
+            description="시설하우스 자두 출하가 시작됐다는 산지 소식이다.",
+            link="https://example.com/greenhouse-shipment",
+            press="지역신문",
+            topic="자두",
+        )
+
+        self.assertTrue(main._is_policy_climate_adaptation_gap_story(climate))
+        self.assertFalse(main._is_policy_climate_adaptation_gap_story(shipment))
+
+    def test_preferred_count_recovery_keeps_policy_agri_finance_support_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-finance-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        finance = self._make_article(
+            section="policy",
+            title="도시 농축협, 무이자자금 3771억원 지원",
+            description="농협중앙회 상생협력위원회가 농촌지역 농축협의 경제사업 활성화를 위해 도농상생기금 3771억원을 지원한다.",
+            link="https://example.com/policy-finance-support",
+            press="농축유통신문",
+            topic="농협",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, finance]}
+
+        self.assertTrue(main._is_policy_agri_finance_support_gap_story(finance))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(finance.link, {article.link for article in final_by_section["policy"]})
+
     def test_preferred_count_recovery_allows_dist_online_wholesale_fifth_slot(self) -> None:
         existing = [
             self._make_article(
@@ -2010,6 +2180,62 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
         self.assertEqual(len(final_by_section["dist"]), 5)
         self.assertIn(online_market.link, {article.link for article in final_by_section["dist"]})
+
+    def test_preferred_count_recovery_keeps_regional_dist_shipment_despite_cross_section_similarity(self) -> None:
+        existing = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=desc,
+                link=f"https://example.com/dist-regional-existing-{idx}",
+                topic=topic,
+            )
+            for idx, (title, desc, topic) in enumerate(
+                (
+                    ("고당도 ‘다올찬수박’ 본격 출하", "음성 수박 공선회가 본격 출하에 들어갔다.", "수박"),
+                    ("청도 농협공판장 일제 개장", "청도 농산물 공판장이 경매와 출하를 시작했다.", "농산물"),
+                    ("제주 농산물 산지 유통 경쟁력 강화", "제주 농산물 저온유통체계 구축을 추진한다.", "농산물"),
+                    ("온라인 도매시장 출하 업무협약", "농협공판장이 온라인 도매시장 출하 업무협약을 맺었다.", "농산물"),
+                ),
+                start=1,
+            )
+        ]
+        policy_context = self._make_article(
+            section="policy",
+            title="정부, 무기질비료 보조금 115억 긴급 투입",
+            description="농식품부가 농가 부담 완화를 위해 무기질비료 구입 보조금을 긴급 지원한다.",
+            link="https://example.com/policy-fert-dist-context",
+            press="농식품부",
+            topic="비료",
+        )
+        regional = self._make_article(
+            section="dist",
+            title="여름 과일 고창 수박, 도매시장 본격 출하…공선회 중심 51만 덩이 공급",
+            description="고창 수박 공선회가 산지유통센터를 통해 농산물 도매시장 출하 물량을 전국 시장에 공급한다.",
+            link="https://example.com/dist-gochang-watermelon",
+            press="전북일보",
+            topic="수박",
+        )
+        dist_conf = next(s for s in main.SECTIONS if s.get("key") == "dist")
+        final_by_section = {"dist": list(existing), "policy": [policy_context]}
+        raw_by_section = {"dist": [*existing, regional], "policy": [policy_context]}
+
+        original_reject = main._postbuild_article_reject_reason
+
+        def _rank(article: main.Article, _conf: main.JsonDict) -> tuple[int, ...] | None:
+            return (1,) if article.link == regional.link else None
+
+        def _reject(article: main.Article, section_key: str, *args: object, **kwargs: object) -> str:
+            if article.link == regional.link and section_key == "dist":
+                return ""
+            return original_reject(article, section_key, *args, **kwargs)
+
+        with (
+            patch.object(main, "_dist_replacement_candidate_rank", side_effect=_rank),
+            patch.object(main, "_postbuild_article_reject_reason", side_effect=_reject),
+        ):
+            self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(regional.link, {article.link for article in final_by_section["dist"]})
 
     def test_postbuild_rejects_foreign_unmanaged_commodity_context(self) -> None:
         ai_market = self._make_article(
@@ -2342,6 +2568,32 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(dropped, 1)
         self.assertEqual(len(final_by_section["supply"]), 3)
         self.assertNotIn(weak_tail, final_by_section["supply"])
+
+    def test_final_preferred_tail_cleanup_keeps_direct_pest_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="pest",
+                title=f"과수화상병 예찰·방제 대응 {idx}",
+                description="과수화상병 확산 차단과 예찰 대응을 다뤘다.",
+                link=f"https://example.com/pest-cleanup-existing-{idx}",
+                topic="과수화상병",
+            )
+            for idx in range(3)
+        ]
+        direct = self._make_article(
+            section="pest",
+            title="정읍시, 농작물 돌발해충 피해 예방 '공동 방제' 총력",
+            description="농작물 돌발해충 피해 예방을 위해 공동 방제와 예찰을 강화한다.",
+            link="https://example.com/pest-direct-gap-cleanup",
+            press="전북일보",
+            topic="돌발해충",
+        )
+        final_by_section = {"pest": [*existing, direct]}
+
+        self.assertTrue(main._is_pest_direct_gap_story(direct))
+        self.assertEqual(main._preferred_tail_block_reason(direct, "pest", current_count=4, raw_count=20), "pest_weak_notice_tail")
+        self.assertEqual(main._drop_preferred_tail_blocked_items(final_by_section, min_items=3), 0)
+        self.assertIn(direct, final_by_section["pest"])
 
     def test_final_story_duplicate_cleanup_removes_same_region_commodity_tail(self) -> None:
         core = self._make_article(
