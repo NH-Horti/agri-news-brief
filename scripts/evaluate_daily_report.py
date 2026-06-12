@@ -166,15 +166,20 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         operational_score = float(result.get("operational_score", result.get("overall_score", 0.0)) or 0.0)
     except (TypeError, ValueError):
         operational_score = 0.0
+    try:
+        current_headline_score = float(result.get("overall_score", operational_score) or operational_score)
+    except (TypeError, ValueError):
+        current_headline_score = operational_score
 
     target_score = float(editorial_result.get("target_score", 95.0) or 95.0)
     target_status = str(editorial_result.get("target_status") or "")
     gate_status = "target_met" if editorial_score >= target_score and target_status == "target_met" else (target_status or "needs_iteration")
-    gated_score = min(operational_score, editorial_score) if editorial_score < target_score else operational_score
+    gated_score = min(current_headline_score, editorial_score) if editorial_score < target_score else current_headline_score
     result["quality_gate"] = {
         "status": gate_status,
         "target_score": round(target_score, 2),
         "operational_score": round(operational_score, 2),
+        "reader_quality_score": round(current_headline_score, 2),
         "editorial_score": round(editorial_score, 2),
         "headline_score": round(gated_score, 2),
         "reason": "editorial_below_target" if editorial_score < target_score else "all_targets_met",
@@ -186,9 +191,9 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         if not isinstance(notes, dict):
             notes = {}
         notes["overall_score"] = (
-            "Editorial-gated headline score. The deterministic operational score is preserved "
-            "as operational_score, but the headline score is capped when the editorial shadow "
-            "judge is below the target."
+            "Reader-quality headline score. The deterministic operational score is preserved "
+            "as operational_score, and the headline score is further capped when the editorial "
+            "shadow judge is below the target."
         )
         result["score_notes"] = notes
     return result
@@ -235,9 +240,11 @@ def main() -> int:
         html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
 
     result = evaluate_report(report_date, html_text, snapshot_payload)
-    result["operational_score"] = result.get("overall_score")
+    result["operational_score"] = result.get("operational_score", result.get("overall_score"))
     result["score_notes"] = {
-        "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+        "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
+        "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+        "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
         "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
     }
     if args.editorial_eval:
