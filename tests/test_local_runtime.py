@@ -2891,3 +2891,164 @@ class LocalRuntimeTests(TestCase):
         self.assertNotIn(fire_photo.link, links)
         self.assertIn(jeongeup.link, links)
         self.assertIn(stinkbug.link, links)
+
+    def test_supply_editorial_guard_replaces_machine_demo_tail(self) -> None:
+        core = self._make_article(
+            section="supply",
+            title="“캘수록 손해” 창녕 양파 수확농가의 눈물",
+            description="양파 산지 가격 하락과 인건비 상승으로 수확 농가 손실이 커지고 있다.",
+            link="https://example.com/supply-core-onion",
+        )
+        weak = self._make_article(
+            section="supply",
+            title="창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
+            description="마늘 파종부터 수확까지 기계화 기술을 공개하는 행사성 기사다.",
+            link="https://example.com/supply-machine",
+        )
+        better = self._make_article(
+            section="supply",
+            title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+            description="매실 가격 하락과 소비 부진에 대응해 가공용 수매와 제값받기 지원을 추진한다.",
+            link="https://example.com/supply-maesil-buy",
+        )
+        better.selection_fit_score = 1.8
+        core.is_core = True
+        final_by_section = {"supply": [core, weak]}
+
+        self.assertEqual(main._replace_supply_editorial_weak_tail_from_raw(final_by_section, {"supply": [better]}), 1)
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertNotIn(weak.link, links)
+        self.assertIn(better.link, links)
+
+    def test_policy_editorial_guard_replaces_local_application_tail(self) -> None:
+        core = self._make_article(
+            section="policy",
+            title="농민의길 “농특세, 농산물 가격 안정에 우선 써야”",
+            description="농민단체가 농특세를 농산물 가격 안정과 농어촌 정책 재원으로 써야 한다고 주장했다.",
+            link="https://example.com/policy-core",
+        )
+        weak = self._make_article(
+            section="policy",
+            title="횡성군, 2027년 유기질 비료 지원사업 접수 시작",
+            description="지역 농가를 대상으로 유기질 비료 지원사업 신청 접수를 안내했다.",
+            link="https://example.com/policy-local-fertilizer",
+        )
+        bad_origin_dispute = self._make_article(
+            section="policy",
+            title="“한국, 샤인머스캣 훔치더니 대박”…950억 손실 日, 소 잃고",
+            description="일본 과일 품종 원조 주장을 다룬 해외 논쟁 기사다.",
+            link="https://example.com/policy-shine-origin",
+        )
+        bad_local_labor = self._make_article(
+            section="policy",
+            title="영양군, 외국인 계절근로자 247명 추가 입국",
+            description="농번기 인력난 해소를 위한 지역 근로자 입국 안내 기사다.",
+            link="https://example.com/policy-seasonal-worker",
+        )
+        better = self._make_article(
+            section="policy",
+            title="[국가책임농정 1년] 예산·법제화 지속 과제",
+            description="정부 국가책임농정 1년을 맞아 농가소득, 농업 예산, 법제화 과제를 점검했다.",
+            link="https://example.com/policy-national",
+        )
+        core.is_core = True
+        final_by_section = {"policy": [core, weak]}
+
+        self.assertEqual(
+            main._replace_policy_editorial_weak_tail_from_raw(
+                final_by_section,
+                {"policy": [bad_origin_dispute, bad_local_labor, better]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["policy"]}
+        self.assertNotIn(weak.link, links)
+        self.assertNotIn(bad_origin_dispute.link, links)
+        self.assertNotIn(bad_local_labor.link, links)
+        self.assertIn(better.link, links)
+
+    def test_dist_editorial_guard_replaces_promotional_watermelon_tail(self) -> None:
+        core = self._make_article(
+            section="dist",
+            title="[일본 도매시장, 경계를 허물다] 3사 거점 하나로 묶어 물류비 확 줄였다",
+            description="일본 도매시장 물류 거점 통합으로 비용 절감과 유통 효율 개선이 나타났다.",
+            link="https://example.com/dist-core-market",
+        )
+        weak = self._make_article(
+            section="dist",
+            title="대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략",
+            description="첫 출하식과 브랜드 판촉을 중심으로 전국 소비자 입맛 공략에 나섰다.",
+            link="https://example.com/dist-watermelon",
+        )
+        weak_two = self._make_article(
+            section="dist",
+            title="고당도 ‘다올찬수박’ 본격 출하",
+            description="수박 출하식과 고당도 브랜드 판촉을 중심으로 소개했다.",
+            link="https://example.com/dist-watermelon-two",
+        )
+        better = self._make_article(
+            section="dist",
+            title="“농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
+            description="농협몰 활용과 온라인 유통망 확대를 통해 농산물 판매의 디지털 전환을 추진한다.",
+            link="https://example.com/dist-nonghyupmall",
+        )
+        better_two = self._make_article(
+            section="dist",
+            title="제주산 블루베리 판매량 쑥…유통 망 확대 성과",
+            description="블루베리 유통 망 확대와 판로 관리로 판매량이 늘었다.",
+            link="https://example.com/dist-blueberry-network",
+        )
+        core.is_core = True
+        final_by_section = {"dist": [core, weak, weak_two]}
+
+        self.assertEqual(main._replace_dist_editorial_promo_tail_from_raw(final_by_section, {"dist": [better, better_two]}), 2)
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertNotIn(weak.link, links)
+        self.assertNotIn(weak_two.link, links)
+        self.assertIn(better.link, links)
+        self.assertIn(better_two.link, links)
+
+    def test_dist_title_ops_fallback_replaces_remaining_promotional_tail(self) -> None:
+        core = self._make_article(
+            section="dist",
+            title="[일본 도매시장, 경계를 허물다] 3사 거점 하나로 묶어 물류비 확 줄였다",
+            description="도매시장 물류 거점 통합으로 유통 효율을 높였다.",
+            link="https://example.com/dist-core-market-two",
+        )
+        weak = self._make_article(
+            section="dist",
+            title="대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략",
+            description="브랜드 판촉과 입맛 공략을 중심으로 소개했다.",
+            link="https://example.com/dist-gocang-promo-tail",
+        )
+        existing_jeju = self._make_article(
+            section="dist",
+            title="제주 농산물 산지 유통 경쟁력 강화...저온유통체계 구축 추진",
+            description="제주 농산물 산지 유통 경쟁력과 저온유통체계 구축을 추진한다.",
+            link="https://example.com/dist-jeju-existing",
+        )
+        blueberry = self._make_article(
+            section="dist",
+            title="제주산 블루베리 판매량 쑥…유통 망 확대 성과",
+            description="제주산 블루베리가 유통 망 확대와 판로 관리로 판매량을 늘렸다.",
+            link="https://example.com/dist-blueberry-title-ops",
+        )
+        jeju_duplicate = self._make_article(
+            section="dist",
+            title="제주 농산물, 산지 저온유통체계 구축...신선도 잡는다",
+            description="제주 농산물 산지 저온유통체계를 구축한다.",
+            link="https://example.com/dist-jeju-duplicate",
+        )
+        core.is_core = True
+        final_by_section = {"dist": [core, weak, existing_jeju], "supply": []}
+
+        self.assertEqual(
+            main._replace_dist_promo_tail_with_title_ops_from_raw(
+                final_by_section,
+                {"dist": [jeju_duplicate, blueberry], "supply": []},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertNotIn(weak.link, links)
+        self.assertIn(blueberry.link, links)
