@@ -3056,6 +3056,64 @@ class LocalRuntimeTests(TestCase):
         self.assertNotIn(supply_policy_story.link, supply_links)
         self.assertIn(supply_refill.link, supply_links)
 
+    def test_shadow_repair_avoids_same_local_commodity_repeat(self) -> None:
+        onion_core = self._make_article(
+            section="supply",
+            title="“캘수록 손해” 창녕 양파 수확농가의 눈물",
+            description="양파 산지 가격 하락과 인건비 상승으로 수확 농가 손실이 커지고 있다.",
+            link="https://example.com/shadow-onion-core",
+        )
+        machine_demo = self._make_article(
+            section="supply",
+            title="창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
+            description="마늘 파종부터 수확까지 기계화 기술을 공개하는 행사성 기사다.",
+            link="https://example.com/shadow-machine-demo",
+        )
+        machine_efficiency = self._make_article(
+            section="supply",
+            title="경북 영천시, 마늘 수확 작업 기계화 및 농가 경영 효율화에 주력",
+            description="마늘 수확 작업 기계화와 농가 경영 효율화를 소개하는 기사다.",
+            link="https://example.com/shadow-machine-efficiency",
+        )
+        gwangyang_supply = self._make_article(
+            section="supply",
+            title="광양매실 생산량 급증...가격은 전년보다 하락 조짐",
+            description="매실 생산량 급증과 소비 부진으로 산지 가격 하락 우려가 커지고 있다.",
+            link="https://example.com/shadow-gwangyang-supply",
+        )
+        gwangyang_repeat = self._make_article(
+            section="supply",
+            title="광양 매실 냉해 없어 '풍작'.. 가격은 걱정",
+            description="광양 매실 생산량이 늘며 산지 가격 하락 걱정이 커지고 있다.",
+            link="https://example.com/shadow-gwangyang-repeat",
+        )
+        melon_origin = self._make_article(
+            section="supply",
+            title="타 지역 참외의 '성주참외' 둔갑 정황 포착",
+            description="타 지역 참외가 성주참외로 둔갑했다는 정황이 포착돼 농가 우려가 커졌다.",
+            link="https://example.com/shadow-seongju-origin",
+        )
+        ugly_maesil = self._make_article(
+            section="dist",
+            title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+            description="규격외 매실을 가공용으로 수매해 산지 물량 부담을 줄이는 조치다.",
+            link="https://example.com/shadow-ugly-maesil",
+        )
+        onion_core.is_core = True
+        final_by_section = {"supply": [onion_core, machine_demo, machine_efficiency], "policy": [], "dist": []}
+
+        changed = main._repair_editorial_shadow_issues_from_raw(
+            final_by_section,
+            {"supply": [gwangyang_supply, gwangyang_repeat, melon_origin], "dist": [ugly_maesil]},
+        )
+
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertGreaterEqual(changed, 2)
+        self.assertIn(gwangyang_supply.link, links)
+        self.assertIn(melon_origin.link, links)
+        self.assertIn(ugly_maesil.link, links)
+        self.assertNotIn(gwangyang_repeat.link, links)
+
     def test_dist_editorial_guard_replaces_promotional_watermelon_tail(self) -> None:
         core = self._make_article(
             section="dist",
