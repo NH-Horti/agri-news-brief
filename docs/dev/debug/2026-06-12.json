@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-12T16:50:59+09:00",
-  "build_tag": "a15a864",
+  "generated_at_kst": "2026-06-12T17:01:55+09:00",
+  "build_tag": "ac36988",
   "filter_rejects": [
     {
       "section": "policy",
@@ -15266,7 +15266,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.97,
+          "score": 19.77,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17773,7 +17773,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 19.43,
           "semantic_similarity": 0.0,
@@ -17786,10 +17786,10 @@
           "domain": "kookje.co.kr",
           "title": "[기고] 대학이 부산의 ‘앵커’ 되어야",
           "url": "http://www.kookje.co.kr/news2011/asp/newsbody.asp?code=1700&key=20260612.22018003415",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 1.91,
-          "selection_stage": "policy_underfill_recovery",
-          "selection_note": "major_policy_underfill",
+          "selection_stage": "below_threshold",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "딸기 산업",
@@ -18191,7 +18191,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.07,
+          "score": 18.87,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18541,7 +18541,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 12.92,
           "semantic_similarity": 0.0,
@@ -18554,10 +18554,10 @@
           "domain": "viva100.com",
           "title": "경북 청송군, 미래형 사과 재배 로 기후변화에 맞선다",
           "url": "https://www.viva100.com/article/20260611500463",
-          "reason": "below_threshold",
+          "reason": "",
           "fit_score": 1.53,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
+          "selection_stage": "policy_underfill_recovery",
+          "selection_note": "major_policy_underfill",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "사과 재배",
@@ -19420,7 +19420,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 18.08,
+          "score": 17.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -21097,7 +21097,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 15.48,
+          "score": 15.28,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
