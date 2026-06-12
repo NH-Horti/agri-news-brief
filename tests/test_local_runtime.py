@@ -1743,6 +1743,51 @@ class LocalRuntimeTests(TestCase):
             main._candidate_conflicts_with_final(duplicate, {"policy": [existing]}, "policy")
         )
 
+    def test_preferred_count_recovery_avoids_duplicate_ag_tax_policy_statement(self) -> None:
+        existing = self._make_article(
+            section="policy",
+            title="농민의길 “농특세, 농산물 가격 안정에 우선 써야”",
+            description="농산물 가격안정 재원으로 농특세를 우선 써야 한다고 성명을 냈다.",
+            link="https://example.com/ag-tax-1",
+            topic="농산물",
+        )
+        duplicate = self._make_article(
+            section="policy",
+            title='"농어촌특별세, 농산물 가격안정에 사용해야"',
+            description="농어촌특별세를 농산물 가격 안정에 사용해야 한다는 같은 성명이 발표됐다.",
+            link="https://example.com/ag-tax-2",
+            topic="농산물",
+        )
+
+        self.assertTrue(
+            main._candidate_conflicts_with_final(duplicate, {"policy": [existing]}, "policy")
+        )
+
+    def test_policy_gap_still_blocks_duplicate_ag_tax_policy_statement(self) -> None:
+        existing = self._make_article(
+            section="policy",
+            title="농민의길 “농특세, 농산물 가격 안정에 우선 써야”",
+            description="농산물 가격안정 재원으로 농특세를 우선 써야 한다고 성명을 냈다.",
+            link="https://example.com/ag-tax-gap-1",
+            topic="농산물",
+        )
+        duplicate = self._make_article(
+            section="policy",
+            title='"농어촌특별세, 농산물 가격안정에 사용해야"',
+            description="농어촌특별세를 농산물 가격 안정에 사용해야 한다는 같은 성명이 발표됐다.",
+            link="https://example.com/ag-tax-gap-2",
+            topic="농산물",
+        )
+
+        self.assertTrue(
+            main._candidate_conflicts_with_final(
+                duplicate,
+                {"policy": [existing]},
+                "policy",
+                allow_policy_preferred_gap=True,
+            )
+        )
+
     def test_preferred_count_recovery_uses_story_signature_for_same_section_duplicates(self) -> None:
         existing = self._make_article(
             section="supply",
@@ -1974,6 +2019,94 @@ class LocalRuntimeTests(TestCase):
 
         self.assertTrue(main.is_ai_economic_explainer_tail(explainer.title, explainer.description))
         self.assertEqual(main._postbuild_article_reject_reason(explainer, "dist"), "dist_ai_explainer_tail")
+
+    def test_postbuild_rejects_consumer_storage_tip_from_supply(self) -> None:
+        storage_tip = self._make_article(
+            section="supply",
+            title="감자만 따로 보관하면 손해… 사과와 함께 두니 저장 기간 길어진 이유",
+            description="감자는 실온 보관 시 싹이 트기 쉽고 솔라닌 독성 위험이 있어 햇빛과 수분 노출을 피해야 한다는 생활정보 기사다.",
+            link="https://example.com/potato-storage-tip",
+            topic="감자",
+        )
+
+        self.assertTrue(main.is_commodity_consumer_storage_tip_context(storage_tip.title, storage_tip.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(storage_tip, "supply"),
+            "commodity_consumer_storage_tip",
+        )
+
+    def test_postbuild_rejects_supply_crime_incident_tail(self) -> None:
+        incident = self._make_article(
+            section="supply",
+            title="사라진 하우스 개폐기…한라봉 농사 망쳐",
+            description="제주 서귀포 하우스에서 자동개폐기 도난으로 한라봉 묘목이 고사했고 경찰 수사가 진행 중이다.",
+            link="https://example.com/citrus-theft",
+            topic="한라봉",
+        )
+
+        self.assertTrue(main.is_supply_crime_incident_context(incident.title, incident.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(incident, "supply"),
+            "agri_crime_incident_tail",
+        )
+
+    def test_postbuild_rejects_no_damage_crop_price_story_from_pest(self) -> None:
+        no_damage = self._make_article(
+            section="pest",
+            title="광양 매실 냉해 없어 '풍작'.. 가격은 걱정",
+            description="올해 냉해 피해가 없어 매실 작황이 좋지만 생산량 증가에 따른 가격 하락이 우려된다.",
+            link="https://example.com/maesil-no-damage",
+            topic="매실",
+        )
+
+        self.assertTrue(main.is_pest_no_damage_crop_price_context(no_damage.title, no_damage.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(no_damage, "pest"),
+            "pest_no_damage_crop_price",
+        )
+
+    def test_postbuild_rejects_non_agri_industrial_material_market_noise(self) -> None:
+        industrial = self._make_article(
+            section="supply",
+            title="분리막·동박 가격반등…K배터리 소재 온기 확산",
+            description="배터리 소재 업황과 동박 가격 반등으로 관련 기업 실적 개선 기대가 커지고 있다.",
+            link="https://example.com/battery-material-price",
+            topic="배터리",
+        )
+
+        self.assertTrue(main.is_non_agri_industrial_material_market_context(industrial.title, industrial.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(industrial, "supply"),
+            "industrial_material_market_noise",
+        )
+
+    def test_postbuild_rejects_commodity_origin_history_tail(self) -> None:
+        origin_story = self._make_article(
+            section="supply",
+            title="일본서 들여온 참외, ‘코리안 멜론’ 된 사연",
+            description="참외가 국내 대표 과일로 자리 잡기까지 품종 유래와 역사 이야기를 소개했다.",
+            link="https://example.com/melon-origin-story",
+            topic="참외",
+        )
+
+        self.assertTrue(main.is_commodity_origin_history_tail_context(origin_story.title, origin_story.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(origin_story, "supply"),
+            "commodity_origin_history_tail",
+        )
+
+    def test_dist_preferred_gap_accepts_cold_chain_system_story(self) -> None:
+        cold_chain = self._make_article(
+            section="dist",
+            title="제주 농산물, 산지 저온유통체계 구축…신선도 잡는다",
+            description="제주 농산물 산지 유통 경쟁력 강화를 위해 저온유통체계 구축을 추진한다.",
+            link="https://example.com/jeju-cold-chain",
+            topic="농산물",
+        )
+
+        self.assertTrue(main._is_dist_preferred_gap_story(cold_chain))
+        dist_conf = next(section for section in main.SECTIONS if section.get("key") == "dist")
+        self.assertIsNotNone(main._dist_preferred_gap_rank(cold_chain, dist_conf))
 
     def test_dist_soft_fallback_allows_direct_distribution_tail_only_for_short_section(self) -> None:
         dist_tail = self._make_article(
