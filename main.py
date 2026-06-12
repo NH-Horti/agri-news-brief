@@ -6701,6 +6701,18 @@ def is_non_agri_consumer_export_promo_context(title: str, desc: str) -> bool:
     return promo_hits >= 1 and export_hits >= 1 and title_promo_hits >= 1
 
 
+def is_non_agri_education_opinion_policy_context(title: str, desc: str) -> bool:
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    ttl = _nfkc_lower(title or "")
+    if not txt:
+        return False
+    if _has_title_agri_policy_anchor(title):
+        return False
+    education_hits = count_any(ttl, [w.lower() for w in ("대학", "캠퍼스", "교육", "부산의 앵커", "앵커")])
+    opinion_hits = count_any(txt, [w.lower() for w in ("기고", "칼럼", "오피니언", "지역발전", "도시", "혁신")])
+    return education_hits >= 1 and opinion_hits >= 1
+
+
 def is_pest_diplomacy_not_pest_context(title: str, desc: str) -> bool:
     txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     if not txt:
@@ -21411,6 +21423,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "non_agri_transport_policy_noise"
     if section_key == "policy" and is_non_agri_consumer_export_promo_context(a.title or "", a.description or ""):
         return "non_agri_export_promo_noise"
+    if section_key == "policy" and is_non_agri_education_opinion_policy_context(a.title or "", a.description or ""):
+        return "non_agri_education_opinion_noise"
     if section_key in ("supply", "policy", "dist") and is_commodity_origin_history_tail_context(a.title or "", a.description or ""):
         return "commodity_origin_history_tail"
     if section_key == "pest" and is_pest_no_damage_crop_price_context(a.title or "", a.description or ""):
@@ -28377,6 +28391,8 @@ def _preferred_tail_block_reason(
             return "non_agri_transport_policy_noise"
         if is_non_agri_consumer_export_promo_context(title, desc):
             return "non_agri_export_promo_noise"
+        if is_non_agri_education_opinion_policy_context(title, desc):
+            return "non_agri_education_opinion_noise"
         if (
             is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip())
             and not protected_thin_section
@@ -29400,6 +29416,7 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "industrial_material_market_noise",
         "non_agri_transport_policy_noise",
         "non_agri_export_promo_noise",
+        "non_agri_education_opinion_noise",
         "commodity_origin_history_tail",
         "policy_internal_award_filler",
         "policy_regional_project_promo",

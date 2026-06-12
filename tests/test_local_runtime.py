@@ -2147,6 +2147,22 @@ class LocalRuntimeTests(TestCase):
             main._preferred_tail_block_reason(consumer_export, "policy", current_count=3, raw_count=20),
             "non_agri_export_promo_noise",
         )
+        education_opinion = self._make_article(
+            section="policy",
+            title="[기고] 대학이 부산의 ‘앵커’ 되어야",
+            description="지역 대학과 도시 혁신 거점 역할을 다룬 오피니언이다.",
+            link="https://example.com/local-university-opinion",
+            topic="대학",
+        )
+
+        self.assertEqual(
+            main._postbuild_article_reject_reason(education_opinion, "policy"),
+            "non_agri_education_opinion_noise",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(education_opinion, "policy", current_count=3, raw_count=20),
+            "non_agri_education_opinion_noise",
+        )
 
     def test_postbuild_rejects_pest_diplomacy_story(self) -> None:
         diplomacy = self._make_article(
