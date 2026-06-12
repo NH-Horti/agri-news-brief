@@ -1,20 +1,20 @@
 {
   "report_date": "2026-06-12",
-  "generated_at_kst": "2026-06-13T08:06:31+09:00",
+  "generated_at_kst": "2026-06-13T08:53:33+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 91.96,
-    "commodity_board_quality": 100.0
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 96.08
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_quality_penalty": 0.18,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.1667,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.05,
     "promotional_core_rate": 0.0,
@@ -36,7 +36,7 @@
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4286
+    "commodity_primary_dominant_section_rate": 0.5714
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -74,8 +74,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "“ 농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
-      "href": "https://www.nongmin.com/article/20260611500228",
+      "title": "제주 블루베리 판매 량 73% 증가 '껑충'",
+      "href": "https://www.jejumaeil.net/news/articleView.html?idxno=401792",
       "section": "dist",
       "is_core": false,
       "reasons": [
@@ -85,108 +85,108 @@
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 84.0,
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 82.0,
-      "section_fit": 85.0,
-      "core_pick_quality": 86.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 78.0,
-      "noise_control": 80.0
+      "article_selection": 84.0,
+      "section_fit": 88.0,
+      "core_pick_quality": 87.0,
+      "summary_usefulness": 93.0,
+      "missed_opportunity": 80.0,
+      "noise_control": 82.0
     },
     "issues": [
       {
-        "type": "duplication",
+        "type": "missed_better_candidate",
         "severity": "high",
         "section": "policy",
-        "title": "농민의길 “농특세, 농산물 가격 안정 에 우선 써야” / 농어촌기본소득 재원 농특세 활용 농민단체 반대 목소리",
-        "reason": "같은 성명 논점을 사실상 중복 선정했다.",
-        "suggested_action": "둘 중 하나만 남기고 다른 정책 이슈로 교체."
+        "title": "양파산업 위기 해법 찾는다",
+        "reason": "더 강한 정책 1순위는 농민의길 농특세 기사였다.",
+        "suggested_action": "정책 톱을 농특세·가격안정 요구 기사로 교체 검토."
       },
       {
-        "type": "wrong_priority",
+        "type": "weak_core",
+        "severity": "high",
+        "section": "policy",
+        "title": "정책 섹션 전반",
+        "reason": "raw 후보가 충분한데 코어 지정이 하나도 없다.",
+        "suggested_action": "정책 대표성 높은 1~2건을 코어로 명확히 선정."
+      },
+      {
+        "type": "filler",
         "severity": "medium",
-        "section": "supply",
-        "title": "창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
-        "reason": "성과공유회 성격이 강해 수급 핵심도는 낮다.",
-        "suggested_action": "가격·출하·작황 충격 기사로 우선 교체."
+        "section": "policy",
+        "title": "횡성군, 2027년 유기질 비료 지원사업 접수 시작",
+        "reason": "전국성 파급이 약한 지자체 접수 안내성 기사다.",
+        "suggested_action": "불가피한 꼬리로만 사용하거나 더 큰 정책 기사 우선."
       },
       {
-        "type": "wrong_priority",
+        "type": "weak_selection",
         "severity": "medium",
-        "section": "supply",
-        "title": "경북 영천시, 마늘 수확 작업 기계화 및 농가 경영 효율화에 주력",
-        "reason": "지자체 장비보급 안내성 기사로 전국 수급 임팩트가 약하다.",
-        "suggested_action": "산지 가격 급락·유통 혼선 기사 우선 반영."
+        "section": "policy",
+        "title": "[국가책임농정 1년] 역대 최고 농가소득 달성 속 예산·법제화 등 지속...",
+        "reason": "평가·홍보 성격이 강하고 당일 현안성은 약하다.",
+        "suggested_action": "현안 대응·제도 변화 기사로 대체 우선."
       },
       {
-        "type": "section_fit",
+        "type": "wrong_emphasis",
         "severity": "medium",
         "section": "dist",
-        "title": "“ 농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
-        "reason": "실제 유통 운영보다 설명회·참여 안내 비중이 크다.",
-        "suggested_action": "공판장·수매·수출 차질 같은 현장 유통 기사로 교체."
+        "title": "제주 블루베리 판매 량 73% 증가 '껑충'",
+        "reason": "판촉·실적 홍보성 강해 dist 우선순위가 낮다.",
+        "suggested_action": "유통 운영·물류·공판장 기능 기사로 대체."
       },
       {
-        "type": "noise",
-        "severity": "medium",
-        "section": "dist",
-        "title": "고당도 ‘다올찬수박’ 본격 출하",
-        "reason": "출하 기사지만 판촉성 톤이 강하다.",
-        "suggested_action": "보조 카드로 두되 더 단단한 물류·시장운영 기사 우선."
-      },
-      {
-        "type": "missed_opportunity",
+        "type": "missed_better_candidate",
         "severity": "medium",
         "section": "dist",
         "title": "청도 농협공판장 일제 개장…\"농업인 소득증대 최선\"",
-        "reason": "선정은 무난하지만 같은 풀의 체리·오디·산딸기 산지 희비 기사가 더 정보량이 컸다.",
-        "suggested_action": "가격·작황 대비가 뚜렷한 기사 우선 검토."
+        "reason": "개장식 기사보다 고창수박 출하가 더 직접적 출하·유통 기사였다.",
+        "suggested_action": "출하 규모·공선 구조가 뚜렷한 기사 우선 선택."
       },
       {
-        "type": "missed_opportunity",
+        "type": "duplication_thematic",
         "severity": "medium",
-        "section": "dist",
-        "title": "제주 농산물 산지 유통 경쟁력 강화...저온유통체계 구축 추진",
-        "reason": "사전 수요조사 단계 기사라 즉시성은 낮다.",
-        "suggested_action": "광양매실 수매·유통, 고창수박 출하 등 실행 기사 우선."
+        "section": "supply",
+        "title": "광양매실 생산량 급증...가격은 전년보다 하락 조짐 / 진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+        "reason": "매실 2건이 비슷한 가격·판로 이슈로 묶여 다양성이 떨어진다.",
+        "suggested_action": "한 건만 남기고 다른 품목 수급 기사로 분산."
       },
       {
-        "type": "noise",
+        "type": "promotional_risk",
         "severity": "low",
         "section": "pest",
         "title": "과수 노린재 피해 증가, 친환경 관리 관심 확대",
-        "reason": "업계 솔루션 소개 색채가 있어 기사 순도가 떨어진다.",
-        "suggested_action": "공공 방제·발생 경보 기사로 대체 검토."
+        "reason": "친환경 자재 솔루션 소개가 섞여 상업성 우려가 있다.",
+        "suggested_action": "공공기관 경보·발생 확산 기사 우선 사용."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "editorial_section_fit",
-      "editorial_duplicate_topic",
+      "editorial_noise_filter",
+      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
       "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -195,7 +195,7 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -208,7 +208,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -242,7 +242,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
+          "core_count": 0,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -282,11 +282,17 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
-      "article_selection",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -294,16 +300,10 @@
         "reason": "The raw pool contained stronger alternatives than selected cards."
       },
       {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
         "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
