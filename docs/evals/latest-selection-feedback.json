@@ -1,27 +1,27 @@
 {
   "report_date": "2026-06-12",
-  "generated_at_kst": "2026-06-12T21:33:37+09:00",
+  "generated_at_kst": "2026-06-12T22:47:35+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 92.05,
-    "commodity_board_quality": 100.0
+    "section_alignment": 100.0,
+    "core_quality": 91.83,
+    "commodity_board_quality": 92.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.18,
+    "reader_quality_penalty": 0.36,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.1667,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
+    "promotional_filler_rate": 0.1,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1,
+    "editorial_quality_penalty": 0.2,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,14 +29,14 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
+    "commodity_primary_count": 6,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4286
+    "commodity_primary_dominant_section_rate": 0.6667
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -81,6 +81,15 @@
       "reasons": [
         "promotional_or_event_filler"
       ]
+    },
+    {
+      "title": "“ 농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
+      "href": "https://www.nongmin.com/article/20260611500228",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
     }
   ],
   "reader_hard_issue_samples": [],
@@ -91,77 +100,77 @@
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 84.0,
-      "section_fit": 87.0,
-      "core_pick_quality": 88.0,
+      "article_selection": 85.0,
+      "section_fit": 84.0,
+      "core_pick_quality": 90.0,
       "summary_usefulness": 93.0,
-      "missed_opportunity": 79.0,
+      "missed_opportunity": 80.0,
       "noise_control": 82.0
     },
     "issues": [
       {
-        "type": "weak_tail",
+        "type": "wrong_section_or_weak_policy",
         "severity": "high",
-        "section": "supply",
-        "title": "창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
-        "reason": "행사성 기술 공개 기사로 수급 직접성이 약함.",
-        "suggested_action": "공급 충격·가격·출하 동향 기사로 교체."
-      },
-      {
-        "type": "weak_tail",
-        "severity": "high",
-        "section": "supply",
-        "title": "경북 영천시, 마늘 수확 작업 기계화 및 농가 경영 효율화에 주력",
-        "reason": "지자체 장비 보급 기사로 전국 수급성 낮음.",
-        "suggested_action": "가격 하락·산지 혼선 등 현안 기사 우선."
-      },
-      {
-        "type": "wrong_section_bias",
-        "severity": "medium",
-        "section": "supply",
-        "title": "양파산업 위기 해법 찾는다",
-        "reason": "토론회·대책 논의 성격이 강해 정책 적합도가 더 높음.",
-        "suggested_action": "정책으로 옮기거나 공급 실물 기사로 대체."
+        "section": "policy",
+        "title": "농산물 유통공사·도민 펀드…“농산물 경쟁력 높여야”",
+        "reason": "제주 당선인 공약 해설은 정책 확정성 낮고 지역 공약성 기사다.",
+        "suggested_action": "중앙정부·제도 변화 기사로 교체."
       },
       {
         "type": "weak_tail",
         "severity": "medium",
         "section": "policy",
-        "title": "횡성군, 2027년 유기질 비료 지원사업 접수 시작",
-        "reason": "지역 접수 안내성 기사로 정책 영향 범위가 좁음.",
-        "suggested_action": "전국 제도 변화·정부 결정 기사 우선."
+        "title": "시설하우스 ‘천장 환기창’ 달아 폭염 극복",
+        "reason": "현장 지원 사례로는 유용하지만 정책면 핵심 의제성은 약하다.",
+        "suggested_action": "보조·제도·예산 기사 우선 배치."
       },
       {
         "type": "weak_tail",
         "severity": "medium",
         "section": "policy",
-        "title": "도시 농축협, 무이자자금 3771억원 지원",
-        "reason": "농협 내부 지원성 기사로 공공정책성 약함.",
-        "suggested_action": "정부 예산·제도·규제 기사로 대체."
+        "title": "정부, 무기질비료 보조금 '115억' 긴급 투입",
+        "reason": "나쁘진 않지만 단신성 지원기사로 정책면 무게감이 약하다.",
+        "suggested_action": "더 구조적인 가격안정·제도 기사와 조합."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략",
-        "reason": "출하식 중심 지역 판촉 기사 성격이 강함.",
-        "suggested_action": "공판장·물류·수출 차질 기사 우선."
+        "reason": "출하식·시장 공략형 홍보 기사 성격이 강하다.",
+        "suggested_action": "물류·공판·수출 차질 기사로 대체."
       },
       {
-        "type": "promotional_filler",
+        "type": "section_quality_mix",
+        "severity": "medium",
+        "section": "supply",
+        "title": "광양시, ' 매실 상생마케팅 후원금' 2000만 원 지원…소비촉진·제값받기...",
+        "reason": "소비촉진 후원금 중심의 지역 지원 기사로 공급 핵심성은 제한적이다.",
+        "suggested_action": "산업 수급·가격 구조 기사 우선."
+      },
+      {
+        "type": "section_quality_mix",
+        "severity": "medium",
+        "section": "supply",
+        "title": "진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+        "reason": "지역 구제성 기사로 보조 꼬리로는 가능하나 상위 공급 카드로는 약하다.",
+        "suggested_action": "전국 파급력 큰 수급 기사와 교체 검토."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "양파 산업 위기 해법 찾는다",
+        "reason": "원시 후보에 더 강한 정책-수급 연결 기사가 있었는데 빠졌다.",
+        "suggested_action": "공약·현장지원 기사 대신 채택 검토."
+      },
+      {
+        "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
         "title": "고당도 ‘다올찬수박’ 본격 출하",
-        "reason": "브랜드 홍보·판촉 비중이 높아 운영 현안성이 약함.",
-        "suggested_action": "유통 구조·채널 변화 기사로 보완."
-      },
-      {
-        "type": "missed_better_candidate",
-        "severity": "medium",
-        "section": "dist",
-        "title": "양파 값 역전 해법 찾고 수출길 넓히고",
-        "reason": "수출·공급과잉 해소가 포함돼 선택 기사들보다 운영성 높음.",
-        "suggested_action": "출하식성 수박 기사 1건과 교체 검토."
+        "reason": "출하 홍보성이 있으나 공동브랜드·품질관리·판매 실적이 더 구체적이다.",
+        "suggested_action": "고창수박 기사보다 우선 검토."
       }
     ]
   },
