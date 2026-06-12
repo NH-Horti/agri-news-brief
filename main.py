@@ -22352,6 +22352,8 @@ def _dist_replacement_candidate_rank(article: "Article", dist_conf: JsonDict) ->
         return None
     if is_dist_primary_supply_price_story(title, desc):
         return None
+    if count_any(text_l, [w.lower() for w in ("구매 협조", "구매협조", "소비 촉진 호소", "서한문 발송")]) >= 1:
+        return None
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     direct_agri_ops = count_any(
         text_l,
@@ -23203,6 +23205,9 @@ def _drop_optional_policy_macro_tail(final_by_section: dict[str, list["Article"]
         if (
             not bool(getattr(article, "is_core", False))
             and not _is_policy_keepable_macro_issue(article.title or "", article.description or "")
+            and not _is_policy_fertilizer_support_gap_story(article)
+            and not _is_policy_agri_finance_support_gap_story(article)
+            and not _is_policy_climate_adaptation_gap_story(article)
             and (
                 _is_weaker_policy_macro_story(article)
                 or _preferred_tail_block_reason(
@@ -23919,6 +23924,8 @@ def _drop_duplicate_pest_theme_tail(
             continue
         if bool(getattr(article, "is_core", False)):
             continue
+        if _is_pest_direct_gap_story(article):
+            continue
         removable.append(
             (
                 (
@@ -23957,6 +23964,8 @@ def _drop_weak_pest_notice_tail(final_by_section: dict[str, list["Article"]], *,
     for article in pest_items:
         if bool(getattr(article, "is_core", False)):
             continue
+        if _is_pest_direct_gap_story(article):
+            continue
         if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
             continue
         title_l = _nfkc_lower(article.title or "")
@@ -23994,6 +24003,8 @@ def _drop_weak_pest_notice_tail(final_by_section: dict[str, list["Article"]], *,
 
 def _is_generic_pest_notice_tail(article: "Article") -> bool:
     if not isinstance(article, Article) or bool(getattr(article, "is_core", False)):
+        return False
+    if _is_pest_direct_gap_story(article):
         return False
     if is_pest_fire_blight_farmer_risk_context(article.title or "", article.description or ""):
         return False
@@ -28526,9 +28537,10 @@ def _recover_supply_underfill_from_raw(
             or reject_reason not in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
         ):
             continue
-        if _preferred_tail_block_reason(article, "supply", current_count=len(supply_items), raw_count=raw_count):
+        supply_field_support_gap = _is_supply_field_support_gap_story(article)
+        if _preferred_tail_block_reason(article, "supply", current_count=len(supply_items), raw_count=raw_count) and not supply_field_support_gap:
             continue
-        rank = _supply_underfill_recovery_rank(article, supply_conf)
+        rank = _supply_underfill_recovery_rank(article, supply_conf) or _supply_field_support_gap_rank(article, supply_conf)
         if rank is None:
             continue
         ranked.append((rank, article))
@@ -28730,13 +28742,22 @@ def _recover_policy_underfill_from_raw(
         article_key = _article_selection_identity(article)
         if article_key and (article_key in policy_keys or article_key in all_final_keys):
             continue
-        if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in policy_items):
+        policy_fertilizer_support_gap = _is_policy_fertilizer_support_gap_story(article)
+        policy_agri_finance_support_gap = _is_policy_agri_finance_support_gap_story(article)
+        policy_climate_adaptation_gap = _is_policy_climate_adaptation_gap_story(article)
+        policy_gap = policy_fertilizer_support_gap or policy_agri_finance_support_gap or policy_climate_adaptation_gap
+        if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in policy_items) and not policy_gap:
             continue
-        if any(_is_similar_story(article, existing, "policy") for existing in policy_items):
+        if any(_is_similar_story(article, existing, "policy") for existing in policy_items) and not policy_gap:
             continue
-        if _preferred_tail_block_reason(article, "policy", current_count=len(policy_items), raw_count=raw_count):
+        if _preferred_tail_block_reason(article, "policy", current_count=len(policy_items), raw_count=raw_count) and not policy_gap:
             continue
-        rank = _policy_underfill_recovery_rank(article, policy_conf)
+        rank = (
+            _policy_underfill_recovery_rank(article, policy_conf)
+            or _policy_fertilizer_support_gap_rank(article, policy_conf)
+            or _policy_agri_finance_support_gap_rank(article, policy_conf)
+            or _policy_climate_adaptation_gap_rank(article, policy_conf)
+        )
         if rank is None:
             continue
         ranked.append((rank, article))
@@ -28814,6 +28835,9 @@ def _recover_policy_underfill_from_raw(
         key=lambda article: (
             1 if getattr(article, "is_core", False) else 0,
             _policy_underfill_recovery_rank(article, policy_conf)
+            or _policy_fertilizer_support_gap_rank(article, policy_conf)
+            or _policy_agri_finance_support_gap_rank(article, policy_conf)
+            or _policy_climate_adaptation_gap_rank(article, policy_conf)
             or (
                 0,
                 0,
@@ -28845,9 +28869,15 @@ def _preferred_section_rank(
     section_conf: JsonDict,
 ) -> tuple[Any, ...] | None:
     if section_key == "supply":
-        return _supply_underfill_recovery_rank(article, section_conf)
+        return _supply_underfill_recovery_rank(article, section_conf) or _supply_field_support_gap_rank(article, section_conf)
     if section_key == "policy":
-        return _policy_underfill_recovery_rank(article, section_conf) or _policy_supply_response_gap_rank(article, section_conf)
+        return (
+            _policy_underfill_recovery_rank(article, section_conf)
+            or _policy_supply_response_gap_rank(article, section_conf)
+            or _policy_fertilizer_support_gap_rank(article, section_conf)
+            or _policy_agri_finance_support_gap_rank(article, section_conf)
+            or _policy_climate_adaptation_gap_rank(article, section_conf)
+        )
     if section_key == "dist":
         return (
             _dist_replacement_candidate_rank(article, section_conf)
@@ -29061,6 +29091,287 @@ def _policy_supply_response_gap_rank(article: Article, section_conf: JsonDict) -
     )
 
 
+def _is_supply_field_support_gap_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if not text.strip():
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "supply", apply_selection_fit=False)
+    if reject_reason and _is_hard_final_postbuild_reject_reason(reject_reason):
+        return False
+    if is_supply_local_sales_event_context(title, desc) or is_fruit_foodservice_event_context(text):
+        return False
+    if is_flower_consumer_trend_context(text) or is_processed_food_lifestyle_context(title, desc):
+        return False
+
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    crop_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "농산물",
+                "농작물",
+                "원예",
+                "과수",
+                "과일",
+                "채소",
+                "양파",
+                "마늘",
+                "매실",
+                "사과",
+                "배",
+                "배추",
+                "무",
+                "참외",
+                "수박",
+                "토마토",
+            )
+        ],
+    )
+    if managed_count <= 0 and crop_hits <= 0 and best_horti_score(title, desc) < 1.2:
+        return False
+
+    title_action_hits = count_any(
+        title_l,
+        [w.lower() for w in ("수매", "매입", "지원", "기계화", "기계", "소비촉진", "제값받기", "상생마케팅")],
+    )
+    procurement_hits = count_any(
+        text,
+        [w.lower() for w in ("수매", "매입", "가공용", "못난이", "규격외", "제값받기", "소비촉진", "상생마케팅", "가격 지지")],
+    )
+    mechanization_hits = count_any(
+        text,
+        [w.lower() for w in ("기계화", "기계", "파종", "수확", "저장", "재배 전 과정", "노동력", "생산비 절감")],
+    )
+    support_hits = count_any(
+        text,
+        [w.lower() for w in ("지원", "농협", "정부", "지자체", "농가", "사업", "기술", "현장", "시범")],
+    )
+    return bool(
+        title_action_hits >= 1
+        and (
+            (procurement_hits >= 2 and support_hits >= 1)
+            or (mechanization_hits >= 3 and support_hits >= 1)
+        )
+    )
+
+
+def _supply_field_support_gap_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_supply_field_support_gap_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
+    procurement_hits = count_any(
+        text,
+        [w.lower() for w in ("수매", "매입", "가공용", "못난이", "규격외", "제값받기", "소비촉진", "상생마케팅")],
+    )
+    mechanization_hits = count_any(
+        text,
+        [w.lower() for w in ("기계화", "기계", "파종", "수확", "저장", "재배 전 과정", "노동력", "생산비 절감")],
+    )
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        min(8, procurement_hits),
+        min(8, mechanization_hits),
+        min(5, managed_count),
+        round(best_horti_score(title, desc), 3),
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
+
+
+def _is_policy_fertilizer_support_gap_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if not text.strip() or "비료" not in title_l:
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+    if reject_reason and _is_hard_final_postbuild_reject_reason(reject_reason):
+        return False
+    if is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip()):
+        return False
+    if count_any(title_l, [w.lower() for w in ("허위", "과대광고", "광고", "알맞게 사용", "사용해야", "요령")]) >= 1:
+        return False
+
+    actor_hits = count_any(
+        text,
+        [w.lower() for w in ("정부", "농식품부", "농림축산식품부", "시", "군", "도", "지자체", "농협")],
+    )
+    support_hits = count_any(
+        text,
+        [
+            w.lower()
+            for w in (
+                "보조금",
+                "지원사업",
+                "지원 사업",
+                "긴급 투입",
+                "투입",
+                "지원",
+                "접수",
+                "신청",
+                "농가 부담",
+                "부담 완화",
+            )
+        ],
+    )
+    specific_support = bool(
+        "보조금" in text
+        or "긴급 투입" in text
+        or "지원사업" in text
+        or ("지원" in text and count_any(text, [w.lower() for w in ("농가", "사업", "접수", "신청", "부담")]) >= 1)
+    )
+    return actor_hits >= 1 and support_hits >= 1 and specific_support
+
+
+def _policy_fertilizer_support_gap_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_policy_fertilizer_support_gap_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    central_actor_hits = count_any(text, [w.lower() for w in ("정부", "농식품부", "농림축산식품부")])
+    support_hits = count_any(
+        text,
+        [w.lower() for w in ("보조금", "지원사업", "지원 사업", "긴급 투입", "투입", "지원", "접수", "신청")],
+    )
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        1 if central_actor_hits >= 1 else 0,
+        min(8, support_hits),
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
+
+
+def _is_policy_agri_finance_support_gap_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if not text.strip():
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+    if reject_reason and _is_hard_final_postbuild_reject_reason(reject_reason):
+        return False
+    if is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip()):
+        return False
+    finance_hits = count_any(title_l, [w.lower() for w in ("무이자자금", "무이자 자금", "도농상생기금", "상생기금")])
+    support_hits = count_any(text, [w.lower() for w in ("지원", "기금", "경제사업 활성화", "농촌지역", "농가", "농축협")])
+    actor_hits = count_any(text, [w.lower() for w in ("농협중앙회", "농협", "농축협", "상생협력위원회")])
+    amount_signal = bool(re.search(r"\d+\s*(억|억원)", text))
+    return finance_hits >= 1 and support_hits >= 2 and actor_hits >= 1 and amount_signal
+
+
+def _policy_agri_finance_support_gap_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_policy_agri_finance_support_gap_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    finance_hits = count_any(text, [w.lower() for w in ("무이자자금", "무이자 자금", "도농상생기금", "상생기금", "경제사업 활성화")])
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        min(6, finance_hits),
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
+
+
+def _is_policy_climate_adaptation_gap_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    title_l = _nfkc_lower(title)
+    if not text.strip():
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+    if reject_reason and _is_hard_final_postbuild_reject_reason(reject_reason):
+        return False
+    if is_policy_livestock_dominant_context(title, desc, normalize_host(article.domain or ""), (article.press or "").strip()):
+        return False
+    facility_hits = count_any(title_l, [w.lower() for w in ("시설하우스", "온실", "시설원예")])
+    climate_hits = count_any(text, [w.lower() for w in ("폭염", "고온", "기후변화", "이상기후", "장마", "집중호우")])
+    adaptation_hits = count_any(
+        text,
+        [w.lower() for w in ("환기창", "천장 환기", "차광", "냉방", "스마트팜", "시설 개선", "기술", "극복", "대응")],
+    )
+    horti_hits = count_any(text, [w.lower() for w in ("농가", "원예", "작물", "채소", "과채", "토마토", "참외", "멜론")])
+    official_actor_hits = count_any(
+        text,
+        [w.lower() for w in ("정부", "농진청", "농촌진흥청", "농업기술원", "농업기술센터", "시범사업")],
+    )
+    local_program_hits = count_any(
+        text,
+        [w.lower() for w in ("지자체 협력사업", "협력사업", "설치 지원", "설치지원", "지원사업")],
+    )
+    coop_actor = "농협" in text and local_program_hits >= 1
+    return (
+        facility_hits >= 1
+        and climate_hits >= 1
+        and adaptation_hits >= 1
+        and horti_hits >= 1
+        and (official_actor_hits >= 1 or coop_actor)
+    )
+
+
+def _policy_climate_adaptation_gap_rank(article: Article, section_conf: JsonDict) -> tuple[Any, ...] | None:
+    if not _is_policy_climate_adaptation_gap_story(article):
+        return None
+    title = article.title or ""
+    desc = article.description or ""
+    text = _nfkc_lower(f"{title} {desc}")
+    try:
+        fit_sc = float(section_fit_score(title, desc, section_conf, article.domain or "", article.press or ""))
+    except Exception:
+        fit_sc = 0.0
+    adaptation_hits = count_any(
+        text,
+        [w.lower() for w in ("환기창", "천장 환기", "차광", "냉방", "스마트팜", "시설 개선", "기술", "극복", "대응")],
+    )
+    pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
+    return (
+        min(6, adaptation_hits),
+        round(fit_sc, 3),
+        press_priority(article.press, article.domain),
+        round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        pub_sort,
+    )
+
+
 def is_foreign_unmanaged_commodity_context(title: str, desc: str) -> bool:
     text = _nfkc_lower(f"{title or ''} {desc or ''}")
     if not text.strip():
@@ -29094,6 +29405,8 @@ def _is_dist_preferred_gap_story(article: Article) -> bool:
     if is_ai_economic_explainer_tail(title, desc):
         return False
     if is_dist_primary_supply_price_story(title, desc):
+        return False
+    if count_any(text, [w.lower() for w in ("구매 협조", "구매협조", "소비 촉진 호소", "서한문 발송")]) >= 1:
         return False
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     agri_hits = count_any(text, [w.lower() for w in ("농산물", "채소", "과일", "친환경농산물")])
@@ -29294,6 +29607,14 @@ def _candidate_conflicts_with_final(
         and section_key == "policy"
         and candidate_story_sig != ("policy_ag_tax_price_stabilization",)
     )
+    policy_gap_can_relax_cross_section = bool(
+        policy_gap_can_relax_story_dupe
+        and (
+            _is_policy_fertilizer_support_gap_story(candidate)
+            or _is_policy_agri_finance_support_gap_story(candidate)
+            or _is_policy_climate_adaptation_gap_story(candidate)
+        )
+    )
     if section_key == "pest" and "과수화상병" in candidate_text:
         existing_fire_blight = sum(
             1
@@ -29334,7 +29655,9 @@ def _candidate_conflicts_with_final(
                     pass
             try:
                 if _is_similar_title(candidate.title_key or "", existing.title_key or ""):
-                    if policy_gap_can_relax_story_dupe and str(other_section or "") == section_key:
+                    if policy_gap_can_relax_story_dupe and (
+                        str(other_section or "") == section_key or policy_gap_can_relax_cross_section
+                    ):
                         continue
                     if allow_pest_national_fire_blight_gap and section_key == "pest" and str(other_section or "") == section_key:
                         continue
@@ -29344,7 +29667,9 @@ def _candidate_conflicts_with_final(
             try:
                 story_section = section_key if str(other_section or "") == section_key else str(other_section or section_key)
                 if _is_similar_story(candidate, existing, story_section):
-                    if policy_gap_can_relax_story_dupe and str(other_section or "") == section_key:
+                    if policy_gap_can_relax_story_dupe and (
+                        str(other_section or "") == section_key or policy_gap_can_relax_cross_section
+                    ):
                         continue
                     if allow_pest_national_fire_blight_gap and section_key == "pest" and str(other_section or "") == section_key:
                         continue
@@ -29377,6 +29702,16 @@ def _drop_preferred_tail_blocked_items(
         removable: list[tuple[tuple[Any, ...], Article]] = []
         for article in items:
             if bool(getattr(article, "is_core", False)):
+                continue
+            if section_key == "supply" and _is_supply_field_support_gap_story(article):
+                continue
+            if section_key == "policy" and _is_policy_fertilizer_support_gap_story(article):
+                continue
+            if section_key == "policy" and _is_policy_agri_finance_support_gap_story(article):
+                continue
+            if section_key == "policy" and _is_policy_climate_adaptation_gap_story(article):
+                continue
+            if section_key == "pest" and _is_pest_direct_gap_story(article):
                 continue
             reason = _preferred_tail_block_reason(
                 article,
@@ -29495,11 +29830,14 @@ def _final_story_signature(section_key: str, article: Article) -> tuple[str, ...
     text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     if not text.strip():
         return ()
+    if section_key == "policy" and _is_policy_agri_finance_support_gap_story(article):
+        return ("policy_agri_finance_support", _nfkc_lower(article.title_key or article.title or "")[:80])
     region_terms = (
         "경산", "와촌", "고흥", "무안", "화성", "충북", "안동", "강릉", "가락시장",
         "중동", "gcc", "중국", "상하이", "서울", "영등포", "청송",
+        "고창", "음성", "진주", "제주", "청주", "완주", "논산", "성주", "함양",
     )
-    fallback_commodities = ("자두", "양파", "배추", "양배추", "사과", "감귤", "토마토", "고추", "마늘", "감자")
+    fallback_commodities = ("자두", "양파", "배추", "양배추", "사과", "감귤", "토마토", "고추", "마늘", "감자", "수박", "매실")
     commodity_terms = tuple(t for t in fallback_commodities if t in text)
     if not commodity_terms:
         commodity_terms = tuple(t for t in HORTI_ITEM_TERMS_L if t in text)
@@ -29644,7 +29982,7 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
         return False
     pest_hits = count_any(
         text,
-        [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "병해충", "해충", "과수화상병", "탄저병")],
+        [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "과수화상병", "탄저병", "총채벌레", "진딧물")],
     )
     action_hits = count_any(
         text,
@@ -29755,6 +30093,12 @@ def _recover_preferred_section_counts_from_raw(
                     and len(current) < target
                     and _is_foodservice_supply_chain_slot_story(article)
                 )
+                supply_field_support_gap = (
+                    section_key == "supply"
+                    and source_section == section_key
+                    and len(current) < target
+                    and _is_supply_field_support_gap_story(article)
+                )
                 if section_key == "supply" and source_section != section_key and not supply_chain_crossfill:
                     continue
                 if section_key == "dist" and source_section != section_key and not soft_dist_crossfill:
@@ -29775,12 +30119,36 @@ def _recover_preferred_section_counts_from_raw(
                     and len(current) < target
                     and _is_policy_supply_response_gap_story(article)
                 )
+                policy_fertilizer_support_gap = (
+                    section_key == "policy"
+                    and source_section == section_key
+                    and len(current) < target
+                    and _is_policy_fertilizer_support_gap_story(article)
+                )
+                policy_agri_finance_support_gap = (
+                    section_key == "policy"
+                    and source_section == section_key
+                    and len(current) < target
+                    and _is_policy_agri_finance_support_gap_story(article)
+                )
+                policy_climate_adaptation_gap = (
+                    section_key == "policy"
+                    and source_section == section_key
+                    and len(current) < target
+                    and _is_policy_climate_adaptation_gap_story(article)
+                )
                 if section_key == "policy" and source_section != section_key and not policy_supply_response_gap:
                     continue
                 dist_preferred_gap = (
                     section_key == "dist"
                     and len(current) < target
                     and _is_dist_preferred_gap_story(article)
+                )
+                dist_ranked_gap = (
+                    section_key == "dist"
+                    and source_section == section_key
+                    and len(current) < target
+                    and _dist_replacement_candidate_rank(article, conf) is not None
                 )
                 pest_national_gap = (
                     section_key == "pest"
@@ -29797,17 +30165,30 @@ def _recover_preferred_section_counts_from_raw(
                     soft_policy_tail
                     or policy_preferred_gap
                     or policy_supply_response_gap
+                    or policy_fertilizer_support_gap
+                    or policy_agri_finance_support_gap
+                    or policy_climate_adaptation_gap
                     or dist_preferred_gap
+                    or dist_ranked_gap
+                    or supply_field_support_gap
                     or supply_chain_crossfill
                     or pest_national_gap
                     or pest_direct_gap
                 ):
                     continue
                 rank = _preferred_section_rank(section_key, article, conf)
+                if rank is None and supply_field_support_gap:
+                    rank = _supply_field_support_gap_rank(article, conf)
                 if rank is None and policy_preferred_gap:
                     rank = _policy_preferred_gap_rank(article, conf)
                 if rank is None and policy_supply_response_gap:
                     rank = _policy_supply_response_gap_rank(article, conf)
+                if rank is None and policy_fertilizer_support_gap:
+                    rank = _policy_fertilizer_support_gap_rank(article, conf)
+                if rank is None and policy_agri_finance_support_gap:
+                    rank = _policy_agri_finance_support_gap_rank(article, conf)
+                if rank is None and policy_climate_adaptation_gap:
+                    rank = _policy_climate_adaptation_gap_rank(article, conf)
                 if rank is None and dist_preferred_gap:
                     rank = _dist_preferred_gap_rank(article, conf)
                 if rank is None and pest_national_gap:
@@ -29836,6 +30217,22 @@ def _recover_preferred_section_counts_from_raw(
                     or (
                         policy_supply_response_gap
                         and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit", "grain_only_not_horti"}
+                    )
+                    or (
+                        policy_fertilizer_support_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
+                    )
+                    or (
+                        policy_agri_finance_support_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
+                    )
+                    or (
+                        policy_climate_adaptation_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
+                    )
+                    or (
+                        supply_field_support_gap
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
                     )
                     or (
                         dist_preferred_gap
@@ -29876,9 +30273,15 @@ def _recover_preferred_section_counts_from_raw(
                     article,
                     final_by_section,
                     section_key,
-                    allow_dist_soft_crossfill=soft_dist_crossfill,
+                    allow_dist_soft_crossfill=(soft_dist_crossfill or dist_preferred_gap or dist_ranked_gap),
                     allow_supply_chain_crossfill=supply_chain_crossfill,
-                    allow_policy_preferred_gap=(policy_preferred_gap or policy_supply_response_gap),
+                    allow_policy_preferred_gap=(
+                        policy_preferred_gap
+                        or policy_supply_response_gap
+                        or policy_fertilizer_support_gap
+                        or policy_agri_finance_support_gap
+                        or policy_climate_adaptation_gap
+                    ),
                     allow_pest_national_fire_blight_gap=pest_national_gap,
                 ):
                     continue
@@ -29907,12 +30310,28 @@ def _recover_preferred_section_counts_from_raw(
             policy_preferred_gap = (
                 section_key == "policy"
                 and len(current) < target
-                and (_is_policy_preferred_gap_story(article) or _is_policy_supply_response_gap_story(article))
+                and (
+                    _is_policy_preferred_gap_story(article)
+                    or _is_policy_supply_response_gap_story(article)
+                    or _is_policy_fertilizer_support_gap_story(article)
+                    or _is_policy_agri_finance_support_gap_story(article)
+                    or _is_policy_climate_adaptation_gap_story(article)
+                )
+            )
+            supply_field_support_gap = (
+                section_key == "supply"
+                and len(current) < target
+                and _is_supply_field_support_gap_story(article)
             )
             dist_preferred_gap = (
                 section_key == "dist"
                 and len(current) < target
                 and _is_dist_preferred_gap_story(article)
+            )
+            dist_ranked_gap = (
+                section_key == "dist"
+                and len(current) < target
+                and _dist_replacement_candidate_rank(article, conf) is not None
             )
             pest_national_gap = (
                 section_key == "pest"
@@ -29936,9 +30355,13 @@ def _recover_preferred_section_counts_from_raw(
                 final_by_section,
                 section_key,
                 allow_dist_soft_crossfill=(
-                    section_key == "dist"
-                    and len(current) < SOFT_MIN_PER_SECTION
-                    and _is_soft_fallback_dist_ops_tail(article)
+                    (
+                        section_key == "dist"
+                        and len(current) < SOFT_MIN_PER_SECTION
+                        and _is_soft_fallback_dist_ops_tail(article)
+                    )
+                    or dist_preferred_gap
+                    or dist_ranked_gap
                 ),
                 allow_supply_chain_crossfill=(
                     section_key in {"supply", "dist"}
@@ -29954,7 +30377,7 @@ def _recover_preferred_section_counts_from_raw(
                 section_key == "policy"
                 and len(current) < SOFT_MIN_PER_SECTION
                 and _is_soft_fallback_policy_issue_tail(article)
-            ) and not policy_preferred_gap and not dist_preferred_gap and not pest_national_gap and not pest_direct_gap and not (
+            ) and not policy_preferred_gap and not supply_field_support_gap and not dist_preferred_gap and not dist_ranked_gap and not pest_national_gap and not pest_direct_gap and not (
                 section_key in {"supply", "dist"}
                 and _is_foodservice_supply_chain_slot_story(article)
             ):
