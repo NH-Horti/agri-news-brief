@@ -1709,6 +1709,23 @@ class LocalRuntimeTests(TestCase):
         self.assertFalse(main._commodity_board_has_operational_issue_signal(metrics))
         self.assertFalse(main._commodity_board_article_is_active_candidate(grape_item, lifestyle, metrics))
 
+    def test_commodity_board_requires_title_item_focus_for_active_primary(self) -> None:
+        tomato_item = next(item for item in main.MANAGED_COMMODITY_CATALOG if item.get("key") == "tomato")
+        body_only = self._make_article(
+            section="policy",
+            title="통합 대한항공, 출범 앞두고 기내 생수 수급 변수",
+            description="기내식 공급 설명 중 토마토와 채소가 본문에 언급되지만 제목은 항공 생수 수급 이슈다.",
+            link="https://example.com/korean-air-water",
+            topic="토마토",
+        )
+        body_only.selection_fit_score = 1.2
+        body_only.selection_stage = "policy_preferred_count_recovery"
+
+        metrics = main._commodity_board_item_article_representative_metrics(tomato_item, body_only)
+
+        self.assertEqual(metrics["title_primary_hits"], 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(tomato_item, body_only, metrics))
+
     def test_supply_demotes_distribution_market_education_story(self) -> None:
         education = self._make_article(
             section="supply",
@@ -2079,6 +2096,85 @@ class LocalRuntimeTests(TestCase):
             main._postbuild_article_reject_reason(industrial, "supply"),
             "industrial_material_market_noise",
         )
+        scraped_press_text = self._make_article(
+            section="supply",
+            title="분리막·동박 가격반등…K배터리 소재 ‘온기 확산’",
+            description="뉴스토마토 기사 본문에 토마토 문자열이 포함됐지만 내용은 전기차 배터리 소재 업황이다.",
+            link="https://example.com/battery-material-tomato-press",
+            topic="배터리",
+        )
+
+        self.assertTrue(
+            main.is_non_agri_industrial_material_market_context(
+                scraped_press_text.title,
+                scraped_press_text.description,
+            )
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(scraped_press_text, "supply"),
+            "industrial_material_market_noise",
+        )
+
+    def test_postbuild_rejects_non_agri_policy_transport_and_export_promo(self) -> None:
+        transport = self._make_article(
+            section="policy",
+            title="조타실 CCTV 의무화·AI 도입…여객선 안전 대전환",
+            description="여객선 안전관리와 해양사고 예방을 위한 제도 개편을 다뤘다.",
+            link="https://example.com/passenger-ship-policy",
+            topic="해양안전",
+        )
+        consumer_export = self._make_article(
+            section="policy",
+            title="베트남 등 동남아 소비재 전서...전남도 수출길 청신호",
+            description="소비재 박람회에서 해외 바이어 상담과 판로 확대 성과를 소개했다.",
+            link="https://example.com/consumer-export-promo",
+            topic="수출홍보",
+        )
+
+        self.assertEqual(
+            main._postbuild_article_reject_reason(transport, "policy"),
+            "non_agri_transport_policy_noise",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(transport, "policy", current_count=3, raw_count=20),
+            "non_agri_transport_policy_noise",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(consumer_export, "policy"),
+            "non_agri_export_promo_noise",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(consumer_export, "policy", current_count=3, raw_count=20),
+            "non_agri_export_promo_noise",
+        )
+
+    def test_postbuild_rejects_pest_diplomacy_story(self) -> None:
+        diplomacy = self._make_article(
+            section="pest",
+            title="제주 한라봉 묘목 北으로…‘비타민C 외교’ 재개될까",
+            description="한라봉 묘목 지원과 남북 교류 재개 가능성을 다룬 외교 기사다.",
+            link="https://example.com/citrus-diplomacy",
+            topic="한라봉",
+        )
+
+        self.assertTrue(main.is_pest_diplomacy_not_pest_context(diplomacy.title, diplomacy.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(diplomacy, "pest"),
+            "pest_diplomacy_not_pest",
+        )
+
+        final_by_section = {
+            "pest": [
+                self._make_article(section="pest", title="과수화상병 확산 비상 현장 점검", topic="사과"),
+                self._make_article(section="pest", title="사과 과원 병해충 예찰 강화", topic="사과"),
+                self._make_article(section="pest", title="여름철 탄저병 방제 지도", topic="복숭아"),
+                diplomacy,
+            ],
+        }
+        dropped = main._drop_hard_postbuild_rejected_final_items(final_by_section, min_items=3)
+
+        self.assertEqual(dropped, 1)
+        self.assertNotIn(diplomacy, final_by_section["pest"])
 
     def test_postbuild_rejects_commodity_origin_history_tail(self) -> None:
         origin_story = self._make_article(

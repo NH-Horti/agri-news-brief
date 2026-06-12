@@ -49,6 +49,11 @@ _COMMODITY_ISSUE_TERMS = (
     "피해",
     "병해충",
     "방제",
+    "화상병",
+    "과수화상병",
+    "예찰",
+    "확산",
+    "비상",
     "생산량",
     "공급",
     "재배면적",
@@ -1628,6 +1633,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         ),
     )
 
+    clean_quality_surface = (
+        hard_reader_issue_count == 0
+        and content_false_positive_count == 0
+        and len(story_duplicate_indices) == 0
+        and pest_theme_duplicate_count == 0
+        and commodity_primary_false_link_rate == 0.0
+        and editorial_quality_penalty <= 0.0
+    )
+    preferred_slot_reader_penalty_weight = 0.75 if clean_quality_surface else 1.5
     reader_quality_penalty = min(
         42.0,
         hard_reader_issue_count * 6.0
@@ -1636,7 +1650,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + len(story_duplicate_indices) * 4.0
         + pest_theme_duplicate_count * 4.0
         + editorial_quality_penalty * 1.8
-        + preferred_slot_gap_total * 1.5
+        + preferred_slot_gap_total * preferred_slot_reader_penalty_weight
         + commodity_primary_false_link_rate * 18.0,
     )
     reader_quality_cap = 100.0
@@ -1830,6 +1844,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "reader_hard_core_issue_count": int(hard_reader_core_issue_count),
             "reader_quality_penalty": round(reader_quality_penalty, 4),
             "reader_quality_cap": round(reader_quality_cap, 4),
+            "preferred_slot_reader_penalty_weight": round(preferred_slot_reader_penalty_weight, 4),
             "off_scope_foreign_rate": round(
                 _rate(
                     sum(1 for record in briefing_match_records if str(record.get("off_scope_reason") or "")),
