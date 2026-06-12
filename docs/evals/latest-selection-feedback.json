@@ -1,9 +1,9 @@
 {
   "report_date": "2026-06-12",
-  "generated_at_kst": "2026-06-12T20:41:49+09:00",
+  "generated_at_kst": "2026-06-12T21:33:37+09:00",
   "scores": {
     "section_alignment": 97.19,
-    "core_quality": 91.89,
+    "core_quality": 92.05,
     "commodity_board_quality": 100.0
   },
   "metrics": {
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 4.9,
-    "reader_quality_cap": 90.0,
+    "reader_quality_penalty": 0.18,
+    "reader_quality_cap": 100.0,
     "weak_core_rate": 0.1667,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.05,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.05,
+    "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.5,
+    "editorial_quality_penalty": 0.1,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -81,114 +81,104 @@
       "reasons": [
         "promotional_or_event_filler"
       ]
-    },
-    {
-      "title": "과수화상병 예찰 현장 점검하는 이승돈 농진청장",
-      "href": "https://www.news1.kr/photos/7954963",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:fire_blight"
-      ]
     }
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 84.0,
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 83.0,
-      "section_fit": 82.0,
-      "core_pick_quality": 87.0,
-      "summary_usefulness": 92.0,
+      "article_selection": 84.0,
+      "section_fit": 87.0,
+      "core_pick_quality": 88.0,
+      "summary_usefulness": 93.0,
       "missed_opportunity": 79.0,
-      "noise_control": 80.0
+      "noise_control": 82.0
     },
     "issues": [
       {
-        "type": "wrong_section",
+        "type": "weak_tail",
         "severity": "high",
-        "section": "pest",
-        "title": "함평군, 장마철 농작물 피해 예방 강화",
-        "reason": "병해충보다 일반 재해예방 기사다.",
-        "suggested_action": "병해충 리스크 기사로 교체."
+        "section": "supply",
+        "title": "창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
+        "reason": "행사성 기술 공개 기사로 수급 직접성이 약함.",
+        "suggested_action": "공급 충격·가격·출하 동향 기사로 교체."
       },
       {
-        "type": "wrong_section",
+        "type": "weak_tail",
         "severity": "high",
-        "section": "pest",
-        "title": "여름철 태풍·집중호우 '선제적 차단'",
-        "reason": "해충·병해보다 재난대응 일반 기사다.",
-        "suggested_action": "돌발해충·화상병 기사 우선 배치."
+        "section": "supply",
+        "title": "경북 영천시, 마늘 수확 작업 기계화 및 농가 경영 효율화에 주력",
+        "reason": "지자체 장비 보급 기사로 전국 수급성 낮음.",
+        "suggested_action": "가격 하락·산지 혼선 등 현안 기사 우선."
       },
       {
-        "type": "duplicate_theme",
+        "type": "wrong_section_bias",
         "severity": "medium",
-        "section": "pest",
-        "title": "과수화상병 예찰 현장 점검하는 이승돈 농진청장",
-        "reason": "1번 화상병 점검 기사와 사실상 중복이다.",
-        "suggested_action": "현장 사진성 기사 대신 다른 병해충 선택."
+        "section": "supply",
+        "title": "양파산업 위기 해법 찾는다",
+        "reason": "토론회·대책 논의 성격이 강해 정책 적합도가 더 높음.",
+        "suggested_action": "정책으로 옮기거나 공급 실물 기사로 대체."
       },
       {
-        "type": "promotional_filler",
+        "type": "weak_tail",
         "severity": "medium",
-        "section": "dist",
-        "title": "고당도 ‘다올찬수박’ 본격 출하",
-        "reason": "출하·판촉 중심 지역 홍보성이 강하다.",
-        "suggested_action": "운영·물류 구조 기사보다 뒤로 내리기."
+        "section": "policy",
+        "title": "횡성군, 2027년 유기질 비료 지원사업 접수 시작",
+        "reason": "지역 접수 안내성 기사로 정책 영향 범위가 좁음.",
+        "suggested_action": "전국 제도 변화·정부 결정 기사 우선."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "policy",
+        "title": "도시 농축협, 무이자자금 3771억원 지원",
+        "reason": "농협 내부 지원성 기사로 공공정책성 약함.",
+        "suggested_action": "정부 예산·제도·규제 기사로 대체."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
         "title": "대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략",
-        "reason": "출하식 중심 홍보 기사다.",
-        "suggested_action": "공판장·수매·디지털판매 기사로 대체 검토."
+        "reason": "출하식 중심 지역 판촉 기사 성격이 강함.",
+        "suggested_action": "공판장·물류·수출 차질 기사 우선."
       },
       {
-        "type": "weak_section_mix",
-        "severity": "medium",
-        "section": "policy",
-        "title": "도시 농축협, 무이자자금 3771억원 지원",
-        "reason": "직접 정책 변화보다 기관 지원성 보도에 가깝다.",
-        "suggested_action": "제도·예산·규제 기사 우선 선별."
-      },
-      {
-        "type": "weak_core_context",
-        "severity": "medium",
-        "section": "policy",
-        "title": "농민의길 “농특세, 농산물 가격 안정 에 우선 써야”",
-        "reason": "핵심이 성명 기사라 정책 섹션 메인으로는 약하다.",
-        "suggested_action": "정부 결정·제도화 기사와 짝지어 보강."
-      },
-      {
-        "type": "missed_opportunity",
+        "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
-        "title": "청도 농협공판장 일제 개장…\"농업인 소득증대 최선\"",
-        "reason": "raw pool의 매실 수매·디지털몰 설명회가 운영성 면에서 더 나았다.",
-        "suggested_action": "공판장 개장식보다 실제 유통조정 기사 우선."
+        "title": "고당도 ‘다올찬수박’ 본격 출하",
+        "reason": "브랜드 홍보·판촉 비중이 높아 운영 현안성이 약함.",
+        "suggested_action": "유통 구조·채널 변화 기사로 보완."
+      },
+      {
+        "type": "missed_better_candidate",
+        "severity": "medium",
+        "section": "dist",
+        "title": "양파 값 역전 해법 찾고 수출길 넓히고",
+        "reason": "수출·공급과잉 해소가 포함돼 선택 기사들보다 운영성 높음.",
+        "suggested_action": "출하식성 수박 기사 1건과 교체 검토."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "editorial_section_fit",
       "editorial_noise_filter",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.9,
-      "supply": 0.95,
-      "policy": 0.95,
-      "dist": 1.1,
-      "pest": 0.89
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
     "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.2,
@@ -217,7 +207,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -234,7 +224,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 206,
+          "raw_candidates": 205,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -292,8 +282,7 @@
     },
     "guardrail_focus": [
       "missed_opportunity",
-      "noise_control",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -307,12 +296,6 @@
         "target": "semantic_false_positive_gate",
         "direction": "tighten",
         "reason": "Selected cards included low editorial-value noise."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
