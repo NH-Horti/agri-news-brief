@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T02:47:03+09:00",
+  "generated_at": "2026-06-13T02:16:52+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -661,6 +661,19 @@
       "target_domain": "www.nongmin.com",
       "clicks": 3,
       "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "4f6493646605",
+      "title": "양파산업 위기 해법 찾는다",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.farmnmarket.com",
+      "clicks": 3,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -1807,6 +1820,45 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-11.html#sec-policy",
       "source_url": "http://www.newsworker.co.kr/news/articleView.html?idxno=430554"
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "6d5300317160",
+      "title": "과수화상병 예찰 현장 점검하는 이승돈 농진청장",
+      "report_date": "2026-06-12",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.news1.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "9b2f10685a26",
+      "title": "“캘수록 손해” 창녕 양파 수확농가의 눈물",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.knnews.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-12.html#sec-supply",
+      "source_url": "http://www.knnews.co.kr/news/articleView.php?idxno=1543816"
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "9b2f10685a26",
+      "title": "“캘수록 손해” 창녕 양파 수확농가의 눈물",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.knnews.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-12.html#sec-supply",
+      "source_url": "http://www.knnews.co.kr/news/articleView.php?idxno=1543816"
     },
     {
       "date": "2026-03-30",
@@ -6656,6 +6708,123 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-11.html#sec-dist",
       "source_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5029179"
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "04424cf452d0",
+      "title": "제주 한라봉 묘목 北으로…‘비타민C 외교’ 재개될까",
+      "report_date": "2026-06-12",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "05e2f0b23111",
+      "title": "감자만 따로 보관하면 손해… 사과 와 함께 두니 저장 기간 길어진 이유",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "kormedi.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "2712f62d282d",
+      "title": "‘풍년의 역설’… 양파 공급 과잉에 결국 산지 폐기",
+      "report_date": "2026-06-11",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "2a8a4e44d5c9",
+      "title": "\"과수화상병 확산 비상\"… 이승돈 청장, 공주 사과농가 긴급 점검",
+      "report_date": "2026-06-12",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.foodicon.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-12.html#sec-pest",
+      "source_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=34038"
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "a0b67d1ea466",
+      "title": "광양 매실 냉해 없어 '풍작'.. 가격 은 걱정",
+      "report_date": "2026-06-12",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "mpmbc.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "e287455bcd9c",
+      "title": "함양군, 햇 양파 구매 협조 서한문 발송…소비 촉진 호소",
+      "report_date": "2026-06-12",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.newspim.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "f31d32eefbdd",
+      "title": "송미령 장관, '특별성과 포상' 수여식 실시",
+      "report_date": "2026-06-12",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "f457a70fd411",
+      "title": "준고랭지 여름 배추 시범사업으로 수급 안정 뒷받침",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsam.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-12.html#sec-supply",
+      "source_url": "https://www.newsam.co.kr/news/article.html?no=43181"
+    },
+    {
+      "date": "2026-06-12",
+      "article_id": "f8199ae14dab",
+      "title": "사라진 하우스 개폐기…한라봉 농사 망쳐",
+      "report_date": "2026-06-12",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
