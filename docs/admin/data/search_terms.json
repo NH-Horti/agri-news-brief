@@ -1,20 +1,6 @@
 {
-  "generated_at": "2026-06-11T02:36:14+09:00",
+  "generated_at": "2026-06-12T02:47:03+09:00",
   "rows": [
-    {
-      "date": "2026-06-10",
-      "query": "메론",
-      "section_filter": "",
-      "result_count": 0,
-      "count": 2
-    },
-    {
-      "date": "2026-06-10",
-      "query": "메론 가격",
-      "section_filter": "",
-      "result_count": 0,
-      "count": 2
-    },
     {
       "date": "2026-04-30",
       "query": "사과",
@@ -62,6 +48,20 @@
       "query": "배추",
       "section_filter": "(not set)",
       "result_count": 80,
+      "count": 1
+    },
+    {
+      "date": "2026-06-10",
+      "query": "메론",
+      "section_filter": "(not set)",
+      "result_count": 0,
+      "count": 1
+    },
+    {
+      "date": "2026-06-10",
+      "query": "메론 가격",
+      "section_filter": "(not set)",
+      "result_count": 0,
       "count": 1
     }
   ]

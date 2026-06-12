@@ -600,6 +600,32 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_consumer_guide_story"]))
 
+    def test_storage_tip_story_is_not_active_board_candidate(self):
+        article = self._make_article(
+            "supply",
+            "감자만 따로 보관하면 손해… 사과와 함께 두니 저장 기간 길어진 이유",
+            "감자는 실온 보관 시 싹이 트기 쉽고 솔라닌 독성 위험이 있어 햇빛과 수분 노출을 피해야 한다는 생활정보 기사다.",
+            "https://example.com/potato-storage-tip-board",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("potato"), article)
+
+        self.assertTrue(main.is_commodity_consumer_storage_tip_context(article.title, article.description))
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("potato"), article, metrics))
+
+    def test_crime_incident_story_is_not_active_board_candidate(self):
+        article = self._make_article(
+            "supply",
+            "사라진 하우스 개폐기…한라봉 농사 망쳐",
+            "제주 서귀포 하우스에서 자동개폐기 도난으로 한라봉 묘목이 고사했고 경찰 수사가 진행 중이다.",
+            "https://example.com/citrus-theft-board",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("citrus"), article)
+
+        self.assertTrue(main.is_supply_crime_incident_context(article.title, article.description))
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("citrus"), article, metrics))
+
     def test_regional_branding_story_is_not_representative(self):
         article = self._make_article(
             "supply",
@@ -1407,7 +1433,7 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
         self.assertIn("활성 품목 0 / 5", html)
-        self.assertIn("미연결 품목 5개", html)
+        self.assertIn("미연결 품목 5 / 총 5개", html)
         self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("붉은고추", html)
         self.assertLess(html.index("commodity-group-fruit_veg"), html.index("commodity-group-fruit_flower"))
