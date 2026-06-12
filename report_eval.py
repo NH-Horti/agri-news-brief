@@ -588,6 +588,55 @@ def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str)
     return ""
 
 
+def _reader_hard_issue_reason(article: SurfaceArticle, snapshot_body: str) -> str:
+    source_text = _normalize_spaces(f"{article.title or ''} {snapshot_body or ''}").lower()
+    text = _normalize_spaces(f"{article.title or ''} {article.summary or ''} {snapshot_body or ''}").lower()
+    if not text:
+        return ""
+
+    agri_keep_terms = (
+        "농산물", "농업", "농가", "원예", "과수", "채소", "청과", "도매시장", "공판장",
+        "수급", "출하", "경락", "반입", "병해충", "방제", "과수화상병", "사과", "배추",
+        "양파", "마늘", "감자", "참외", "수박", "한라봉", "매실", "배 농가", "배 과원",
+        "배 재배", "신고배", "무 농가", "무 재배", "무 출하", "무 가격", "가을무", "월동무",
+    )
+    has_agri_context = any(term in source_text for term in agri_keep_terms)
+
+    if article.section in {"supply", "policy", "dist"}:
+        industrial_hits = _term_hits(
+            text,
+            (
+                "배터리", "k배터리", "분리막", "동박", "전해액", "양극재", "음극재", "이차전지",
+                "반도체", "철강",
+            ),
+        )
+        industrial_market_hits = _term_hits(text, ("가격반등", "가격 반등", "소재", "온기 확산", "업황", "실적", "주가"))
+        if industrial_hits >= 1 and industrial_market_hits >= 1 and not has_agri_context:
+            return "industrial_material_market_noise"
+
+        transport_hits = _term_hits(text, ("여객선", "조타실", "선박", "해양사고", "선원", "해운", "항해", "cctv"))
+        transport_policy_hits = _term_hits(text, ("의무화", "안전", "대전환", "도입", "규제", "법안"))
+        if article.section == "policy" and transport_hits >= 1 and transport_policy_hits >= 1 and not has_agri_context:
+            return "non_agri_transport_policy_noise"
+
+        export_promo_hits = _term_hits(text, ("소비재전", "소비재 전", "수출길 청신호", "판로 확대", "해외 진출"))
+        if article.section == "policy" and export_promo_hits >= 1 and not has_agri_context:
+            return "non_agri_export_promo_noise"
+
+    if article.section == "pest":
+        no_damage = any(term in text for term in ("냉해 없어", "냉해 피해 없어", "피해 없어", "피해가 없어", "냉해가 없어"))
+        crop_price = _term_hits(text, ("풍작", "작황", "수확", "생산량", "가격", "하락", "걱정", "우려")) >= 2
+        pest_action = _term_hits(text, ("방제", "예찰", "약제", "살포", "확산", "발생", "차단", "병해충", "과수화상병", "탄저병"))
+        if no_damage and crop_price and pest_action == 0:
+            return "pest_no_damage_crop_price"
+
+        diplomacy_hits = _term_hits(text, ("북", "北", "북한", "외교", "비타민c", "묘목"))
+        if diplomacy_hits >= 2 and pest_action == 0:
+            return "pest_diplomacy_not_pest"
+
+    return ""
+
+
 def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section not in {"supply", "policy", "dist"}:
         return ""
@@ -1110,8 +1159,11 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         _agri_hits = sum(1 for t in _AGRI_RELEVANCE_TERMS if t in _combined_text)
         semantic_reason = _semantic_false_positive_reason(article, _desc_text)
         off_scope_reason = _off_scope_content_reason(article, _desc_text)
-        false_positive_reason = semantic_reason or off_scope_reason
+        hard_reader_reason = _reader_hard_issue_reason(article, _desc_text)
+        false_positive_reason = semantic_reason or off_scope_reason or hard_reader_reason
         editorial_issue_reasons = _editorial_base_issue_reasons(article, _desc_text)
+        if hard_reader_reason and hard_reader_reason not in editorial_issue_reasons:
+            editorial_issue_reasons.append(hard_reader_reason)
         briefing_match_records.append(
             {
                 "title": article.title,
@@ -1126,6 +1178,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "agri_relevance_hits": _agri_hits,
                 "semantic_false_positive_reason": semantic_reason,
                 "off_scope_reason": off_scope_reason,
+                "reader_hard_issue_reason": hard_reader_reason,
                 "false_positive_reason": false_positive_reason,
                 "snapshot_body": _desc_text,
                 "editorial_issue_reasons": editorial_issue_reasons,
@@ -1528,6 +1581,20 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     else:
         commodity_board_quality_score = 100.0
 
+    hard_reader_issue_records = [
+        record
+        for record in briefing_match_records
+        if str(record.get("reader_hard_issue_reason") or "")
+    ]
+    hard_reader_issue_count = len(hard_reader_issue_records)
+    hard_reader_issue_rate = _rate(hard_reader_issue_count, len(briefing_match_records), default=0.0)
+    hard_reader_core_issue_count = sum(1 for record in hard_reader_issue_records if bool(record.get("is_core")))
+    pest_theme_duplicate_count = sum(
+        1
+        for record in briefing_match_records
+        if any(str(reason).startswith("pest_theme_duplicate:") for reason in (record.get("editorial_issue_reasons") or []))
+    )
+
     semantic_false_positive_penalty = min(18.0, content_false_positive_rate * 120.0)
     story_duplicate_penalty = min(12.0, story_duplicate_rate * 90.0)
     editorial_quality_penalty = min(
@@ -1539,7 +1606,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + pest_theme_duplicate_rate * 8.0
         + weak_core_editorial_rate * 10.0,
     )
-    overall_score = (
+    operational_score = (
         completeness_score * 0.20
         + diversity_score * 0.18
         + summary_score * 0.16
@@ -1549,17 +1616,69 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + core_quality_score * 0.07
         + commodity_board_quality_score * 0.05
     )
-    overall_score = max(
+    operational_score = max(
         0.0,
         min(
             100.0,
-            overall_score
+            operational_score
             - semantic_false_positive_penalty
             - story_duplicate_penalty
             - editorial_quality_penalty
             - preferred_slot_penalty,
         ),
     )
+
+    reader_quality_penalty = min(
+        42.0,
+        hard_reader_issue_count * 6.0
+        + hard_reader_core_issue_count * 4.0
+        + max(0, content_false_positive_count - hard_reader_issue_count) * 5.0
+        + len(story_duplicate_indices) * 4.0
+        + pest_theme_duplicate_count * 4.0
+        + editorial_quality_penalty * 1.8
+        + preferred_slot_gap_total * 1.5
+        + commodity_primary_false_link_rate * 18.0,
+    )
+    reader_quality_cap = 100.0
+    reader_quality_cap_reasons: list[str] = []
+
+    def _cap(value: float, reason: str) -> None:
+        nonlocal reader_quality_cap
+        if value < reader_quality_cap:
+            reader_quality_cap = value
+        if reason not in reader_quality_cap_reasons:
+            reader_quality_cap_reasons.append(reason)
+
+    if hard_reader_issue_count >= 1:
+        _cap(86.0, "hard_reader_issue")
+    if hard_reader_issue_count >= 2:
+        _cap(80.0, "multiple_hard_reader_issues")
+    if hard_reader_issue_count >= 3:
+        _cap(74.0, "severe_hard_reader_issues")
+    if hard_reader_issue_count >= 4:
+        _cap(70.0, "critical_hard_reader_issues")
+    if hard_reader_core_issue_count >= 1:
+        _cap(82.0, "hard_core_reader_issue")
+    if len(story_duplicate_indices) >= 1:
+        _cap(88.0, "story_duplicate")
+    if pest_theme_duplicate_count >= 1:
+        _cap(90.0, "pest_theme_duplicate")
+    if commodity_primary_false_link_rate > 0.0:
+        _cap(88.0, "commodity_false_link")
+    if commodity_primary_false_link_rate >= 0.10:
+        _cap(84.0, "commodity_false_link_severe")
+    if preferred_slot_gap_total > 0:
+        _cap(95.0, "preferred_slot_underfill")
+
+    reader_quality_score = max(
+        0.0,
+        min(
+            100.0,
+            reader_quality_cap,
+            operational_score - reader_quality_penalty,
+        ),
+    )
+    overall_score = reader_quality_score
 
     if overall_score >= 85.0:
         status = "pass"
@@ -1653,6 +1772,16 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
         "status": status,
         "overall_score": round(overall_score, 2),
+        "operational_score": round(operational_score, 2),
+        "reader_quality_score": round(reader_quality_score, 2),
+        "reader_quality_gate": {
+            "status": "capped" if reader_quality_cap_reasons else "clear",
+            "headline_score": round(reader_quality_score, 2),
+            "operational_score": round(operational_score, 2),
+            "penalty": round(reader_quality_penalty, 2),
+            "cap": round(reader_quality_cap, 2),
+            "reasons": reader_quality_cap_reasons,
+        },
         "scores": {
             "completeness": round(completeness_score, 2),
             "diversity": round(diversity_score, 2),
@@ -1662,6 +1791,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "section_alignment": round(section_alignment_score, 2),
             "core_quality": round(core_quality_score, 2),
             "commodity_board_quality": round(commodity_board_quality_score, 2),
+            "reader_quality": round(reader_quality_score, 2),
         },
         "counts": {
             "briefing_total": len(briefing_articles),
@@ -1695,6 +1825,11 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "section_alignment_cross_gap_rate": round(section_alignment_cross_gap_rate, 4),
             "section_alignment_weak_stage_rate": round(section_alignment_weak_stage_rate, 4),
             "content_false_positive_rate": round(content_false_positive_rate, 4),
+            "reader_hard_issue_count": int(hard_reader_issue_count),
+            "reader_hard_issue_rate": round(hard_reader_issue_rate, 4),
+            "reader_hard_core_issue_count": int(hard_reader_core_issue_count),
+            "reader_quality_penalty": round(reader_quality_penalty, 4),
+            "reader_quality_cap": round(reader_quality_cap, 4),
             "off_scope_foreign_rate": round(
                 _rate(
                     sum(1 for record in briefing_match_records if str(record.get("off_scope_reason") or "")),
@@ -1760,6 +1895,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             for record in briefing_match_records
             if str(record.get("false_positive_reason") or "")
         ][:8],
+        "reader_hard_issue_samples": [
+            {
+                "title": str(record.get("title") or ""),
+                "href": str(record.get("href") or ""),
+                "section": str(record.get("section") or ""),
+                "reason": str(record.get("reader_hard_issue_reason") or ""),
+            }
+            for record in hard_reader_issue_records
+        ][:8],
         "story_duplicate_samples": story_duplicate_samples,
         "commodity_primary_linkage_samples": commodity_primary_linkage_samples,
         "editorial_quality_samples": [
@@ -1816,6 +1960,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     section_alignment_low_fit_rate = float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0)
     section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
     content_false_positive_rate = float(metrics.get("content_false_positive_rate", 0.0) or 0.0)
+    reader_hard_issue_count = int(metrics.get("reader_hard_issue_count", 0) or 0)
     weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
@@ -1871,6 +2016,14 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
             section_card_min_fit[key] += delta
         low_fit_rescue_min = max(low_fit_rescue_min, 0.35)
         high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.4)
+        tail_score_floor_delta += 0.5
+
+    if reader_hard_issue_count > 0:
+        reasons.append("reader_hard_issue")
+        for key, delta in (("supply", 0.08), ("policy", 0.1), ("dist", 0.08), ("pest", 0.08)):
+            section_card_min_fit[key] += delta
+        low_fit_rescue_min = max(low_fit_rescue_min, 0.4)
+        high_score_low_fit_rescue_margin = max(high_score_low_fit_rescue_margin, 4.8)
         tail_score_floor_delta += 0.5
 
     if content_false_positive_rate >= 0.08:
@@ -2017,6 +2170,10 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "section_alignment_low_fit_rate": round(float(metrics.get("section_alignment_low_fit_rate", 0.0) or 0.0), 4),
             "section_alignment_cross_gap_rate": round(float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0), 4),
             "content_false_positive_rate": round(float(metrics.get("content_false_positive_rate", 0.0) or 0.0), 4),
+            "reader_hard_issue_count": int(metrics.get("reader_hard_issue_count", 0) or 0),
+            "reader_hard_issue_rate": round(float(metrics.get("reader_hard_issue_rate", 0.0) or 0.0), 4),
+            "reader_quality_penalty": round(float(metrics.get("reader_quality_penalty", 0.0) or 0.0), 4),
+            "reader_quality_cap": round(float(metrics.get("reader_quality_cap", 100.0) or 100.0), 4),
             "weak_core_rate": round(float(metrics.get("weak_core_rate", 0.0) or 0.0), 4),
             "policy_wrong_section_rate": round(float(metrics.get("policy_wrong_section_rate", 0.0) or 0.0), 4),
             "promotional_filler_rate": round(float(metrics.get("promotional_filler_rate", 0.0) or 0.0), 4),
@@ -2043,6 +2200,7 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
         },
         "selection_guardrails": guardrails,
         "editorial_quality_samples": result.get("editorial_quality_samples", [])[:8],
+        "reader_hard_issue_samples": result.get("reader_hard_issue_samples", [])[:8],
     }
     if isinstance(editorial, dict) and editorial.get("status") == "success":
         payload["editorial"] = {
@@ -2184,6 +2342,20 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
             f"editorial={float(quality_gate.get('editorial_score', 0.0) or 0.0):.1f}, "
             f"operational={float(quality_gate.get('operational_score', 0.0) or 0.0):.1f})\n"
         )
+    reader_quality_gate = result.get("reader_quality_gate", {})
+    reader_quality_line = ""
+    if isinstance(reader_quality_gate, dict) and reader_quality_gate:
+        reasons = reader_quality_gate.get("reasons", [])
+        if not isinstance(reasons, list):
+            reasons = []
+        reason_text = ", ".join(str(reason) for reason in reasons[:4]) or "clear"
+        reader_quality_line = (
+            f"- Reader quality: **{float(result.get('reader_quality_score', result.get('overall_score', 0.0)) or 0.0):.2f}** "
+            f"({reader_quality_gate.get('status', 'unknown')}; "
+            f"penalty={float(reader_quality_gate.get('penalty', 0.0) or 0.0):.1f}, "
+            f"cap={float(reader_quality_gate.get('cap', 100.0) or 100.0):.1f}, "
+            f"reasons={reason_text})\n"
+        )
     editorial = result.get("editorial", {})
     editorial_block = ""
     if isinstance(editorial, dict) and editorial:
@@ -2231,6 +2403,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"## Daily Eval ({result.get('report_date', '')})\n"
         f"- Overall: **{result.get('overall_score', 0):.2f}** ({result.get('status', 'unknown')})\n"
         f"- Operational: **{float(result.get('operational_score', result.get('overall_score', 0.0)) or 0.0):.2f}**\n"
+        f"{reader_quality_line}"
         f"{quality_gate_line}"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
@@ -2245,6 +2418,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
         f"fit_avg={metrics.get('section_alignment_fit_avg', 0):.2f}, "
         f"false_positive={metrics.get('content_false_positive_rate', 0):.2f}, "
+        f"hard_reader_issues={int(metrics.get('reader_hard_issue_count', 0) or 0)}, "
         f"weak_core={metrics.get('weak_core_rate', 0):.2f}, "
         f"editorial_penalty={metrics.get('editorial_quality_penalty', 0):.1f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
@@ -2268,11 +2442,17 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
     quality_gate = result.get("quality_gate", {})
     if not isinstance(quality_gate, dict):
         quality_gate = {}
+    reader_quality_gate = result.get("reader_quality_gate", {})
+    if not isinstance(reader_quality_gate, dict):
+        reader_quality_gate = {}
     return {
         "report_date": result.get("report_date"),
         "generated_at_kst": result.get("generated_at_kst"),
         "overall_score": result.get("overall_score"),
         "operational_score": result.get("operational_score", result.get("overall_score")),
+        "reader_quality_score": result.get("reader_quality_score", result.get("overall_score")),
+        "reader_quality_gate_status": reader_quality_gate.get("status"),
+        "reader_quality_gate_reasons": reader_quality_gate.get("reasons", []),
         "editorial_score": result.get("editorial_score"),
         "editorial_status": (result.get("editorial") or {}).get("target_status") if isinstance(result.get("editorial"), dict) else None,
         "quality_gate_status": quality_gate.get("status"),
@@ -2287,6 +2467,8 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
         "content_false_positive_rate": metrics.get("content_false_positive_rate", 0),
+        "reader_hard_issue_count": metrics.get("reader_hard_issue_count", 0),
+        "reader_quality_penalty": metrics.get("reader_quality_penalty", 0),
         "editorial_quality_penalty": metrics.get("editorial_quality_penalty", 0),
         "policy_wrong_section_rate": metrics.get("policy_wrong_section_rate", 0),
         "promotional_filler_rate": metrics.get("promotional_filler_rate", 0),

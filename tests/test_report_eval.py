@@ -147,6 +147,10 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn("section_alignment", result["scores"])
         self.assertIn("core_quality", result["scores"])
         self.assertIn("commodity_board_quality", result["scores"])
+        self.assertIn("reader_quality", result["scores"])
+        self.assertIn("operational_score", result)
+        self.assertIn("reader_quality_score", result)
+        self.assertIn("reader_quality_gate", result)
         self.assertIn("soft_fallback_briefing_by_section", result["counts"])
         self.assertIn("minimum_fallback_briefing_by_section", result["counts"])
 
@@ -365,6 +369,72 @@ class ReportEvalTests(unittest.TestCase):
 
         self.assertEqual(result["metrics"]["content_false_positive_rate"], 1.0)
         self.assertEqual(result["content_false_positive_samples"][0]["reason"], "housing_market_noise")
+
+    def test_reader_quality_caps_hard_offtopic_articles(self) -> None:
+        titles_by_section = {
+            "supply": [
+                "창녕 양파 가격 하락에 수확 농가 부담 커져",
+                "준고랭지 여름 배추 시범사업으로 수급 안정",
+                "성주 참외 본격 출하…산지 가격 안정 기대",
+                "마늘 재배면적 감소에 산지 수급 점검",
+                "분리막·동박 가격반등…K배터리 소재 온기 확산",
+            ],
+            "policy": [
+                "농산물 가격안정제 도입 논의 본격화",
+                "농식품부, 원예농산물 수급 안정 대책 점검",
+                "정부, 양파·마늘 계약재배 확대 추진",
+                "농가 경영안정 지원 예산 확대 논의",
+                "조타실 CCTV 의무화·AI 도입…여객선 안전 대전환",
+            ],
+            "dist": [
+                "가락시장 물류 개선으로 농산물 반입 처리 속도 높인다",
+                "고당도 수박 본격 출하…도매시장 거래 활발",
+                "청도 농협공판장 개장…복숭아 출하 확대",
+                "제주 농산물 저온유통체계 구축 추진",
+                "온라인 도매시장 농산물 거래 품목 확대",
+            ],
+            "pest": [
+                "과수화상병 확산 비상…사과농가 긴급 예찰",
+                "토마토뿔나방 방제 대응 강화",
+                "장마철 고추 탄저병 예찰 당부",
+                "배 과원 병해충 방제 약제 지원",
+                "시설채소 병해충 발생 증가에 현장 점검",
+            ],
+        }
+        html = "\n".join(
+            self._briefing_card(section, title, f"https://example.com/{section}-{idx}", core=(idx == 0), stage="core" if idx == 0 else "tail")
+            for section, titles in titles_by_section.items()
+            for idx, title in enumerate(titles)
+        )
+        raw_by_section = {section: [] for section in report_eval.SECTION_KEYS}
+        for section, titles in titles_by_section.items():
+            for idx, title in enumerate(titles):
+                raw_by_section[section].append(
+                    {
+                        "section": section,
+                        "title": title,
+                        "link": f"https://example.com/{section}-{idx}",
+                        "description": title,
+                        "selection_fit_score": 1.6,
+                        "selection_stage": "core" if idx == 0 else "tail",
+                        "score": 90.0,
+                        "pub_dt_kst": "2026-06-12T05:00:00+09:00",
+                    }
+                )
+
+        result = report_eval.evaluate_report(
+            "2026-06-12",
+            html,
+            {"window": {"end_kst": "2026-06-12T06:00:00+09:00"}, "raw_by_section": raw_by_section},
+        )
+
+        self.assertGreater(result["operational_score"], result["overall_score"])
+        self.assertLessEqual(result["overall_score"], 80.0)
+        self.assertEqual(result["metrics"]["reader_hard_issue_count"], 2)
+        self.assertEqual(result["reader_quality_gate"]["status"], "capped")
+        reasons = {sample["reason"] for sample in result["reader_hard_issue_samples"]}
+        self.assertIn("industrial_material_market_noise", reasons)
+        self.assertIn("non_agri_transport_policy_noise", reasons)
 
     def test_commodity_board_quality_penalizes_weak_title_linkage(self) -> None:
         html = """
