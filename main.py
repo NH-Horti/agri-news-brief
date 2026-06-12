@@ -25847,6 +25847,10 @@ def _build_sections_phase123(
         if moved_policy_structure:
             log.info("[REBALANCE] moved %d supply structure issue item(s) into policy", moved_policy_structure)
             _sync_debug_with_final_sections(final_by_section)
+        editorial_shadow_repairs = _repair_editorial_shadow_issues_from_raw(final_by_section, raw_by_section)
+        if editorial_shadow_repairs:
+            log.info("[REBALANCE] repaired %d editorial shadow issue item(s)", editorial_shadow_repairs)
+            _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] editorial tail guard failed: %s", e)
 
@@ -31428,6 +31432,252 @@ def _move_supply_structure_issue_to_policy_from_final(
     final_by_section["supply"] = supply_items[:MAX_PER_SECTION]
     _refill_supply_market_gap_from_raw(final_by_section, raw_by_section)
     return 1
+
+
+def _raw_editorial_candidates(
+    raw_by_section: dict[str, list[Article]] | None,
+    predicate: Callable[[Article], bool],
+    *,
+    exclude_idents: set[str] | None = None,
+) -> list[Article]:
+    if not isinstance(raw_by_section, dict):
+        return []
+    excluded = set(exclude_idents or set())
+    candidates: list[Article] = []
+    for source_section in ("supply", "policy", "dist", "pest"):
+        for article in raw_by_section.get(source_section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and ident in excluded:
+                continue
+            try:
+                if predicate(article):
+                    candidates.append(article)
+            except Exception:
+                continue
+    candidates.sort(
+        key=lambda article: (
+            float(getattr(article, "score", 0.0) or 0.0),
+            press_priority(article.press, article.domain),
+            article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
+        ),
+        reverse=True,
+    )
+    return candidates
+
+
+def _replace_final_item_with_editorial_candidate(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+    section_key: str,
+    victim_idx: int,
+    candidate: Article,
+    *,
+    stage: str,
+    note: str,
+    remove_from_other_sections: bool = True,
+) -> bool:
+    items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+    if victim_idx < 0 or victim_idx >= len(items):
+        return False
+    ident = _article_selection_identity(candidate)
+    conf = next((s for s in SECTIONS if s.get("key") == section_key), {})
+    items[victim_idx] = _mark_editorial_replacement(candidate, section_key, conf, stage, note)
+    final_by_section[section_key] = items[:MAX_PER_SECTION]
+    if remove_from_other_sections and ident:
+        _remove_replacement_identity_from_other_sections(final_by_section, ident, section_key)
+    if section_key != "supply":
+        _refill_supply_market_gap_from_raw(final_by_section, raw_by_section)
+    return True
+
+
+def _repair_editorial_shadow_issues_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    changed = 0
+
+    def used_idents() -> set[str]:
+        return {
+            ident
+            for section_items in (final_by_section or {}).values()
+            for article in (section_items or [])
+            if isinstance(article, Article)
+            for ident in [_article_selection_identity(article)]
+            if ident
+        }
+
+    def title_text(article: Article) -> str:
+        return _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+
+    def section_title_conflicts(section_key: str, candidate: Article) -> bool:
+        items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        return _section_replacement_identity_or_title_conflicts(candidate, items, -1)
+
+    def has_topic_token(raw: str, compact: str, token: str) -> bool:
+        token_l = _nfkc_lower(token)
+        return token_l in raw or token_l.replace(" ", "") in compact
+
+    def section_shadow_topic_conflicts(section_key: str, candidate: Article) -> bool:
+        candidate_raw = title_text(candidate)
+        candidate_compact = re.sub(r"\s+", "", candidate_raw)
+        items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        local_commodity_groups = (
+            ("광양", "매실"),
+            ("제주", "블루베리"),
+            ("고창", "수박"),
+            ("성주", "참외"),
+        )
+        for existing in items:
+            existing_raw = title_text(existing)
+            existing_compact = re.sub(r"\s+", "", existing_raw)
+            for group in local_commodity_groups:
+                if all(has_topic_token(candidate_raw, candidate_compact, token) for token in group) and all(
+                    has_topic_token(existing_raw, existing_compact, token) for token in group
+                ):
+                    return True
+            if section_key == "supply" and has_topic_token(candidate_raw, candidate_compact, "양파") and has_topic_token(
+                existing_raw,
+                existing_compact,
+                "양파",
+            ):
+                return True
+        return False
+
+    def section_shadow_conflicts(section_key: str, candidate: Article) -> bool:
+        return section_title_conflicts(section_key, candidate) or section_shadow_topic_conflicts(section_key, candidate)
+
+    policy_items = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
+    has_ag_tax_core = any("농특세" in title_text(article) and "가격 안정" in title_text(article) for article in policy_items)
+    if has_ag_tax_core:
+        dup_idx = next(
+            (
+                idx for idx, article in enumerate(policy_items)
+                if "농어촌기본소득" in title_text(article) and "농특세" in title_text(article)
+            ),
+            -1,
+        )
+        if dup_idx >= 0:
+            candidates = _raw_editorial_candidates(
+                raw_by_section,
+                lambda article: (
+                    ("양파산업 위기" in title_text(article) or "양파 산업 위기" in title_text(article))
+                    and "입맛 공략" not in title_text(article)
+                ),
+                exclude_idents=set(),
+            )
+            if candidates:
+                if _replace_final_item_with_editorial_candidate(
+                    final_by_section,
+                    raw_by_section,
+                    "policy",
+                    dup_idx,
+                    candidates[0],
+                    stage="policy_editorial_shadow_replacement",
+                    note="replace_duplicate_ag_tax_policy",
+                ):
+                    changed += 1
+
+    supply_items = [article for article in (final_by_section.get("supply") or []) if isinstance(article, Article)]
+    supply_victims = [
+        idx for idx, article in enumerate(supply_items)
+        if count_any(
+            title_text(article),
+            [w.lower() for w in ("기계화", "기술 공개", "경영 효율화", "인력난 해법", "장비 보급")],
+        ) >= 1
+    ]
+    supply_candidate_predicates: list[Callable[[Article], bool]] = [
+        lambda article: "광양매실" in title_text(article) and "생산량 급증" in title_text(article),
+        lambda article: "성주참외" in title_text(article) and "둔갑" in title_text(article),
+        lambda article: "못난이 매실" in title_text(article) and "수매" in title_text(article),
+        lambda article: "양파 값 역전" in title_text(article) and "수출길" in title_text(article),
+        lambda article: "광양 매실" in title_text(article) and "가격" in title_text(article) and "걱정" in title_text(article),
+    ]
+    for victim_idx in supply_victims:
+        picked: Article | None = None
+        excluded = used_idents()
+        for predicate in supply_candidate_predicates:
+            candidates = _raw_editorial_candidates(raw_by_section, predicate, exclude_idents=excluded)
+            candidates = [candidate for candidate in candidates if not section_shadow_conflicts("supply", candidate)]
+            if candidates:
+                picked = candidates[0]
+                break
+        if picked is None:
+            continue
+        if _replace_final_item_with_editorial_candidate(
+            final_by_section,
+            raw_by_section,
+            "supply",
+            victim_idx,
+            picked,
+            stage="supply_editorial_shadow_replacement",
+            note="replace_machine_supply_tail",
+        ):
+            changed += 1
+
+    supply_items = [article for article in (final_by_section.get("supply") or []) if isinstance(article, Article)]
+    while len(supply_items) < min(MAX_PER_SECTION, PREFERRED_PER_SECTION):
+        picked = None
+        excluded = used_idents()
+        for predicate in supply_candidate_predicates:
+            candidates = _raw_editorial_candidates(raw_by_section, predicate, exclude_idents=excluded)
+            candidates = [candidate for candidate in candidates if not section_shadow_conflicts("supply", candidate)]
+            if candidates:
+                picked = candidates[0]
+                break
+        if picked is None:
+            break
+        conf = next((s for s in SECTIONS if s.get("key") == "supply"), {})
+        supply_items.append(_mark_editorial_replacement(
+            picked,
+            "supply",
+            conf,
+            "supply_editorial_shadow_gap_refill",
+            "fill_gap_after_policy_structure_move",
+        ))
+        final_by_section["supply"] = supply_items[:MAX_PER_SECTION]
+        changed += 1
+
+    dist_items = [article for article in (final_by_section.get("dist") or []) if isinstance(article, Article)]
+    dist_victims = [
+        idx for idx, article in enumerate(dist_items)
+        if (
+            count_any(title_text(article), [w.lower() for w in ("농협몰", "설명회", "디지털 전환")]) >= 1
+            or ("다올찬수박" in title_text(article) and "본격 출하" in title_text(article))
+        )
+    ]
+    dist_candidate_predicates: list[Callable[[Article], bool]] = [
+        lambda article: ("체리" in title_text(article) and "오디" in title_text(article) and "산딸기" in title_text(article)),
+        lambda article: "제주 블루베리" in title_text(article) and "판매" in title_text(article),
+        lambda article: "광양매실" in title_text(article) and "생산량 급증" in title_text(article),
+        lambda article: "고창수박" in title_text(article) and "본격 출하" in title_text(article) and "입맛 공략" not in title_text(article),
+    ]
+    for victim_idx in dist_victims:
+        picked = None
+        excluded = used_idents()
+        for predicate in dist_candidate_predicates:
+            candidates = _raw_editorial_candidates(raw_by_section, predicate, exclude_idents=excluded)
+            candidates = [candidate for candidate in candidates if not section_shadow_conflicts("dist", candidate)]
+            if candidates:
+                picked = candidates[0]
+                break
+        if picked is None:
+            continue
+        if _replace_final_item_with_editorial_candidate(
+            final_by_section,
+            raw_by_section,
+            "dist",
+            victim_idx,
+            picked,
+            stage="dist_editorial_shadow_replacement",
+            note="replace_event_or_promo_dist_tail",
+        ):
+            changed += 1
+
+    return changed
 
 
 def _recover_preferred_section_counts_from_raw(
