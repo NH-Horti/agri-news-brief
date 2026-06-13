@@ -724,6 +724,7 @@ PLACEMENT_ONLY_OUTPUT = os.getenv("PLACEMENT_ONLY_OUTPUT", "").strip()
 _DEBUG_LOCK = threading.Lock()
 _DEBUG_QUERY_CONTEXT = threading.local()
 _HF_COMPARE_ACTIVE = False
+_DEBUG_RUN_STARTED_MONO = time.monotonic()
 DEBUG_DATA: JsonDict = {
     "generated_at_kst": None,
     "build_tag": os.getenv("BUILD_TAG", ""),
@@ -731,6 +732,8 @@ DEBUG_DATA: JsonDict = {
     "sections": {},        # section_key -> {threshold, core_min, total_candidates, total_selected, top: [...]}
     "collections": {},     # section_key -> {queries, hits, paging, recall, ...}
     "hf_compare": {},
+    "runtime": {},
+    "commodity_board_audit": {},
 }
 
 def dbg_add_filter_reject(section: str, reason: str, title: str, url: str, domain: str, press: str) -> None:
@@ -801,6 +804,61 @@ def dbg_set_hf_compare(payload: JsonDict) -> None:
         pass
 
 
+def dbg_mark_stage(stage: str, status: str = "start", **details: Any) -> None:
+    stage_name = str(stage or "").strip() or "unknown"
+    status_name = str(status or "").strip() or "event"
+    elapsed = round(max(0.0, time.monotonic() - _DEBUG_RUN_STARTED_MONO), 3)
+    safe_details: JsonDict = {}
+    for key, value in details.items():
+        if value is None:
+            continue
+        if isinstance(value, (str, int, float, bool)):
+            safe_details[str(key)] = value
+        else:
+            safe_details[str(key)] = str(value)
+    try:
+        log.info("[STAGE] %s %s elapsed=%.1fs %s", stage_name, status_name, elapsed, safe_details or "")
+    except Exception:
+        pass
+    if not DEBUG_REPORT:
+        return
+    try:
+        row: JsonDict = {
+            "stage": stage_name,
+            "status": status_name,
+            "elapsed_sec": elapsed,
+            "at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+        }
+        if safe_details:
+            row["details"] = safe_details
+        with _DEBUG_LOCK:
+            runtime = DEBUG_DATA.setdefault("runtime", {})
+            if not isinstance(runtime, dict):
+                runtime = {}
+                DEBUG_DATA["runtime"] = runtime
+            stages = runtime.setdefault("stages", [])
+            if not isinstance(stages, list):
+                stages = []
+                runtime["stages"] = stages
+            stages.append(row)
+            runtime["last_stage"] = row
+            runtime["elapsed_sec"] = elapsed
+            runtime["local_dry_run"] = bool(is_local_dry_run())
+            runtime["placement_only"] = bool(PLACEMENT_ONLY)
+    except Exception:
+        pass
+
+
+def dbg_set_commodity_board_audit(payload: JsonDict) -> None:
+    if not DEBUG_REPORT:
+        return
+    try:
+        with _DEBUG_LOCK:
+            DEBUG_DATA["commodity_board_audit"] = payload if isinstance(payload, dict) else {}
+    except Exception:
+        pass
+
+
 def reset_debug_report() -> None:
     if not DEBUG_REPORT:
         return
@@ -812,6 +870,12 @@ def reset_debug_report() -> None:
             DEBUG_DATA["sections"] = {}
             DEBUG_DATA["collections"] = {}
             DEBUG_DATA["hf_compare"] = {}
+            DEBUG_DATA["runtime"] = {
+                "started_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+                "local_dry_run": bool(is_local_dry_run()),
+                "placement_only": bool(PLACEMENT_ONLY),
+            }
+            DEBUG_DATA["commodity_board_audit"] = {}
     except Exception:
         pass
 
@@ -4156,7 +4220,7 @@ _HORTI_TOPICS_SET = {topic for topic, _terms in ALL_ITEM_COMMODITY_TOPICS}
 
 _MANAGED_COMMODITY_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
     "radish": [
-        re.compile(r"(?:^|[\s\W])무(?:값|가격|시세|수급|출하|작황|재배|농가|도매가격)"),
+        re.compile(r"(?:^|[\s\W])무\s*(?:값|가격|시세|수급|출하|작황|재배|농가|도매가격)"),
         re.compile(r"월동무"),
         re.compile(r"고랭지무"),
     ],
@@ -4764,6 +4828,9 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
     text = f"{title} {desc}".strip()
     text_l = _nfkc_lower(text)
     title_l = _nfkc_lower(title)
+    desc_l = _nfkc_lower(desc)
+    host_l = normalize_host(getattr(article, "domain", "") or "")
+    press_l = _nfkc_lower(str(getattr(article, "press", "") or ""))
     key = str(item.get("key") or "").strip()
     title_focus_hits = int(metrics.get("title_primary_hits") or 0) + int(metrics.get("title_context_hits") or 0) + int(metrics.get("pattern_hits") or 0)
     body_focus_hits = int(metrics.get("body_primary_hits") or 0) + int(metrics.get("body_context_hits") or 0)
@@ -4784,7 +4851,11 @@ def _managed_commodity_board_focus_metrics(item: dict[str, Any], article: "Artic
         return metrics
     if key == "tomato" and not is_edible_tomato_context(text_l):
         return metrics
-    if key == "tomato" and any(marker in title_l for marker in ("[ib 토마토", "ib 토마토", "뉴스토마토", "newstomato")):
+    if key == "tomato" and any(
+        marker in candidate
+        for marker in ("[ib 토마토", "ib 토마토", "뉴스토마토", "newstomato")
+        for candidate in (title_l, desc_l, host_l, press_l)
+    ):
         return metrics
     if key in _FRUIT_TREE_COMMODITY_KEYS and is_fruit_blossom_tourism_context(title, desc):
         return metrics
@@ -12128,6 +12199,10 @@ def _replay_allow_openai() -> bool:
     return _env_flag("REPLAY_ALLOW_OPENAI", default=False)
 
 
+def _local_dry_run_fast_exit_after_archive() -> bool:
+    return is_local_dry_run() and _env_flag("LOCAL_DRY_RUN_FAST_EXIT_AFTER_ARCHIVE", default=True)
+
+
 def _clone_article(article: "Article") -> "Article":
     """Article 딥카피 (replay 스냅샷 저장 전 원본 보존용)."""
     return Article(**_replay_article_dict_to_kwargs(_replay_article_to_dict(article)))
@@ -12167,6 +12242,8 @@ def _snapshot_debug_payload() -> JsonDict:
                     {
                         "collections": DEBUG_DATA.get("collections", {}) or {},
                         "filter_rejects": DEBUG_DATA.get("filter_rejects", []) or [],
+                        "runtime": DEBUG_DATA.get("runtime", {}) or {},
+                        "commodity_board_audit": DEBUG_DATA.get("commodity_board_audit", {}) or {},
                         "hf_state": hf_state,
                     },
                     ensure_ascii=False,
@@ -12188,8 +12265,12 @@ def _restore_debug_from_snapshot(payload: Any, snapshot_path: Path | None = None
         with _DEBUG_LOCK:
             collections = data.get("collections", {})
             filter_rejects = data.get("filter_rejects", [])
+            runtime = data.get("runtime", {})
+            board_audit = data.get("commodity_board_audit", {})
             DEBUG_DATA["collections"] = collections if isinstance(collections, dict) else {}
             DEBUG_DATA["filter_rejects"] = filter_rejects if isinstance(filter_rejects, list) else []
+            DEBUG_DATA["runtime"] = runtime if isinstance(runtime, dict) else {}
+            DEBUG_DATA["commodity_board_audit"] = board_audit if isinstance(board_audit, dict) else {}
             DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
             DEBUG_DATA["build_tag"] = BUILD_TAG
             DEBUG_DATA["replay"] = {
@@ -26561,6 +26642,8 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
             "filter_rejects": list(DEBUG_DATA.get("filter_rejects", [])),
             "sections": dict(DEBUG_DATA.get("sections", {})),
             "hf_compare": dict(DEBUG_DATA.get("hf_compare", {})) if isinstance(DEBUG_DATA.get("hf_compare"), dict) else {},
+            "runtime": dict(DEBUG_DATA.get("runtime", {})) if isinstance(DEBUG_DATA.get("runtime"), dict) else {},
+            "commodity_board_audit": dict(DEBUG_DATA.get("commodity_board_audit", {})) if isinstance(DEBUG_DATA.get("commodity_board_audit"), dict) else {},
         }
 
     # 요약(사유 카운트)
@@ -26653,6 +26736,16 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         _kv("BUILD_TAG", str(data.get("build_tag", ""))),
         _kv("generated_at_kst", str(data.get("generated_at_kst", ""))),
     ])
+    runtime = data.get("runtime") if isinstance(data.get("runtime"), dict) else {}
+    if runtime:
+        meta_line += " " + " ".join(
+            [
+                _kv("elapsed_sec", str(runtime.get("elapsed_sec", ""))),
+                _kv("last_stage", str((runtime.get("last_stage") or {}).get("stage", "")) if isinstance(runtime.get("last_stage"), dict) else ""),
+                _kv("local_dry_run", str(runtime.get("local_dry_run", ""))),
+                _kv("placement_only", str(runtime.get("placement_only", ""))),
+            ]
+        )
 
     link_line = ""
     if json_href:
@@ -26681,6 +26774,53 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         </div>
         """
 
+    board_audit_html = ""
+    board_audit = data.get("commodity_board_audit") if isinstance(data.get("commodity_board_audit"), dict) else {}
+    if board_audit:
+        board_summary = board_audit.get("summary") if isinstance(board_audit.get("summary"), dict) else {}
+        board_items = board_audit.get("items") if isinstance(board_audit.get("items"), list) else []
+        audit_rows: list[str] = []
+        visible_items = [
+            item
+            for item in board_items
+            if isinstance(item, dict) and (bool(item.get("active_today_unlinked")) or bool(item.get("linked")))
+        ][:80]
+        for item in visible_items:
+            top_candidate = item.get("top_candidate") if isinstance(item.get("top_candidate"), dict) else {}
+            status = "연결" if bool(item.get("linked")) else "후보 미연결"
+            audit_rows.append(
+                "<tr>"
+                f"<td class='c'>{esc(status)}</td>"
+                f"<td>{esc(str(item.get('label') or ''))}</td>"
+                f"<td>{esc(str(item.get('group_title') or ''))}</td>"
+                f"<td class='r'>{int(item.get('matched_count') or 0)}</td>"
+                f"<td class='r'>{int(item.get('active_today_candidate_count') or 0)}</td>"
+                f"<td class='r'>{int(item.get('qualified_count') or 0)}</td>"
+                f"<td class='muted'>{esc(str(item.get('unlinked_reason') or ''))}</td>"
+                f"<td class='r'>{top_candidate.get('representative_rank','')}</td>"
+                f"<td class='r'>{top_candidate.get('title_primary_hits','')}</td>"
+                f"<td class='r'>{top_candidate.get('title_issue_hits','')}</td>"
+                f"<td><a href='{esc(str(top_candidate.get('url') or ''))}' target='_blank' rel='noopener'>{esc(str(top_candidate.get('title') or ''))}</a></td>"
+                "</tr>"
+            )
+        audit_rows_html = "".join(audit_rows) if audit_rows else "<tr><td colspan='11' class='muted'>표시할 품목보드 audit 행이 없습니다.</td></tr>"
+        board_audit_html = f"""
+        <div class="dbgSec">
+          <div class="dbgSecHead">
+            <b>품목보드 연결 audit</b>
+            <span class="muted">managed={int(board_summary.get('managed_total') or 0)} linked={int(board_summary.get('linked_total') or 0)} active_today={int(board_summary.get('active_today_total') or 0)} active_today_unlinked={int(board_summary.get('active_today_unlinked_total') or 0)} managed_unlinked={int(board_summary.get('managed_unlinked_total') or 0)}</span>
+          </div>
+          <div class="dbgTableWrap">
+            <table class="dbgTable">
+              <thead>
+                <tr><th class="c">상태</th><th>품목</th><th>그룹</th><th class="r">매칭</th><th class="r">보이는후보</th><th class="r">연결후보</th><th>사유</th><th class="r">rank</th><th class="r">품목명</th><th class="r">이슈</th><th>상위 후보</th></tr>
+              </thead>
+              <tbody>{audit_rows_html}</tbody>
+            </table>
+          </div>
+        </div>
+        """
+
     return f"""
     <style>
       details.dbgWrap {{ margin-top:24px; padding-top:16px; border-top:1px dashed var(--line); }}
@@ -26705,6 +26845,7 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
       <div class="dbgMeta">{meta_line}</div>
       <div class="muted" style="font-size:12px;">필터링 제외 사유 상위: {esc(reason_line)}</div>
       {hf_compare_html}
+      {board_audit_html}
       {''.join(sec_blocks)}
       <div class="dbgSec">
         <div class="dbgSecHead"><b>필터링 제외(샘플)</b><span class="muted">최대 60건 표시</span></div>
@@ -26813,6 +26954,260 @@ def _hf_compare_board_state(board_ctx: dict[str, Any]) -> JsonDict:
                 continue
             items[item_key] = _hf_compare_board_item_summary(item_payload)
     return {"items": items}
+
+
+def _commodity_board_unlinked_reason_for_counts(
+    article_count: int,
+    qualified_count: int,
+    active_today_candidate_count: int,
+) -> str:
+    if qualified_count > 0:
+        return ""
+    if article_count <= 0:
+        return "no_matched_articles"
+    if active_today_candidate_count <= 0:
+        return "matched_but_not_visible"
+    return "matched_but_not_qualified"
+
+
+def _commodity_board_article_is_visible_today_candidate(
+    item: dict[str, Any],
+    article: Article,
+    metrics: dict[str, Any] | None = None,
+) -> bool:
+    article_metrics = dict(metrics or _commodity_board_item_article_representative_metrics(item, article))
+    if _commodity_board_article_is_active_candidate(item, article, article_metrics):
+        return True
+    if not bool(article_metrics.get("board_eligible")):
+        return False
+    title = str(getattr(article, "title", "") or "")
+    desc = str(getattr(article, "description", "") or "")
+    text_l = _nfkc_lower(f"{title} {desc}".strip())
+    item_key = str(item.get("key") or "").strip()
+    if item_key == "radish":
+        radish_patterns = _MANAGED_COMMODITY_CONTEXT_PATTERNS.get("radish") or []
+        if not any(pattern.search(text_l) for pattern in radish_patterns):
+            return False
+    title_primary_hits = int(article_metrics.get("title_primary_hits") or 0)
+    title_context_hits = int(article_metrics.get("title_context_hits") or 0)
+    pattern_hits = int(article_metrics.get("pattern_hits") or 0)
+    title_item_focus_ok = bool(
+        title_primary_hits >= 1
+        or title_context_hits >= 1
+        or pattern_hits >= 1
+        or (
+            item_key == "napa_cabbage"
+            and re.search(r"금\s*\([^)]*[金金][^)]*\)\s*추|금추", _nfkc_lower(title)) is not None
+        )
+    )
+    if not title_item_focus_ok:
+        return False
+    if is_processed_food_lifestyle_context(title, desc):
+        return False
+    if (
+        is_supply_tourism_event_context(title, desc)
+        or is_supply_tourism_event_context(title, "")
+        or is_fruit_blossom_tourism_context(title, desc)
+        or is_fruit_blossom_tourism_context(title, "")
+    ):
+        return False
+    if is_commodity_origin_history_tail_context(title, desc):
+        return False
+    if (
+        item_key in _FRUIT_TREE_COMMODITY_KEYS
+        and any(term in _nfkc_lower(title) for term in ("원조 주장", "훔쳐갔다", "품종 유출", "종자 유출", "잇슈 키워드"))
+        and not bool(_commodity_board_has_operational_issue_signal(article_metrics))
+    ):
+        return False
+    if is_commodity_sales_promo_context(title, desc):
+        return False
+    if is_commodity_support_advice_context(title, desc):
+        return False
+    if is_commodity_consumer_guide_context(title, desc):
+        return False
+    if is_commodity_regional_branding_context(title, desc):
+        return False
+    if is_low_value_local_promo_context(title, desc):
+        return False
+    weak_visible_flags = (
+        "weak_training_story",
+        "weak_profile_story",
+        "weak_org_feature_story",
+        "weak_org_promo_story",
+        "weak_event_story",
+        "weak_admin_title_story",
+        "weak_consumer_lifestyle_story",
+        "weak_tourism_story",
+        "weak_blossom_tourism_story",
+        "weak_sales_promo_story",
+        "weak_support_advice_story",
+        "weak_consumer_guide_story",
+        "weak_regional_branding_story",
+        "weak_macro_roundup_story",
+        "weak_unanchored_general_story",
+        "weak_supply_macro_official_story",
+        "weak_processed_panic_story",
+        "weak_program_brand_story",
+        "weak_price_support_event_story",
+        "weak_generic_market_watch_story",
+        "weak_labor_help_story",
+        "weak_local_political_story",
+        "weak_local_promo_story",
+        "weak_wine_lifestyle_story",
+        "weak_flower_consumer_lifestyle_story",
+        "weak_research_award_story",
+    )
+    if any(bool(article_metrics.get(flag)) for flag in weak_visible_flags):
+        if not bool(_commodity_board_has_operational_issue_signal(article_metrics)):
+            return False
+    return True
+
+
+def _commodity_board_article_audit_row(article: Article, metrics: dict[str, Any] | None = None) -> JsonDict:
+    row: JsonDict = {
+        "id": _article_selection_identity(article),
+        "title": str(getattr(article, "title", "") or "")[:220],
+        "url": str(getattr(article, "url", "") or getattr(article, "originallink", "") or getattr(article, "link", "") or "")[:500],
+        "section": str(getattr(article, "section", "") or ""),
+        "press": str(getattr(article, "press", "") or ""),
+        "score": round(float(getattr(article, "score", 0.0) or 0.0), 3),
+        "selection_fit_score": round(float(getattr(article, "selection_fit_score", 0.0) or 0.0), 3),
+        "selection_stage": str(getattr(article, "selection_stage", "") or ""),
+        "is_core": bool(getattr(article, "is_core", False)),
+    }
+    if metrics:
+        row.update(
+            {
+                "representative_rank": int(metrics.get("representative_rank", -1)),
+                "representative_score": round(float(metrics.get("representative_score", 0.0) or 0.0), 3),
+                "board_score": round(float(metrics.get("board_score", 0.0) or 0.0), 3),
+                "board_eligible": bool(metrics.get("board_eligible")),
+                "direct_item_focus": bool(metrics.get("direct_item_focus")),
+                "title_primary_hits": int(metrics.get("title_primary_hits") or 0),
+                "title_issue_hits": int(_commodity_board_title_issue_hits(str(getattr(article, "title", "") or ""))),
+                "operational_issue_signal": bool(_commodity_board_has_operational_issue_signal(metrics)),
+                "issue_bucket": str(metrics.get("issue_bucket") or ""),
+                "feature_kind": str(metrics.get("feature_kind") or ""),
+                "weak_stage_story": bool(metrics.get("weak_stage_story")),
+            }
+        )
+    return row
+
+
+def _build_commodity_board_audit(
+    item_state: dict[str, dict[str, Any]],
+    groups: list[dict[str, Any]],
+    *,
+    active_items: int,
+    active_program_items: int,
+) -> JsonDict:
+    group_lookup: dict[str, tuple[str, str]] = {}
+    for group in MANAGED_COMMODITY_GROUP_SPECS:
+        group_key = str(group.get("key") or "").strip()
+        group_title = str(group.get("title") or "").strip()
+        for spec in group.get("items") or []:
+            item_key = str(spec.get("key") or "").strip()
+            if item_key:
+                group_lookup[item_key] = (group_key, group_title)
+
+    audit_items: list[JsonDict] = []
+    for item_key, payload in item_state.items():
+        articles = [article for article in (payload.get("articles") or []) if isinstance(article, Article)]
+        active_today_articles = [article for article in (payload.get("active_today_articles") or []) if isinstance(article, Article)]
+        qualified_articles = [article for article in (payload.get("preview_articles") or []) if isinstance(article, Article)]
+        top_article = payload.get("top_article") if isinstance(payload.get("top_article"), Article) else None
+        top_metrics = dict(payload.get("top_article_metrics") or {})
+        top_candidate = active_today_articles[0] if active_today_articles else (articles[0] if articles else None)
+        top_candidate_metrics = (
+            _commodity_board_item_article_representative_metrics(payload, top_candidate)
+            if isinstance(top_candidate, Article)
+            else {}
+        )
+        matched_count = int(payload.get("article_count") or len(articles))
+        active_today_candidate_count = int(payload.get("active_today_article_count") or len(active_today_articles))
+        qualified_count = int(payload.get("qualified_article_count") or 0)
+        active_today = bool(payload.get("active_today"))
+        linked = bool(payload.get("active"))
+        unlinked_reason = _commodity_board_unlinked_reason_for_counts(
+            matched_count,
+            qualified_count,
+            active_today_candidate_count,
+        )
+        group_key, group_title = group_lookup.get(item_key, ("", ""))
+        audit_items.append(
+            {
+                "key": item_key,
+                "label": str(payload.get("label") or ""),
+                "group_key": group_key,
+                "group_title": group_title,
+                "program_core": bool(payload.get("program_core")),
+                "managed": True,
+                "active_today": active_today,
+                "linked": linked,
+                "matched_count": matched_count,
+                "active_today_candidate_count": active_today_candidate_count,
+                "qualified_count": qualified_count,
+                "linked_count": 1 if linked else 0,
+                "active_today_unlinked": bool(active_today and not linked),
+                "managed_unlinked": bool(not linked),
+                "unlinked_reason": unlinked_reason,
+                "source_sections": _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in articles]),
+                "qualified_source_sections": _ordered_unique_terms([str(getattr(article, "section", "") or "") for article in qualified_articles]),
+                "top_article": _commodity_board_article_audit_row(top_article, top_metrics) if top_article else {},
+                "top_candidate": _commodity_board_article_audit_row(top_candidate, top_candidate_metrics) if top_candidate else {},
+                "thresholds": {
+                    "active_min_rank": _commodity_board_active_min_rank(payload),
+                    "require_issue_signal": _selection_guardrail_bool("commodity_require_issue_signal", False),
+                    "require_direct_item_focus": _selection_guardrail_bool("commodity_require_direct_item_focus", False),
+                },
+                "candidate_sample": [
+                    _commodity_board_article_audit_row(
+                        article,
+                        _commodity_board_item_article_representative_metrics(payload, article),
+                    )
+                    for article in (active_today_articles or articles)[:3]
+                ],
+            }
+        )
+
+    active_today_count = sum(1 for item in audit_items if bool(item.get("active_today")))
+    active_today_unlinked_count = sum(1 for item in audit_items if bool(item.get("active_today_unlinked")))
+    managed_unlinked_count = sum(1 for item in audit_items if bool(item.get("managed_unlinked")))
+    group_summaries: list[JsonDict] = []
+    for group in groups:
+        group_key = str(group.get("key") or "").strip()
+        group_items = [item for item in audit_items if str(item.get("group_key") or "") == group_key]
+        group_summaries.append(
+            {
+                "key": group_key,
+                "title": str(group.get("title") or "").strip(),
+                "managed_total": len(group_items),
+                "active_today_total": sum(1 for item in group_items if bool(item.get("active_today"))),
+                "linked_total": sum(1 for item in group_items if bool(item.get("linked"))),
+                "active_today_unlinked_total": sum(1 for item in group_items if bool(item.get("active_today_unlinked"))),
+                "managed_unlinked_total": sum(1 for item in group_items if bool(item.get("managed_unlinked"))),
+                "program_core_total": int(group.get("program_core_total") or 0),
+                "program_core_active": int(group.get("program_core_active") or 0),
+            }
+        )
+
+    return {
+        "summary": {
+            "managed_total": len(MANAGED_COMMODITY_CATALOG),
+            "linked_total": int(active_items),
+            "linked_program_total": int(active_program_items),
+            "active_today_total": int(active_today_count),
+            "active_today_unlinked_total": int(active_today_unlinked_count),
+            "managed_unlinked_total": int(managed_unlinked_count),
+            "program_core_active_today_unlinked_total": sum(
+                1
+                for item in audit_items
+                if bool(item.get("program_core")) and bool(item.get("active_today_unlinked"))
+            ),
+        },
+        "groups": group_summaries,
+        "items": audit_items,
+    }
 
 
 def _hf_compare_board_diff(
@@ -32927,14 +33322,29 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
             for article, metrics in _all_repr_metrics
             if _commodity_board_article_is_active_candidate(item_payload, article, metrics)
         ]
+        active_today_metric_pairs = [
+            (article, metrics)
+            for article, metrics in _all_repr_metrics
+            if _commodity_board_article_is_visible_today_candidate(item_payload, article, metrics)
+        ]
         qualified_metric_pairs = _rebalance_commodity_board_preview_pairs(qualified_metric_pairs, secondary_preview_limit)
         qualified_articles = [article for article, _ in qualified_metric_pairs]
+        active_today_articles = [article for article, _ in active_today_metric_pairs]
         top_article_metrics = dict(qualified_metric_pairs[0][1]) if qualified_metric_pairs else {}
         item_payload["articles"] = articles
         item_payload["article_count"] = len(articles)
+        item_payload["matched_article_count"] = len(articles)
+        item_payload["active_today_articles"] = active_today_articles
+        item_payload["active_today_article_count"] = len(active_today_articles)
         item_payload["core_count"] = sum(1 for article in articles if getattr(article, "is_core", False))
         item_payload["qualified_article_count"] = len(qualified_articles)
         item_payload["active"] = bool(qualified_articles)
+        item_payload["active_today"] = bool(active_today_articles or qualified_articles)
+        item_payload["unlinked_reason"] = _commodity_board_unlinked_reason_for_counts(
+            len(articles),
+            len(qualified_articles),
+            len(active_today_articles),
+        )
         item_payload["top_article"] = qualified_articles[0] if qualified_articles else None
         item_payload["top_article_metrics"] = top_article_metrics
         item_payload["top_article_board_score"] = float(top_article_metrics.get("board_score") or 0.0)
@@ -32957,6 +33367,8 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         items = [item_state[str(spec.get("key") or "").strip()] for spec in group.get("items") or [] if str(spec.get("key") or "").strip() in item_state]
         active_group_items = [item for item in items if item.get("active")]
         inactive_group_items = [item for item in items if not item.get("active")]
+        active_today_group_items = [item for item in items if item.get("active_today")]
+        active_today_unlinked_group_items = [item for item in inactive_group_items if item.get("active_today")]
         active_group_items.sort(
             key=lambda item: (
                 0 if item.get("program_core") else 1,
@@ -32984,24 +33396,37 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
                 "item_total": len(items),
                 "active_count": len(active_group_items),
                 "inactive_count": len(inactive_group_items),
+                "active_today_count": len(active_today_group_items),
+                "active_today_unlinked_count": len(active_today_unlinked_group_items),
+                "managed_unlinked_count": len(inactive_group_items),
                 "program_core_total": sum(1 for item in items if item.get("program_core")),
                 "program_core_active": sum(1 for item in active_group_items if item.get("program_core")),
                 "article_count": sum(int(item.get("article_count") or 0) for item in active_group_items),
             }
         )
 
-    # 진단: 미연결 품목 로그(DEBUG_REPORT 모드에서만 출력)
+    board_audit = _build_commodity_board_audit(
+        item_state,
+        groups,
+        active_items=active_items,
+        active_program_items=active_program_items,
+    )
+    dbg_set_commodity_board_audit(board_audit)
+    audit_summary = board_audit.get("summary") if isinstance(board_audit, dict) else {}
+    active_today_total = int((audit_summary or {}).get("active_today_total") or 0)
+    active_today_unlinked_total = int((audit_summary or {}).get("active_today_unlinked_total") or 0)
+    managed_unlinked_total = int((audit_summary or {}).get("managed_unlinked_total") or 0)
+
+    # 진단: 오늘 후보가 있었지만 대표 연결에 실패한 품목만 로그로 출력한다.
     if DEBUG_REPORT and (not _HF_COMPARE_ACTIVE):
         for payload in item_state.values():
             _ik = str(payload.get("key") or "")
             _il = str(payload.get("label") or "")
             _ac = int(payload.get("article_count") or 0)
+            _tc = int(payload.get("active_today_article_count") or 0)
             _qc = int(payload.get("qualified_article_count") or 0)
-            if not payload.get("active"):
-                if _ac == 0:
-                    print(f"[BOARD] unlinked: {_ik} ({_il}) - no articles matched")
-                else:
-                    print(f"[BOARD] unlinked: {_ik} ({_il}) - {_ac} matched, {_qc} qualified (fallback may apply)")
+            if (not payload.get("active")) and bool(payload.get("active_today")):
+                print(f"[BOARD] active-today unlinked: {_ik} ({_il}) - {_ac} matched, {_tc} visible, {_qc} qualified")
 
     return {
         "groups": groups,
@@ -33009,6 +33434,10 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
         "program_total": sum(1 for item in MANAGED_COMMODITY_CATALOG if item.get("program_core")),
         "active_total": active_items,
         "active_program_total": active_program_items,
+        "active_today_total": active_today_total,
+        "active_today_unlinked_total": active_today_unlinked_total,
+        "managed_unlinked_total": managed_unlinked_total,
+        "audit": board_audit,
     }
 
 
@@ -33103,11 +33532,18 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             item for item in (group.get("inactive_items") or [])
             if isinstance(item, dict)
         ]
+        active_today_unlinked_items_for_group = [
+            item for item in inactive_items_for_group
+            if bool(item.get("active_today")) and int(item.get("article_count") or 0) > 0
+        ]
         display_active_count = len(active_items_for_group)
-        display_inactive_count = len(inactive_items_for_group)
-        display_item_total = display_active_count + display_inactive_count
+        display_active_today_unlinked_count = len(active_today_unlinked_items_for_group)
+        display_item_total = display_active_count + len(inactive_items_for_group)
         if display_item_total <= 0:
             display_item_total = int(group.get("item_total") or 0)
+        display_active_today_count = int(group.get("active_today_count") or 0)
+        if display_active_today_count <= 0:
+            display_active_today_count = display_active_count + display_active_today_unlinked_count
         display_program_total = sum(1 for item in [*active_items_for_group, *inactive_items_for_group] if item.get("program_core"))
         if display_program_total <= 0:
             display_program_total = int(group.get("program_core_total") or 0)
@@ -33210,17 +33646,19 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
 
         inactive_chips = "".join(
             (
-                f'<span class="commodityMiniChip{" isCore" if item.get("program_core") else ""}">'
+                f'<span class="commodityMiniChip{" isCore" if item.get("program_core") else ""}" '
+                f'data-unlinked-reason="{esc(str(item.get("unlinked_reason") or ""))}">'
                 f'{esc(str(item.get("label") or ""))}'
+                f' · 후보 {int(item.get("active_today_article_count") or item.get("article_count") or 0)}'
                 f'{"  ·수급" if item.get("program_core") else ""}'
                 f'</span>'
             )
-            for item in inactive_items_for_group
+            for item in active_today_unlinked_items_for_group
         )
         inactive_html = (
             f"""
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">미연결 품목 {display_inactive_count} / 총 {display_item_total}개</div>
+              <div class="commodityInactiveTitle">오늘 후보 미연결 {display_active_today_unlinked_count} / 후보 {display_active_today_count}개</div>
               <div class="commodityMiniGrid">{inactive_chips}</div>
             </div>
             """
@@ -33235,7 +33673,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                   <span class="commodityGroupDot" style="background:{esc(group_color)}"></span>
                   <h3>{esc(str(group.get('title') or ''))}</h3>
                 </div>
-                <div class="commodityGroupMeta">활성 품목 {display_active_count} / {display_item_total} · 수급사업 {display_program_active} / {display_program_total}</div>
+                <div class="commodityGroupMeta">오늘 후보 {display_active_today_count}개 · 연결 {display_active_count}개 · 수급사업 {display_program_active} / {display_program_total}</div>
               </div>
               <div class="commodityGrid{' isSingle' if len(item_cards) == 1 else ' isDuo' if len(item_cards) == 2 else ''}">
                 {''.join(item_cards)}
@@ -33247,7 +33685,11 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
         )
 
     return f"""
-    <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle">
+    <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle"
+      data-active-total="{int(board_ctx.get('active_total') or 0)}"
+      data-active-today-total="{int(board_ctx.get('active_today_total') or 0)}"
+      data-active-today-unlinked-total="{int(board_ctx.get('active_today_unlinked_total') or 0)}"
+      data-managed-unlinked-total="{int(board_ctx.get('managed_unlinked_total') or 0)}">
       <div class="commodityHead">
         <div class="commodityHeadMain">
           <h2 id="commodityBoardTitle">전체 품목 보드 <span class="commodityEyebrow">원예수급부 관리 품목</span></h2>
@@ -33263,8 +33705,8 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             <strong>{int(board_ctx.get('active_total') or 0)}개</strong>
           </div>
           <div class="commodityHeadStat">
-            <span class="commodityHeadStatLabel">수급사업 연결</span>
-            <strong>{int(board_ctx.get('active_program_total') or 0)}개</strong>
+            <span class="commodityHeadStatLabel">후보 미연결</span>
+            <strong>{int(board_ctx.get('active_today_unlinked_total') or 0)}개</strong>
           </div>
         </div>
       </div>
@@ -33416,7 +33858,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
           <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
           <span class="viewTabStats">
             <span class="viewTabStat"><strong>{int(commodity_board_ctx.get('active_total') or 0)}</strong>개 연결 품목</span>
-            <span class="viewTabStat"><strong>{int(commodity_board_ctx.get('active_program_total') or 0)}</strong>개 수급사업</span>
+            <span class="viewTabStat"><strong>{int(commodity_board_ctx.get('active_today_unlinked_total') or 0)}</strong>개 후보 미연결</span>
           </span>
         </button>
       </div>
@@ -36974,14 +37416,20 @@ def _publish_maintenance_report(
     summary_cache: dict[str, SummaryCacheEntry | str] | None = None,
     action_label: str = "maintenance rebuild_date",
 ) -> None:
+    dbg_mark_stage("maintenance_publish", "start", action=action_label, report_date=report_date)
+    dbg_mark_stage("maintenance_publish_list_archives", "start")
     avail = _list_dev_preview_archive_dates(repo, token) if DEV_SINGLE_PAGE_MODE else _list_archive_dates(repo, token)
     avail.add(report_date)
     archive_dates_desc = sorted(avail, reverse=True)
+    dbg_mark_stage("maintenance_publish_list_archives", "done", archive_count=len(archive_dates_desc))
 
+    dbg_mark_stage("maintenance_publish_render", "start")
     _finalize_sections_for_render(by_section)
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+    dbg_mark_stage("maintenance_publish_render", "done", html_bytes=len(daily_html.encode("utf-8", errors="ignore")))
 
     if DEV_SINGLE_PAGE_MODE:
+        dbg_mark_stage("maintenance_publish_dev_upload", "start")
         preview_ref = GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"
         version_path = _dev_single_page_version_repo_path()
         version_json = build_dev_preview_version_json(report_date)
@@ -37019,20 +37467,25 @@ def _publish_maintenance_report(
             branch=preview_ref,
         )
         log.info("[MAINT PUT] %s", archive_manifest_path)
+        dbg_mark_stage("maintenance_publish_dev_upload", "done")
 
         if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
             try:
                 DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
                 debug_path = _dev_single_page_debug_repo_path(report_date)
+                dbg_mark_stage("maintenance_publish_debug", "start", path=debug_path)
                 debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
                 _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref=preview_ref)
                 github_put_file(repo, debug_path, debug_json, token, f"Update dev preview debug {report_date}", sha=sha_dbg_old, branch=preview_ref)
                 log.info("[MAINT PUT] %s", debug_path)
+                dbg_mark_stage("maintenance_publish_debug", "done", path=debug_path)
             except Exception as e:
                 log.warning("[WARN] dev preview debug upload failed: %s", e)
+                dbg_mark_stage("maintenance_publish_debug", "error", error=type(e).__name__)
 
         if MAINTENANCE_SEND_KAKAO:
             try:
+                dbg_mark_stage("maintenance_publish_kakao", "start")
                 base_url = get_pages_base_url(repo).rstrip("/")
                 daily_url = _dev_single_page_archive_url(report_date, base_url, cache_bust=True)
                 daily_url = ensure_absolute_http_url(daily_url)
@@ -37043,45 +37496,69 @@ def _publish_maintenance_report(
                 kakao_send_to_me(kakao_text, daily_url)
                 _write_kakao_send_status("success")
                 log.info("[OK] Kakao message sent (%s, single-page). URL=%s", action_label, daily_url)
+                dbg_mark_stage("maintenance_publish_kakao", "done")
             except Exception as e:
                 _write_kakao_send_status(_kakao_send_status_for_exception(e))
+                dbg_mark_stage("maintenance_publish_kakao", "error", error=type(e).__name__)
                 if KAKAO_FAIL_OPEN:
                     _log_kakao_fail_open(e)
                 else:
                     raise
+        dbg_mark_stage("maintenance_publish", "done", action=action_label, report_date=report_date)
         return
 
     daily_path = f"{DOCS_ARCHIVE_DIR}/{report_date}.html"
+    dbg_mark_stage("maintenance_publish_archive", "start", path=daily_path)
     _raw_daily_old, sha_old = github_get_file(repo, daily_path, token, ref="main")
     github_put_file(repo, daily_path, daily_html, token, f"Rebuild date {report_date}", sha=sha_old, branch="main")
     log.info("[MAINT PUT] %s", daily_path)
+    dbg_mark_stage("maintenance_publish_archive", "done", path=daily_path)
 
+    fast_exit_after_archive = _local_dry_run_fast_exit_after_archive()
+    fast_exit_stage_recorded = False
     if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:
         try:
             DEBUG_DATA["generated_at_kst"] = datetime.now(KST).isoformat(timespec="seconds")
             debug_path = f"docs/debug/{report_date}.json"
+            dbg_mark_stage("maintenance_publish_debug", "start", path=debug_path)
+            if fast_exit_after_archive:
+                dbg_mark_stage("maintenance_publish_fast_exit", "done", reason="local_dry_run_after_archive")
+                fast_exit_stage_recorded = True
             debug_json = json.dumps(DEBUG_DATA, ensure_ascii=False, indent=2)
             _raw_dbg_old, sha_dbg_old = github_get_file(repo, debug_path, token, ref="main")
             github_put_file(repo, debug_path, debug_json, token, f"Debug report {report_date}", sha=sha_dbg_old, branch="main")
             log.info("[MAINT PUT] %s", debug_path)
+            dbg_mark_stage("maintenance_publish_debug", "done", path=debug_path)
         except Exception as e:
             log.warning("[WARN] debug report upload failed: %s", e)
+            dbg_mark_stage("maintenance_publish_debug", "error", error=type(e).__name__)
 
+    if fast_exit_after_archive:
+        if not fast_exit_stage_recorded:
+            dbg_mark_stage("maintenance_publish_fast_exit", "done", reason="local_dry_run_after_archive")
+        log.info("[LOCAL DRY RUN] fast exit after archive/debug publish; set LOCAL_DRY_RUN_FAST_EXIT_AFTER_ARCHIVE=0 to run index/manifest follow-up")
+        return
+
+    dbg_mark_stage("maintenance_publish_search_index", "start")
     search_idx, ssha = load_search_index(repo, token)
     search_idx = update_search_index(search_idx, report_date, by_section, site_path)
     try:
         save_search_index(repo, token, search_idx, ssha)
     except Exception as e:
         log.warning("[WARN] save_search_index failed (non-fatal): %s", e)
+    dbg_mark_stage("maintenance_publish_search_index", "done")
 
+    dbg_mark_stage("maintenance_publish_index", "start")
     avail2 = _list_archive_dates(repo, token)
     avail2.add(report_date)
     archive_dates_desc2 = sorted(avail2, reverse=True)
     index_html = render_index_page({"dates": archive_dates_desc2}, site_path)
     raw_i, sha_i = github_get_file(repo, DOCS_INDEX_PATH, token, ref="main")
     github_put_file(repo, DOCS_INDEX_PATH, index_html, token, f"Update index {report_date}", sha=sha_i, branch="main")
+    dbg_mark_stage("maintenance_publish_index", "done")
 
     try:
+        dbg_mark_stage("maintenance_publish_manifest", "start")
         avail3 = _list_archive_dates(repo, token)
         avail3.add(report_date)
         dates_sorted = sorted(set(sanitize_dates(list(avail3))))
@@ -37090,24 +37567,35 @@ def _publish_maintenance_report(
         manifest3["dates"] = dates_sorted
         save_archive_manifest(repo, token, manifest3, msha3)
         save_docs_archive_manifest(repo, token, dates_sorted)
+        dbg_mark_stage("maintenance_publish_manifest", "done", date_count=len(dates_sorted))
     except Exception as e:
         log.warning("[WARN] manifest update after rebuild_date failed: %s", e)
+        dbg_mark_stage("maintenance_publish_manifest", "error", error=type(e).__name__)
 
     try:
+        dbg_mark_stage("maintenance_publish_neighbor_nav", "start")
         backfill_neighbor_archive_nav(repo, token, report_date, archive_dates_desc2, site_path)
+        dbg_mark_stage("maintenance_publish_neighbor_nav", "done")
     except Exception as e:
         log.warning("[WARN] neighbor nav backfill failed: %s", e)
+        dbg_mark_stage("maintenance_publish_neighbor_nav", "error", error=type(e).__name__)
 
+    dbg_mark_stage("maintenance_publish_ux_patch", "start")
     _maybe_ux_patch(repo, token, report_date, site_path)
+    dbg_mark_stage("maintenance_publish_ux_patch", "done")
 
     if summary_cache is not None:
         try:
+            dbg_mark_stage("maintenance_publish_summary_cache", "start")
             save_summary_cache(repo, token, summary_cache)
+            dbg_mark_stage("maintenance_publish_summary_cache", "done")
         except Exception as e:
             log.warning("[WARN] save_summary_cache after rebuild_date failed: %s", e)
+            dbg_mark_stage("maintenance_publish_summary_cache", "error", error=type(e).__name__)
 
     if MAINTENANCE_SEND_KAKAO:
         try:
+            dbg_mark_stage("maintenance_publish_kakao", "start")
             base_url = get_pages_base_url(repo).rstrip("/")
             daily_url = build_daily_url(base_url, report_date, cache_bust=True)
             daily_url = ensure_absolute_http_url(daily_url)
@@ -37118,12 +37606,15 @@ def _publish_maintenance_report(
             kakao_send_to_me(kakao_text, daily_url)
             _write_kakao_send_status("success")
             log.info("[OK] Kakao message sent (%s). URL=%s", action_label, daily_url)
+            dbg_mark_stage("maintenance_publish_kakao", "done")
         except Exception as e:
             _write_kakao_send_status(_kakao_send_status_for_exception(e))
+            dbg_mark_stage("maintenance_publish_kakao", "error", error=type(e).__name__)
             if KAKAO_FAIL_OPEN:
                 _log_kakao_fail_open(e)
             else:
                 raise
+    dbg_mark_stage("maintenance_publish", "done", action=action_label, report_date=report_date)
 
 
 def maintenance_rebuild_date(repo: str, token: str, report_date: str, site_path: str, allow_openai: bool = True) -> None:

@@ -132,6 +132,24 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(article.selection_stage, "core_final")
         self.assertTrue(article.is_core)
 
+    def test_parse_commodity_board_counts_extracts_audit_metadata(self) -> None:
+        html = """
+        <section
+          id="commodity-board"
+          data-active-total="3"
+          data-active-today-total="5"
+          data-active-today-unlinked-total="2"
+          data-managed-unlinked-total="30"
+        ></section>
+        """
+
+        counts = report_eval.parse_commodity_board_counts(html)
+
+        self.assertEqual(counts["active_total"], 3)
+        self.assertEqual(counts["active_today_total"], 5)
+        self.assertEqual(counts["active_today_unlinked_total"], 2)
+        self.assertEqual(counts["managed_unlinked_total"], 30)
+
     def test_parse_report_html_extracts_briefing_selection_metadata(self) -> None:
         html = """
         <div
@@ -160,6 +178,8 @@ class ReportEvalTests(unittest.TestCase):
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
 
         self.assertEqual(result["counts"]["briefing_total"], 15)
+        self.assertIn("commodity_active_today_unlinked_total", result["counts"])
+        self.assertIn("commodity_active_today_unlinked_total", result["metrics"])
         self.assertIn(result["status"], {"pass", "warn", "fail"})
         self.assertGreaterEqual(result["overall_score"], 0.0)
         self.assertLessEqual(result["overall_score"], 100.0)

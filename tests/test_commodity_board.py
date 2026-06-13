@@ -165,8 +165,14 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(ctx["managed_total"], 33)
         self.assertEqual(ctx["program_total"], 18)
         self.assertEqual(ctx["active_total"], 1)
+        self.assertEqual(ctx["active_today_total"], 1)
+        self.assertEqual(ctx["active_today_unlinked_total"], 0)
+        self.assertEqual(ctx["managed_unlinked_total"], 32)
+        self.assertEqual(ctx["audit"]["summary"]["active_today_unlinked_total"], 0)
         seasoning_group = next(group for group in ctx["groups"] if group["key"] == "seasoning_veg")
         self.assertEqual(seasoning_group["active_count"], 0)
+        self.assertEqual(seasoning_group["active_today_count"], 0)
+        self.assertEqual(seasoning_group["active_today_unlinked_count"], 0)
         self.assertEqual(seasoning_group["item_total"], 5)
         self.assertEqual(seasoning_group["inactive_count"], 5)
         self.assertNotIn("붉은고추", {item["label"] for group in ctx["groups"] for item in group["items"]})
@@ -174,6 +180,39 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertEqual(len(apple["secondary_articles"]), 0)
         self.assertEqual(len(apple["extra_articles"]), 0)
         self.assertGreaterEqual(float(apple["top_article_board_score"]), 0.0)
+
+    def test_board_context_tracks_active_today_unlinked_items(self):
+        article = self._make_article(
+            "supply",
+            "사과 가격 동향 점검",
+            "사과 농가와 시장 관계자가 가격 동향을 점검했다.",
+            "https://example.com/apple-price-watch",
+        )
+        by_section = {key: [] for key in self.conf}
+        by_section["supply"] = [article]
+
+        with mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}):
+            ctx = main.build_managed_commodity_board_context(by_section)
+
+        apple = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["items"]) + list(group["inactive_items"])
+            if item["key"] == "apple"
+        )
+        fruit_flower = next(group for group in ctx["groups"] if group["key"] == "fruit_flower")
+
+        self.assertFalse(apple["active"])
+        self.assertTrue(apple["active_today"])
+        self.assertEqual(apple["article_count"], 1)
+        self.assertEqual(apple["qualified_article_count"], 0)
+        self.assertEqual(apple["unlinked_reason"], "matched_but_not_qualified")
+        self.assertEqual(ctx["active_today_total"], 1)
+        self.assertEqual(ctx["active_today_unlinked_total"], 1)
+        self.assertEqual(fruit_flower["active_today_unlinked_count"], 1)
+        audit_item = next(item for item in ctx["audit"]["items"] if item["key"] == "apple")
+        self.assertTrue(audit_item["active_today_unlinked"])
+        self.assertEqual(audit_item["top_candidate"]["representative_rank"], 1)
 
     def test_board_context_prefers_item_specific_top_article(self):
         item = self._item("apple")
@@ -1432,8 +1471,9 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertIn("--nav-chip-height", html)
         self.assertIn(label, html)
         self.assertIn("양념채소류", html)
-        self.assertIn("활성 품목 0 / 5", html)
-        self.assertIn("미연결 품목 5 / 총 5개", html)
+        self.assertIn("오늘 후보 0개 · 연결 0개", html)
+        self.assertIn('data-active-today-unlinked-total="0"', html)
+        self.assertNotIn("미연결 품목 5 / 총 5개", html)
         self.assertIn('data-swipe-ignore="1"', html)
         self.assertNotIn("붉은고추", html)
         self.assertLess(html.index("commodity-group-fruit_veg"), html.index("commodity-group-fruit_flower"))

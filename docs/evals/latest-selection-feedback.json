@@ -1,27 +1,27 @@
 {
   "report_date": "2026-06-12",
-  "generated_at_kst": "2026-06-13T09:43:28+09:00",
+  "generated_at_kst": "2026-06-13T11:17:02+09:00",
   "scores": {
-    "section_alignment": 90.3,
-    "core_quality": 94.11,
-    "commodity_board_quality": 92.0
+    "section_alignment": 91.67,
+    "core_quality": 94.39,
+    "commodity_board_quality": 96.08
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1,
+    "section_alignment_low_fit_rate": 0.05,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.9,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.1429,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
-    "dist_weak_ops_rate": 0.05,
-    "editorial_quality_penalty": 0.5,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,14 +29,14 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 6,
+    "commodity_primary_count": 7,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.1818,
+    "commodity_board_coverage_rate": 0.2121,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.6667
+    "commodity_primary_dominant_section_rate": 0.5714
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -72,114 +72,103 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "애플망고 전국 첫 공선 출하 회, 제주에서 달콤한 ‘첫 수확’",
-      "href": "https://www.nongmin.com/article/20260610500814",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 84.0,
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 82.0,
-      "section_fit": 79.0,
+      "article_selection": 84.0,
+      "section_fit": 86.0,
       "core_pick_quality": 88.0,
       "summary_usefulness": 92.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 76.0
+      "missed_opportunity": 82.0,
+      "noise_control": 83.0
     },
     "issues": [
       {
-        "type": "wrong_section",
+        "type": "duplication",
         "severity": "high",
         "section": "supply",
-        "title": "타 지역 참외 의 '성주 참외 ' 둔갑 정황 포착… 농민들 \"박스갈이 의심\" [...",
-        "reason": "수급보다 원산지·유통 질서 이슈에 가깝고 적합도도 매우 낮다.",
-        "suggested_action": "공급에서 제외하고 dist 또는 정책성 원산지 단속 기사로 대체."
+        "title": "양파 값 역전 해법 찾고 수출길 넓히고",
+        "reason": "정책 섹션의 양파 토론회 기사와 사실상 같은 축이다.",
+        "suggested_action": "공급에선 다른 품목 수급 기사로 교체."
       },
       {
-        "type": "weak_tail",
+        "type": "section_fit",
         "severity": "medium",
-        "section": "supply",
-        "title": "충남 대추형 방울 토마토 신품종 경쟁력 입증",
-        "reason": "시장성 평가회 성격으로 당일 수급 이슈성이 약하다.",
-        "suggested_action": "가격·출하·재배면적 변화 기사 우선 선별."
+        "section": "policy",
+        "title": "양파산업 위기 해법 찾는다",
+        "reason": "수급·산업 이슈이지만 공급 기사와의 구분이 약하다.",
+        "suggested_action": "정책 각도 더 강한 제도·예산 기사 우선."
       },
       {
-        "type": "promotional_filler",
-        "severity": "medium",
-        "section": "dist",
-        "title": "대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략",
-        "reason": "출하식 중심 지역 홍보 톤이 강하다.",
-        "suggested_action": "공판장 개장·수매·저온물류 같은 운영 기사 우선."
-      },
-      {
-        "type": "weak_section_pick",
-        "severity": "medium",
-        "section": "dist",
-        "title": "애플망고 전국 첫 공선 출하 회, 제주에서 달콤한 ‘첫 수확’",
-        "reason": "첫 출하 기념 성격이 강해 유통 운영 정보가 제한적이다.",
-        "suggested_action": "판매채널·물류체계·가격 형성 기사로 교체."
-      },
-      {
-        "type": "missed_opportunity",
+        "type": "filler",
         "severity": "high",
+        "section": "supply",
+        "title": "진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+        "reason": "지역 지원성 기사로 전국성·핵심성이 약하다.",
+        "suggested_action": "꼬리 기사로도 더 강한 수급 후보 우선 검토."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
         "section": "dist",
         "title": "고당도 ‘다올찬수박’ 본격 출하",
-        "reason": "raw pool에 더 강한 출하·품질관리 기사였는데 미선정됐다.",
-        "suggested_action": "고창수박 또는 애플망고 대신 우선 채택."
+        "reason": "출하 소식 위주로 물류·시장운영 정보가 제한적이다.",
+        "suggested_action": "유통구조·판로·물류 변화가 드러난 기사 우선."
       },
       {
-        "type": "missed_opportunity",
+        "type": "filler",
         "severity": "medium",
         "section": "dist",
         "title": "청도 농협공판장 일제 개장…\"농업인 소득증대 최선\"",
-        "reason": "공판장 개장과 경매는 dist 적합성이 높다.",
-        "suggested_action": "지역 판촉성 카드 1건과 교체 검토."
+        "reason": "개장 행사 성격이 강하고 운영 변화 정보가 얕다.",
+        "suggested_action": "경매 동향·물류 차질·수출 채널 기사로 교체 검토."
       },
       {
-        "type": "duplication_risk",
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "제주 농산물 산지 유통 경쟁력 강화...저온유통체계 구축 추진",
+        "reason": "실제 운영보다 2027년 수요조사 단계라 즉시성은 약하다.",
+        "suggested_action": "전남농협 농협몰 설명회 등 현행 판로 운영 기사와 비교 선별."
+      },
+      {
+        "type": "theme_balance",
         "severity": "medium",
         "section": "pest",
-        "title": "\"과수화상병 확산 비상\"… 이승돈 청장, 공주 사과농가 긴급 점검 / ‘붉은 죽음’ 전국 퍼진다…‘출입금지’ 초토화된 그곳 [르포]",
-        "reason": "둘 다 화상병 확산 축으로 주제 중복이 크다.",
-        "suggested_action": "하나는 유지하고 나머지는 다른 병해충 리스크로 분산."
+        "title": "해외 직구 씨앗, 소량도 식물검역증명서 첨부해야",
+        "reason": "검역 제도 기사로 현장 병해충 위험도는 상대적으로 약하다.",
+        "suggested_action": "명명된 작물 해충 리스크 기사 우선 배치."
       },
       {
-        "type": "weak_tail",
+        "type": "theme_balance",
         "severity": "low",
-        "section": "policy",
-        "title": "도시 농축협, 무이자자금 3771억원 지원",
-        "reason": "정책 영향은 있으나 기관 지원 기사 톤이 강하다.",
-        "suggested_action": "제도 변화·정부 대책성 기사 있으면 우선 교체."
+        "section": "pest",
+        "title": "충남도 농기원, 맥문동 정식 후 예찰·방제 필수",
+        "reason": "전문 작목·지역 한정성이 커 보편성이 떨어진다.",
+        "suggested_action": "토마토뿔나방 등 파급력 큰 해충 기사 우선 고려."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "editorial_section_fit",
-      "editorial_noise_filter",
+      "editorial_duplicate_topic",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.9,
-      "supply": 0.95,
-      "policy": 0.95,
-      "dist": 1.1,
-      "pest": 0.89
+      "default": 0.85,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
     },
-    "section_low_fit_rescue_min": 0.35,
+    "section_low_fit_rescue_min": 0.15,
     "high_score_low_fit_rescue_margin": 4.2,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
@@ -209,7 +198,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 84.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -238,7 +227,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 73,
+          "raw_candidates": 75,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -250,7 +239,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 45,
+          "raw_candidates": 43,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -284,7 +273,7 @@
     },
     "guardrail_focus": [
       "missed_opportunity",
-      "noise_control",
+      "article_selection",
       "section_fit"
     ],
     "recommended_actions": [
@@ -295,10 +284,10 @@
         "reason": "The raw pool contained stronger alternatives than selected cards."
       },
       {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
         "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "section_fit",
