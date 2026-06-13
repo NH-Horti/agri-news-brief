@@ -774,6 +774,33 @@ def parse_report_html(html_text: str) -> list[SurfaceArticle]:
     return parser.articles
 
 
+def parse_commodity_board_counts(html_text: str) -> dict[str, int]:
+    match = re.search(
+        r"<section\b(?=[^>]*\bid=(['\"])commodity-board\1)[^>]*>",
+        html_text or "",
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not match:
+        return {}
+    attrs: dict[str, str] = {}
+    for attr_match in re.finditer(
+        r"\bdata-([a-z0-9-]+)\s*=\s*(['\"])(.*?)\2",
+        match.group(0),
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        attrs[attr_match.group(1).lower().replace("-", "_")] = unescape(attr_match.group(3) or "")
+    out: dict[str, int] = {}
+    for key in (
+        "active_total",
+        "active_today_total",
+        "active_today_unlinked_total",
+        "managed_unlinked_total",
+    ):
+        if key in attrs:
+            out[key] = _int_attr(attrs.get(key), default=0)
+    return out
+
+
 def load_snapshot_payload(path: str | Path) -> dict[str, Any]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
@@ -1501,6 +1528,20 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         default=0.0,
     )
     commodity_primary_count = len(commodity_primary_records)
+    commodity_board_counts = parse_commodity_board_counts(html_text)
+    commodity_active_today_total = int(
+        commodity_board_counts.get("active_today_total", commodity_primary_count) or 0
+    )
+    commodity_active_today_unlinked_total = int(
+        commodity_board_counts.get("active_today_unlinked_total", 0) or 0
+    )
+    commodity_managed_unlinked_total = int(
+        commodity_board_counts.get(
+            "managed_unlinked_total",
+            max(0, MANAGED_COMMODITY_EVAL_ITEM_COUNT - commodity_primary_count),
+        )
+        or 0
+    )
     commodity_board_daily_min_primary_count = MANAGED_COMMODITY_DAILY_MIN_PRIMARY_COUNT
     commodity_board_low_coverage = commodity_primary_count < commodity_board_daily_min_primary_count
     commodity_board_coverage_rate = _rate(
@@ -1813,6 +1854,9 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "briefing_total": len(briefing_articles),
             "commodity_total": len(commodity_articles),
             "commodity_primary_total": len(commodity_primary_articles),
+            "commodity_active_today_total": int(commodity_active_today_total),
+            "commodity_active_today_unlinked_total": int(commodity_active_today_unlinked_total),
+            "commodity_managed_unlinked_total": int(commodity_managed_unlinked_total),
             "briefing_by_section": briefing_counts,
             "core_by_section": core_counts,
             "commodity_by_section": commodity_counts,
@@ -1884,6 +1928,9 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "commodity_primary_strict_link_rate": round(commodity_primary_strict_link_rate, 4),
             "commodity_primary_low_rank_rate": round(commodity_primary_low_rank_rate, 4),
             "commodity_primary_count": int(commodity_primary_count),
+            "commodity_active_today_total": int(commodity_active_today_total),
+            "commodity_active_today_unlinked_total": int(commodity_active_today_unlinked_total),
+            "commodity_managed_unlinked_total": int(commodity_managed_unlinked_total),
             "commodity_board_daily_min_primary_count": int(commodity_board_daily_min_primary_count),
             "commodity_board_low_coverage": bool(commodity_board_low_coverage),
             "commodity_board_coverage_rate": round(commodity_board_coverage_rate, 4),
@@ -2207,6 +2254,9 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "commodity_primary_strict_link_rate": round(float(metrics.get("commodity_primary_strict_link_rate", 0.0) or 0.0), 4),
             "commodity_primary_low_rank_rate": round(float(metrics.get("commodity_primary_low_rank_rate", 0.0) or 0.0), 4),
             "commodity_primary_count": int(metrics.get("commodity_primary_count", 0) or 0),
+            "commodity_active_today_total": int(metrics.get("commodity_active_today_total", 0) or 0),
+            "commodity_active_today_unlinked_total": int(metrics.get("commodity_active_today_unlinked_total", 0) or 0),
+            "commodity_managed_unlinked_total": int(metrics.get("commodity_managed_unlinked_total", 0) or 0),
             "commodity_board_daily_min_primary_count": int(metrics.get("commodity_board_daily_min_primary_count", MANAGED_COMMODITY_DAILY_MIN_PRIMARY_COUNT) or MANAGED_COMMODITY_DAILY_MIN_PRIMARY_COUNT),
             "commodity_board_low_coverage": bool(metrics.get("commodity_board_low_coverage", False)),
             "commodity_board_coverage_rate": round(float(metrics.get("commodity_board_coverage_rate", 0.0) or 0.0), 4),
@@ -2440,6 +2490,8 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"editorial_penalty={metrics.get('editorial_quality_penalty', 0):.1f}, "
         f"commodity_weak={metrics.get('commodity_primary_weak_rate', 0):.2f}, "
         f"commodity_items={int(metrics.get('commodity_primary_count', 0) or 0)}, "
+        f"commodity_active_today={int(metrics.get('commodity_active_today_total', 0) or 0)}, "
+        f"commodity_active_today_unlinked={int(metrics.get('commodity_active_today_unlinked_total', 0) or 0)}, "
         f"commodity_coverage={metrics.get('commodity_board_coverage_rate', 0):.2f}, "
         f"commodity_strict_link={metrics.get('commodity_primary_strict_link_rate', 0):.2f}, "
         f"commodity_false_link={metrics.get('commodity_primary_false_link_rate', 0):.2f}, "
@@ -2480,6 +2532,9 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "commodity_board_quality": result.get("scores", {}).get("commodity_board_quality", 0),
         "briefing_total": counts.get("briefing_total", 0),
         "commodity_total": counts.get("commodity_total", 0),
+        "commodity_active_today_total": metrics.get("commodity_active_today_total", counts.get("commodity_active_today_total", 0)),
+        "commodity_active_today_unlinked_total": metrics.get("commodity_active_today_unlinked_total", counts.get("commodity_active_today_unlinked_total", 0)),
+        "commodity_managed_unlinked_total": metrics.get("commodity_managed_unlinked_total", counts.get("commodity_managed_unlinked_total", 0)),
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
