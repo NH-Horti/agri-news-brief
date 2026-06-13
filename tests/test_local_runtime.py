@@ -1971,6 +1971,38 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(picked.section, "policy")
         self.assertEqual(picked.reassigned_from, "supply")
 
+    def test_policy_supply_response_gap_keeps_official_discount_support_even_with_promo_terms(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격안정제 정책 점검 {idx}",
+                description="정부가 농산물 가격안정제와 수급 안정 대책을 점검했다.",
+                link=f"https://example.com/policy-official-discount-existing-{idx}",
+                press="농업신문",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        official_response = self._make_article(
+            section="policy",
+            title="농식품부, 여름철 농축산물 수급 불안 대비 공급 확대·할인지원",
+            description=(
+                "농식품부가 여름철 농축산물 수급 불안에 대비해 공급 확대와 할인지원을 추진하고 "
+                "소비자 체감 물가 안정을 위해 대형마트 기획전도 병행한다고 밝혔다."
+            ),
+            link="https://example.com/policy-official-discount-support",
+            press="경남일보",
+            topic="농축산물",
+        )
+        official_response.score = 79.0
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, official_response]}
+
+        self.assertFalse(main.is_low_value_local_promo_context(official_response.title, official_response.description))
+        self.assertTrue(main._is_policy_supply_response_gap_story(official_response))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(official_response.link, {article.link for article in final_by_section["policy"]})
+
     def test_preferred_count_recovery_keeps_supply_procurement_gap_story(self) -> None:
         existing = [
             self._make_article(
@@ -1997,6 +2029,46 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
         self.assertEqual(len(final_by_section["supply"]), 5)
         self.assertIn(procurement.link, {article.link for article in final_by_section["supply"]})
+
+    def test_supply_underfill_recovery_keeps_direct_procurement_gap_despite_broad_supply_similarity(self) -> None:
+        existing = [
+            self._make_article(
+                section="supply",
+                title="기온 상승에 채소·축산물 '들썩'…여름철 수급 안정 '가동'",
+                description="정부가 여름철 채소와 축산물 수급 안정을 위해 공급 물량과 가격 동향을 점검했다.",
+                link="https://example.com/supply-broad-stabilization",
+                topic="채소",
+            ),
+            self._make_article(
+                section="supply",
+                title='농식품부 "대파·수박 가격 하락…계란은 7월 이후 수급 안정"',
+                description="농식품부가 대파와 수박 가격 하락, 계란 수급 안정 전망을 발표했다.",
+                link="https://example.com/supply-ministry-price",
+                topic="수박",
+            ),
+            self._make_article(
+                section="supply",
+                title="때이른 더위에 수박 소비 늘며 가격 부담",
+                description="수박 소비와 가격 부담을 다룬 산지·소비 현장 기사다.",
+                link="https://example.com/supply-watermelon",
+                topic="수박",
+            ),
+        ]
+        onion_procurement = self._make_article(
+            section="supply",
+            title="'공급과잉' 양파 가격 뚝…수매비축 늘리고 수출 돕는다",
+            description="정부가 공급과잉으로 떨어진 양파 가격 지지를 위해 수매·매입을 늘리고 소비촉진과 수출 지원에 나선다.",
+            link="https://example.com/supply-onion-procurement",
+            press="아시아투데이",
+            topic="양파",
+        )
+        onion_procurement.score = 26.5
+        final_by_section = {"supply": list(existing)}
+        raw_by_section = {"supply": [*existing, onion_procurement]}
+
+        self.assertTrue(main._is_supply_field_support_gap_story(onion_procurement))
+        self.assertEqual(main._recover_supply_underfill_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(onion_procurement.link, {article.link for article in final_by_section["supply"]})
 
     def test_preferred_count_recovery_keeps_policy_fertilizer_support_gap_story(self) -> None:
         existing = [
@@ -2141,6 +2213,169 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
         self.assertIn(finance.link, {article.link for article in final_by_section["policy"]})
 
+    def test_preferred_count_recovery_rejects_broad_agri_finance_fund_tail(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-broad-finance-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        broad_fund = self._make_article(
+            section="policy",
+            title="농협 상생협력위원회, '도농상생기금' 3771억원 지원",
+            description="농협중앙회 상생협력위원회가 농촌지역 농축협의 경제사업 활성화를 위해 도농상생기금 3771억원을 지원한다.",
+            link="https://example.com/policy-broad-finance-fund",
+            press="농축유통신문",
+            topic="농협",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, broad_fund]}
+
+        self.assertFalse(main._is_policy_agri_finance_support_gap_story(broad_fund))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 0)
+        self.assertNotIn(broad_fund.link, {article.link for article in final_by_section["policy"]})
+
+    def test_preferred_count_recovery_keeps_policy_farm_cost_support_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-cost-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        farm_cost = self._make_article(
+            section="policy",
+            title="농협, 민생 지원에 1142억 투입…장바구니 덜고 영농비도 낮췄다",
+            description="농협이 농가 영농비 부담 완화와 농축산물 물가 안정을 위해 1142억원 규모 지원 대책을 추진한다.",
+            link="https://example.com/policy-farm-cost-support",
+            press="한국일보",
+            topic="농협",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, farm_cost]}
+
+        self.assertTrue(main._is_policy_agri_finance_support_gap_story(farm_cost))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(farm_cost.link, {article.link for article in final_by_section["policy"]})
+
+    def test_preferred_count_recovery_keeps_policy_supplier_payment_gap_story(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-payment-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        payment_gap = self._make_article(
+            section="policy",
+            title="홈플러스 미정산 2000억 추산…농산물 납품업체·농가 생존 위기",
+            description=(
+                "홈플러스 회생 이후 납품대금 정산 지연이 커지며 농산물 협력업체와 "
+                "산지 농가 피해 부담이 확대돼 대책을 호소하고 있다."
+            ),
+            link="https://example.com/policy-supplier-payment-gap",
+            press="경북일보",
+            topic="농산물",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, payment_gap]}
+
+        self.assertFalse(main.is_low_value_local_political_context(payment_gap.title, payment_gap.description))
+        self.assertEqual(main._postbuild_article_reject_reason(payment_gap, "policy", apply_selection_fit=False), "")
+        self.assertTrue(main._is_policy_agri_supplier_payment_gap_story(payment_gap))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(payment_gap.link, {article.link for article in final_by_section["policy"]})
+
+    def test_preferred_count_recovery_crossfills_supplier_payment_gap_from_supply_raw(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-payment-cross-existing-{idx}",
+                topic="농산물",
+            )
+            for idx in range(4)
+        ]
+        payment_gap = self._make_article(
+            section="supply",
+            title="홈플러스 회생 이후 납품대금 정산 지연…농산물 협력업체 부담 확대",
+            description=(
+                "홈플러스 납품대금 정산 지연으로 농산물 협력업체와 산지 농가 피해 부담이 커져 "
+                "정부와 국회에 대책을 호소하고 있다."
+            ),
+            link="https://example.com/supply-origin-policy-payment-gap",
+            press="중도일보",
+            topic="농산물",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": list(existing), "supply": [payment_gap]}
+
+        self.assertTrue(main._is_policy_agri_supplier_payment_gap_story(payment_gap))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(payment_gap.link, {article.link for article in final_by_section["policy"]})
+        self.assertEqual(final_by_section["policy"][-1].section, "policy")
+
+    def test_policy_editorial_guard_marks_broad_national_task_tail_weak(self) -> None:
+        broad_tail = self._make_article(
+            section="policy",
+            title="친환경 유기농업 2배 확대, 국정과제 이행 '역량 집중'",
+            description="정부 국정과제 이행 계획과 친환경농업 확대 방향을 소개하는 행사성 브리핑이다.",
+            link="https://example.com/policy-organic-task",
+            press="한국농어민신문",
+            topic="농업",
+        )
+
+        self.assertTrue(main._is_policy_editorial_weak_tail(broad_tail))
+        self.assertFalse(main._is_policy_broad_editorial_replacement(broad_tail))
+
+    def test_policy_editorial_guard_rejects_event_campaign_tail(self) -> None:
+        campaign_tail = self._make_article(
+            section="policy",
+            title="양파 1망 사면 100원 기부…농협, 1150개 매장서 상생 캠페인",
+            description="농협이 양파 소비 촉진을 위해 상생 캠페인과 기부 행사를 진행한다고 밝혔다.",
+            link="https://example.com/policy-onion-campaign-tail",
+            press="농민신문",
+            topic="양파",
+        )
+        organic_event = self._make_article(
+            section="policy",
+            title="농식품부, '2026 유기농데이 기념행사' 개최…친환경 소비 촉진 나선다",
+            description="농식품부가 유기농데이 기념행사를 열고 친환경 농산물 소비 촉진을 홍보한다.",
+            link="https://example.com/policy-organic-event-tail",
+            press="농축유통신문",
+            topic="농산물",
+        )
+
+        for article in (campaign_tail, organic_event):
+            self.assertTrue(main.is_low_value_local_promo_context(article.title, article.description))
+            self.assertEqual(main._postbuild_article_reject_reason(article, "policy"), "low_value_local_promo")
+            self.assertTrue(main._is_policy_editorial_weak_tail(article))
+            self.assertFalse(main._is_policy_broad_editorial_replacement(article))
+
+    def test_local_political_filter_keeps_direct_field_supply_harvest_story(self) -> None:
+        harvest_story = self._make_article(
+            section="supply",
+            title="소비 부진에 '스펀지 마늘'까지…'한숨' 속 수확철",
+            description="마늘 수확철 산지에서 소비 부진과 품질 저하가 겹쳐 농가 가격 부담이 커지고 있다.",
+            link="https://example.com/supply-garlic-harvest-slump",
+            press="지역방송",
+            topic="마늘",
+        )
+
+        self.assertFalse(main.is_low_value_local_political_context(harvest_story.title, harvest_story.description))
+        self.assertEqual(main._postbuild_article_reject_reason(harvest_story, "supply", apply_selection_fit=False), "")
+
     def test_preferred_count_recovery_allows_dist_online_wholesale_fifth_slot(self) -> None:
         existing = [
             self._make_article(
@@ -2180,6 +2415,147 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
         self.assertEqual(len(final_by_section["dist"]), 5)
         self.assertIn(online_market.link, {article.link for article in final_by_section["dist"]})
+
+    def test_dist_editorial_guard_marks_entry_briefing_tail_optional(self) -> None:
+        entry_briefing = self._make_article(
+            section="dist",
+            title="[전남농협 소식] 유통센터 담당자 대상 '싱씽몰' 입점 설명회",
+            description=(
+                "전남 권역 APC 산지유통센터 운영 농협 담당자를 대상으로 농협몰 입점 설명회를 열고 "
+                "온라인 판로 확대 방안을 안내했다."
+            ),
+            link="https://example.com/dist-entry-briefing",
+            press="SIDAE",
+            topic="농산물",
+        )
+
+        self.assertEqual(
+            main._editorial_safe_core_demote_reason(entry_briefing, "dist"),
+            "promotional_or_event_filler",
+        )
+        self.assertTrue(main._is_optional_dist_editorial_tail(entry_briefing))
+
+    def test_dist_replacement_rejects_bank_president_lecture_news_tail(self) -> None:
+        lecture_tail = self._make_article(
+            section="dist",
+            title="[경남농협 소식] 강태영 농협은행장 경상국립대서 특강",
+            description="농협은행장이 경상국립대에서 청년과 농업의 미래를 주제로 특강을 진행하고 지역 농협 소식을 전했다.",
+            link="https://example.com/dist-bank-president-lecture",
+            press="뉴스1",
+            topic="농협",
+        )
+
+        self.assertIsNone(main._dist_replacement_candidate_rank(lecture_tail, next(s for s in main.SECTIONS if s.get("key") == "dist")))
+        self.assertFalse(main._is_dist_preferred_gap_story(lecture_tail))
+
+    def test_dist_preferred_gap_rejects_anchorless_lowprice_legal_case(self) -> None:
+        legal_case = self._make_article(
+            section="dist",
+            title="[예규·판례] “못난이라 반값?”…中 건조고추 ‘저가 신고’ 전말",
+            description="수입 건조고추 저가 신고와 관세 판례를 다룬 법률성 해설 기사다.",
+            link="https://example.com/dist-lowprice-legal-case",
+            press="세정일보",
+            topic="고추",
+        )
+
+        self.assertFalse(main._is_dist_preferred_gap_story(legal_case))
+        self.assertIsNone(main._dist_replacement_candidate_rank(legal_case, next(s for s in main.SECTIONS if s.get("key") == "dist")))
+
+    def test_dist_preferred_gap_accepts_direct_export_shipment_story(self) -> None:
+        export_story = self._make_article(
+            section="dist",
+            title="대전산 씨 없는 포도, 대만에 320kg 수출",
+            description=(
+                "대전 산내농협 공동선별·출하를 통해 생산된 델라웨어 포도 320kg이 "
+                "대만으로 선적됐고 잔류농약 검정을 통과했다."
+            ),
+            link="https://example.com/dist-grape-export",
+            press="연합뉴스TV",
+            topic="포도",
+        )
+
+        self.assertTrue(main._is_dist_preferred_gap_story(export_story))
+        self.assertIsNotNone(main._dist_preferred_gap_rank(export_story, next(s for s in main.SECTIONS if s.get("key") == "dist")))
+        self.assertEqual(main._postbuild_article_reject_reason(export_story, "dist"), "")
+
+    def test_preferred_count_recovery_crossfills_dist_export_gap_from_supply_raw(self) -> None:
+        existing = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=desc,
+                link=f"https://example.com/dist-export-cross-existing-{idx}",
+                press="농민신문",
+                topic=topic,
+            )
+            for idx, (title, desc, topic) in enumerate(
+                (
+                    ("청도 농산물 공판장 일제 개장", "청도 농산물 공판장이 경매와 출하를 시작했다.", "농산물"),
+                    ("광주농협, 농산물 판로 지원 총력", "농협이 산지 농산물 판로 확대와 유통 지원을 추진했다.", "농산물"),
+                    ("제주 항만 검역 탐지견 운영 확대", "제주 항만에서 농산물 검역 현장 대응 역량을 강화했다.", "농산물"),
+                    ("함양 양파 수급 안정 직거래 추진", "함양군과 농협이 양파 수급 안정과 소비지 판로 확보에 나섰다.", "양파"),
+                ),
+                start=1,
+            )
+        ]
+        export_story = self._make_article(
+            section="supply",
+            title="대전산 씨 없는 포도, 대만에 320kg 수출",
+            description=(
+                "대전산내농협 공동선별·출하를 통해 생산된 델라웨어 포도 320kg이 "
+                "대만으로 선적됐고 잔류농약 검정을 통과했다."
+            ),
+            link="https://example.com/supply-origin-dist-grape-export",
+            press="연합뉴스TV",
+            topic="포도",
+        )
+        final_by_section = {"dist": list(existing)}
+        raw_by_section = {"dist": list(existing), "supply": [export_story]}
+
+        self.assertTrue(main._is_dist_preferred_gap_story(export_story))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(export_story.link, {article.link for article in final_by_section["dist"]})
+
+    def test_preferred_count_recovery_keeps_structural_apc_gap_despite_dist_similarity(self) -> None:
+        existing = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=desc,
+                link=f"https://example.com/dist-apc-existing-{idx}",
+                press="농민신문",
+                topic="농산물",
+            )
+            for idx, (title, desc) in enumerate(
+                (
+                    (
+                        "고품질 농산물 유통 새로운 표준 세운다",
+                        "산지유통센터와 스마트 APC 운영 준비를 통해 AI 기반 산지 유통 데이터 공유를 추진한다.",
+                    ),
+                    ("농협, 양파 해외 수출로 돌파구 마련", "함양 양파 대만 수출 선적식을 열고 수출 판로를 확대했다."),
+                    ("순천 매실 본격 출하", "순천 매실이 산지에서 본격 출하돼 전국 소비지로 공급된다."),
+                    ("CA 수출 품질 관리 프로그램 공개", "원예작물 수출 전후 품질 관리 정보를 제공한다."),
+                ),
+                start=1,
+            )
+        ]
+        structural_gap = self._make_article(
+            section="dist",
+            title="스마트 APC 성패여부, AI 기반 산지 유통 데이터 공유에 달렸다",
+            description="농산물 산지 유통 경쟁력 강화를 위해 APC 운영 데이터 공유와 유통 구조 개선이 핵심 과제로 제시됐다.",
+            link="https://example.com/dist-smart-apc-data-share",
+            press="원예산업신문",
+            topic="농산물",
+        )
+        final_by_section = {"dist": list(existing)}
+        raw_by_section = {"dist": [*existing, structural_gap]}
+
+        self.assertTrue(main._is_dist_structural_ops_gap_story(structural_gap))
+        self.assertTrue(
+            any(main._is_similar_story(structural_gap, article, "dist") for article in existing)
+        )
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertIn(structural_gap.link, {article.link for article in final_by_section["dist"]})
 
     def test_preferred_count_recovery_keeps_regional_dist_shipment_despite_cross_section_similarity(self) -> None:
         existing = [
@@ -2250,6 +2626,30 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main.is_foreign_unmanaged_commodity_context(ai_market.title, ai_market.description))
         self.assertEqual(main._postbuild_article_reject_reason(ai_market, "dist"), "foreign_unmanaged_commodity")
 
+    def test_postbuild_rejects_garbled_article_text(self) -> None:
+        garbled = self._make_article(
+            section="supply",
+            title="국산 양파값, 수입산보다 싸진 이유는",
+            description=(
+                "±¹»ê ¾çÆÄ °¡°ÝÀÌ ¼öÀÔ»êº¸´Ù ³·¾ÆÁö´Â ÀÌ·ÊÀûÀÎ Çö»óÀÌ "
+                "Àå±â°£ ÀÌ¾îÁö¸é¼­ ±¹³» ¾çÆÄ »ê¾÷ÀÇ ¼ö±Þ ºÒ¾ÈÁ¤¿¡ ´ëÇÑ "
+                "¿ì·Á°¡ Ä¿Áö°í ÀÖ´Ù."
+            ),
+            link="https://example.com/garbled-onion",
+            topic="양파",
+        )
+        clean = self._make_article(
+            section="supply",
+            title="국산 양파값, 수입산보다 싸진 이유는",
+            description="국산 양파 가격 하락과 수입산 역전 현상을 두고 산지 수급 대책 논의가 이어졌다.",
+            link="https://example.com/clean-onion",
+            topic="양파",
+        )
+
+        self.assertTrue(main.is_garbled_article_text(garbled.title, garbled.description))
+        self.assertEqual(main._postbuild_article_reject_reason(garbled, "supply"), "garbled_article_text")
+        self.assertFalse(main.is_garbled_article_text(clean.title, clean.description))
+
     def test_postbuild_rejects_ai_economic_explainer_tail(self) -> None:
         explainer = self._make_article(
             section="dist",
@@ -2262,6 +2662,34 @@ class LocalRuntimeTests(TestCase):
 
         self.assertTrue(main.is_ai_economic_explainer_tail(explainer.title, explainer.description))
         self.assertEqual(main._postbuild_article_reject_reason(explainer, "dist"), "dist_ai_explainer_tail")
+
+    def test_postbuild_rejects_housing_market_policy_noise(self) -> None:
+        housing = self._make_article(
+            section="policy",
+            title="[장용동의 우리들의 주거복지] 주택시장을 보는 대통령과 시장 간의 괴리",
+            description="아파트 매매와 주택시장 규제 완화 기대를 다룬 부동산 정책 칼럼이다.",
+            link="https://example.com/policy-housing-market-noise",
+            press="부동산뉴스",
+            topic="주택시장",
+        )
+        final_by_section = {
+            "policy": [
+                self._make_article(
+                    section="policy",
+                    title=f"농산물 가격 안정 정책 점검 {idx}",
+                    description="정부가 농산물 수급과 농가 지원 대책을 점검했다.",
+                    link=f"https://example.com/policy-housing-existing-{idx}",
+                    topic="농산물",
+                )
+                for idx in range(4)
+            ] + [housing],
+        }
+
+        self.assertTrue(main.is_housing_market_policy_noise_context(housing.title, housing.description))
+        self.assertEqual(main._postbuild_article_reject_reason(housing, "policy"), "housing_market_noise")
+        self.assertEqual(main._preferred_tail_block_reason(housing, "policy", current_count=4, raw_count=20), "housing_market_noise")
+        self.assertEqual(main._drop_hard_postbuild_rejected_final_items(final_by_section, min_items=4), 1)
+        self.assertNotIn(housing, final_by_section["policy"])
 
     def test_postbuild_rejects_consumer_storage_tip_from_supply(self) -> None:
         storage_tip = self._make_article(
