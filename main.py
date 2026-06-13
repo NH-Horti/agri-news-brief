@@ -26775,10 +26775,13 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
         """
 
     board_audit_html = ""
-    board_audit = data.get("commodity_board_audit") if isinstance(data.get("commodity_board_audit"), dict) else {}
+    board_audit_obj = data.get("commodity_board_audit")
+    board_audit: dict[str, Any] = board_audit_obj if isinstance(board_audit_obj, dict) else {}
     if board_audit:
-        board_summary = board_audit.get("summary") if isinstance(board_audit.get("summary"), dict) else {}
-        board_items = board_audit.get("items") if isinstance(board_audit.get("items"), list) else []
+        board_summary_obj = board_audit.get("summary")
+        board_summary: dict[str, Any] = board_summary_obj if isinstance(board_summary_obj, dict) else {}
+        board_items_obj = board_audit.get("items")
+        board_items: list[Any] = board_items_obj if isinstance(board_items_obj, list) else []
         audit_rows: list[str] = []
         visible_items = [
             item
@@ -26786,7 +26789,8 @@ def render_debug_report_html(report_date: str, site_path: str) -> str:
             if isinstance(item, dict) and (bool(item.get("active_today_unlinked")) or bool(item.get("linked")))
         ][:80]
         for item in visible_items:
-            top_candidate = item.get("top_candidate") if isinstance(item.get("top_candidate"), dict) else {}
+            top_candidate_obj = item.get("top_candidate")
+            top_candidate: dict[str, Any] = top_candidate_obj if isinstance(top_candidate_obj, dict) else {}
             status = "연결" if bool(item.get("linked")) else "후보 미연결"
             audit_rows.append(
                 "<tr>"
