@@ -48,7 +48,7 @@ class ReportEvalTests(unittest.TestCase):
         self.assertTrue(any(article.is_core for article in briefing))
         self.assertTrue(all(article.summary.strip() for article in briefing))
 
-    def test_editorial_quality_gate_caps_headline_score_below_target(self) -> None:
+    def test_editorial_quality_gate_applies_bounded_penalty_below_target(self) -> None:
         result = {
             "overall_score": 98.13,
             "operational_score": 98.13,
@@ -64,10 +64,11 @@ class ReportEvalTests(unittest.TestCase):
 
         apply_editorial_quality_gate(result, editorial)
 
-        self.assertEqual(result["overall_score"], 80.0)
+        self.assertEqual(result["overall_score"], 96.63)
         self.assertEqual(result["operational_score"], 98.13)
-        self.assertEqual(result["status"], "warn")
-        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target")
+        self.assertEqual(result["status"], "pass")
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target_bounded_penalty")
+        self.assertEqual(result["quality_gate"]["bounded_penalty"], 1.5)
         rendered = report_eval.render_evaluation_markdown(
             {
                 **result,
@@ -78,6 +79,28 @@ class ReportEvalTests(unittest.TestCase):
             }
         )
         self.assertIn("Quality gate", rendered)
+
+    def test_editorial_quality_gate_hard_caps_blocking_issues(self) -> None:
+        result = {
+            "overall_score": 98.13,
+            "operational_score": 98.13,
+            "status": "pass",
+            "score_notes": {},
+        }
+        editorial = {
+            "status": "success",
+            "score": 80.0,
+            "target_score": 95.0,
+            "target_status": "needs_major_iteration",
+            "issues": [{"severity": "high", "type": "false_positive"}],
+        }
+
+        apply_editorial_quality_gate(result, editorial)
+
+        self.assertEqual(result["overall_score"], 80.0)
+        self.assertEqual(result["status"], "warn")
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_blocking_issue")
+        self.assertEqual(result["quality_gate"]["blocking_issue_count"], 1)
 
     def test_parse_report_html_extracts_commodity_primary_metadata(self) -> None:
         html = """

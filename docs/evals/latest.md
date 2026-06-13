@@ -1,28 +1,29 @@
 ## Daily Eval (2026-06-12)
-- Overall: **86.00** (pass)
-- Operational: **97.12**
-- Reader quality: **96.94** (clear; penalty=0.2, cap=100.0, reasons=clear)
-- Quality gate: **86.00** (needs_iteration, editorial_below_target; editorial=86.0, operational=97.1)
-- Scores: completeness=93.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=85.2, section_fit=100.0, core=100.0, commodity=96.1
+- Overall: **84.00** (warn)
+- Operational: **96.29**
+- Reader quality: **95.39** (clear; penalty=0.9, cap=100.0, reasons=clear)
+- Quality gate: **84.00** (needs_iteration, editorial_below_target; editorial=84.0, operational=96.3)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=84.6, section_fit=90.3, core=94.1, commodity=92.0
 - Briefing cards: 20 / Commodity cards: 14
-- Sections: supply:5/5 raw=204, policy:5/5 raw=74, dist:5/5 raw=44, pest:5/5 raw=25
-- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=0.90, fresh_72h=1.00, fit_avg=3.51, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.1, commodity_weak=0.00, commodity_items=7, commodity_coverage=0.21, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_dominant_section=0.57, semantic_penalty=0.0
+- Sections: supply:5/5 raw=203, policy:5/5 raw=73, dist:5/5 raw=45, pest:5/5 raw=25
+- Metrics: title_unique=1.00, domain_diversity=0.70, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=3.52, false_positive=0.00, hard_reader_issues=0, weak_core=0.14, editorial_penalty=0.5, commodity_weak=0.00, commodity_items=6, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_dominant_section=0.67, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **86.00** (target 95, needs_iteration)
+- Editorial: **84.00** (target 95, needs_iteration)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=84.0, section_fit=88.0, core=87.0, summary=93.0, missed=80.0, noise=82.0
-- Summary: 전반적으로 20건을 모두 채우고 핵심 이슈인 양파 수익성 악화, 여름배추 수급, 과수화상병 확산, 도매시장 물류 혁신 등을 잡아 기본 틀은 괜찮다. 다만 정책 섹션의 코어 부재와 약한 꼬리 기사, 유통 섹션의 판촉성·지역 개장성 기사 혼입, 공급 섹션의 매실 중복 계열 편중이 점수를 깎는다. raw pool을 보면 policy에서는 ‘농민의길…농특세’가 더 강한 선두감이었고, dist에서는 더 강한 출하/공선 기사와 디지털 유통 전환 기사 활용 여지가 있었다. 형식은 충족했지만 기사 선택의 날카로움은 목표 95점 수준에 못 미친다.
-- [high] missed_better_candidate: 양파산업 위기 해법 찾는다 - 더 강한 정책 1순위는 농민의길 농특세 기사였다.
-- [high] weak_core: 정책 섹션 전반 - raw 후보가 충분한데 코어 지정이 하나도 없다.
-- [medium] filler: 횡성군, 2027년 유기질 비료 지원사업 접수 시작 - 전국성 파급이 약한 지자체 접수 안내성 기사다.
-- [medium] weak_selection: [국가책임농정 1년] 역대 최고 농가소득 달성 속 예산·법제화 등 지속... - 평가·홍보 성격이 강하고 당일 현안성은 약하다.
-- [medium] wrong_emphasis: 제주 블루베리 판매 량 73% 증가 '껑충' - 판촉·실적 홍보성 강해 dist 우선순위가 낮다.
+- Components: article_selection=82.0, section_fit=79.0, core=88.0, summary=92.0, missed=80.0, noise=76.0
+- Summary: 기본 골격과 개수는 잘 맞췄고, 양파·배추 수급, 농특세·양파 토론회, 과수화상병 등 핵심 축은 대체로 잡혔다. 다만 공급·유통 섹션에 지역 출하식·품평회성 기사와 낮은 적합도의 카드가 섞여 편집 밀도가 떨어졌다. 특히 공급의 성주참외 둔갑 의혹, 토마토 신품종 평가는 섹션 순도에 흠이 있고, 유통은 더 강한 물류·공판장·출하 기사 후보가 있었는데 지역 홍보성 출하 기사들이 일부 우선됐다. 5장 구성은 충족했지만 ‘보이는 후보 대비 최선의 선택’ 기준으로는 90점대 중반까지 주기 어렵다.
+- [high] wrong_section: 타 지역 참외 의 '성주 참외 ' 둔갑 정황 포착… 농민들 "박스갈이 의심" [... - 수급보다 원산지·유통 질서 이슈에 가깝고 적합도도 매우 낮다.
+- [medium] weak_tail: 충남 대추형 방울 토마토 신품종 경쟁력 입증 - 시장성 평가회 성격으로 당일 수급 이슈성이 약하다.
+- [medium] promotional_filler: 대한민국 대표 여름 과일 '고창수박' 본격 출하 …전국 소비자 입맛 공략 - 출하식 중심 지역 홍보 톤이 강하다.
+- [medium] weak_section_pick: 애플망고 전국 첫 공선 출하 회, 제주에서 달콤한 ‘첫 수확’ - 첫 출하 기념 성격이 강해 유통 운영 정보가 제한적이다.
+- [high] missed_opportunity: 고당도 ‘다올찬수박’ 본격 출하 - raw pool에 더 강한 출하·품질관리 기사였는데 미선정됐다.
 
 ### Improvement Hints
 - 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, dist_weak_ops=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.

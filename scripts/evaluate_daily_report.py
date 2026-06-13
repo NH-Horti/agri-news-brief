@@ -153,7 +153,7 @@ def _score_status(score: float) -> str:
 
 
 def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[str, Any]) -> dict[str, Any]:
-    """Cap the published headline score when the editorial shadow judge is below target."""
+    """Apply a bounded editorial shadow penalty to the published headline score."""
     if not isinstance(result, dict) or not isinstance(editorial_result, dict):
         return result
     if editorial_result.get("status") != "success":
@@ -174,7 +174,40 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     target_score = float(editorial_result.get("target_score", 95.0) or 95.0)
     target_status = str(editorial_result.get("target_status") or "")
     gate_status = "target_met" if editorial_score >= target_score and target_status == "target_met" else (target_status or "needs_iteration")
-    gated_score = min(current_headline_score, editorial_score) if editorial_score < target_score else current_headline_score
+    blocking_types = {
+        "false_positive",
+        "off_topic",
+        "wrong_section",
+        "duplicate_url",
+        "hard_duplicate",
+        "factual_error",
+        "unsafe_summary",
+    }
+    editorial_issues = editorial_result.get("issues", [])
+    if not isinstance(editorial_issues, list):
+        editorial_issues = []
+    blocking_issues = [
+        issue for issue in editorial_issues
+        if isinstance(issue, dict)
+        and str(issue.get("severity", "")).lower() == "high"
+        and str(issue.get("type", "")).lower() in blocking_types
+    ]
+    penalty = 0.0
+    reason = "all_targets_met"
+    if editorial_score < target_score:
+        if blocking_issues:
+            gated_score = min(current_headline_score, editorial_score)
+            reason = "editorial_blocking_issue"
+        else:
+            base_score = min(current_headline_score, operational_score) if operational_score > 0.0 else current_headline_score
+            gap = max(0.0, target_score - editorial_score)
+            penalty = min(6.0, round(gap * 0.10, 2))
+            if editorial_score < 70.0:
+                penalty = max(penalty, min(10.0, round((70.0 - editorial_score) * 0.25 + 3.0, 2)))
+            gated_score = max(0.0, base_score - penalty)
+            reason = "editorial_below_target_bounded_penalty"
+    else:
+        gated_score = current_headline_score
     result["quality_gate"] = {
         "status": gate_status,
         "target_score": round(target_score, 2),
@@ -182,7 +215,9 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         "reader_quality_score": round(current_headline_score, 2),
         "editorial_score": round(editorial_score, 2),
         "headline_score": round(gated_score, 2),
-        "reason": "editorial_below_target" if editorial_score < target_score else "all_targets_met",
+        "reason": reason,
+        "bounded_penalty": round(penalty, 2),
+        "blocking_issue_count": len(blocking_issues),
     }
     if editorial_score < target_score:
         result["overall_score"] = round(gated_score, 2)
@@ -192,8 +227,8 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
             notes = {}
         notes["overall_score"] = (
             "Reader-quality headline score. The deterministic operational score is preserved "
-            "as operational_score, and the headline score is further capped when the editorial "
-            "shadow judge is below the target."
+            "as operational_score, and non-blocking editorial shadow misses apply a bounded "
+            "headline penalty while hard editorial blockers still cap the score."
         )
         result["score_notes"] = notes
     return result

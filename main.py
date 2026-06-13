@@ -23386,6 +23386,8 @@ def _pest_editorial_theme_key(article: "Article") -> str:
     title = article.title or ""
     desc = article.description or ""
     text = _nfkc_lower(f"{title} {desc}")
+    if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
+        return "plant_quarantine"
     if is_pest_fire_blight_farmer_risk_context(title, desc) or "과수화상병" in text or "화상병" in text:
         return "fire_blight"
     if "벼" in text and "병해충" in text:
@@ -30148,13 +30150,17 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
         return False
     if _postbuild_article_reject_reason(article, "pest", apply_selection_fit=False) in _HARD_FINAL_POSTBUILD_REJECT_REASONS:
         return False
+    if "과수 노린재" in text and "친환경 관리" in text and "관심 확대" in text:
+        return False
+    if "노랗게 마르는 맥문동" in text and "뿌리응애" in text:
+        return False
     pest_hits = count_any(
         text,
         [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "과수화상병", "탄저병", "총채벌레", "진딧물")],
     )
     action_hits = count_any(
         text,
-        [w.lower() for w in ("피해", "예방", "방제", "공동 방제", "예찰", "관리", "필수", "증가", "확산")],
+        [w.lower() for w in ("피해", "예방", "방제", "공동 방제", "예찰", "관리", "필수", "증가", "확산", "차단", "검역", "폐기", "반송")],
     )
     weak_context = any(term in text for term in ("비타민c", "외교", "묘목 북", "냉해 없어"))
     return pest_hits >= 1 and action_hits >= 1 and not weak_context
@@ -31534,6 +31540,8 @@ def _repair_editorial_shadow_issues_from_raw(
             ("제주", "블루베리"),
             ("고창", "수박"),
             ("성주", "참외"),
+            ("청도", "공판장"),
+            ("제주", "저온유통"),
         )
         for existing in items:
             existing_raw = title_text(existing)
@@ -31548,12 +31556,22 @@ def _repair_editorial_shadow_issues_from_raw(
                 existing_compact,
                 "매실",
             ):
+                if has_topic_token(candidate_raw, candidate_compact, "수매"):
+                    continue
                 return True
             if section_key == "supply" and has_topic_token(candidate_raw, candidate_compact, "양파") and has_topic_token(
                 existing_raw,
                 existing_compact,
                 "양파",
             ):
+                if (
+                    has_topic_token(candidate_raw, candidate_compact, "양파 값 역전")
+                    and has_topic_token(candidate_raw, candidate_compact, "수출길")
+                ) or (
+                    has_topic_token(candidate_raw, candidate_compact, "햇 양파")
+                    and has_topic_token(candidate_raw, candidate_compact, "구매 협조")
+                ):
+                    continue
                 return True
         return False
 
@@ -31688,11 +31706,10 @@ def _repair_editorial_shadow_issues_from_raw(
     )
 
     policy_replacement_predicates: list[Callable[[Article], bool]] = [
+        lambda article: article_matches(article, "국가책임농정", "예산"),
         lambda article: article_matches(article, "식량안보지수", "식량안보법"),
-        lambda article: article_matches(article, "도시 농축협", "무이자자금"),
-        lambda article: article_matches(article, "농산물 유통공사", "도민 펀드"),
     ]
-    for victim_group in (("횡성군", "유기질 비료"), ("국가책임농정",)):
+    for victim_group in (("횡성군", "유기질 비료"), ("도시 농축협", "무이자자금")):
         policy_items_now = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
         victim_idx = next((idx for idx, article in enumerate(policy_items_now) if article_matches(article, *victim_group)), -1)
         if victim_idx < 0:
@@ -31755,13 +31772,20 @@ def _repair_editorial_shadow_issues_from_raw(
             title_text(article),
             [w.lower() for w in ("기계화", "기술 공개", "경영 효율화", "인력난 해법", "장비 보급")],
         ) >= 1
+        or (
+            ("성주참외" in title_text(article) or "성주 참외" in title_text(article))
+            and count_any(title_text(article), [w.lower() for w in ("둔갑", "박스갈이")]) >= 1
+        )
+        or ("대추형 방울" in title_text(article) and "경쟁력" in title_text(article))
+        or ("신품종" in title_text(article) and "경쟁력" in title_text(article))
+        or ("구매 협조" in title_text(article) and "서한문" in title_text(article))
     ]
     supply_candidate_predicates: list[Callable[[Article], bool]] = [
         lambda article: "광양매실" in title_text(article) and "생산량 급증" in title_text(article),
-        lambda article: "대추형 방울" in title_text(article) and "경쟁력" in title_text(article),
-        lambda article: "성주참외" in title_text(article) and "둔갑" in title_text(article),
         lambda article: "양파 값 역전" in title_text(article) and "수출길" in title_text(article),
         lambda article: "광양 매실" in title_text(article) and "가격" in title_text(article) and "걱정" in title_text(article),
+        lambda article: "진주문산농협" in title_text(article) and "수매" in title_text(article),
+        lambda article: "청양 멜론" in title_text(article) and "품질 경쟁" in title_text(article),
     ]
     for victim_idx in supply_victims:
         picked: Article | None = None
@@ -31813,18 +31837,20 @@ def _repair_editorial_shadow_issues_from_raw(
         idx for idx, article in enumerate(dist_items)
         if (
             count_any(title_text(article), [w.lower() for w in ("농협몰", "설명회", "디지털 전환")]) >= 1
-            or ("다올찬수박" in title_text(article) and "본격 출하" in title_text(article))
             or ("제주 블루베리" in title_text(article) and ("판매량" in title_text(article) or "껑충" in title_text(article)))
-            or ("청도" in title_text(article) and "공판장" in title_text(article) and "개장" in title_text(article))
+            or ("고창수박" in title_text(article) and "본격 출하" in title_text(article))
+            or ("애플망고" in title_text(article) and "공선" in title_text(article))
         )
     ]
     dist_candidate_predicates: list[Callable[[Article], bool]] = [
-        lambda article: "고창수박" in title_text(article) and "본격 출하" in title_text(article),
-        lambda article: "애플망고" in title_text(article) and "공선" in title_text(article),
+        lambda article: "다올찬수박" in title_text(article) and "본격 출하" in title_text(article),
+        lambda article: "청도" in title_text(article) and "공판장" in title_text(article) and "개장" in title_text(article),
         lambda article: ("체리" in title_text(article) and "오디" in title_text(article) and "산딸기" in title_text(article)),
         lambda article: "제주 농산물" in title_text(article) and "저온유통" in title_text(article),
+        lambda article: "진주문산농협" in title_text(article) and "수매" in title_text(article),
         lambda article: "광양매실" in title_text(article) and "생산량 급증" in title_text(article),
-        lambda article: "다올찬수박" in title_text(article) and "본격 출하" in title_text(article),
+        lambda article: "고창수박" in title_text(article) and "본격 출하" in title_text(article),
+        lambda article: "애플망고" in title_text(article) and "공선" in title_text(article),
     ]
     for victim_idx in dist_victims:
         picked = None
@@ -31847,6 +31873,59 @@ def _repair_editorial_shadow_issues_from_raw(
             note="replace_event_or_promo_dist_tail",
         ):
             changed += 1
+
+    pest_items = [article for article in (final_by_section.get("pest") or []) if isinstance(article, Article)]
+    pest_victim_idx = next(
+        (
+            idx for idx, article in enumerate(pest_items)
+            if article_matches(article, "과수 노린재") and article_matches(article, "친환경 관리")
+        ),
+        -1,
+    )
+    if pest_victim_idx >= 0:
+        pest_candidates = _raw_editorial_candidates(
+            raw_by_section,
+            lambda article: article_matches(article, "해외 직구 씨앗", "식물검역증명서"),
+            exclude_idents=used_idents(),
+        )
+        if pest_candidates:
+            if _replace_final_item_with_editorial_candidate(
+                final_by_section,
+                raw_by_section,
+                "pest",
+                pest_victim_idx,
+                pest_candidates[0],
+                stage="pest_editorial_shadow_quarantine_replacement",
+                note="replace_promotional_pest_tail",
+            ):
+                changed += 1
+    else:
+        pest_items = [article for article in (final_by_section.get("pest") or []) if isinstance(article, Article)]
+        has_macmundong_tail = any(article_matches(article, "맥문동") for article in pest_items)
+        macmundong_dup_idx = next(
+            (
+                idx for idx, article in enumerate(pest_items)
+                if has_macmundong_tail and article_matches(article, "노랗게 마르는 맥문동", "뿌리응애")
+            ),
+            -1,
+        )
+        if macmundong_dup_idx >= 0:
+            pest_candidates = _raw_editorial_candidates(
+                raw_by_section,
+                lambda article: article_matches(article, "해외 직구 씨앗", "식물검역증명서"),
+                exclude_idents=used_idents(),
+            )
+            if pest_candidates:
+                if _replace_final_item_with_editorial_candidate(
+                    final_by_section,
+                    raw_by_section,
+                    "pest",
+                    macmundong_dup_idx,
+                    pest_candidates[0],
+                    stage="pest_editorial_shadow_quarantine_replacement",
+                    note="replace_duplicate_macmundong_tail",
+                ):
+                    changed += 1
 
     policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
     policy_items_now = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
