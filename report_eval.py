@@ -538,6 +538,8 @@ def _pest_editorial_theme(article: SurfaceArticle, snapshot_body: str = "") -> s
     if article.section != "pest":
         return ""
     text = _editorial_text(article, snapshot_body)
+    if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
+        return "plant_quarantine"
     if "과수화상병" in text or "화상병" in text:
         return "fire_blight"
     if "벼" in text and "병해충" in text:
