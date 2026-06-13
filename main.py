@@ -23877,8 +23877,6 @@ def _replace_weak_pest_tail_from_raw(
             candidate_theme = _pest_editorial_theme_key(article)
             if fire_blight_count >= 2 and candidate_theme == "fire_blight":
                 continue
-            if _is_generic_pest_notice_tail(article):
-                continue
             rank = _pest_replacement_candidate_rank(article, pest_conf)
             if rank is None:
                 continue
@@ -30549,8 +30547,6 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
         return False
     if _postbuild_article_reject_reason(article, "pest", apply_selection_fit=False) in _HARD_FINAL_POSTBUILD_REJECT_REASONS:
         return False
-    if "과수 노린재" in text and "친환경 관리" in text and "관심 확대" in text:
-        return False
     if "노랗게 마르는 맥문동" in text and "뿌리응애" in text:
         return False
     pest_hits = count_any(
@@ -30613,7 +30609,7 @@ def _refill_pest_direct_gap_from_raw(
                 continue
             if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
                 continue
-            if _is_pest_weather_disaster_noise(article) or _is_generic_pest_notice_tail(article):
+            if _is_pest_weather_disaster_noise(article):
                 continue
             if not _is_pest_direct_gap_story(article):
                 continue
@@ -31955,8 +31951,6 @@ def _repair_editorial_shadow_issues_from_raw(
                 existing_compact,
                 "매실",
             ):
-                if has_topic_token(candidate_raw, candidate_compact, "수매"):
-                    continue
                 return True
             if section_key == "supply" and has_topic_token(candidate_raw, candidate_compact, "양파") and has_topic_token(
                 existing_raw,
@@ -32182,6 +32176,8 @@ def _repair_editorial_shadow_issues_from_raw(
     supply_candidate_predicates: list[Callable[[Article], bool]] = [
         lambda article: "광양매실" in title_text(article) and "생산량 급증" in title_text(article),
         lambda article: "양파 값 역전" in title_text(article) and "수출길" in title_text(article),
+        lambda article: "성주참외" in title_text(article) and "둔갑" in title_text(article),
+        lambda article: "대추형 방울" in title_text(article) and "토마토" in title_text(article) and "경쟁력" in title_text(article),
         lambda article: "광양 매실" in title_text(article) and "가격" in title_text(article) and "걱정" in title_text(article),
         lambda article: "진주문산농협" in title_text(article) and "수매" in title_text(article),
         lambda article: "청양 멜론" in title_text(article) and "품질 경쟁" in title_text(article),
