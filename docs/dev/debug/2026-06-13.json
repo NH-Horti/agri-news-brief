@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-13T13:03:03+09:00",
-  "build_tag": "617845a",
+  "generated_at_kst": "2026-06-13T13:07:04+09:00",
+  "build_tag": "c28f05f",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13050,7 +13050,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.81,
+          "score": 9.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13690,7 +13690,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 6.85,
+          "score": 6.65,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -19570,8 +19570,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 79.83,
-        "at_kst": "2026-06-13T13:02:29+09:00",
+        "elapsed_sec": 81.446,
+        "at_kst": "2026-06-13T13:06:28+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-13"
@@ -19580,14 +19580,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 79.83,
-        "at_kst": "2026-06-13T13:02:29+09:00"
+        "elapsed_sec": 81.446,
+        "at_kst": "2026-06-13T13:06:28+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 80.009,
-        "at_kst": "2026-06-13T13:02:30+09:00",
+        "elapsed_sec": 81.657,
+        "at_kst": "2026-06-13T13:06:28+09:00",
         "details": {
           "archive_count": 86
         }
@@ -19595,14 +19595,14 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 80.009,
-        "at_kst": "2026-06-13T13:02:30+09:00"
+        "elapsed_sec": 81.657,
+        "at_kst": "2026-06-13T13:06:28+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 80.706,
-        "at_kst": "2026-06-13T13:02:30+09:00",
+        "elapsed_sec": 82.362,
+        "at_kst": "2026-06-13T13:06:29+09:00",
         "details": {
           "html_bytes": 268637
         }
@@ -19610,20 +19610,20 @@
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 80.706,
-        "at_kst": "2026-06-13T13:02:30+09:00"
+        "elapsed_sec": 82.362,
+        "at_kst": "2026-06-13T13:06:29+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 113.004,
-        "at_kst": "2026-06-13T13:03:03+09:00"
+        "elapsed_sec": 117.23,
+        "at_kst": "2026-06-13T13:07:04+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 113.005,
-        "at_kst": "2026-06-13T13:03:03+09:00",
+        "elapsed_sec": 117.231,
+        "at_kst": "2026-06-13T13:07:04+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-13.json"
         }
@@ -19632,13 +19632,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 113.005,
-      "at_kst": "2026-06-13T13:03:03+09:00",
+      "elapsed_sec": 117.231,
+      "at_kst": "2026-06-13T13:07:04+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-13.json"
       }
     },
-    "elapsed_sec": 113.005,
+    "elapsed_sec": 117.231,
     "local_dry_run": false,
     "placement_only": false
   },
