@@ -3093,6 +3093,12 @@ class LocalRuntimeTests(TestCase):
             description="타 지역 참외가 성주참외로 둔갑했다는 정황이 포착돼 농가 우려가 커졌다.",
             link="https://example.com/shadow-seongju-origin",
         )
+        tomato_competitiveness = self._make_article(
+            section="supply",
+            title="충남 대추형 방울 토마토 신품종 경쟁력 입증",
+            description="대추형 방울토마토 신품종의 생산성과 시장 경쟁력을 확인했다.",
+            link="https://example.com/shadow-tomato-competitiveness",
+        )
         ugly_maesil = self._make_article(
             section="dist",
             title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
@@ -3104,15 +3110,16 @@ class LocalRuntimeTests(TestCase):
 
         changed = main._repair_editorial_shadow_issues_from_raw(
             final_by_section,
-            {"supply": [gwangyang_supply, gwangyang_repeat, melon_origin], "dist": [ugly_maesil]},
+            {"supply": [gwangyang_supply, gwangyang_repeat, melon_origin, tomato_competitiveness], "dist": [ugly_maesil]},
         )
 
         links = {article.link for article in final_by_section["supply"]}
         self.assertGreaterEqual(changed, 2)
         self.assertIn(gwangyang_supply.link, links)
         self.assertIn(melon_origin.link, links)
-        self.assertIn(ugly_maesil.link, links)
+        self.assertIn(tomato_competitiveness.link, links)
         self.assertNotIn(gwangyang_repeat.link, links)
+        self.assertNotIn(ugly_maesil.link, links)
 
     def test_dist_editorial_guard_replaces_promotional_watermelon_tail(self) -> None:
         core = self._make_article(
