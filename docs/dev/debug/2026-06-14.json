@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T21:05:21+09:00",
-  "build_tag": "2cedfe9",
+  "generated_at_kst": "2026-06-14T22:15:23+09:00",
+  "build_tag": "fbac022",
   "filter_rejects": [
     {
       "section": "policy",
@@ -13088,38 +13088,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.58,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 3,
-          "press": "농민신문",
-          "domain": "nongmin.com",
-          "title": "전북농협, 양파 수확 돕고 소비촉진 까지 ‘열일’",
-          "url": "https://www.nongmin.com/article/20260612500292",
-          "reason": "below_threshold",
-          "fit_score": -0.45,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "양파 소비 촉진",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 6,
-            "korea": 6,
-            "offtopic_pen": 0,
-            "press_tier": 3,
-            "press_weight": 6.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 19.76,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -13147,6 +13115,38 @@
             "offtopic_pen": 1,
             "press_tier": 3,
             "press_weight": 5.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.38,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 3,
+          "press": "농민신문",
+          "domain": "nongmin.com",
+          "title": "전북농협, 양파 수확 돕고 소비촉진 까지 ‘열일’",
+          "url": "https://www.nongmin.com/article/20260612500292",
+          "reason": "below_threshold",
+          "fit_score": -0.45,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "양파 소비 촉진",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 6,
+            "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 3,
+            "press_weight": 6.7
           }
         },
         {
@@ -14144,38 +14144,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 8.72,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "경남일보",
-          "domain": "gnnews.co.kr",
-          "title": "남해 마늘 한우 축제 빛낸 '공예작품·우량 마늘 전시회'",
-          "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=638866",
-          "reason": "below_threshold",
-          "fit_score": 0.95,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "마늘 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 0,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 6.83,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -14203,6 +14171,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 8.52,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "경남일보",
+          "domain": "gnnews.co.kr",
+          "title": "남해 마늘 한우 축제 빛낸 '공예작품·우량 마늘 전시회'",
+          "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=638866",
+          "reason": "below_threshold",
+          "fit_score": 0.95,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "마늘 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.95,
+            "market_hits": 0,
+            "strength": 0,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -16623,9 +16623,9 @@
       ]
     },
     "dist": {
-      "threshold": 45.15,
-      "tail_cut": 50.75,
-      "core_min": 45.15,
+      "threshold": 44.95,
+      "tail_cut": 50.55,
+      "core_min": 44.95,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 37,
@@ -16698,7 +16698,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 58.15,
+          "score": 57.95,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -16794,7 +16794,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 44.39,
+          "score": 44.19,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17916,9 +17916,9 @@
       ]
     },
     "pest": {
-      "threshold": 43.94,
-      "tail_cut": 43.94,
-      "core_min": 43.94,
+      "threshold": 43.74,
+      "tail_cut": 43.74,
+      "core_min": 43.74,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 19,
@@ -17957,9 +17957,9 @@
           }
         },
         {
-          "selected": false,
-          "is_core": false,
-          "score": 50.94,
+          "selected": true,
+          "is_core": true,
+          "score": 50.74,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17970,9 +17970,9 @@
           "domain": "nongmin.com",
           "title": "대전 유성농협, 고령 과수 농가 찾아 배 봉지 씌우기 지원",
           "url": "https://www.nongmin.com/article/20260612500538",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 2.56,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "core",
           "selection_note": "",
           "origin_section": "pest",
           "reassigned_from": "policy",
@@ -18021,8 +18021,8 @@
           }
         },
         {
-          "selected": true,
-          "is_core": true,
+          "selected": false,
+          "is_core": false,
           "score": 33.78,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -18034,12 +18034,12 @@
           "domain": "news.mbccb.co.kr",
           "title": "과수화상병 6곳 추가.. 전국 46% 충북서 발생",
           "url": "http://news.mbccb.co.kr/home/sub.php?menukey=61&mod=view&RECEIVE_DATE=20260612&SEQUENCE=0105",
-          "reason": "",
+          "reason": "postbuild_pruned",
           "fit_score": 4.19,
-          "selection_stage": "pest_priority_fire_blight_core",
-          "selection_note": "national_fire_blight_escalation",
+          "selection_stage": "postbuild_pruned",
+          "selection_note": "",
           "origin_section": "pest",
-          "reassigned_from": "pest",
+          "reassigned_from": "",
           "source_query": "과수화상병",
           "source_channel": "naver_api",
           "signals": {
@@ -18100,8 +18100,8 @@
           "url": "https://www.kwnews.co.kr/page/view/2026061250041700000",
           "reason": "",
           "fit_score": 3.59,
-          "selection_stage": "forced_section",
-          "selection_note": "pest",
+          "selection_stage": "pest_theme_diversity_replacement",
+          "selection_note": "replace_duplicate_fire_blight_tail",
           "origin_section": "supply",
           "reassigned_from": "pest",
           "source_query": "사과 출하",
@@ -18373,7 +18373,7 @@
           }
         },
         {
-          "selected": true,
+          "selected": false,
           "is_core": false,
           "score": 4.19,
           "semantic_similarity": 0.0,
@@ -18386,10 +18386,10 @@
           "domain": "kwnews.co.kr",
           "title": "기습 우박에 정선 임계 농작물16㏊ 피해",
           "url": "https://www.kwnews.co.kr/page/view/2026061250016800000",
-          "reason": "",
+          "reason": "below_threshold",
           "fit_score": 1.71,
-          "selection_stage": "pest_preferred_count_recovery",
-          "selection_note": "preferred_count_tail",
+          "selection_stage": "below_threshold",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "배추 농가",
@@ -18531,6 +18531,36 @@
             "press_tier": 1,
             "press_weight": -1.5
           }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 17.87,
+          "semantic_similarity": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "뉴스핌",
+          "domain": "newspim.com",
+          "title": "충주·제천에 우박...50농가 60ha 피해",
+          "url": "https://www.newspim.com/news/view/20260612001074",
+          "reason": "",
+          "fit_score": 2.06,
+          "selection_stage": "pest_theme_diversity_replacement",
+          "selection_note": "replace_duplicate_fire_blight_tail",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "사과 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.7
+          }
         }
       ],
       "coverage_ledger": [
@@ -18538,7 +18568,7 @@
           "seed": "병해충",
           "rep": "병해충",
           "hits": 12,
-          "selected_hits": 4,
+          "selected_hits": 5,
           "missing": false,
           "sample_title": "40년 일군 사과밭…하루아침에 황무지로"
         },
@@ -18546,7 +18576,7 @@
           "seed": "사과",
           "rep": "사과",
           "hits": 6,
-          "selected_hits": 3,
+          "selected_hits": 4,
           "missing": false,
           "sample_title": "40년 일군 사과밭…하루아침에 황무지로"
         },
@@ -20094,8 +20124,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 105.53,
-        "at_kst": "2026-06-14T21:04:37+09:00",
+        "elapsed_sec": 110.376,
+        "at_kst": "2026-06-14T22:14:31+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-14"
@@ -20104,14 +20134,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 105.531,
-        "at_kst": "2026-06-14T21:04:37+09:00"
+        "elapsed_sec": 110.376,
+        "at_kst": "2026-06-14T22:14:31+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 105.785,
-        "at_kst": "2026-06-14T21:04:37+09:00",
+        "elapsed_sec": 110.466,
+        "at_kst": "2026-06-14T22:14:31+09:00",
         "details": {
           "archive_count": 87
         }
@@ -20119,35 +20149,35 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 105.785,
-        "at_kst": "2026-06-14T21:04:37+09:00"
+        "elapsed_sec": 110.466,
+        "at_kst": "2026-06-14T22:14:31+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 106.773,
-        "at_kst": "2026-06-14T21:04:38+09:00",
+        "elapsed_sec": 111.511,
+        "at_kst": "2026-06-14T22:14:32+09:00",
         "details": {
-          "html_bytes": 312313
+          "html_bytes": 312655
         }
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 106.773,
-        "at_kst": "2026-06-14T21:04:38+09:00"
+        "elapsed_sec": 111.511,
+        "at_kst": "2026-06-14T22:14:32+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 150.083,
-        "at_kst": "2026-06-14T21:05:21+09:00"
+        "elapsed_sec": 162.237,
+        "at_kst": "2026-06-14T22:15:23+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 150.083,
-        "at_kst": "2026-06-14T21:05:21+09:00",
+        "elapsed_sec": 162.237,
+        "at_kst": "2026-06-14T22:15:23+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-14.json"
         }
@@ -20156,13 +20186,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 150.083,
-      "at_kst": "2026-06-14T21:05:21+09:00",
+      "elapsed_sec": 162.237,
+      "at_kst": "2026-06-14T22:15:23+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-14.json"
       }
     },
-    "elapsed_sec": 150.083
+    "elapsed_sec": 162.237
   },
   "commodity_board_audit": {
     "summary": {
@@ -20777,7 +20807,7 @@
             "press": "강원일보",
             "score": 24.82,
             "selection_fit_score": 3.59,
-            "selection_stage": "forced_section",
+            "selection_stage": "pest_theme_diversity_replacement",
             "is_core": false,
             "representative_rank": 0,
             "representative_score": 248.091,
@@ -22479,8 +22509,8 @@
           "section": "pest",
           "press": "뉴스워커",
           "score": 17.67,
-          "selection_fit_score": 3.79,
-          "selection_stage": "pest_tail_replacement",
+          "selection_fit_score": 0.0,
+          "selection_stage": "",
           "is_core": false,
           "representative_rank": 0,
           "representative_score": 284.519,
@@ -22492,7 +22522,7 @@
           "operational_issue_signal": true,
           "issue_bucket": "",
           "feature_kind": "field",
-          "weak_stage_story": true
+          "weak_stage_story": false
         },
         "thresholds": {
           "active_min_rank": 2,
@@ -22507,8 +22537,8 @@
             "section": "pest",
             "press": "뉴스워커",
             "score": 17.67,
-            "selection_fit_score": 3.79,
-            "selection_stage": "pest_tail_replacement",
+            "selection_fit_score": 0.0,
+            "selection_stage": "",
             "is_core": false,
             "representative_rank": 0,
             "representative_score": 284.519,
@@ -22520,7 +22550,7 @@
             "operational_issue_signal": true,
             "issue_bucket": "",
             "feature_kind": "field",
-            "weak_stage_story": true
+            "weak_stage_story": false
           }
         ]
       },
