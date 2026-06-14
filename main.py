@@ -6230,6 +6230,28 @@ def is_roundup_digest_title(title: str) -> bool:
     return (bracketed and roundup_hits >= 1) or (roundup_hits >= 2 and tail_digest)
 
 
+_NEWS_ROUNDUP_BRACKET_RX = re.compile(r"^\s*\[(여기는|오늘의|이\s?시각|이주의|주간|주말|간추린)\b")
+
+
+def is_news_roundup_brief_context(title: str, desc: str) -> bool:
+    """'[여기는 OO] … 외' 형식의 지역 단신 묶음(roundup) 기사 판정.
+
+    여러 토막 소식을 모은 잡보로, 특정 주제(병해충 방제 등)가 한두 문장만 섞여 있을 뿐이라
+    해당 섹션의 핵심 기사로 보기 어렵다.
+    """
+    ttl = (title or "").strip()
+    if not ttl:
+        return False
+    ttl_l = _nfkc_lower(ttl)
+    bracket_local = _NEWS_ROUNDUP_BRACKET_RX.search(ttl) is not None
+    trailing_etc = bool(re.search(r"(?:…|\.\.\.|\s)외\s*$", ttl)) or ttl.endswith("…외")
+    roundup_word = any(
+        w in ttl_l
+        for w in ("단신", "주요 뉴스", "주요뉴스", "뉴스 브리핑", "한 주간", "주간 종합", "이 시각 주요")
+    )
+    return (bracket_local and (trailing_etc or roundup_word)) or (trailing_etc and roundup_word)
+
+
 def is_pest_story_focus_strong(title: str, desc: str) -> bool:
     t = f"{title or ''} {desc or ''}".lower()
     strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
@@ -6980,6 +7002,35 @@ def is_local_agri_org_feature_context(title: str, desc: str) -> bool:
     agri_terms = ("농산물", "원예", "과수", "과일", "채소", "화훼", "농가", "샤인머스캣", "포도", "사과", "배", "GAP")
     agri_hit = count_any(txt, [w.lower() for w in agri_terms]) >= 1
     return org_hit and promo_hit >= 2 and field_hit >= 1 and (horti_hit or agri_hit)
+
+
+_COOP_PR_FEATURE_TITLE_PATTERNS = ("농가실익 증진", "농가실익증진", "활발한 경제사업", "활발한경제사업")
+
+
+def is_low_value_coop_pr_feature_context(title: str, desc: str) -> bool:
+    """농협/조합의 '농가실익 증진·활발한 경제사업'식 성과 홍보 feature 판정.
+
+    - 검역·통관·선적·공동선별·산지유통센터·APC·도매시장 같은 구체 유통/현장 실무 신호가 함께 있으면
+      실제 유통 기사이므로 제외 대상이 아니다(False).
+    - 그런 구체 신호 없이 PR 성과 문구만 있는 기사는 supply/dist 핵심에 부적합한 저관여 홍보로 본다.
+    """
+    ttl = title or ""
+    ttl_compact = re.sub(r"\s+", "", ttl)
+    if not (
+        any(p in ttl for p in _COOP_PR_FEATURE_TITLE_PATTERNS)
+        or any(p in ttl_compact for p in _COOP_PR_FEATURE_TITLE_PATTERNS)
+    ):
+        return False
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
+    concrete_ops_hits = count_any(
+        txt,
+        [w.lower() for w in (
+            "검역", "통관", "선적", "바이어", "공동선별", "공선출하", "산지유통센터",
+            "apc", "물류", "도매시장", "공판장", "경락", "경매", "온라인 도매시장",
+            "저온저장", "저장고", "선별",
+        )],
+    )
+    return concrete_ops_hits == 0
 
 
 _DIST_LOCAL_FIELD_PROFILE_TITLE_TERMS = (
@@ -9246,6 +9297,11 @@ def is_supply_price_collapse_field_context(title: str, desc: str, dom: str = "",
     txt_l = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     if not txt_l:
         return False
+    # 정부·기관발 거시 가격/수급 브리핑(농축산물 전반 점검·전년 대비 등)은 '정부 가용물량 도매시장
+    # 분산 출하' 같은 표현 때문에 출하/물량/시장 신호가 잡혀도 현장 가격붕괴 기사가 아니다.
+    # 이런 macro 브리핑은 policy로 보내야 하므로 여기서 supply 현장 신호로 인정하지 않는다.
+    if is_policy_market_brief_context(txt_l, dom, press):
+        return False
     item_hits = count_any(
         ttl_l,
         [w.lower() for w in (
@@ -10274,6 +10330,23 @@ def is_low_value_local_promo_context(title: str, desc: str) -> bool:
         [w.lower() for w in ("수급", "공급 확대", "할인지원", "할인 지원", "가용물량", "비축", "방출", "가격 안정", "물가 안정", "점검", "대비")],
     )
     if official_supply_response_hits >= 1 and broad_supply_item_hits >= 1 and supply_response_hits >= 2:
+        return False
+    # 가격 급락·산지 폐기 등 시장 distress가 분명한 기사는 소비촉진·할인 문구가 섞여 있어도
+    # 지역 판촉 단신이 아니라 수급 실무 기사다. (답례품·상생캠페인·기념행사형 판촉에는
+    # 이런 가격 distress 프레이밍이 없으므로 진짜 판촉 분류는 그대로 유지된다.)
+    price_distress_hits = count_any(
+        text,
+        [
+            "가격 하락", "가격 급락", "가격 폭락", "값 하락", "값 급락", "값 폭락",
+            "가격 약세", "값 약세", "가격 곤두박질", "값 곤두박질", "폭락 우려",
+            "급락 우려", "산지 폐기", "공급 과잉", "과잉 생산", "수확기 가격",
+        ],
+    )
+    supply_distress_anchor_hits = count_any(
+        text,
+        [w.lower() for w in ("농가", "산지", "수급", "출하", "재고", "도매", "유통", "공급", "물량", "판로", "대책")],
+    )
+    if price_distress_hits >= 1 and supply_distress_anchor_hits >= 1:
         return False
     direct_supply_hits = count_any(text, _QUALITY_DIRECT_SUPPLY_TERMS)
     market_ops = (
@@ -13540,6 +13613,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("finance_asset_policy_noise")
     if key == "supply" and is_supply_social_policy_noise_context(ttl, desc):
         return _reject("supply_social_policy_noise")
+    if key in ("supply", "dist") and is_low_value_coop_pr_feature_context(ttl, desc):
+        return _reject("low_value_coop_pr_feature")
+    if key == "pest" and is_news_roundup_brief_context(ttl, desc):
+        return _reject("pest_news_roundup_brief")
 
     # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
     if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
@@ -16405,7 +16482,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         ttl_local = (a.title or "").lower()
         if press_priority(a.press, a.domain) == 1 and (("농축산물" in ttl_local) or ("농산물" in ttl_local)) and any(t in txt_local for t in ("전주 대비", "전년 대비", "평년 대비", "대체로")):
             return True
-        if has_direct_supply_chain_signal(txt_local):
+        # '정부 가용물량 도매시장 분산 출하' 류의 출하/시장 신호가 섞여 has_direct_supply_chain_signal이
+        # 잡혀도, 기관발 거시 가격 브리핑은 supply 선발에서 제외(아래 policy_market_brief 컷으로 이동)한다.
+        if has_direct_supply_chain_signal(txt_local) and not is_policy_market_brief_context(txt_local, dom_local, pr_local):
             return False
         if is_supply_feature_article(a.title or "", a.description or ""):
             return False
@@ -16631,6 +16710,8 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             ) == 0
         )
         if org_performance_noise:
+            return True
+        if is_low_value_coop_pr_feature_context(a.title or "", a.description or ""):
             return True
         if (
             is_policy_market_brief_context(txt_local, dom_local, pr_local)
@@ -21650,6 +21731,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "pest_no_damage_crop_price"
     if section_key == "pest" and is_pest_diplomacy_not_pest_context(a.title or "", a.description or ""):
         return "pest_diplomacy_not_pest"
+    if section_key == "pest" and is_news_roundup_brief_context(a.title or "", a.description or ""):
+        return "pest_news_roundup_brief"
 
     min_fit = _selection_guardrail_number("section_card_min_fit", 0.0, section_key=section_key)
     core_min_fit = _selection_guardrail_number("core_relaxed_min_fit", min_fit, section_key=section_key)
@@ -33925,6 +34008,16 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             item for item in inactive_items_for_group
             if bool(item.get("active_today")) and int(item.get("article_count") or 0) > 0
         ]
+        # 노출·선발 분리: 매칭 기사가 있으나 대표 기준 미달인 품목은 muted 타일로,
+        # 매칭 기사가 0건인 관리 품목은 하단 칩으로 항상 노출한다.
+        matched_inactive_items_for_group = [
+            item for item in inactive_items_for_group
+            if int(item.get("article_count") or 0) > 0
+        ]
+        nonews_items_for_group = [
+            item for item in inactive_items_for_group
+            if int(item.get("article_count") or 0) <= 0
+        ]
         display_active_count = len(active_items_for_group)
         display_active_today_unlinked_count = len(active_today_unlinked_items_for_group)
         display_item_total = display_active_count + len(inactive_items_for_group)
@@ -34033,25 +34126,73 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 """
             )
 
-        inactive_chips = "".join(
+        for item in matched_inactive_items_for_group:
+            badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
+            pool_articles = [article for article in (item.get("articles") or []) if isinstance(article, Article)]
+            pool_sections: list[str] = []
+            for article in pool_articles:
+                sec_key = str(getattr(article, "section", "") or "").strip()
+                if sec_key and sec_key not in pool_sections:
+                    pool_sections.append(sec_key)
+            signal_html = "".join(
+                f'<span class="commoditySig muted" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
+                for sec_key in pool_sections
+                if sec_key
+            )
+            pool_links = "".join(
+                f"""
+                <a class="commodityMoreStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_pool")} href="{esc(article.url)}" target="_top" rel="noopener">
+                  <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+                  <span class="commoditySupportText">{esc(article.title)}</span>
+                </a>
+                """
+                for article in pool_articles[:6]
+            )
+            pool_count = len(pool_articles)
+            pool_html = (
+                f"""
+                <details class="commodityMoreWrap" data-swipe-ignore="1">
+                  <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 {pool_count}건 보기</summary>
+                  <div class="commodityMoreList">{pool_links}</div>
+                </details>
+                """
+                if pool_count > 0 else ""
+            )
+            item_cards.append(
+                f"""
+                <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile isMuted">
+                  <div class="commodityTileTop">
+                    <div class="commodityTileName">{esc(str(item.get('label') or ''))}</div>
+                    {badge_html}
+                  </div>
+                  <div class="commodityTileMeta">
+                    <span>관련 {pool_count}건</span>
+                    <span>핵심 {int(item.get('core_count') or 0)}건</span>
+                  </div>
+                  <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
+                  <div class="commodityStoryMuted">오늘 브리핑 대표 기사 기준 미달 · 관련 기사 풀</div>
+                  {pool_html}
+                </article>
+                """
+            )
+
+        nonews_chips = "".join(
             (
-                f'<span class="commodityMiniChip{" isCore" if item.get("program_core") else ""}" '
-                f'data-unlinked-reason="{esc(str(item.get("unlinked_reason") or ""))}">'
+                f'<span class="commodityMiniChip{" isCore" if item.get("program_core") else ""}">'
                 f'{esc(str(item.get("label") or ""))}'
-                f' · 후보 {int(item.get("active_today_article_count") or item.get("article_count") or 0)}'
                 f'{"  ·수급" if item.get("program_core") else ""}'
                 f'</span>'
             )
-            for item in active_today_unlinked_items_for_group
+            for item in nonews_items_for_group
         )
         inactive_html = (
             f"""
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">오늘 후보 미연결 {display_active_today_unlinked_count} / 후보 {display_active_today_count}개</div>
-              <div class="commodityMiniGrid">{inactive_chips}</div>
+              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 {len(nonews_items_for_group)}개</div>
+              <div class="commodityMiniGrid">{nonews_chips}</div>
             </div>
             """
-            if inactive_chips else ""
+            if nonews_chips else ""
         )
         empty_group_html = '<div class="empty commodityGroupEmpty">오늘 연결된 품목 기사가 없습니다.</div>' if not item_cards else ""
         group_blocks.append(
@@ -34625,6 +34766,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     .commodityGrid.isDuo{{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .commodityTile{{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid #dbe4ee;border-radius:16px;background:#fff;min-height:100%}}
     .commodityTile.isActive{{border-color:#86efac;box-shadow:0 8px 24px rgba(15,118,110,.08)}}
+    .commodityTile.isMuted{{border-style:dashed;border-color:#dbe4ee;background:#fcfdfe;opacity:.86}}
+    .commodityTile.isMuted .commodityTileName{{color:#64748b}}
     .commodityTileTop{{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}}
     .commodityTileName{{font-size:16px;font-weight:900;line-height:1.35}}
     .commodityTileMeta{{display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px;font-weight:700}}
@@ -34883,6 +35026,8 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
       .commodityHeadStat strong{{color:#e2e8f0}}
       .commodityTile{{background:#1e293b;border-color:var(--line)}}
       .commodityTile.isActive{{border-color:#34d399;box-shadow:0 8px 24px rgba(52,211,153,.1)}}
+      .commodityTile.isMuted{{background:#172033;border-color:#475569}}
+      .commodityTile.isMuted .commodityTileName{{color:#94a3b8}}
       .commodityPrimaryCard{{background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);border-color:var(--line)}}
       .commodityPrimaryStory{{color:#f1f5f9}}
       .commoditySupportStory,.commodityMoreStory{{background:#1e293b;border-color:var(--line);color:#e2e8f0}}
