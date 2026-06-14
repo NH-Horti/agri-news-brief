@@ -1,0 +1,54 @@
+{
+  "report_date": "2026-04-13",
+  "generated_at_kst": "2026-04-13T07:03:45+09:00",
+  "scores": {
+    "section_alignment": 71.17,
+    "core_quality": 81.39,
+    "commodity_board_quality": 81.2
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.1538,
+    "section_alignment_cross_gap_rate": 0.0769,
+    "weak_core_rate": 0.3333,
+    "commodity_primary_item_focus_rate": 0.3684,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "core_quality",
+      "core_quality_severe",
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.88,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.3,
+    "high_score_low_fit_rescue_margin": 4.0,
+    "tail_score_floor_delta": 0.6,
+    "core_fit_min": {
+      "default": 1.36,
+      "supply": 1.56,
+      "policy": 1.56,
+      "dist": 1.7,
+      "pest": 1.36
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.22,
+      "supply": 1.4,
+      "policy": 1.37,
+      "dist": 1.5,
+      "pest": 1.22
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": true
+  }
+}

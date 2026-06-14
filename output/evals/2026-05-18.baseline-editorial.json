@@ -1,0 +1,383 @@
+{
+  "report_date": "2026-05-18",
+  "generated_at_kst": "2026-05-18T13:51:24+09:00",
+  "status": "pass",
+  "overall_score": 96.5,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 90.0,
+    "retrieval_support": 83.75,
+    "section_alignment": 95.25,
+    "core_quality": 100.0,
+    "commodity_board_quality": 95.37
+  },
+  "counts": {
+    "briefing_total": 15,
+    "commodity_total": 61,
+    "commodity_primary_total": 15,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 3,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 1,
+      "dist": 2,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 37,
+      "policy": 10,
+      "dist": 4,
+      "pest": 10
+    },
+    "raw_by_section": {
+      "supply": 215,
+      "policy": 115,
+      "dist": 43,
+      "pest": 63
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.6667,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 0.4,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "weekend_span",
+    "seed_coverage_score": 0.4583,
+    "section_alignment_fit_avg": 4.4613,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0667,
+    "section_alignment_weak_stage_rate": 0.0667,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.87,
+    "core_rank_percentile_avg": 0.9278,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.1107,
+    "commodity_primary_rank_avg": 2.8667
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.4167,
+      "policy": 0.5833,
+      "dist": 0.5,
+      "pest": 0.3333
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.9468,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+      "section": "supply",
+      "age_hours": 67.7
+    },
+    {
+      "title": "aT, 농식품 온라인 마케터 육성사업 참여사 300여 개소 모집",
+      "section": "dist",
+      "age_hours": 67.7
+    },
+    {
+      "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+      "section": "pest",
+      "age_hours": 64.7
+    },
+    {
+      "title": "[K-푸드 산지특송]경매에서 온라인 으로… 도매 상도 소비자도 ‘활짝’",
+      "section": "dist",
+      "age_hours": 64.5
+    },
+    {
+      "title": "보령시농업기술센터, 과수 돌발 해충 방제 총력… 농가 150곳 약제 지원",
+      "section": "pest",
+      "age_hours": 64.1
+    },
+    {
+      "title": "과수화상병 올 첫 발생…긴급 방제 ·확산 차단 총력 대응",
+      "section": "pest",
+      "age_hours": 63.5
+    },
+    {
+      "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+      "section": "supply",
+      "age_hours": 63.3
+    },
+    {
+      "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
+      "section": "dist",
+      "age_hours": 57.3
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 96.5,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  },
+  "editorial": {
+    "status": "success",
+    "rubric_version": 1,
+    "model": "gpt-5.4",
+    "generated_at_kst": "2026-05-18T13:51:59+09:00",
+    "score": 82.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 80.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 84.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 76.0,
+      "noise_control": 79.0
+    },
+    "summary": "전반적으로 창구별 핵심 현안은 어느 정도 포착했지만, 편집 판단은 ‘발행 가능’보다는 ‘보완 필요’에 가깝다. 가장 큰 약점은 중복·유사 이슈 과다 반영과 섹션 배치의 흔들림이다. 공급 섹션에서 양파 갈아엎기 기사 2건을 동시 채택해 지면 효율이 떨어졌고, 유통 섹션에는 사업 공모·교육 기사 등 상대적으로 가벼운 소재가 들어가 핵심 유통 이슈의 밀도가 낮아졌다. 병해충 섹션은 사실상 동일한 과수화상병 속보를 3건 반복 배치해 중복이 심하다. 반면 정책 섹션의 산란계협회 제재 건은 강한 핵심 픽으로 적절했다. 전체적으로 ‘보이는 후보 중 더 나은 대체재’가 있었는데도, 비슷한 기사 반복과 홍보성/기관발 기사 채우기가 섞여 점수가 깎인다.",
+    "issues": [
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개",
+        "reason": "같은 이슈의 농민신문 기사(‘양파 밭 싹 다 갈아엎었다…’)와 사실상 중복이다. 같은 섹션에 양파 갈아엎기 기사 2건을 배치해 정보 효율이 떨어진다.",
+        "suggested_action": "둘 중 한 건만 남기고, 남는 자리는 배추·무·양파 가격 하락 및 정부 비축·출하조절 같은 수급 총괄 기사로 교체."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "supply",
+        "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+        "reason": "같은 현장성 양파 투쟁 기사와 중복 채택되어 공급 섹션의 스펙트럼이 좁아졌다. 공급 섹션이 마늘 1건+양파 2건+물류 1건 구조로 편중됐다.",
+        "suggested_action": "동일 이슈 1건만 유지하고 다른 품목·수급 총괄 기사로 다양화."
+      },
+      {
+        "type": "section_mismatch",
+        "severity": "medium",
+        "section": "supply",
+        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+        "reason": "내용 핵심이 산지-도매시장 물류체계·파렛트 운송지원으로, 공급보다 유통/물류 섹션 적합성이 높다.",
+        "suggested_action": "유통(dist) 섹션으로 이동하고 공급 섹션은 작황·가격·출하 동향 기사로 대체."
+      },
+      {
+        "type": "weak_section_pick",
+        "severity": "high",
+        "section": "dist",
+        "title": "aT, 농식품 온라인 마케터 육성사업 참여사 300여 개소 모집",
+        "reason": "사업 참여사 모집 공고 성격이 강해 뉴스 가치가 상대적으로 약하다. 유통 구조 변화나 가격·물류 영향이 큰 기사보다 우선될 급은 아니다.",
+        "suggested_action": "유통 섹션 후순위 또는 제외. 실제 거래 변화·도매시장 구조개편 기사로 대체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "high",
+        "section": "dist",
+        "title": "동화청과, 자체 기획· 운영 청년농 교육",
+        "reason": "기업 교육 프로그램 소개로 홍보성 성격이 강하다. 농업 일간 브리프의 핵심 유통 이슈 카드로는 약하다.",
+        "suggested_action": "삭제 또는 단신 처리. 대신 가락시장 물류개선, 온라인도매시장 거래 확산, 군급식 조달 변화 같은 구조 기사 채택."
+      },
+      {
+        "type": "section_mismatch",
+        "severity": "medium",
+        "section": "dist",
+        "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
+        "reason": "양파 가격 폭락과 갈아엎기 투쟁은 본질적으로 공급/정책 이슈다. 유통 섹션 배치는 부적절하다.",
+        "suggested_action": "공급 또는 정책으로 이동, 유통 섹션에서는 제외."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "pest",
+        "title": "\"金 사과 재현?\"… 가격 안정세 사과 '과수화상병' 변수 등장",
+        "reason": "같은 과수화상병 첫 발생 이슈를 병해충 섹션에서 3건 이상 반복했다. 이 기사는 수급 영향까지 짚어 상대적으로 낫지만, 다른 2건과 함께 실린 탓에 중복 문제가 발생했다.",
+        "suggested_action": "이 기사 1건만 대표로 남기고 나머지 동일 속보성 기사 정리."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "pest",
+        "title": "과수화상병 올 첫 발생…긴급 방제 ·확산 차단 총력 대응",
+        "reason": "위 기사와 사실상 같은 팩트의 반복이다. 병해충 섹션이 단일 속보로 과포화됐다.",
+        "suggested_action": "제외하고 다른 병해충/돌발해충 기사로 교체."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "pest",
+        "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+        "reason": "동일한 첫 발생 기사 반복으로 정보 증분이 거의 없다.",
+        "suggested_action": "제외."
+      },
+      {
+        "type": "local_filler",
+        "severity": "medium",
+        "section": "pest",
+        "title": "보령시농업기술센터, 과수 돌발 해충 방제 총력… 농가 150곳 약제 지원",
+        "reason": "지자체 단위 약제 지원 기사로 규모와 파급력이 제한적이다. 전국성 병해충 브리프 카드로는 약하다.",
+        "suggested_action": "전국 확산 우려나 제도 변화가 있는 병해충 기사로 교체하거나 단신 처리."
+      }
+    ],
+    "section_notes": {
+      "supply": "마늘 수확 현장 자체는 제철성 있고 현장감도 있으나, 같은 양파 투쟁 이슈 2건을 중복 배치한 것이 치명적이다. 게다가 가락시장 파렛트 운송지원은 유통 섹션 성격이 더 강해 섹션 정합성이 떨어진다. 원시 후보군에는 배추·무·양파 가격 하락과 정부 비축·출하조절 같은 더 넓은 수급 시야의 기사도 보여 이를 놓친 점이 아쉽다.",
+      "policy": "산란계협회 담합 제재 및 제도개편은 확실한 핵심 기사다. 다만 가락시장 시설현대화 국비 요구는 업계 요구 기사로 상대적으로 약하고, 스마트팜 저비용 모델 기사는 정책 일반/현장 리포트에 가까워 정책 섹션 강도가 다소 떨어진다. 그래도 타 섹션보다 구성은 상대적으로 안정적이다.",
+      "dist": "가장 약한 섹션. 모집 공고, 기업 교육, 온라인도매시장 홍보성 리포트, 심지어 양파 갈아엎기 기사까지 섞여 정체성이 흐려졌다. 유통 구조·물류 개선 중심으로 재편했어야 한다. 같은 후보군에 가락시장 파렛트 기사와 군급식 민간위탁에 따른 지역 농가 조달 변화 등 더 실질적인 유통 이슈가 보인다.",
+      "pest": "과수화상병 첫 발생은 당연히 핵심이지만, 동일 사안을 3건 반복하고 보령시 지역 방제 기사까지 붙여 중복과 로컬성이 강하다. 병해충 섹션은 동일 속보 1건 + 별도 전국성 병해충/방제 이슈 1~2건으로 구성하는 편이 적절하다."
+    },
+    "improvement_suggestions": [
+      "같은 사안을 여러 매체로 반복 채택하지 말고, 가장 정보량이 많은 대표 기사 1건만 남겨라.",
+      "섹션 간 경계 기준을 강화하라: 작황·가격·출하 동향은 supply, 제도·정부 조치·단체 요구는 policy, 물류·도매시장·판로 구조 변화는 dist로 분리.",
+      "유통(dist) 섹션에서 모집공고·교육·기관 홍보성 기사는 핵심 카드에서 배제하라.",
+      "공급 섹션은 단일 품목 반복보다 여러 품목의 수급 변화와 정부 대응을 함께 보여주는 기사 1건을 우선 검토하라.",
+      "병해충 섹션은 동일한 ‘첫 발생’ 속보 복수 채택을 금지하고, 전국성 위험도·방제 체계·다른 병해충 동향으로 다양화하라.",
+      "가시 후보 중 더 강한 대체재가 있으면 낮은 강도의 기관발·지역 행사성 기사 대신 교체하는 편집 원칙을 적용하라."
+    ],
+    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":80,\"section_fit\":78,\"core_pick_quality\":84,\"summary_usefulness\":88,\"missed_opportunity\":76,\"noise_control\":79},\"summary\":\"전반적으로 창구별 핵심 현안은 어느 정도 포착했지만, 편집 판단은 ‘발행 가능’보다는 ‘보완 필요’에 가깝다. 가장 큰 약점은 중복·유사 이슈 과다 반영과 섹션 배치의 흔들림이다. 공급 섹션에서 양파 갈아엎기 기사 2건을 동시 채택해 지면 효율이 떨어졌고, 유통 섹션에는 사업 공모·교육 기사 등 상대적으로 가벼운 소재가 들어가 핵심 유통 이슈의 밀도가 낮아졌다. 병해충 섹션은 사실상 동일한 과수화상병 속보를 3건 반복 배치해 중복이 심하다. 반면 정책 섹션의 산란계협회 제재 건은 강한 핵심 픽으로 적절했다. 전체적으로 ‘보이는 후보 중 더 나은 대체재’가 있었는데도, 비슷한 기사 반복과 홍보성/기관발 기사 채우기가 섞여 점수가 깎인다.\",\"issues\":[{\"type\":\"duplicate_topic\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"양파 농가들, '양파밭 갈아엎기 투쟁' 전개\",\"reason\":\"같은 이슈의 농민신문 기사(‘양파 밭 싹 다 갈아엎었다…’)와 사실상 중복이다. 같은 섹션에 양파 갈아엎기 기사 2건을 배치해 정보 효율이 떨어진다.\",\"suggested_action\":\"둘 중 한 건만 남기고, 남는 자리는 배추·무·양파 가격 하락 및 정부 비축·출하조절 같은 수급 총괄 기사로 교체.\"},{\"type\":\"duplicate_topic\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?\",\"reason\":\"같은 현장성 양파 투쟁 기사와 중복 채택되어 공급 섹션의 스펙트럼이 좁아졌다. 공급 섹션이 마늘 1건+양파 2건+물류 1건 구조로 편중됐다.\",\"suggested_action\":\"동일 이슈 1건만 유지하고 다른 품목·수급 총괄 기사로 다양화.\"},{\"type\":\"section_mismatch\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진\",\"reason\":\"내용 핵심이 산지-도매시..."
+  },
+  "editorial_score": 82.0,
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
+}

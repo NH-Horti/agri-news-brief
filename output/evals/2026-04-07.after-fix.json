@@ -1,0 +1,200 @@
+{
+  "report_date": "2026-04-07",
+  "generated_at_kst": "2026-04-12T17:14:26+09:00",
+  "status": "warn",
+  "overall_score": 83.02,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 85.0,
+    "section_alignment": 35.0,
+    "core_quality": 23.79,
+    "commodity_board_quality": 47.0
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 59,
+    "commodity_primary_total": 22,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 34,
+      "policy": 17,
+      "dist": 2,
+      "pest": 6
+    },
+    "raw_by_section": {
+      "supply": 234,
+      "policy": 68,
+      "dist": 29,
+      "pest": 19
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.875,
+    "surface_reuse_penalty": 0.0133,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8125,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 0.2681,
+    "section_alignment_low_fit_rate": 0.9375,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "core_fit_avg": 0.6129,
+    "core_rank_percentile_avg": 0.8831,
+    "core_stage_core_rate": 0.1429,
+    "weak_core_rate": 0.8571,
+    "commodity_primary_item_focus_rate": 0.0,
+    "commodity_primary_issue_signal_rate": 0.9091,
+    "commodity_primary_weak_rate": 0.0455,
+    "commodity_primary_fit_avg": 0.0,
+    "commodity_primary_rank_avg": 0.0
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {},
+    "section_alignment": {
+      "supply": 0.0,
+      "policy": 0.0,
+      "dist": 0.3468,
+      "pest": 0.0
+    },
+    "core_quality": {
+      "supply": 0.25,
+      "policy": 0.2006,
+      "dist": 0.7975,
+      "pest": 0.2086
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "난방비는 치솟고 일부 농자재는 품귀, 농민들 ‘울상’",
+      "section": "supply",
+      "age_hours": 24.0
+    },
+    {
+      "title": "“치솟는 비닐값에 하우스 접을 판” “만선이어도 적자”… ‘고유가...",
+      "section": "policy",
+      "age_hours": 23.9
+    },
+    {
+      "title": "감귤 대신 올리브...23만명 몰린 제주 비양도의 '기후위기 생존법'",
+      "section": "supply",
+      "age_hours": 21.7
+    },
+    {
+      "title": "농식품부, 2026년 식품융합클러스터 시범사업 대상지역 전남·경북 선정",
+      "section": "dist",
+      "age_hours": 20.7
+    },
+    {
+      "title": "가락시장 먹거리 안전, 시민이 직접 검증",
+      "section": "dist",
+      "age_hours": 20.6
+    },
+    {
+      "title": "경북농기원, 과수 봄철 개화기 '기상 변동' 주의 당부",
+      "section": "pest",
+      "age_hours": 20.6
+    },
+    {
+      "title": "경남농기원, 감나무 새순 불청객 '애무늬고리장님노린재' 방제 당부",
+      "section": "pest",
+      "age_hours": 20.1
+    },
+    {
+      "title": "경기 농협 , 평택 송탄 농협 애호박·방울토마토 재배기술 및 유통 교육",
+      "section": "dist",
+      "age_hours": 20.0
+    }
+  ],
+  "improvement_hints": [
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 품목명 직접 언급, 수급/가격 신호, representative rank 상위 후보를 우선하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "section_alignment",
+      "section_alignment_severe",
+      "core_quality",
+      "core_quality_severe",
+      "commodity_board",
+      "commodity_board_severe"
+    ],
+    "section_card_min_fit": {
+      "default": 0.96,
+      "supply": 0.98,
+      "policy": 0.98,
+      "dist": 1.05,
+      "pest": 0.9
+    },
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 4.8,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.36,
+      "supply": 1.56,
+      "policy": 1.56,
+      "dist": 1.7,
+      "pest": 1.36
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.22,
+      "supply": 1.4,
+      "policy": 1.37,
+      "dist": 1.5,
+      "pest": 1.22
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": true,
+    "commodity_require_direct_item_focus": true
+  },
+  "summary_prompt_feedback": [
+    "핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다."
+  ]
+}

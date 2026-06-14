@@ -1,0 +1,207 @@
+{
+  "report_date": "2026-05-22",
+  "generated_at_kst": "2026-05-23T08:16:30.266830+09:00",
+  "sections": {
+    "supply": [
+      {
+        "rank": 1,
+        "title": "\"㎏당 500원도 안해… 양파 농사 포기하고 싶다\"",
+        "press": "남도일보",
+        "domain": "namdonews.com",
+        "score": 57.95,
+        "fit": 4.18,
+        "is_core": true,
+        "reassigned_from": "",
+        "norm_key": "url:5c3a7514f824d3eec5df1b30894bb268",
+        "url": "https://www.namdonews.com/news/articleView.html?idxno=911356"
+      },
+      {
+        "rank": 2,
+        "title": "햇 양파 보관 어쩌라고...지난해산 비축분 폐기 ‘세월아 네월아’",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "score": 56.2,
+        "fit": 4.96,
+        "is_core": true,
+        "reassigned_from": "",
+        "norm_key": "url:4e86f8aa57844590b6a97fb58c9bd923",
+        "url": "https://n.news.naver.com/mnews/article/662/0000095702?sid=101"
+      },
+      {
+        "rank": 3,
+        "title": "[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…‘약세늪’서 허...",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "score": 64.69,
+        "fit": 4.74,
+        "is_core": false,
+        "reassigned_from": "dist",
+        "norm_key": "url:3d4f0b2d466383602e7e020310a1d013",
+        "url": "https://n.news.naver.com/mnews/article/662/0000095776?sid=101"
+      }
+    ],
+    "policy": [
+      {
+        "rank": 1,
+        "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "score": 27.94,
+        "fit": 10.52,
+        "is_core": true,
+        "reassigned_from": "supply",
+        "norm_key": "url:0451b189bb4ddf516de5dbd58fe2627c",
+        "url": "https://n.news.naver.com/mnews/article/662/0000095705?sid=100"
+      },
+      {
+        "rank": 2,
+        "title": "‘농업민생’ 입법에 여야 합심…농협법·농지법 개정 난제 산적",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "score": 61.7,
+        "fit": 4.1,
+        "is_core": true,
+        "reassigned_from": "",
+        "norm_key": "url:deb49eca29afe0e391230e7dff81cbd9",
+        "url": "https://n.news.naver.com/mnews/article/662/0000095772?sid=102"
+      },
+      {
+        "rank": 3,
+        "title": "“농협, 직선제 받겠다”…강호동 회장 '진짜 농협' 개혁안 발표",
+        "press": "전자신문",
+        "domain": "etnews.com",
+        "score": 58.76,
+        "fit": 6.49,
+        "is_core": false,
+        "reassigned_from": "",
+        "norm_key": "url:8935ca47593b53ff0a21d865b646a03d",
+        "url": "https://n.news.naver.com/mnews/article/030/0003430318?sid=101"
+      },
+      {
+        "rank": 4,
+        "title": "중동發 원자재 충격 현실화···4월 생산자물가 28년 만에 최대 상승",
+        "press": "이뉴스투데이",
+        "domain": "enewstoday.co.kr",
+        "score": 47.4,
+        "fit": 6.7,
+        "is_core": false,
+        "reassigned_from": "",
+        "norm_key": "url:843d282638c85376c3cde5bf8955f54b",
+        "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2431558"
+      }
+    ],
+    "dist": [
+      {
+        "rank": 1,
+        "title": "중동전쟁에도 'K푸드 호조'…중동 수출 37.6% 늘어",
+        "press": "아시아경제",
+        "domain": "view.asiae.co.kr",
+        "score": 13.82,
+        "fit": 2.78,
+        "is_core": true,
+        "reassigned_from": "policy",
+        "norm_key": "url:472baa6ee229e91a7c74c8439567c29f",
+        "url": "https://n.news.naver.com/mnews/article/277/0005766324?sid=101"
+      },
+      {
+        "rank": 2,
+        "title": "중동전쟁에도 K-푸드 수출 순항…라면ㆍ쌀가공식품 등 두자릿수 증가율",
+        "press": "식품음료신문",
+        "domain": "foodnews.co.kr",
+        "score": 36.05,
+        "fit": 6.74,
+        "is_core": false,
+        "reassigned_from": "dist",
+        "norm_key": "url:f51756cfc8644d5091580d064fea7c97",
+        "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=118672"
+      },
+      {
+        "rank": 3,
+        "title": "무안군, ' 양파 100톤' 수도권 직거래로 판로 뚫었다",
+        "press": "뉴스워커",
+        "domain": "newsworker.co.kr",
+        "score": 26.16,
+        "fit": 4.93,
+        "is_core": false,
+        "reassigned_from": "supply",
+        "norm_key": "url:b2f762fb06fb4ba21687e39938db47a5",
+        "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=427898"
+      },
+      {
+        "rank": 4,
+        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+        "press": "농축유통신문",
+        "domain": "amnews.co.kr",
+        "score": 34.31,
+        "fit": 3.59,
+        "is_core": false,
+        "reassigned_from": "supply",
+        "norm_key": "url:1382dfc7ec48500e314b0a91da88be22",
+        "url": "http://www.amnews.co.kr/news/articleView.html?idxno=72651"
+      }
+    ],
+    "pest": [
+      {
+        "rank": 1,
+        "title": "화성서 올해 첫 경기도 과수화상병 발생…도농기원 “확산 차단 총력”",
+        "press": "경기일보",
+        "domain": "kyeonggi.com",
+        "score": 46.78,
+        "fit": 5.2,
+        "is_core": true,
+        "reassigned_from": "policy",
+        "norm_key": "url:0d04d900022ef98dbd4e763792e3eafc",
+        "url": "https://n.news.naver.com/mnews/article/666/0000107992?sid=101"
+      },
+      {
+        "rank": 2,
+        "title": "농진청, 과수화상병 확산 차단... 세종서 첫 과수화상병 확진…위기단계...",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "score": 40.7,
+        "fit": 4.72,
+        "is_core": true,
+        "reassigned_from": "policy",
+        "norm_key": "url:09aabc986aca1c9155c836b8a5101a8c",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=321073"
+      },
+      {
+        "rank": 3,
+        "title": "서천군 농업기술센터, 밭작물 병해충 예찰 강화",
+        "press": "전국매일신문",
+        "domain": "jeonmae.co.kr",
+        "score": 24.23,
+        "fit": 4.17,
+        "is_core": false,
+        "reassigned_from": "pest",
+        "norm_key": "url:f930b6f31845c66652bbe48404ce22f0",
+        "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1258562"
+      },
+      {
+        "rank": 4,
+        "title": "“초기 방제 실패하면 콩 농사 끝”",
+        "press": "팜&마켓",
+        "domain": "farmnmarket.com",
+        "score": 38.67,
+        "fit": 3.73,
+        "is_core": false,
+        "reassigned_from": "policy",
+        "norm_key": "url:4222320334f7c6cabfa018fd8a39e934",
+        "url": "https://www.farmnmarket.com/news/article.html?no=26521"
+      },
+      {
+        "rank": 5,
+        "title": "생육 위축·수확량 감소 부르는 고추 '총채벌레'…보은군 바이러스 확산...",
+        "press": "인뉴스365",
+        "domain": "inews365.com",
+        "score": 18.34,
+        "fit": 4.17,
+        "is_core": false,
+        "reassigned_from": "pest",
+        "norm_key": "url:03b717b5b201cbd2371a3ca10b852143",
+        "url": "https://www.inews365.com/news/article.html?no=920359"
+      }
+    ]
+  },
+  "total_selected": 16
+}

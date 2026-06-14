@@ -1,0 +1,252 @@
+{
+  "report_date": "2026-05-19",
+  "generated_at_kst": "2026-05-19T10:55:45+09:00",
+  "status": "pass",
+  "overall_score": 90.81,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 90.2,
+    "core_quality": 100.0,
+    "commodity_board_quality": 97.22
+  },
+  "counts": {
+    "briefing_total": 17,
+    "commodity_total": 57,
+    "commodity_primary_total": 15,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 30,
+      "policy": 12,
+      "dist": 12,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 146,
+      "policy": 113,
+      "dist": 51,
+      "pest": 47
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.7647,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9412,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 4.5759,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0588,
+    "content_false_positive_rate": 0.0588,
+    "semantic_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0588,
+    "story_duplicate_rate": 0.0588,
+    "cross_section_duplicate_rate": 0.0588,
+    "content_irrelevant_rate": 0.0588,
+    "semantic_false_positive_penalty": 4.1176,
+    "story_duplicate_penalty": 2.7059,
+    "quality_signal_penalty": 6.8235,
+    "core_fit_avg": 4.685,
+    "core_rank_percentile_avg": 0.9494,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.754,
+    "commodity_primary_rank_avg": 3.0
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5,
+      "policy": 0.8333,
+      "dist": 0.5,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "[전국 톡톡] 전국서 갈아엎는 양파 밭‥\"생산비도 못 건져\"",
+      "section": "supply",
+      "age_hours": 23.4
+    },
+    {
+      "title": "[친절한 경제] 수박 한 통에 3만 원… 가격 널뛰는 여름 과일들",
+      "section": "supply",
+      "age_hours": 20.8
+    },
+    {
+      "title": "\"당도 꽉 찬 명품 멜론 출하 시작\" 곡성멜론 본격 판매",
+      "section": "dist",
+      "age_hours": 19.6
+    },
+    {
+      "title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
+      "section": "supply",
+      "age_hours": 19.2
+    },
+    {
+      "title": "풍양농협, 2026년산 햇 마늘 산지경매장 개징",
+      "section": "dist",
+      "age_hours": 19.0
+    },
+    {
+      "title": "담양군, 과수화상병 7월까지 집중 예찰",
+      "section": "pest",
+      "age_hours": 17.0
+    },
+    {
+      "title": "권요안 전북도의원, 양파 가격 폭락 대응 촉구",
+      "section": "policy",
+      "age_hours": 15.6
+    },
+    {
+      "title": "원주서 올해 강원 첫 과수화상병 발생…0.91㏊ 규모",
+      "section": "pest",
+      "age_hours": 14.8
+    }
+  ],
+  "content_false_positive_samples": [
+    {
+      "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+      "href": "https://www.ajunews.com/view/20260518142237838",
+      "section": "policy",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "off_scope_samples": [
+    {
+      "title": "한국향 두리안 수출 262% 급증에도...울상짓는 베트남 농가?",
+      "href": "https://www.ajunews.com/view/20260518142237838",
+      "section": "policy",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "story_duplicate_samples": [
+    {
+      "reason": "same_event_numbers",
+      "left_title": "평창군, 908개 농가에 농산물 가격안정 기금 21억 지원",
+      "left_section": "supply",
+      "left_href": "https://www.yna.co.kr/view/AKR20260518061200062?input=1195m",
+      "right_title": "평창군, 농축산물 가격 안정 기금 21억 지원 …908농가 '숨통'",
+      "right_section": "policy",
+      "right_href": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2430514",
+      "cross_section": true
+    }
+  ],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "동일 사건 카드가 반복 노출됩니다 (비율 6%). URL·제목만 보지 말고 숫자·지역·주체를 묶은 story signature로 섹션 간 중복을 줄이세요.",
+    "해외 비관리 품목 카드가 브리핑에 섞였습니다 (비율 6%). 국내 정책·수급·가격 안정 연결고리가 없으면 해당 품목어를 다음 선별 가드레일에 반영하세요.",
+    "국내 원예·수급 브리핑 범위 밖 기사가 포함되어 있습니다 (비율 6%). 해외 품목 동향, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "foreign_scope_noise",
+      "story_duplicate",
+      "cross_section_duplicate"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.86,
+      "policy": 0.88,
+      "dist": 0.99,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.4,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.65,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "exclude_title_terms": [
+      "두리안"
+    ],
+    "story_duplicate_similarity_min": 0.32
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 90.81,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  }
+}

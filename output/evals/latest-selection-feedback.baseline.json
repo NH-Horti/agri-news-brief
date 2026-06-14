@@ -1,0 +1,188 @@
+{
+  "report_date": "2026-05-18",
+  "generated_at_kst": "2026-05-18T13:51:24+09:00",
+  "scores": {
+    "section_alignment": 95.25,
+    "core_quality": 100.0,
+    "commodity_board_quality": 95.37
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0667,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial": {
+    "score": 82.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 80.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 84.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 76.0,
+      "noise_control": 79.0
+    },
+    "issues": [
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개",
+        "reason": "같은 이슈의 농민신문 기사(‘양파 밭 싹 다 갈아엎었다…’)와 사실상 중복이다. 같은 섹션에 양파 갈아엎기 기사 2건을 배치해 정보 효율이 떨어진다.",
+        "suggested_action": "둘 중 한 건만 남기고, 남는 자리는 배추·무·양파 가격 하락 및 정부 비축·출하조절 같은 수급 총괄 기사로 교체."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "supply",
+        "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+        "reason": "같은 현장성 양파 투쟁 기사와 중복 채택되어 공급 섹션의 스펙트럼이 좁아졌다. 공급 섹션이 마늘 1건+양파 2건+물류 1건 구조로 편중됐다.",
+        "suggested_action": "동일 이슈 1건만 유지하고 다른 품목·수급 총괄 기사로 다양화."
+      },
+      {
+        "type": "section_mismatch",
+        "severity": "medium",
+        "section": "supply",
+        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+        "reason": "내용 핵심이 산지-도매시장 물류체계·파렛트 운송지원으로, 공급보다 유통/물류 섹션 적합성이 높다.",
+        "suggested_action": "유통(dist) 섹션으로 이동하고 공급 섹션은 작황·가격·출하 동향 기사로 대체."
+      },
+      {
+        "type": "weak_section_pick",
+        "severity": "high",
+        "section": "dist",
+        "title": "aT, 농식품 온라인 마케터 육성사업 참여사 300여 개소 모집",
+        "reason": "사업 참여사 모집 공고 성격이 강해 뉴스 가치가 상대적으로 약하다. 유통 구조 변화나 가격·물류 영향이 큰 기사보다 우선될 급은 아니다.",
+        "suggested_action": "유통 섹션 후순위 또는 제외. 실제 거래 변화·도매시장 구조개편 기사로 대체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "high",
+        "section": "dist",
+        "title": "동화청과, 자체 기획· 운영 청년농 교육",
+        "reason": "기업 교육 프로그램 소개로 홍보성 성격이 강하다. 농업 일간 브리프의 핵심 유통 이슈 카드로는 약하다.",
+        "suggested_action": "삭제 또는 단신 처리. 대신 가락시장 물류개선, 온라인도매시장 거래 확산, 군급식 조달 변화 같은 구조 기사 채택."
+      },
+      {
+        "type": "section_mismatch",
+        "severity": "medium",
+        "section": "dist",
+        "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
+        "reason": "양파 가격 폭락과 갈아엎기 투쟁은 본질적으로 공급/정책 이슈다. 유통 섹션 배치는 부적절하다.",
+        "suggested_action": "공급 또는 정책으로 이동, 유통 섹션에서는 제외."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "pest",
+        "title": "\"金 사과 재현?\"… 가격 안정세 사과 '과수화상병' 변수 등장",
+        "reason": "같은 과수화상병 첫 발생 이슈를 병해충 섹션에서 3건 이상 반복했다. 이 기사는 수급 영향까지 짚어 상대적으로 낫지만, 다른 2건과 함께 실린 탓에 중복 문제가 발생했다.",
+        "suggested_action": "이 기사 1건만 대표로 남기고 나머지 동일 속보성 기사 정리."
+      },
+      {
+        "type": "duplicate_topic",
+        "severity": "high",
+        "section": "pest",
+        "title": "과수화상병 올 첫 발생…긴급 방제 ·확산 차단 총력 대응",
+        "reason": "위 기사와 사실상 같은 팩트의 반복이다. 병해충 섹션이 단일 속보로 과포화됐다.",
+        "suggested_action": "제외하고 다른 병해충/돌발해충 기사로 교체."
+      }
+    ]
+  },
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
+}

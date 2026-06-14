@@ -1,0 +1,327 @@
+{
+  "report_date": "2026-06-12",
+  "generated_at_kst": "2026-06-13T11:01:52+09:00",
+  "scores": {
+    "section_alignment": 91.67,
+    "core_quality": 94.11,
+    "commodity_board_quality": 92.0
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "reader_hard_issue_count": 0,
+    "reader_hard_issue_rate": 0.0,
+    "reader_quality_penalty": 0.0,
+    "reader_quality_cap": 100.0,
+    "weak_core_rate": 0.1429,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_primary_count": 6,
+    "commodity_board_daily_min_primary_count": 6,
+    "commodity_board_low_coverage": false,
+    "commodity_board_coverage_rate": 0.1818,
+    "commodity_primary_title_item_missing_rate": 0.0,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.6667
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "editorial_quality_samples": [],
+  "reader_hard_issue_samples": [],
+  "editorial": {
+    "score": 88.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
+    "scores": {
+      "article_selection": 86.0,
+      "section_fit": 87.0,
+      "core_pick_quality": 90.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 84.0,
+      "noise_control": 86.0
+    },
+    "issues": [
+      {
+        "type": "duplication",
+        "severity": "medium",
+        "section": "policy",
+        "title": "양파 산업 위기 해법 찾는다",
+        "reason": "공급 섹션 양파 기사들과 주제가 크게 겹친다.",
+        "suggested_action": "정책 고유성 강한 법·재정 기사로 일부 교체."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "supply",
+        "title": "진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
+        "reason": "지역 지원성 기사로 전국 수급 핵심성은 약하다.",
+        "suggested_action": "기계화·산지둔갑 등 구조 이슈로 교체 검토."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "supply",
+        "title": "광양 매실 생산량 급증... 가격 은 전년보다 하락 조짐",
+        "reason": "지역 시황 기사로 파급력은 제한적이다.",
+        "suggested_action": "더 전국성 있는 품목 구조 기사 우선 선별."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
+        "section": "dist",
+        "title": "고당도 ‘다올찬수박’ 본격 출하",
+        "reason": "출하 소식은 맞지만 판촉성 색채가 강하다.",
+        "suggested_action": "물류·공판·온라인유통 기사보다 뒤로 배치."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "“농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
+        "reason": "온라인 판매 운영 이슈가 있는데 선택되지 않았다.",
+        "suggested_action": "단순 출하 홍보 카드와 교체 검토."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "pest",
+        "title": "해외 직구 씨앗, 소량도 식물검역증명서 첨부해야",
+        "reason": "검역 제도성 기사로 당일 병해충 긴급감은 낮다.",
+        "suggested_action": "화상병 확산·현장 피해 기사 비중을 더 높여라."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "low",
+        "section": "pest",
+        "title": "충남도 농기원, 맥문동 정식 후 예찰·방제 필수",
+        "reason": "특정 약용작물 국지 기사로 독자 범용성이 낮다.",
+        "suggested_action": "과수 노린재 등 범용 과수 해충 기사 우선 검토."
+      }
+    ]
+  },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_section_fit",
+      "editorial_duplicate_topic",
+      "editorial_missed_opportunity"
+    ],
+    "section_card_min_fit": {
+      "default": 0.85,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.4,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "editorial_guardrail_mode": "advisory_only",
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 88.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "promotion_gates": {
+      "editorial_score_min": 95.0,
+      "operational_score_min": 95.0,
+      "section_count_score_min": 95.0,
+      "commodity_board_score_min": 95.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 203,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "policy": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 73,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "dist": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 45,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "pest": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 25,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        }
+      },
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
+      "minimum_fallback_sections": [],
+      "severe_underfilled_sections": [],
+      "preferred_count": 5,
+      "soft_fallback_count": 4,
+      "minimum_fallback_count": 3,
+      "target_score": 95.0,
+      "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "missed_opportunity",
+      "article_selection",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false,
+      "commodity_strict_primary_only": true,
+      "commodity_disable_primary_fallback": true
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
+  }
+}

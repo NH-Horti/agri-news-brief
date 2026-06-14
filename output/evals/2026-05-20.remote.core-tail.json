@@ -1,0 +1,433 @@
+﻿{
+  "report_date": "2026-05-20",
+  "generated_at_kst": "2026-05-20T14:59:31+09:00",
+  "status": "pass",
+  "overall_score": 94.11,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 100.0
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 41,
+    "commodity_primary_total": 18,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 3,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 27,
+      "policy": 6,
+      "dist": 5,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 143,
+      "policy": 87,
+      "dist": 53,
+      "pest": 57
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.75,
+    "surface_reuse_penalty": 0.0175,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 4.2462,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0625,
+    "promotional_filler_rate": 0.125,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.0625,
+    "dist_weak_ops_rate": 0.0625,
+    "editorial_quality_penalty": 4.8214,
+    "core_fit_avg": 4.0243,
+    "core_rank_percentile_avg": 0.938,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9444,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.3917,
+    "commodity_primary_rank_avg": 3.3889
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5,
+      "policy": 0.6667,
+      "dist": 0.5833,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 0.954,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "수급 대책 약발 안먹히는 ‘햇 양파 ’…“수출로 값 안정 도모하자”",
+      "section": "policy",
+      "age_hours": 23.0
+    },
+    {
+      "title": "“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생",
+      "section": "pest",
+      "age_hours": 23.0
+    },
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "section": "supply",
+      "age_hours": 19.6
+    },
+    {
+      "title": "계란 224만개 추가 수입, 가공용 돼지ㆍ닭고기 할당관세 추가 적용",
+      "section": "policy",
+      "age_hours": 19.4
+    },
+    {
+      "title": "\"잘 팔린다는 소식에 출하했더니 가격 폭락\" … 23만건 빅데이터가 밝힌...",
+      "section": "supply",
+      "age_hours": 17.7
+    },
+    {
+      "title": "이상기온에 과일 가격 상승, 채소류는 안정",
+      "section": "supply",
+      "age_hours": 16.9
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "section": "policy",
+      "age_hours": 15.8
+    },
+    {
+      "title": "양배추 1포기 2600원대로 '뚝'…재고에 봄철 출하 물량 겹치며 가격 급락",
+      "section": "supply",
+      "age_hours": 15.6
+    }
+  ],
+  "content_false_positive_samples": [],
+  "story_duplicate_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3586011",
+      "section": "supply",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320854",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+      "href": "https://www.yna.co.kr/view/AKR20260519112200062?input=1195m",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "충북 충주 과수 원서 과수화상병 올 첫 발생",
+      "href": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101053",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (policy_wrong_section=6%, promotional_filler=12%, dist_weak_ops=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 94.11,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  },
+  "editorial": {
+    "status": "success",
+    "rubric_version": 1,
+    "model": "gpt-5.4",
+    "generated_at_kst": "2026-05-20T14:59:55+09:00",
+    "score": 82.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 80.0,
+      "section_fit": 76.0,
+      "core_pick_quality": 74.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 83.0,
+      "noise_control": 72.0
+    },
+    "summary": "핵심 이슈인 봄채소 약세와 과수화상병은 잘 잡았지만, 공급·유통 섹션에 지역 홍보성/행사성 카드가 섞였고 유통 핵심축이 약하다. 정책 섹션도 제도 변화보다 수급 대응 기사 비중이 높아 편집 의도가 다소 흐려졌다. 전반적으로 읽을 만하지만 95점급 편집으로 보긴 어렵다.",
+    "issues": [
+      {
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "supply",
+        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+        "reason": "지역 지원행사성 기사로 수급 이슈성이 약함.",
+        "suggested_action": "공급 동향·가격·출하 영향 기사로 교체."
+      },
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "supply",
+        "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+        "reason": "코어로 둘 수준의 파급력과 데이터가 부족함.",
+        "suggested_action": "비코어 또는 제외 처리."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "high",
+        "section": "dist",
+        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
+        "reason": "브랜드 출하 홍보에 가까워 유통 구조 변화 정보가 약함.",
+        "suggested_action": "도매시장·APC·수출·온라인유통 변화 기사 우선."
+      },
+      {
+        "type": "weak_core",
+        "severity": "medium",
+        "section": "dist",
+        "title": "청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하",
+        "reason": "유통 섹션 코어치고 운영·제도·채널 변화가 빈약함.",
+        "suggested_action": "비코어로 내리거나 더 강한 유통 기사 교체."
+      },
+      {
+        "type": "duplicate_theme",
+        "severity": "medium",
+        "section": "pest",
+        "title": "“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생 / ‘ 과수화상병 ’ 주의보",
+        "reason": "동일 화상병 이슈를 비슷한 각도로 중복 배치.",
+        "suggested_action": "하나는 발생 총괄, 하나는 대응/약제/추가 확산 기사로 분산."
+      },
+      {
+        "type": "section_drift",
+        "severity": "medium",
+        "section": "policy",
+        "title": "수급 대책 약발 안먹히는 ‘햇 양파 ’…“수출로 값 안정 도모하자”",
+        "reason": "정책보다는 산지 수급·출하 대응 기사 성격이 강함.",
+        "suggested_action": "공급으로 이동하거나 정책성 stronger 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+        "reason": "후보풀에 있었는데도 유통 섹션에 더 적합한 운영 기사 활용이 약함.",
+        "suggested_action": "홍보성 출하 기사 대신 산지유통 고도화 기사 전진 배치."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농식품부 , ‘황당 규제’ 50개 개선",
+        "reason": "온라인도매시장 가입기준 완화 등 제도 기사보다 현재 선택안의 정책성 밀도가 낮음.",
+        "suggested_action": "정책 섹션에 제도 변화 기사 반영."
+      }
+    ],
+    "section_notes": {
+      "supply": "양배추 급락 기사는 적절한 리드다. 다만 창녕 마늘망 지원은 공급 섹션 품질을 크게 깎는다. 하우스과일 조기 출하는 보조 카드로 무난하지만, 전체적으로 양파·채소 수급 구조 기사 비중을 더 높였어야 한다.",
+      "policy": "계란 추가 수입 기사는 정책 섹션에 맞지만, 양파 수출 기사까지 더해지며 수급 대응 위주로 쏠렸다. 규제합리화, 양곡수급계획 조정 등 더 제도적인 후보를 일부 반영하는 편이 낫다.",
+      "dist": "가장 아쉬운 섹션이다. 수박 본격 출하는 브랜드 홍보성 성격이 강하다. 현장투어, 온라인도매시장 규제완화, APC 고도화 같은 유통 인프라/채널 기사로 중심을 세웠어야 한다.",
+      "pest": "과수화상병 자체는 당일 최우선 이슈라 선별 방향은 맞다. 그러나 같은 이슈 중복도가 높아 추가 발생, 현장진단실, 방제제 등록 등 대응 관점으로 차별화가 필요하다."
+    },
+    "improvement_suggestions": [
+      "공급 섹션에서 지역 농협 지원·행사성 기사는 원칙적으로 제외하라.",
+      "유통 코어는 브랜드 출하보다 APC·도매시장·수출·온라인유통 변화 기사로 선정하라.",
+      "정책 섹션은 단순 수급 기사와 제도 기사 비중을 분리해 후자를 최소 1건 이상 확보하라.",
+      "동일 병해충 이슈를 2건 이상 넣을 때는 발생·확산·대응 각도를 분리하라.",
+      "코어 선정 시 기사 파급력, 전국성, 데이터 밀도를 함께 보라.",
+      "후보풀에 더 나은 정합 기사 있으면 저적합 코어를 과감히 교체하라."
+    ],
+    "raw_response_excerpt": "{\"score\":82,\"scores\":{\"article_selection\":80,\"section_fit\":76,\"core_pick_quality\":74,\"summary_usefulness\":89,\"missed_opportunity\":83,\"noise_control\":72},\"summary\":\"핵심 이슈인 봄채소 약세와 과수화상병은 잘 잡았지만, 공급·유통 섹션에 지역 홍보성/행사성 카드가 섞였고 유통 핵심축이 약하다. 정책 섹션도 제도 변화보다 수급 대응 기사 비중이 높아 편집 의도가 다소 흐려졌다. 전반적으로 읽을 만하지만 95점급 편집으로 보긴 어렵다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대\",\"reason\":\"지역 지원행사성 기사로 수급 이슈성이 약함.\",\"suggested_action\":\"공급 동향·가격·출하 영향 기사로 교체.\"},{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대\",\"reason\":\"코어로 둘 수준의 파급력과 데이터가 부족함.\",\"suggested_action\":\"비코어 또는 제외 처리.\"},{\"type\":\"promotional_filler\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하\",\"reason\":\"브랜드 출하 홍보에 가까워 유통 구조 변화 정보가 약함.\",\"suggested_action\":\"도매시장·APC·수출·온라인유통 변화 기사 우선.\"},{\"type\":\"weak_core\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"청주 오송농협, ‘청원생명 맛찬동이’ 수박 본격 출하\",\"reason\":\"유통 섹션 코어치고 운영·제도·채널 변화가 빈약함.\",\"suggested_action\":\"비코어로 내리거나 더 강한 유통 기사 교체.\"},{\"type\":\"duplicate_theme\",\"severity\":\"medium\",\"section\":\"pest\",\"title\":\"“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생 / ‘ 과수화상병 ’ 주의보\",\"reason\":..."
+  },
+  "editorial_score": 82.0,
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 82.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "core_quality",
+      "missed_opportunity",
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
+}
+

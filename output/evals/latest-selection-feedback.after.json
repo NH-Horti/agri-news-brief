@@ -1,0 +1,188 @@
+{
+  "report_date": "2026-05-18",
+  "generated_at_kst": "2026-05-18T14:16:26+09:00",
+  "scores": {
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 95.37
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial": {
+    "score": 76.0,
+    "target_score": 95.0,
+    "target_status": "needs_major_iteration",
+    "scores": {
+      "article_selection": 74.0,
+      "section_fit": 72.0,
+      "core_pick_quality": 73.0,
+      "summary_usefulness": 85.0,
+      "missed_opportunity": 70.0,
+      "noise_control": 68.0
+    },
+    "issues": [
+      {
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "supply",
+        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+        "reason": "산지 물류·파렛트 출하 지원은 공급 동향보다 유통/물류 또는 제도 이슈에 가깝다. 공급 섹션 핵심 카드로 두기엔 주제축이 어긋난다.",
+        "suggested_action": "dist 또는 policy로 이동하고, supply에는 배추·무·양파 가격 하락/비축 확대 등 직접 수급 기사로 교체."
+      },
+      {
+        "type": "duplicate",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개 / ‘양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+        "reason": "동일 사건을 두 건이나 실어 지면 효율을 해쳤다. 같은 창의 다른 소스를 병렬 배치할 필요성이 낮다.",
+        "suggested_action": "하나만 남기고 다른 한 자리는 양배추·배추·무 가격 하락 및 정부 대응 기사로 대체."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "medium",
+        "section": "policy",
+        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
+        "reason": "정책적 측면은 있으나 본질적으로 이해관계자 요구·시장 인프라 이슈여서 유통 섹션 적합성이 더 높다. 정책 섹션 핵심 카드로는 공공 정책 결정 기사보다 약하다.",
+        "suggested_action": "dist로 이동하거나 비중을 낮추고, policy에는 마늘·양파 주산지협의체 회의나 정부 수급안정 대책 기사 우선 반영."
+      },
+      {
+        "type": "weak_selection",
+        "severity": "medium",
+        "section": "policy",
+        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
+        "reason": "농정 일반론 성격의 지역 리포트로, 당일 농산물 가격·수급·제도 변화의 긴급성과 직접성이 약하다.",
+        "suggested_action": "백필 성격으로만 제한하고, 더 직접적인 가격안정·수급대책 기사로 교체."
+      },
+      {
+        "type": "promotional",
+        "severity": "high",
+        "section": "dist",
+        "title": "서익산 농협, 블루베리 육성사업으로 농가소득 견인",
+        "reason": "특정 농협의 육성 성과 소개 성격이 강해 업계 전체 유통 변화나 제도 변화보다 홍보성에 가깝다.",
+        "suggested_action": "산지유통 구조 변화, 온라인도매시장, 학교급식 조달, 군급식 조달 변화 등 파급력 큰 기사로 교체."
+      },
+      {
+        "type": "promotional",
+        "severity": "medium",
+        "section": "dist",
+        "title": "동화청과, 자체 기획· 운영 청년농 교육",
+        "reason": "회사 활동 소개 중심의 기관 홍보성 기사다. 업계 구조 변화나 시장 가격 신호가 약하다.",
+        "suggested_action": "부득이할 때만 후순위 백필로 사용하고, 실제 유통제도·거래방식 변화 기사 우선 선별."
+      },
+      {
+        "type": "duplicate",
+        "severity": "high",
+        "section": "pest",
+        "title": "\"金 사과 재현?\"…가격 안정세 사과 '과수화상병' 변수 등장 / 과수화상병 올 첫 발생…긴급 방제·확산 차단 총력 대응",
+        "reason": "둘 다 같은 충주 첫 과수화상병 발생을 다룬다. 하나는 가격 영향, 하나는 방제 대응이지만 핵심 사실이 중복돼 병해충 섹션이 과도하게 한 사건에 잠식됐다.",
+        "suggested_action": "1건만 메인으로 남기고 다른 한 자리는 지역 확산 가능성, 타 병해충 대응, 돌발해충 기사로 분산."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "supply",
+        "title": "배추·무·양파 가격 하락.. 정부, 비축 확대·출하 조절",
+        "reason": "원시 후보군에 공급 섹션 핵심감인 직접 수급대책 기사가 있었는데, 대신 물류 기사와 양파 중복 기사들이 들어갔다.",
+        "suggested_action": "공급 섹션의 메인 또는 서브로 채택해 가격 하락과 정부 대응을 함께 보여주기."
+      }
+    ]
+  },
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 76.0,
+    "target_status": "needs_major_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "missed_opportunity",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
+}

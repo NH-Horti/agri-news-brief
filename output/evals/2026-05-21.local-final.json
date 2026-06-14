@@ -1,0 +1,276 @@
+{
+  "report_date": "2026-05-21",
+  "generated_at_kst": "2026-05-21T12:26:23+09:00",
+  "status": "pass",
+  "overall_score": 92.45,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 88.75,
+    "section_alignment": 91.43,
+    "core_quality": 100.0,
+    "commodity_board_quality": 93.95
+  },
+  "counts": {
+    "briefing_total": 14,
+    "commodity_total": 59,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 1,
+      "dist": 1,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 28,
+      "policy": 14,
+      "dist": 9,
+      "pest": 8
+    },
+    "raw_by_section": {
+      "supply": 156,
+      "policy": 104,
+      "dist": 41,
+      "pest": 70
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.9286,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9286,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.625,
+    "section_alignment_fit_avg": 4.3079,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.2143,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.2857,
+    "promotional_core_rate": 0.2,
+    "weak_core_editorial_rate": 0.2,
+    "pest_theme_duplicate_rate": 0.1429,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 5.3143,
+    "core_fit_avg": 3.948,
+    "core_rank_percentile_avg": 0.9287,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9412,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 2.9241,
+    "commodity_primary_rank_avg": 2.7647
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.6667,
+      "dist": 0.5833,
+      "pest": 0.6667
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.9495,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "원주에 반복되는 과수화상병 …“농가 초긴장”",
+      "section": "pest",
+      "age_hours": 22.4
+    },
+    {
+      "title": "공급과잉 ' 양파 '…농식품부, 수출 지원 나서",
+      "section": "supply",
+      "age_hours": 18.9
+    },
+    {
+      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+      "section": "dist",
+      "age_hours": 18.4
+    },
+    {
+      "title": "세종서 사상 첫 과수화상병…이틀새 전국 7농가 2.5㏊",
+      "section": "pest",
+      "age_hours": 17.2
+    },
+    {
+      "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
+      "section": "supply",
+      "age_hours": 16.4
+    },
+    {
+      "title": "농식품부 \"국제곡물가 상승세…8∼11월 공급 물량 확보\"",
+      "section": "policy",
+      "age_hours": 16.0
+    },
+    {
+      "title": "국제 밀·대두 추가 상승 전망…정부 \"8∼11월 물량 확보\"",
+      "section": "policy",
+      "age_hours": 15.9
+    },
+    {
+      "title": "강원 농협 , 선진 산지유통 현장 벤치마킹…농산물 경쟁력 강화 모색",
+      "section": "dist",
+      "age_hours": 15.9
+    }
+  ],
+  "content_false_positive_samples": [],
+  "story_duplicate_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "충남도농기원, 시설채소 현장기술지원단 가동...\"폭염 속 토마토 ·오이...",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320988",
+      "section": "supply",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "시설원예 농가 경영비 절감·안정 생산 총력 지원",
+      "href": "http://www.amnews.co.kr/news/articleView.html?idxno=72617",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "가락시장 근교산 채소류 파렛트 운송지원 확대 추진",
+      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64702",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "전북자치도, 금마농협서 농산물 유통 활성화 간담회 개최",
+      "href": "http://www.domin.co.kr/news/articleView.html?idxno=1556123",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "\"새벽마다 소독해도 속수무책\"…사과산지 충주 비상",
+      "href": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008572225&plink=ORI&cooper=NAVER",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    },
+    {
+      "title": "해마다 찾아오는 과수화상병 ...충북서 4건 발생",
+      "href": "https://www.seoul.co.kr/news/society/2026/05/20/20260520500136?wlog_tag3=naver",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=29%, pest_theme_duplicate=14%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 92.45,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  }
+}
