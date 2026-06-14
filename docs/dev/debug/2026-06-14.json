@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T19:41:35+09:00",
-  "build_tag": "5551df0",
+  "generated_at_kst": "2026-06-14T21:05:21+09:00",
+  "build_tag": "2cedfe9",
   "filter_rejects": [
     {
       "section": "policy",
@@ -12672,7 +12672,7 @@
         {
           "selected": true,
           "is_core": true,
-          "score": 33.88,
+          "score": 33.68,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13792,38 +13792,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 10.17,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "광주MBC",
-          "domain": "kjmbc.co.kr",
-          "title": "수입산 장벽 넘는다..체리 '국산화' 시동",
-          "url": "https://kjmbc.co.kr/NewsArticle/1522909",
-          "reason": "below_threshold",
-          "fit_score": -3.41,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "멜론 출하",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.32,
-            "market_hits": 0,
-            "strength": 7,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 10.09,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -13851,6 +13819,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 9.97,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "광주MBC",
+          "domain": "kjmbc.co.kr",
+          "title": "수입산 장벽 넘는다..체리 '국산화' 시동",
+          "url": "https://kjmbc.co.kr/NewsArticle/1522909",
+          "reason": "below_threshold",
+          "fit_score": -3.41,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "멜론 출하",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.32,
+            "market_hits": 0,
+            "strength": 7,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 1.5
           }
         },
         {
@@ -14957,7 +14957,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 39.2,
+          "score": 39.0,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -15755,38 +15755,6 @@
           }
         },
         {
-          "selected": true,
-          "is_core": false,
-          "score": 18.67,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "에스리스트",
-          "domain": "slist.kr",
-          "title": "CJ프레시웨이, 세광푸드와 식자재 계약→동원F&B, '컨펙스' 그랑프리",
-          "url": "https://www.slist.kr/news/articleView.html?idxno=744975",
-          "reason": "",
-          "fit_score": 1.53,
-          "selection_stage": "policy_preferred_count_recovery",
-          "selection_note": "preferred_count_tail",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 콜드체인",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 2,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
           "selected": false,
           "is_core": false,
           "score": 20.37,
@@ -15816,6 +15784,38 @@
             "offtopic_pen": 1,
             "press_tier": 2,
             "press_weight": 1.7
+          }
+        },
+        {
+          "selected": true,
+          "is_core": false,
+          "score": 18.47,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "에스리스트",
+          "domain": "slist.kr",
+          "title": "CJ프레시웨이, 세광푸드와 식자재 계약→동원F&B, '컨펙스' 그랑프리",
+          "url": "https://www.slist.kr/news/articleView.html?idxno=744975",
+          "reason": "",
+          "fit_score": 1.53,
+          "selection_stage": "policy_preferred_count_recovery",
+          "selection_note": "preferred_count_tail",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 콜드체인",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
           }
         },
         {
@@ -18055,7 +18055,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 27.7,
+          "score": 27.5,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18087,7 +18087,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 25.02,
+          "score": 24.82,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18407,7 +18407,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.65,
+          "score": 3.45,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20094,8 +20094,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 111.46,
-        "at_kst": "2026-06-14T19:40:44+09:00",
+        "elapsed_sec": 105.53,
+        "at_kst": "2026-06-14T21:04:37+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-14"
@@ -20104,14 +20104,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 111.46,
-        "at_kst": "2026-06-14T19:40:44+09:00"
+        "elapsed_sec": 105.531,
+        "at_kst": "2026-06-14T21:04:37+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 111.548,
-        "at_kst": "2026-06-14T19:40:44+09:00",
+        "elapsed_sec": 105.785,
+        "at_kst": "2026-06-14T21:04:37+09:00",
         "details": {
           "archive_count": 87
         }
@@ -20119,35 +20119,35 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 111.548,
-        "at_kst": "2026-06-14T19:40:44+09:00"
+        "elapsed_sec": 105.785,
+        "at_kst": "2026-06-14T21:04:37+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 112.583,
-        "at_kst": "2026-06-14T19:40:45+09:00",
+        "elapsed_sec": 106.773,
+        "at_kst": "2026-06-14T21:04:38+09:00",
         "details": {
-          "html_bytes": 312314
+          "html_bytes": 312313
         }
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 112.583,
-        "at_kst": "2026-06-14T19:40:45+09:00"
+        "elapsed_sec": 106.773,
+        "at_kst": "2026-06-14T21:04:38+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 162.925,
-        "at_kst": "2026-06-14T19:41:35+09:00"
+        "elapsed_sec": 150.083,
+        "at_kst": "2026-06-14T21:05:21+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 162.925,
-        "at_kst": "2026-06-14T19:41:35+09:00",
+        "elapsed_sec": 150.083,
+        "at_kst": "2026-06-14T21:05:21+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-14.json"
         }
@@ -20156,13 +20156,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 162.925,
-      "at_kst": "2026-06-14T19:41:35+09:00",
+      "elapsed_sec": 150.083,
+      "at_kst": "2026-06-14T21:05:21+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-14.json"
       }
     },
-    "elapsed_sec": 162.925
+    "elapsed_sec": 150.083
   },
   "commodity_board_audit": {
     "summary": {
@@ -20775,13 +20775,13 @@
             "url": "https://www.kwnews.co.kr/page/view/2026061250041700000",
             "section": "pest",
             "press": "강원일보",
-            "score": 25.02,
+            "score": 24.82,
             "selection_fit_score": 3.59,
             "selection_stage": "forced_section",
             "is_core": false,
             "representative_rank": 0,
-            "representative_score": 248.201,
-            "board_score": 246.701,
+            "representative_score": 248.091,
+            "board_score": 246.591,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -20823,13 +20823,13 @@
           "url": "https://www.ichannela.com/news/main/news_detailPage.do?publishId=000000534278",
           "section": "supply",
           "press": "ichannela",
-          "score": 33.88,
+          "score": 33.68,
           "selection_fit_score": 3.55,
           "selection_stage": "core_final",
           "is_core": true,
           "representative_rank": 3,
-          "representative_score": 393.934,
-          "board_score": 310.934,
+          "representative_score": 393.824,
+          "board_score": 310.824,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -20895,13 +20895,13 @@
             "url": "https://www.ichannela.com/news/main/news_detailPage.do?publishId=000000534278",
             "section": "supply",
             "press": "ichannela",
-            "score": 33.88,
+            "score": 33.68,
             "selection_fit_score": 3.55,
             "selection_stage": "core_final",
             "is_core": true,
             "representative_rank": 3,
-            "representative_score": 393.934,
-            "board_score": 310.934,
+            "representative_score": 393.824,
+            "board_score": 310.824,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -22014,13 +22014,13 @@
             "url": "http://www.tjb.co.kr/sub0301/bodo/view/id/99485",
             "section": "pest",
             "press": "TJB",
-            "score": 27.7,
+            "score": 27.5,
             "selection_fit_score": 0.0,
             "selection_stage": "",
             "is_core": false,
             "representative_rank": 1,
-            "representative_score": 296.455,
-            "board_score": 252.455,
+            "representative_score": 296.345,
+            "board_score": 252.345,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
