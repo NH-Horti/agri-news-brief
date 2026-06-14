@@ -4418,6 +4418,7 @@ _SHORT_TERM_FALSE_POSITIVE_WORDS: dict[str, tuple[str, ...]] = {
              "관유자", "임유자", "피보유자", "비소유자"),
     "매실": ("판매실", "거래실", "매실적"),
     "감자": ("투자감자", "감자본"),  # 주식 감자(감자본)
+    "딸기": ("산딸기", "뱀딸기", "멍석딸기", "겨울딸기", "땅딸기", "복분자딸기", "산딸기나무"),
 }
 
 
@@ -6837,6 +6838,22 @@ def is_commodity_origin_history_tail_context(title: str, desc: str) -> bool:
     market_hits = count_any(txt, [w.lower() for w in ("수급", "가격", "출하", "반입", "경락", "도매시장", "공판장", "농가 피해", "생산량", "재배면적")])
     title_story = any(term in ttl for term in ("된 사연", "유래", "역사", "들여온"))
     return origin_hits >= 2 and title_story and market_hits == 0
+
+
+def is_origin_fraud_enforcement_context(title: str, desc: str) -> bool:
+    """원산지 둔갑·박스갈이·원산지 표시 위반 적발/단속형 기사 판정.
+
+    품목 수급(supply)이나 정책(policy) 핵심이 아니라 유통 단속·부정유통 성격이 강한 기사다.
+    (예: "타 지역 참외의 '성주 참외' 둔갑 정황…박스갈이 의심")
+    """
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not txt:
+        return False
+    strong_fraud = any(w in txt for w in ("둔갑", "박스갈이"))
+    origin_violation = ("원산지" in txt) and (
+        count_any(txt, [w.lower() for w in ("위반", "거짓", "속여", "속이", "허위", "부정유통", "적발", "둔갑")]) >= 1
+    )
+    return strong_fraud or origin_violation
 
 
 def is_commodity_regional_branding_context(title: str, desc: str) -> bool:
@@ -13617,6 +13634,8 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("low_value_coop_pr_feature")
     if key == "pest" and is_news_roundup_brief_context(ttl, desc):
         return _reject("pest_news_roundup_brief")
+    if key in ("supply", "policy") and is_origin_fraud_enforcement_context(ttl, desc):
+        return _reject("origin_fraud_enforcement")
 
     # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
     if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
@@ -21727,6 +21746,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "non_agri_education_opinion_noise"
     if section_key in ("supply", "policy", "dist") and is_commodity_origin_history_tail_context(a.title or "", a.description or ""):
         return "commodity_origin_history_tail"
+    if section_key in ("supply", "policy") and is_origin_fraud_enforcement_context(a.title or "", a.description or ""):
+        return "origin_fraud_enforcement"
     if section_key == "pest" and is_pest_no_damage_crop_price_context(a.title or "", a.description or ""):
         return "pest_no_damage_crop_price"
     if section_key == "pest" and is_pest_diplomacy_not_pest_context(a.title or "", a.description or ""):
@@ -26199,6 +26220,16 @@ def _build_sections_phase123(
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final pest direct-gap guard failed: %s", e)
+
+    # 최종 품질 sweep: audit(26064) 이후의 editorial shadow 교체·recovery·refill 단계가
+    # 재유입했을 수 있는 postbuild reject 기사(원산지 둔갑·연간 회고 등)를 발행 직전 1회 더 정리한다.
+    try:
+        final_quality_sweep = _audit_final_sections(final_by_section)
+        if final_quality_sweep:
+            log.info("[REBALANCE] final quality sweep pruned %d residual item(s)", final_quality_sweep)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final quality sweep failed: %s", e)
 
     return final_by_section
 
@@ -32326,6 +32357,10 @@ def _replace_final_item_with_editorial_candidate(
 ) -> bool:
     items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
     if victim_idx < 0 or victim_idx >= len(items):
+        return False
+    # 교체 후보가 섹션 품질 게이트(원산지 둔갑·연간 회고 등 postbuild reject)에서 걸리면
+    # editorial shadow 교체로도 재유입하지 않는다. (audit 이후 단계라 별도 가드 필요)
+    if _postbuild_article_reject_reason(candidate, section_key, apply_selection_fit=False):
         return False
     ident = _article_selection_identity(candidate)
     conf = next((s for s in SECTIONS if s.get("key") == section_key), {})
