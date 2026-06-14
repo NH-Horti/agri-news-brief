@@ -1,0 +1,207 @@
+{
+  "report_date": "2026-05-18",
+  "generated_at_kst": "2026-05-18T14:23:46+09:00",
+  "scores": {
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 95.37
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [
+      "editorial_section_fit",
+      "editorial_noise_filter",
+      "editorial_duplicate_topic",
+      "editorial_missed_opportunity"
+    ],
+    "section_card_min_fit": {
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial": {
+    "score": 72.0,
+    "target_score": 95.0,
+    "target_status": "needs_major_iteration",
+    "scores": {
+      "article_selection": 68.0,
+      "section_fit": 62.0,
+      "core_pick_quality": 66.0,
+      "summary_usefulness": 84.0,
+      "missed_opportunity": 70.0,
+      "noise_control": 58.0
+    },
+    "issues": [
+      {
+        "type": "duplicate",
+        "severity": "high",
+        "section": "supply",
+        "title": "양파 농가들, '양파밭 갈아엎기 투쟁' 전개",
+        "reason": "같은 양파 갈아엎기 이슈가 supply·policy에 중복 반영됐다.",
+        "suggested_action": "한 꼭지만 남기고 다른 면은 해설·대책 기사로 교체."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "supply",
+        "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+        "reason": "산지 수급보다 도매시장 물류정책 성격이 강하다.",
+        "suggested_action": "dist 또는 policy로 이동."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "medium",
+        "section": "policy",
+        "title": "가락시장 유통인, \"시설현대화 국비 지원 확대·융자 금리 인하\" 촉구",
+        "reason": "정책 결정이 아닌 이해관계자 요구 성명에 가깝다.",
+        "suggested_action": "비중 축소하거나 실제 정부 조치 기사로 대체."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "high",
+        "section": "dist",
+        "title": "서익산 농협 , 블루베리 육성사업으로 농가소득 견인",
+        "reason": "유통 구조 변화보다 지역농협 홍보성 성공사례다.",
+        "suggested_action": "dist에서 제외하고 구조적 판로·물류 기사로 교체."
+      },
+      {
+        "type": "promotional",
+        "severity": "medium",
+        "section": "dist",
+        "title": "동화청과, 자체 기획· 운영 청년농 교육",
+        "reason": "업체 활동 소개 중심으로 뉴스 가치가 약하다.",
+        "suggested_action": "제외하거나 업계 제도 변화 기사로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "supply",
+        "title": "배추·무·양파 가격 하락.. 정부, 비축 확대·출하 조절",
+        "reason": "개별 산지 르포보다 범용 채소 수급 대책을 함께 잡았어야 했다.",
+        "suggested_action": "공급 섹션 상단에 종합 수급 기사 추가."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "충주 사과 농장서 올 첫 ‘과수화상병’…위기경보 ‘주의’ 격상",
+        "reason": "농민신문 원문이 있었는데 유사 기사 다건으로 분산했다.",
+        "suggested_action": "대표 기사 1건으로 통일하고 지역 후속만 보강."
+      },
+      {
+        "type": "noise",
+        "severity": "medium",
+        "section": "policy",
+        "title": "초기 비용만 수억 원대 스마트팜…실속 보급형도 고민해야",
+        "reason": "해당 기간 최우선 농정 이슈 대비 중요도가 낮은 백필성 선택이다.",
+        "suggested_action": "정책 비중이 큰 수급·가격 대책 기사로 교체."
+      }
+    ]
+  },
+  "editorial_improvement_plan": {
+    "mode": "shadow_proposal",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 72.0,
+    "target_status": "needs_major_iteration",
+    "iteration_budget": 3,
+    "guardrail_focus": [
+      "missed_opportunity",
+      "article_selection",
+      "noise_control",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "This is intentionally not auto-applied in production. Use it to drive a replay/eval loop, then promote only changes that improve both editorial and operational scores."
+  }
+}

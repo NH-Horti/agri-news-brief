@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-05-01",
+  "generated_at_kst": "2026-05-09T00:58:51+09:00",
+  "status": "pass",
+  "overall_score": 95.91,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 92.5,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.25,
+    "section_alignment": 100.0,
+    "core_quality": 88.83,
+    "commodity_board_quality": 82.9
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 46,
+    "commodity_primary_total": 16,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 3,
+      "dist": 4,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 1,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 26,
+      "policy": 3,
+      "dist": 9,
+      "pest": 8
+    },
+    "raw_by_section": {
+      "supply": 169,
+      "policy": 83,
+      "dist": 34,
+      "pest": 14
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.625,
+    "surface_reuse_penalty": 0.0323,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.5481,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.2533,
+    "core_rank_percentile_avg": 0.8253,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.1667,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.875,
+    "commodity_primary_weak_rate": 0.125,
+    "commodity_primary_fit_avg": 1.2825,
+    "commodity_primary_rank_avg": 2.5625
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.5833,
+      "dist": 0.4167,
+      "pest": 0.5833
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.55,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "경북도, 물가 부담 완화 위해 경북 사과 할인 판매",
+      "section": "supply",
+      "age_hours": 20.8
+    },
+    {
+      "title": "예천 감천면, 아삭하고 달콤한 '돌 토마토 ' 본격 출하",
+      "section": "supply",
+      "age_hours": 19.5
+    },
+    {
+      "title": "임실군, 고추 병해충 공동 방제 본격화",
+      "section": "pest",
+      "age_hours": 19.2
+    },
+    {
+      "title": "농안법 사각지대에 갇힌 공영도매시장 , 대전 노은 시장 사태가 남긴 과제",
+      "section": "dist",
+      "age_hours": 18.8
+    },
+    {
+      "title": "상주 대경사과 원예농협 , 농산물 산지유통 센터 준공",
+      "section": "dist",
+      "age_hours": 16.5
+    },
+    {
+      "title": "aT, 산지 팸투어로 온라인도매시장 '신뢰장벽' 허문다",
+      "section": "dist",
+      "age_hours": 16.5
+    },
+    {
+      "title": "수입산에 밀리는 국산 양파 '소비 활로' 모색",
+      "section": "policy",
+      "age_hours": 16.4
+    },
+    {
+      "title": "삼성카드, 농협과 포천 농가 일손돕기 나서… 5월 할인행사도 연계",
+      "section": "dist",
+      "age_hours": 14.9
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

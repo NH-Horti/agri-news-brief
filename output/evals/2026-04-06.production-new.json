@@ -1,0 +1,132 @@
+{
+  "report_date": "2026-04-06",
+  "generated_at_kst": "2026-04-11T22:57:55+09:00",
+  "status": "pass",
+  "overall_score": 94.61,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 92.5,
+    "summary_quality": 100.0,
+    "freshness": 88.39,
+    "retrieval_support": 85.0
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 62,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 3,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 34,
+      "policy": 13,
+      "dist": 9,
+      "pest": 6
+    },
+    "raw_by_section": {
+      "supply": 418,
+      "policy": 102,
+      "dist": 78,
+      "pest": 22
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.625,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.8125,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 0.6875,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "seed_coverage_score": 0.5
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {}
+  },
+  "freshness_samples": [
+    {
+      "title": "농축산물 물가 흐름 '안정세'",
+      "section": "policy",
+      "age_hours": 67.5
+    },
+    {
+      "title": "치솟는 비닐값에 비료는 품귀...영농철 농민 막막",
+      "section": "supply",
+      "age_hours": 62.1
+    },
+    {
+      "title": "서천군 농기센터, 사과 ·배 농가에 과수화상병 적기 방제 당부",
+      "section": "pest",
+      "age_hours": 58.3
+    },
+    {
+      "title": "예산군, 과수화상병 선제 대응… 드론 활용 미관리 과원 방제",
+      "section": "pest",
+      "age_hours": 58.2
+    },
+    {
+      "title": "[녹색] \" 과수화상병 예방, 개화기 약제 살포 필수\"",
+      "section": "pest",
+      "age_hours": 48.8
+    },
+    {
+      "title": "진도군, 대파 산지폐기·해상풍력 등 현안 점검…국비사업·제도개선 건...",
+      "section": "supply",
+      "age_hours": 40.5
+    },
+    {
+      "title": "경기도, 중동전쟁 장기화에 농어민 고충 직접 듣고 해결",
+      "section": "policy",
+      "age_hours": 15.0
+    },
+    {
+      "title": "[시황] 감자 값, 1년 새 1만원 올라…상승 전망 vs 현장 \"단정 어려워\"",
+      "section": "supply",
+      "age_hours": 11.7
+    }
+  ],
+  "improvement_hints": [
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
+  ],
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

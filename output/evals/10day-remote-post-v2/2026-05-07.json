@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-05-07",
+  "generated_at_kst": "2026-05-09T00:59:31+09:00",
+  "status": "pass",
+  "overall_score": 97.34,
+  "scores": {
+    "completeness": 93.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.25,
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 97.22
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 67,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 3,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 1,
+      "policy": 2,
+      "dist": 0,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 32,
+      "policy": 19,
+      "dist": 1,
+      "pest": 15
+    },
+    "raw_by_section": {
+      "supply": 147,
+      "policy": 187,
+      "dist": 17,
+      "pest": 73
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 2,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 1.0,
+    "surface_reuse_penalty": 0.012,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.625,
+    "summary_opening_diversity": 0.9375,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5417,
+    "section_alignment_fit_avg": 3.9706,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 5.525,
+    "core_rank_percentile_avg": 0.9458,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8824,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 0.4818,
+    "commodity_primary_rank_avg": 3.0
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.6667,
+      "policy": 0.5833,
+      "dist": 0.5,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "경기농기원, 과수화상병 차단 총력…15개 시군 집중점검",
+      "section": "pest",
+      "age_hours": 21.2
+    },
+    {
+      "title": "중동發 오일쇼크 현실화…4월 물가 2.6% 급등, 21개월 만에 최고",
+      "section": "policy",
+      "age_hours": 20.5
+    },
+    {
+      "title": "중동 변수에도 농축산물 물가 1.1% ↓…축산물 5.5% 상승",
+      "section": "policy",
+      "age_hours": 20.1
+    },
+    {
+      "title": "국제유가 '직격탄'에 4월 물가 2.6%↑… 농산물은 하락 안정",
+      "section": "policy",
+      "age_hours": 19.5
+    },
+    {
+      "title": "단양군, 과수화상병 집중 예찰… 과수농가 352곳 대상",
+      "section": "pest",
+      "age_hours": 18.8
+    },
+    {
+      "title": "정영철 영동군수 예비후보, 10대 대표 공약 발표",
+      "section": "dist",
+      "age_hours": 18.5
+    },
+    {
+      "title": "기후 위기의 습격과 신고의 한계, 신품종 배가 여는 새로운 소비 지도",
+      "section": "dist",
+      "age_hours": 16.5
+    },
+    {
+      "title": "청송군 미생물배양실, 농가 호응 속 이용 증가",
+      "section": "pest",
+      "age_hours": 15.1
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

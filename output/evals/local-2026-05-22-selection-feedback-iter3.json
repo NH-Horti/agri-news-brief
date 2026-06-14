@@ -1,0 +1,272 @@
+{
+  "report_date": "2026-05-22",
+  "generated_at_kst": "2026-05-23T09:26:52+09:00",
+  "scores": {
+    "section_alignment": 99.63,
+    "core_quality": 100.0,
+    "commodity_board_quality": 91.34
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.75,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_quality_samples": [],
+  "editorial": {
+    "score": 86.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
+    "scores": {
+      "article_selection": 85.0,
+      "section_fit": 87.0,
+      "core_pick_quality": 88.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 84.0
+    },
+    "issues": [
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "policy",
+        "title": "중동發 원자재 충격 현실화···4월 생산자물가 28년 만에 최대 상승",
+        "reason": "농업정책 직접성 낮은 거시 물가 기사다.",
+        "suggested_action": "농산물 담합 제재나 농자재 직접지원 등 농업 연관 정책으로 교체."
+      },
+      {
+        "type": "duplication",
+        "severity": "medium",
+        "section": "dist",
+        "title": "중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+        "reason": "같은 날 수출 실적 기사와 묶이며 물류 이슈가 중복된다.",
+        "suggested_action": "정부 대응 하나, 수출 실적 하나로 정리하고 다른 운영 기사 보강."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "K-푸드 수출 , 중동 물류 위기 속 37.6% 성장 기록",
+        "reason": "선택본보다 뉴시스발 중동 우회·지원 규모 설명 기사가 더 구체적이다.",
+        "suggested_action": "수출 실적 tail은 우회항로·지원액이 담긴 기사로 교체."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "pest",
+        "title": "서천군 농업기술센터, 밭작물 병해충 예찰 강화",
+        "reason": "일반적 지역 예찰 공지 성격이 강하다.",
+        "suggested_action": "화상병 확산 현황·위기단계 상향 기사 우선 반영."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "pest",
+        "title": "안동시, 고추 진딧물·총채벌레 급증 우려…\"적기 방제 당부\"",
+        "reason": "지역 행정 당부형 기사로 전국성·구체성이 약하다.",
+        "suggested_action": "병명·피해 규모·확산성 있는 작목 기사만 선별."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "pest",
+        "title": "생육 위축·수확량 감소 부르는 고추 '총채벌레'…보은군 바이러스 확산...",
+        "reason": "선택된 안동·서천 기사보다 TSWV 매개충 위험이 더 명확하다.",
+        "suggested_action": "일반 예찰 기사 1건을 보은 총채벌레 기사로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "과수화상병 급속 확산... 감염 농가 절반 이상 '충북'",
+        "reason": "확산 강도 보여주는 상위 맥락 기사를 놓쳤다.",
+        "suggested_action": "지역 첫 발생 1건 대신 확산 집계 기사 1건 추가 검토."
+      }
+    ]
+  },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_duplicate_topic",
+      "editorial_missed_opportunity"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.4,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_guardrail_mode": "advisory_only",
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 86.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "promotion_gates": {
+      "editorial_score_min": 95.0,
+      "operational_score_min": 95.0,
+      "section_count_score_min": 100.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 156,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "policy": {
+          "actual": 4,
+          "expected": 3,
+          "raw_candidates": 172,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "dist": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 53,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0
+        },
+        "pest": {
+          "actual": 5,
+          "expected": 3,
+          "raw_candidates": 43,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        }
+      },
+      "underfilled_sections": [],
+      "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "missed_opportunity",
+      "article_selection"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, and section-count gates all pass."
+  }
+}

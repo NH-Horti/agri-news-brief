@@ -1,0 +1,259 @@
+{
+  "report_date": "2026-05-20",
+  "generated_at_kst": "2026-05-20T14:38:50+09:00",
+  "status": "pass",
+  "overall_score": 94.11,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 100.0
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 43,
+    "commodity_primary_total": 18,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 3,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 30,
+      "policy": 6,
+      "dist": 4,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 145,
+      "policy": 88,
+      "dist": 53,
+      "pest": 58
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.75,
+    "surface_reuse_penalty": 0.0169,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9375,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 4.2462,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0625,
+    "promotional_filler_rate": 0.125,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.0625,
+    "dist_weak_ops_rate": 0.0625,
+    "editorial_quality_penalty": 4.8214,
+    "core_fit_avg": 4.0243,
+    "core_rank_percentile_avg": 0.9388,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9444,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.3917,
+    "commodity_primary_rank_avg": 3.3889
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5,
+      "policy": 0.6667,
+      "dist": 0.5833,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 0.9557,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "수급 대책 약발 안먹히는 ‘햇 양파 ’…“수출로 값 안정 도모하자”",
+      "section": "policy",
+      "age_hours": 23.0
+    },
+    {
+      "title": "“예측보다 빨랐다”…‘과수화상병’ 충주·원주서 잇따라 발생",
+      "section": "pest",
+      "age_hours": 23.0
+    },
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "section": "supply",
+      "age_hours": 19.6
+    },
+    {
+      "title": "계란 224만개 추가 수입, 가공용 돼지ㆍ닭고기 할당관세 추가 적용",
+      "section": "policy",
+      "age_hours": 19.4
+    },
+    {
+      "title": "\"잘 팔린다는 소식에 출하했더니 가격 폭락\" … 23만건 빅데이터가 밝힌...",
+      "section": "supply",
+      "age_hours": 17.7
+    },
+    {
+      "title": "이상기온에 과일 가격 상승, 채소류는 안정",
+      "section": "supply",
+      "age_hours": 16.9
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "section": "policy",
+      "age_hours": 15.8
+    },
+    {
+      "title": "양배추 1포기 2600원대로 '뚝'…재고에 봄철 출하 물량 겹치며 가격 급락",
+      "section": "supply",
+      "age_hours": 15.6
+    }
+  ],
+  "content_false_positive_samples": [],
+  "story_duplicate_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3586011",
+      "section": "supply",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320854",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+      "href": "https://www.yna.co.kr/view/AKR20260519112200062?input=1195m",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "충북 충주 과수 원서 과수화상병 올 첫 발생",
+      "href": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101053",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (policy_wrong_section=6%, promotional_filler=12%, dist_weak_ops=6%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 94.11,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  }
+}

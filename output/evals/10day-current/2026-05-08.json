@@ -1,0 +1,221 @@
+{
+  "report_date": "2026-05-08",
+  "generated_at_kst": "2026-05-08T22:11:25+09:00",
+  "status": "warn",
+  "overall_score": 81.24,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 85.0,
+    "section_alignment": 77.83,
+    "core_quality": 95.12,
+    "commodity_board_quality": 91.26
+  },
+  "counts": {
+    "briefing_total": 17,
+    "commodity_total": 71,
+    "commodity_primary_total": 21,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 4,
+      "dist": 3,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 48,
+      "policy": 12,
+      "dist": 4,
+      "pest": 7
+    },
+    "raw_by_section": {
+      "supply": 168,
+      "policy": 162,
+      "dist": 43,
+      "pest": 30
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.9412,
+    "surface_reuse_penalty": 0.0227,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 3.4747,
+    "section_alignment_low_fit_rate": 0.1176,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0588,
+    "content_false_positive_rate": 0.1176,
+    "content_irrelevant_rate": 0.1176,
+    "semantic_false_positive_penalty": 14.1176,
+    "core_fit_avg": 4.0586,
+    "core_rank_percentile_avg": 0.8967,
+    "core_stage_core_rate": 0.8571,
+    "weak_core_rate": 0.1429,
+    "commodity_primary_item_focus_rate": 0.9524,
+    "commodity_primary_issue_signal_rate": 0.9524,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 1.0276,
+    "commodity_primary_rank_avg": 2.6667
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.5833,
+      "dist": 0.4167,
+      "pest": 0.4167
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 0.7682,
+      "dist": 1.0,
+      "pest": 0.8364
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 0.7766,
+      "dist": 0.9385,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "‘재배면적’ 마늘 늘고 양파 줄고…가격도 희비 교차",
+      "section": "supply",
+      "age_hours": 22.1
+    },
+    {
+      "title": "강원도농업기술원, 과수화상병 예방 수칙 준수 당부",
+      "section": "pest",
+      "age_hours": 22.0
+    },
+    {
+      "title": "단양군, 과수화상병 차단 위해 개화기 집중 예찰 총력",
+      "section": "pest",
+      "age_hours": 21.7
+    },
+    {
+      "title": "중동전쟁에 비료·비닐·사료까지 줄인상…농가 덮친 '3중고'",
+      "section": "policy",
+      "age_hours": 20.8
+    },
+    {
+      "title": "정부, 할당관세 설탕 시중 방출 4개월로 단축…부당이득 차단",
+      "section": "policy",
+      "age_hours": 20.2
+    },
+    {
+      "title": "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
+      "section": "supply",
+      "age_hours": 20.0
+    },
+    {
+      "title": "배추·무 내리고 참외·수박 오르고…5월 장바구니 품목별 '명암'",
+      "section": "supply",
+      "age_hours": 19.6
+    },
+    {
+      "title": "채소값, 5월도 안정 세 전망…곡물·육계는 중동·변수에 '들썩'",
+      "section": "policy",
+      "age_hours": 19.1
+    }
+  ],
+  "content_false_positive_samples": [
+    {
+      "title": "오이 솔루션, 장중 상한가 직행 후 이탈…광통신 기대감에",
+      "section": "supply",
+      "reason": "finance_company_noise"
+    },
+    {
+      "title": "영등포 지도가 바뀐다... 김종길 의원, ‘영등포구청역~ 청과 시장 ’ 1호...",
+      "section": "dist",
+      "reason": "political_market_pledge_noise"
+    }
+  ],
+  "improvement_hints": [
+    "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.",
+    "리콜 시드 결손이 보입니다: dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "금융·정치성 오탐이 브리핑에 섞였습니다 (비율 12%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.",
+    "농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 12%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "semantic_false_positive",
+      "semantic_false_positive_severe",
+      "section_alignment"
+    ],
+    "section_card_min_fit": {
+      "default": 0.88,
+      "supply": 1.03,
+      "policy": 1.0,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.45,
+    "high_score_low_fit_rescue_margin": 5.0,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}

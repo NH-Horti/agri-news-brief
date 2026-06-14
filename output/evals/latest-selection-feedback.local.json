@@ -1,0 +1,123 @@
+{
+  "report_date": "2026-05-20",
+  "generated_at_kst": "2026-05-20T09:29:54+09:00",
+  "scores": {
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 100.0
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "policy_wrong_section_rate": 0.0625,
+    "promotional_filler_rate": 0.25,
+    "weak_core_editorial_rate": 0.5,
+    "pest_theme_duplicate_rate": 0.0625,
+    "dist_weak_ops_rate": 0.125,
+    "editorial_quality_penalty": 10.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9444,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_quality_samples": [
+    {
+      "title": "NH농협 창녕군지부, 마늘 망 지원… 농업인 영농비 절감 기대",
+      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3586011",
+      "section": "supply",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "“양파는 식탁 위 불로초”…송미령 장관의 ‘깜짝’ 홈쇼핑",
+      "href": "https://www.kmib.co.kr/article/view.asp?arcid=0029844466&code=61111311&cp=nv",
+      "section": "supply",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=320854",
+      "section": "policy",
+      "is_core": true,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "‘블루베리’ 소득작목 육성 온힘",
+      "href": "https://www.nongmin.com/article/20260518500715",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "강원 농협 연합판매사업 협의회, 2026 산지 유통 현장투어 개최",
+      "href": "https://www.yna.co.kr/view/AKR20260519112200062?input=1195m",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "\"장관이 직접 파는 햇양파·수박\" 농식품부, 익산원예농협서 산지 직송...",
+      "href": "https://www.newscammp.co.kr/news/articleView.html?idxno=6244",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "충북 충주 과수 원서 과수화상병 올 첫 발생",
+      "href": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101053",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
+  "editorial_improvement_plan": {}
+}

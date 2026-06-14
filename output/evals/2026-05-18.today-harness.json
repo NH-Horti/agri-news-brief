@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-05-18",
+  "generated_at_kst": "2026-05-19T08:42:58+09:00",
+  "status": "pass",
+  "overall_score": 97.15,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 90.0,
+    "retrieval_support": 85.0,
+    "section_alignment": 99.86,
+    "core_quality": 100.0,
+    "commodity_board_quality": 95.37
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 60,
+    "commodity_primary_total": 15,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 3,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 2,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 37,
+      "policy": 9,
+      "dist": 4,
+      "pest": 10
+    },
+    "raw_by_section": {
+      "supply": 207,
+      "policy": 113,
+      "dist": 33,
+      "pest": 65
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.75,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.75,
+    "summary_opening_diversity": 0.9375,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 0.375,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "weekend_span",
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 4.4231,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.9488,
+    "core_rank_percentile_avg": 0.9457,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.9333,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 2.9507,
+    "commodity_primary_rank_avg": 2.8667
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {},
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.9957,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "가락시장, 근교산 채소·햇감자 파렛트 운송지원 확대 추진",
+      "section": "supply",
+      "age_hours": 67.7
+    },
+    {
+      "title": "충북 충주 과수 원서 올해 첫 과수화상병 발생",
+      "section": "pest",
+      "age_hours": 64.7
+    },
+    {
+      "title": "충북 충주서 올해 첫 과수화상병 발생…위기 단계 ‘주의’ 격상",
+      "section": "pest",
+      "age_hours": 64.7
+    },
+    {
+      "title": "[K-푸드 산지특송]경매에서 온라인 으로… 도매 상도 소비자도 ‘활짝’",
+      "section": "dist",
+      "age_hours": 64.5
+    },
+    {
+      "title": "보령시농업기술센터, 과수 돌발 해충 방제 총력… 농가 150곳 약제 지원",
+      "section": "pest",
+      "age_hours": 64.1
+    },
+    {
+      "title": "과수화상병 올 첫 발생…긴급 방제 ·확산 차단 총력 대응",
+      "section": "pest",
+      "age_hours": 63.5
+    },
+    {
+      "title": "‘ 양파 밭’ 싹 다 갈아엎었다…자식같이 키웠는데, 왜?",
+      "section": "supply",
+      "age_hours": 63.3
+    },
+    {
+      "title": "\"자식처럼 애지중지 키웠는데 오죽하면 갈아엎겠습니까?\"",
+      "section": "policy",
+      "age_hours": 57.3
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 97.15,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  }
+}

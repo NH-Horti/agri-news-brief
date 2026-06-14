@@ -1,0 +1,243 @@
+{
+  "report_date": "2026-05-22",
+  "generated_at_kst": "2026-05-23T10:41:01+09:00",
+  "scores": {
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 91.34
+  },
+  "metrics": {
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.75,
+    "commodity_primary_weak_rate": 0.0
+  },
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "editorial_quality_samples": [],
+  "editorial": {
+    "score": 95.0,
+    "target_score": 95.0,
+    "target_status": "target_met",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
+    "scores": {
+      "article_selection": 87.0,
+      "section_fit": 90.0,
+      "core_pick_quality": 86.0,
+      "summary_usefulness": 84.0,
+      "missed_opportunity": 83.0,
+      "noise_control": 91.0
+    },
+    "issues": [
+      {
+        "type": "duplication",
+        "severity": "high",
+        "section": "supply",
+        "title": "햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
+        "reason": "양파 3건째로 앞선 2건과 논점 중복이 크다.",
+        "suggested_action": "양배추 시세 급락 등 다른 품목 핵심 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "supply",
+        "title": "[한눈에 보는 시세] 양배추, 반입량 많고 소비는 침체…‘약세늪’서 허...",
+        "reason": "원물 시세 급락을 수치로 보여주는 더 강한 대체 후보가 있었다.",
+        "suggested_action": "양파 테일 1건 대신 양배추 시세 기사 채택."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
+        "section": "dist",
+        "title": "K-푸드는 \"전쟁 영향? 글쎄요\"…중동 물류난에도 GCC 수출 37.6%↑",
+        "reason": "수출 실적 중심이라 유통·물류 장애의 구체성이 약하다.",
+        "suggested_action": "물류 차질·우회 운송·지원 집행 중심으로 재요약하거나 더 직접적인 기사로 교체."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
+        "section": "dist",
+        "title": "중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+        "reason": "농식품 물류보다 산업 전반·고용 비중이 커 dist 집중도가 떨어진다.",
+        "suggested_action": "농식품 물류 지원이 본문 중심인 기사로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "화성서 올해 첫 경기도 과수화상병 발생…도농기원 “확산 차단 총력”",
+        "reason": "권역 첫 발생 기사인데 선정에서 빠져 지역 확산 강도가 약해졌다.",
+        "suggested_action": "일반 대응 기사 1건 대신 편입."
+      },
+      {
+        "type": "core_pick",
+        "severity": "medium",
+        "section": "dist",
+        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+        "reason": "유통 운영성은 맞지만 이날 dist의 최상위 메인감으로는 임팩트가 약하다.",
+        "suggested_action": "핵심은 중동 물류 리스크나 시장 구조 변화 기사로 세우고 본건은 보조로 배치."
+      },
+      {
+        "type": "summary",
+        "severity": "low",
+        "section": "supply",
+        "title": "\"㎏당 500원도 안해… 양파 농사 포기하고 싶다\"",
+        "reason": "요약이 인용 반복에 치우쳐 수급 규모·가격 맥락이 약하다.",
+        "suggested_action": "폐기 면적, 가격 수준, 원인 한 줄을 보강."
+      }
+    ]
+  },
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 95.0,
+    "target_status": "target_met",
+    "iteration_budget": 0,
+    "promotion_gates": {
+      "editorial_score_min": 95.0,
+      "operational_score_min": 95.0,
+      "section_count_score_min": 100.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 156,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "policy": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 172,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "dist": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 53,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0
+        },
+        "pest": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 43,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        }
+      },
+      "underfilled_sections": [],
+      "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "missed_opportunity",
+      "article_selection",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, and section-count gates all pass."
+  }
+}

@@ -1,0 +1,467 @@
+{
+  "report_date": "2026-05-22",
+  "generated_at_kst": "2026-05-23T10:36:48+09:00",
+  "status": "pass",
+  "overall_score": 97.92,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 96.67,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 86.87,
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 91.34
+  },
+  "counts": {
+    "briefing_total": 12,
+    "commodity_total": 42,
+    "commodity_primary_total": 12,
+    "briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 27,
+      "policy": 1,
+      "dist": 7,
+      "pest": 7
+    },
+    "raw_by_section": {
+      "supply": 156,
+      "policy": 172,
+      "dist": 53,
+      "pest": 43
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.6667,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 1.0,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5625,
+    "section_alignment_fit_avg": 4.8608,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "core_fit_avg": 5.0857,
+    "core_rank_percentile_avg": 0.9059,
+    "core_stage_core_rate": 0.8571,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.75,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 2.8933,
+    "commodity_primary_rank_avg": 2.8333
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.5833,
+      "policy": 0.6667,
+      "dist": 0.5,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 0.9801,
+      "dist": 0.9636,
+      "pest": 0.9884
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "햇 양파 보관 어쩌라고...지난해산 비축분 폐기 ‘세월아 네월아’",
+      "section": "supply",
+      "age_hours": 23.0
+    },
+    {
+      "title": "농산물가격안정제도 8월 시행…“평균가격, 경영비 밑돌땐 차액 지원”",
+      "section": "policy",
+      "age_hours": 23.0
+    },
+    {
+      "title": "과수화상병 확산 우려…위기 단계 ‘주의’에서 ‘경계’로",
+      "section": "pest",
+      "age_hours": 22.1
+    },
+    {
+      "title": "K-푸드는 \"전쟁 영향? 글쎄요\"…중동 물류난에도 GCC 수출 37.6%↑",
+      "section": "dist",
+      "age_hours": 19.0
+    },
+    {
+      "title": "햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
+      "section": "supply",
+      "age_hours": 18.2
+    },
+    {
+      "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+      "section": "dist",
+      "age_hours": 17.1
+    },
+    {
+      "title": "중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+      "section": "dist",
+      "age_hours": 15.7
+    },
+    {
+      "title": "생육 위축·수확량 감소 부르는 고추 '총채벌레'…보은군 바이러스 확산...",
+      "section": "pest",
+      "age_hours": 15.7
+    }
+  ],
+  "content_false_positive_samples": [],
+  "story_duplicate_samples": [],
+  "editorial_quality_samples": [],
+  "improvement_hints": [
+    "전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "operational_score": 97.92,
+  "score_notes": {
+    "overall_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  },
+  "editorial": {
+    "status": "success",
+    "rubric_version": 2,
+    "model": "gpt-5.4",
+    "generated_at_kst": "2026-05-23T10:37:09+09:00",
+    "score": 84.0,
+    "target_score": 95.0,
+    "target_status": "needs_iteration",
+    "scores": {
+      "article_selection": 84.0,
+      "section_fit": 86.0,
+      "core_pick_quality": 82.0,
+      "summary_usefulness": 78.0,
+      "missed_opportunity": 80.0,
+      "noise_control": 88.0
+    },
+    "summary": "전반적으로 양파 수급난·가격안정제도·과수화상병 경계 상향 등 당일 핵심 의제를 상당수 포착했지만, dist 섹션의 코어 선택이 약하고 pest에서도 더 강한 발생 기사 대신 무난한 지역 대응 기사가 들어가 점수가 깎인다. supply는 양파 과잉·창고 적체를 입체적으로 잡은 점이 좋지만 3번 카드가 2번과 사실상 같은 정부 대응 축을 반복한다. policy는 가장 안정적이나 농협 개혁안은 중요도 대비 검증·파급 해설이 약한 매체를 tail로 쓴 점이 아쉽다. 전체적으로 실사용 가능하나, raw pool에 보이는 더 강한 후보를 몇 건 놓쳐 95점대 평가는 어렵다.",
+    "issues": [
+      {
+        "type": "weak_core",
+        "severity": "high",
+        "section": "dist",
+        "title": "\"가락시장 물류 선진화 속도\"…파렛트 운송지원 확대",
+        "reason": "운영 기사이긴 하나 전국급 충격 대비 임팩트가 약한 코어다.",
+        "suggested_action": "중동 물류 차질·수출 대응 기사를 코어로 격상."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "high",
+        "section": "pest",
+        "title": "충북농기원, 과수화상병 차단 총력",
+        "reason": "세종 첫 발생·경기 첫 발생 기사보다 전국성 뉴스 가치가 약하다.",
+        "suggested_action": "세종 첫 발생 또는 경기 첫 발생 기사로 대체."
+      },
+      {
+        "type": "redundancy",
+        "severity": "medium",
+        "section": "supply",
+        "title": "햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색",
+        "reason": "앞선 양파 비축·폐기 기사와 대응 포인트가 겹친다.",
+        "suggested_action": "양배추 시세 급락 등 다른 품목 수급 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "supply",
+        "title": "전체 섹션 구성",
+        "reason": "raw pool에 양배추 약세 시세 기사가 있어 품목 분산 기회가 있었다.",
+        "suggested_action": "양파 3건 중 1건을 양배추 가격 기사로 교체."
+      },
+      {
+        "type": "section_fit",
+        "severity": "medium",
+        "section": "dist",
+        "title": "중동발 충격 확산…정부, K-푸드 물류·플라스틱 고용 방어 총력",
+        "reason": "농식품 물류보다 산업·고용 일반론 비중이 섞였다.",
+        "suggested_action": "농식품 물류 지원 중심 기사로 대체 또는 요지 축소."
+      },
+      {
+        "type": "summary_issue",
+        "severity": "medium",
+        "section": "supply",
+        "title": "\"㎏당 500원도 안해… 양파 농사 포기하고 싶다\"",
+        "reason": "요약이 기사 첫문장 반복에 치우쳐 정보 밀도가 낮다.",
+        "suggested_action": "폐기 면적·가격 수준·현장 파장 수치를 넣어 재작성."
+      },
+      {
+        "type": "source_choice",
+        "severity": "low",
+        "section": "policy",
+        "title": "“농협, 직선제 받겠다”…강호동 회장 '진짜 농협' 개혁안 발표",
+        "reason": "중요 이슈치고 발표 수용 기사 성격이 강하다.",
+        "suggested_action": "후속 검증·제도 쟁점 해설 기사 우선 검토."
+      }
+    ],
+    "section_notes": {
+      "supply": "양파 과잉과 저장창고 병목을 잘 짚었지만 3건 모두 양파에 몰려 과밀하다. raw에 있던 양배추 약세 시세 기사로 한 건 분산했으면 더 신문다웠다.",
+      "policy": "가격안정제도와 국회 농정입법 과제를 잡아 핵심 축은 좋다. 다만 농협 개혁안은 발표성 보도라 tail로는 무난하지만 더 분석적인 후속이 있으면 교체 가치가 있다.",
+      "dist": "가락시장 파렛트 지원은 섹션 적합성은 있으나 코어로는 약하다. 중동발 물류 차질과 수출 우회·바우처 지원 기사 쪽이 당일성·파급력에서 더 강했다.",
+      "pest": "과수화상병 경계 상향을 담은 점은 적절하다. 그러나 세종 첫 발생, 경기 첫 발생 등 명시적 확산 기사들을 더 앞세웠어야 했고 지역 대응성 기사 비중이 약간 높다."
+    },
+    "improvement_suggestions": [
+      "dist 코어는 시장운영 소식보다 수출차질·운임·물류대응 같은 전국급 이슈를 우선 배치하세요.",
+      "pest는 '위기단계 상향 + 신규 발생 지역' 조합을 기본 골격으로 잡으세요.",
+      "supply는 동일 품목 3연타를 피하고 다른 품목 시세 급락 기사로 분산하세요.",
+      "요약문 첫 문장 반복을 줄이고 수치·조치·영향을 1문장에 압축하세요.",
+      "발표성 기사 tail은 허용하되 제도 쟁점 해설이 보이면 우선 교체하세요.",
+      "raw pool 상위 후보 중 전국성 강한 기사 누락 여부를 섹션별로 마지막 점검하세요."
+    ],
+    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":84,\"section_fit\":86,\"core_pick_quality\":82,\"summary_usefulness\":78,\"missed_opportunity\":80,\"noise_control\":88},\"summary\":\"전반적으로 양파 수급난·가격안정제도·과수화상병 경계 상향 등 당일 핵심 의제를 상당수 포착했지만, dist 섹션의 코어 선택이 약하고 pest에서도 더 강한 발생 기사 대신 무난한 지역 대응 기사가 들어가 점수가 깎인다. supply는 양파 과잉·창고 적체를 입체적으로 잡은 점이 좋지만 3번 카드가 2번과 사실상 같은 정부 대응 축을 반복한다. policy는 가장 안정적이나 농협 개혁안은 중요도 대비 검증·파급 해설이 약한 매체를 tail로 쓴 점이 아쉽다. 전체적으로 실사용 가능하나, raw pool에 보이는 더 강한 후보를 몇 건 놓쳐 95점대 평가는 어렵다.\",\"issues\":[{\"type\":\"weak_core\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"\\\"가락시장 물류 선진화 속도\\\"…파렛트 운송지원 확대\",\"reason\":\"운영 기사이긴 하나 전국급 충격 대비 임팩트가 약한 코어다.\",\"suggested_action\":\"중동 물류 차질·수출 대응 기사를 코어로 격상.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"pest\",\"title\":\"충북농기원, 과수화상병 차단 총력\",\"reason\":\"세종 첫 발생·경기 첫 발생 기사보다 전국성 뉴스 가치가 약하다.\",\"suggested_action\":\"세종 첫 발생 또는 경기 첫 발생 기사로 대체.\"},{\"type\":\"redundancy\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"햇 양파 공급과잉에 가격 급락…정부, 수출 확대로 돌파구 모색\",\"reason\":\"앞선 양파 비축·폐기 기사와 대응 포인트가 겹친다.\",\"suggested_action\":\"양배추 시세 급락 등 다른 품목 수급 기사로 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"전체 섹션 구성\",\"reason\":\"raw pool에 양배추 약세 시세 기사가 있어 품목 분산...",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 156,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "policy": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 172,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "dist": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 53,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0
+        },
+        "pest": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 43,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        }
+      },
+      "underfilled_sections": [],
+      "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95."
+    }
+  },
+  "editorial_score": 84.0,
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 95.0,
+    "current_editorial_score": 84.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
+    "promotion_gates": {
+      "editorial_score_min": 95.0,
+      "operational_score_min": 95.0,
+      "section_count_score_min": 100.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 100.0,
+      "status": "target_met",
+      "sections": {
+        "supply": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 156,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "policy": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 172,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        },
+        "dist": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 53,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0
+        },
+        "pest": {
+          "actual": 3,
+          "expected": 3,
+          "raw_candidates": 43,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0
+        }
+      },
+      "underfilled_sections": [],
+      "scoring_rule": "A section with enough raw candidates should meet its expected briefing count; underfilled sections cap editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "core_quality",
+      "missed_opportunity",
+      "section_fit"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "candidate_recall",
+        "target": "raw_candidate_pool",
+        "direction": "expand_or_rerank",
+        "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, and section-count gates all pass."
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "report_date": "2026-05-06",
+  "generated_at_kst": "2026-05-09T00:04:04+09:00",
+  "status": "pass",
+  "overall_score": 97.78,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 83.75,
+    "section_alignment": 99.86,
+    "core_quality": 93.3,
+    "commodity_board_quality": 91.35
+  },
+  "counts": {
+    "briefing_total": 16,
+    "commodity_total": 43,
+    "commodity_primary_total": 17,
+    "briefing_by_section": {
+      "supply": 3,
+      "policy": 4,
+      "dist": 4,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 2,
+      "dist": 1,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 25,
+      "policy": 10,
+      "dist": 5,
+      "pest": 3
+    },
+    "raw_by_section": {
+      "supply": 141,
+      "policy": 121,
+      "dist": 38,
+      "pest": 13
+    },
+    "expected_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 2
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8125,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.6875,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.4583,
+    "section_alignment_fit_avg": 3.7319,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0625,
+    "content_false_positive_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "core_fit_avg": 4.0643,
+    "core_rank_percentile_avg": 0.8712,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.1429,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8824,
+    "commodity_primary_weak_rate": 0.0588,
+    "commodity_primary_fit_avg": 1.0982,
+    "commodity_primary_rank_avg": 2.6471
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.4167,
+      "policy": 0.75,
+      "dist": 0.4167,
+      "pest": 0.25
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 0.9774,
+      "pest": 0.6516
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "과수화상병 방제, ‘새순’ 자랄 때도 약제 쓰면 효과",
+      "section": "pest",
+      "age_hours": 47.3
+    },
+    {
+      "title": "과수화상병 방제, 꽃 진 뒤 ‘새순’ 자랄 때 방제",
+      "section": "pest",
+      "age_hours": 44.8
+    },
+    {
+      "title": "\"오늘 저녁은 미나리 삼겹살?\" 미나리·대파값 내렸다던데...",
+      "section": "policy",
+      "age_hours": 41.3
+    },
+    {
+      "title": "고온·건조 날씨에 응애 비상, 방제전략 달라져야",
+      "section": "pest",
+      "age_hours": 40.9
+    },
+    {
+      "title": "양파 경남협의회, 정기총회 개최… 수급 안정 대책 논의",
+      "section": "supply",
+      "age_hours": 40.7
+    },
+    {
+      "title": "민형배, 각화 농산물 도매시장 찾아 \"유통구조 혁신\" 강조",
+      "section": "dist",
+      "age_hours": 39.6
+    },
+    {
+      "title": "[2026 지방선거] [전남광주특별시장] 민형배, 각화도매시장 방문…\"AI 유...",
+      "section": "supply",
+      "age_hours": 39.3
+    },
+    {
+      "title": "호남청과 \"감귤 신품종, 온라인 판로 뚫는다\"",
+      "section": "dist",
+      "age_hours": 36.7
+    }
+  ],
+  "content_false_positive_samples": [],
+  "improvement_hints": [
+    "리콜 시드 결손이 보입니다: supply, dist, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ]
+}
