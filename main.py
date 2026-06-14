@@ -34236,15 +34236,30 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 for sec_key in (item.get("section_keys") or [])
                 if sec_key
             )
-            primary_article = item.get("top_article") if isinstance(item.get("top_article"), Article) else None
-            secondary_articles = [article for article in (item.get("secondary_articles") or []) if isinstance(article, Article)]
-            extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
+            # 품목 카드 내 기사는 중요도(대표 순위·점수) 순으로 노출한다.
+            _display_articles = [
+                article
+                for article in (
+                    [item.get("top_article")]
+                    + list(item.get("secondary_articles") or [])
+                    + list(item.get("extra_articles") or [])
+                )
+                if isinstance(article, Article)
+            ]
+            _display_articles = sorted(
+                _display_articles,
+                key=lambda article: _commodity_board_item_article_sort_key(item, article),
+                reverse=True,
+            )
+            primary_article = _display_articles[0] if _display_articles else None
+            secondary_articles = _display_articles[1 : 1 + 2]
+            extra_articles = _display_articles[1 + 2 :]
             story_html = _commodity_story_cluster_html(
                 item,
                 primary_article,
                 secondary_articles,
                 extra_articles,
-                int(item.get("more_article_count") or 0),
+                len(extra_articles),
             )
             item_cards.append(
                 f"""
@@ -34269,6 +34284,12 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
         for item in matched_inactive_items_for_group:
             badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
             pool_articles = [article for article in (item.get("articles") or []) if isinstance(article, Article)]
+            # 품목 카드 내 기사는 중요도(대표 순위·점수) 순으로 노출한다.
+            pool_articles = sorted(
+                pool_articles,
+                key=lambda article: _commodity_board_item_article_sort_key(item, article),
+                reverse=True,
+            )
             pool_count = len(pool_articles)
             pool_sections: list[str] = []
             for article in pool_articles:
