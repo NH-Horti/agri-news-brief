@@ -6856,6 +6856,54 @@ def is_origin_fraud_enforcement_context(title: str, desc: str) -> bool:
     return strong_fraud or origin_violation
 
 
+def is_personnel_award_noise_context(title: str, desc: str) -> bool:
+    """공무원·직원 포상·표창·시상·인사발령 등 인사성 기사 판정.
+
+    농산물 수급/정책 실무 가치가 없는 내부 인사 기사다.
+    (예: "탁월한 공무 성과엔 적극 포상…농식품부, 공무원 11명에 4천500만원")
+    """
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not ttl:
+        return False
+    award_hits = count_any(
+        ttl,
+        [w.lower() for w in ("포상", "표창", "시상", "수상자", "공로상", "모범공무원", "인사발령", "승진", "임명", "유공", "공무 성과")],
+    )
+    actor_hits = count_any(
+        txt,
+        [w.lower() for w in ("공무원", "공무 성과", "주무관", "사무관", "서기관", "공직", "임직원", "직원")],
+    )
+    return award_hits >= 1 and actor_hits >= 1
+
+
+def is_food_cooking_lifestyle_context(title: str, desc: str) -> bool:
+    """레시피·셰프·맛집·요리법 중심의 음식 라이프스타일 기사 판정.
+
+    농산물 수급·가격과 무관한 외식/요리 콘텐츠다.
+    (예: "중식의 대가 여경옥이 꼽은 짜장면 맛의 비결, 삼겹살·라드유")
+    """
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not txt:
+        return False
+    # 실제 수급·유통 시장 신호(도매시장/경락/산지유통 등)가 있으면 소비촉진성 요리 언급이 섞여도 보존.
+    if has_direct_supply_chain_signal(txt):
+        return False
+    cooking_hits = count_any(
+        txt,
+        [w.lower() for w in (
+            "레시피", "셰프", "조리법", "요리법", "맛의 비결", "맛집", "집에서 만들", "집밥",
+            "요리 대가", "중식의 대가", "손쉽게 만들", "비법", "황금레시피", "쿠킹",
+        )],
+    )
+    food_hits = count_any(
+        txt,
+        [w.lower() for w in ("음식", "메뉴", "외식", "배달", "먹방", "맛있", "즐길", "한 그릇", "별미")],
+    )
+    # 요리 큐가 2개 이상으로 분명할 때만 음식 라이프스타일로 판정(수급 기사의 부수적 '레시피' 1회 언급은 보존).
+    return cooking_hits >= 2 and food_hits >= 1
+
+
 def is_commodity_regional_branding_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = _nfkc_lower(f"{ttl} {desc or ''}".strip())
@@ -9511,6 +9559,30 @@ def is_pest_official_photo_check_context(title: str, desc: str, dom: str = "", p
     pest_hits = count_any(txt_l, [w.lower() for w in ("방제", "예찰", "선충", "병해충", "화상병")])
     farm_risk_hits = count_any(txt_l, [w.lower() for w in ("농가 피해", "확산", "신고", "보상", "방역망", "폐원")])
     return visit_hits >= 1 and pest_hits >= 1 and farm_risk_hits == 0
+
+
+def is_pest_preparedness_drill_context(title: str, desc: str) -> bool:
+    """모의훈련·대비 훈련·점검 회의 개최처럼 '준비/회의'형 병해충 기사 판정.
+
+    실제 발생·확산·피해 현황 기사보다 뉴스 가치가 낮으므로, 실발생 신호가 없을 때만 약한 tail로 본다.
+    (예: "청송군, 과수화상병 발생 대비 모의훈련", "과수화상병 긴급 상황 점검 회의 개최")
+    """
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if "화상병" not in txt and "병해충" not in txt:
+        return False
+    drill_or_meeting = any(
+        w in ttl
+        for w in (
+            "모의훈련", "모의 훈련", "대비 훈련", "대응 훈련", "가상 방제", "가상방제",
+            "점검 회의", "대책 회의", "대책회의", "회의 개최", "간담회 개최", "결의대회",
+        )
+    )
+    real_outbreak = count_any(
+        ttl,
+        [w.lower() for w in ("번졌", "곳 피해", "농가 피해", "확진", "폐원", "매몰", "발생 절반", "피해 면적", "ha", "㏊", "발생 규모")],
+    )
+    return drill_or_meeting and real_outbreak == 0
 
 
 _DIST_APC_NH_DIVERSITY_TERMS = (
@@ -13636,6 +13708,10 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         return _reject("pest_news_roundup_brief")
     if key in ("supply", "policy") and is_origin_fraud_enforcement_context(ttl, desc):
         return _reject("origin_fraud_enforcement")
+    if key in ("supply", "policy", "dist") and is_personnel_award_noise_context(ttl, desc):
+        return _reject("personnel_award_noise")
+    if key in ("supply", "policy", "dist", "pest") and is_food_cooking_lifestyle_context(ttl, desc):
+        return _reject("food_cooking_lifestyle")
 
     # HARD BLOCK: 유가/에너지 주제 기사(농업 부수적 언급)는 supply/dist에서 제외
     if key in ("supply", "dist") and is_oil_energy_primary_macro_context(ttl, desc):
@@ -21748,6 +21824,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "commodity_origin_history_tail"
     if section_key in ("supply", "policy") and is_origin_fraud_enforcement_context(a.title or "", a.description or ""):
         return "origin_fraud_enforcement"
+    if section_key in ("supply", "policy", "dist") and is_personnel_award_noise_context(a.title or "", a.description or ""):
+        return "personnel_award_noise"
+    if is_food_cooking_lifestyle_context(a.title or "", a.description or ""):
+        return "food_cooking_lifestyle"
     if section_key == "pest" and is_pest_no_damage_crop_price_context(a.title or "", a.description or ""):
         return "pest_no_damage_crop_price"
     if section_key == "pest" and is_pest_diplomacy_not_pest_context(a.title or "", a.description or ""):
@@ -23674,6 +23754,9 @@ def _is_weak_pest_tail(article: "Article") -> bool:
     if "콩" in text and count_any(text, [w.lower() for w in PEST_HORTI_TERMS]) == 0:
         return True
     if title_signal <= 0 and not title_has_named_pest:
+        return True
+    # 모의훈련·점검 회의 개최형 준비성 기사는 실발생·확산 현황 기사에 자리를 양보(약한 tail)한다.
+    if is_pest_preparedness_drill_context(title, desc):
         return True
     if is_pest_fire_blight_farmer_risk_context(title, desc):
         return False
