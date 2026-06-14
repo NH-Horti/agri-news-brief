@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T22:38:46+09:00",
-  "build_tag": "3c0a612",
+  "generated_at_kst": "2026-06-14T23:45:17+09:00",
+  "build_tag": "39a0eb5",
   "filter_rejects": [
     {
       "section": "policy",
@@ -16173,7 +16173,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.02,
+          "score": 12.82,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20124,8 +20124,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 110.354,
-        "at_kst": "2026-06-14T22:37:54+09:00",
+        "elapsed_sec": 111.317,
+        "at_kst": "2026-06-14T23:44:17+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-14"
@@ -20134,14 +20134,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 110.354,
-        "at_kst": "2026-06-14T22:37:54+09:00"
+        "elapsed_sec": 111.317,
+        "at_kst": "2026-06-14T23:44:17+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 110.451,
-        "at_kst": "2026-06-14T22:37:54+09:00",
+        "elapsed_sec": 111.58,
+        "at_kst": "2026-06-14T23:44:17+09:00",
         "details": {
           "archive_count": 87
         }
@@ -20149,35 +20149,35 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 110.451,
-        "at_kst": "2026-06-14T22:37:54+09:00"
+        "elapsed_sec": 111.58,
+        "at_kst": "2026-06-14T23:44:17+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 111.486,
-        "at_kst": "2026-06-14T22:37:55+09:00",
+        "elapsed_sec": 112.615,
+        "at_kst": "2026-06-14T23:44:18+09:00",
         "details": {
-          "html_bytes": 312655
+          "html_bytes": 316934
         }
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 111.486,
-        "at_kst": "2026-06-14T22:37:55+09:00"
+        "elapsed_sec": 112.615,
+        "at_kst": "2026-06-14T23:44:18+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 162.129,
-        "at_kst": "2026-06-14T22:38:46+09:00"
+        "elapsed_sec": 171.116,
+        "at_kst": "2026-06-14T23:45:17+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 162.129,
-        "at_kst": "2026-06-14T22:38:46+09:00",
+        "elapsed_sec": 171.116,
+        "at_kst": "2026-06-14T23:45:17+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-14.json"
         }
@@ -20186,13 +20186,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 162.129,
-      "at_kst": "2026-06-14T22:38:46+09:00",
+      "elapsed_sec": 171.116,
+      "at_kst": "2026-06-14T23:45:17+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-14.json"
       }
     },
-    "elapsed_sec": 162.129
+    "elapsed_sec": 171.116
   },
   "commodity_board_audit": {
     "summary": {
