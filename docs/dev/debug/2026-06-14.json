@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T22:22:31+09:00",
-  "build_tag": "957b700",
+  "generated_at_kst": "2026-06-14T22:27:20+09:00",
+  "build_tag": "90950f0",
   "filter_rejects": [
     {
       "section": "policy",
@@ -20124,8 +20124,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 110.786,
-        "at_kst": "2026-06-14T22:21:36+09:00",
+        "elapsed_sec": 111.422,
+        "at_kst": "2026-06-14T22:26:26+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-14"
@@ -20134,14 +20134,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 110.786,
-        "at_kst": "2026-06-14T22:21:36+09:00"
+        "elapsed_sec": 111.422,
+        "at_kst": "2026-06-14T22:26:26+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 110.924,
-        "at_kst": "2026-06-14T22:21:36+09:00",
+        "elapsed_sec": 111.508,
+        "at_kst": "2026-06-14T22:26:26+09:00",
         "details": {
           "archive_count": 87
         }
@@ -20149,14 +20149,14 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 110.924,
-        "at_kst": "2026-06-14T22:21:36+09:00"
+        "elapsed_sec": 111.509,
+        "at_kst": "2026-06-14T22:26:26+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 111.958,
-        "at_kst": "2026-06-14T22:21:38+09:00",
+        "elapsed_sec": 112.547,
+        "at_kst": "2026-06-14T22:26:27+09:00",
         "details": {
           "html_bytes": 312655
         }
@@ -20164,20 +20164,20 @@
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 111.958,
-        "at_kst": "2026-06-14T22:21:38+09:00"
+        "elapsed_sec": 112.547,
+        "at_kst": "2026-06-14T22:26:27+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 165.51,
-        "at_kst": "2026-06-14T22:22:31+09:00"
+        "elapsed_sec": 165.407,
+        "at_kst": "2026-06-14T22:27:20+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 165.51,
-        "at_kst": "2026-06-14T22:22:31+09:00",
+        "elapsed_sec": 165.407,
+        "at_kst": "2026-06-14T22:27:20+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-14.json"
         }
@@ -20186,13 +20186,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 165.51,
-      "at_kst": "2026-06-14T22:22:31+09:00",
+      "elapsed_sec": 165.407,
+      "at_kst": "2026-06-14T22:27:20+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-14.json"
       }
     },
-    "elapsed_sec": 165.51
+    "elapsed_sec": 165.407
   },
   "commodity_board_audit": {
     "summary": {
