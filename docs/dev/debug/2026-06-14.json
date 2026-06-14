@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T18:30:31+09:00",
-  "build_tag": "b40543d",
+  "generated_at_kst": "2026-06-14T19:41:35+09:00",
+  "build_tag": "5551df0",
   "filter_rejects": [
     {
       "section": "policy",
@@ -12393,6 +12393,16 @@
       "source_channel": ""
     },
     {
+      "section": "supply",
+      "reason": "origin_fraud_enforcement",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "수입꽃도 화훼공판장 상장…'국산 혼용' 원천 차단해야",
+      "url": "https://agrinet.co.kr/news/articleView.html?idxno=404939",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "pest",
       "reason": "must_terms_fail",
       "press": "뉴스핌",
@@ -12483,6 +12493,26 @@
       "source_channel": ""
     },
     {
+      "section": "supply",
+      "reason": "origin_fraud_enforcement",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "수입꽃도 화훼 공판장 상장…'국산 혼용' 원천 차단해야",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404939",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
+      "section": "supply",
+      "reason": "origin_fraud_enforcement",
+      "press": "한국농어민신문",
+      "domain": "agrinet.co.kr",
+      "title": "수입꽃도 화훼 공판장 상장…'국산 혼용' 원천 차단해야",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404939",
+      "source_query": "",
+      "source_channel": ""
+    },
+    {
       "section": "policy",
       "reason": "policy_macro_general_economy",
       "press": "뉴시스",
@@ -12535,9 +12565,9 @@
   ],
   "sections": {
     "supply": {
-      "threshold": 41.08,
-      "tail_cut": 44.88,
-      "core_min": 41.08,
+      "threshold": 40.88,
+      "tail_cut": 44.68,
+      "core_min": 40.88,
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 166,
@@ -12578,7 +12608,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 53.08,
+          "score": 52.88,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -12802,7 +12832,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.85,
+          "score": 26.65,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13122,7 +13152,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 19.25,
+          "score": 19.05,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13346,7 +13376,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 14.96,
+          "score": 14.76,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13370,38 +13400,6 @@
             "market_hits": 0,
             "strength": 2,
             "korea": 3,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 14.85,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "여주 느타리버섯 재배 '해피머쉬' 엄태선 대표 \"하루 2톤 출하·불량률 ...",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404958",
-          "reason": "below_threshold",
-          "fit_score": 0.3,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "policy",
-          "reassigned_from": "policy",
-          "source_query": "원예 시범사업",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 3,
-            "korea": 4,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 3.7
@@ -13442,6 +13440,38 @@
         {
           "selected": false,
           "is_core": false,
+          "score": 14.65,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "여주 느타리버섯 재배 '해피머쉬' 엄태선 대표 \"하루 2톤 출하·불량률 ...",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404958",
+          "reason": "below_threshold",
+          "fit_score": 0.3,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "policy",
+          "reassigned_from": "policy",
+          "source_query": "원예 시범사업",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 3,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
           "score": 14.55,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -13474,7 +13504,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.91,
+          "score": 13.71,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13506,7 +13536,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.91,
+          "score": 13.71,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13602,7 +13632,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 13.4,
+          "score": 13.2,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -13826,7 +13856,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.88,
+          "score": 9.68,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -15311,38 +15341,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 26.71,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "한국농어민신문",
-          "domain": "agrinet.co.kr",
-          "title": "반복되는 농식품 납품업체 피해 막아야",
-          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404956",
-          "reason": "below_threshold",
-          "fit_score": 2.09,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "농산물 유통 현장",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 0,
-            "strength": 5,
-            "korea": 4,
-            "offtopic_pen": 1,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 26.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -15370,6 +15368,38 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 1.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 26.51,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "한국농어민신문",
+          "domain": "agrinet.co.kr",
+          "title": "반복되는 농식품 납품업체 피해 막아야",
+          "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404956",
+          "reason": "below_threshold",
+          "fit_score": 2.09,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "농산물 유통 현장",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 1,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -15535,38 +15565,6 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 22.52,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "더팩트",
-          "domain": "news.tf.co.kr",
-          "title": "새만금에 첨단 스마트 원예단지…전북도, 65억 원 투입한다",
-          "url": "https://news.tf.co.kr/read/national/2332341.htm",
-          "reason": "below_threshold",
-          "fit_score": 1.53,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "스마트 APC 준공",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 1,
-            "strength": 3,
-            "korea": 5,
-            "offtopic_pen": 0,
-            "press_tier": 1,
-            "press_weight": -1.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
           "score": 20.54,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
@@ -15591,6 +15589,38 @@
             "market_hits": 0,
             "strength": 4,
             "korea": 6,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 22.32,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "더팩트",
+          "domain": "news.tf.co.kr",
+          "title": "새만금에 첨단 스마트 원예단지…전북도, 65억 원 투입한다",
+          "url": "https://news.tf.co.kr/read/national/2332341.htm",
+          "reason": "below_threshold",
+          "fit_score": 1.53,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "스마트 APC 준공",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 1,
+            "strength": 3,
+            "korea": 5,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
@@ -16239,7 +16269,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 11.79,
+          "score": 11.59,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -16535,12 +16565,12 @@
           "sample_title": "제주 밭작물 재배면적 조절 강화...지원 늘리고 패널티 도입"
         },
         {
-          "seed": "원예",
-          "rep": "원예",
-          "hits": 7,
+          "seed": "현장",
+          "rep": "현장",
+          "hits": 24,
           "selected_hits": 1,
           "missing": false,
-          "sample_title": "중동 리스크에 농자재 가격 압박…국제 가격 상승분 시차 반영 우려"
+          "sample_title": "중동전쟁 장기화에 식품업계 비상…식산협 \"세제·수출 지원 확대 필요..."
         },
         {
           "seed": "토마토",
@@ -16636,7 +16666,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 70.72,
+          "score": 70.52,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -16828,7 +16858,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 31.56,
+          "score": 31.36,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17052,7 +17082,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 23.81,
+          "score": 23.61,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17276,7 +17306,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 9.3,
+          "score": 9.1,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17308,7 +17338,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 7.77,
+          "score": 7.57,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17500,7 +17530,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 4.15,
+          "score": 3.95,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -17596,7 +17626,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": -1.38,
+          "score": -1.58,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -18409,7 +18439,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 3.33,
+          "score": 3.13,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -20064,8 +20094,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 112.104,
-        "at_kst": "2026-06-14T18:29:35+09:00",
+        "elapsed_sec": 111.46,
+        "at_kst": "2026-06-14T19:40:44+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-14"
@@ -20074,14 +20104,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 112.104,
-        "at_kst": "2026-06-14T18:29:35+09:00"
+        "elapsed_sec": 111.46,
+        "at_kst": "2026-06-14T19:40:44+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 112.184,
-        "at_kst": "2026-06-14T18:29:35+09:00",
+        "elapsed_sec": 111.548,
+        "at_kst": "2026-06-14T19:40:44+09:00",
         "details": {
           "archive_count": 87
         }
@@ -20089,35 +20119,35 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 112.184,
-        "at_kst": "2026-06-14T18:29:35+09:00"
+        "elapsed_sec": 111.548,
+        "at_kst": "2026-06-14T19:40:44+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 113.216,
-        "at_kst": "2026-06-14T18:29:36+09:00",
+        "elapsed_sec": 112.583,
+        "at_kst": "2026-06-14T19:40:45+09:00",
         "details": {
-          "html_bytes": 312189
+          "html_bytes": 312314
         }
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 113.216,
-        "at_kst": "2026-06-14T18:29:36+09:00"
+        "elapsed_sec": 112.583,
+        "at_kst": "2026-06-14T19:40:45+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 168.117,
-        "at_kst": "2026-06-14T18:30:31+09:00"
+        "elapsed_sec": 162.925,
+        "at_kst": "2026-06-14T19:41:35+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 168.117,
-        "at_kst": "2026-06-14T18:30:31+09:00",
+        "elapsed_sec": 162.925,
+        "at_kst": "2026-06-14T19:41:35+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-14.json"
         }
@@ -20126,13 +20156,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 168.117,
-      "at_kst": "2026-06-14T18:30:31+09:00",
+      "elapsed_sec": 162.925,
+      "at_kst": "2026-06-14T19:41:35+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-14.json"
       }
     },
-    "elapsed_sec": 168.117
+    "elapsed_sec": 162.925
   },
   "commodity_board_audit": {
     "summary": {
@@ -20309,6 +20339,7 @@
         ],
         "qualified_source_sections": [
           "policy",
+          "supply",
           "pest"
         ],
         "top_article": {
@@ -20385,17 +20416,17 @@
           },
           {
             "id": "https://agrinet.co.kr/news/articleView.html?idxno=404901",
-            "title": "\"준고랭지 여름배추 고온기 재배 차질 없게\"",
+            "title": "\"준고랭지 여름 배추 고온기 재배 차질 없게\"",
             "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404901",
-            "section": "policy",
+            "section": "supply",
             "press": "한국농어민신문",
-            "score": 11.79,
+            "score": 26.65,
             "selection_fit_score": 0.0,
             "selection_stage": "",
             "is_core": false,
             "representative_rank": 3,
-            "representative_score": 390.644,
-            "board_score": 319.144,
+            "representative_score": 427.577,
+            "board_score": 347.317,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -20934,13 +20965,13 @@
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404903",
           "section": "supply",
           "press": "한국농어민신문",
-          "score": 14.958,
+          "score": 14.758,
           "selection_fit_score": 0.0,
           "selection_stage": "",
           "is_core": false,
           "representative_rank": 3,
-          "representative_score": 341.947,
-          "board_score": 262.047,
+          "representative_score": 341.837,
+          "board_score": 261.937,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -20956,13 +20987,13 @@
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404903",
           "section": "supply",
           "press": "한국농어민신문",
-          "score": 14.958,
+          "score": 14.758,
           "selection_fit_score": 0.0,
           "selection_stage": "",
           "is_core": false,
           "representative_rank": 3,
-          "representative_score": 341.947,
-          "board_score": 262.047,
+          "representative_score": 341.837,
+          "board_score": 261.937,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -20984,13 +21015,13 @@
             "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404903",
             "section": "supply",
             "press": "한국농어민신문",
-            "score": 14.958,
+            "score": 14.758,
             "selection_fit_score": 0.0,
             "selection_stage": "",
             "is_core": false,
             "representative_rank": 3,
-            "representative_score": 341.947,
-            "board_score": 262.047,
+            "representative_score": 341.837,
+            "board_score": 261.937,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -22207,13 +22238,13 @@
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404912",
           "section": "supply",
           "press": "한국농어민신문",
-          "score": 31.56,
+          "score": 31.36,
           "selection_fit_score": 0.0,
           "selection_stage": "core_final",
           "is_core": true,
           "representative_rank": 3,
-          "representative_score": 362.998,
-          "board_score": 281.498,
+          "representative_score": 362.888,
+          "board_score": 281.388,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -22229,13 +22260,13 @@
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404912",
           "section": "supply",
           "press": "한국농어민신문",
-          "score": 31.56,
+          "score": 31.36,
           "selection_fit_score": 0.0,
           "selection_stage": "core_final",
           "is_core": true,
           "representative_rank": 3,
-          "representative_score": 362.998,
-          "board_score": 281.498,
+          "representative_score": 362.888,
+          "board_score": 281.388,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -22257,13 +22288,13 @@
             "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404912",
             "section": "supply",
             "press": "한국농어민신문",
-            "score": 31.56,
+            "score": 31.36,
             "selection_fit_score": 0.0,
             "selection_stage": "core_final",
             "is_core": true,
             "representative_rank": 3,
-            "representative_score": 362.998,
-            "board_score": 281.498,
+            "representative_score": 362.888,
+            "board_score": 281.388,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -22610,23 +22641,24 @@
         "managed_unlinked": true,
         "unlinked_reason": "matched_but_not_qualified",
         "source_sections": [
+          "dist",
           "supply"
         ],
         "qualified_source_sections": [],
         "top_article": {},
         "top_candidate": {
           "id": "https://agrinet.co.kr/news/articleView.html?idxno=404939",
-          "title": "수입꽃도 화훼 공판장 상장…'국산 혼용' 원천 차단해야",
+          "title": "수입꽃도 화훼공판장 상장…'국산 혼용' 원천 차단해야",
           "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404939",
-          "section": "supply",
+          "section": "dist",
           "press": "한국농어민신문",
-          "score": 53.08,
-          "selection_fit_score": 3.96,
-          "selection_stage": "core_guarantee",
-          "is_core": true,
+          "score": 70.52,
+          "selection_fit_score": 7.54,
+          "selection_stage": "tail_dist_hard_logistics_core",
+          "is_core": false,
           "representative_rank": 4,
-          "representative_score": 624.994,
-          "board_score": 518.994,
+          "representative_score": 634.586,
+          "board_score": 528.586,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
@@ -22634,7 +22666,7 @@
           "operational_issue_signal": true,
           "issue_bucket": "export_recovery",
           "feature_kind": "issue",
-          "weak_stage_story": false
+          "weak_stage_story": true
         },
         "thresholds": {
           "active_min_rank": 2,
@@ -22644,17 +22676,17 @@
         "candidate_sample": [
           {
             "id": "https://agrinet.co.kr/news/articleView.html?idxno=404939",
-            "title": "수입꽃도 화훼 공판장 상장…'국산 혼용' 원천 차단해야",
+            "title": "수입꽃도 화훼공판장 상장…'국산 혼용' 원천 차단해야",
             "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=404939",
-            "section": "supply",
+            "section": "dist",
             "press": "한국농어민신문",
-            "score": 53.08,
-            "selection_fit_score": 3.96,
-            "selection_stage": "core_guarantee",
-            "is_core": true,
+            "score": 70.52,
+            "selection_fit_score": 7.54,
+            "selection_stage": "tail_dist_hard_logistics_core",
+            "is_core": false,
             "representative_rank": 4,
-            "representative_score": 624.994,
-            "board_score": 518.994,
+            "representative_score": 634.586,
+            "board_score": 528.586,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 1,
@@ -22662,7 +22694,7 @@
             "operational_issue_signal": true,
             "issue_bucket": "export_recovery",
             "feature_kind": "issue",
-            "weak_stage_story": false
+            "weak_stage_story": true
           },
           {
             "id": "https://aflnews.co.kr/news/articleView.html?idxno=322308",
