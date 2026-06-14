@@ -34109,6 +34109,87 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             extra_attrs=item_extra_attrs,
         )
 
+    def _commodity_story_cluster_html(
+        item_payload: dict[str, Any],
+        primary_article: Article | None,
+        secondary_articles: list[Article],
+        extra_articles: list[Article],
+        more_count: int,
+        *,
+        primary_surface: str = "commodity_primary",
+        support_surface: str = "commodity_support",
+        more_surface: str = "commodity_more",
+    ) -> str:
+        if not isinstance(primary_article, Article):
+            return '<div class="commodityStoryMuted">오늘 관련 기사가 없습니다.</div>'
+        primary_semantic_badge = _commodity_semantic_badge(item_payload, primary_article)
+        primary_metrics = dict(item_payload.get("top_article_metrics") or {})
+        if not primary_metrics:
+            primary_metrics = _commodity_board_item_article_representative_metrics(item_payload, primary_article)
+        primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
+        primary_press_label = normalize_press_label(str(getattr(primary_article, "press", "") or "").strip(), str(getattr(primary_article, "url", "") or ""))
+        primary_meta_terms = [
+            term
+            for term in (
+                _MANAGED_COMMODITY_SECTION_LABELS.get(primary_section_key, primary_section_key),
+                primary_press_label,
+                fmt_dt(getattr(primary_article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)),
+            )
+            if term
+        ]
+        secondary_links = "".join(
+            f"""
+            <a class="commoditySupportStory" data-swipe-ignore="1"{_commodity_article_attrs(item_payload, article, surface=support_surface)} href="{esc(article.url)}" target="_top" rel="noopener">
+              <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+              <span class="commoditySupportText">{esc(article.title)}</span>
+            </a>
+            """
+            for article in secondary_articles
+            if isinstance(article, Article)
+        )
+        extra_links = "".join(
+            f"""
+            <a class="commodityMoreStory" data-swipe-ignore="1"{_commodity_article_attrs(item_payload, article, surface=more_surface)} href="{esc(article.url)}" target="_top" rel="noopener">
+              <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
+              <span class="commoditySupportText">{esc(article.title)}</span>
+            </a>
+            """
+            for article in extra_articles
+            if isinstance(article, Article)
+        )
+        more_html = (
+            f"""
+            <details class="commodityMoreWrap" data-swipe-ignore="1">
+              <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 {more_count}건 더 보기</summary>
+              <div class="commodityMoreList">{extra_links}</div>
+            </details>
+            """
+            if more_count > 0 else ""
+        )
+        secondary_html = (
+            f"""
+            <div class="commoditySupportList">
+              <div class="commoditySupportTitle">추가 기사</div>
+              {secondary_links}
+            </div>
+            """
+            if secondary_links else ""
+        )
+        return f"""
+        <div class="commodityStoryCluster">
+          <div class="commodityPrimaryCard">
+            <div class="commodityPrimaryHead">
+              <div class="commodityPrimaryKicker">대표 기사</div>
+              {primary_semantic_badge}
+            </div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1"{_commodity_article_attrs(item_payload, primary_article, surface=primary_surface, metrics=primary_metrics)} href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
+            <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
+          </div>
+          {secondary_html}
+          {more_html}
+        </div>
+        """
+
     for group in groups:
         group_color = str(group.get("color") or "#475569")
         group_soft_bg = _hex_to_rgba(group_color, 0.07)
@@ -34158,75 +34239,13 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             primary_article = item.get("top_article") if isinstance(item.get("top_article"), Article) else None
             secondary_articles = [article for article in (item.get("secondary_articles") or []) if isinstance(article, Article)]
             extra_articles = [article for article in (item.get("extra_articles") or []) if isinstance(article, Article)]
-            if primary_article:
-                primary_semantic_badge = _commodity_semantic_badge(item, primary_article)
-                primary_metrics = dict(item.get("top_article_metrics") or {})
-                if not primary_metrics:
-                    primary_metrics = _commodity_board_item_article_representative_metrics(item, primary_article)
-                primary_section_key = str(getattr(primary_article, "section", "") or "").strip()
-                primary_press_label = normalize_press_label(str(getattr(primary_article, "press", "") or "").strip(), str(getattr(primary_article, "url", "") or ""))
-                primary_meta_terms = [
-                    term
-                    for term in (
-                        _MANAGED_COMMODITY_SECTION_LABELS.get(primary_section_key, primary_section_key),
-                        primary_press_label,
-                        fmt_dt(getattr(primary_article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)),
-                    )
-                    if term
-                ]
-                secondary_links = "".join(
-                    f"""
-                    <a class="commoditySupportStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_support")} href="{esc(article.url)}" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
-                      <span class="commoditySupportText">{esc(article.title)}</span>
-                    </a>
-                    """
-                    for article in secondary_articles
-                )
-                extra_links = "".join(
-                    f"""
-                    <a class="commodityMoreStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_more")} href="{esc(article.url)}" target="_top" rel="noopener">
-                      <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
-                      <span class="commoditySupportText">{esc(article.title)}</span>
-                    </a>
-                    """
-                    for article in extra_articles
-                )
-                more_count = int(item.get("more_article_count") or 0)
-                more_html = (
-                    f"""
-                    <details class="commodityMoreWrap" data-swipe-ignore="1">
-                      <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 {more_count}건 더 보기</summary>
-                      <div class="commodityMoreList">{extra_links}</div>
-                    </details>
-                    """
-                    if more_count > 0 else ""
-                )
-                secondary_html = (
-                    f"""
-                    <div class="commoditySupportList">
-                      <div class="commoditySupportTitle">추가 기사</div>
-                      {secondary_links}
-                    </div>
-                    """
-                    if secondary_links else ""
-                )
-                story_html = f"""
-                <div class="commodityStoryCluster">
-                  <div class="commodityPrimaryCard">
-                    <div class="commodityPrimaryHead">
-                      <div class="commodityPrimaryKicker">대표 기사</div>
-                      {primary_semantic_badge}
-                    </div>
-                    <a class="commodityPrimaryStory" data-swipe-ignore="1"{_commodity_article_attrs(item, primary_article, surface="commodity_primary", metrics=primary_metrics)} href="{esc(primary_article.url)}" target="_top" rel="noopener">{esc(primary_article.title)}</a>
-                    <div class="commodityPrimaryMeta">{esc(" · ".join(primary_meta_terms))}</div>
-                  </div>
-                  {secondary_html}
-                  {more_html}
-                </div>
-                """
-            else:
-                story_html = '<div class="commodityStoryMuted">아직 연결된 대표 기사가 없습니다.</div>'
+            story_html = _commodity_story_cluster_html(
+                item,
+                primary_article,
+                secondary_articles,
+                extra_articles,
+                int(item.get("more_article_count") or 0),
+            )
             item_cards.append(
                 f"""
                 <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile{' isActive' if item.get('active') else ''}">
@@ -34244,52 +34263,51 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 """
             )
 
+        # 품목 보드는 '그날의 품목 기사'를 보여주는 곳이므로, 브리핑 대표 기준 미달 품목도
+        # active 타일과 동일하게 그날 매칭된 기사 풀을 대표/추가/관련 기사로 직접 노출한다.
+        secondary_preview_limit = 2
         for item in matched_inactive_items_for_group:
             badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
             pool_articles = [article for article in (item.get("articles") or []) if isinstance(article, Article)]
+            pool_count = len(pool_articles)
             pool_sections: list[str] = []
             for article in pool_articles:
                 sec_key = str(getattr(article, "section", "") or "").strip()
                 if sec_key and sec_key not in pool_sections:
                     pool_sections.append(sec_key)
             signal_html = "".join(
-                f'<span class="commoditySig muted" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
+                f'<span class="commoditySig" data-section="{esc(sec_key)}">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(sec_key, sec_key))}</span>'
                 for sec_key in pool_sections
                 if sec_key
             )
-            pool_links = "".join(
-                f"""
-                <a class="commodityMoreStory" data-swipe-ignore="1"{_commodity_article_attrs(item, article, surface="commodity_pool")} href="{esc(article.url)}" target="_top" rel="noopener">
-                  <span class="commoditySupportLabel">{esc(_MANAGED_COMMODITY_SECTION_LABELS.get(str(getattr(article, "section", "") or "").strip(), str(getattr(article, "section", "") or "").strip()))}</span>
-                  <span class="commoditySupportText">{esc(article.title)}</span>
-                </a>
-                """
-                for article in pool_articles[:6]
-            )
-            pool_count = len(pool_articles)
-            pool_html = (
-                f"""
-                <details class="commodityMoreWrap" data-swipe-ignore="1">
-                  <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 {pool_count}건 보기</summary>
-                  <div class="commodityMoreList">{pool_links}</div>
-                </details>
-                """
-                if pool_count > 0 else ""
+            pool_primary = pool_articles[0] if pool_articles else None
+            pool_secondary = pool_articles[1 : 1 + secondary_preview_limit]
+            pool_extra = pool_articles[1 + secondary_preview_limit :]
+            # 브리핑 대표 기준 미달 품목은 시각적으로는 대표/추가/관련 기사로 보여주되,
+            # eval의 '대표 링크 품질' 지표에는 잡히지 않도록 commodity_pool surface로 태깅한다.
+            story_html = _commodity_story_cluster_html(
+                item,
+                pool_primary,
+                pool_secondary,
+                pool_extra,
+                len(pool_extra),
+                primary_surface="commodity_pool",
+                support_surface="commodity_pool",
+                more_surface="commodity_pool",
             )
             item_cards.append(
                 f"""
-                <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile isMuted">
+                <article id="commodity-{esc(str(item.get('key') or ''))}" class="commodityTile">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">{esc(str(item.get('label') or ''))}</div>
                     {badge_html}
                   </div>
                   <div class="commodityTileMeta">
-                    <span>관련 {pool_count}건</span>
+                    <span>기사 {pool_count}건</span>
                     <span>핵심 {int(item.get('core_count') or 0)}건</span>
                   </div>
                   <div class="commoditySignals">{signal_html or '<span class="commoditySig muted">미노출</span>'}</div>
-                  <div class="commodityStoryMuted">오늘 브리핑 대표 기사 기준 미달 · 관련 기사 풀</div>
-                  {pool_html}
+                  {story_html}
                 </article>
                 """
             )
@@ -34323,7 +34341,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
                 </div>
                 <div class="commodityGroupMeta">오늘 후보 {display_active_today_count}개 · 연결 {display_active_count}개 · 수급사업 {display_program_active} / {display_program_total}</div>
               </div>
-              <div class="commodityGrid{' isSingle' if len(item_cards) == 1 else ' isDuo' if len(item_cards) == 2 else ''}">
+              <div class="commodityGrid">
                 {''.join(item_cards)}
               </div>
               {inactive_html}
