@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-14T22:18:18+09:00",
-  "build_tag": "republish-20260609",
+  "generated_at_kst": "2026-06-14T23:51:53+09:00",
+  "build_tag": "republish2-20260609",
   "filter_rejects": [
     {
       "section": "policy",
@@ -22485,8 +22485,8 @@
       "threshold": 47.38,
       "tail_cut": 47.68,
       "core_min": 47.38,
-      "hf_semantic_enabled": false,
-      "hf_semantic_hits": 0,
+      "hf_semantic_enabled": true,
+      "hf_semantic_hits": 4,
       "total_candidates": 32,
       "total_selected": 6,
       "top": [
@@ -22494,11 +22494,11 @@
           "selected": true,
           "is_core": true,
           "score": 68.91,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8421,
+          "semantic_noise_similarity": 0.7834,
+          "semantic_margin": 0.0587,
+          "semantic_boost": 0.45,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 3,
           "press": "농민신문",
           "domain": "nongmin.com",
@@ -22526,11 +22526,11 @@
           "selected": true,
           "is_core": true,
           "score": 54.38,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8274,
+          "semantic_noise_similarity": 0.808,
+          "semantic_margin": 0.0194,
+          "semantic_boost": -0.642,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "경남일보",
           "domain": "gnnews.co.kr",
@@ -22558,11 +22558,11 @@
           "selected": true,
           "is_core": true,
           "score": 54.38,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8274,
+          "semantic_noise_similarity": 0.808,
+          "semantic_margin": 0.0194,
+          "semantic_boost": -0.642,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "경남일보",
           "domain": "gnnews.co.kr",
@@ -22590,11 +22590,11 @@
           "selected": false,
           "is_core": false,
           "score": 50.73,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8396,
+          "semantic_noise_similarity": 0.7848,
+          "semantic_margin": 0.0547,
+          "semantic_boost": 0.341,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "팜인사이트",
           "domain": "farminsight.net",
@@ -22622,11 +22622,11 @@
           "selected": false,
           "is_core": false,
           "score": 48.15,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8628,
+          "semantic_noise_similarity": 0.7932,
+          "semantic_margin": 0.0696,
+          "semantic_boost": 0.753,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "뉴스프리존",
           "domain": "newsfreezone.co.kr",
@@ -22654,11 +22654,11 @@
           "selected": false,
           "is_core": false,
           "score": 48.15,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
+          "semantic_similarity": 0.8628,
+          "semantic_noise_similarity": 0.7932,
+          "semantic_margin": 0.0696,
+          "semantic_boost": 0.753,
+          "semantic_model": "intfloat/multilingual-e5-large",
           "tier": 1,
           "press": "뉴스프리존",
           "domain": "newsfreezone.co.kr",
@@ -25039,8 +25039,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 265.64,
-        "at_kst": "2026-06-14T22:16:28+09:00",
+        "elapsed_sec": 248.82,
+        "at_kst": "2026-06-14T23:51:08+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-09"
@@ -25049,14 +25049,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 265.64,
-        "at_kst": "2026-06-14T22:16:28+09:00"
+        "elapsed_sec": 248.82,
+        "at_kst": "2026-06-14T23:51:08+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 265.929,
-        "at_kst": "2026-06-14T22:16:28+09:00",
+        "elapsed_sec": 249.309,
+        "at_kst": "2026-06-14T23:51:08+09:00",
         "details": {
           "archive_count": 109
         }
@@ -25064,23 +25064,23 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 265.929,
-        "at_kst": "2026-06-14T22:16:28+09:00"
+        "elapsed_sec": 249.309,
+        "at_kst": "2026-06-14T23:51:08+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 357.808,
-        "at_kst": "2026-06-14T22:18:00+09:00",
+        "elapsed_sec": 276.678,
+        "at_kst": "2026-06-14T23:51:36+09:00",
         "details": {
-          "html_bytes": 331819
+          "html_bytes": 338439
         }
       },
       {
         "stage": "maintenance_publish_archive",
         "status": "start",
-        "elapsed_sec": 357.809,
-        "at_kst": "2026-06-14T22:18:00+09:00",
+        "elapsed_sec": 276.678,
+        "at_kst": "2026-06-14T23:51:36+09:00",
         "details": {
           "path": "docs/archive/2026-06-09.html"
         }
@@ -25088,8 +25088,8 @@
       {
         "stage": "maintenance_publish_archive",
         "status": "done",
-        "elapsed_sec": 375.696,
-        "at_kst": "2026-06-14T22:18:18+09:00",
+        "elapsed_sec": 293.847,
+        "at_kst": "2026-06-14T23:51:53+09:00",
         "details": {
           "path": "docs/archive/2026-06-09.html"
         }
@@ -25097,8 +25097,8 @@
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 375.696,
-        "at_kst": "2026-06-14T22:18:18+09:00",
+        "elapsed_sec": 293.847,
+        "at_kst": "2026-06-14T23:51:53+09:00",
         "details": {
           "path": "docs/debug/2026-06-09.json"
         }
@@ -25107,13 +25107,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 375.696,
-      "at_kst": "2026-06-14T22:18:18+09:00",
+      "elapsed_sec": 293.847,
+      "at_kst": "2026-06-14T23:51:53+09:00",
       "details": {
         "path": "docs/debug/2026-06-09.json"
       }
     },
-    "elapsed_sec": 375.696,
+    "elapsed_sec": 293.847,
     "local_dry_run": false,
     "placement_only": false
   },
