@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-15T00:26:42+09:00",
-  "build_tag": "c395b59",
+  "generated_at_kst": "2026-06-15T00:42:42+09:00",
+  "build_tag": "c860977",
   "filter_rejects": [
     {
       "section": "policy",
@@ -25505,7 +25505,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 28.84,
+          "score": 28.44,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -27636,8 +27636,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 137.901,
-        "at_kst": "2026-06-15T00:25:29+09:00",
+        "elapsed_sec": 138.017,
+        "at_kst": "2026-06-15T00:41:34+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-15"
@@ -27646,14 +27646,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 137.902,
-        "at_kst": "2026-06-15T00:25:29+09:00"
+        "elapsed_sec": 138.017,
+        "at_kst": "2026-06-15T00:41:34+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 138.026,
-        "at_kst": "2026-06-15T00:25:29+09:00",
+        "elapsed_sec": 138.253,
+        "at_kst": "2026-06-15T00:41:34+09:00",
         "details": {
           "archive_count": 88
         }
@@ -27661,14 +27661,14 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 138.026,
-        "at_kst": "2026-06-15T00:25:29+09:00"
+        "elapsed_sec": 138.253,
+        "at_kst": "2026-06-15T00:41:34+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 139.43,
-        "at_kst": "2026-06-15T00:25:31+09:00",
+        "elapsed_sec": 139.652,
+        "at_kst": "2026-06-15T00:41:35+09:00",
         "details": {
           "html_bytes": 343165
         }
@@ -27676,20 +27676,20 @@
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 139.43,
-        "at_kst": "2026-06-15T00:25:31+09:00"
+        "elapsed_sec": 139.652,
+        "at_kst": "2026-06-15T00:41:35+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 210.908,
-        "at_kst": "2026-06-15T00:26:42+09:00"
+        "elapsed_sec": 206.734,
+        "at_kst": "2026-06-15T00:42:42+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 210.908,
-        "at_kst": "2026-06-15T00:26:42+09:00",
+        "elapsed_sec": 206.734,
+        "at_kst": "2026-06-15T00:42:42+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-15.json"
         }
@@ -27698,13 +27698,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 210.908,
-      "at_kst": "2026-06-15T00:26:42+09:00",
+      "elapsed_sec": 206.734,
+      "at_kst": "2026-06-15T00:42:42+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-15.json"
       }
     },
-    "elapsed_sec": 210.908
+    "elapsed_sec": 206.734
   },
   "commodity_board_audit": {
     "summary": {
