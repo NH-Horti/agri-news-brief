@@ -1,15 +1,15 @@
 {
   "report_date": "2026-06-15",
-  "generated_at_kst": "2026-06-15T06:21:30+09:00",
-  "status": "pass",
-  "overall_score": 85.0,
-  "operational_score": 94.56,
-  "reader_quality_score": 92.87,
+  "generated_at_kst": "2026-06-15T09:50:52+09:00",
+  "status": "warn",
+  "overall_score": 84.0,
+  "operational_score": 94.73,
+  "reader_quality_score": 93.98,
   "reader_quality_gate": {
     "status": "capped",
-    "headline_score": 92.87,
-    "operational_score": 94.56,
-    "penalty": 1.69,
+    "headline_score": 93.98,
+    "operational_score": 94.73,
+    "penalty": 0.75,
     "cap": 95.0,
     "reasons": [
       "preferred_slot_underfill"
@@ -19,16 +19,16 @@
     "completeness": 96.4,
     "diversity": 100.0,
     "summary_quality": 100.0,
-    "freshness": 90.0,
+    "freshness": 90.75,
     "retrieval_support": 86.87,
     "section_alignment": 100.0,
-    "core_quality": 87.1,
+    "core_quality": 86.57,
     "commodity_board_quality": 96.76,
-    "reader_quality": 92.87
+    "reader_quality": 93.98
   },
   "counts": {
     "briefing_total": 19,
-    "commodity_total": 22,
+    "commodity_total": 21,
     "commodity_primary_total": 9,
     "commodity_active_today_total": 15,
     "commodity_active_today_unlinked_total": 6,
@@ -46,16 +46,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 13,
+      "supply": 12,
       "policy": 2,
       "dist": 2,
       "pest": 5
     },
     "raw_by_section": {
-      "supply": 254,
-      "policy": 123,
-      "dist": 51,
-      "pest": 38
+      "supply": 246,
+      "policy": 124,
+      "dist": 47,
+      "pest": 36
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -84,19 +84,19 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7895,
+    "briefing_domain_diversity_rate": 0.7368,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
     "summary_length_ok_rate": 1.0,
-    "summary_numeric_rate": 0.6316,
+    "summary_numeric_rate": 0.7368,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.4211,
+    "within_48h_rate": 0.5263,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "weekend_span",
     "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 3.8405,
+    "section_alignment_fit_avg": 3.9437,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -104,9 +104,9 @@
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 1.6895,
+    "reader_quality_penalty": 0.75,
     "reader_quality_cap": 95.0,
-    "preferred_slot_reader_penalty_weight": 1.5,
+    "preferred_slot_reader_penalty_weight": 0.75,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
@@ -114,17 +114,17 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0526,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1053,
+    "editorial_quality_penalty": 0.0,
     "preferred_slot_gap_rate": 0.05,
     "preferred_slot_gap_total": 1,
     "preferred_slot_penalty": 1.1,
     "core_fit_avg": 4.546,
-    "core_rank_percentile_avg": 0.8243,
+    "core_rank_percentile_avg": 0.817,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.2,
     "commodity_primary_item_focus_rate": 1.0,
@@ -184,7 +184,7 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 0.55,
-      "pest": 0.968
+      "pest": 0.9722
     }
   },
   "freshness_samples": [
@@ -199,11 +199,6 @@
       "age_hours": 69.0
     },
     {
-      "title": "[픽! 영동] 금강 모래밭서 생산된 '양산수박' 출하",
-      "section": "supply",
-      "age_hours": 67.1
-    },
-    {
       "title": "중동 리스크에 농자재 가격 압박…국제 가격 상승분 시차 반영 우려",
       "section": "policy",
       "age_hours": 66.7
@@ -214,9 +209,9 @@
       "age_hours": 66.5
     },
     {
-      "title": "소유진·심진화부터 '흑백요리사' 셰프까지…' 양파 챌린지' 동참",
+      "title": "농협유통 하나로마트, ' 양배추 ' 소비 촉진행사...농촌과 상생 협력",
       "section": "supply",
-      "age_hours": 63.5
+      "age_hours": 63.6
     },
     {
       "title": "충주·제천에 우박...50농가 60ha 피해",
@@ -227,28 +222,22 @@
       "title": "수입꽃도 화훼공판장 상장…'국산 혼용' 원천 차단해야",
       "section": "dist",
       "age_hours": 58.5
+    },
+    {
+      "title": "대전 산내 델라웨어 포도, 대만 첫 수출",
+      "section": "dist",
+      "age_hours": 58.5
     }
   ],
   "content_false_positive_samples": [],
   "reader_hard_issue_samples": [],
   "story_duplicate_samples": [],
   "commodity_primary_linkage_samples": [],
-  "editorial_quality_samples": [
-    {
-      "title": "소유진·심진화부터 '흑백요리사' 셰프까지…' 양파 챌린지' 동참",
-      "href": "https://star.ytn.co.kr/_sn/0117_202606121428075241",
-      "section": "supply",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "improvement_hints": [
     "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.",
     "리콜 시드 결손이 보입니다: dist. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
-    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
@@ -301,92 +290,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.4",
-    "generated_at_kst": "2026-06-15T06:21:43+09:00",
-    "score": 85.0,
+    "generated_at_kst": "2026-06-15T09:51:03+09:00",
+    "score": 84.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 84.0,
-      "section_fit": 87.0,
-      "core_pick_quality": 88.0,
-      "summary_usefulness": 91.0,
-      "missed_opportunity": 78.0,
-      "noise_control": 80.0
+      "article_selection": 82.0,
+      "section_fit": 86.0,
+      "core_pick_quality": 83.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 76.0,
+      "noise_control": 79.0
     },
-    "summary": "핵심 축은 대체로 맞았지만, 공급·정책 꼬리 카드의 잡음과 놓친 강한 후보들 때문에 90점대 중반까지는 어렵다. 특히 정책은 원자료가 충분한데도 4장에 그쳤고, 공급은 연예인 챌린지·지역 출하성 단신이 강한 기사들을 밀어냈다. 유통은 물류·시장 기능 중심으로 비교적 잘 잡았고, 병해충은 화상병 중심축은 적절하나 우박성 피해 기사 중복이 아쉽다.",
+    "summary": "전반적으로 기사 요약과 기본 섹션 구성은 갖췄지만, 편집 선택은 95점대와 거리가 있다. 공급 섹션에 행사성·지원성 filler가 과하고, 유통 섹션은 일본 도매시장 기사가 중복적으로 소비되며 더 강한 온라인도매시장 비판 기사를 놓쳤다. 병해충은 화상병 핵심 이슈를 잡았지만 우박 기사 2건은 주제 적합성이 떨어진다. 정책은 4건 soft fallback이라 상한도 낮다.",
     "issues": [
-      {
-        "type": "missed_opportunity",
-        "severity": "high",
-        "section": "policy",
-        "title": "정책 섹션 4장 편성",
-        "reason": "원후보 충분한데 목표 5장을 못 채움.",
-        "suggested_action": "정책 5장 기본 편성을 지키고 약한 타 섹션성 기사 대신 채워라."
-      },
       {
         "type": "wrong_section",
         "severity": "high",
-        "section": "policy",
-        "title": "CJ프레시웨이, 세광푸드와 식자재 계약→동원F&B, '컨펙스' 그랑프리",
-        "reason": "민간 계약·기업 홍보성으로 정책성 매우 약함.",
-        "suggested_action": "정책에서 제외하고 제도·관세·수급대응 기사로 교체하라."
+        "section": "supply",
+        "title": "“ 양파 즙 한잔하며 쉬었다 가세요”…농협, 폭염 대비 쉼터 지원 강화",
+        "reason": "수급보다 복지·현장지원 기사다.",
+        "suggested_action": "공급 섹션에서 제외하고 가격·출하 동향으로 교체."
       },
       {
         "type": "promotional_filler",
-        "severity": "medium",
+        "severity": "high",
         "section": "supply",
-        "title": "소유진·심진화부터 '흑백요리사' 셰프까지…' 양파 챌린지' 동참",
-        "reason": "소비촉진 이벤트성 비중이 커 수급 기사로는 약함.",
-        "suggested_action": "가격·출하·면적 등 실물 수급 기사 뒤의 보조 카드로만 사용하라."
+        "title": "농협유통 하나로마트, ' 양배추 ' 소비 촉진행사...농촌과 상생 협력",
+        "reason": "판촉행사 비중이 커 공급 핵심성이 약하다.",
+        "suggested_action": "가격·작황 중심 기사로 대체."
       },
       {
         "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "supply",
-        "title": "\"보이면 바로 사세요\"…6월 지나면 사라지는 '초여름 과일' [프라이스&]",
-        "reason": "단일 유통 MD성 생활기사보다 천도복숭아 작황 기사가 더 직접적임.",
-        "suggested_action": "산지 작황·출하 전망 기사로 교체하라."
+        "severity": "high",
+        "section": "dist",
+        "title": "온라인도매시장, 왜 나랏돈 퍼주는 '곳간' 됐나",
+        "reason": "유통 구조 비판성과 현안성이 큰데 미선정.",
+        "suggested_action": "일본 사례성 기사 1건 대신 채택."
       },
       {
-        "type": "promotional_filler",
-        "severity": "medium",
-        "section": "supply",
-        "title": "[픽! 영동] 금강 모래밭서 생산된 '양산수박' 출하",
-        "reason": "지역 출하 알림 수준으로 전국 수급 함의가 약함.",
-        "suggested_action": "전국 가격·생산 전망 기사나 작황 기사 우선 배치."
-      },
-      {
-        "type": "missed_opportunity",
+        "type": "duplication",
         "severity": "medium",
         "section": "dist",
-        "title": "오타도매시장, '저장·분류·배송' 종합 유통 플랫폼",
-        "reason": "무난하지만 온라인도매시장 비판 기사 등 더 직접적인 국내 유통 구조 이슈를 놓침.",
-        "suggested_action": "해외 사례와 함께 국내 유통 구조 기사 1건을 섞어 균형을 맞춰라."
+        "title": "오타도매시장, '저장·분류·배송' 종합 유통 플랫폼 / 요코하마도매시장 '소매 분산 물류'로 특화",
+        "reason": "둘 다 일본 도매시장 사례로 결이 유사하다.",
+        "suggested_action": "1건만 남기고 국내 유통 현안으로 분산."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "medium",
+        "section": "pest",
+        "title": "“양배추 잎에 동전만 한 구멍”⋯기습우박에 강원 농경지 20만평 피해",
+        "reason": "병해충이 아니라 기상재해다.",
+        "suggested_action": "병해충 섹션 대신 재해·수급 문맥으로 이동."
       },
       {
         "type": "duplication",
         "severity": "medium",
         "section": "pest",
-        "title": "강원 우박 피해 기사 2건 동시 선별",
-        "reason": "같은 사건군 반복으로 정보 효율이 떨어짐.",
-        "suggested_action": "우박은 1건만 두고 화상병 확산·타 작물 병해충으로 다양화하라."
+        "title": "“양배추 잎에 동전만 한 구멍”⋯기습우박… / “ 배추 수확 앞두고 쑥대밭” 강원농가 덮친 우박 피해 속출",
+        "reason": "동일 우박 피해의 반복 편성이다.",
+        "suggested_action": "1건만 남기고 화상병 추가 확산 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "pest",
+        "title": "과수화상병 발생농가 100곳 돌파…신규 지역 확산에 ‘긴장’",
+        "reason": "전국 확산 총괄성이 더 높은 핵심 기사다.",
+        "suggested_action": "우박 기사 1건 대신 채택."
+      },
+      {
+        "type": "count_underfill",
+        "severity": "medium",
+        "section": "policy",
+        "title": "policy section underfill",
+        "reason": "후보가 충분한데 4건만 편성됐다.",
+        "suggested_action": "5번째 카드 보강, 단 일반 일정표는 피하고 실질 정책 기사 선택."
       }
     ],
     "section_notes": {
-      "supply": "핵심 기사 1번은 괜찮지만 꼬리 4장 중 2~3장이 약하다. 같은 풀에서 천도복숭아 작황, 채소값 동향 같은 더 직접적인 수급 기사가 보였는데 연예인 챌린지·지역 출하성 기사로 채운 점이 아쉽다.",
-      "policy": "중동발 농자재 가격 압박은 좋은 코어다. 그러나 정책 풀은 충분했는데 4장에 그쳤고, 할당관세 효과 분석은 적절한 보강인 반면 CJ프레시웨이 계약 기사는 정책 섹션 품질을 크게 깎는다.",
-      "dist": "유통은 저장·분류·배송, 화훼 상장, 수출, 도매시장 기능 등 비교적 섹션 적합성이 높다. 다만 일본 도매시장 연속물 비중이 커 국내 온라인도매시장 문제 제기 기사 1건을 섞었으면 더 강했다.",
-      "pest": "과수화상병 피해 현장과 충북 확산 기사는 핵심 선택으로 적절하다. 다만 우박 피해 기사 2건은 사건 중복도가 높아 한 장만 남기고 화상병 전국 확산 또는 특정 작물 병해충 기사로 대체하는 편이 낫다."
+      "supply": "핵심 1건은 좋지만 나머지 2~3건이 행사·지원성으로 내려앉았다. 같은 후보군에서 천도복숭아 작황, 채소값 동향 등 더 직접적인 수급 기사 활용 여지가 컸다.",
+      "policy": "중동발 농자재 압박은 적절한 리드다. 다만 4건 soft fallback이며, 할당관세 기사도 들어갔지만 전반적으로 정책 묶음의 무게감은 보통 수준이다.",
+      "dist": "유통 섹션은 물류·수출 기사 비중 자체는 맞지만 일본 도매시장 사례가 과다하다. 온라인도매시장 비판, CJ-농협 물류협력 같은 국내 운영 현안을 더 전면에 둘 필요가 있다.",
+      "pest": "화상병 핵심 선택은 맞다. 그러나 우박 피해 2건은 병해충보다 재해 기사라 섹션 순도가 떨어지고, 전국 100농가 돌파 같은 더 강한 화상병 총괄 기사를 놓쳤다."
     },
     "improvement_suggestions": [
-      "정책은 원후보가 충분하면 5장 편성을 원칙으로 유지하라.",
-      "정책 섹션에서 기업 계약·수상·홍보성 기사는 강하게 배제하라.",
-      "공급은 이벤트성 소비촉진보다 산지 작황·출하·가격 변수 기사를 우선하라.",
-      "유통은 해외 사례 1~2건에 국내 도매시장·물류 구조 기사 1건 이상을 반드시 섞어라.",
-      "병해충은 동일 재해 기사 중복을 줄이고 화상병 확산·방제 체계 기사로 깊이를 보강하라.",
-      "약한 지역 출하 단신은 섹션 카운트 복구용 최후순위로만 사용하라."
+      "공급 섹션에서 행사·캠페인성 기사 2건 이상을 직접 수급·작황 기사로 교체하라.",
+      "유통 섹션은 해외 사례 1건, 국내 운영·제도 현안 2~3건 구조로 재편하라.",
+      "병해충 섹션에서 기상재해 중복을 줄이고 화상병 전국 확산 총괄 기사 우선순위를 높여라.",
+      "후보 풀이 충분한 섹션은 5건 원칙을 지키되, 부족분을 약한 filler로 채우지 말고 더 강한 대체 후보를 재탐색하라.",
+      "같은 소재의 시리즈·지역 반복 기사 동시 편성을 줄여 정보 다양성을 높여라.",
+      "핵심 기사 선정 시 현장성뿐 아니라 전국 파급력과 제도 변화 신호를 더 우선하라."
     ],
-    "raw_response_excerpt": "{\"score\":85,\"scores\":{\"article_selection\":84,\"section_fit\":87,\"core_pick_quality\":88,\"summary_usefulness\":91,\"missed_opportunity\":78,\"noise_control\":80},\"summary\":\"핵심 축은 대체로 맞았지만, 공급·정책 꼬리 카드의 잡음과 놓친 강한 후보들 때문에 90점대 중반까지는 어렵다. 특히 정책은 원자료가 충분한데도 4장에 그쳤고, 공급은 연예인 챌린지·지역 출하성 단신이 강한 기사들을 밀어냈다. 유통은 물류·시장 기능 중심으로 비교적 잘 잡았고, 병해충은 화상병 중심축은 적절하나 우박성 피해 기사 중복이 아쉽다.\",\"issues\":[{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"정책 섹션 4장 편성\",\"reason\":\"원후보 충분한데 목표 5장을 못 채움.\",\"suggested_action\":\"정책 5장 기본 편성을 지키고 약한 타 섹션성 기사 대신 채워라.\"},{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"policy\",\"title\":\"CJ프레시웨이, 세광푸드와 식자재 계약→동원F&B, '컨펙스' 그랑프리\",\"reason\":\"민간 계약·기업 홍보성으로 정책성 매우 약함.\",\"suggested_action\":\"정책에서 제외하고 제도·관세·수급대응 기사로 교체하라.\"},{\"type\":\"promotional_filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"소유진·심진화부터 '흑백요리사' 셰프까지…' 양파 챌린지' 동참\",\"reason\":\"소비촉진 이벤트성 비중이 커 수급 기사로는 약함.\",\"suggested_action\":\"가격·출하·면적 등 실물 수급 기사 뒤의 보조 카드로만 사용하라.\"},{\"type\":\"missed_opportunity\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"\\\"보이면 바로 사세요\\\"…6월 지나면 사라지는 '초여름 과일' [프라이스&]\",\"reason\":\"단일 유통 MD성 생활기사보다 천도복숭아 작황 기사가 더 직접적임.\",\"suggested_action\":\"산지 작황·출하 전망 기사로 교체하라.\"},{\"type\":\"promotional_f...",
+    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":82,\"section_fit\":86,\"core_pick_quality\":83,\"summary_usefulness\":92,\"missed_opportunity\":76,\"noise_control\":79},\"summary\":\"전반적으로 기사 요약과 기본 섹션 구성은 갖췄지만, 편집 선택은 95점대와 거리가 있다. 공급 섹션에 행사성·지원성 filler가 과하고, 유통 섹션은 일본 도매시장 기사가 중복적으로 소비되며 더 강한 온라인도매시장 비판 기사를 놓쳤다. 병해충은 화상병 핵심 이슈를 잡았지만 우박 기사 2건은 주제 적합성이 떨어진다. 정책은 4건 soft fallback이라 상한도 낮다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"“ 양파 즙 한잔하며 쉬었다 가세요”…농협, 폭염 대비 쉼터 지원 강화\",\"reason\":\"수급보다 복지·현장지원 기사다.\",\"suggested_action\":\"공급 섹션에서 제외하고 가격·출하 동향으로 교체.\"},{\"type\":\"promotional_filler\",\"severity\":\"high\",\"section\":\"supply\",\"title\":\"농협유통 하나로마트, ' 양배추 ' 소비 촉진행사...농촌과 상생 협력\",\"reason\":\"판촉행사 비중이 커 공급 핵심성이 약하다.\",\"suggested_action\":\"가격·작황 중심 기사로 대체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"온라인도매시장, 왜 나랏돈 퍼주는 '곳간' 됐나\",\"reason\":\"유통 구조 비판성과 현안성이 큰데 미선정.\",\"suggested_action\":\"일본 사례성 기사 1건 대신 채택.\"},{\"type\":\"duplication\",\"severity\":\"medium\",\"section\":\"dist\",\"title\":\"오타도매시장, '저장·분류·배송' 종합 유통 플랫폼 / 요코하마도매시장 '소매 분산 물류'로 특화\",\"reason\":\"둘 다 일본 도매시장 사례로 결이 유사하다.\",\"suggested_action\":\"1건만 남기고 국내 유통 현안으로 분산.\"},{\"type\":\"wrong_section\",\"severity\":\"medium\",\"section...",
     "section_count_score": 98.0,
     "section_count_status": "soft_fallback",
     "section_count_context": {
@@ -396,7 +393,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 254,
+          "raw_candidates": 246,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -408,7 +405,7 @@
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 123,
+          "raw_candidates": 124,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -420,7 +417,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 51,
+          "raw_candidates": 47,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -432,7 +429,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 38,
+          "raw_candidates": 36,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -457,12 +454,12 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     }
   },
-  "editorial_score": 85.0,
+  "editorial_score": 84.0,
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 85.0,
+    "current_editorial_score": 84.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -479,7 +476,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 254,
+          "raw_candidates": 246,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -491,7 +488,7 @@
         "policy": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 123,
+          "raw_candidates": 124,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -503,7 +500,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 51,
+          "raw_candidates": 47,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -515,7 +512,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 38,
+          "raw_candidates": 36,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -612,10 +609,10 @@
   "quality_gate": {
     "status": "needs_iteration",
     "target_score": 95.0,
-    "operational_score": 94.56,
-    "reader_quality_score": 92.87,
-    "editorial_score": 85.0,
-    "headline_score": 85.0,
+    "operational_score": 94.73,
+    "reader_quality_score": 93.98,
+    "editorial_score": 84.0,
+    "headline_score": 84.0,
     "reason": "editorial_blocking_issue",
     "bounded_penalty": 0.0,
     "blocking_issue_count": 1
