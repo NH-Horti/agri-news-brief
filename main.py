@@ -6500,6 +6500,30 @@ _COMMODITY_UNANCHORED_GENERIC_TERMS = (
     "드론", "자율 트랙터", "ai 시대", "농업기술원", "농기원", "기술원", "농사", "관리법", "안전사용서", "재배 기술", "스마트팜",
 )
 
+# 연예인·SNS '소비 촉진 챌린지/캠페인' 동참류 연성 홍보 기사.
+# 품목 가격·작황 맥락이 있어도 본질은 셀럽 소비촉진 이벤트이므로 수급 핵심 기사로는 약하다.
+_CONSUMER_CAMPAIGN_CELEB_TERMS = (
+    "셰프", "배우", "개그우먼", "개그맨", "가수", "아이돌", "인플루언서",
+    "방송인", "연예인", "흑백요리사", "sns", "인스타", "유튜버", "챌린지 동참",
+)
+
+
+def is_consumer_campaign_promo_context(title: str, desc: str, dom: str = "") -> bool:
+    """연예인/SNS 소비촉진 '챌린지·캠페인 동참' 연성 홍보 기사를 핵심 수급 기사에서 배제한다."""
+    ttl = title or ""
+    lead = _nfkc_lower(f"{ttl} {(desc or '')[:200]}")
+    if not lead:
+        return False
+    if "챌린지" not in lead and "캠페인 동참" not in lead:
+        return False
+    # 정부·지자체·생산자단체의 공식 수급/소비 정책 행사는 제외하지 않는다(정책성 유지).
+    if count_any(lead, [w.lower() for w in ("농식품부", "농림축산식품부", "정부", "지자체", "도청", "시청", "군청")]) >= 1:
+        return False
+    celeb_hits = count_any(lead, [w.lower() for w in _CONSUMER_CAMPAIGN_CELEB_TERMS])
+    star_domain = "star." in (dom or "") or "entertain" in (dom or "")
+    return celeb_hits >= 1 or star_domain
+
+
 def is_supply_org_promo_feature_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
@@ -8190,6 +8214,64 @@ def is_policy_event_tail_context(title: str, desc: str, dom: str = "", press: st
         [w.lower() for w in ("\ub18d\uc2dd\ud488\ubd80", "\ub18d\ub9bc\ucd95\uc0b0\uc2dd\ud488\ubd80", "aT", "\ud55c\uad6d\ub18d\uc218\uc0b0\uc2dd\ud488\uc720\ud1b5\uacf5\uc0ac", "\uc7a5\uad00", "\uc815\ucc45\uad00")],
     )
     return actor_hits >= 1
+
+
+# 민간 기업 간 상거래(식자재 공급계약·납품·수주)·외식/식품 브랜드 수상·출시 홍보 기사는
+# 공공 정책 행위자가 주체가 아니므로 정책 섹션과 구조적으로 무관하다.
+# 정책 미충원(underfill) 복구 경로에서 이런 기사가 정책으로 끌려오는 것을 알고리즘 차원에서 차단한다.
+# 공공 정책 행위자(정부·농식품부·지자체 등)가 등장하거나, 수급안정·계약재배 등
+# 농산물 정책 맥락이 있으면 정책 기사로 유지한다(과차단 방지).
+# 계약/수주 등 '거래 성사' 동작에 한정한다. 단순 '식자재 공급'·'공급권' 같은
+# 일반 수급 표현은 정책 기사(지자체 점검, 정부 대책)에도 흔하므로 제외한다.
+_POLICY_PRIVATE_DEAL_ACTION_TERMS = (
+    "공급 계약", "공급계약", "납품 계약", "납품계약", "공급 재계약",
+    "계약 체결", "계약을 체결", "재계약을 체결", "독점 공급 계약",
+    "독점공급 계약", "공급 협약 체결", "수주 계약", "납품 계약을 체결",
+    "공급계약을 체결",
+)
+# 민간 기업 주체(특정 사명·기업형 토큰)가 제목/도입부에 명시돼야 민간 상거래로 본다.
+# 지자체·정부·산업 일반 표현은 여기에 잡히지 않아 과차단을 막는다.
+_POLICY_PRIVATE_DEAL_BRAND_TERMS = (
+    "f&b", "에프앤비", "㈜", "(주)", "주식회사",
+    "외식 전문 기업", "외식전문기업", "외식기업", "외식 기업",
+    "식품기업", "식품 기업", "식자재 기업", "식자재기업",
+    "급식업체", "급식 업체", "프랜차이즈", "가맹사업", "유통전문기업",
+)
+# 공공 정책 행위자/정책 맥락이 보이면 민간 상거래로 보지 않고 정책 기사로 유지한다.
+_POLICY_PRIVATE_DEAL_PUBLIC_TERMS = (
+    "농식품부", "농림축산식품부", "정부", "기재부", "기획재정부", "국회",
+    "국회의원", "지자체", "지방자치단체", "도청", "시청", "군청", "구청",
+    "한국농수산식품유통공사", "농관원", "국립농산물품질관리원", "검역",
+    "관세청", "장관", "차관", "조례", "보조금", "지원사업", "농촌진흥청",
+    "농진청", "공공기관", "식품의약품안전처", "산업통상부",
+    # NH·협동조합 등 공익적 행위자 기사는 민간 상거래로 보지 않는다(핵심 우선 행위자)
+    "농협", "농협경제지주", "농협중앙회", "산림조합", "수협",
+)
+_POLICY_PRIVATE_DEAL_KEEP_TERMS = (
+    "계약재배", "수급 안정", "수급안정", "비축", "공공비축", "정부 비축",
+    "할당관세", "출하 조절", "출하조절", "산지 수급",
+)
+
+
+def is_policy_private_commercial_deal_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
+    """민간 기업 간 식자재 공급계약·납품·외식 브랜드 수상 등 상거래 홍보 기사를 정책 섹션에서 배제한다.
+
+    스크랩된 description 꼬리에는 다른 기사 footer/관련기사(예: 정부·농촌진흥청 언급)가 섞여
+    들어오므로, 공공 행위자·정책 맥락 판정은 제목 + 본문 도입부(lead)로 한정해 오탐을 막는다.
+    """
+    ttl = title or ""
+    # 본문은 도입부(lead)만 사용해 스크랩 footer 잡음(공유하기/관련기사 블록)을 배제
+    lead = _nfkc_lower(f"{ttl} {(desc or '')[:220]}".strip())
+    if not lead:
+        return False
+    # 제목/도입부에 공공 정책 행위자나 수급안정·계약재배 등 정책 맥락이 있으면 정책 기사로 유지
+    if count_any(lead, [w.lower() for w in _POLICY_PRIVATE_DEAL_PUBLIC_TERMS]) >= 1:
+        return False
+    if count_any(lead, [w.lower() for w in _POLICY_PRIVATE_DEAL_KEEP_TERMS]) >= 1:
+        return False
+    action_hits = count_any(lead, [w.lower() for w in _POLICY_PRIVATE_DEAL_ACTION_TERMS])
+    brand_hits = count_any(lead, [w.lower() for w in _POLICY_PRIVATE_DEAL_BRAND_TERMS])
+    return action_hits >= 1 and brand_hits >= 1
 
 
 _POLICY_MAJOR_ISSUE_ACTOR_TERMS = (
@@ -21941,7 +22023,11 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "livestock_title_dominant"
     if section_key in ("supply", "policy", "dist") and is_processed_food_lifestyle_context(a.title or "", a.description or ""):
         return "processed_food_lifestyle_noise"
+    if section_key in ("supply", "policy", "dist") and is_consumer_campaign_promo_context(a.title or "", a.description or "", normalize_host(a.domain or "")):
+        return "consumer_campaign_promo"
     if section_key == "policy":
+        if is_policy_private_commercial_deal_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
+            return "policy_private_commercial_deal"
         if is_policy_forest_admin_noise_context(a.title or "", a.description or ""):
             return "policy_forest_admin_noise"
         if is_policy_budget_drive_noise_context(a.title or "", a.description or ""):
@@ -29533,6 +29619,16 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     if is_retail_sales_trend_context(text):
         return None
     if is_policy_event_tail_context(title, desc, dom, press):
+        return None
+
+    # 미충원 복구는 마지막 백필 경로이므로 '진짜 농업 앵커'를 요구한다.
+    # 스크랩 description 꼬리의 잡음(관련기사·footer)과 품목 매처의 alias 오탐
+    # (예: 방산 기사에 'tomato'가 매칭)이 anchor_ok를 우연히 통과시켜 방산·조선·반도체 등
+    # 비농업 산업/기업 기사가 정책으로 끌려오는 것을 구조적으로 차단한다.
+    # 판정은 제목+도입부(lead)에 '문자 그대로의' 농업 강신호/직접 품목 앵커가 있는지로 한정한다
+    # (fuzzy managed_count는 오탐이 많아 사용하지 않는다).
+    _lead = _nfkc_lower(f"{title} {desc[:240]}")
+    if agri_strength_score(_lead) == 0 and count_any(_lead, [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS]) == 0:
         return None
 
     officialish = (
