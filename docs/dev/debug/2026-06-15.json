@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-06-15T09:36:26+09:00",
-  "build_tag": "22aac58",
+  "generated_at_kst": "2026-06-15T10:08:38+09:00",
+  "build_tag": "ecc73e0",
   "filter_rejects": [
     {
       "section": "policy",
@@ -22663,7 +22663,7 @@
         {
           "selected": false,
           "is_core": false,
-          "score": 21.88,
+          "score": 21.68,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -27636,8 +27636,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 133.722,
-        "at_kst": "2026-06-15T09:35:28+09:00",
+        "elapsed_sec": 103.799,
+        "at_kst": "2026-06-15T10:07:49+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-06-15"
@@ -27646,14 +27646,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 133.722,
-        "at_kst": "2026-06-15T09:35:28+09:00"
+        "elapsed_sec": 103.799,
+        "at_kst": "2026-06-15T10:07:49+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 133.83,
-        "at_kst": "2026-06-15T09:35:28+09:00",
+        "elapsed_sec": 103.941,
+        "at_kst": "2026-06-15T10:07:49+09:00",
         "details": {
           "archive_count": 88
         }
@@ -27661,35 +27661,35 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 133.83,
-        "at_kst": "2026-06-15T09:35:28+09:00"
+        "elapsed_sec": 103.941,
+        "at_kst": "2026-06-15T10:07:49+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 135.225,
-        "at_kst": "2026-06-15T09:35:29+09:00",
+        "elapsed_sec": 105.018,
+        "at_kst": "2026-06-15T10:07:50+09:00",
         "details": {
-          "html_bytes": 342959
+          "html_bytes": 342960
         }
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "start",
-        "elapsed_sec": 135.225,
-        "at_kst": "2026-06-15T09:35:29+09:00"
+        "elapsed_sec": 105.018,
+        "at_kst": "2026-06-15T10:07:50+09:00"
       },
       {
         "stage": "maintenance_publish_dev_upload",
         "status": "done",
-        "elapsed_sec": 191.534,
-        "at_kst": "2026-06-15T09:36:26+09:00"
+        "elapsed_sec": 152.993,
+        "at_kst": "2026-06-15T10:08:38+09:00"
       },
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 191.534,
-        "at_kst": "2026-06-15T09:36:26+09:00",
+        "elapsed_sec": 152.994,
+        "at_kst": "2026-06-15T10:08:38+09:00",
         "details": {
           "path": "docs/dev/debug/2026-06-15.json"
         }
@@ -27698,13 +27698,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 191.534,
-      "at_kst": "2026-06-15T09:36:26+09:00",
+      "elapsed_sec": 152.994,
+      "at_kst": "2026-06-15T10:08:38+09:00",
       "details": {
         "path": "docs/dev/debug/2026-06-15.json"
       }
     },
-    "elapsed_sec": 191.534
+    "elapsed_sec": 152.994
   },
   "commodity_board_audit": {
     "summary": {
@@ -28389,8 +28389,8 @@
         "managed": true,
         "active_today": true,
         "linked": true,
-        "matched_count": 16,
-        "active_today_candidate_count": 12,
+        "matched_count": 14,
+        "active_today_candidate_count": 11,
         "qualified_count": 4,
         "linked_count": 1,
         "active_today_unlinked": false,
@@ -29919,8 +29919,8 @@
         "managed": true,
         "active_today": true,
         "linked": true,
-        "matched_count": 6,
-        "active_today_candidate_count": 1,
+        "matched_count": 7,
+        "active_today_candidate_count": 2,
         "qualified_count": 1,
         "linked_count": 1,
         "active_today_unlinked": false,
@@ -30003,6 +30003,28 @@
             "operational_issue_signal": true,
             "issue_bucket": "",
             "feature_kind": "",
+            "weak_stage_story": false
+          },
+          {
+            "id": "https://nongmin.com/article/20260609500053",
+            "title": "포천 가산농협, 농업용수 산도 조정으로 포도 품질 높인다",
+            "url": "https://www.nongmin.com/article/20260609500053",
+            "section": "supply",
+            "press": "농민신문",
+            "score": 17.65,
+            "selection_fit_score": 0.0,
+            "selection_stage": "",
+            "is_core": false,
+            "representative_rank": 2,
+            "representative_score": 373.608,
+            "board_score": 315.248,
+            "board_eligible": true,
+            "direct_item_focus": true,
+            "title_primary_hits": 1,
+            "title_issue_hits": 0,
+            "operational_issue_signal": true,
+            "issue_bucket": "",
+            "feature_kind": "field",
             "weak_stage_story": false
           }
         ]
