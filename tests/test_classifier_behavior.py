@@ -871,6 +871,29 @@ class TestClassifierBehavior(unittest.TestCase):
         policy_conf = next((s for s in main.SECTIONS if s.get("key") == "policy"), {})
         self.assertIsNone(main._policy_underfill_recovery_rank(a, policy_conf))
 
+    def test_nh_welfare_shelter_story_is_rejected_from_supply(self):
+        # NH 폭염 쉼터·복지/현장지원 기사는 시장 앵커가 없으면 수급 코어에서 배제(NH라도).
+        title = "“양파 즙 한잔하며 쉬었다 가세요”…농협, 폭염 대비 쉼터 지원 강화"
+        desc = "강호동 농협중앙회장은 백석농협을 방문해 무더위 쉼터 운영 현황을 점검하고 생수·양파즙 등을 무상 배부했다."
+        self.assertTrue(main.is_supply_welfare_field_support_context(title, desc))
+        a = self._make_article("supply", title, desc, "https://nongmin.com/welfare")
+        self.assertEqual(
+            main._postbuild_article_reject_reason(a, "supply", apply_selection_fit=False),
+            "supply_welfare_field_support",
+        )
+
+    def test_nh_market_shipment_story_is_kept_in_supply(self):
+        # 시장 앵커(출하/가격)가 있으면 NH 기사는 수급 코어로 유지(고향사랑기부제 답례품 오탐 방지).
+        title = "대전 산내농협, 델라웨어 포도 전국 첫 출하"
+        desc = "산내지역 델라웨어 포도가 전국 최초로 첫 출하를 시작했다. 고향사랑기부제 답례품으로도 선정됐다."
+        self.assertFalse(main.is_supply_welfare_field_support_context(title, desc))
+
+    def test_nh_consumption_promo_with_market_context_is_kept(self):
+        # 판촉 행사라도 가격 폭락·출하량 등 실제 시장 맥락이 있으면 유지한다.
+        title = "농협유통 하나로마트, '양배추' 소비 촉진행사…농촌과 상생 협력"
+        desc = "양배추 가격 폭락으로 어려움을 겪는 농가와의 상생을 위해 소비 촉진 캠페인을 추진한다. 출하량 증가로 시세가 절반으로 폭락했다."
+        self.assertFalse(main.is_supply_welfare_field_support_context(title, desc))
+
     def test_genuine_agri_policy_passes_underfill_recovery(self):
         # 문자 그대로의 농업 앵커가 있는 정상 정책 기사는 복구 후보로 유지돼야 한다.
         title = "정부, 6월 농축산물 할인지원 강화…수급 안정 총력"
