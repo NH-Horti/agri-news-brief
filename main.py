@@ -6524,6 +6524,36 @@ def is_consumer_campaign_promo_context(title: str, desc: str, dom: str = "") -> 
     return celeb_hits >= 1 or star_domain
 
 
+# 폭염 쉼터·봉사·사회공헌·기부 등 복지/현장지원성 기사. NH·지자체 등 핵심 행위자가
+# 주체여도 시장(가격·시세·출하·수급) 앵커가 없으면 수급 코어 기사로는 부적합하다.
+# NH 우선순위는 '시장/수급' NH 기사로 보호되며, 여기서는 복지·이벤트성만 걸러낸다.
+_SUPPLY_WELFARE_TERMS = (
+    "무더위 쉼터", "폭염 쉼터", "쉼터 운영", "쉼터 지원", "온열질환",
+    "폭염 대비", "폭염 대응", "봉사활동", "봉사 활동", "사회공헌", "csr",
+    "기부", "성금", "위문품", "위문", "헌혈", "무상 배부", "무상배부",
+    "무료 배부", "급식 봉사", "사랑의", "온정", "나눔 행사",
+)
+_SUPPLY_MARKET_ANCHOR_TERMS = (
+    "가격", "시세", "경락", "경매", "도매", "출하", "작황", "반입", "재고",
+    "폭락", "폭등", "수급", "물량", "공판장", "공판", "공선", "산지유통",
+    "답례품", "고향사랑기부", "수확", "생산량", "관측",
+)
+
+
+def is_supply_welfare_field_support_context(title: str, desc: str) -> bool:
+    """폭염 쉼터·봉사·사회공헌 등 복지/현장지원성 기사를 수급 코어에서 배제(시장 앵커 없을 때)."""
+    ttl = title or ""
+    lead = _nfkc_lower(f"{ttl} {(desc or '')[:220]}")
+    if not lead:
+        return False
+    if count_any(lead, [w.lower() for w in _SUPPLY_WELFARE_TERMS]) < 1:
+        return False
+    # 가격·시세·출하 등 실제 시장/수급 맥락이 있으면 수급 기사로 유지(판촉이라도 시장성 보존)
+    if count_any(lead, [w.lower() for w in _SUPPLY_MARKET_ANCHOR_TERMS]) >= 1:
+        return False
+    return True
+
+
 def is_supply_org_promo_feature_context(title: str, desc: str) -> bool:
     ttl = title or ""
     txt = f"{ttl} {desc or ''}".lower()
@@ -22025,6 +22055,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "processed_food_lifestyle_noise"
     if section_key in ("supply", "policy", "dist") and is_consumer_campaign_promo_context(a.title or "", a.description or "", normalize_host(a.domain or "")):
         return "consumer_campaign_promo"
+    if section_key == "supply" and is_supply_welfare_field_support_context(a.title or "", a.description or ""):
+        return "supply_welfare_field_support"
     if section_key == "policy":
         if is_policy_private_commercial_deal_context(a.title or "", a.description or "", normalize_host(a.domain or ""), (a.press or "").strip()):
             return "policy_private_commercial_deal"
