@@ -29632,6 +29632,17 @@ def _recover_supply_underfill_from_raw(
     return inserted
 
 
+# 정책 미충원 복구 후보가 갖춰야 할 '농업 일반 맥락어'. 특정 품목명에 국한하지 않고
+# 농정·법·산업 일반어까지 포함해, 농업 정책 기사(농협법·농지법·농업민생 등)는 통과시키되
+# 비농업 산업/기업 기사(방산·조선·반도체)는 도입부에 이런 단어가 없어 배제되도록 한다.
+_POLICY_RECOVERY_AGRI_CONTEXT_TERMS = (
+    "농업", "농가", "농민", "농촌", "농정", "농협", "농지", "농수산", "농식품",
+    "농산물", "농어촌", "영농", "농약", "비료", "농자재", "축산", "원예", "과수",
+    "과일", "채소", "화훼", "청과", "식량", "곡물", "양곡", "임업", "수산",
+    "출하", "작황", "산지", "수급", "농안법", "농지법", "농협법", "양곡관리법",
+)
+
+
 def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> tuple[Any, ...] | None:
     if not isinstance(article, Article):
         return None
@@ -29653,14 +29664,12 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
     if is_policy_event_tail_context(title, desc, dom, press):
         return None
 
-    # 미충원 복구는 마지막 백필 경로이므로 '진짜 농업 앵커'를 요구한다.
-    # 스크랩 description 꼬리의 잡음(관련기사·footer)과 품목 매처의 alias 오탐
-    # (예: 방산 기사에 'tomato'가 매칭)이 anchor_ok를 우연히 통과시켜 방산·조선·반도체 등
-    # 비농업 산업/기업 기사가 정책으로 끌려오는 것을 구조적으로 차단한다.
-    # 판정은 제목+도입부(lead)에 '문자 그대로의' 농업 강신호/직접 품목 앵커가 있는지로 한정한다
-    # (fuzzy managed_count는 오탐이 많아 사용하지 않는다).
+    # 미충원 복구(마지막 백필)는 '농업 맥락'이 도입부에 실제로 있는 기사에만 허용한다.
+    # 정책 신호 함수들이 스크랩 잡음·오탐("대두"=쟁점 대두, 품목 매처 alias 'tomato' 등)으로
+    # 방산·조선·반도체 등 비농업 산업/기업 기사를 통과시키므로, 제목+도입부(lead)에 농업 일반
+    # 맥락어(품목명에 국한하지 않고 농정·법·산업 일반어 포함)가 전혀 없으면 후보에서 제외한다.
     _lead = _nfkc_lower(f"{title} {desc[:240]}")
-    if agri_strength_score(_lead) == 0 and count_any(_lead, [w.lower() for w in _POLICY_HORTI_DIRECT_ANCHOR_TERMS]) == 0:
+    if count_any(_lead, _POLICY_RECOVERY_AGRI_CONTEXT_TERMS) == 0:
         return None
 
     officialish = (
