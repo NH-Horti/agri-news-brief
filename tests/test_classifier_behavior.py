@@ -827,6 +827,58 @@ class TestClassifierBehavior(unittest.TestCase):
         best, scores = self._best_section(title, desc, "https://example.com/policy-forest-admin")
         self.assertIsNone(best, msg=f"scores={scores}")
 
+    def test_private_commercial_food_supply_deal_is_rejected_from_policy(self):
+        # 민간 기업 간 식자재 공급계약·외식 브랜드 홍보 기사는 정책 섹션에서 구조적으로 배제한다.
+        title = "CJ프레시웨이, 세광푸드와 식자재 계약→동원F&B, '컨펙스' 그랑프리"
+        desc = (
+            "CJ프레시웨이가 외식 전문 기업 ‘세광그린푸드’와 연간 600억 원 규모의 식자재 공급 "
+            "재계약을 체결했다. 7개 브랜드 전국 150여 개 매장에 식자재 800여 종을 공급한다."
+        )
+        self.assertTrue(main.is_policy_private_commercial_deal_context(title, desc, "slist.kr", "에스리스트"))
+        a = self._make_article("policy", title, desc, "https://slist.kr/news/cj-deal")
+        self.assertEqual(
+            main._postbuild_article_reject_reason(a, "policy", apply_selection_fit=False),
+            "policy_private_commercial_deal",
+        )
+        # 정책 미충원 복구 경로로도 끌려오지 않아야 한다.
+        policy_conf = next((s for s in main.SECTIONS if s.get("key") == "policy"), {})
+        self.assertIsNone(main._policy_underfill_recovery_rank(a, policy_conf))
+
+    def test_local_government_supply_inspection_is_kept_in_policy(self):
+        # 지자체(파주시)의 물가·식자재 수급 점검은 정상 정책 기사 → 민간 상거래로 오탐 금지.
+        title = "파주시, 밥상 물가 및 영농자재 수급 상황 점검"
+        desc = (
+            "파주시는 파주로컬푸드직매장을 찾아 농산물 가격 동향을 점검했다. 시민들의 필수 식자재 "
+            "공급에 차질이 생기지 않도록 안정적 지역 먹거리 공급에 만전을 기한다는 취지다."
+        )
+        self.assertFalse(main.is_policy_private_commercial_deal_context(title, desc, "wklyo.kr", "위클리오늘"))
+
+    def test_nh_export_supply_deal_is_not_private_commercial_deal(self):
+        # 농협경제지주 등 공익적 행위자 기사는 민간 상거래로 보지 않는다(핵심 우선 행위자).
+        title = "농협경제지주, 일본 외식기업에 국산 김 공급 협의"
+        desc = "농협경제지주는 일본 외식업체와 김 공급 계약을 추진 중이며 국산 농식품 수출 판로를 확대한다."
+        self.assertFalse(main.is_policy_private_commercial_deal_context(title, desc, "nonghyup.com", "농협"))
+
+    def test_non_agri_industry_story_is_blocked_from_policy_underfill_recovery(self):
+        # 방산·조선 등 비농업 산업/기업 기사는 도입부에 농업 앵커가 없으므로
+        # 정책 미충원 복구 백필 후보에서 구조적으로 배제한다(품목 매처 alias 오탐 방어).
+        title = "보안 족쇄에 발목 잡힌 현대…방산 퍼즐 맞춘 한화"
+        desc = (
+            "대한민국 해군의 핵심 전력이 될 7조8000억원 규모의 한국형 차기 구축함(KDDX) "
+            "상세설계 및 선도함 건조 사업의 우선협상대상자로 한화오션이 선정됐다."
+        )
+        a = self._make_article("policy", title, desc, "https://newstomato.com/defense")
+        policy_conf = next((s for s in main.SECTIONS if s.get("key") == "policy"), {})
+        self.assertIsNone(main._policy_underfill_recovery_rank(a, policy_conf))
+
+    def test_genuine_agri_policy_passes_underfill_recovery(self):
+        # 문자 그대로의 농업 앵커가 있는 정상 정책 기사는 복구 후보로 유지돼야 한다.
+        title = "정부, 6월 농축산물 할인지원 강화…수급 안정 총력"
+        desc = "농식품부가 농축산물 수급 안정을 위해 공급 확대와 할인지원을 강화한다고 밝혔다."
+        a = self._make_article("policy", title, desc, "https://example.com/policy-discount")
+        policy_conf = next((s for s in main.SECTIONS if s.get("key") == "policy"), {})
+        self.assertIsNotNone(main._policy_underfill_recovery_rank(a, policy_conf))
+
     def test_local_smart_agri_zone_selection_is_not_dist_core(self):
         herald = self._make_article(
             "dist",
