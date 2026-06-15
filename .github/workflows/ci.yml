@@ -2,8 +2,6 @@ name: agri-news-brief (ci)
 
 on:
   push:
-    branches-ignore:
-      - codex/dev-preview
   pull_request:
 
 permissions:

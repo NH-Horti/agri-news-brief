@@ -1,9 +1,9 @@
 {
   "report_date": "2026-06-15",
-  "generated_at_kst": "2026-06-15T09:50:52+09:00",
+  "generated_at_kst": "2026-06-15T10:22:48+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 86.57,
+    "core_quality": 86.27,
     "commodity_board_quality": 96.76
   },
   "metrics": {
@@ -88,95 +88,94 @@
     "scores": {
       "article_selection": 82.0,
       "section_fit": 86.0,
-      "core_pick_quality": 83.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 76.0,
-      "noise_control": 79.0
+      "core_pick_quality": 84.0,
+      "summary_usefulness": 91.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 81.0
     },
     "issues": [
-      {
-        "type": "wrong_section",
-        "severity": "high",
-        "section": "supply",
-        "title": "“ 양파 즙 한잔하며 쉬었다 가세요”…농협, 폭염 대비 쉼터 지원 강화",
-        "reason": "수급보다 복지·현장지원 기사다.",
-        "suggested_action": "공급 섹션에서 제외하고 가격·출하 동향으로 교체."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "high",
-        "section": "supply",
-        "title": "농협유통 하나로마트, ' 양배추 ' 소비 촉진행사...농촌과 상생 협력",
-        "reason": "판촉행사 비중이 커 공급 핵심성이 약하다.",
-        "suggested_action": "가격·작황 중심 기사로 대체."
-      },
       {
         "type": "missed_opportunity",
         "severity": "high",
         "section": "dist",
         "title": "온라인도매시장, 왜 나랏돈 퍼주는 '곳간' 됐나",
-        "reason": "유통 구조 비판성과 현안성이 큰데 미선정.",
-        "suggested_action": "일본 사례성 기사 1건 대신 채택."
+        "reason": "유통 구조·운영성 더 강한 후보를 누락했다.",
+        "suggested_action": "지역 수출·홍보성 기사 대신 우선 채택."
+      },
+      {
+        "type": "weak_selection",
+        "severity": "high",
+        "section": "supply",
+        "title": "[픽! 영동] 금강 모래밭서 생산된 '양산수박' 출하",
+        "reason": "단순 지역 출하 소식으로 수급 의제성이 약하다.",
+        "suggested_action": "가격·작황·출하 변수 기사로 교체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "supply",
+        "title": "농협유통 하나로마트, ' 양배추 ' 소비 촉진행사...농촌과 상생 협력",
+        "reason": "행사성 소비촉진 기사로 편집 밀도가 낮다.",
+        "suggested_action": "수급 원인·정책 대응 중심 기사로 대체."
       },
       {
         "type": "duplication",
         "severity": "medium",
         "section": "dist",
-        "title": "오타도매시장, '저장·분류·배송' 종합 유통 플랫폼 / 요코하마도매시장 '소매 분산 물류'로 특화",
-        "reason": "둘 다 일본 도매시장 사례로 결이 유사하다.",
-        "suggested_action": "1건만 남기고 국내 유통 현안으로 분산."
+        "title": "오타도매시장 / 요코하마도매시장",
+        "reason": "일본 도매시장 사례가 유사해 정보 중복감이 있다.",
+        "suggested_action": "둘 중 하나만 두고 국내 운영 이슈 보강."
       },
       {
-        "type": "wrong_section",
+        "type": "wrong_section_tone",
         "severity": "medium",
         "section": "pest",
-        "title": "“양배추 잎에 동전만 한 구멍”⋯기습우박에 강원 농경지 20만평 피해",
-        "reason": "병해충이 아니라 기상재해다.",
-        "suggested_action": "병해충 섹션 대신 재해·수급 문맥으로 이동."
+        "title": "“ 배추 수확 앞두고 쑥대밭” 강원농가 덮친 우박 피해 속출",
+        "reason": "재해 피해 기사로 병해충 섹션 적합성이 약하다.",
+        "suggested_action": "명명된 병해충·화상병 확산 기사로 교체."
       },
       {
         "type": "duplication",
         "severity": "medium",
         "section": "pest",
-        "title": "“양배추 잎에 동전만 한 구멍”⋯기습우박… / “ 배추 수확 앞두고 쑥대밭” 강원농가 덮친 우박 피해 속출",
-        "reason": "동일 우박 피해의 반복 편성이다.",
-        "suggested_action": "1건만 남기고 화상병 추가 확산 기사로 교체."
+        "title": "우박 피해 기사 2건 동시 채택",
+        "reason": "같은 피해 유형의 반복으로 섹션 효율이 떨어진다.",
+        "suggested_action": "1건만 남기고 다른 병해충 리스크 추가."
+      },
+      {
+        "type": "underfill",
+        "severity": "medium",
+        "section": "policy",
+        "title": "정책 섹션 4건만 구성",
+        "reason": "원후보가 충분한데 5건을 채우지 못했다.",
+        "suggested_action": "할당관세 단독·업계 간담회 등으로 5건 구성."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
-        "section": "pest",
-        "title": "과수화상병 발생농가 100곳 돌파…신규 지역 확산에 ‘긴장’",
-        "reason": "전국 확산 총괄성이 더 높은 핵심 기사다.",
-        "suggested_action": "우박 기사 1건 대신 채택."
-      },
-      {
-        "type": "count_underfill",
-        "severity": "medium",
-        "section": "policy",
-        "title": "policy section underfill",
-        "reason": "후보가 충분한데 4건만 편성됐다.",
-        "suggested_action": "5번째 카드 보강, 단 일반 일정표는 피하고 실질 정책 기사 선택."
+        "section": "supply",
+        "title": "[산지 확대경] 천도 복숭아 작황 ‘맑음’…남은 가격 변수는 ‘장마’",
+        "reason": "작황·출하·가격 변수 설명력이 높은 후보를 놓쳤다.",
+        "suggested_action": "지역 출하·행사성 기사와 교체 검토."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "core_quality",
-      "editorial_section_fit",
       "editorial_noise_filter",
       "editorial_duplicate_topic",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.9,
-      "supply": 0.95,
-      "policy": 0.95,
-      "dist": 1.1,
-      "pest": 0.89
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
     "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.28,
@@ -285,8 +284,7 @@
     "guardrail_focus": [
       "missed_opportunity",
       "article_selection",
-      "noise_control",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -306,12 +304,6 @@
         "target": "semantic_false_positive_gate",
         "direction": "tighten",
         "reason": "Selected cards included low editorial-value noise."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
