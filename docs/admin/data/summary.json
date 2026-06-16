@@ -1,58 +1,58 @@
 {
-  "generated_at": "2026-06-16T03:47:06+09:00",
+  "generated_at": "2026-06-17T03:40:11+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 55,
+        "visits": 51,
         "users": 15,
-        "pageviews": 160,
-        "article_clicks": 83,
-        "article_ctr": 0.51875,
-        "avg_engagement_sec": 533.15
+        "pageviews": 149,
+        "article_clicks": 86,
+        "article_ctr": 0.577181,
+        "avg_engagement_sec": 301.87
       },
       "prev": {
-        "visits": 60,
+        "visits": 77,
         "users": 17,
-        "pageviews": 134,
-        "article_clicks": 61,
-        "article_ctr": 0.455224,
-        "avg_engagement_sec": 128.81
+        "pageviews": 178,
+        "article_clicks": 83,
+        "article_ctr": 0.466292,
+        "avg_engagement_sec": 141.28
       },
       "range": {
-        "from": "2026-06-10",
-        "to": "2026-06-16"
+        "from": "2026-06-11",
+        "to": "2026-06-17"
       }
     },
     "30": {
       "totals": {
-        "visits": 277,
+        "visits": 274,
         "users": 25,
-        "pageviews": 729,
-        "article_clicks": 402,
-        "article_ctr": 0.55144,
-        "avg_engagement_sec": 290.32
+        "pageviews": 721,
+        "article_clicks": 405,
+        "article_ctr": 0.56172,
+        "avg_engagement_sec": 220.6
       },
       "prev": {
-        "visits": 190,
+        "visits": 206,
         "users": 25,
-        "pageviews": 426,
-        "article_clicks": 210,
-        "article_ctr": 0.492958,
-        "avg_engagement_sec": 211.72
+        "pageviews": 467,
+        "article_clicks": 232,
+        "article_ctr": 0.496788,
+        "avg_engagement_sec": 239.92
       },
       "range": {
-        "from": "2026-05-18",
-        "to": "2026-06-16"
+        "from": "2026-05-19",
+        "to": "2026-06-17"
       }
     },
     "90": {
       "totals": {
-        "visits": 652,
+        "visits": 665,
         "users": 40,
-        "pageviews": 1799,
-        "article_clicks": 801,
-        "article_ctr": 0.445247,
-        "avg_engagement_sec": 279.29
+        "pageviews": 1832,
+        "article_clicks": 826,
+        "article_ctr": 0.450873,
+        "avg_engagement_sec": 257.62
       },
       "prev": {
         "visits": 0,
@@ -63,8 +63,8 @@
         "avg_engagement_sec": 0.0
       },
       "range": {
-        "from": "2026-03-19",
-        "to": "2026-06-16"
+        "from": "2026-03-20",
+        "to": "2026-06-17"
       }
     }
   }
