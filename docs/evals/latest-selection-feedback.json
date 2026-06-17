@@ -1,45 +1,45 @@
 {
-  "report_date": "2026-06-17",
-  "generated_at_kst": "2026-06-17T06:20:17+09:00",
+  "report_date": "2026-06-18",
+  "generated_at_kst": "2026-06-18T06:23:40+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 100.0,
-    "commodity_board_quality": 78.43
+    "section_alignment": 96.67,
+    "core_quality": 95.99,
+    "commodity_board_quality": 88.0
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0556,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 2.25,
+    "reader_quality_penalty": 4.6,
     "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.0,
+    "policy_wrong_section_rate": 0.0556,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 0.8889,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.75,
-    "commodity_primary_strict_link_rate": 0.75,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 8,
-    "commodity_active_today_total": 15,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 25,
+    "commodity_primary_count": 6,
+    "commodity_active_today_total": 10,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 27,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2424,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.75
+    "commodity_primary_dominant_section_rate": 0.8333
   },
   "selection_guardrails": {
     "driver_tags": [
@@ -77,86 +77,96 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "‘비료 사용 처방 적정 시비 실천 캠페인’ 추진",
+      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64983",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial": {
     "score": 84.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
-    "section_count_score": 94.0,
+    "section_count_score": 96.0,
     "section_count_status": "soft_fallback",
     "scores": {
       "article_selection": 82.0,
       "section_fit": 80.0,
-      "core_pick_quality": 78.0,
-      "summary_usefulness": 90.0,
-      "missed_opportunity": 81.0,
-      "noise_control": 79.0
+      "core_pick_quality": 83.0,
+      "summary_usefulness": 91.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 81.0
     },
     "issues": [
       {
         "type": "wrong_section",
         "severity": "high",
-        "section": "pest",
-        "title": "대전 유성농협·고향주부모임, 배농가 찾아 봉지 씌우기 도와",
-        "reason": "병해충 기사 아닌 일손돕기다.",
-        "suggested_action": "pest에서 제외하고 화상병 기사로 교체."
+        "section": "policy",
+        "title": "대아청과, 기후위기 여름채소 생산안정 지원 나서",
+        "reason": "정부 정책보다 기업 지원·상생 기사에 가깝다.",
+        "suggested_action": "policy 대신 dist tail로 내리거나 제외."
       },
       {
-        "type": "weak_core",
+        "type": "promotional_filler",
         "severity": "high",
-        "section": "pest",
-        "title": "대전 유성농협·고향주부모임, 배농가 찾아 봉지 씌우기 도와",
-        "reason": "코어로 뽑기엔 이슈성·위험도 낮다.",
-        "suggested_action": "화상병 확산·방제 대응 기사를 코어로 승격."
+        "section": "policy",
+        "title": "함양군, 양파 가격 하락에 고향사랑기부 연계 이벤트 실시",
+        "reason": "이벤트성 소비촉진 기사로 정책 핵심성이 약하다.",
+        "suggested_action": "정책 섹션에서 빼고 더 강한 정부·제도 기사로 교체."
+      },
+      {
+        "type": "weak_selection",
+        "severity": "medium",
+        "section": "policy",
+        "title": "현장 - 한국과수농협연합회 중앙과수묘목관리센터",
+        "reason": "배경성 기관 소개로 당일 정책 의제성이 낮다.",
+        "suggested_action": "제도 변화·수급 대응 기사 우선."
+      },
+      {
+        "type": "weak_selection",
+        "severity": "medium",
+        "section": "policy",
+        "title": "‘비료 사용 처방 적정 시비 실천 캠페인’ 추진",
+        "reason": "캠페인 소식은 정책 강도가 낮고 시의성도 약하다.",
+        "suggested_action": "제주 겨울채소 수급조절 사업 등 더 구조적 기사로 교체."
       },
       {
         "type": "missed_opportunity",
         "severity": "high",
-        "section": "dist",
-        "title": "구리시장 7월15일 시범휴업 안한다",
-        "reason": "도매시장 운영 변화라는 더 강한 유통 핵심 후보를 놓쳤다.",
-        "suggested_action": "출하식성 기사 대신 우선 반영."
+        "section": "pest",
+        "title": "무주 사과농가 4년 연속 과수화상병 비상…올해 벌써 8곳 매몰",
+        "reason": "반복 발생·면적·재식재 공백이 뚜렷한 강한 화상병 기사인데 빠졌다.",
+        "suggested_action": "일반 피해 르포성 기사 1건 대신 포함."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
-        "title": "진천 덕산농협, ‘생거진천 오감드레 꿀수박’ 출하 나서",
-        "reason": "실무 유통 이슈보다 출하식 성격이 강하다.",
-        "suggested_action": "코어보다 후순위 꼬리 기사로 사용."
+        "title": "축제장 못 와도 클릭 한 번으로 구매… 익산 블루베리 인기몰이",
+        "reason": "축제 연계 판촉 성격이 강해 유통 핵심도는 낮다.",
+        "suggested_action": "수출 선적·검역·운영 기사 우선 배치."
       },
       {
-        "type": "weak_selection",
+        "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "청송군 농산물산지공판장 8월까지 휴장",
-        "reason": "휴장 공지는 운영 참고성은 있으나 임팩트 약하다.",
-        "suggested_action": "시장 운영·경매·가격 기사 우선 검토."
-      },
-      {
-        "type": "cross_section_balance",
-        "severity": "medium",
-        "section": "policy",
-        "title": "\" 상추 한 장도 덜덜\"…물가 폭탄에 마트 ‘특가 매대’만 붐빈다",
-        "reason": "소비 트렌드 기사로 농정 직접성은 약하다.",
-        "suggested_action": "정책·제도·통상 기사로 대체 검토."
+        "title": "팜조아, 냉동 큐브마늘 미국 수출 본격화",
+        "reason": "실제 수출 선적은 유통 섹션 선호 주제와 더 잘 맞는다.",
+        "suggested_action": "블루베리 판촉 기사 대신 채택 검토."
       },
       {
         "type": "count_underfill",
         "severity": "medium",
-        "section": "supply",
-        "title": "supply 4건 편성",
-        "reason": "원시 후보가 충분한데 5건을 채우지 못했다.",
-        "suggested_action": "매실 시세 등 보드형 기사 추가 검토."
-      },
-      {
-        "type": "count_underfill",
-        "severity": "medium",
-        "section": "dist",
-        "title": "dist 4건 편성",
-        "reason": "후보풀이 충분한데 5건 미달이다.",
-        "suggested_action": "구리시장 휴업 철회 등 강한 운영 기사 추가."
+        "section": "supply/dist",
+        "title": "섹션 4장 마감",
+        "reason": "raw 후보가 충분한데 두 섹션 모두 5장 미달이다.",
+        "suggested_action": "supply·dist 각각 1장씩 보강해 완성도 높이기."
       }
     ]
   },
@@ -165,7 +175,6 @@
       "commodity_board",
       "editorial_section_fit",
       "editorial_noise_filter",
-      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
@@ -179,11 +188,11 @@
     "high_score_low_fit_rescue_margin": 4.2,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.3,
-      "supply": 1.5,
-      "policy": 1.5,
-      "dist": 1.7,
-      "pest": 1.3
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -192,7 +201,7 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": true,
+    "disable_relaxed_core_fill": false,
     "commodity_active_min_rank": 2,
     "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
@@ -216,25 +225,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 94.0,
+      "score": 96.0,
       "status": "soft_fallback",
       "sections": {
         "supply": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 277,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 0.8,
-          "score": 92.0
-        },
-        "policy": {
-          "actual": 4,
-          "expected": 5,
-          "raw_candidates": 128,
+          "raw_candidates": 186,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -243,10 +240,22 @@
           "fill_ratio": 0.8,
           "score": 92.0
         },
+        "policy": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 118,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
         "dist": {
           "actual": 4,
           "expected": 5,
-          "raw_candidates": 59,
+          "raw_candidates": 44,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -258,7 +267,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 28,
+          "raw_candidates": 44,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -270,12 +279,10 @@
       },
       "underfilled_sections": [
         "supply",
-        "policy",
         "dist"
       ],
       "soft_fallback_sections": [
         "supply",
-        "policy",
         "dist"
       ],
       "minimum_fallback_sections": [],
@@ -287,18 +294,11 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
