@@ -3395,6 +3395,158 @@ class LocalRuntimeTests(TestCase):
         self.assertNotIn(direct_market.link, links)
         self.assertIn(better.link, links)
 
+    def test_supply_editorial_guard_replaces_support_core_with_market_story(self) -> None:
+        weak_core = self._make_article(
+            section="supply",
+            title="“여름채소 생산기반 지키자”…대아청과, 물류기자재 4천만원 지원",
+            description="대아청과가 고랭지 여름채소 농가에 물류기자재와 후원금을 지원하는 상생 활동을 진행했다.",
+            link="https://example.com/supply-support-core",
+        )
+        better = self._make_article(
+            section="supply",
+            title="외식업 불황에 김치 소비 부진…‘배추값’ 넉달째 약세",
+            description="김치 소비 부진과 출하 물량 영향으로 배추 가격 약세가 이어지고 있다.",
+            link="https://example.com/supply-cabbage-price",
+            topic="배추",
+        )
+        weak_core.is_core = True
+        final_by_section = {"supply": [weak_core]}
+
+        self.assertEqual(main._replace_supply_editorial_weak_tail_from_raw(final_by_section, {"supply": [better]}), 1)
+        self.assertEqual(final_by_section["supply"][0].link, better.link)
+        self.assertTrue(final_by_section["supply"][0].is_core)
+
+    def test_policy_energy_tariff_duplicates_are_grouped(self) -> None:
+        first = self._make_article(
+            section="policy",
+            title="정부, LNG·LPG 관세 0%로 낮춘다…하반기 물가 안정 총력",
+            description="정부가 발전용 LNG와 LPG 할당관세를 연말까지 0%로 낮춰 물가 부담 완화를 추진한다.",
+            link="https://example.com/policy-lng-a",
+        )
+        second = self._make_article(
+            section="policy",
+            title="하반기에도 LNG·LPG 할당관세율 0%…발전용LNG 개소세 감면",
+            description="LNG·LPG 할당 관세를 0%로 유지하고 에너지 비용 부담을 낮추는 정책이다.",
+            link="https://example.com/policy-lng-b",
+        )
+        final_by_section = {"policy": [first, second]}
+
+        self.assertEqual(main._drop_final_story_duplicates(final_by_section, min_items=1), 1)
+        self.assertEqual(len(final_by_section["policy"]), 1)
+
+    def test_supply_core_pest_care_story_is_replaced_by_market_story(self) -> None:
+        weak_core = self._make_article(
+            section="supply",
+            title="장마철 사과 과원 관리 비상…철저한 배수·병해 예방 필요",
+            description="장마철 배수 관리와 병해 예방을 안내하는 기술 기사다.",
+            link="https://example.com/supply-pest-care-core",
+        )
+        market = self._make_article(
+            section="supply",
+            title="풍년에 가격 폭락…양파 농가 시름",
+            description="양파 생산량 증가와 가격 폭락으로 산지 농가의 수급 부담이 커지고 있다.",
+            link="https://example.com/supply-onion-price",
+            topic="양파",
+        )
+        weak_core.is_core = True
+        final_by_section = {"supply": [weak_core]}
+
+        self.assertEqual(main._replace_supply_editorial_weak_tail_from_raw(final_by_section, {"supply": [market]}), 1)
+        self.assertEqual(final_by_section["supply"][0].link, market.link)
+
+    def test_policy_fertilizer_campaign_tail_is_rejected(self) -> None:
+        campaign = self._make_article(
+            section="policy",
+            title="‘비료 사용 처방 적정 시비 실천 캠페인’ 추진",
+            description="비료 사용 처방과 적정 시비 실천을 홍보하는 캠페인 기사다.",
+            link="https://example.com/policy-fertilizer-campaign",
+        )
+
+        self.assertEqual(main._postbuild_article_reject_reason(campaign, "policy", apply_selection_fit=False), "policy_private_support_promo")
+        self.assertTrue(main._is_policy_editorial_weak_tail(campaign))
+
+    def test_policy_rejects_local_field_trial_supply_story(self) -> None:
+        trial = self._make_article(
+            section="policy",
+            title="준고랭지 여름 배추 시범사업으로 수급 안정 뒷받침",
+            description="지역 재배 시범사업으로 여름 배추 수급 안정을 뒷받침한다는 산지 기사다.",
+            link="https://example.com/policy-local-field-trial",
+            topic="배추",
+        )
+
+        self.assertEqual(main._postbuild_article_reject_reason(trial, "policy", apply_selection_fit=False), "policy_local_field_trial_not_policy")
+
+    def test_postbuild_rejects_section_misfits_from_june_quality_gate(self) -> None:
+        potato_ship = self._make_article(
+            section="policy",
+            title="오창농협, 청원생명 ‘꺼리’ 햇 감자 출하",
+            description="지역 농협이 햇감자 출하를 시작했다는 산지 출하 소식이다.",
+            link="https://example.com/policy-potato-ship",
+        )
+        tourism = self._make_article(
+            section="dist",
+            title="관광기념품 지역 제한 완화…지자체 조례 등 233건 개선",
+            description="관광기념품 공모 지역 제한 완화와 조례 개선을 다룬 행정 기사다.",
+            link="https://example.com/dist-tourism-policy",
+        )
+        labor = self._make_article(
+            section="pest",
+            title="대전 유성농협·고향주부모임, 배농가 찾아 봉지 씌우기 도와",
+            description="농협과 단체가 배 농가를 찾아 봉지 씌우기 일손돕기 활동을 했다.",
+            link="https://example.com/pest-labor-help",
+        )
+
+        self.assertEqual(main._postbuild_article_reject_reason(potato_ship, "policy", apply_selection_fit=False), "policy_shipping_story_not_policy")
+        self.assertEqual(main._postbuild_article_reject_reason(tourism, "dist", apply_selection_fit=False), "dist_non_agri_tourism_policy")
+        self.assertEqual(main._postbuild_article_reject_reason(labor, "pest", apply_selection_fit=False), "pest_labor_help_not_pest")
+
+    def test_dist_editorial_guard_replaces_support_promo_with_market_ops(self) -> None:
+        promo = self._make_article(
+            section="dist",
+            title="대아청과, 고랭지 여름채소 생산 안정에 4천만원 지원",
+            description="농가 물류기자재 지원과 생산 안정 후원금을 전달했다는 홍보성 기사다.",
+            link="https://example.com/dist-support-promo",
+        )
+        ops = self._make_article(
+            section="dist",
+            title="“고온에 농산물 쉽게 상해”…구리시장 7월15일 시범휴업 안한다",
+            description="구리 농수산물도매시장이 경매와 시장 운영 상황을 고려해 시범휴업을 하지 않기로 했다.",
+            link="https://example.com/dist-guri-market",
+        )
+        final_by_section = {"dist": [promo]}
+
+        self.assertEqual(main._replace_dist_editorial_promo_tail_from_raw(final_by_section, {"dist": [ops]}), 1)
+        self.assertEqual(final_by_section["dist"][0].link, ops.link)
+
+    def test_pest_refill_allows_third_fire_blight_when_section_is_underfilled(self) -> None:
+        fire_a = self._make_article(
+            section="pest",
+            title="곡성군, 과수화상병 선제 대응",
+            description="과수화상병 확산 차단을 위해 사과·배 농가 예찰과 방제를 강화한다.",
+            link="https://example.com/pest-fire-a",
+        )
+        fire_b = self._make_article(
+            section="pest",
+            title="무주 사과농가 과수화상병 비상…올해 벌써 8곳 매몰",
+            description="사과 농가 과수화상병 피해가 커져 매몰과 긴급 방제가 이어지고 있다.",
+            link="https://example.com/pest-fire-b",
+        )
+        fire_c = self._make_article(
+            section="pest",
+            title="담양군, 사과·배 농가 방제 총력…과수화상병 유입 차단",
+            description="담양군이 사과와 배 농가에 약제비를 지원하고 과수화상병 유입 차단 방제를 추진한다.",
+            link="https://example.com/pest-fire-c",
+        )
+        fire_a.is_core = True
+        fire_b.is_core = True
+        final_by_section = {"pest": [fire_a, fire_b]}
+
+        changed = main._refill_pest_direct_gap_from_raw(final_by_section, {"pest": [fire_c]}, target=3)
+
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(changed, 1)
+        self.assertIn(fire_c.link, links)
+
     def test_policy_editorial_guard_replaces_local_application_tail(self) -> None:
         core = self._make_article(
             section="policy",
