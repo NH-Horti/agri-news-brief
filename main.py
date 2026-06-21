@@ -3699,6 +3699,16 @@ def is_dist_hard_logistics_metric_context(title: str, desc: str) -> bool:
     text = _nfkc_lower(f"{title or ''} {desc or ''}")
     if not text:
         return False
+    support_grant_hits = count_any(
+        text,
+        [w.lower() for w in ("물류기자재", "기자재 지원", "지원금 전달", "후원금 전달", "생산 안정", "생산안정")],
+    )
+    physical_ops_hits = count_any(
+        text,
+        [w.lower() for w in ("물류비", "운송비", "하역", "반입량", "처리물량", "정산", "순회수집", "파렛트", "팰릿")],
+    )
+    if support_grant_hits >= 1 and physical_ops_hits <= 0:
+        return False
     if not (
         _editorial_safe_has_any(text, ("가락시장", "도매시장", "공판장"))
         and _editorial_safe_has_any(text, ("파렛트", "팰릿", "물류", "운송지원", "운송 지원"))
@@ -8005,6 +8015,7 @@ _DIST_PROGRAM_EVENT_NOISE_TERMS = (
     "동행마케팅", "공동구매", "출하비용 보전", "출하 비용 보전", "보전 사업", "농가 지원",
     "판로 확대", "판로확대", "판로 개척", "유통 혁신", "유통구조", "유통 구조",
     "단지 조성", "조성 추진", "활성화", "상생 장터", "상생 직거래", "버팀목",
+    "박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스", "클릭 한 번", "인기몰이",
 )
 _DIST_PROGRAM_EVENT_KEEP_TERMS = (
     "도매시장", "공판장", "가락시장", "경락", "경매", "반입", "산지유통", "산지유통센터", "apc",
@@ -8017,6 +8028,7 @@ _DIST_PROGRAM_EVENT_ACTOR_TERMS = (
 _DIST_PROGRAM_EVENT_STRONG_TITLE_TERMS = (
     "소비촉진", "소비 촉진", "공동구매", "동행마케팅", "판로 확대", "출하비용 보전", "출하 비용 보전",
     "직거래 장터", "직거래장터", "판로 개척", "농가 지원", "판매활성화", "판매 활성화",
+    "박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스", "인기몰이",
 )
 _DIST_PROGRAM_EVENT_HARD_KEEP_TITLE_TERMS = (
     "선적", "통관", "검역", "준공", "현대화", "가동", "저온", "선별", "물류", "하역", "수출", "수입",
@@ -22057,7 +22069,57 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "consumer_campaign_promo"
     if section_key == "supply" and is_supply_welfare_field_support_context(a.title or "", a.description or ""):
         return "supply_welfare_field_support"
+    if section_key == "supply":
+        _supply_title_l = _nfkc_lower(a.title or "")
+        _supply_text_l = _nfkc_lower(f"{a.title or ''} {a.description or ''}")
+        _supply_market_ops_misfiled = (
+            count_any(_supply_text_l, [w.lower() for w in ("가락시장", "도매시장", "공판장")]) >= 1
+            and count_any(_supply_text_l, [w.lower() for w in ("경매", "경락", "반입", "경매시간", "경매 시각", "경매개시")]) >= 1
+            and count_any(
+                _supply_title_l,
+                [w.lower() for w in ("가격", "값", "폭락", "하락", "급등", "수급", "작황", "생산량", "재배면적", "수확농가")],
+            ) <= 0
+        )
+        if _supply_market_ops_misfiled:
+            return "supply_market_ops_not_supply"
+        _supply_pest_management_misfiled = (
+            count_any(_supply_text_l, [w.lower() for w in ("병해 예방", "병해 관리", "방제", "병해충", "바이러스", "총채벌레", "탄저병")]) >= 1
+            and count_any(_supply_text_l, [w.lower() for w in ("사과 과원", "과원 관리", "묘판", "고추 병해", "작물 병해")]) >= 1
+            and count_any(
+                _supply_title_l,
+                [w.lower() for w in ("가격", "값", "폭락", "하락", "급등", "수급", "출하", "생산량", "재배면적", "수확농가")],
+            ) <= 0
+        )
+        if _supply_pest_management_misfiled:
+            return "supply_pest_management_not_supply"
+        _supply_machine_demo = (
+            count_any(_supply_text_l, [w.lower() for w in ("기계가 척척", "전 과정 기계화", "파종부터 수확")]) >= 1
+            and count_any(_supply_text_l, [w.lower() for w in ("가격", "값", "수급", "도매", "경락", "수매", "제값", "생산비 절감")]) <= 0
+        )
+        _supply_procurement_promo = (
+            count_any(_supply_text_l, [w.lower() for w in ("공동구매", "농심천심", "상생 구매", "행사를 개최")]) >= 2
+            and count_any(_supply_text_l, [w.lower() for w in ("가격 지지", "수매", "규격외", "못난이", "시장격리", "수급")]) <= 0
+        )
+        if _supply_machine_demo or _supply_procurement_promo:
+            return "supply_editorial_weak_tail"
     if section_key == "policy":
+        _policy_title_l = _nfkc_lower(a.title or "")
+        _policy_text_l = _nfkc_lower(f"{a.title or ''} {a.description or ''}")
+        if count_any(_policy_text_l, [w.lower() for w in ("임시회 폐회", "의회 사실상 마무리", "회기 마무리")]) >= 1:
+            return "policy_assembly_schedule_filler"
+        _policy_industry_meeting = (
+            count_any(_policy_text_l, [w.lower() for w in ("품목농협", "조합장", "운영협의회", "회의")]) >= 2
+            and count_any(_policy_text_l, [w.lower() for w in ("촉구", "건의", "지원책", "규제 혁신", "농협법")]) >= 1
+            and count_any(_policy_title_l, [w.lower() for w in ("정부", "농식품부", "농림축산식품부", "국회", "법안", "예산")]) <= 0
+        )
+        if _policy_industry_meeting:
+            return "policy_industry_meeting_request_filler"
+        _policy_vague_supply_response = (
+            "안정적 공급 대책 추진" in _policy_title_l
+            and count_any(_policy_title_l, [w.lower() for w in ("배추", "무", "3.4", "3만", "계란", "닭고기", "비축", "수입")]) <= 0
+        )
+        if _policy_vague_supply_response:
+            return "policy_vague_supply_response_tail"
         policy_ship_hits = count_any(
             text,
             [w.lower() for w in ("첫 출하", "본격 출하", "햇 감자", "햇감자", "출하")],
@@ -22072,6 +22134,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         )
         if policy_ship_hits >= 1 and policy_actor_hits <= 0 and policy_action_hits <= 1:
             return "policy_shipping_story_not_policy"
+        if "고향사랑기부" in text and count_any(text, [w.lower() for w in ("이벤트", "답례품", "상생 이벤트")]) >= 1:
+            return "policy_private_support_promo"
         if (
             ("시범사업" in text and "수급 안정" in text and policy_actor_hits <= 0)
             or ("준고랭지" in text and "배추" in text and "시범사업" in text)
@@ -22108,6 +22172,13 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         )
         if _dist_national_export_logistics:
             return ""
+        if (
+            count_any(text, [w.lower() for w in ("전자송품장", "출하비용 보전", "출하 비용 보전")]) >= 1
+            and count_any(text, [w.lower() for w in ("정부", "농식품부", "기재부", "정책", "추진")]) >= 1
+        ):
+            return "dist_policy_price_response_not_dist"
+        if count_any(text, [w.lower() for w in ("박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스", "클릭 한 번", "인기몰이")]) >= 1:
+            return "dist_event_sales_promo"
         if count_any(text, [w.lower() for w in ("관광기념품", "관광 기념품")]) >= 1:
             return "dist_non_agri_tourism_policy"
         _dist_support_promo_hits = count_any(
@@ -22118,7 +22189,7 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             text,
             [w.lower() for w in ("도매시장", "공판장", "경매", "경락", "반입", "온라인도매시장", "산지유통센터", "수출", "선적", "검역", "저온유통")],
         )
-        if (_dist_support_promo_hits >= 1 or ("대아청과" in text and "지원" in text)) and _dist_hard_ops_hits <= 0:
+        if (_dist_support_promo_hits >= 1 or ("대아청과" in text and "지원" in text)) and _dist_hard_ops_hits <= 1:
             return "dist_support_promo_without_ops"
         _title_dist_agri_hits = count_any(
             _ttl_dist,
@@ -22213,7 +22284,15 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             return "pest_no_damage_crop_price"
         if is_pest_diplomacy_not_pest_context(a.title or "", a.description or ""):
             return "pest_diplomacy_not_pest"
-        if not (is_pest_story_focus_strong(a.title or "", a.description or "") or is_pest_fire_blight_farmer_risk_context(a.title or "", a.description or "")):
+        pest_crop_disease_prevention = (
+            count_any(text, [w.lower() for w in ("고추 병해", "병해 예방", "병해 관리")]) >= 1
+            and count_any(text, [w.lower() for w in ("예방", "방제", "예찰", "관리")]) >= 1
+        )
+        if not (
+            is_pest_story_focus_strong(a.title or "", a.description or "")
+            or is_pest_fire_blight_farmer_risk_context(a.title or "", a.description or "")
+            or pest_crop_disease_prevention
+        ):
             return "pest_partial_mention"
     return ""
 
@@ -23878,6 +23957,8 @@ def _is_pest_weather_disaster_noise(article: "Article") -> bool:
         return False
     title_l = _nfkc_lower(title)
     lead_l = _nfkc_lower(f"{title} {desc[:420]}")
+    if count_any(title_l, [w.lower() for w in ("병해 예방", "고추 병해", "병해 관리")]) >= 1:
+        return False
     title_weather_hits = count_any(
         title_l,
         [w.lower() for w in ("장마", "태풍", "집중호우", "호우", "폭우", "농업재해")],
@@ -23962,6 +24043,7 @@ def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) ->
         is_pest_fire_blight_farmer_risk_context(title, desc)
         or is_pest_story_focus_strong(title, desc)
         or is_pest_control_policy_context(_nfkc_lower(f"{title} {desc}"))
+        or _is_pest_direct_gap_story(article)
     ):
         return None
     reject_reason = _postbuild_article_reject_reason(article, "pest")
@@ -23993,7 +24075,7 @@ def _pest_editorial_theme_key(article: "Article") -> str:
         return "fire_blight"
     if "벼" in text and "병해충" in text:
         return "rice_pest"
-    if any(term in text for term in ("병해충", "탄저병", "총채벌레", "진딧물", "흰비단병", "방제", "예찰")):
+    if any(term in text for term in ("병해충", "병해", "탄저병", "총채벌레", "진딧물", "흰비단병", "방제", "예찰")):
         return "general_pest"
     return ""
 
@@ -24011,13 +24093,14 @@ def _pest_diversity_replacement_rank(article: "Article", pest_conf: JsonDict) ->
         text_l,
         [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "과수화상병")],
     ) >= 1
+    crop_disease_named = count_any(text_l, [w.lower() for w in ("고추 병해", "병해 예방", "병해 관리")]) >= 1
     if "콩" in text_l and count_any(text_l, [w.lower() for w in PEST_HORTI_TERMS]) == 0:
         return None
-    if not horti_named and not named_pest and not is_pest_fire_blight_farmer_risk_context(title, desc):
+    if not horti_named and not named_pest and not crop_disease_named and not is_pest_fire_blight_farmer_risk_context(title, desc):
         return None
     return (
         1 if horti_named else 0,
-        1 if named_pest else 0,
+        1 if named_pest or crop_disease_named else 0,
         1 if is_pest_story_focus_strong(title, desc) else 0,
         *base_rank[1:],
     )
@@ -24534,7 +24617,17 @@ def _replace_duplicate_pest_theme_tail_from_raw(
                 continue
             if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in current_items):
                 continue
-            if any(_is_similar_story(candidate, existing, "pest") for existing in current_items if _pest_editorial_theme_key(existing) != duplicate_theme):
+            story_conflict = False
+            for existing in current_items:
+                if _pest_editorial_theme_key(existing) == duplicate_theme:
+                    continue
+                if not _is_similar_story(candidate, existing, "pest"):
+                    continue
+                if _is_pest_direct_gap_story(candidate) and not _is_pest_direct_gap_story(existing):
+                    continue
+                story_conflict = True
+                break
+            if story_conflict:
                 continue
             pick = candidate
             pick_theme = candidate_theme
@@ -24604,6 +24697,8 @@ def _drop_duplicate_pest_theme_tail(
         if bool(getattr(article, "is_core", False)):
             continue
         if theme != "fire_blight" and _is_pest_direct_gap_story(article):
+            continue
+        if theme == "fire_blight" and _is_pest_direct_gap_story(article) and len(pest_items) >= PREFERRED_PER_SECTION:
             continue
         removable.append(
             (
@@ -26491,6 +26586,18 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] final pest direct-gap guard failed: %s", e)
 
+    try:
+        final_pest_diversity_refill = _refill_pest_diversity_gap_from_raw(
+            final_by_section,
+            raw_by_section,
+            target=PREFERRED_PER_SECTION,
+        )
+        if final_pest_diversity_refill:
+            log.info("[REBALANCE] final pest diversity guard repaired %d item(s)", final_pest_diversity_refill)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final pest diversity guard failed: %s", e)
+
     # 최종 품질 sweep: audit(26064) 이후의 editorial shadow 교체·recovery·refill 단계가
     # 재유입했을 수 있는 postbuild reject 기사(원산지 둔갑·연간 회고 등)를 발행 직전 1회 더 정리한다.
     try:
@@ -26522,6 +26629,23 @@ def _build_sections_phase123(
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final quality sweep failed: %s", e)
+
+    try:
+        final_relaxed_refill = _refill_preferred_section_counts_relaxed_from_raw(
+            final_by_section,
+            raw_by_section,
+            target=PREFERRED_PER_SECTION,
+        )
+        if final_relaxed_refill:
+            final_relaxed_audit = _audit_final_sections(final_by_section)
+            log.info(
+                "[REBALANCE] final relaxed preferred-count refill added %d item(s), audit=%d",
+                final_relaxed_refill,
+                final_relaxed_audit,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final relaxed preferred-count refill failed: %s", e)
 
     return final_by_section
 
@@ -30199,6 +30323,10 @@ def _is_policy_supply_response_gap_story(article: Article) -> bool:
                 "비축",
                 "점검회의",
                 "점검 회의",
+                "가격 변동",
+                "전자송품장",
+                "출하비용 보전",
+                "출하 비용 보전",
                 "총력",
             )
         ],
@@ -30242,6 +30370,10 @@ def _policy_supply_response_gap_rank(article: Article, section_conf: JsonDict) -
                 "수입",
                 "점검회의",
                 "점검 회의",
+                "가격 변동",
+                "전자송품장",
+                "출하비용 보전",
+                "출하 비용 보전",
             )
         ],
     )
@@ -31089,10 +31221,18 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "policy_internal_award_filler",
         "policy_regional_project_promo",
         "policy_private_support_promo",
+        "policy_assembly_schedule_filler",
+        "policy_industry_meeting_request_filler",
+        "policy_vague_supply_response_tail",
         "policy_shipping_story_not_policy",
         "policy_local_field_trial_not_policy",
         "dist_non_agri_tourism_policy",
+        "dist_policy_price_response_not_dist",
+        "dist_event_sales_promo",
         "dist_support_promo_without_ops",
+        "supply_market_ops_not_supply",
+        "supply_pest_management_not_supply",
+        "supply_editorial_weak_tail",
         "pest_no_damage_crop_price",
         "pest_diplomacy_not_pest",
         "pest_labor_help_not_pest",
@@ -31335,12 +31475,16 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
         text,
         [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "과수화상병", "화상병", "탄저병", "총채벌레", "진딧물")],
     )
+    crop_disease_hits = count_any(
+        text,
+        [w.lower() for w in ("고추 병해", "병해 예방", "병해 관리")],
+    )
     action_hits = count_any(
         text,
         [w.lower() for w in ("피해", "예방", "방제", "공동 방제", "긴급 방제", "예찰", "관리", "필수", "증가", "확산", "차단", "유입 차단", "검역", "폐기", "반송", "약제비", "긴급 지원", "매몰", "비상")],
     )
-    weak_context = any(term in text for term in ("비타민c", "외교", "묘목 북", "냉해 없어"))
-    return pest_hits >= 1 and action_hits >= 1 and not weak_context
+    weak_context = any(term in text for term in ("비타민c", "외교", "묘목 북", "냉해 없어", "등록 완료", "신젠타", "인시피오"))
+    return (pest_hits >= 1 or crop_disease_hits >= 1) and action_hits >= 1 and not weak_context
 
 
 def _pest_direct_gap_rank(article: Article, conf: JsonDict) -> tuple[Any, ...]:
@@ -31538,6 +31682,325 @@ def _refill_pest_direct_gap_from_raw(
     return changed
 
 
+def _is_pest_crop_protection_input_fallback(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    if not text:
+        return False
+    product_hits = count_any(
+        text,
+        [w.lower() for w in ("방제제", "약제", "농약", "살충제", "신젠타", "인시피오", "등록 완료")],
+    )
+    pest_hits = count_any(
+        text,
+        [w.lower() for w in ("나방", "노린재", "응애", "총채벌레", "진딧물", "해충", "병해충", "방제")],
+    )
+    return product_hits >= 1 and pest_hits >= 2
+
+
+def _is_pest_climate_risk_fallback(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    if not text:
+        return False
+    climate_hit = any(term in text for term in ("기후위기", "이상기후", "우박", "집중호우", "폭염"))
+    crop_hits = count_any(text, [w.lower() for w in ("사과", "과수", "농가", "원예", "채소", "시설하우스")])
+    response_hits = count_any(text, [w.lower() for w in ("스마트농업", "대응", "피해", "예방", "관리", "리스크", "위기")])
+    return climate_hit and crop_hits >= 1 and response_hits >= 1
+
+
+def _is_pest_diversity_fallback_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    if _is_pest_direct_gap_story(article):
+        return True
+    if _pest_editorial_theme_key(article) == "fire_blight":
+        return False
+    if _is_pest_weather_disaster_noise(article) and not _is_pest_climate_risk_fallback(article):
+        return False
+    reject_reason = _postbuild_article_reject_reason(article, "pest")
+    if reject_reason and reject_reason not in {"selection_feedback_low_fit", "selection_feedback_core_fit", "pest_partial_mention"}:
+        return False
+    return _is_pest_crop_protection_input_fallback(article) or _is_pest_climate_risk_fallback(article)
+
+
+def _pest_diversity_fallback_rank(article: Article, conf: JsonDict) -> tuple[Any, ...]:
+    title = article.title or ""
+    desc = article.description or ""
+    fit = float(getattr(article, "selection_fit_score", 0.0) or 0.0)
+    if fit <= 0.0:
+        try:
+            fit = float(section_fit_score(title, desc, conf, article.domain or "", article.press or ""))
+        except Exception:
+            fit = 0.0
+    return (
+        3 if _is_pest_direct_gap_story(article) and _pest_editorial_theme_key(article) != "fire_blight" else 0,
+        2 if _is_pest_crop_protection_input_fallback(article) else 0,
+        1 if _is_pest_climate_risk_fallback(article) else 0,
+        fit,
+        float(getattr(article, "score", 0.0) or 0.0),
+        press_priority(article.press, article.domain),
+        article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _refill_pest_diversity_gap_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+    *,
+    target: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    max_n = max(1, min(MAX_PER_SECTION, int(target or PREFERRED_PER_SECTION)))
+    pest_items = [article for article in (final_by_section.get("pest") or []) if isinstance(article, Article)]
+    if not pest_items:
+        return 0
+    pest_conf = next((s for s in SECTIONS if s.get("key") == "pest"), {})
+    existing_keys = {
+        _article_selection_identity(article)
+        for article in pest_items
+        if _article_selection_identity(article)
+    }
+    ranked: list[tuple[tuple[Any, ...], Article]] = []
+    for article in raw_by_section.get("pest", []) or []:
+        if not isinstance(article, Article):
+            continue
+        ident = _article_selection_identity(article)
+        if ident and ident in existing_keys:
+            continue
+        if _pest_editorial_theme_key(article) == "fire_blight":
+            continue
+        if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in pest_items):
+            continue
+        if not _is_pest_diversity_fallback_story(article):
+            continue
+        if _candidate_conflicts_with_final(article, final_by_section, "pest"):
+            continue
+        ranked.append((_pest_diversity_fallback_rank(article, pest_conf), article))
+    if not ranked:
+        final_by_section["pest"] = pest_items[:MAX_PER_SECTION]
+        return 0
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    used_keys = set(existing_keys)
+
+    def _pick_next(current_items: list[Article]) -> Article | None:
+        for _rank, candidate in ranked:
+            ident = _article_selection_identity(candidate)
+            if ident and ident in used_keys:
+                continue
+            if any(_is_similar_title(candidate.title_key or "", existing.title_key or "") for existing in current_items):
+                continue
+            if any(_is_similar_story(candidate, existing, "pest") for existing in current_items):
+                continue
+            return candidate
+        return None
+
+    def _prepare_pick(pick: Article, note: str) -> None:
+        prev_section = str(getattr(pick, "section", "") or "")
+        if not getattr(pick, "origin_section", ""):
+            pick.origin_section = prev_section or "pest"
+        if prev_section and prev_section != "pest":
+            pick.reassigned_from = prev_section
+        pick.section = "pest"
+        pick.forced_section = "pest"
+        pick.is_core = False
+        pick.selection_stage = "pest_diversity_gap_refill"
+        pick.selection_note = note
+        try:
+            pick.selection_fit_score = round(float(section_fit_score(
+                pick.title or "", pick.description or "", pest_conf, pick.domain or "", pick.press or "",
+            )), 3)
+        except Exception:
+            pass
+
+    changed = 0
+    while sum(1 for article in pest_items if _pest_editorial_theme_key(article) == "fire_blight") > 2:
+        victim_indexes = [
+            idx
+            for idx, article in enumerate(pest_items)
+            if _pest_editorial_theme_key(article) == "fire_blight" and not bool(getattr(article, "is_core", False))
+        ]
+        if not victim_indexes:
+            break
+        pick = _pick_next(pest_items)
+        if pick is None:
+            break
+        replace_idx = sorted(
+            victim_indexes,
+            key=lambda idx: (
+                float(getattr(pest_items[idx], "selection_fit_score", 0.0) or 0.0),
+                float(getattr(pest_items[idx], "score", 0.0) or 0.0),
+            ),
+        )[0]
+        _prepare_pick(pick, "replace_third_fire_blight_for_theme_diversity")
+        pest_items[replace_idx] = pick
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_keys.add(ident)
+        changed += 1
+
+    while len(pest_items) < max_n:
+        pick = _pick_next(pest_items)
+        if pick is None:
+            break
+        _prepare_pick(pick, "fill_pest_diversity_gap")
+        pest_items.append(pick)
+        ident = _article_selection_identity(pick)
+        if ident:
+            used_keys.add(ident)
+        changed += 1
+
+    if changed:
+        final_by_section["pest"] = sorted(
+            pest_items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                1 if _is_pest_direct_gap_story(article) and _pest_editorial_theme_key(article) != "fire_blight" else 0,
+                1 if _is_pest_crop_protection_input_fallback(article) else 0,
+                1 if _is_pest_climate_risk_fallback(article) else 0,
+                _pest_diversity_fallback_rank(article, pest_conf) if _is_pest_diversity_fallback_story(article) else (),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    else:
+        final_by_section["pest"] = pest_items[:MAX_PER_SECTION]
+    return changed
+
+
+def _relaxed_preferred_gap_min_fit(section_key: str) -> float:
+    if section_key == "dist":
+        return 2.45
+    if section_key == "policy":
+        return 2.0
+    if section_key == "supply":
+        return 2.35
+    if section_key == "pest":
+        return 2.0
+    return 2.0
+
+
+def _relaxed_preferred_gap_rank(article: Article, section_key: str, conf: JsonDict) -> tuple[Any, ...]:
+    fit = float(getattr(article, "selection_fit_score", 0.0) or 0.0)
+    if fit <= 0.0:
+        try:
+            fit = float(section_fit_score(article.title or "", article.description or "", conf, article.domain or "", article.press or ""))
+        except Exception:
+            fit = 0.0
+    text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    supply_price_issue = section_key == "supply" and count_any(
+        text,
+        [w.lower() for w in ("가격", "값", "폭락", "하락", "수급", "출하", "시세", "생산량", "소비 촉진")],
+    ) >= 1
+    policy_action_issue = section_key == "policy" and count_any(
+        text,
+        [w.lower() for w in ("정부", "농식품부", "농진청", "지원", "관세", "할당관세", "정책", "대책", "재배면적", "보조", "수입 농산물")],
+    ) >= 2
+    dist_ops_issue = section_key == "dist" and count_any(
+        text,
+        [w.lower() for w in ("경매", "공판장", "도매", "출하", "산지", "유통", "공급", "판매", "선적")],
+    ) >= 2
+    pest_issue = section_key == "pest" and (_is_pest_direct_gap_story(article) or _is_pest_diversity_fallback_story(article))
+    return (
+        1 if supply_price_issue or policy_action_issue or dist_ops_issue or pest_issue else 0,
+        fit,
+        float(getattr(article, "score", 0.0) or 0.0),
+        press_priority(article.press, article.domain),
+        article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _refill_preferred_section_counts_relaxed_from_raw(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+    *,
+    target: int | None = None,
+) -> int:
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    max_n = max(1, min(MAX_PER_SECTION, int(target or PREFERRED_PER_SECTION)))
+    conf_by_key = {str(section.get("key") or ""): section for section in SECTIONS if str(section.get("key") or "")}
+    all_final_keys = {
+        _article_selection_identity(article)
+        for section_items in (final_by_section or {}).values()
+        for article in (section_items or [])
+        if isinstance(article, Article) and _article_selection_identity(article)
+    }
+    inserted = 0
+    for section_key in ("supply", "policy", "dist", "pest"):
+        conf = conf_by_key.get(section_key, {})
+        items = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        if len(items) >= max_n:
+            final_by_section[section_key] = items[:MAX_PER_SECTION]
+            continue
+        min_fit = _relaxed_preferred_gap_min_fit(section_key)
+        ranked: list[tuple[tuple[Any, ...], Article]] = []
+        section_keys = {_article_selection_identity(article) for article in items if _article_selection_identity(article)}
+        for article in raw_by_section.get(section_key, []) or []:
+            if not isinstance(article, Article):
+                continue
+            ident = _article_selection_identity(article)
+            if ident and (ident in all_final_keys or ident in section_keys):
+                continue
+            if any(_is_similar_title(article.title_key or "", existing.title_key or "") for existing in items):
+                continue
+            reject_reason = _postbuild_article_reject_reason(article, section_key)
+            if reject_reason:
+                continue
+            try:
+                fit = float(section_fit_score(article.title or "", article.description or "", conf, article.domain or "", article.press or ""))
+            except Exception:
+                fit = 0.0
+            if fit < min_fit:
+                continue
+            score = float(getattr(article, "score", 0.0) or 0.0)
+            if score < 10.0 and fit < (min_fit + 0.75):
+                continue
+            ranked.append((_relaxed_preferred_gap_rank(article, section_key, conf), article))
+        ranked.sort(key=lambda item: item[0], reverse=True)
+        for _rank, pick in ranked:
+            if len(items) >= max_n:
+                break
+            ident = _article_selection_identity(pick)
+            if ident and (ident in all_final_keys or ident in section_keys):
+                continue
+            prev_section = str(getattr(pick, "section", "") or "")
+            if not getattr(pick, "origin_section", ""):
+                pick.origin_section = prev_section or section_key
+            if prev_section and prev_section != section_key:
+                pick.reassigned_from = prev_section
+            pick.section = section_key
+            pick.forced_section = section_key
+            pick.is_core = False
+            pick.selection_stage = f"{section_key}_relaxed_preferred_refill"
+            pick.selection_note = "clean_candidate_preferred_gap"
+            try:
+                pick.selection_fit_score = round(float(section_fit_score(
+                    pick.title or "", pick.description or "", conf, pick.domain or "", pick.press or "",
+                )), 3)
+            except Exception:
+                pass
+            items.append(pick)
+            if ident:
+                section_keys.add(ident)
+                all_final_keys.add(ident)
+            inserted += 1
+        final_by_section[section_key] = sorted(
+            items,
+            key=lambda article: (
+                1 if getattr(article, "is_core", False) else 0,
+                _relaxed_preferred_gap_rank(article, section_key, conf),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+    return inserted
+
+
 def _section_replacement_conflicts(
     candidate: Article,
     final_by_section: dict[str, list[Article]],
@@ -31652,7 +32115,7 @@ def _is_supply_editorial_weak_tail(article: Article) -> bool:
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     machine_hits = count_any(
         text_l,
-        [w.lower() for w in ("기계화", "기계로", "수집기", "기술 공개", "기술 선보여", "장비 보급", "작업 기계")],
+        [w.lower() for w in ("기계화", "기계로", "기계가 척척", "수집기", "기술 공개", "기술 선보여", "장비 보급", "작업 기계", "전 과정 기계", "파종부터 수확")],
     )
     market_hits = count_any(
         text_l,
@@ -31672,6 +32135,8 @@ def _is_supply_editorial_weak_tail(article: Article) -> bool:
         text_l,
         [w.lower() for w in ("물류기자재", "기자재", "후원금", "4천만원", "생산 안정", "생산안정")],
     ) >= 1 and market_hits <= 1:
+        return True
+    if count_any(text_l, [w.lower() for w in ("공동구매", "농심천심", "상생 구매", "행사를 개최")]) >= 2 and market_hits <= 2:
         return True
     return False
 
@@ -32166,7 +32631,7 @@ def _is_dist_editorial_promo_tail(article: Article) -> bool:
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     promo_hits = count_any(
         text_l,
-        [w.lower() for w in ("출하식", "입맛 공략", "판촉", "브랜드", "고당도", "당도", "판매 촉진", "엄선", "관광기념품")],
+        [w.lower() for w in ("출하식", "입맛 공략", "판촉", "브랜드", "고당도", "당도", "판매 촉진", "엄선", "관광기념품", "박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스", "인기몰이")],
     )
     support_promo_hits = count_any(
         text_l,
@@ -32180,6 +32645,8 @@ def _is_dist_editorial_promo_tail(article: Article) -> bool:
         return True
     if "관광기념품" in text_l or "관광 기념품" in text_l:
         return True
+    if count_any(text_l, [w.lower() for w in ("박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스", "클릭 한 번", "인기몰이")]) >= 1:
+        return True
     return count_any(title_l, [w.lower() for w in ("본격 출하", "첫 출하")]) >= 1 and promo_hits >= 1 and ops_hits <= 0
 
 
@@ -32189,7 +32656,7 @@ def _is_dist_editorial_ops_replacement(article: Article) -> bool:
     title = article.title or ""
     desc = article.description or ""
     text_l = _nfkc_lower(f"{title} {desc}")
-    if count_any(text_l, [w.lower() for w in ("축제", "헌혈", "대문어", "소비주간", "판촉 릴레이")]) >= 1:
+    if count_any(text_l, [w.lower() for w in ("축제", "헌혈", "대문어", "소비주간", "판촉 릴레이", "물류기자재", "지원금 전달", "후원금 전달", "생산안정", "생산 안정", "박람회", "온라인 생중계 판매", "생중계 판매", "라이브커머스")]) >= 1:
         return False
     ops_hits = count_any(
         text_l,
@@ -34725,10 +35192,11 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                       archive_dates_desc: list[str], site_path: str,
                       board_source_by_section: dict[str, list[Article]] | None = None) -> str:
     try:
-        _drop_final_story_duplicates(by_section, min_items=PREFERRED_PER_SECTION)
-        _drop_duplicate_pest_theme_tail(by_section, min_items=MIN_FALLBACK_PER_SECTION)
-        _drop_hard_postbuild_rejected_final_items(by_section, min_items=MIN_FALLBACK_PER_SECTION)
-        _drop_preferred_tail_blocked_items(by_section, min_items=PREFERRED_PER_SECTION)
+        render_floor = max(MIN_FALLBACK_PER_SECTION, PREFERRED_PER_SECTION)
+        _drop_final_story_duplicates(by_section, min_items=render_floor)
+        _drop_duplicate_pest_theme_tail(by_section, min_items=render_floor)
+        _drop_hard_postbuild_rejected_final_items(by_section, min_items=render_floor)
+        _drop_preferred_tail_blocked_items(by_section, min_items=render_floor)
     except Exception as e:
         log.warning("[WARN] render-time final tail cleanup failed: %s", e)
     # 상단 칩 카운트 + 섹션별 중요도 정렬

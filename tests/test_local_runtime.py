@@ -2003,6 +2003,33 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
         self.assertIn(official_response.link, {article.link for article in final_by_section["policy"]})
 
+    def test_preferred_count_recovery_keeps_policy_e_invoice_price_response(self) -> None:
+        existing = [
+            self._make_article(
+                section="policy",
+                title=f"농산물 가격 안정 정책 점검 {idx}",
+                description="정부가 농산물 가격 안정과 농가 지원 대책을 점검했다.",
+                link=f"https://example.com/policy-einvoice-existing-{idx}",
+                topic="정책",
+            )
+            for idx in range(4)
+        ]
+        e_invoice = self._make_article(
+            section="policy",
+            title="정부, 널뛰는 농산물 가격에 전자송품장·출하비용 보전 추진",
+            description="정부가 농산물 가격 변동을 줄이기 위해 전자송품장과 출하비용 보전 제도를 추진한다.",
+            link="https://example.com/policy-einvoice-price-response",
+            press="중앙일보",
+            topic="정책",
+        )
+        final_by_section = {"policy": list(existing)}
+        raw_by_section = {"policy": [*existing, e_invoice]}
+
+        self.assertTrue(main._is_policy_supply_response_gap_story(e_invoice))
+        self.assertEqual(main._recover_preferred_section_counts_from_raw(final_by_section, raw_by_section), 1)
+        self.assertEqual(len(final_by_section["policy"]), 5)
+        self.assertIn(e_invoice.link, {article.link for article in final_by_section["policy"]})
+
     def test_preferred_count_recovery_keeps_supply_procurement_gap_story(self) -> None:
         existing = [
             self._make_article(
@@ -3518,6 +3545,81 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._replace_dist_editorial_promo_tail_from_raw(final_by_section, {"dist": [ops]}), 1)
         self.assertEqual(final_by_section["dist"][0].link, ops.link)
 
+    def test_dist_support_grant_is_not_hard_logistics_core(self) -> None:
+        grant = self._make_article(
+            section="dist",
+            title="“여름채소 생산기반 지키자”…대아청과·농어촌희망재단, 물류기자재 지원금 전달",
+            description="가락시장 대아청과가 고랭지 채소 산지를 대상으로 물류기자재 지원금을 전달했다.",
+            link="https://example.com/dist-material-grant",
+        )
+
+        self.assertFalse(main.is_dist_hard_logistics_metric_context(grant.title, grant.description))
+        self.assertTrue(main._is_dist_editorial_promo_tail(grant))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(grant, "dist", apply_selection_fit=False),
+            "dist_support_promo_without_ops",
+        )
+
+    def test_followup_quality_gate_rejects_event_and_section_misfits(self) -> None:
+        market_ops_in_supply = self._make_article(
+            section="supply",
+            title="7월부터 두달간 가락시장 배추 경매 오후 10시에 시작",
+            description="서울시공사가 하절기 가락시장 배추 경매개시 시각을 조정한다.",
+            link="https://example.com/supply-garak-market",
+        )
+        machine_demo = self._make_article(
+            section="supply",
+            title="'마늘' 파종부터 수확까지 기계가 척척",
+            description="마늘 종자 준비부터 파종, 수확, 저장까지 전 과정 기계화 기술을 공개했다.",
+            link="https://example.com/supply-garlic-machine",
+        )
+        donation_event = self._make_article(
+            section="policy",
+            title="함양군, 양파 가격 하락에 고향사랑기부 연계 이벤트 실시",
+            description="양파 가격 하락 농가를 지원한다며 고향사랑기부제와 연계한 상생 이벤트를 추진한다.",
+            link="https://example.com/policy-donation-event",
+        )
+        expo = self._make_article(
+            section="dist",
+            title="'제2회 한국 마늘 산업 박람회' 해남서 7월 9일 개막",
+            description="마늘 산업의 현재와 스마트 첨단 미래 기술을 볼 수 있는 박람회가 열린다.",
+            link="https://example.com/dist-garlic-expo",
+        )
+        live_sale = self._make_article(
+            section="dist",
+            title="익산 '탑마루' 블루베리, 오는 20일 온라인 생중계 판매",
+            description="클릭 한 번으로 구매할 수 있는 온라인 생중계 판매를 진행한다.",
+            link="https://example.com/dist-live-sale",
+        )
+        e_invoice_dist = self._make_article(
+            section="dist",
+            title="정부, 널뛰는 농산물 가격에 전자송품장·출하비용 보전 추진",
+            description="정부가 농산물 가격 변동을 줄이기 위해 전자송품장과 출하비용 보전 제도를 추진한다.",
+            link="https://example.com/dist-einvoice-price-response",
+        )
+
+        self.assertEqual(
+            main._postbuild_article_reject_reason(market_ops_in_supply, "supply", apply_selection_fit=False),
+            "supply_market_ops_not_supply",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(machine_demo, "supply", apply_selection_fit=False),
+            "supply_editorial_weak_tail",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(donation_event, "policy", apply_selection_fit=False),
+            "policy_private_support_promo",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(expo, "dist", apply_selection_fit=False),
+            "dist_event_sales_promo",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(e_invoice_dist, "dist", apply_selection_fit=False),
+            "dist_policy_price_response_not_dist",
+        )
+        self.assertTrue(main._is_dist_editorial_promo_tail(live_sale))
+
     def test_pest_refill_allows_third_fire_blight_when_section_is_underfilled(self) -> None:
         fire_a = self._make_article(
             section="pest",
@@ -3546,6 +3648,284 @@ class LocalRuntimeTests(TestCase):
         links = {article.link for article in final_by_section["pest"]}
         self.assertEqual(changed, 1)
         self.assertIn(fire_c.link, links)
+
+    def test_duplicate_pest_theme_cleanup_preserves_target_direct_fire_blight(self) -> None:
+        fire_a = self._make_article(
+            section="pest",
+            title="치료제 없는 과수화상병…전국 과일 농가 초비상",
+            description="과수화상병 확산으로 사과와 배 농가 피해와 매몰 대응이 이어지고 있다.",
+            link="https://example.com/pest-fire-core-a",
+        )
+        fire_b = self._make_article(
+            section="pest",
+            title="과수화상병 즉시 신고를…이중진단키트 활용 예찰 강화",
+            description="과수화상병 예찰과 즉시 신고, 방제 대응을 강화한다.",
+            link="https://example.com/pest-fire-core-b",
+        )
+        fire_direct = self._make_article(
+            section="pest",
+            title="담양군, 사과·배 농가 방제 총력…과수화상병 유입 차단",
+            description="사과와 배 농가에 약제비를 지원하고 과수화상병 유입 차단 방제를 추진한다.",
+            link="https://example.com/pest-fire-direct",
+        )
+        pepper = self._make_article(
+            section="pest",
+            title="안동시, 고추 진딧물·총채벌레 급증 우려…적기 방제 당부",
+            description="고추 진딧물과 총채벌레 피해 예방을 위해 예찰과 방제가 필요하다.",
+            link="https://example.com/pest-pepper",
+        )
+        tomato = self._make_article(
+            section="pest",
+            title="토마토뿔나방 확산 우려…시설하우스 예찰 강화",
+            description="토마토뿔나방 피해 예방을 위해 시설하우스 예찰과 방제를 강화한다.",
+            link="https://example.com/pest-tomato",
+        )
+        fire_a.is_core = True
+        fire_b.is_core = True
+        final_by_section = {"pest": [fire_a, fire_b, fire_direct, pepper, tomato]}
+
+        self.assertEqual(main._drop_duplicate_pest_theme_tail(final_by_section, min_items=4), 0)
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertIn(fire_direct, final_by_section["pest"])
+
+    def test_render_cleanup_preserves_preferred_pest_count(self) -> None:
+        fire_a = self._make_article(
+            section="pest",
+            title="치료제 없는 과수화상병…전국 과일 농가 초비상",
+            description="과수화상병 확산으로 사과와 배 농가 피해와 매몰 대응이 이어지고 있다.",
+            link="https://example.com/render-pest-fire-a",
+        )
+        fire_b = self._make_article(
+            section="pest",
+            title="과수화상병 즉시 신고를…이중진단키트 활용 예찰 강화",
+            description="과수화상병 예찰과 즉시 신고, 방제 대응을 강화한다.",
+            link="https://example.com/render-pest-fire-b",
+        )
+        fire_direct = self._make_article(
+            section="pest",
+            title="담양군, 사과·배 농가 방제 총력…과수화상병 유입 차단",
+            description="사과와 배 농가에 약제비를 지원하고 과수화상병 유입 차단 방제를 추진한다.",
+            link="https://example.com/render-pest-fire-direct",
+        )
+        pepper = self._make_article(
+            section="pest",
+            title="[요즘 이기술] 장마철 고추 병해 예방하려면…땅 적정 산성도 유지",
+            description="장마철 고추 병해 예방을 위해 토양 산성도와 배수 관리, 예찰이 필요하다.",
+            link="https://example.com/render-pest-pepper",
+        )
+        tomato = self._make_article(
+            section="pest",
+            title="토마토뿔나방 확산 우려…시설하우스 예찰 강화",
+            description="토마토뿔나방 피해 예방을 위해 시설하우스 예찰과 방제를 강화한다.",
+            link="https://example.com/render-pest-tomato",
+        )
+        fire_a.is_core = True
+        fire_b.is_core = True
+        by_section = {"supply": [], "policy": [], "dist": [], "pest": [fire_a, fire_b, fire_direct, pepper, tomato]}
+
+        html = main.render_daily_page(
+            "2026-06-19",
+            datetime(2026, 6, 18, 6, 0, tzinfo=main.KST),
+            datetime(2026, 6, 19, 6, 0, tzinfo=main.KST),
+            by_section,
+            ["2026-06-19"],
+            "/agri-news-brief/",
+        )
+
+        self.assertEqual(len(by_section["pest"]), 5)
+        self.assertIn("render-pest-fire-direct", html)
+        self.assertIn("render-pest-tomato", html)
+
+    def test_pest_diversity_replacement_accepts_pepper_disease_prevention(self) -> None:
+        fire_core_a = self._make_article(
+            section="pest",
+            title="치료제 없는 과수화상병…전국 과일 농가 초비상",
+            description="과수화상병 확산으로 사과와 배 농가 피해와 매몰 대응이 이어지고 있다.",
+            link="https://example.com/pest-diversity-fire-a",
+        )
+        fire_core_b = self._make_article(
+            section="pest",
+            title="과수화상병 즉시 신고를…이중진단키트 활용 예찰 강화",
+            description="과수화상병 예찰과 즉시 신고, 방제 대응을 강화한다.",
+            link="https://example.com/pest-diversity-fire-b",
+        )
+        fire_tail = self._make_article(
+            section="pest",
+            title="담양군, 사과·배 농가 방제 총력…과수화상병 유입 차단",
+            description="사과와 배 농가에 약제비를 지원하고 과수화상병 유입 차단 방제를 추진한다.",
+            link="https://example.com/pest-diversity-fire-tail",
+        )
+        input_tail = self._make_article(
+            section="pest",
+            title="신젠타 인시피오Ⓡ, 미국·대만·일본에 등록 완료",
+            description="나방, 노린재, 응애, 총채벌레 등을 두루 방제하는 약제가 해외 등록을 마쳤다.",
+            link="https://example.com/pest-diversity-input",
+        )
+        pepper = self._make_article(
+            section="pest",
+            title="[요즘 이기술] 장마철 고추 병해 예방하려면…땅 적정 산성도 유지",
+            description="장마철 고추 병해 예방을 위해 토양 산성도와 배수 관리, 예찰이 필요하다.",
+            link="https://example.com/pest-diversity-pepper",
+            topic="고추",
+        )
+        fire_core_a.is_core = True
+        fire_core_b.is_core = True
+        final_by_section = {"pest": [fire_core_a, fire_core_b, fire_tail, input_tail]}
+
+        self.assertTrue(main._is_pest_direct_gap_story(pepper))
+        self.assertFalse(main._is_pest_weather_disaster_noise(pepper))
+        self.assertFalse(main._is_generic_pest_notice_tail(pepper))
+        self.assertEqual(main._replace_duplicate_pest_theme_tail_from_raw(final_by_section, {"pest": [pepper]}), 1)
+        themes = [main._pest_editorial_theme_key(article) for article in final_by_section["pest"]]
+        self.assertLessEqual(themes.count("fire_blight"), 2)
+        self.assertIn(pepper.link, {article.link for article in final_by_section["pest"]})
+
+    def test_pest_diversity_gap_refill_uses_input_and_climate_tails(self) -> None:
+        fire_core_a = self._make_article(
+            section="pest",
+            title="치료제 없는 과수화상병…전국 과일 농가 초비상",
+            description="과수화상병 확산으로 사과와 배 농가 피해와 매몰 대응이 이어지고 있다.",
+            link="https://example.com/pest-gap-fire-a",
+        )
+        fire_core_b = self._make_article(
+            section="pest",
+            title="과수화상병 즉시 신고를…이중진단키트 활용 예찰 강화",
+            description="과수화상병 예찰과 즉시 신고, 방제 대응을 강화한다.",
+            link="https://example.com/pest-gap-fire-b",
+        )
+        fire_tail = self._make_article(
+            section="pest",
+            title="담양군, 사과·배 농가 방제 총력…과수화상병 유입 차단",
+            description="사과와 배 농가에 약제비를 지원하고 과수화상병 유입 차단 방제를 추진한다.",
+            link="https://example.com/pest-gap-fire-tail",
+        )
+        pepper = self._make_article(
+            section="pest",
+            title="[요즘 이기술] 장마철 고추 병해 예방하려면…땅 적정 산성도 유지",
+            description="장마철 고추 병해 예방을 위해 토양 산성도와 배수 관리, 예찰이 필요하다.",
+            link="https://example.com/pest-gap-pepper",
+        )
+        input_tail = self._make_article(
+            section="pest",
+            title="신젠타 인시피오Ⓡ, 미국·대만·일본에 등록 완료",
+            description="나방, 노린재, 응애, 총채벌레 등을 두루 방제하는 약제가 해외 등록을 마쳤다.",
+            link="https://example.com/pest-gap-input",
+        )
+        climate_tail = self._make_article(
+            section="pest",
+            title="기후위기 넘는 청송사과…스마트농업으로 미래를 심다",
+            description="기후위기와 이상기후에 대응해 사과 농가가 스마트농업으로 생육 관리와 피해 예방을 강화한다.",
+            link="https://example.com/pest-gap-climate",
+        )
+        fire_core_a.is_core = True
+        fire_core_b.is_core = True
+        final_by_section = {"pest": [fire_core_a, fire_core_b, fire_tail, pepper]}
+
+        self.assertTrue(main._is_pest_crop_protection_input_fallback(input_tail))
+        self.assertTrue(main._is_pest_climate_risk_fallback(climate_tail))
+        changed = main._refill_pest_diversity_gap_from_raw(
+            final_by_section,
+            {"pest": [input_tail, climate_tail]},
+            target=5,
+        )
+
+        links = {article.link for article in final_by_section["pest"]}
+        themes = [main._pest_editorial_theme_key(article) for article in final_by_section["pest"]]
+        self.assertEqual(changed, 2)
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertLessEqual(themes.count("fire_blight"), 2)
+        self.assertNotIn(fire_tail.link, links)
+        self.assertIn(input_tail.link, links)
+        self.assertIn(climate_tail.link, links)
+
+    def test_supply_rejects_pest_management_tail(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="장마철 사과 과원 관리 비상. 철저한 배수 병해 예방 필요",
+            description="장마철 사과 과원은 철저한 배수와 병해 예방, 방제 관리가 중요하다.",
+            link="https://example.com/supply-pest-management",
+        )
+
+        self.assertEqual(
+            main._postbuild_article_reject_reason(article, "supply", apply_selection_fit=False),
+            "supply_pest_management_not_supply",
+        )
+        self.assertEqual(main._postbuild_article_reject_reason(article, "pest", apply_selection_fit=False), "")
+
+    def test_policy_rejects_meeting_schedule_and_vague_supply_response_tails(self) -> None:
+        meeting = self._make_article(
+            section="policy",
+            title="농자재값 폭등·농지 규제 혁신…위기의 농업 타개할 실효적 대책 시급",
+            description="품목농협 조합장들이 운영협의회 회의를 열고 정부 지원책과 규제 혁신을 촉구했다.",
+            link="https://example.com/policy-meeting-request",
+        )
+        assembly = self._make_article(
+            section="policy",
+            title="경남도의회, 제433회 임시회 폐회 제12대 의회 사실상 마무리",
+            description="도의회 임시회 폐회와 회기 마무리를 전하는 일정성 기사다.",
+            link="https://example.com/policy-assembly-schedule",
+        )
+        vague = self._make_article(
+            section="policy",
+            title="정부, 여름철 재해 대비 농축산물 안정적 공급 대책 추진",
+            description="정부가 여름철 농축산물 수급안정대책반을 구성하고 공급 대책을 추진한다.",
+            link="https://example.com/policy-vague-supply",
+        )
+        specific = self._make_article(
+            section="policy",
+            title="정부, 배추·무 3.4만톤 비축, 계란 3천만개 수입…여름 물가 안정 총력",
+            description="농식품부가 배추·무 3.4만톤 비축과 계란 3천만개 수입 등 수급 안정 대책을 추진한다.",
+            link="https://example.com/policy-specific-supply",
+        )
+
+        self.assertEqual(
+            main._postbuild_article_reject_reason(meeting, "policy", apply_selection_fit=False),
+            "policy_industry_meeting_request_filler",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(assembly, "policy", apply_selection_fit=False),
+            "policy_assembly_schedule_filler",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(vague, "policy", apply_selection_fit=False),
+            "policy_vague_supply_response_tail",
+        )
+        self.assertEqual(main._postbuild_article_reject_reason(specific, "policy", apply_selection_fit=False), "")
+
+    def test_relaxed_preferred_refill_uses_clean_same_section_candidate(self) -> None:
+        supply_items = [
+            self._make_article(
+                section="supply",
+                title=f"양파 가격 하락에 산지 농가 시름 {idx}",
+                description="양파 가격 하락과 출하 물량 부담으로 산지 농가 어려움이 커지고 있다.",
+                link=f"https://example.com/supply-existing-{idx}",
+            )
+            for idx in range(4)
+        ]
+        candidate = self._make_article(
+            section="supply",
+            title="햇양파 가격 폭락...양파김치 나누기 등 소비 촉진 운동",
+            description="햇양파 가격 폭락으로 농가 어려움이 커져 양파 소비 촉진 운동을 진행한다.",
+            link="https://example.com/supply-clean-refill",
+        )
+        duplicate = self._make_article(
+            section="supply",
+            title="양파 가격 하락에 산지 농가 시름 1",
+            description="양파 가격 하락과 출하 물량 부담으로 산지 농가 어려움이 커지고 있다.",
+            link="https://example.com/supply-duplicate",
+        )
+        final_by_section = {"supply": supply_items, "policy": [], "dist": [], "pest": []}
+
+        changed = main._refill_preferred_section_counts_relaxed_from_raw(
+            final_by_section,
+            {"supply": [duplicate, candidate]},
+            target=5,
+        )
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(len(final_by_section["supply"]), 5)
+        self.assertIn(candidate.link, {article.link for article in final_by_section["supply"]})
+        self.assertNotIn(duplicate.link, {article.link for article in final_by_section["supply"]})
 
     def test_policy_editorial_guard_replaces_local_application_tail(self) -> None:
         core = self._make_article(
