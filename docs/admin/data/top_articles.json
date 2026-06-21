@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T00:55:26+09:00",
+  "generated_at": "2026-06-22T01:12:12+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -10,19 +10,6 @@
       "surface": "commodity_primary",
       "target_domain": "www.ajunews.com",
       "clicks": 9,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-19",
-      "article_id": "556bccfda0ae",
-      "title": "관광기념품 지역 제한 완화…지자체 조례 등 233건 개선",
-      "report_date": "2026-06-19",
-      "section": "dist",
-      "surface": "briefing_card",
-      "target_domain": "www.newsis.com",
-      "clicks": 8,
       "users": 1,
       "archive_url": "",
       "source_url": ""
@@ -741,19 +728,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-16.html#sec-pest",
       "source_url": "https://www.newspim.com/news/view/20260615000838"
-    },
-    {
-      "date": "2026-06-19",
-      "article_id": "fe46883d4ed7",
-      "title": "정부, 널뛰는 농산 물 가격 에 전자송품장·출하비용 보전 추진",
-      "report_date": "2026-06-19",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.joongang.co.kr",
-      "clicks": 3,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -2106,6 +2080,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-17.html#sec-policy",
       "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101346"
+    },
+    {
+      "date": "2026-06-19",
+      "article_id": "fe46883d4ed7",
+      "title": "정부, 널뛰는 농산 물 가격 에 전자송품장·출하비용 보전 추진",
+      "report_date": "2026-06-19",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.joongang.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -7561,6 +7548,19 @@
       "report_date": "2026-06-19",
       "section": "supply",
       "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-19",
+      "article_id": "556bccfda0ae",
+      "title": "관광기념품 지역 제한 완화…지자체 조례 등 233건 개선",
+      "report_date": "2026-06-19",
+      "section": "dist",
+      "surface": "briefing_card",
       "target_domain": "www.newsis.com",
       "clicks": 1,
       "users": 1,
