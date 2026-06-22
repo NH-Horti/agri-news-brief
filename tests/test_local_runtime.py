@@ -405,6 +405,136 @@ class LocalRuntimeTests(TestCase):
         self.assertFalse(pallet_core.is_core)
         self.assertNotIn(local_tail.link, {article.link for article in final_by_section["dist"]})
 
+    def test_dist_national_export_logistics_core_skips_opinion_column(self) -> None:
+        column = self._make_article(
+            section="dist",
+            title="[천자칼럼] K-푸드 수출 물류비 지원의 명암",
+            description="K-푸드 수출 기업의 물류비 지원과 수출바우처 72억원, 중동 물류 차질 37.6%를 다룬 칼럼.",
+            link="https://www.hankyung.com/article/2026062200011",
+            press="한국경제",
+        )
+        kfood = self._make_article(
+            section="dist",
+            title="K-푸드 수출기업, 중동 물류 차질에 물류비 지원 72억원",
+            description="정부가 수출바우처와 물류비 지원으로 농식품 수출기업 부담을 낮춘다. GCC 수출은 37.6% 늘었다.",
+            link="https://www.yna.co.kr/view/AKR20260622000000000",
+            press="연합뉴스",
+        )
+        local_tail = self._make_article(
+            section="dist",
+            title="무안군 양파 직거래 행사로 소비 촉진",
+            description="지역 농산물 소비촉진 캠페인과 할인 행사를 추진한다.",
+            link="https://example.com/muan-onion-column",
+        )
+        column.is_core = True
+        final_by_section = {"dist": [column, local_tail]}
+
+        self.assertTrue(main._is_dist_national_export_core_opinion_noise(column))
+        self.assertTrue(main.is_dist_national_export_logistics_context(column.title, column.description, column.domain, column.press))
+        self.assertTrue(main.is_dist_national_export_logistics_context(kfood.title, kfood.description, kfood.domain, kfood.press))
+        self.assertEqual(main._promote_dist_national_export_logistics_core(final_by_section, {"dist": [kfood]}), 1)
+
+        links = {article.link: article for article in final_by_section["dist"]}
+        self.assertTrue(links[kfood.link].is_core)
+        self.assertFalse(column.is_core)
+        self.assertIn(column.link, links)
+        self.assertNotIn(local_tail.link, links)
+
+    def test_dist_national_export_logistics_does_not_match_at_inside_words(self) -> None:
+        foreign_macro = self._make_article(
+            section="dist",
+            title="이게 다 얼마야? 미국인들 망했다 말 나온 이유",
+            description=(
+                "미국과 이란 전쟁으로 에너지·원자재 가격이 오르고 물류비 부담이 커졌다는 외신 분석이다. "
+                "식품 가격과 비료 가격에도 1320억 달러 충격이 발생한다는 전망을 전했다."
+            ),
+            link="https://www.seoul.co.kr/news/international/2026/06/20/20260620500009",
+            press="서울신문",
+        )
+        at_export = self._make_article(
+            section="dist",
+            title="aT, K-푸드 중동 수출 물류비 지원 72억원 확대",
+            description="aT가 수출바우처와 물류비 지원으로 농식품 수출기업의 GCC 물류 차질 대응을 돕는다.",
+            link="https://example.com/at-kfood-logistics",
+            press="aT",
+        )
+
+        self.assertFalse(main.is_dist_national_export_logistics_context(
+            foreign_macro.title,
+            foreign_macro.description,
+            foreign_macro.domain,
+            foreign_macro.press,
+        ))
+        self.assertTrue(main.is_dist_national_export_logistics_context(
+            at_export.title,
+            at_export.description,
+            at_export.domain,
+            at_export.press,
+        ))
+
+    def test_editorial_shadow_restores_fruit_tariff_and_reference_price_policy(self) -> None:
+        reserve = self._make_article(
+            section="policy",
+            title="농식품부, 여름철 폭염·호우 대비 농산물 비축물량 확대",
+            description="정부가 폭염과 호우에 대비해 농산물 수급 안정 대책을 추진한다.",
+            link="https://example.com/reserve",
+            press="농식품부",
+        )
+        labor = self._make_article(
+            section="policy",
+            title="농식품부·법무부, 계절노동자 현장간담회 개최",
+            description="농업 인력난 대응을 위한 제도 개선 논의를 진행했다.",
+            link="https://example.com/labor",
+            press="농식품부",
+        )
+        fertilizer = self._make_article(
+            section="policy",
+            title="비료 가격 상승에도 지원 예산은 감소...농가 부담 가중",
+            description="비료 가격 상승과 지원 예산 감소로 농가 생산비 부담이 커지고 있다.",
+            link="https://example.com/fertilizer",
+        )
+        president_a = self._make_article(
+            section="policy",
+            title='李대통령 "첫째도 둘째도 물가…채소·육류 가격 안정 특단 방안"',
+            description="대통령이 민생 물가 안정과 채소·육류 가격 안정 방안을 지시했다.",
+            link="https://example.com/president-a",
+        )
+        president_b = self._make_article(
+            section="policy",
+            title='이 대통령 "중동전쟁 종전 문턱…민생·물가 대응, 이제 시작"',
+            description="대통령이 중동전쟁 이후 민생과 물가 대응을 주문했다.",
+            link="https://example.com/president-b",
+        )
+        tariff = self._make_article(
+            section="policy",
+            title="국산 과일 한창때 ‘할당관세’ 재 뿌리나",
+            description="바나나·파인애플·망고 할당관세 적용기간 연장으로 국산 여름과일 가격 하락 우려가 커졌다.",
+            link="https://www.nongmin.com/article/20260619500576",
+            press="농민신문",
+        )
+        reference_price = self._make_article(
+            section="policy",
+            title="농산물가격안정제, 핵심은 ‘기준가격’…“비용 보전 넘어 경영안정에 방점을”",
+            description="새 농안법 시행을 앞두고 기준가격, 경영비, 차액 지원 기준을 두고 전문가 제언이 나왔다.",
+            link="https://www.nongmin.com/article/20260619500594",
+            press="농민신문",
+        )
+        reserve.is_core = True
+        labor.is_core = True
+        final_by_section = {"policy": [reserve, labor, fertilizer, president_a, president_b]}
+
+        changed = main._repair_editorial_shadow_issues_from_raw(
+            final_by_section,
+            {"policy": [tariff, reference_price]},
+        )
+
+        titles = [article.title for article in final_by_section["policy"]]
+        self.assertGreaterEqual(changed, 2)
+        self.assertIn(tariff.title, titles)
+        self.assertIn(reference_price.title, titles)
+        self.assertNotIn(fertilizer.title, titles)
+        self.assertLessEqual(sum(1 for title in titles if "대통령" in title or "대통령" in title), 1)
+
     def test_dist_response_logistics_and_market_education_replace_local_promo_tail(self) -> None:
         response = self._make_article(
             section="policy",

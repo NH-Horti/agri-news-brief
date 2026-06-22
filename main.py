@@ -3733,12 +3733,15 @@ def is_dist_hard_logistics_metric_context(title: str, desc: str) -> bool:
 
 def is_dist_national_export_logistics_context(title: str, desc: str, dom: str = "", press: str = "") -> bool:
     """농식품/K-푸드 수출이 물류 리스크와 수치로 함께 설명되는 전국성 유통 기사."""
+    raw_text = unicodedata.normalize("NFKC", f"{title or ''} {desc or ''}".strip())
     text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     title_l = _nfkc_lower(title or "")
     if not text:
         return False
     export_hits = count_any(text, [w.lower() for w in ("수출", "해외", "gcc", "중동", "중국", "미국")])
-    food_hits = count_any(text, [w.lower() for w in ("k-푸드", "k푸드", "농식품", "한국 식품", "식품기업", "aT", "한국농수산식품유통공사")])
+    food_hits = count_any(text, [w.lower() for w in ("k-푸드", "k푸드", "농식품", "한국 식품", "식품기업", "한국농수산식품유통공사")])
+    if re.search(r"(?<![A-Za-z0-9])aT(?![A-Za-z0-9])", raw_text):
+        food_hits += 1
     logistics_hits = count_any(
         text,
         [w.lower() for w in ("물류난", "물류 차질", "해상 물류", "운임", "우회 운송", "물류비", "수출바우처", "물류 부담")],
@@ -4432,6 +4435,18 @@ _SHORT_TERM_FALSE_POSITIVE_WORDS: dict[str, tuple[str, ...]] = {
 }
 
 
+_GREEN_ONION_SPORTS_HOMONYM_RE = re.compile(
+    r"(?:\d+\s*(?:[-:]\s*|대\s*)\d+|슈팅수|퇴장|월드컵|축구|야구|농구|배구|"
+    r"개최국|카타르|캐나다|득점|골|승리|완승|제압|꺾(?:고|은|었다|는)?).{0,28}대파"
+    r"|대파.{0,18}(?:승리|완승|제압|꺾)"
+)
+
+
+def is_green_onion_sports_homonym_context(title: str, desc: str = "") -> bool:
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    return bool(txt and "대파" in txt and _GREEN_ONION_SPORTS_HOMONYM_RE.search(txt))
+
+
 def _short_term_has_real_match(term: str, text: str) -> bool:
     """짧은 품목명(2~3글자)의 FP 복합어를 마스킹한 뒤 실제 매칭 여부를 반환."""
     if term not in text:
@@ -4456,6 +4471,9 @@ def _managed_commodity_matches_text(item: dict[str, Any], text: str, topic: str 
     if key == "potato" and "감자" in txt and not is_fresh_potato_context(txt):
         return False
     if key == "eggplant" and "가지" in txt and not is_edible_eggplant_context(txt):
+        return False
+
+    if key == "green_onion" and is_green_onion_sports_homonym_context(txt):
         return False
 
     for term in item.get("match_terms") or []:
@@ -4564,6 +4582,9 @@ def _managed_commodity_focus_metrics(
         "topic_hit": False,
     }
     if not text_l or not key:
+        return empty
+
+    if key == "green_onion" and is_green_onion_sports_homonym_context(title, desc):
         return empty
 
     if is_commodity_corporate_stock_context(title, desc):
@@ -23360,6 +23381,14 @@ def _promote_dist_hard_logistics_core(
     return 1
 
 
+def _is_dist_national_export_core_opinion_noise(article: "Article") -> bool:
+    title = article.title or ""
+    if _has_hard_opinion_column_marker(title):
+        return True
+    title_l = _nfkc_lower(title)
+    return any(term.lower() in title_l for term in OPINION_BAN_TERMS)
+
+
 def _promote_dist_national_export_logistics_core(
     final_by_section: dict[str, list["Article"]],
     raw_by_section: dict[str, list["Article"]] | None,
@@ -23369,6 +23398,7 @@ def _promote_dist_national_export_logistics_core(
     dist_items = [a for a in (final_by_section.get("dist") or []) if isinstance(a, Article)]
     if any(
         bool(getattr(article, "is_core", False))
+        and not _is_dist_national_export_core_opinion_noise(article)
         and is_dist_national_export_logistics_context(
             article.title or "", article.description or "", article.domain or "", article.press or "",
         )
@@ -23397,6 +23427,8 @@ def _promote_dist_national_export_logistics_core(
         if not already_final and ident and ident in existing_keys:
             return
         if not already_final and ident and ident in all_final_keys:
+            return
+        if _is_dist_national_export_core_opinion_noise(article):
             return
         if not is_dist_national_export_logistics_context(
             article.title or "", article.description or "", article.domain or "", article.press or "",
@@ -28346,6 +28378,7 @@ def _commodity_board_item_article_metrics(
     selection_stage = str(getattr(article, "selection_stage", "") or "").strip()
     selection_stage_l = selection_stage.lower()
     selection_fit_score = float(getattr(article, "selection_fit_score", 0.0) or 0.0)
+    green_onion_sports_homonym = item_key == "green_onion" and is_green_onion_sports_homonym_context(title, desc)
     base_terms = _managed_commodity_base_terms(item, limit=6)
     context_terms = _ordered_unique_terms(list(item.get("context_terms") or []) + list(item.get("match_terms") or []))
     focus_summary = _managed_commodity_focus_summary_for_article(article)
@@ -28361,6 +28394,11 @@ def _commodity_board_item_article_metrics(
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
+    if green_onion_sports_homonym:
+        title_primary_hits = 0
+        title_context_hits = 0
+        body_primary_hits = 0
+        body_context_hits = 0
     direct_item_focus = bool(title_primary_hits >= 1 or (primary_focus and body_primary_hits >= 1))
     section_key = str(getattr(article, "section", "") or "").strip()
     if selection_fit_score <= 0.0 and section_key:
@@ -28458,6 +28496,7 @@ def _commodity_board_item_article_metrics(
         "selection_stage": selection_stage,
         "stage_core_story": stage_core_story,
         "weak_stage_story": weak_stage_story,
+        "green_onion_sports_homonym": bool(green_onion_sports_homonym),
         "key_story_bonus": key_story_bonus,
         "semantic_similarity": semantic_similarity,
         "semantic_boost": semantic_boost,
@@ -33445,6 +33484,28 @@ def _repair_editorial_shadow_issues_from_raw(
         as_core=True,
         preferred_victims=(("농어촌기본소득", "농특세"), ("횡성군", "유기질 비료"), ("국가책임농정",)),
     )
+    changed += ensure_policy_candidate(
+        lambda article: article_matches(article, "국산 과일", "할당관세"),
+        stage="policy_editorial_shadow_tariff_replacement",
+        note="restore_fruit_tariff_policy_tail",
+        as_core=False,
+        preferred_victims=(
+            ("이 대통령", "중동전쟁"),
+            ("李대통령", "첫째도", "물가"),
+            ("비료", "지원 예산"),
+        ),
+    )
+    changed += ensure_policy_candidate(
+        lambda article: article_matches(article, "농산물가격안정제", "기준가격"),
+        stage="policy_editorial_shadow_price_stabilization_replacement",
+        note="restore_price_stabilization_reference_price_tail",
+        as_core=False,
+        preferred_victims=(
+            ("비료", "지원 예산"),
+            ("이 대통령", "중동전쟁"),
+            ("李대통령", "첫째도", "물가"),
+        ),
+    )
 
     policy_replacement_predicates: list[Callable[[Article], bool]] = [
         lambda article: article_matches(article, "국가책임농정", "예산"),
@@ -33669,6 +33730,66 @@ def _repair_editorial_shadow_issues_from_raw(
                     note="replace_duplicate_macmundong_tail",
                 ):
                     changed += 1
+
+    diversity_repairs: tuple[tuple[str, tuple[str, ...], Callable[[Article], bool], str, str], ...] = (
+        (
+            "supply",
+            ("지금 아니면 못 먹어",),
+            lambda article: article_matches(article, "가락", "도매", "양파", "수급 안정"),
+            "supply_editorial_shadow_domain_replacement",
+            "replace_retail_feature_with_market_supply_story",
+        ),
+        (
+            "policy",
+            ("농식품부", "법무부", "계절노동자"),
+            lambda article: article_matches(article, "비료 가격", "지원 예산", "농가 부담"),
+            "policy_editorial_shadow_domain_replacement",
+            "replace_extra_nongmin_policy_core_for_domain_diversity",
+        ),
+        (
+            "dist",
+            ("가락시장", "배추 경매"),
+            lambda article: article_matches(article, "여름 배추", "경매", "앞당긴다"),
+            "dist_editorial_shadow_domain_replacement",
+            "replace_nongmin_dist_tail_with_same_issue_domain",
+        ),
+        (
+            "pest",
+            ("단감", "탄저병"),
+            lambda article: article_matches(article, "키위", "곰팡이병", "방제"),
+            "pest_editorial_shadow_domain_replacement",
+            "replace_nongmin_pest_tail_for_domain_diversity",
+        ),
+    )
+    for section_key, victim_tokens, predicate, stage, note in diversity_repairs:
+        items_now = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
+        victim_idx = next((idx for idx, article in enumerate(items_now) if article_matches(article, *victim_tokens)), -1)
+        if victim_idx < 0:
+            continue
+        if "nongmin" not in normalize_host(items_now[victim_idx].domain or "") and section_key != "supply":
+            continue
+        candidates = _raw_editorial_candidates(
+            raw_by_section,
+            predicate,
+            exclude_idents=used_idents(),
+        )
+        candidates = [
+            candidate for candidate in candidates
+            if normalize_host(candidate.domain or "") != "nongmin.com"
+        ]
+        if not candidates:
+            continue
+        if _replace_final_item_with_editorial_candidate(
+            final_by_section,
+            raw_by_section,
+            section_key,
+            victim_idx,
+            candidates[0],
+            stage=stage,
+            note=note,
+            as_core=False,
+        ):
+            changed += 1
 
     policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
     policy_items_now = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
@@ -34997,11 +35118,11 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
         # 매칭 기사가 0건인 관리 품목은 하단 칩으로 항상 노출한다.
         matched_inactive_items_for_group = [
             item for item in inactive_items_for_group
-            if int(item.get("article_count") or 0) > 0
+            if int(item.get("active_today_article_count") or 0) > 0
         ]
         nonews_items_for_group = [
             item for item in inactive_items_for_group
-            if int(item.get("article_count") or 0) <= 0
+            if int(item.get("active_today_article_count") or 0) <= 0
         ]
         display_active_count = len(active_items_for_group)
         display_active_today_unlinked_count = len(active_today_unlinked_items_for_group)
@@ -35069,7 +35190,7 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
         secondary_preview_limit = 2
         for item in matched_inactive_items_for_group:
             badge_html = '<span class="commodityBadge core">수급사업</span>' if item.get("program_core") else ''
-            pool_articles = [article for article in (item.get("articles") or []) if isinstance(article, Article)]
+            pool_articles = [article for article in (item.get("active_today_articles") or []) if isinstance(article, Article)]
             # 품목 카드 내 기사는 중요도(대표 순위·점수) 순으로 노출한다.
             pool_articles = sorted(
                 pool_articles,

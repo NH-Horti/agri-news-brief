@@ -526,6 +526,57 @@ class ReportEvalTests(unittest.TestCase):
         self.assertAlmostEqual(result["metrics"]["commodity_board_coverage_rate"], round(1 / report_eval.MANAGED_COMMODITY_EVAL_ITEM_COUNT, 4))
         self.assertEqual(result["commodity_primary_linkage_samples"][0]["item_label"], "애호박(쥬키니)")
 
+    def test_commodity_pool_sports_homonym_penalizes_visible_false_link(self) -> None:
+        title = "슈팅수 30-2…개최국 캐나다, ‘2명 퇴장’ 자멸한 카타르 6대0 대파"
+        html = f"""
+        <a
+          data-surface="commodity_pool"
+          data-section="supply"
+          data-article-title="{title}"
+          data-article-id="sports-green-onion-homonym"
+          data-target-domain="chosun.com"
+          data-item-key="green_onion"
+          data-item-label="대파"
+          data-representative-rank="1"
+          data-representative-score="210.6"
+          data-board-score="176.6"
+          data-selection-fit="1.05"
+          data-selection-stage="commodity_pool"
+          href="https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/"
+        >대파 대표 기사</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-22T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": title,
+                        "link": "https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/",
+                        "description": "축구 경기에서 개최국 캐나다가 카타르를 크게 이겼다는 스포츠 기사다.",
+                        "selection_fit_score": 1.05,
+                        "selection_stage": "commodity_pool",
+                        "score": 7.8,
+                        "pub_dt_kst": "2026-06-19T12:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-22", html, snapshot_payload)
+
+        self.assertEqual(result["counts"]["commodity_pool_total"], 1)
+        self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
+        self.assertEqual(result["metrics"]["commodity_pool_false_link_rate"], 1.0)
+        self.assertIn("commodity_pool_false_link_severe", result["reader_quality_gate"]["reasons"])
+        self.assertIn("commodity_board", result["selection_guardrails"]["driver_tags"])
+        sample = result["commodity_pool_linkage_samples"][0]
+        self.assertEqual(sample["surface"], "commodity_pool")
+        self.assertIn("green_onion_sports_homonym", sample["reasons"])
+
     def test_commodity_board_strict_link_accepts_weather_and_field_issue_terms(self) -> None:
         html = """
         <a

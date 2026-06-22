@@ -626,6 +626,23 @@ class TestCommodityBoard(unittest.TestCase):
 
         self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
 
+    def test_green_onion_sports_homonym_is_not_board_match(self):
+        title = "슈팅수 30-2…개최국 캐나다, ‘2명 퇴장’ 자멸한 카타르 6대0 대파"
+        article = self._make_article(
+            "supply",
+            title,
+            "축구 경기에서 개최국 캐나다가 카타르를 크게 이겼다는 스포츠 기사다.",
+            "https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/",
+        )
+
+        self.assertNotIn("green_onion", main.managed_commodity_keys_for_article(article))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertTrue(bool(metrics["green_onion_sports_homonym"]))
+        self.assertEqual(int(metrics["title_primary_hits"]), 0)
+        self.assertFalse(bool(metrics["direct_item_focus"]))
+        self.assertLess(int(metrics["representative_rank"]), 1)
+
     def test_consumer_guide_story_is_not_representative(self):
         article = self._make_article(
             "supply",
