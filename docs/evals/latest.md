@@ -1,27 +1,29 @@
-## Daily Eval (2026-06-22)
-- Overall: **96.41** (pass)
-- Operational: **97.51**
-- Reader quality: **97.51** (clear; penalty=0.0, cap=100.0, reasons=clear)
-- Quality gate: **96.41** (needs_iteration, editorial_below_target_bounded_penalty; editorial=84.0, operational=97.5)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=94.3, retrieval=88.8, section_fit=100.0, core=90.6, commodity=97.5
-- Briefing cards: 20 / Commodity cards: 47
-- Sections: supply:5/5 raw=238, policy:5/5 raw=242, dist:5/5 raw=70, pest:5/5 raw=82
-- Metrics: title_unique=1.00, domain_diversity=0.75, summary_presence=1.00, summary_numeric=0.80, fresh_72h=1.00, fit_avg=5.33, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=13, commodity_active_today=17, commodity_active_today_unlinked=4, commodity_coverage=0.39, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.54, semantic_penalty=0.0
+## Daily Eval (2026-06-23)
+- Overall: **81.00** (warn)
+- Operational: **98.20**
+- Reader quality: **86.00** (capped; penalty=2.6, cap=86.0, reasons=commodity_pool_false_link, commodity_pool_false_link_severe)
+- Quality gate: **81.00** (needs_major_iteration, editorial_blocking_issue; editorial=81.0, operational=98.2)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=85.6, section_fit=100.0, core=95.4, commodity=95.6
+- Briefing cards: 20 / Commodity cards: 52
+- Sections: supply:5/5 raw=200, policy:5/5 raw=117, dist:5/5 raw=52, pest:5/5 raw=35
+- Metrics: title_unique=1.00, domain_diversity=1.00, summary_presence=1.00, summary_numeric=0.90, fresh_72h=1.00, fit_avg=4.51, false_positive=0.00, hard_reader_issues=0, weak_core=0.14, editorial_penalty=0.1, commodity_weak=0.00, commodity_items=12, commodity_active_today=17, commodity_active_today_unlinked=5, commodity_coverage=0.36, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.20, commodity_dominant_section=0.58, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **84.00** (target 95, needs_iteration)
+- Editorial: **81.00** (target 95, needs_major_iteration)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=82.0, section_fit=86.0, core=84.0, summary=90.0, missed=78.0, noise=83.0
-- Summary: 전반적으로 5x4 구성을 채우고 큰 오분류는 많지 않지만, 공급 섹션에서 경남 마늘·양파류의 중복/지역 편중이 심하고, 유통 섹션은 운영 기사보다 농협 성공사례·개장 안내 성격이 섞여 핵심도가 약해졌다. 병해충은 화상병 중심 편성은 맞지만 더 강한 보은·충북 확산 기사 풀이 보였는데 지역 단신·일반 관리성 기사가 포함돼 아쉽다. 정책은 비교적 안정적이나 비료 예산 기사 채택으로 더 직접적인 수급·물가 대응 후보를 일부 놓쳤다.
-- [high] duplication: 생산비도 못 건지는 남해 마늘 가격…농민들 "가격안정" 요구 - 같은 섹션에 경남 마늘·양파 고충 기사 3건이 겹친다.
-- [medium] duplication: 마늘은 녹고 양파 는 갈아엎고… 경남 농가 덮친 '이상기후·공급과잉' 이... - 연합 기사와 내용축이 매우 유사한 지역 재가공 기사다.
-- [medium] wrong_section_bias: 공선회·APC 운영 활성화…판매사업 날개 - 유통 실무성은 있으나 농협 성공사례 성격이 강해 대표 핵심으로는 다소 홍보성이다.
-- [medium] weak_core: 여름 배추 경매 1시간 앞당긴다 - 실무적으로 유효하지만 파급력이 제한적이고 선택 점수도 낮다.
-- [medium] promotional_filler: 통합 첫 시험대 오른 영산 마늘 경매장…창녕남부농협, 7월 1일 첫 경매 - 개장 안내와 기관 계획 위주로 독자 효용이 약하다.
+- Components: article_selection=79.0, section_fit=78.0, core=80.0, summary=90.0, missed=74.0, noise=77.0
+- Summary: 섹션 수는 모두 채웠지만, 실제 편집 선택은 양파 중복과 지역·홍보성 보강이 많아 점수가 깎입니다. 공급은 같은 전북 양파 대책을 중복 채택했고 토마토 수출 검역 완화는 dist 성격이 강합니다. 정책은 핵심 2건은 괜찮지만 칼럼과 지역 물가 기사 비중이 높아 약합니다. dist는 유통 현안보다 지원·개장식·브리핑성 기사가 많고, 보이는 더 강한 후보인 도매시장 해킹 사고를 놓친 점이 큽니다. pest는 과수화상병 중심축은 맞지만 탄저병 2건과 정읍 고추 안내는 하위 꼬리 수준입니다. 요약문 자체는 대체로 명확합니다.
+- [high] duplication: 전북도, 양파 가격 하락에…시장격리와 소비촉진 대책 추진 / 전북도 양파 가격 안정 총력 - 동일 전북 양파 대책을 사실상 중복 채택했다.
+- [high] wrong_section: 국산 토마토 , 수출식물검역증명서만으로 일본 수출 가능 - 수급보다 수출·검역·통관 완화 성격이 강하다.
+- [medium] weak_core: 전북도, 양파 가격 하락에…시장격리와 소비촉진 대책 추진 - 전국 충격이 큰 양파 폭락 현장 기사보다 정책발표물이 1순위다.
+- [medium] promotional_filler: [편집자 칼럼] 저출산의 부메랑이 농식품 시장을 강타하고 있다 - 의견성 칼럼으로 정책 정보 가치가 낮다.
+- [medium] weak_selection: 장바구니 덮친 이른 무더위…먹거리 물가 '고공행진' - 지역 물가 재전달로 전국 정책 섹션에 비해 급이 약하다.
 
 ### Improvement Hints
-- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
+- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
+- 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
