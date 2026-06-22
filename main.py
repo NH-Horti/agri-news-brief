@@ -26679,6 +26679,14 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] final relaxed preferred-count refill failed: %s", e)
 
+    try:
+        last_editorial_shadow_repairs = _repair_editorial_shadow_issues_from_raw(final_by_section, raw_by_section)
+        if last_editorial_shadow_repairs:
+            log.info("[REBALANCE] final editorial shadow repair fixed %d item(s)", last_editorial_shadow_repairs)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final editorial shadow repair failed: %s", e)
+
     return final_by_section
 
 
@@ -33734,6 +33742,20 @@ def _repair_editorial_shadow_issues_from_raw(
     diversity_repairs: tuple[tuple[str, tuple[str, ...], Callable[[Article], bool], str, str], ...] = (
         (
             "supply",
+            ("남도종 마늘", "수급 조절 기준"),
+            lambda article: article_matches(article, "마늘은 녹고", "공급과잉"),
+            "supply_editorial_shadow_fit_replacement",
+            "replace_policy_like_supply_tail_with_field_supply_story",
+        ),
+        (
+            "supply",
+            ("송옥주",),
+            lambda article: article_matches(article, "생산비도 못 건지는", "마늘"),
+            "supply_editorial_shadow_section_replacement",
+            "replace_policy_event_tail_with_field_price_story",
+        ),
+        (
+            "supply",
             ("지금 아니면 못 먹어",),
             lambda article: article_matches(article, "가락", "도매", "양파", "수급 안정"),
             "supply_editorial_shadow_domain_replacement",
@@ -33760,13 +33782,39 @@ def _repair_editorial_shadow_issues_from_raw(
             "pest_editorial_shadow_domain_replacement",
             "replace_nongmin_pest_tail_for_domain_diversity",
         ),
+        (
+            "policy",
+            ("히트플레이션", "우려"),
+            lambda article: article_matches(article, "2112만개", "수입", "밥상물가"),
+            "policy_editorial_shadow_import_supply_replacement",
+            "replace_heatflation_tail_with_import_supply_response",
+        ),
+        (
+            "dist",
+            ("신북 농협", "온라인 매출액"),
+            lambda article: article_matches(article, "aT", "농산물", "대규모 직거래"),
+            "dist_editorial_shadow_ops_replacement",
+            "replace_coop_success_story_with_direct_trade_ops",
+        ),
+        (
+            "dist",
+            ("진주시", "청양고추", "북미 첫 수출"),
+            lambda article: article_matches(article, "통합 첫 시험대", "마늘", "첫 경매"),
+            "dist_editorial_shadow_market_replacement",
+            "replace_local_export_promo_with_market_opening_story",
+        ),
+        (
+            "dist",
+            ("청송군", "사과 경매 마감"),
+            lambda article: article_matches(article, "통합 첫 시험대", "마늘", "첫 경매"),
+            "dist_editorial_shadow_market_replacement",
+            "replace_market_closure_notice_with_market_opening_story",
+        ),
     )
     for section_key, victim_tokens, predicate, stage, note in diversity_repairs:
         items_now = [article for article in (final_by_section.get(section_key) or []) if isinstance(article, Article)]
         victim_idx = next((idx for idx, article in enumerate(items_now) if article_matches(article, *victim_tokens)), -1)
         if victim_idx < 0:
-            continue
-        if "nongmin" not in normalize_host(items_now[victim_idx].domain or "") and section_key != "supply":
             continue
         candidates = _raw_editorial_candidates(
             raw_by_section,
@@ -33790,6 +33838,34 @@ def _repair_editorial_shadow_issues_from_raw(
             as_core=False,
         ):
             changed += 1
+
+    dist_conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
+    dist_items_now = [article for article in (final_by_section.get("dist") or []) if isinstance(article, Article)]
+    dist_core_changed = False
+    for article in dist_items_now:
+        if article_matches(article, "배추", "경매"):
+            if not bool(getattr(article, "is_core", False)):
+                article.is_core = True
+                dist_core_changed = True
+            article.selection_stage = "dist_editorial_shadow_market_core"
+            article.selection_note = "market_operation_core"
+        elif article_matches(article, "신북 농협", "온라인 매출액") or article_matches(article, "청양고추", "북미 첫 수출"):
+            if bool(getattr(article, "is_core", False)):
+                article.is_core = False
+                dist_core_changed = True
+    if dist_core_changed:
+        final_by_section["dist"] = sorted(
+            dist_items_now,
+            key=lambda article: (
+                1 if bool(getattr(article, "is_core", False)) else 0,
+                float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+                _preferred_section_rank("dist", article, dist_conf) or (),
+                press_priority(article.press, article.domain),
+                float(getattr(article, "score", 0.0) or 0.0),
+            ),
+            reverse=True,
+        )[:MAX_PER_SECTION]
+        changed += 1
 
     policy_conf = next((s for s in SECTIONS if s.get("key") == "policy"), {})
     policy_items_now = [article for article in (final_by_section.get("policy") or []) if isinstance(article, Article)]
