@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T03:18:36+09:00",
+  "generated_at": "2026-06-24T01:43:10+09:00",
   "rows": [
     {
       "date": "2026-04-30",
@@ -67,7 +67,7 @@
     {
       "date": "2026-06-22",
       "query": "물가",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 12,
       "count": 1
     }
