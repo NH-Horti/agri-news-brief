@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T01:43:10+09:00",
+  "generated_at": "2026-06-25T01:34:13+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -1200,6 +1200,13 @@
       "nav_type": "archive_index",
       "from_date": "2026-06-22",
       "to_date": "(not set)"
+    },
+    {
+      "date": "2026-06-24",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-06-24",
+      "to_date": "2026-06-23"
     }
   ]
 }
