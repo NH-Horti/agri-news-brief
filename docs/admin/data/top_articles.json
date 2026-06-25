@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T01:34:13+09:00",
+  "generated_at": "2026-06-26T01:37:01+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -386,6 +386,19 @@
       "section": "supply",
       "surface": "briefing_card",
       "target_domain": "www.hankyung.com",
+      "clicks": 4,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-24",
+      "article_id": "3444cb574da4",
+      "title": "창원 동읍농협, 단감농가에 탄저병 약제 지원",
+      "report_date": "2026-06-24",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
       "clicks": 4,
       "users": 2,
       "archive_url": "",
@@ -809,19 +822,6 @@
     },
     {
       "date": "2026-06-24",
-      "article_id": "3444cb574da4",
-      "title": "창원 동읍농협, 단감농가에 탄저병 약제 지원",
-      "report_date": "2026-06-24",
-      "section": "pest",
-      "surface": "briefing_card",
-      "target_domain": "www.nongmin.com",
-      "clicks": 3,
-      "users": 2,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-24",
       "article_id": "ad30001d440e",
       "title": "함양 4개 농협 양파 수매가 지난해보다 인하",
       "report_date": "2026-06-24",
@@ -832,6 +832,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-24.html#sec-supply",
       "source_url": "https://mbcgn.kr/01_new/new01_view.asp?idx=409058"
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "35f33605c3bf",
+      "title": "[뉴스팜리포트] 농산물가격안정제 , 농가 안전망인가 새로운 왜곡의 시작...",
+      "report_date": "2026-06-25",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-policy",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101432"
     },
     {
       "date": "2026-04-01",
@@ -2239,29 +2252,68 @@
     },
     {
       "date": "2026-06-24",
-      "article_id": "9723c4a6c137",
-      "title": "특란 10구 5000원 넘고 정부 수입 달걀도 오픈런···밥상물가 비상",
+      "article_id": "f8acecc3937c",
+      "title": "경남농기원, 단감 '탄저병·둥근무늬낙엽병' 확산 방제 당부",
       "report_date": "2026-06-24",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.ziksir.com",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
       "clicks": 2,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-24.html#sec-policy",
-      "source_url": "https://www.ziksir.com/news/articleView.html?idxno=137750"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-24",
-      "article_id": "fd24450a0390",
-      "title": "\"계란프라이도 사치?\"... 달걀 10구 첫 5000원 돌파, 밥상물가 비상",
+      "article_id": "f9e4a4c74cde",
+      "title": "양파 경북협의회, 특판 행사와 소비촉진 운동으로 양파 값 안정화 나선다",
       "report_date": "2026-06-24",
-      "section": "policy",
+      "section": "supply",
       "surface": "briefing_open",
-      "target_domain": "www.insight.co.kr",
+      "target_domain": "www.nongmin.com",
       "clicks": 2,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-24.html#sec-policy",
-      "source_url": "https://www.insight.co.kr/news/559790"
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "76301ea6e213",
+      "title": "전종덕 의원·농민의길 “ 농산물 가격폭락 ·농자재값 폭등 대책 마련해...",
+      "report_date": "2026-06-25",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "8f5992fcfc97",
+      "title": "농해수위원장 서삼석·송옥주·이만희 거론… 농협 개혁 '기로'",
+      "report_date": "2026-06-25",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.newstomato.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-policy",
+      "source_url": "http://www.newstomato.com/ReadNews.aspx?no=1305029&inflow=N"
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "8f5992fcfc97",
+      "title": "농해수위원장 서삼석·송옥주·이만희 거론… 농협 개혁 '기로'",
+      "report_date": "2026-06-25",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newstomato.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-policy",
+      "source_url": "http://www.newstomato.com/ReadNews.aspx?no=1305029&inflow=N"
     },
     {
       "date": "2026-03-30",
@@ -8193,6 +8245,19 @@
     },
     {
       "date": "2026-06-24",
+      "article_id": "9723c4a6c137",
+      "title": "특란 10구 5000원 넘고 정부 수입 달걀도 오픈런···밥상물가 비상",
+      "report_date": "2026-06-24",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ziksir.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-24.html#sec-policy",
+      "source_url": "https://www.ziksir.com/news/articleView.html?idxno=137750"
+    },
+    {
+      "date": "2026-06-24",
       "article_id": "dac160bfdc9b",
       "title": "전북도, 양파 가격 하락 대응 수급 안정 대책 추진",
       "report_date": "2026-06-24",
@@ -8232,29 +8297,55 @@
     },
     {
       "date": "2026-06-24",
-      "article_id": "f8acecc3937c",
-      "title": "경남농기원, 단감 '탄저병·둥근무늬낙엽병' 확산 방제 당부",
+      "article_id": "fd24450a0390",
+      "title": "\"계란프라이도 사치?\"... 달걀 10구 첫 5000원 돌파, 밥상물가 비상",
       "report_date": "2026-06-24",
-      "section": "pest",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.insight.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-24.html#sec-policy",
+      "source_url": "https://www.insight.co.kr/news/559790"
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "76301ea6e213",
+      "title": "전종덕 의원·농민의길 “ 농산물 가격폭락 ·농자재값 폭등 대책 마련해...",
+      "report_date": "2026-06-25",
+      "section": "policy",
       "surface": "briefing_card",
-      "target_domain": "www.newsis.com",
+      "target_domain": "www.nongmin.com",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
       "source_url": ""
     },
     {
-      "date": "2026-06-24",
-      "article_id": "f9e4a4c74cde",
-      "title": "양파 경북협의회, 특판 행사와 소비촉진 운동으로 양파 값 안정화 나선다",
-      "report_date": "2026-06-24",
+      "date": "2026-06-25",
+      "article_id": "b08da3bcdf66",
+      "title": "밭작물 가격 하락 대응, 제주형 가격안정관리제 추진",
+      "report_date": "2026-06-25",
       "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
+      "surface": "briefing_card",
+      "target_domain": "www.jemin.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-supply",
+      "source_url": "https://www.jemin.com/news/articleView.html?idxno=839330"
+    },
+    {
+      "date": "2026-06-25",
+      "article_id": "f3d6bc77900e",
+      "title": "경남도농업기술원, 단감 병해 대비 적기 방제 당부",
+      "report_date": "2026-06-25",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.gnnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-pest",
+      "source_url": "https://www.gnnews.co.kr/news/articleView.html?idxno=639738"
     }
   ]
 }
