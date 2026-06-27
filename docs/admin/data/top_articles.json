@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T01:29:00+09:00",
+  "generated_at": "2026-06-28T00:40:15+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -401,6 +401,19 @@
       "target_domain": "www.nongmin.com",
       "clicks": 4,
       "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-26",
+      "article_id": "5af53c4834a1",
+      "title": "“한국 APC 시스템 놀랍다”…파라과이 농업차관 일행, 영월 한반도농협...",
+      "report_date": "2026-06-26",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 4,
+      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -845,19 +858,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-25.html#sec-policy",
       "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101432"
-    },
-    {
-      "date": "2026-06-26",
-      "article_id": "5af53c4834a1",
-      "title": "“한국 APC 시스템 놀랍다”…파라과이 농업차관 일행, 영월 한반도농협...",
-      "report_date": "2026-06-26",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 3,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-06-26",
@@ -2348,6 +2348,19 @@
       "report_date": "2026-06-26",
       "section": "supply",
       "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-26.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65085"
+    },
+    {
+      "date": "2026-06-26",
+      "article_id": "210d1aee18be",
+      "title": "기후재앙 맞은 마늘 산업, 신속한 시장격리와 소비자 온정 모을 때",
+      "report_date": "2026-06-26",
+      "section": "supply",
+      "surface": "briefing_open",
       "target_domain": "www.wonyesanup.co.kr",
       "clicks": 2,
       "users": 2,
@@ -8427,16 +8440,16 @@
     },
     {
       "date": "2026-06-26",
-      "article_id": "210d1aee18be",
-      "title": "기후재앙 맞은 마늘 산업, 신속한 시장격리와 소비자 온정 모을 때",
+      "article_id": "36d0040ccc58",
+      "title": "주요 농산물 공공수급제 실시, 반값 농자재를 보장하라",
       "report_date": "2026-06-26",
-      "section": "supply",
+      "section": "policy",
       "surface": "briefing_open",
-      "target_domain": "www.wonyesanup.co.kr",
+      "target_domain": "www.aflnews.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-26.html#sec-supply",
-      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65085"
+      "archive_url": "/agri-news-brief/archive/2026-06-26.html#sec-policy",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323068"
     },
     {
       "date": "2026-06-26",
@@ -8450,6 +8463,32 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-06-26.html#sec-supply",
       "source_url": "http://www.nongup.net/news/articleView.html?idxno=33320"
+    },
+    {
+      "date": "2026-06-26",
+      "article_id": "4b6a3828f5b2",
+      "title": "농어촌 기본소득 효과?...\"월 15만원 준대, 이사 가자\" 귀촌 확 늘었다",
+      "report_date": "2026-06-26",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-26",
+      "article_id": "603ea613323b",
+      "title": "온라인도매시장, 영동 거봉 포도 첫 산지 직접 경매 실시",
+      "report_date": "2026-06-26",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.livesnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-26.html#sec-dist",
+      "source_url": "https://www.livesnews.com/news/article.html?no=62178"
     },
     {
       "date": "2026-06-26",
