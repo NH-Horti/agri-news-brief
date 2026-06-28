@@ -1,14 +1,14 @@
 {
-  "report_date": "2026-06-25",
-  "generated_at_kst": "2026-06-28T18:14:27+09:00",
+  "report_date": "2026-06-26",
+  "generated_at_kst": "2026-06-28T18:18:24+09:00",
   "scores": {
-    "section_alignment": 92.41,
-    "core_quality": 90.0,
-    "commodity_board_quality": 92.0
+    "section_alignment": 100.0,
+    "core_quality": 98.33,
+    "commodity_board_quality": 98.61
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.15,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
@@ -29,19 +29,19 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 9,
-    "commodity_active_today_total": 12,
-    "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2727,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 9,
+    "commodity_pool_count": 11,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.6667
+    "commodity_primary_dominant_section_rate": 0.5
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -80,133 +80,93 @@
   "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 82.0,
+    "score": 95.0,
     "target_score": 95.0,
-    "target_status": "needs_iteration",
+    "target_status": "target_met",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
       "article_selection": 80.0,
-      "section_fit": 78.0,
-      "core_pick_quality": 76.0,
-      "summary_usefulness": 89.0,
-      "missed_opportunity": 84.0,
-      "noise_control": 81.0
+      "section_fit": 84.0,
+      "core_pick_quality": 85.0,
+      "summary_usefulness": 88.0,
+      "missed_opportunity": 74.0,
+      "noise_control": 79.0
     },
     "issues": [
       {
-        "type": "duplication",
+        "type": "duplicate",
         "severity": "high",
         "section": "supply",
-        "title": "당근 ·양배추 가격 하락에...'제주형 가격안정관리제' 발동",
-        "reason": "동일 제주 가격안정제 이슈가 3건 반복됐다.",
-        "suggested_action": "대표 기사 1건만 남기고 나머지는 다른 수급 이슈로 교체."
+        "title": "제주 월동채소 생산 늘었지만 가격 '뚝' / 월동무 ·당근·양배추 생산량↑·소비부진으로 ' 가격 반토막'",
+        "reason": "같은 제주 월동채소 작황·가격하락 사안을 중복 채택했다.",
+        "suggested_action": "한 건만 남기고 다른 품목·전국 수급 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
-        "severity": "high",
-        "section": "policy",
-        "title": "농산업 수출 ' 비관세장벽 ' 뚫는다… 농식품부 , 글로벌 인허가 지원단 출...",
-        "reason": "정책 섹션 최상위 후보였던 가격폭락·생산비 급등 대책 기사보다 약하다.",
-        "suggested_action": "수출지원단은 후순위로 내리고 가격·생산비 대응 기사를 코어로 배치."
-      },
-      {
-        "type": "promotional_or_institutional",
+        "type": "weak_tail",
         "severity": "medium",
-        "section": "policy",
-        "title": "농축산물 할당관세 전담기구 신설…물가 안정 본격화",
-        "reason": "aT 결의대회 기반 기관 계획성 기사로 실질 정책 뉴스성이 약하다.",
-        "suggested_action": "정부 회의·제도 시행·현장 파급이 뚜렷한 기사로 교체."
+        "section": "supply",
+        "title": "6월 채소류 농업관측",
+        "reason": "단순 관측 요약물로 당일성·차별성이 약하다.",
+        "suggested_action": "실제 수급 충격이나 산지 대응 기사 우선 반영."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "supply",
+        "title": "“ 양파 출하철 외상거래 주의”…표준계약서·증빙자료 챙겨야",
+        "reason": "지역성 강한 피해예방 공지에 가깝다.",
+        "suggested_action": "전국 유통·수급 영향 기사로 대체."
       },
       {
         "type": "weak_core",
         "severity": "medium",
-        "section": "dist",
-        "title": "파라과이 농업 관계자들, 영월 한반도 농협 스마트 APC 견학",
-        "reason": "견학성 기사로 유통 운영 변화 자체보다 이벤트성이 크다.",
-        "suggested_action": "도매시장 운영, 계약거래, 물류 차질 등 직접 운영 기사 우선."
+        "section": "policy",
+        "title": "농협, ‘농산물 가격안정과 적정 생산체계 구축’ 방안 논의",
+        "reason": "포럼 개최 기사로 실행 정책 정보가 제한적이다.",
+        "suggested_action": "제도 시행·예산·조치가 담긴 정책 기사로 교체."
       },
       {
-        "type": "promotional_or_institutional",
+        "type": "weak_tail",
         "severity": "medium",
-        "section": "dist",
-        "title": "시선AI 자회사 유온로보틱스, APC 자동화 사업 수주",
-        "reason": "기업 수주 기사로 광고성 인상이 있으며 업계 영향 검증이 약하다.",
-        "suggested_action": "동일 APC라도 현장 도입 효과나 제도 변화 기사로 대체."
+        "section": "policy",
+        "title": "농협, 2주간 전국 단위 범농협 농촌일손 집중지원",
+        "reason": "기관 활동성 홍보 기사 성격이 강하다.",
+        "suggested_action": "현장 제도개선이나 수급정책 기사로 대체."
       },
       {
-        "type": "promotional_or_institutional",
-        "severity": "medium",
+        "type": "duplicate",
+        "severity": "high",
         "section": "dist",
-        "title": "더자인, 산지 원청 기반 B2B 농산물 도매 플랫폼 '최고집 홀세일' 선보여",
-        "reason": "출시 보도자료성 성격이 강하다.",
-        "suggested_action": "플랫폼 출시보다 실제 거래·물류·수출 운영 기사 우선."
+        "title": "도매시장 거치지 않고 소비자가 경매를…aT, 온라인 산지 직 거래 확대 / 온라인도매시장, 영동 거봉 포도 첫 산지 직접 경매 실시",
+        "reason": "동일한 온라인도매시장 거봉 산지경매 사안의 중복이다.",
+        "suggested_action": "한 건만 남기고 가락시장 운영·강서시장 현안 등 다른 유통 기사로 교체."
       },
       {
-        "type": "wrong_section",
+        "type": "promotional_filler",
         "severity": "medium",
-        "section": "pest",
-        "title": "화순군, 집중호우 예고된 장마철 \"농가 피해 예방 총력\"",
-        "reason": "병해충보다 일반 재해예방 성격이 더 강하다.",
-        "suggested_action": "감자 역병, 생강 병해, 토마토뿔나방 등 명시적 병해충 기사로 교체."
+        "section": "dist",
+        "title": "더자인, B2B 농산물 도매몰 ‘최고집 홀세일’ 본격 운영... 산지 직거래...",
+        "reason": "기업 서비스 출시 홍보성 기사에 가깝다.",
+        "suggested_action": "시장 운영·물류·직거래 구조 변화 기사 우선."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "매년 수십억 적자 늪 인천 공영 도매시장 , 공사 전환 승부수",
-        "reason": "로컬성은 있으나 유통구조 운영 이슈로서 선택 기사들보다 편집 가치가 높다.",
-        "suggested_action": "견학·출시성 기사 중 1건과 교체 검토."
+        "title": "하절기 가락시장 배추 경매개시 시각 한시적 변경 시행",
+        "reason": "구체적 시장 운영 변화 기사인데 중복 온라인경매보다 유통면 적합성이 높았다.",
+        "suggested_action": "중복 카드 대신 운영형 기사로 교체."
       }
     ]
   },
-  "editorial_suggested_guardrails": {
-    "driver_tags": [
-      "editorial_section_fit",
-      "editorial_duplicate_topic",
-      "editorial_core_pick",
-      "editorial_missed_opportunity"
-    ],
-    "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
-    },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.4,
-    "core_fit_min": {
-      "default": 1.3,
-      "supply": 1.5,
-      "policy": 1.5,
-      "dist": 1.7,
-      "pest": 1.3
-    },
-    "core_relaxed_min_fit": {
-      "default": 1.0,
-      "supply": 1.18,
-      "policy": 1.15,
-      "dist": 1.35,
-      "pest": 1.0
-    },
-    "disable_relaxed_core_fill": true,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
-    "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false,
-    "commodity_strict_primary_only": true,
-    "commodity_disable_primary_fallback": true
-  },
-  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 82.0,
-    "target_status": "needs_iteration",
-    "iteration_budget": 3,
+    "current_editorial_score": 95.0,
+    "target_status": "target_met",
+    "iteration_budget": 0,
     "promotion_gates": {
       "editorial_score_min": 95.0,
       "operational_score_min": 95.0,
@@ -221,7 +181,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 163,
+          "raw_candidates": 160,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -233,7 +193,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 100,
+          "raw_candidates": 110,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -245,7 +205,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 27,
+          "raw_candidates": 59,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -257,7 +217,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 30,
+          "raw_candidates": 32,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -281,7 +241,7 @@
       "core_quality",
       "missed_opportunity",
       "article_selection",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -303,10 +263,10 @@
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
         "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
