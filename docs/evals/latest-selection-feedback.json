@@ -1,27 +1,27 @@
 {
-  "report_date": "2026-06-22",
-  "generated_at_kst": "2026-06-28T18:01:53+09:00",
+  "report_date": "2026-06-23",
+  "generated_at_kst": "2026-06-28T18:06:07+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 92.94,
-    "commodity_board_quality": 97.49
+    "section_alignment": 97.19,
+    "core_quality": 85.39,
+    "commodity_board_quality": 95.57
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.05,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.05,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
+    "reader_quality_penalty": 0.18,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.125,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
+    "promotional_filler_rate": 0.05,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 0.1,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,19 +29,19 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 13,
+    "commodity_primary_count": 12,
     "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 4,
-    "commodity_managed_unlinked_total": 20,
+    "commodity_active_today_unlinked_total": 5,
+    "commodity_managed_unlinked_total": 21,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3939,
+    "commodity_board_coverage_rate": 0.3636,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 5,
+    "commodity_pool_count": 4,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5385
+    "commodity_primary_dominant_section_rate": 0.5833
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -77,7 +77,17 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "[기획] 농촌의 '직거래 혁명'…개인 생산자도 세계 소비자와 직접 만나...",
+      "href": "https://www.dailyt.co.kr/newsView/dlt202606220007",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial": {
     "score": 82.0,
@@ -87,76 +97,76 @@
     "section_count_status": "target_met",
     "scores": {
       "article_selection": 80.0,
-      "section_fit": 83.0,
+      "section_fit": 78.0,
       "core_pick_quality": 84.0,
-      "summary_usefulness": 76.0,
-      "missed_opportunity": 78.0,
-      "noise_control": 81.0
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 79.0,
+      "noise_control": 74.0
     },
     "issues": [
       {
         "type": "duplication",
         "severity": "high",
-        "section": "supply",
-        "title": "생장불량 마늘·과잉생산 양파 …주산지 경남 농민 '시름' / 생산비도 못 건지는 남해 마늘 가격…농민들 \"가격안정\" 요구",
-        "reason": "양파·마늘 가격난을 지역 단위로 비슷하게 반복했다.",
-        "suggested_action": "한 건만 남기고 전국 수급·정책성 기사로 교체."
+        "section": "policy",
+        "title": "전북, 양파 수급 안정 대책 추진...농가 경영안정 지원",
+        "reason": "supply와 사실상 같은 전북 양파 대책 반복.",
+        "suggested_action": "policy는 별도 제도·정부 정책 기사로 교체."
       },
       {
-        "type": "filler",
-        "severity": "medium",
-        "section": "supply",
-        "title": "경북도의회, 농산물 가격 폭락 '선제적 대응' 촉구",
-        "reason": "지방의회 발언성 기사로 정보 밀도가 낮다.",
-        "suggested_action": "실제 대책·시장조치 기사로 교체."
-      },
-      {
-        "type": "filler",
-        "severity": "medium",
-        "section": "supply",
-        "title": "양파값 폭락에 가락시장 도매법인 3사 '3억원' 투입",
-        "reason": "소비촉진 이벤트 성격이 강해 핵심 수급 기사로는 약하다.",
-        "suggested_action": "보조 꼬리로만 쓰거나 더 구조적 기사 우선."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "high",
-        "section": "dist",
-        "title": "가락시장, 여름철 배추 경매시간 1시간 앞당긴다",
-        "reason": "실제 도매시장 운영 변화인데 선택본에서 비핵심 후순위 처리됐다.",
-        "suggested_action": "로컬 APC 소개 기사보다 우선 반영."
-      },
-      {
-        "type": "section_fit",
-        "severity": "medium",
-        "section": "dist",
-        "title": "영천 스마트 APC 가동…AI 스펙트럼 선별로 '공동출하 경쟁력' 키운다",
-        "reason": "유통 섹션 적합성은 있으나 지역 홍보성 톤이 강하다.",
-        "suggested_action": "시장 운영·물류 변화 기사와 균형 배치."
-      },
-      {
-        "type": "missed_opportunity",
+        "type": "duplication",
         "severity": "medium",
         "section": "policy",
-        "title": "뛰는 계란값 '2112만개 수입'…여름 기상이변 밥상물가도 '총력'",
-        "reason": "실제 수입·공급조치가 있는 정책 기사인데 빠졌다.",
-        "suggested_action": "토론회 기사 한 건 대신 편성 검토."
+        "title": "양파 풍년에 값 하락 우려 ‘쑥’…전북도, 수급 안정 대책 ‘신발끈’",
+        "reason": "같은 전북 양파 기사 3중 편성으로 새 정보 부족.",
+        "suggested_action": "중복 1건만 남기고 다른 정책 이슈 보강."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "medium",
+        "section": "supply",
+        "title": "전북도, 양파 가격 하락 대응 수급 안정 대책 추진",
+        "reason": "산지 수급 대응이지만 정책 섹션과 더 맞고 중복도 유발.",
+        "suggested_action": "supply는 현장 가격·출하 피해 중심 기사 우선."
       },
       {
         "type": "weak_tail",
         "severity": "medium",
-        "section": "pest",
-        "title": "농기원 농작물 강풍.호우 피해 최소화 방제 당부",
-        "reason": "병해충 섹션에서 재해 일반 대응에 가까워 테마 집중도가 약하다.",
-        "suggested_action": "화상병 확산·정밀예찰 기사로 교체."
+        "section": "supply",
+        "title": "“기후변화 대응” 농산물 생산· 수급 안정 에 힘 합친다",
+        "reason": "MOU성 기사로 즉시성·시장 파급이 약함.",
+        "suggested_action": "가격 급등락·작황 신호 기사로 대체."
       },
       {
-        "type": "summary_quality",
-        "severity": "low",
+        "type": "duplication",
+        "severity": "medium",
         "section": "supply",
-        "title": "이른 더위에…풋고추· 토마토 가격 뛰어",
-        "reason": "요약이 원문 헤드라인 반복과 잡문구 포함으로 정리가 약하다.",
-        "suggested_action": "상승 품목·하락 품목·배경만 간결 재작성."
+        "title": "aT-농과원, CA 기술 공조… 여름 배추 수급 잡는다",
+        "reason": "윗기사와 사실상 같은 협약/협력 내용 반복.",
+        "suggested_action": "둘 중 하나만 남기고 다른 품목 수급 기사 채택."
+      },
+      {
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "dist",
+        "title": "군위군 농산물 공판장 개장…여름 '명품 자두' 첫 경매 개시",
+        "reason": "지역 개장행사 성격이 강해 전국 유통 의미가 약함.",
+        "suggested_action": "물류비·도매시장 운영·수출 차질 기사 우선."
+      },
+      {
+        "type": "weak_fit",
+        "severity": "medium",
+        "section": "dist",
+        "title": "[기획] 농촌의 '직거래 혁명'…개인 생산자도 세계 소비자와 직접 만나...",
+        "reason": "추상적 기획물로 당일 유통 운영 이슈성이 낮음.",
+        "suggested_action": "구체적 거래·물류 변화 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "dist",
+        "title": "“팰릿 포장용 랩값 올라 부담되시죠”…한국청과, 산지출하조직 지원 나서",
+        "reason": "원시 후보 중 더 강한 현장 유통 기사였는데 미선정.",
+        "suggested_action": "dist 핵심 또는 꼬리 기사로 반영."
       }
     ]
   },
@@ -220,7 +230,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 238,
+          "raw_candidates": 200,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -232,7 +242,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 242,
+          "raw_candidates": 117,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -244,7 +254,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 70,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -256,7 +266,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 82,
+          "raw_candidates": 35,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
