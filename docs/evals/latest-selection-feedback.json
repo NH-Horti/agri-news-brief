@@ -1,27 +1,27 @@
 {
-  "report_date": "2026-06-23",
-  "generated_at_kst": "2026-06-28T18:06:07+09:00",
+  "report_date": "2026-06-24",
+  "generated_at_kst": "2026-06-28T18:10:14+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 85.39,
-    "commodity_board_quality": 95.57
+    "section_alignment": 100.0,
+    "core_quality": 94.17,
+    "commodity_board_quality": 96.76
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.05,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.18,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.125,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,19 +29,19 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_primary_count": 9,
+    "commodity_active_today_total": 12,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 24,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_coverage_rate": 0.2727,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 4,
+    "commodity_pool_count": 3,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5833
+    "commodity_primary_dominant_section_rate": 0.5556
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -77,121 +77,105 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "[기획] 농촌의 '직거래 혁명'…개인 생산자도 세계 소비자와 직접 만나...",
-      "href": "https://www.dailyt.co.kr/newsView/dlt202606220007",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 82.0,
+    "score": 86.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 78.0,
+      "article_selection": 85.0,
+      "section_fit": 83.0,
       "core_pick_quality": 84.0,
-      "summary_usefulness": 89.0,
-      "missed_opportunity": 79.0,
-      "noise_control": 74.0
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 81.0,
+      "noise_control": 82.0
     },
     "issues": [
       {
         "type": "duplication",
         "severity": "high",
-        "section": "policy",
-        "title": "전북, 양파 수급 안정 대책 추진...농가 경영안정 지원",
-        "reason": "supply와 사실상 같은 전북 양파 대책 반복.",
-        "suggested_action": "policy는 별도 제도·정부 정책 기사로 교체."
+        "section": "supply",
+        "title": "전북도, 양파 가격 하락 대응 수급 안정 대책 추진 / “양파 ‘풍년의 눈물’ 막자”… 전북, 4500t 출하 정지",
+        "reason": "같은 사안을 두 장으로 반복했다.",
+        "suggested_action": "한 장만 남기고 다른 품목·전국 단위 수급 기사로 교체."
       },
       {
         "type": "duplication",
-        "severity": "medium",
+        "severity": "high",
         "section": "policy",
-        "title": "양파 풍년에 값 하락 우려 ‘쑥’…전북도, 수급 안정 대책 ‘신발끈’",
-        "reason": "같은 전북 양파 기사 3중 편성으로 새 정보 부족.",
-        "suggested_action": "중복 1건만 남기고 다른 정책 이슈 보강."
+        "title": "홈플러스 미수금에 산지유통 조직 '비상'…정부, 300억 긴급 금융지원 / 홈플러스 납품대금 미수 산지유통 에 정부 금융지원",
+        "reason": "동일 정책 사안 중복이다.",
+        "suggested_action": "한 건만 남기고 다른 정책 현안으로 교체."
       },
       {
         "type": "wrong_section",
         "severity": "medium",
-        "section": "supply",
-        "title": "전북도, 양파 가격 하락 대응 수급 안정 대책 추진",
-        "reason": "산지 수급 대응이지만 정책 섹션과 더 맞고 중복도 유발.",
-        "suggested_action": "supply는 현장 가격·출하 피해 중심 기사 우선."
+        "section": "dist",
+        "title": "홈플러스 미수금에 산지 돈줄 막혀…정부 300억원 긴급 지원",
+        "reason": "유통 이슈이긴 하나 정책 섹션과 주제가 사실상 겹친다.",
+        "suggested_action": "유통면에는 시장 운영·물류·출하 채널 기사 우선 배치."
       },
       {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "supply",
-        "title": "“기후변화 대응” 농산물 생산· 수급 안정 에 힘 합친다",
-        "reason": "MOU성 기사로 즉시성·시장 파급이 약함.",
-        "suggested_action": "가격 급등락·작황 신호 기사로 대체."
-      },
-      {
-        "type": "duplication",
-        "severity": "medium",
-        "section": "supply",
-        "title": "aT-농과원, CA 기술 공조… 여름 배추 수급 잡는다",
-        "reason": "윗기사와 사실상 같은 협약/협력 내용 반복.",
-        "suggested_action": "둘 중 하나만 남기고 다른 품목 수급 기사 채택."
-      },
-      {
-        "type": "weak_tail",
+        "type": "weak_core",
         "severity": "medium",
         "section": "dist",
-        "title": "군위군 농산물 공판장 개장…여름 '명품 자두' 첫 경매 개시",
-        "reason": "지역 개장행사 성격이 강해 전국 유통 의미가 약함.",
-        "suggested_action": "물류비·도매시장 운영·수출 차질 기사 우선."
+        "title": "가락 시장 41년, 'AX 도매시장 ' 정조준",
+        "reason": "기념식 성격이 강해 당일 운영 충격·거래 변화 기사보다 약하다.",
+        "suggested_action": "강서시장 해킹 마비 같은 운영 리스크 기사를 우선 코어 검토."
       },
       {
-        "type": "weak_fit",
+        "type": "promotional_filler",
         "severity": "medium",
-        "section": "dist",
-        "title": "[기획] 농촌의 '직거래 혁명'…개인 생산자도 세계 소비자와 직접 만나...",
-        "reason": "추상적 기획물로 당일 유통 운영 이슈성이 낮음.",
-        "suggested_action": "구체적 거래·물류 변화 기사로 교체."
+        "section": "pest",
+        "title": "창원 동읍농협, 단감농가에 탄저병 약제 지원",
+        "reason": "병해충 현황보다 기관 지원 행사 성격이 강하다.",
+        "suggested_action": "보은 화상병 신고 기피 의혹 등 확산·방역 허점 기사로 대체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "medium",
+        "section": "policy",
+        "title": "농식품부 , 여름철 농축산물 수급 점검 ...\"할당관세·수입 확대로 가격 안...",
+        "reason": "더 강한 동일 사안 원문 후보인 뉴시스 축산물 가격 대응 기사가 있었다.",
+        "suggested_action": "대표성 높은 원문·수치가 더 풍부한 기사 우선 선택."
       },
       {
         "type": "missed_opportunity",
         "severity": "medium",
         "section": "dist",
-        "title": "“팰릿 포장용 랩값 올라 부담되시죠”…한국청과, 산지출하조직 지원 나서",
-        "reason": "원시 후보 중 더 강한 현장 유통 기사였는데 미선정.",
-        "suggested_action": "dist 핵심 또는 꼬리 기사로 반영."
+        "title": "가락 시장 41년, 'AX 도매시장 ' 정조준",
+        "reason": "원시 후보에 강서시장 도매법인 해킹 마비가 더 시급하고 운영성도 높았다.",
+        "suggested_action": "기념성 기사보다 실제 시장 장애·복구 기사 비중 확대."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "editorial_section_fit",
+      "editorial_noise_filter",
       "editorial_duplicate_topic",
+      "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.4,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -200,7 +184,7 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -213,7 +197,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 82.0,
+    "current_editorial_score": 86.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -230,7 +214,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 200,
+          "raw_candidates": 216,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -242,7 +226,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 117,
+          "raw_candidates": 103,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -254,7 +238,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 52,
+          "raw_candidates": 64,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -266,7 +250,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 35,
+          "raw_candidates": 36,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -287,11 +271,19 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "article_selection",
+      "noise_control",
       "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -303,6 +295,12 @@
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",
