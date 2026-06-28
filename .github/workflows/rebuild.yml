@@ -169,7 +169,7 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5.4
+          OPENAI_MODEL: gpt-5.5
           OPENAI_REASONING_EFFORT: low
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
@@ -345,7 +345,7 @@ jobs:
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
-            echo "- Article generation model: gpt-5.4"
+            echo "- Article generation model: gpt-5.5"
             echo "- Editorial evaluation model: gpt-5.5"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
