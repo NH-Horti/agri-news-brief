@@ -346,7 +346,6 @@ def _apply_operational_shadow_calibration(result: dict[str, Any], operational_re
     blocking_types = {
         "false_positive",
         "off_topic",
-        "wrong_section",
         "duplicate_url",
         "hard_duplicate",
         "factual_error",

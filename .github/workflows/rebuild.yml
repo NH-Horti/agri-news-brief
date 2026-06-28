@@ -27,6 +27,16 @@ on:
         required: false
         default: 'false'
         type: string
+      use_saved_snapshot:
+        description: 'Replay docs/replay/<date>.snapshot.json instead of searching again (true/false)'
+        required: false
+        default: 'false'
+        type: string
+      quality_fail_under:
+        description: 'Fail the evaluation when the final score is below this value'
+        required: false
+        default: '55'
+        type: string
 
 permissions:
   contents: write
@@ -67,6 +77,8 @@ jobs:
           INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
           INPUT_MAX_PER_SECTION: ${{ inputs.max_per_section }}
           INPUT_DEBUG: ${{ inputs.debug }}
+          INPUT_USE_SAVED_SNAPSHOT: ${{ inputs.use_saved_snapshot }}
+          INPUT_QUALITY_FAIL_UNDER: ${{ inputs.quality_fail_under }}
         run: |
           set -euo pipefail
 
@@ -75,6 +87,8 @@ jobs:
           send_kakao="$INPUT_SEND_KAKAO"
           max_per_section="$INPUT_MAX_PER_SECTION"
           debug_input="$INPUT_DEBUG"
+          use_saved_snapshot="$INPUT_USE_SAVED_SNAPSHOT"
+          quality_fail_under="$INPUT_QUALITY_FAIL_UNDER"
 
           if [ -z "$ux_patch_days" ]; then
             ux_patch_days='0'
@@ -94,11 +108,30 @@ jobs:
             debug_enabled='0'
           fi
 
+          if [ "$use_saved_snapshot" = 'true' ]; then
+            maintenance_task='replay_date'
+            replay_snapshot_path=".agri_replay/${report_date}.snapshot.json"
+            replay_write_snapshot='false'
+          else
+            maintenance_task='rebuild_date'
+            replay_snapshot_path=''
+            replay_write_snapshot='true'
+          fi
+
+          if [ -z "$quality_fail_under" ]; then
+            quality_fail_under='55'
+          fi
+
           echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
           echo "ux_patch_days=$ux_patch_days" >> "$GITHUB_OUTPUT"
           echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
           echo "max_per_section=$max_per_section" >> "$GITHUB_OUTPUT"
           echo "debug_enabled=$debug_enabled" >> "$GITHUB_OUTPUT"
+          echo "use_saved_snapshot=$use_saved_snapshot" >> "$GITHUB_OUTPUT"
+          echo "maintenance_task=$maintenance_task" >> "$GITHUB_OUTPUT"
+          echo "replay_snapshot_path=$replay_snapshot_path" >> "$GITHUB_OUTPUT"
+          echo "replay_write_snapshot=$replay_write_snapshot" >> "$GITHUB_OUTPUT"
+          echo "quality_fail_under=$quality_fail_under" >> "$GITHUB_OUTPUT"
 
       - name: Install deps
         run: |
@@ -111,6 +144,20 @@ jobs:
           SELECTION_FEEDBACK_PATH: ''
         run: |
           python scripts/run_smoke_checks.py
+
+      - name: Prepare saved replay snapshot
+        if: steps.vars.outputs.use_saved_snapshot == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path="docs/replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          target_path="${{ steps.vars.outputs.replay_snapshot_path }}"
+          if [ ! -f "$source_path" ]; then
+            echo "Saved replay snapshot not found: $source_path"
+            exit 1
+          fi
+          mkdir -p "$(dirname "$target_path")"
+          cp "$source_path" "$target_path"
 
       - name: Rebuild
         id: rebuild
@@ -141,10 +188,12 @@ jobs:
           PAGES_FILE_PATH: docs/index.html
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
-          MAINTENANCE_TASK: rebuild_date
+          MAINTENANCE_TASK: ${{ steps.vars.outputs.maintenance_task }}
           FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
-          REPLAY_WRITE_SNAPSHOT: 'true'
+          REPLAY_SNAPSHOT_PATH: ${{ steps.vars.outputs.replay_snapshot_path }}
+          REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
+          REPLAY_ALLOW_OPENAI: 'false'
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 
@@ -217,7 +266,7 @@ jobs:
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
             --editorial-eval \
             --editorial-model "$EDITORIAL_OPENAI_MODEL" \
-            --fail-under 55
+            --fail-under "${{ steps.vars.outputs.quality_fail_under }}"
 
       - name: Resolve Kakao status
         if: always()
