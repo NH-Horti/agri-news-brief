@@ -123,25 +123,22 @@
     },
     {
       "report_date": "2026-06-23",
-      "generated_at_kst": "2026-06-23T06:19:03+09:00",
-      "overall_score": 81.0,
-      "operational_score": 98.2,
-      "reader_quality_score": 86.0,
-      "reader_quality_gate_status": "capped",
-      "reader_quality_gate_reasons": [
-        "commodity_pool_false_link",
-        "commodity_pool_false_link_severe"
-      ],
-      "editorial_score": 81.0,
-      "editorial_status": "needs_major_iteration",
-      "quality_gate_status": "needs_major_iteration",
-      "quality_gate_reason": "editorial_blocking_issue",
-      "status": "warn",
-      "section_alignment": 100.0,
-      "core_quality": 95.36,
+      "generated_at_kst": "2026-06-28T18:06:07+09:00",
+      "overall_score": 95.69,
+      "operational_score": 97.17,
+      "reader_quality_score": 96.99,
+      "reader_quality_gate_status": "clear",
+      "reader_quality_gate_reasons": [],
+      "editorial_score": 82.0,
+      "editorial_status": "needs_iteration",
+      "quality_gate_status": "needs_iteration",
+      "quality_gate_reason": "editorial_below_target_bounded_penalty",
+      "status": "pass",
+      "section_alignment": 97.19,
+      "core_quality": 85.39,
       "commodity_board_quality": 95.57,
       "briefing_total": 20,
-      "commodity_total": 52,
+      "commodity_total": 50,
       "commodity_active_today_total": 17,
       "commodity_active_today_unlinked_total": 5,
       "commodity_managed_unlinked_total": 21,
@@ -150,18 +147,15 @@
       "briefing_title_unique_rate": 1.0,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 2.58,
+      "reader_quality_penalty": 0.18,
       "editorial_quality_penalty": 0.1,
       "commodity_primary_false_link_rate": 0.0,
-      "commodity_pool_false_link_rate": 0.2,
+      "commodity_pool_false_link_rate": 0.0,
       "policy_wrong_section_rate": 0.0,
       "promotional_filler_rate": 0.05,
       "promotional_core_rate": 0.0,
       "pest_theme_duplicate_rate": 0.0,
-      "guardrail_driver_tags": [
-        "commodity_board",
-        "commodity_board_severe"
-      ]
+      "guardrail_driver_tags": []
     },
     {
       "report_date": "2026-06-22",
@@ -1332,5 +1326,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-06-28T18:01:53+09:00"
+  "updated_at_kst": "2026-06-28T18:06:07+09:00"
 }
