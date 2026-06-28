@@ -20,7 +20,7 @@ from report_eval import (
 
 
 EDITORIAL_RUBRIC_VERSION = 2
-DEFAULT_EDITORIAL_MODEL = "gpt-5.4"
+DEFAULT_EDITORIAL_MODEL = "gpt-5.5"
 DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
 SECTION_COUNT_TARGET_SCORE = 95.0
@@ -570,7 +570,6 @@ def evaluate_editorial_quality(
     resolved_model = (
         model
         or os.getenv("EDITORIAL_OPENAI_MODEL")
-        or os.getenv("OPENAI_MODEL")
         or DEFAULT_EDITORIAL_MODEL
     )
     resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
@@ -639,12 +638,16 @@ def evaluate_editorial_quality(
         response_payload = response.json()
         raw_text = _extract_response_text(response_payload)
         parsed = extract_json_object(raw_text)
-        return _normalize_editorial_response(
+        result = _normalize_editorial_response(
             parsed,
             model=resolved_model,
             raw_text=raw_text,
             operational_result=operational_result,
         )
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        if model_snapshot:
+            result["model_snapshot"] = model_snapshot
+        return result
     except Exception as exc:
         return {
             "status": "error",

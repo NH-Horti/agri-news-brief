@@ -243,7 +243,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_OPENAI_MODEL: gpt-5.4
+          EDITORIAL_OPENAI_MODEL: gpt-5.5
         run: |
           set -euo pipefail
 
@@ -345,7 +345,8 @@ jobs:
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
-            echo "- OpenAI model: gpt-5.4"
+            echo "- Article generation model: gpt-5.4"
+            echo "- Editorial evaluation model: gpt-5.5"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"

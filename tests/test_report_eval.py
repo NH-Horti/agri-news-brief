@@ -1036,6 +1036,8 @@ class ReportEvalTests(unittest.TestCase):
         result["editorial_score"] = 91.0
         result["editorial"] = {
             "status": "success",
+            "model": "gpt-5.5",
+            "model_snapshot": "gpt-5.5-2026-04-23",
             "score": 91.0,
             "target_score": 95.0,
             "target_status": "needs_minor_iteration",
@@ -1061,6 +1063,7 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn(self.report_date, markdown)
         self.assertIn("section_fit=", markdown)
         self.assertIn("Editorial Shadow Eval", markdown)
+        self.assertIn("Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)", markdown)
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
