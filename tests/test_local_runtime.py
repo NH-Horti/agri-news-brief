@@ -4232,8 +4232,8 @@ class LocalRuntimeTests(TestCase):
         )
         better = self._make_article(
             section="dist",
-            title="“농산물 판매, 디지털 전환해야”…전남농협, 농협몰 설명회 열어",
-            description="농협몰 활용과 온라인 유통망 확대를 통해 농산물 판매의 디지털 전환을 추진한다.",
+            title="농산물 도매시장법인 해킹 공격…농민 출하정보 보안 비상",
+            description="도매시장법인이 해킹 공격을 받아 출하정보 보안과 시장 운영 대응을 강화한다.",
             link="https://example.com/dist-nonghyupmall",
         )
         better_two = self._make_article(
@@ -4296,3 +4296,210 @@ class LocalRuntimeTests(TestCase):
         links = {article.link for article in final_by_section["dist"]}
         self.assertNotIn(weak.link, links)
         self.assertIn(blueberry.link, links)
+
+    def test_commodity_pool_guard_matches_published_title_link_contract(self) -> None:
+        event = self._make_article(
+            section="supply",
+            title="파프리카 생산자자조회, 27~30일 15만 개 할인 행사",
+            description="파프리카 할인 행사를 진행한다.",
+            link="https://example.com/paprika-discount",
+            topic="파프리카",
+        )
+        safe = self._make_article(
+            section="supply",
+            title="파프리카 가격 하락…출하 물량 조절 착수",
+            description="파프리카 가격과 출하 물량을 조절한다.",
+            link="https://example.com/paprika-market",
+            topic="파프리카",
+        )
+        flower = self._make_article(
+            section="supply",
+            title="충남 대표 백합 4계통 선발…수입 구근 대체",
+            description="화훼 산업의 백합 품종을 선발했다.",
+            link="https://example.com/lily",
+            topic="화훼",
+        )
+        item = {"key": "paprika", "label": "파프리카"}
+        safe_metrics = {
+            "board_eligible": True,
+            "title_primary_hits": 1,
+            "title_context_hits": 0,
+            "pattern_hits": 0,
+            "representative_rank": 3,
+            "selection_fit_score": 1.8,
+            "issue_bucket": "commodity_issue",
+            "market_response": True,
+        }
+
+        self.assertFalse(main._commodity_board_article_is_safe_pool_candidate(item, event, safe_metrics))
+        self.assertTrue(main._commodity_board_article_is_safe_pool_candidate(item, safe, safe_metrics))
+        self.assertFalse(
+            main._commodity_board_pool_title_has_eval_item_focus(
+                {"key": "flowers", "label": "화훼"},
+                flower.title,
+            )
+        )
+
+    def test_publish_quality_guards_flag_weekly_promotional_and_opinion_tails(self) -> None:
+        festival = self._make_article(
+            section="supply",
+            title="광주시 퇴촌 토마토 거리축제 33만명 방문 속 마무리",
+            description="지역 축제 방문객과 토마토 홍보 성과를 소개한다.",
+            link="https://example.com/tomato-festival",
+        )
+        first_ship = self._make_article(
+            section="supply",
+            title="예천 복숭아 본격 출하…전국 소비자 식탁 찾는다",
+            description="지역 복숭아의 첫 출하와 홍보 계획을 알렸다.",
+            link="https://example.com/peach-first-ship",
+        )
+        column = self._make_article(
+            section="policy",
+            title="[편집자 칼럼] 저출산의 부메랑이 농식품 시장을 강타한다",
+            description="저출산과 농식품 시장을 다룬 칼럼이다.",
+            link="https://example.com/policy-column",
+        )
+        demand = self._make_article(
+            section="policy",
+            title="주요 농산물 공공수급제 실시, 반값 농자재를 보장하라",
+            description="농민단체가 기자회견에서 정책 도입을 촉구했다.",
+            link="https://example.com/policy-demand",
+        )
+        tour = self._make_article(
+            section="dist",
+            title="파라과이 농업 관계자들, 스마트 APC 견학",
+            description="방문단이 산지유통시설을 둘러보고 놀랍다는 반응을 보였다.",
+            link="https://example.com/apc-tour",
+        )
+
+        self.assertTrue(main._is_supply_editorial_weak_tail(festival))
+        self.assertTrue(main._is_supply_editorial_weak_tail(first_ship))
+        self.assertTrue(main._is_policy_editorial_weak_tail(column))
+        self.assertTrue(main._is_policy_editorial_weak_tail(demand))
+        self.assertTrue(main._is_dist_editorial_promo_tail(tour))
+
+    def test_dist_editorial_gap_refill_uses_operational_market_candidate(self) -> None:
+        existing = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=description,
+                link=f"https://example.com/dist-existing-{idx}",
+            )
+            for idx, (title, description) in enumerate(
+                (
+                    ("가락시장 배추 경매시간 조정", "도매시장 경매시간을 조정한다."),
+                    ("합천 양파 톤백 수매 시작", "양파 톤백 수매와 선별을 시작한다."),
+                    ("국산 고춧가루 미국 수출 선적", "고춧가루 수출 선적 물량을 확대한다."),
+                    ("산지 농산물 저온유통 가동", "산지 저온유통 시설을 가동한다."),
+                )
+            )
+        ]
+        candidate = self._make_article(
+            section="dist",
+            title="매년 수십억 적자 인천 공영도매시장, 공사 전환 추진",
+            description="인천 공영 농산물도매시장의 운영 구조와 정산 체계를 공사 전환으로 개선한다.",
+            link="https://example.com/incheon-market-ops",
+        )
+        final_by_section = {"dist": existing, "supply": [], "policy": [], "pest": []}
+
+        self.assertEqual(
+            main._refill_dist_editorial_ops_gap_from_raw(
+                final_by_section,
+                {"dist": [candidate], "supply": [], "policy": []},
+                target=5,
+            ),
+            1,
+        )
+        self.assertEqual(len(final_by_section["dist"]), 5)
+        self.assertIn(candidate.link, {article.link for article in final_by_section["dist"]})
+
+    def test_supply_wrong_section_noise_uses_market_duplicate_as_last_resort(self) -> None:
+        existing = self._make_article(
+            section="supply",
+            title="제주 월동채소 생산 늘었지만 가격 '뚝'",
+            description="월동채소 생산량 증가와 가격 하락을 다룬다.",
+            link="https://example.com/winter-veg-existing",
+        )
+        wrong = self._make_article(
+            section="supply",
+            title="삼계탕 3만원에 냉면도 1만6000원…4인가족 외식비 부담",
+            description="복날 외식 메뉴 가격과 가족 외식비 부담을 다룬다.",
+            link="https://example.com/restaurant-price",
+            topic="외식",
+        )
+        fallback = self._make_article(
+            section="supply",
+            title="월동채소 가격 반토막…생산 증가·소비 부진 여파",
+            description="제주 월동채소 생산량 증가와 소비 부진으로 가격이 하락했다.",
+            link="https://example.com/winter-veg-fallback",
+            topic="배추",
+        )
+        fallback.selection_fit_score = 2.0
+        final_by_section = {"supply": [existing, wrong], "policy": [], "dist": [], "pest": []}
+
+        self.assertTrue(main._is_supply_publish_wrong_section_noise(wrong))
+        self.assertEqual(
+            main._replace_supply_editorial_weak_tail_from_raw(
+                final_by_section,
+                {"supply": [fallback], "policy": [], "dist": []},
+            ),
+            1,
+        )
+        self.assertNotIn(wrong.link, {article.link for article in final_by_section["supply"]})
+        self.assertIn(fallback.link, {article.link for article in final_by_section["supply"]})
+
+    def test_publish_editorial_duplicate_story_catches_weekly_issue_variants(self) -> None:
+        winter_one = self._make_article(
+            section="supply",
+            title="제주 월동채소 생산 늘었지만 가격 뚝",
+            description="생산량 증가와 가격 약세를 다룬다.",
+            link="https://example.com/winter-one",
+        )
+        winter_two = self._make_article(
+            section="supply",
+            title="월동채소 가격 반토막…소비 부진 여파",
+            description="생산 증가와 소비 부진을 다룬다.",
+            link="https://example.com/winter-two",
+        )
+        trade_one = self._make_article(
+            section="dist",
+            title="함양군, 양파 출하철 외상거래 피해 주의",
+            description="표준계약서 작성을 당부했다.",
+            link="https://example.com/trade-one",
+        )
+        trade_two = self._make_article(
+            section="dist",
+            title="양파 외상거래 농업인 피해예방…표준계약서 작성",
+            description="구두계약 피해 예방을 안내했다.",
+            link="https://example.com/trade-two",
+        )
+
+        self.assertTrue(main._publish_editorial_duplicate_story("supply", winter_one, winter_two))
+        self.assertTrue(main._publish_editorial_duplicate_story("dist", trade_one, trade_two))
+
+    def test_publish_editorial_guard_separates_events_from_market_operations(self) -> None:
+        event = self._make_article(
+            section="dist",
+            title="농산물 생산자와 구매사 한자리에 직거래 판로 넓힌다",
+            description="구매상담회를 열어 신규 판로를 소개했다.",
+            link="https://example.com/buyer-event",
+        )
+        automation = self._make_article(
+            section="dist",
+            title="유온로보틱스, APC 자동화 사업 수주",
+            description="산지유통센터 선별 공정을 자동화한다.",
+            link="https://example.com/apc-automation",
+        )
+        tariff = self._make_article(
+            section="policy",
+            title="국산 과일 한창때 할당관세 재연장 논란",
+            description="정부의 과일 할당관세 연장 여부를 다룬다.",
+            link="https://example.com/fruit-tariff",
+        )
+
+        self.assertTrue(main._is_publish_dist_editorial_weak(event))
+        self.assertFalse(main._is_publish_dist_editorial_weak(automation))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", automation))
+        self.assertFalse(main._is_publish_policy_editorial_weak(tariff))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", tariff))

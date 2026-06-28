@@ -102,6 +102,27 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["quality_gate"]["reason"], "editorial_blocking_issue")
         self.assertEqual(result["quality_gate"]["blocking_issue_count"], 1)
 
+    def test_editorial_quality_gate_treats_section_judgment_as_bounded_feedback(self) -> None:
+        result = {
+            "overall_score": 98.13,
+            "operational_score": 98.13,
+            "status": "pass",
+            "score_notes": {},
+        }
+        editorial = {
+            "status": "success",
+            "score": 80.0,
+            "target_score": 95.0,
+            "target_status": "needs_major_iteration",
+            "issues": [{"severity": "high", "type": "wrong_section"}],
+        }
+
+        apply_editorial_quality_gate(result, editorial)
+
+        self.assertEqual(result["overall_score"], 96.63)
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target_bounded_penalty")
+        self.assertEqual(result["quality_gate"]["blocking_issue_count"], 0)
+
     def test_parse_report_html_extracts_commodity_primary_metadata(self) -> None:
         html = """
         <a

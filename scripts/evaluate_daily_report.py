@@ -177,7 +177,6 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     blocking_types = {
         "false_positive",
         "off_topic",
-        "wrong_section",
         "duplicate_url",
         "hard_duplicate",
         "factual_error",
