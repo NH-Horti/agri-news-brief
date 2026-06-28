@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
 TEST_TARGETS = [
     "tests.test_regressions",
     "tests.test_report_eval",
+    "tests.test_editorial_eval",
     "tests.test_local_runtime",
     "tests.test_classifier_behavior.TestClassifierBehavior.test_dist_market_ops_context_matches_wholesale_logistics_automation_story",
     "tests.test_classifier_behavior.TestClassifierBehavior.test_dist_consumer_tail_context_keeps_wholesale_cost_support_story",

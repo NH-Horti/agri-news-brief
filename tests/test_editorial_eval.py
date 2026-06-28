@@ -1,6 +1,8 @@
 import json
+import os
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import editorial_eval
 import report_eval
@@ -37,6 +39,7 @@ class _FakeSession:
         )
         return _FakeResponse(
             {
+                "model": "test-model-snapshot",
                 "output_text": json_module_dumps(
                     {
                         "score": 91,
@@ -131,10 +134,52 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(result["score"], 91)
         self.assertEqual(result["scores"]["core_pick_quality"], 89)
         self.assertEqual(result["issues"][0]["type"], "missed_better_candidate")
+        self.assertEqual(result["model"], "test-model")
+        self.assertEqual(result["model_snapshot"], "test-model-snapshot")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
         self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
+
+    def test_default_model_is_gpt_5_5_and_does_not_follow_generation_model(self):
+        session = _FakeSession()
+        with patch.dict(os.environ, {"OPENAI_MODEL": "gpt-5.4"}, clear=True):
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.5")
+        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.5")
+        self.assertEqual(result["model"], "gpt-5.5")
+
+    def test_editorial_model_environment_override_has_precedence(self):
+        session = _FakeSession()
+        with patch.dict(
+            os.environ,
+            {
+                "EDITORIAL_OPENAI_MODEL": "editorial-override",
+                "OPENAI_MODEL": "gpt-5.4",
+            },
+            clear=True,
+        ):
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(session.requests[0]["json"]["model"], "editorial-override")
+        self.assertEqual(result["model"], "editorial-override")
 
     def test_section_count_gate_caps_editorial_target_when_underfilled(self):
         class HighScoreSession(_FakeSession):

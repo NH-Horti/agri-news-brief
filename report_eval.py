@@ -2562,6 +2562,12 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
     editorial = result.get("editorial", {})
     editorial_block = ""
     if isinstance(editorial, dict) and editorial:
+        editorial_model = str(editorial.get("model") or "unknown")
+        editorial_model_snapshot = str(editorial.get("model_snapshot") or "").strip()
+        editorial_model_line = f"- Model: {editorial_model}"
+        if editorial_model_snapshot:
+            editorial_model_line += f" (resolved {editorial_model_snapshot})"
+        editorial_model_line += "\n"
         if editorial.get("status") == "success":
             editorial_scores = editorial.get("scores", {})
             editorial_issues = editorial.get("issues", [])
@@ -2584,6 +2590,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: **{float(editorial.get('score', 0.0) or 0.0):.2f}** "
                 f"(target {float(editorial.get('target_score', 95.0) or 95.0):.0f}, {editorial.get('target_status', 'unknown')})\n"
+                f"{editorial_model_line}"
                 f"- Section count gate: {float(editorial.get('section_count_score', 100.0) or 100.0):.1f} "
                 f"({editorial.get('section_count_status', 'unknown')})\n"
                 f"{calibration_line}"
@@ -2600,6 +2607,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
             editorial_block = (
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: {editorial.get('status', 'unknown')} ({editorial.get('reason', 'no reason provided')})\n"
+                f"{editorial_model_line}"
             )
 
     return (
