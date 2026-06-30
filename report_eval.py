@@ -290,6 +290,11 @@ _KNOWN_DUPLICATE_URL_FRAGMENTS = (
 )
 _OFF_SCOPE_FOREIGN_TERMS = ("베트남", "중국", "태국", "미국", "일본", "해외", "현지")
 _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS = ("두리안", "망고", "바나나", "아보카도", "파인애플")
+_OFF_SCOPE_MANAGED_MARKET_TERMS = (
+    "무", "배추", "감자", "당근", "양배추", "양파", "마늘", "건고추", "대파",
+    "토마토", "오이", "풋고추", "애호박", "참외", "상추", "가지", "파프리카",
+    "사과", "배", "단감", "포도", "감귤", "멜론",
+)
 _DUPLICATE_EVENT_TERMS = ("가격", "안정", "기금", "지원", "농가")
 
 
@@ -497,6 +502,48 @@ def _editorial_dist_hard_logistics_metric(text: str) -> bool:
     return hard_hits >= 2 or bool(metric_hit)
 
 
+def _editorial_policy_execution_context(article: SurfaceArticle, text: str) -> bool:
+    if article.section != "policy":
+        return False
+    title_l = _normalize_spaces(article.title or "").lower()
+    text_l = _normalize_spaces(text).lower()
+    quantified_stock_release = bool(
+        _has_any(title_l, ("정부비축", "정부 비축"))
+        and _has_any(title_l, ("콩", "농산물"))
+        and re.search(r"\d[\d,]*\s*(?:만\s*)?(?:톤|t)\b", title_l)
+        and _has_any(text_l, ("방출", "공급", "시장에 풀", "가격 안정", "수급 안정"))
+    )
+    quantified_price_package = bool(
+        _has_any(title_l, ("물가 안정", "가격 안정", "수급 안정"))
+        and re.search(r"\d[\d,.]*\s*(?:조|억)\s*원", title_l)
+        and _has_any(text_l, ("정부", "기재부", "농식품부", "대책", "투입", "시행"))
+    )
+    import_management_execution = bool(
+        _has_any(title_l, ("수입 농산물 관리", "수입농산물 관리"))
+        and _has_any(text_l, ("개선방안", "효율화", "협의", "생산자", "소비자", "민·관", "민관"))
+    )
+    return quantified_stock_release or quantified_price_package or import_management_execution
+
+
+def _editorial_dist_channel_execution_context(article: SurfaceArticle, text: str) -> bool:
+    if article.section != "dist":
+        return False
+    title_l = _normalize_spaces(article.title or "").lower()
+    text_l = _normalize_spaces(text).lower()
+    direct_platform = bool(
+        _has_any(title_l, ("직거래 플랫폼", "온라인 직거래", "직거래 장터"))
+        and _has_any(title_l, ("농산물", "농특산물", "농식품"))
+        and _has_any(text_l, ("공식 오픈", "개장", "문 연다", "시범 운영", "시범운영"))
+        and _has_any(text_l, ("판매 수수료", "수수료 부담", "마케팅 비용", "판로 확대"))
+    )
+    measured_export_growth = bool(
+        "수출" in title_l
+        and _has_any(text_l, ("수출량", "판매량", "수출액"))
+        and _has_any(text_l, ("증가", "늘", "확대", "성장"))
+    )
+    return direct_platform or measured_export_growth
+
+
 def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section != "policy":
         return ""
@@ -514,6 +561,10 @@ def _editorial_promotional_filler_reason(article: SurfaceArticle, snapshot_body:
     text = _editorial_text(article, snapshot_body)
     title_l = str(article.title or "").lower()
     if article.section == "dist" and _editorial_dist_hard_logistics_metric(text):
+        return ""
+    if _editorial_policy_execution_context(article, text):
+        return ""
+    if _editorial_dist_channel_execution_context(article, text):
         return ""
     if any(term in text for term in ("홈쇼핑", "라이브커머스", "쇼호스트", "현장투어")):
         return "promotional_or_event_filler"
@@ -533,6 +584,8 @@ def _editorial_dist_weak_ops_reason(article: SurfaceArticle, snapshot_body: str)
         return ""
     text = _editorial_text(article, snapshot_body)
     if _editorial_dist_hard_logistics_metric(text):
+        return ""
+    if _editorial_dist_channel_execution_context(article, text):
         return ""
     weak_hits = _term_hits(text, tuple(term.lower() for term in _EDITORIAL_DIST_WEAK_TERMS))
     if weak_hits <= 0:
@@ -667,6 +720,52 @@ def _reader_hard_issue_reason(article: SurfaceArticle, snapshot_body: str) -> st
     return ""
 
 
+def _is_authoritative_domestic_multi_price_bulletin(
+    article: SurfaceArticle,
+    snapshot_body: str,
+) -> bool:
+    title = _normalize_spaces(str(article.title or "")).lower()
+    text = _normalize_spaces(f"{article.title} {article.summary} {snapshot_body}").lower()
+    if not title or not text:
+        return False
+    official_source = (
+        "한국농수산식품유통공사" in text
+        or "농수산식품유통공사" in text
+        or re.search(r"(?:^|[\s(])aT(?:[\s)]|$)", f" {article.title} {article.summary} {snapshot_body} ") is not None
+    )
+    broad_price = any(term in title for term in ("농산물값", "농산물 값", "농산물 가격"))
+    managed_count = sum(1 for term in _OFF_SCOPE_MANAGED_MARKET_TERMS if term in text)
+    quantified_moves = len(re.findall(r"\d+(?:\.\d+)?\s*%", text))
+    both_directions = (
+        any(term in text for term in ("하락", "내렸", "낮아", "↓"))
+        and any(term in text for term in ("상승", "올랐", "오름세", "↑"))
+    )
+    supply_evidence = _term_hits(
+        text,
+        ("출하", "반입량", "생산량", "재배 면적", "재배면적", "전주 대비"),
+    )
+    return bool(
+        official_source
+        and broad_price
+        and managed_count >= 3
+        and quantified_moves >= 3
+        and both_directions
+        and supply_evidence >= 3
+    )
+
+
+def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) -> bool:
+    if article.section != "pest":
+        return False
+    title = _normalize_spaces(str(article.title or "")).lower()
+    text = _normalize_spaces(f"{article.title} {article.summary} {snapshot_body}").lower()
+    named_outbreak = any(term in title for term in ("풀무치", "메뚜기"))
+    outbreak_signal = any(term in text for term in ("집단 발생", "떼", "습격", "비상", "확산"))
+    urgent_control = any(term in text for term in ("긴급 방제", "방제에 나", "확산 차단"))
+    crop_exposure = any(term in text for term in ("농작물", "재배지", "벼", "조사료", "간척지"))
+    return bool(named_outbreak and outbreak_signal and urgent_control and crop_exposure)
+
+
 def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section not in {"supply", "policy", "dist"}:
         return ""
@@ -679,6 +778,8 @@ def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> st
     if not any(term in text for term in _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS):
         return ""
     if not any(term in text for term in _OFF_SCOPE_FOREIGN_TERMS):
+        return ""
+    if _is_authoritative_domestic_multi_price_bulletin(article, snapshot_body):
         return ""
     return "foreign_unmanaged_commodity"
 
@@ -1239,6 +1340,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "href": article.href,
                 "section": article.section,
                 "is_core": bool(article.is_core),
+                "priority_core_override": _is_priority_field_risk_core(article, _desc_text),
                 "fit_score": fit_score,
                 "stage": stage,
                 "score_percentile": _score_percentile(match, section_raw_pools.get(article.section, [])),
@@ -1365,7 +1467,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
 
     core_match_records = [record for record in briefing_match_records if bool(record.get("is_core"))]
     core_fit_avg = _average([float(record.get("fit_score") or 0.0) for record in core_match_records])
-    core_rank_percentile_avg = _average([float(record.get("score_percentile") or 0.0) for record in core_match_records], default=0.5)
+    core_rank_percentile_avg = _average(
+        [
+            1.0
+            if bool(record.get("priority_core_override"))
+            else float(record.get("score_percentile") or 0.0)
+            for record in core_match_records
+        ],
+        default=0.5,
+    )
     core_stage_core_rate = _rate(
         sum(1 for record in core_match_records if _stage_has_core_signal(str(record.get("stage") or ""))),
         len(core_match_records),
@@ -1375,9 +1485,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         sum(
             1
             for record in core_match_records
-            if float(record.get("fit_score") or 0.0) < 0.95
-            or float(record.get("score_percentile") or 0.0) < 0.6
-            or _stage_is_weak(str(record.get("stage") or ""))
+            if not bool(record.get("priority_core_override"))
+            and (
+                float(record.get("fit_score") or 0.0) < 0.95
+                or float(record.get("score_percentile") or 0.0) < 0.6
+                or _stage_is_weak(str(record.get("stage") or ""))
+            )
         ),
         len(core_match_records),
         default=0.0,
