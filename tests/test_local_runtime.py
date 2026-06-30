@@ -6532,3 +6532,185 @@ class LocalRuntimeTests(TestCase):
 
         self.assertGreaterEqual(main._dist_title_ops_hits(article), 2)
         self.assertTrue(main._is_publish_editorial_candidate("dist", article))
+
+    def test_daily_editorial_floor_replaces_sub_90_failure_patterns_and_keeps_five(self) -> None:
+        venture = self._make_article(
+            section="policy",
+            title="벤처투자 표준계약서 개정…RCPS 대신 CPS·사전동의권 손질",
+            description="중기부가 스타트업 벤처투자 계약문화를 개선한다.",
+            link="https://example.com/non-agri-venture-policy",
+        )
+        venture.is_core = True
+        import_one = self._make_article(
+            section="policy",
+            title="'수입농산물 관리' 민관 합동 거버넌스 출범",
+            description="정부가 수입농산물 관리 민관협의체 발족식과 제1차 전체회의를 열었다.",
+            link="https://example.com/import-council-one",
+        )
+        import_two = self._make_article(
+            section="policy",
+            title="민·관이 수입농산물 관리에 머리를 맞대다",
+            description="수입 농산물 관리 민관협의체가 출범해 검역과 통관을 논의한다.",
+            link="https://example.com/import-council-two",
+        )
+        policy_fixed = [
+            self._make_article(
+                section="policy",
+                title="민생물가 안정 대응에 1조원 재정 투입",
+                description="정부가 농산물 물가 안정 대책에 1조원을 투입한다.",
+                link="https://example.com/policy-fixed-package",
+            ),
+            self._make_article(
+                section="policy",
+                title="시설원예 국비지원 사업자 모집",
+                description="농식품부가 시설원예 국비지원 사업을 시행한다.",
+                link="https://example.com/policy-fixed-horti",
+            ),
+        ]
+        production_response = self._make_article(
+            section="policy",
+            title="한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”",
+            description="한농연은 할당관세와 TRQ 수입 확대 대신 국내 생산 기반을 강화해야 한다고 밝혔다.",
+            link="https://example.com/policy-production-response",
+        )
+        potato_tariff = self._make_article(
+            section="policy",
+            title="계절관세 철폐…미국산 감자 공세에 농가 ‘비상’",
+            description="FTA 무관세 전환으로 국산 감자 생산기반과 농가 피해가 우려된다.",
+            link="https://example.com/policy-potato-tariff",
+        )
+        regulation_update = self._make_article(
+            section="policy",
+            title="농지 화장실·주차공간 허용…공공비축미 중간정산금 6만원 [하반기 달라지는 것]",
+            description="농업인은 농지전용허가 없이 편의시설을 설치하고 공공비축미 정산금을 지원받는다.",
+            link="https://example.com/policy-agri-regulation-update",
+        )
+
+        photo = self._make_article(
+            section="dist",
+            title="[포토] 도농상생 매장, 영암 농산물 직거래 판매",
+            description="직거래장 개점식 사진을 소개한다.",
+            link="https://example.com/dist-photo-filler",
+        )
+        dist_fixed = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 운영 개선 {idx}",
+                description="도매시장 경매와 출하 운영을 개선한다.",
+                link=f"https://example.com/dist-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        dist_fixed[0] = self._make_article(
+            section="dist",
+            title="'지역 농산물 판로확대'…동서울-영암낭주농협 직거래장 개점",
+            description="지역 농산물 직거래장 개점식을 열었다.",
+            link="https://example.com/dist-direct-market-opening",
+        )
+        joint_export = self._make_article(
+            section="dist",
+            title="전주원예농협, 공동선별 물량 늘리고 수출도 ‘척척’",
+            description="양파 공선출하회 취급량이 600t으로 3배 늘었고 대만 수출과 대형마트 판로를 확대했다.",
+            link="https://example.com/dist-joint-selection-export",
+        )
+        public_execution = self._make_article(
+            section="policy",
+            title="aT, 유통본부 점검…공공급식 거래액 2.3%↑·스마트 APC 115개 확대",
+            description="aT가 생산유통통합조직과 공공급식플랫폼, 스마트 APC 115개소 확대 실적을 발표했다.",
+            link="https://example.com/dist-public-execution",
+        )
+        public_execution_variant = self._make_article(
+            section="policy",
+            title="aT 유통본부 회의, 스마트 APC 115곳·공공급식 2.3% 성장 점검",
+            description="같은 유통본부 실적을 다룬 재전송 기사다.",
+            link="https://example.com/dist-public-execution-variant",
+        )
+
+        equipment = self._make_article(
+            section="pest",
+            title="최신 방제기로 농가 맞춤 지원",
+            description="농협이 무인헬기와 드론 방제장비를 지원한다.",
+            link="https://example.com/pest-equipment-tail",
+        )
+        pest_fixed = [
+            self._make_article(
+                section="pest",
+                title=f"과수 병해충 현장 대응 {idx}",
+                description="과수 농가가 병해충 확산을 막기 위해 방제한다.",
+                link=f"https://example.com/pest-floor-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        anthracnose = self._make_article(
+            section="pest",
+            title="경북농기원, 장마철 고추 탄저병 주의 당부",
+            description="경북도농업기술원이 고추 탄저병 확산을 경고하고 예방 살균제 방제를 당부했다.",
+            link="https://example.com/pest-anthracnose-warning",
+        )
+
+        first_shipment = self._make_article(
+            section="supply",
+            title="대경사과원예농협, 자두·복숭아 본격 출하",
+            description="임시총회와 초출하 행사를 열어 첫 출하를 축하했다.",
+            link="https://example.com/supply-first-shipment",
+        )
+        supply_fixed = [
+            self._make_article(
+                section="supply",
+                title=f"채소 가격·수급 동향 {idx}",
+                description="채소 생산량과 출하량, 가격 변화를 점검한다.",
+                link=f"https://example.com/supply-floor-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        onion_response = self._make_article(
+            section="supply",
+            title="경북도, 가격 하락 양파 농가 위해 대대적 수급 안정 대책 추진",
+            description="경북도가 양파 가격 하락에 대응해 농가 수급안정과 소비촉진 대책을 시행한다.",
+            link="https://example.com/supply-onion-response",
+        )
+
+        final_by_section = {
+            "supply": supply_fixed + [first_shipment],
+            "policy": [venture, import_one, import_two] + policy_fixed,
+            "dist": dist_fixed + [photo],
+            "pest": pest_fixed + [equipment],
+        }
+        raw_by_section = {
+            "supply": [onion_response],
+            "policy": [
+                production_response,
+                potato_tariff,
+                regulation_update,
+                public_execution,
+                public_execution_variant,
+            ],
+            "dist": [joint_export],
+            "pest": [anthracnose],
+        }
+
+        changed = main._repair_publish_daily_editorial_floor(final_by_section, raw_by_section)
+
+        self.assertGreaterEqual(changed, 6)
+        self.assertTrue(all(len(final_by_section[key]) == 5 for key in ("supply", "policy", "dist", "pest")))
+        policy_titles = [article.title for article in final_by_section["policy"]]
+        self.assertFalse(any("벤처투자" in title for title in policy_titles))
+        self.assertEqual(
+            sum(main._is_policy_import_management_council_story(article) for article in final_by_section["policy"]),
+            1,
+        )
+        self.assertTrue(any("국내 생산 기반" in title for title in policy_titles))
+        self.assertTrue(any("계절관세" in title for title in policy_titles))
+        self.assertTrue(any("공공비축미" in title for title in policy_titles))
+        self.assertTrue(any("공동선별" in article.title for article in final_by_section["dist"]))
+        self.assertTrue(any("스마트 APC" in article.title for article in final_by_section["dist"]))
+        self.assertEqual(
+            sum(main._is_dist_quantified_public_execution_story(article) for article in final_by_section["dist"]),
+            1,
+        )
+        self.assertFalse(any("[포토]" in article.title for article in final_by_section["dist"]))
+        self.assertFalse(any("직거래장 개점" in article.title for article in final_by_section["dist"]))
+        self.assertTrue(any("탄저병" in article.title for article in final_by_section["pest"]))
+        self.assertFalse(any("최신 방제기" in article.title for article in final_by_section["pest"]))
+        self.assertTrue(any("수급 안정 대책" in article.title for article in final_by_section["supply"]))
+        self.assertFalse(any("본격 출하" in article.title for article in final_by_section["supply"]))
