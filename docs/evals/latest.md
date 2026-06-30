@@ -1,31 +1,28 @@
-## Daily Eval (2026-06-30)
-- Overall: **73.22** (warn)
-- Operational: **85.51**
-- Reader quality: **75.52** (clear; penalty=10.0, cap=100.0, reasons=clear)
-- Quality gate: **73.22** (needs_major_iteration, editorial_below_target_bounded_penalty; editorial=72.0, operational=85.5)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=73.7, section_fit=88.8, core=68.2, commodity=99.1
-- Briefing cards: 20 / Commodity cards: 25
-- Sections: supply:5/5 raw=193, policy:5/5 raw=81, dist:5/5 raw=40, pest:5/5 raw=12
-- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=2.95, false_positive=0.05, hard_reader_issues=0, weak_core=0.29, editorial_penalty=2.8, commodity_weak=0.00, commodity_items=6, commodity_active_today=11, commodity_active_today_unlinked=5, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=6.0
+## Daily Eval (2026-07-01)
+- Overall: **92.81** (pass)
+- Operational: **94.11**
+- Reader quality: **94.11** (clear; penalty=0.0, cap=100.0, reasons=clear)
+- Quality gate: **92.81** (needs_iteration, editorial_below_target_bounded_penalty; editorial=82.0, operational=94.1)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=75.5, section_fit=91.7, core=63.9, commodity=92.0
+- Briefing cards: 20 / Commodity cards: 23
+- Sections: supply:5/5 raw=204, policy:5/5 raw=111, dist:5/5 raw=52, pest:5/5 raw=12
+- Metrics: title_unique=1.00, domain_diversity=0.70, summary_presence=1.00, summary_numeric=0.70, fresh_72h=1.00, fit_avg=4.14, false_positive=0.00, hard_reader_issues=0, weak_core=0.38, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=6, commodity_active_today=14, commodity_active_today_unlinked=8, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.67, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **72.00** (target 95, needs_major_iteration)
+- Editorial: **82.00** (target 95, needs_iteration)
 - Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=70.0, section_fit=68.0, core=61.0, summary=84.0, missed=66.0, noise=63.0
-- Summary: 분량과 최신성은 충족했지만, 편집 선별 품질은 목표 95와 거리가 큽니다. 특히 policy 섹션에 비농업 고속도로 기사와 유통/가격 동향 기사가 섞였고, supply에는 자동차 시장 기사가 들어가는 명백한 오탐이 있습니다. dist는 양파 대만 수출과 밀양 물류센터 유치 기사를 각각 중복적으로 싣는 바람에 가락시장 시범휴업 같은 더 중요한 유통 운영 이슈를 놓쳤습니다. pest는 원자료 풀이 약한 편이라 일부 일반 예찰/방제 기사는 허용 가능하지만, 과수화상병 확산 기사를 핵심으로 잡지 않은 점은 아쉽습니다.
-- [high] irrelevant_article: 3000만원대 중 친환경차 ‘공습’…현대차 포위전략 ‘반격’ - 자동차·전기차 시장 기사로 농업 수급과 무관한 명백한 오탐입니다.
-- [high] wrong_section: [민생브리핑]'성남~서초 고속도로' 추진 양재나들목 정체 줄인다 - 농업 정책이 아닌 일반 교통 인프라 기사입니다.
-- [high] wrong_section: 서울청과, 애월농협과 산지 농산물 유통 활성화 협력 - 도매시장·산지 유통 협력 기사로 policy 핵심 카드에 부적합합니다.
-- [high] weak_core: 정부비축 국산 콩 6만5000톤 푼다 - 정책성은 있으나 selection_fit_score가 낮고, 더 넓은 물가·수급 정책 후보가 보입니다.
-- [medium] wrong_section: 늦어지는 '장마'·무더위에 농산물값, 체리·파프리카↓ , 다다기오이·... - aT 라디오 가격 동향으로 supply/시장동향 성격이 강합니다.
+- Components: article_selection=78.0, section_fit=82.0, core=62.0, summary=85.0, missed=66.0, noise=72.0
+- Summary: 건수와 신선도는 충족했지만, 정책과 유통 섹션에서 편집 판단이 크게 흔들렸다. 정책은 비농업성 벤처투자 기사를 core로 올리고 수입농산물 민관협의체를 중복 게재한 반면, 한농연의 수입 확대 비판·감자 계절관세 철폐 같은 더 중요한 농정 후보를 놓쳤다. 유통은 강서시장·마늘 간담회는 적절하나 직거래장 포토 중복과 지역 홍보성 카드가 강하고, 양파 공동선별·대만 수출 같은 실질 유통 기사를 누락했다. 병해충은 약한 원자료 풀을 감안해 일부 tail은 허용되지만, 고추 탄저병 같은 명명 병해 위험을 놓친 점이 아쉽다.
+- [high] wrong_scope: 벤처투자 표준계약서 개정…RCPS 대신 CPS·사전동의권도 손질 - 농업·원예 정책성이 거의 없는 일반 벤처투자 기사인데 policy core로 배치됐다.
+- [high] duplicate_story: 민·관이 수입농산물 관리에 머리를 맞대다…'수입농산물 관리 민관협의...' - 같은 민관협의체 출범 기사가 직전 카드와 중복돼 정책 슬롯을 낭비했다.
+- [high] missed_stronger_candidate: 한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에” - 정부 물가·수입 정책에 대한 농업계 핵심 반응으로, 선정된 약한 core보다 중요하다.
+- [high] missed_stronger_candidate: 전주원예농협, 공동선별 물량 늘리고 수출도 ‘척척’ - 공동선별 확대, 대만 수출, 가격 지지까지 담긴 구체적 유통·수출 기사인데 누락됐다.
+- [medium] duplicate_or_photo_filler: [포토] 도농상생 매장, 영암 농산물 직거래 판매 - 동서울-영암 직거래장 개점 기사와 같은 이야기의 포토성 반복이다.
 
 ### Improvement Hints
 - 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
-- 리콜 시드 결손이 보입니다: policy, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
-- 금융·정치성 오탐이 브리핑에 섞였습니다 (비율 5%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=10%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 - 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
 ### Next Summary Feedback
